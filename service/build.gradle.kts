@@ -146,8 +146,8 @@ tasks {
 }
 
 flyway {
-    url = "jdbc:postgresql://localhost:5432/oppivelvollisuus"
-    user = "oppivelvollisuus"
+    url = "jdbc:postgresql://localhost:5432/vekkuli"
+    user = "vekkuli"
     password = "postgres"
     cleanDisabled = false
 }

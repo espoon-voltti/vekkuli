@@ -1,7 +1,7 @@
 {
   "keys": [
     {
-      "kid": "oppivelvollisuus-api-gateway",
+      "kid": "vekkuli-api-gateway",
       "use": "sig",
       "kty": "RSA",
       "alg": "RS256",

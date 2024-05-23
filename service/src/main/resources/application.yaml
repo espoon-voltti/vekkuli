@@ -6,7 +6,7 @@ spring:
   main:
     banner-mode: "off"
   application:
-    name: "oppivelvollisuus-service"
+    name: "vekkuli-service"
   datasource:
     driver-class-name: "org.postgresql.Driver"
     type: "com.zaxxer.hikari.HikariDataSource"

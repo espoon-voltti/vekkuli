@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-rootProject.name = "oppivelvollisuus-service"
+rootProject.name = "vekkuli-service"
 
 dependencyResolutionManagement {
     repositories {
