@@ -1,2 +1,0 @@
-ALTER TABLE students ADD COLUMN language text NOT NULL DEFAULT '';
-ALTER TABLE students ALTER COLUMN language DROP DEFAULT;
