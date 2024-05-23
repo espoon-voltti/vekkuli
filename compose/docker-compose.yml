@@ -5,16 +5,16 @@
 version: '3.5'
 
 services:
-  oppivelvollisuus-db:
+  vekkuli-db:
     image: postgres:15.4-alpine3.18
     ports:
       - "5432:5432"
     volumes:
-      - oppivelvollisuus-db-data:/var/lib/postgresql/data
+      - vekkuli-db-data:/var/lib/postgresql/data
       - ./db/test-db.sh:/docker-entrypoint-initdb.d/test-db.sh
     environment:
-      POSTGRES_DB: oppivelvollisuus
-      POSTGRES_USER: oppivelvollisuus
+      POSTGRES_DB: vekkuli
+      POSTGRES_USER: vekkuli
       POSTGRES_PASSWORD: postgres
 
   redis:
@@ -28,5 +28,5 @@ services:
       retries: 5
 
 volumes:
-  oppivelvollisuus-db-data:
+  vekkuli-db-data:
     driver: local

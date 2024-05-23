@@ -6,7 +6,7 @@ version: '3.5'
 
 services:
   frontend:
-    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/oppivelvollisuus/frontend:${TAG:-master}
+    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/frontend:${TAG:-master}
     build:
       context: ../frontend/
     ports:
@@ -17,7 +17,7 @@ services:
       HTTP_SCHEME: http
 
   service:
-    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/oppivelvollisuus/service:${TAG:-master}
+    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/service:${TAG:-master}
     build:
       context: ../service/
     ports:
@@ -25,13 +25,13 @@ services:
     environment:
       JAVA_OPTS: -server -Djava.security.egd=file:/dev/./urandom -Xms1024m -Xss512k -Xmx1024m -XX:TieredStopAtLevel=1
       SERVER_PORT: 9000
-      SPRING_DATASOURCE_URL: jdbc:postgresql://oppivelvollisuus-db:5432/oppivelvollisuus
-      SPRING_DATASOURCE_USERNAME: oppivelvollisuus
+      SPRING_DATASOURCE_URL: jdbc:postgresql://vekkuli-db:5432/vekkuli
+      SPRING_DATASOURCE_USERNAME: vekkuli
       SPRING_DATASOURCE_PASSWORD: postgres
       APP_JWT_PUBLIC_KEYS_URL: classpath:local-development/jwks.json
 
   api-gateway:
-    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/oppivelvollisuus/api-gateway:${TAG:-master}
+    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/api-gateway:${TAG:-master}
     build:
       context: ../api-gateway/
     ports:
@@ -40,7 +40,7 @@ services:
       NODE_ENV: local
       HTTP_PORT: 8888
       SERVICE_URL: http://service:9000
-      JWT_KID: "oppivelvollisuus-api-gateway"
+      JWT_KID: "vekkuli-api-gateway"
       JWT_PRIVATE_KEY: "config/test-cert/jwt_private_key.pem"
       AD_MOCK: "false"
       DEV_LOGIN: "false"
