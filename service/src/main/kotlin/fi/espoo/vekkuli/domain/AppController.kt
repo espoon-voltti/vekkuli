@@ -31,7 +31,8 @@ class AppController {
     lateinit var messageUtil: MessageUtil
 
     companion object {
-        const val SIZE_TOLERANCE = 50
+        const val WIDTH_MIN_TOLERANCE = 40
+        const val WIDTH_MAX_TOLERANCE = 100
     }
 
     @GetMapping("/", produces = [TEXT_HTML_UTF8])
@@ -212,10 +213,10 @@ class AppController {
                 BoatSpaceFilter(
                     page = page,
                     pageSize = pageSize,
-                    minWidth = width?.minus(SIZE_TOLERANCE),
-                    maxWidth = width?.plus(SIZE_TOLERANCE),
-                    minLength = length?.minus(SIZE_TOLERANCE),
-                    maxLength = length?.plus(SIZE_TOLERANCE),
+                    minWidth = width?.minus(WIDTH_MIN_TOLERANCE),
+                    maxWidth = width?.plus(WIDTH_MAX_TOLERANCE),
+                    minLength = length,
+                    maxLength = null,
                     amenity = amenity,
                     locationId = locationId,
                 )
