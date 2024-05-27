@@ -299,7 +299,13 @@ class AppController {
                         td { +slip.locationName }
                         td { +slip.section }
                         td { +slip.placeNumber.toString() }
-                        td { +slip.amenity.toString() }
+                        td {
+                            +messageUtil.getMessage(
+                                "boatSpaces.${
+                                    slip.amenity.toString().replaceFirstChar(Char::lowercase)
+                                }"
+                            )
+                        }
                         td { +slip.widthCm.toString() }
                         td { +slip.lengthCm.toString() }
                         td { +slip.description }
