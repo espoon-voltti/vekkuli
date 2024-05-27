@@ -49,6 +49,7 @@ class AppController {
         }
 
         return createHTML().html {
+            lang = "fi"
             attributes["class"] = "theme-light"
             head {
                 title { +"Venepaikat" }
@@ -57,6 +58,10 @@ class AppController {
                     href = "https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
                 )
                 script(src = "https://unpkg.com/htmx.org@1.9.2") {}
+                meta {
+                    name = "viewport"
+                    content = "width=device-width, initial-scale=1"
+                }
             }
             body {
                 section("section") {
@@ -75,15 +80,16 @@ class AppController {
                                     div("column") {
                                         div("field") {
                                             label("label") {
+                                                attributes["for"] = "width"
                                                 +"${messageUtil.getMessage("boatSpaces.widthLabel")}: "
                                             }
                                             div("control") {
                                                 consumer.numberInput("width", width)
                                             }
                                         }
-
                                         div("field") {
                                             label("label") {
+                                                attributes["for"] = "length"
                                                 +"${messageUtil.getMessage("boatSpaces.lengthLabel")}: "
                                             }
                                             div("control") {
@@ -94,11 +100,13 @@ class AppController {
                                     div("column") {
                                         div("field") {
                                             label("label") {
+                                                attributes["for"] = "amenity"
                                                 +messageUtil.getMessage("boatSpaces.amenityLabel")
                                             }
                                             div("select") {
                                                 select {
                                                     name = "amenity"
+                                                    id = "amenity"
                                                     option {
                                                         value = ""
                                                         if (amenity == null) {
@@ -139,11 +147,13 @@ class AppController {
                                         }
                                         div("field") {
                                             label("label") {
+                                                attributes["for"] = "locationId"
                                                 +messageUtil.getMessage("boatSpaces.harborHeader")
                                             }
                                             div("select") {
                                                 select {
                                                     name = "locationId"
+                                                    id = "locationId"
                                                     option {
                                                         value = ""
                                                         +messageUtil.getMessage("boatSpaces.noneOption")
