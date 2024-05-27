@@ -6,6 +6,7 @@ package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.MessageUtil
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.constraints.Min
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import kotlinx.html.stream.createHTML
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
+
+
 import org.springframework.web.bind.annotation.RestController
 
 const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
@@ -33,10 +36,10 @@ class AppController {
 
     @GetMapping("/", produces = [TEXT_HTML_UTF8])
     fun example(
-        @RequestParam page: Int = 1,
+        @RequestParam @Min(1) page: Int = 1,
         @RequestParam pageSize: Int = 25,
-        @RequestParam width: Int?,
-        @RequestParam length: Int?,
+        @RequestParam @Min(0) width: Int?,
+        @RequestParam @Min(0) length: Int?,
         @RequestParam locationId: Int?,
         @RequestParam amenity: BoatSpaceAmenity?
     ): String {
@@ -154,12 +157,6 @@ class AppController {
                                             }
                                         }
                                     }
-                                    hiddenInput(name = "page") {
-                                        value = "1"
-                                    }
-                                    hiddenInput(name = "pageSize") {
-                                        value = pageSize.toString()
-                                    }
                                 }
                             }
                         }
@@ -185,7 +182,7 @@ class AppController {
         "/partial/boat-spaces",
     )
     fun partialBoatSlipTable(
-        @RequestParam page: Int = 1,
+        @RequestParam @Min(0) page: Int = 1,
         @RequestParam pageSize: Int = 25,
         @RequestParam width: Int?,
         @RequestParam length: Int?,
