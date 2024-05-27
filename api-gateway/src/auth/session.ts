@@ -16,7 +16,7 @@ import { fromCallback } from '../utils/promise-utils.js'
 import { RedisClient } from '../clients/redis-client.js'
 import { SessionConfig } from '../config.js'
 
-const cookieName = 'oppivelvollisuus.session'
+const cookieName = 'vekkuli.session'
 
 function sessionKey(id: string) {
   return `sess:${id}`

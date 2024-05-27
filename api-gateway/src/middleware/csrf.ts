@@ -9,7 +9,7 @@ import { useSecureCookies } from '../config.js'
 // Middleware that does XSRF header checks
 export const csrf = csurf({ cookie: false })
 
-export const csrfCookieName = 'oppivelvollisuus.xsrf'
+export const csrfCookieName = 'vekkuli.xsrf'
 
 // Returns a middleware that sets XSRF cookie that the frontend should use in
 // requests. This only needs to be done in the "entry point" URL, which is called

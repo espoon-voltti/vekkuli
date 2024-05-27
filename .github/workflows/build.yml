@@ -38,9 +38,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: oppivelvollisuus/frontend
+          - name: vekkuli/frontend
             path: frontend
-          - name: oppivelvollisuus/api-gateway
+          - name: vekkuli/api-gateway
             path: api-gateway
 
     steps:
@@ -81,7 +81,7 @@ jobs:
   service:
     runs-on: ubuntu-latest
     env:
-      name: oppivelvollisuus/service
+      name: vekkuli/service
       path: service
       builder: builder
 
@@ -217,7 +217,7 @@ jobs:
 
       - name: Start dependencies
         run: |
-          ./e2e-test-compose up -d oppivelvollisuus-db redis frontend api-gateway
+          ./e2e-test-compose up -d vekkuli-db redis frontend api-gateway
 
       - name: Run e2e tests
         run: |
@@ -266,8 +266,8 @@ jobs:
       - name: Retag
         run: |
           for repository in service api-gateway frontend; do
-            MANIFEST=$(aws ecr batch-get-image --repository-name "oppivelvollisuus/$repository" --image-ids imageTag="${{ github.event.pull_request.head.sha || github.sha }}" --output json | jq --raw-output --join-output '.images[0].imageManifest')
-            aws ecr put-image --repository-name "oppivelvollisuus/$repository" --image-tag "env-${{ matrix.environment }}" --image-manifest "$MANIFEST"
+            MANIFEST=$(aws ecr batch-get-image --repository-name "vekkuli/$repository" --image-ids imageTag="${{ github.event.pull_request.head.sha || github.sha }}" --output json | jq --raw-output --join-output '.images[0].imageManifest')
+            aws ecr put-image --repository-name "vekkuli/$repository" --image-tag "env-${{ matrix.environment }}" --image-manifest "$MANIFEST"
           done
 
       - name: Configure AWS credentials
@@ -281,9 +281,9 @@ jobs:
       - name: Deploy
         run: |
           aws ecs update-service \
-            --cluster "oppivelvollisuus-${{ matrix.environment }}" \
-            --service "oppivelvollisuus-${{ matrix.environment }}" \
+            --cluster "vekkuli-${{ matrix.environment }}" \
+            --service "vekkuli-${{ matrix.environment }}" \
             --force-new-deployment
           aws ecs wait services-stable \
-            --cluster "oppivelvollisuus-${{ matrix.environment }}" \
-            --services "oppivelvollisuus-${{ matrix.environment }}"
+            --cluster "vekkuli-${{ matrix.environment }}" \
+            --services "vekkuli-${{ matrix.environment }}"

@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: oppivelvollisuus
-Source: https://github.com/espoon-voltti/oppivelvollisuus
+Upstream-Name: vekkuli
+Source: https://github.com/espoon-voltti/vekkuli
 
 Files: api-gateway/.yarn/*
 Copyright: 2023-present Yarn Contributors

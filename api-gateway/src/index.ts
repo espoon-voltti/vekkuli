@@ -55,7 +55,7 @@ app.use('/api', createRouter(config, redisClient))
 app.use(fallbackErrorHandler)
 
 const server = app.listen(httpPort, () => {
-  console.log(`Oppivelvollisuus API Gateway listening on port ${httpPort}`)
+  console.log(`Vekkuli API Gateway listening on port ${httpPort}`)
 })
 
 server.keepAliveTimeout = 70 * 1000

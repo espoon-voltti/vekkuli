@@ -4,297 +4,310 @@
 
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.common.AppUser
-import fi.espoo.vekkuli.common.getAppUsers
-import fi.espoo.vekkuli.config.AuthenticatedUser
-import fi.espoo.vekkuli.config.audit
-import mu.KotlinLogging
+import fi.espoo.vekkuli.config.MessageUtil
+import jakarta.servlet.http.HttpServletResponse
+import kotlinx.html.*
+import kotlinx.html.stream.appendHTML
+import kotlinx.html.stream.createHTML
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDate
-import java.util.UUID
+
+const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
 
 @RestController
 class AppController {
     @Autowired
     lateinit var jdbi: Jdbi
 
-    private val logger = KotlinLogging.logger {}
+    @Autowired
+    lateinit var messageUtil: MessageUtil
 
-    data class StudentAndCaseInput(
-        val student: StudentInput,
-        val studentCase: StudentCaseInput
+    companion object {
+        const val SIZE_TOLERANCE = 50
+    }
+
+    @GetMapping("/", produces = [TEXT_HTML_UTF8])
+    fun example(
+        @RequestParam page: Int = 1,
+        @RequestParam pageSize: Int = 25,
+        @RequestParam width: Int?,
+        @RequestParam length: Int?,
+        @RequestParam locationId: Int?,
+        @RequestParam amenity: BoatSpaceAmenity?
+    ): String {
+        val locations = jdbi.inTransactionUnchecked { tx ->
+            tx.getLocations()
+        }
+
+        return createHTML().html {
+            attributes["class"] = "theme-light"
+            head {
+                title { +"Venepaikat" }
+                link(
+                    rel = "stylesheet",
+                    href = "https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
+                )
+                script(src = "https://unpkg.com/htmx.org@1.9.2") {}
+            }
+            body {
+                section("section") {
+                    div("container") {
+                        h1("title") { +messageUtil.getMessage("boatSpaces.title") }
+                        div("box") {
+                            form {
+                                id = "form"
+                                action = "/"
+                                method = FormMethod.get
+                                attributes["hx-trigger"] = "input delay:1s, change"
+                                attributes["hx-get"] = "/partial/boat-spaces"
+                                attributes["hx-target"] = "#boatSlipTableDiv"
+                                attributes["hx-swap"] = "innerHTML"
+                                div("columns") {
+                                    div("column") {
+                                        div("field") {
+                                            label("label") {
+                                                +"${messageUtil.getMessage("boatSpaces.widthLabel")}: "
+                                            }
+                                            div("control") {
+                                                consumer.numberInput("width", width)
+                                            }
+                                        }
+
+                                        div("field") {
+                                            label("label") {
+                                                +"${messageUtil.getMessage("boatSpaces.lengthLabel")}: "
+                                            }
+                                            div("control") {
+                                                consumer.numberInput("length", length)
+                                            }
+                                        }
+                                    }
+                                    div("column") {
+                                        div("field") {
+                                            label("label") {
+                                                +messageUtil.getMessage("boatSpaces.amenityLabel")
+                                            }
+                                            div("select") {
+                                                select {
+                                                    name = "amenity"
+                                                    option {
+                                                        value = ""
+                                                        if (amenity == null) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.noneOption")
+                                                    }
+                                                    option {
+                                                        value = "Buoy"
+                                                        if (amenity == BoatSpaceAmenity.Buoy) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.buoyOption")
+                                                    }
+                                                    option {
+                                                        value = "RearBuoy"
+                                                        if (amenity == BoatSpaceAmenity.RearBuoy) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.rearBuoyOption")
+                                                    }
+                                                    option {
+                                                        value = "Beam"
+                                                        if (amenity == BoatSpaceAmenity.Beam) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.beamOption")
+                                                    }
+                                                    option {
+                                                        value = "WalkBeam"
+                                                        if (amenity == BoatSpaceAmenity.WalkBeam) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.walkBeamOption")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        div("field") {
+                                            label("label") {
+                                                +messageUtil.getMessage("boatSpaces.harborHeader")
+                                            }
+                                            div("select") {
+                                                select {
+                                                    name = "locationId"
+                                                    option {
+                                                        value = ""
+                                                        +messageUtil.getMessage("boatSpaces.noneOption")
+                                                    }
+                                                    locations.forEach {
+                                                        option {
+                                                            value = it.id
+                                                            +it.name
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    hiddenInput(name = "page") {
+                                        value = "1"
+                                    }
+                                    hiddenInput(name = "pageSize") {
+                                        value = pageSize.toString()
+                                    }
+                                }
+                            }
+                        }
+                        div {
+                            id = "boatSlipTableDiv"
+                            consumer.boatSpaces(page, pageSize, width, length, amenity, locationId, page)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun TagConsumer<*>.numberInput(id: String, value: Int? = null) {
+        input(InputType.number, name = id, classes = "input") {
+            this.id = id
+            style = "width: 100px"
+            value?.let { this.value = it.toString() }
+        }
+    }
+
+    @GetMapping(
+        "/partial/boat-spaces",
     )
-
-    @PostMapping("/students")
-    fun createStudent(
-        user: AuthenticatedUser,
-        @RequestBody body: StudentAndCaseInput
-    ): UUID {
-        return jdbi.inTransactionUnchecked { tx ->
-            val studentId = tx.insertStudent(data = body.student, user = user)
-            tx.insertStudentCase(studentId = studentId, data = body.studentCase, user = user)
-
-            studentId
-        }.also {
-            logger.audit(
-                user,
-                "CREATE_STUDENT"
-            )
-        }
+    fun partialBoatSlipTable(
+        @RequestParam page: Int = 1,
+        @RequestParam pageSize: Int = 25,
+        @RequestParam width: Int?,
+        @RequestParam length: Int?,
+        @RequestParam locationId: Int?,
+        @RequestParam amenity: BoatSpaceAmenity?,
+        response: HttpServletResponse
+    ): String {
+        val qs = createQueryString(page, pageSize, width, length, locationId, amenity)
+        response.setHeader(
+            "HX-Push-Url",
+            qs
+        )
+        return buildString { appendHTML().boatSpaces(page, pageSize, width, length, amenity, locationId, page) }
     }
 
-    @PostMapping("/students/duplicates")
-    fun getDuplicateStudents(
-        user: AuthenticatedUser,
-        @RequestBody body: DuplicateStudentCheckInput
-    ): List<DuplicateStudent> {
-        return jdbi.inTransactionUnchecked { tx ->
-            tx.getPossibleDuplicateStudents(body)
-        }.also {
-            logger.audit(
-                user,
-                "GET_DUPLICATE_STUDENTS"
-            )
-        }
-    }
-
-    @PostMapping("/students/search")
-    fun getStudents(
-        user: AuthenticatedUser,
-        @RequestBody body: StudentSearchParams
-    ): List<StudentSummary> {
-        return jdbi.inTransactionUnchecked { tx ->
-            tx.getStudentSummaries(
-                params =
-                    body.copy(
-                        query = body.query.takeIf { !it.isNullOrBlank() }
-                    )
-            )
-        }.also {
-            logger.audit(
-                user,
-                "SEARCH_STUDENTS"
-            )
-        }
-    }
-
-    data class StudentResponse(
-        val student: Student,
-        val cases: List<StudentCase>
-    )
-
-    @GetMapping("/students/{id}")
-    fun getStudent(
-        user: AuthenticatedUser,
-        @PathVariable id: UUID
-    ): StudentResponse {
-        return jdbi.inTransactionUnchecked { tx ->
-            val studentDetails = tx.getStudent(id = id)
-            val cases = tx.getStudentCasesByStudent(studentId = id)
-            StudentResponse(studentDetails, cases)
-        }.also {
-            logger.audit(
-                user,
-                "GET_STUDENT",
-                mapOf("studentId" to id.toString())
-            )
-        }
-    }
-
-    @PutMapping("/students/{id}")
-    fun updateStudent(
-        user: AuthenticatedUser,
-        @PathVariable id: UUID,
-        @RequestBody body: StudentInput
+    private fun TagConsumer<*>.boatSpaces(
+        page: Int,
+        pageSize: Int,
+        width: Int?,
+        length: Int?,
+        amenity: BoatSpaceAmenity?,
+        locationId: Int?,
+        currentPage: Int
     ) {
-        jdbi.inTransactionUnchecked { tx ->
-            tx.updateStudent(id = id, data = body, user = user)
-        }.also {
-            logger.audit(
-                user,
-                "UPDATE_STUDENT",
-                mapOf("studentId" to id.toString())
+        val boatSlips = jdbi.inTransactionUnchecked { tx ->
+            tx.getBoatSpaces(
+                BoatSpaceFilter(
+                    page = page,
+                    pageSize = pageSize,
+                    minWidth = width?.minus(SIZE_TOLERANCE),
+                    maxWidth = width?.plus(SIZE_TOLERANCE),
+                    minLength = length?.minus(SIZE_TOLERANCE),
+                    maxLength = length?.plus(SIZE_TOLERANCE),
+                    amenity = amenity,
+                    locationId = locationId,
+                )
             )
+        }
+        if (boatSlips.isEmpty()) {
+            div {
+                h2 { +"Ei tuloksia" }
+            }
+            return
+        }
+        val pages = boatSlips[0].totalCount / pageSize + (if (boatSlips[0].totalCount % pageSize > 0) 1 else 0)
+        println("pages: $pages")
+        val nextPage = if (currentPage < pages) currentPage + 1 else null
+        val prevPage = if (currentPage > 1) currentPage - 1 else null
+        div {
+            boatSpaceTable(boatSlips.toList())
+            nav("pagination is-centered ") {
+                a(classes = "pagination-previous ${if (prevPage == null) "is-disabled" else ""}") {
+                    if (prevPage != null) {
+                        attributes["hx-get"] = "/partial/boat-spaces"
+                        attributes["hx-target"] = "#boatSlipTableDiv"
+                        attributes["hx-swap"] = "innerHTML"
+                        attributes["hx-include"] = "#form"
+                        attributes["hx-vals"] = "js:{page: $prevPage}"
+                    }
+                    +"Edellinen"
+                }
+                span(classes = "pagination-list") {
+                    +"$currentPage/$pages"
+                }
+                a(classes = "pagination-next ${if (nextPage == null) "is-disabled" else ""}") {
+                    if (nextPage != null) {
+                        attributes["hx-get"] = "/partial/boat-spaces"
+                        attributes["hx-target"] = "#boatSlipTableDiv"
+                        attributes["hx-swap"] = "innerHTML"
+                        attributes["hx-include"] = "#form"
+                        attributes["hx-vals"] = "js:{page: $nextPage}"
+                    }
+                    +"Seuraava"
+                }
+            }
         }
     }
 
-    @DeleteMapping("/students/{id}")
-    fun deleteStudent(
-        user: AuthenticatedUser,
-        @PathVariable id: UUID
-    ) {
-        jdbi.inTransactionUnchecked { tx ->
-            tx.deleteStudent(id = id)
-        }.also {
-            logger.audit(
-                user,
-                "DELETE_STUDENT",
-                mapOf("studentId" to id.toString())
-            )
-        }
+    fun createQueryString(
+        page: Int = 1,
+        pageSize: Int = 25,
+        width: Int?,
+        length: Int?,
+        locationId: Int?,
+        amenity: BoatSpaceAmenity?
+    ): String {
+        val queryString = StringBuilder("?")
+        queryString.append("page=$page&pageSize=$pageSize")
+        width?.let { queryString.append("&width=$it") }
+        length?.let { queryString.append("&length=$it") }
+        locationId?.let { queryString.append("&locationId=$it") }
+        amenity?.let { queryString.append("&amenity=$it") }
+        return queryString.toString()
     }
 
-    @PostMapping("/students/{studentId}/cases")
-    fun createStudentCase(
-        user: AuthenticatedUser,
-        @PathVariable studentId: UUID,
-        @RequestBody body: StudentCaseInput
-    ): UUID {
-        return jdbi.inTransactionUnchecked { tx ->
-            tx.insertStudentCase(studentId = studentId, data = body, user = user)
-        }.also {
-            logger.audit(
-                user,
-                "CREATE_STUDENT_CASE",
-                mapOf("studentId" to studentId.toString())
-            )
-        }
-    }
-
-    @PutMapping("/students/{studentId}/cases/{id}")
-    fun updateStudentCase(
-        user: AuthenticatedUser,
-        @PathVariable studentId: UUID,
-        @PathVariable id: UUID,
-        @RequestBody body: StudentCaseInput
-    ) {
-        jdbi.inTransactionUnchecked { tx ->
-            tx.updateStudentCase(id = id, studentId = studentId, data = body, user = user)
-        }.also {
-            logger.audit(
-                user,
-                "UPDATE_STUDENT_CASE",
-                mapOf("studentId" to studentId.toString(), "caseId" to id.toString())
-            )
-        }
-    }
-
-    @DeleteMapping("/students/{studentId}/cases/{id}")
-    fun deleteStudentCase(
-        user: AuthenticatedUser,
-        @PathVariable studentId: UUID,
-        @PathVariable id: UUID
-    ) {
-        jdbi.inTransactionUnchecked { tx ->
-            tx.deleteStudentCase(id = id, studentId = studentId)
-        }.also {
-            logger.audit(
-                user,
-                "DELETE_STUDENT_CASE",
-                mapOf("studentId" to studentId.toString(), "caseId" to id.toString())
-            )
-        }
-    }
-
-    @PutMapping("/students/{studentId}/cases/{id}/status")
-    fun updateStudentCaseStatus(
-        user: AuthenticatedUser,
-        @PathVariable studentId: UUID,
-        @PathVariable id: UUID,
-        @RequestBody body: CaseStatusInput
-    ) {
-        jdbi.inTransactionUnchecked { tx ->
-            tx.updateStudentCaseStatus(id = id, studentId = studentId, data = body, user = user)
-        }.also {
-            logger.audit(
-                user,
-                "UPDATE_STUDENT_CASE_STATUS",
-                mapOf("studentId" to studentId.toString(), "caseId" to id.toString())
-            )
-        }
-    }
-
-    @PostMapping("/student-cases/{studentCaseId}/case-events")
-    fun createCaseEvent(
-        user: AuthenticatedUser,
-        @PathVariable studentCaseId: UUID,
-        @RequestBody body: CaseEventInput
-    ): UUID {
-        return jdbi.inTransactionUnchecked { tx ->
-            tx.insertCaseEvent(studentCaseId = studentCaseId, data = body, user = user)
-        }.also {
-            logger.audit(
-                user,
-                "CREATE_CASE_EVENT",
-                mapOf("caseId" to studentCaseId.toString())
-            )
-        }
-    }
-
-    @PutMapping("/case-events/{id}")
-    fun updateCaseEvent(
-        user: AuthenticatedUser,
-        @PathVariable id: UUID,
-        @RequestBody body: CaseEventInput
-    ) {
-        jdbi.inTransactionUnchecked { tx ->
-            tx.updateCaseEvent(id = id, data = body, user = user)
-        }.also {
-            logger.audit(
-                user,
-                "UPDATE_CASE_EVENT",
-                mapOf("eventId" to id.toString())
-            )
-        }
-    }
-
-    @DeleteMapping("/case-events/{id}")
-    fun deleteCaseEvent(
-        user: AuthenticatedUser,
-        @PathVariable id: UUID
-    ) {
-        jdbi.inTransactionUnchecked { tx ->
-            tx.deleteCaseEvent(id = id)
-        }.also {
-            logger.audit(
-                user,
-                "DELETE_CASE_EVENT",
-                mapOf("eventId" to id.toString())
-            )
-        }
-    }
-
-    @GetMapping("/employees")
-    fun getEmployeeUsers(user: AuthenticatedUser): List<AppUser> {
-        return jdbi.inTransactionUnchecked { it.getAppUsers() }.also {
-            logger.audit(
-                user,
-                "GET_EMPLOYEES"
-            )
-        }
-    }
-
-    @GetMapping("/reports/student-cases")
-    fun getCasesReport(
-        user: AuthenticatedUser,
-        @RequestParam(required = false) start: LocalDate?,
-        @RequestParam(required = false) end: LocalDate?
-    ): List<CaseReportRow> {
-        return jdbi.inTransactionUnchecked { it.getCasesReport(CaseReportRequest(start, end)) }.also {
-            logger.audit(
-                user,
-                "GET_CASES_REPORT"
-            )
-        }
-    }
-
-    @DeleteMapping("/old-students")
-    fun deleteOldStudents(user: AuthenticatedUser) {
-        return jdbi.inTransactionUnchecked { it.deleteOldStudents() }.also {
-            logger.audit(
-                user,
-                "DELETE_OLD_STUDENTS"
-            )
+    private fun TagConsumer<*>.boatSpaceTable(boatSlips: List<BoatSpace>) {
+        table("table is-fullwidth is-striped is-hoverable ") {
+            id = "boatSlipTable"
+            thead {
+                tr {
+                    th { +messageUtil.getMessage("boatSpaces.harborHeader") }
+                    th { +messageUtil.getMessage("boatSpaces.pierHeader") }
+                    th { +messageUtil.getMessage("boatSpaces.placeNumberHeader") }
+                    th { +messageUtil.getMessage("boatSpaces.amenityHeader") }
+                    th { +messageUtil.getMessage("boatSpaces.widthHeader") }
+                    th { +messageUtil.getMessage("boatSpaces.lengthHeader") }
+                    th { +messageUtil.getMessage("boatSpaces.descriptionHeader") }
+                }
+            }
+            tbody {
+                boatSlips.forEach { slip ->
+                    tr {
+                        td { +slip.locationName }
+                        td { +slip.section }
+                        td { +slip.placeNumber.toString() }
+                        td { +slip.amenity.toString() }
+                        td { +slip.widthCm.toString() }
+                        td { +slip.lengthCm.toString() }
+                        td { +slip.description }
+                    }
+                }
+            }
         }
     }
 }

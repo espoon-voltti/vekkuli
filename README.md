@@ -4,9 +4,9 @@ SPDX-FileCopyrightText: 2023-2024 City of Espoo
 SPDX-License-Identifier: LGPL-2.1-or-later
 -->
 
-# Oppivelvollisuus
+# Vekkuli
 
-[![REUSE status](https://api.reuse.software/badge/github.com/espoon-voltti/oppivelvollisuus)](https://api.reuse.software/info/github.com/espoon-voltti/oppivelvollisuus)
+[![REUSE status](https://api.reuse.software/badge/github.com/espoon-voltti/vekkuli)](https://api.reuse.software/info/github.com/espoon-voltti/vekkuli)
 
 A tool for tracking the monitoring and guidance cases related to compulsory education.
 
@@ -86,7 +86,7 @@ After merging a PR go to the Github action and approve the deployments after bui
 
 ## License
 
-Oppivelvollisuus is published under **LGPL-2.1-or-later** license. Please refer to
+Vekkuli is published under **LGPL-2.1-or-later** license. Please refer to
 [LICENSE](LICENSE) for further details.
 
 ### Bulk-licensing

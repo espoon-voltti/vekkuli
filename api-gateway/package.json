@@ -1,7 +1,7 @@
 {
-  "name": "oppivelvollisuus-api-gateway",
+  "name": "vekkuli-api-gateway",
   "version": "0.0.1",
-  "description": "API gateway for oppivelvollisuus",
+  "description": "API gateway for vekkuli",
   "type": "module",
   "private": true,
   "scripts": {
