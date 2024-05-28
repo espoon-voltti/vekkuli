@@ -14,6 +14,8 @@ CREATE TYPE BoatSpaceType AS ENUM ('Storage', 'Slip');
 
 CREATE TYPE BoatAmenity AS ENUM ('None', 'Buoy', 'RearBuoy', 'Beam', 'WalkBeam');
 
+CREATE TYPE BoatType AS ENUM ('Rowboat', 'OutboardMotor', 'InboardMotor', 'Sailboat', 'JetSki');
+
 CREATE TABLE boat_space (
     id Serial PRIMARY KEY,
     type BoatSpaceType NOT NULL,
@@ -33,6 +35,7 @@ CREATE TABLE boat_space_application (
     id Serial PRIMARY KEY,
     created_at timestamp NOT NULL,
     type BoatSpaceType NOT NULL,
+    boatType BoatType NOT NULL,
     amenity BoatAmenity NOT NULL,
     boat_width_cm int NOT NULL,
     boat_length_cm int NOT NULL,
