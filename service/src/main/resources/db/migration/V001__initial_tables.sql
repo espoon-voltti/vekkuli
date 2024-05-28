@@ -28,3 +28,21 @@ CREATE TABLE boat_space (
     CONSTRAINT fk_location_id FOREIGN KEY (location_id) REFERENCES location(id),
     CONSTRAINT fk_price_id FOREIGN KEY (price_id) REFERENCES price(id)
 );
+
+CREATE TABLE boat_space_application (
+    id Serial PRIMARY KEY,
+    created_at timestamp NOT NULL,
+    type BoatSpaceType NOT NULL,
+    amenity BoatAmenity NOT NULL,
+    boat_width_cm int NOT NULL,
+    boat_length_cm int NOT NULL,
+    information text NOT NULL
+);
+
+CREATE TABLE boat_space_application_location_wish (
+    boat_space_application_id int NOT NULL,
+    location_id int NOT NULL,
+    priority int NOT NULL,
+    CONSTRAINT fk_location_wish_location_id FOREIGN KEY (location_id) REFERENCES location(id),
+    CONSTRAINT fk_location_wish_application_id FOREIGN KEY (boat_space_application_id) REFERENCES location(id)
+);
