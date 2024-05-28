@@ -6,6 +6,7 @@ package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.MessageUtil
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
@@ -21,6 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
+
+fun Int.cmToM() : Float = this / 100F
+
+fun Float.mToCm() : Int = (this * 100F).toInt()
 
 @RestController
 class AppController {
@@ -39,8 +44,8 @@ class AppController {
     fun example(
         @RequestParam @Min(1) page: Int = 1,
         @RequestParam pageSize: Int = 25,
-        @RequestParam @Min(0) width: Int?,
-        @RequestParam @Min(0) length: Int?,
+        @RequestParam @Min(0) width: Float?,
+        @RequestParam @Min(0) length: Float?,
         @RequestParam locationId: Int?,
         @RequestParam amenity: BoatSpaceAmenity?
     ): String {
@@ -181,7 +186,7 @@ class AppController {
         }
     }
 
-    private fun TagConsumer<*>.numberInput(id: String, value: Int? = null) {
+    private fun TagConsumer<*>.numberInput(id: String, value: Float? = null) {
         input(InputType.number, name = id, classes = "input") {
             this.id = id
             style = "width: 100px"
@@ -193,10 +198,10 @@ class AppController {
         "/partial/boat-spaces",
     )
     fun partialBoatSlipTable(
-        @RequestParam @Min(0) page: Int = 1,
+        @RequestParam @Min(1) page: Int = 1,
         @RequestParam pageSize: Int = 25,
-        @RequestParam width: Int?,
-        @RequestParam length: Int?,
+        @RequestParam @Min(0) width: Float?,
+        @RequestParam @Min(0) length: Float?,
         @RequestParam locationId: Int?,
         @RequestParam amenity: BoatSpaceAmenity?,
         response: HttpServletResponse
@@ -212,8 +217,8 @@ class AppController {
     private fun TagConsumer<*>.boatSpaces(
         page: Int,
         pageSize: Int,
-        width: Int?,
-        length: Int?,
+        width: Float?,
+        length: Float?,
         amenity: BoatSpaceAmenity?,
         locationId: Int?,
         currentPage: Int
@@ -223,9 +228,9 @@ class AppController {
                 BoatSpaceFilter(
                     page = page,
                     pageSize = pageSize,
-                    minWidth = width?.minus(WIDTH_MIN_TOLERANCE),
-                    maxWidth = width?.plus(WIDTH_MAX_TOLERANCE),
-                    minLength = length,
+                    minWidth = width?.mToCm()?.plus(WIDTH_MIN_TOLERANCE),
+                    maxWidth = width?.mToCm()?.plus(WIDTH_MAX_TOLERANCE),
+                    minLength = length?.mToCm(),
                     maxLength = null,
                     amenity = amenity,
                     locationId = locationId,
@@ -275,15 +280,15 @@ class AppController {
     fun createQueryString(
         page: Int = 1,
         pageSize: Int = 25,
-        width: Int?,
-        length: Int?,
+        width: Float?,
+        length: Float?,
         locationId: Int?,
         amenity: BoatSpaceAmenity?
     ): String {
         val queryString = StringBuilder("?")
         queryString.append("page=$page&pageSize=$pageSize")
-        width?.let { queryString.append("&width=$it") }
-        length?.let { queryString.append("&length=$it") }
+        width?.let { queryString.append("&width=${it}") }
+        length?.let { queryString.append("&length=${it}") }
         locationId?.let { queryString.append("&locationId=$it") }
         amenity?.let { queryString.append("&amenity=$it") }
         return queryString.toString()
@@ -316,8 +321,8 @@ class AppController {
                                 }"
                             )
                         }
-                        td { +slip.widthCm.toString() }
-                        td { +slip.lengthCm.toString() }
+                        td { +String.format("%.2f", slip.widthCm.cmToM()) }
+                        td { +String.format("%.2f", slip.lengthCm.cmToM()) }
                         td { +slip.description }
                     }
                 }
