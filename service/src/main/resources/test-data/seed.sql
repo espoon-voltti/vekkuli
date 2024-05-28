@@ -8,13 +8,13 @@ INSERT INTO price (name, price) VALUES
 
 -- Populate the location table with 7 different locations with made-up Finnish addresses
 INSERT INTO location (name, address) VALUES
-                                         ('Haukilahden satama', 'Satamatie 1, Espoo'),
-                                         ('Kivenlahden satama', 'Kivenlahdentie 10, Espoo'),
-                                         ('Laajalahden satama', 'Laajalahdentie 5, Espoo'),
-                                         ('Otsolahden satama', 'Otsolahdentie 7, Espoo'),
-                                         ('Soukan satama', 'Soukantie 3, Espoo'),
-                                         ('Suomenojan satama', 'Suomenojantie 15, Espoo'),
-                                         ('Svinön satama', 'Svinöntie 8, Espoo');
+                                         ('Haukilahti', 'Satamatie 1, Espoo'),
+                                         ('Kivenlahti', 'Kivenlahdentie 10, Espoo'),
+                                         ('Laajalahti', 'Laajalahdentie 5, Espoo'),
+                                         ('Otsolahti', 'Otsolahdentie 7, Espoo'),
+                                         ('Soukka', 'Soukantie 3, Espoo'),
+                                         ('Suomenoja', 'Suomenojantie 15, Espoo'),
+                                         ('Svinö', 'Svinöntie 8, Espoo');
 
 -- Populate the boat_space table with 3-7 sections per location and 30-100 boat spaces per section
 DO $$
