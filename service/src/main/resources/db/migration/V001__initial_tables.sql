@@ -39,6 +39,8 @@ CREATE TABLE boat_space_application (
     amenity BoatAmenity NOT NULL,
     boat_width_cm int NOT NULL,
     boat_length_cm int NOT NULL,
+    boat_weight_kg int NOT NULL,
+    boat_registration_code text NOT NULL,
     information text NOT NULL
 );
 
