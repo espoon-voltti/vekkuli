@@ -35,7 +35,7 @@ CREATE TABLE boat_space_application (
     id Serial PRIMARY KEY,
     created_at timestamp NOT NULL,
     type BoatSpaceType NOT NULL,
-    boatType BoatType NOT NULL,
+    boat_type BoatType NOT NULL,
     amenity BoatAmenity NOT NULL,
     boat_width_cm int NOT NULL,
     boat_length_cm int NOT NULL,
