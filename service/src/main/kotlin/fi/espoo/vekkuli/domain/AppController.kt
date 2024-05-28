@@ -6,7 +6,6 @@ package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.MessageUtil
 import jakarta.servlet.http.HttpServletResponse
-import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Min
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
@@ -47,7 +46,8 @@ class AppController {
         @RequestParam @Min(0) width: Float?,
         @RequestParam @Min(0) length: Float?,
         @RequestParam locationId: Int?,
-        @RequestParam amenity: BoatSpaceAmenity?
+        @RequestParam amenity: BoatSpaceAmenity?,
+        @RequestParam boatSpaceType: BoatSpaceType?,
     ): String {
         val locations = jdbi.inTransactionUnchecked { tx ->
             tx.getLocations()
@@ -172,13 +172,48 @@ class AppController {
                                                 }
                                             }
                                         }
+
+                                        div("field") {
+                                            label("label") {
+                                                attributes["for"] = "boatSpaceType"
+                                                +messageUtil.getMessage("boatSpaces.typeHeader")
+                                            }
+                                            div("select") {
+                                                select {
+                                                    name = "boatSpaceType"
+                                                    id = "boatSpaceType"
+                                                    option {
+                                                        value = ""
+                                                        if (boatSpaceType == null) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.noneOption")
+                                                    }
+                                                    option {
+                                                        value = "Slip"
+                                                        if (boatSpaceType == BoatSpaceType.Slip) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.typeSlipOption")
+                                                    }
+                                                    option {
+                                                        value = "Storage"
+                                                        if (boatSpaceType == BoatSpaceType.Storage) {
+                                                            attributes["selected"] = "selected"
+                                                        }
+                                                        +messageUtil.getMessage("boatSpaces.typeStorageOption")
+                                                    }
+
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                         div {
                             id = "boatSlipTableDiv"
-                            consumer.boatSpaces(page, pageSize, width, length, amenity, locationId, page)
+                            consumer.boatSpaces(page, pageSize, width, length, amenity, locationId, page, boatSpaceType)
                         }
                     }
                 }
@@ -204,6 +239,7 @@ class AppController {
         @RequestParam @Min(0) length: Float?,
         @RequestParam locationId: Int?,
         @RequestParam amenity: BoatSpaceAmenity?,
+        @RequestParam boatSpaceType: BoatSpaceType?,
         response: HttpServletResponse
     ): String {
         val qs = createQueryString(page, pageSize, width, length, locationId, amenity)
@@ -211,7 +247,7 @@ class AppController {
             "HX-Push-Url",
             qs
         )
-        return buildString { appendHTML().boatSpaces(page, pageSize, width, length, amenity, locationId, page) }
+        return buildString { appendHTML().boatSpaces(page, pageSize, width, length, amenity, locationId, page, boatSpaceType) }
     }
 
     private fun TagConsumer<*>.boatSpaces(
@@ -221,7 +257,8 @@ class AppController {
         length: Float?,
         amenity: BoatSpaceAmenity?,
         locationId: Int?,
-        currentPage: Int
+        currentPage: Int,
+        boatSpaceType: BoatSpaceType?
     ) {
         val boatSlips = jdbi.inTransactionUnchecked { tx ->
             tx.getBoatSpaces(
@@ -234,6 +271,7 @@ class AppController {
                     maxLength = null,
                     amenity = amenity,
                     locationId = locationId,
+                    boatSpaceType = boatSpaceType,
                 )
             )
         }
@@ -300,6 +338,7 @@ class AppController {
             thead {
                 tr {
                     th { +messageUtil.getMessage("boatSpaces.harborHeader") }
+                    th { +messageUtil.getMessage("boatSpaces.typeHeader") }
                     th { +messageUtil.getMessage("boatSpaces.pierHeader") }
                     th { +messageUtil.getMessage("boatSpaces.placeNumberHeader") }
                     th { +messageUtil.getMessage("boatSpaces.amenityHeader") }
@@ -312,6 +351,11 @@ class AppController {
                 boatSlips.forEach { slip ->
                     tr {
                         td { +slip.locationName }
+                        td {
+                            +messageUtil.getMessage(
+                                "boatSpaces.type${slip.type.toString()}Option"
+                            )
+                        }
                         td { +slip.section }
                         td { +slip.placeNumber.toString() }
                         td {
