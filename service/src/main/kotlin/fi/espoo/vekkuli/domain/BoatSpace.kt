@@ -9,7 +9,12 @@ enum class BoatSpaceAmenity {
     None, Buoy, RearBuoy, Beam, WalkBeam
 }
 
+enum class BoatSpaceType {
+    Slip, Storage
+}
+
 data class BoatSpace(
+    val type: BoatSpaceType,
     val section: String,
     val placeNumber: Int,
     val amenity: BoatSpaceAmenity,
@@ -28,7 +33,8 @@ data class BoatSpaceFilter(
     val minLength: Int?,
     val maxLength: Int?,
     val amenity: BoatSpaceAmenity?,
-    val locationId: Int?
+    val locationId: Int?,
+    val boatSpaceType: BoatSpaceType?,
 )
 
 fun Handle.getBoatSpaces(boatSpaceFilter: BoatSpaceFilter): List<BoatSpace> {
@@ -59,6 +65,9 @@ fun Handle.getBoatSpaces(boatSpaceFilter: BoatSpaceFilter): List<BoatSpace> {
     boatSpaceFilter.amenity?.let {
         sql.append(" AND amenity = :amenity")
     }
+    boatSpaceFilter.boatSpaceType?.let {
+        sql.append(" AND type = :boatSpaceType")
+    }
     sql.append(" LIMIT :size OFFSET :offset")
 
     val query = createQuery(sql.toString())
@@ -68,6 +77,7 @@ fun Handle.getBoatSpaces(boatSpaceFilter: BoatSpaceFilter): List<BoatSpace> {
     boatSpaceFilter.maxLength?.let { query.bind("maxLength", it) }
     boatSpaceFilter.locationId?.let { query.bind("locationId", it) }
     boatSpaceFilter.amenity?.let { query.bind("amenity", it) }
+    boatSpaceFilter.boatSpaceType?.let { query.bind("boatSpaceType", it) }
     query.bind("size", boatSpaceFilter.pageSize)
     query.bind("offset", offset)
 
