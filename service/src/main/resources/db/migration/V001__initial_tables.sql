@@ -10,6 +10,13 @@ CREATE TABLE price (
     price float NOT NULL
 );
 
+CREATE TABLE citizen (
+    id Serial PRIMARY KEY,
+    name text NOT NULL,
+    phone text NOT NULL,
+    email text NOT NULL
+);
+
 CREATE TYPE BoatSpaceType AS ENUM ('Storage', 'Slip');
 
 CREATE TYPE BoatAmenity AS ENUM ('None', 'Buoy', 'RearBuoy', 'Beam', 'WalkBeam');
@@ -33,6 +40,7 @@ CREATE TABLE boat_space (
 
 CREATE TABLE boat_space_application (
     id Serial PRIMARY KEY,
+    citizen_id int NOT NULL,
     created_at timestamp NOT NULL,
     type BoatSpaceType NOT NULL,
     boat_type BoatType NOT NULL,
@@ -41,7 +49,8 @@ CREATE TABLE boat_space_application (
     boat_length_cm int NOT NULL,
     boat_weight_kg int NOT NULL,
     boat_registration_code text NOT NULL,
-    information text NOT NULL
+    information text NOT NULL,
+    CONSTRAINT fk_application_citizen_id FOREIGN KEY (citizen_id) REFERENCES citizen(id)
 );
 
 CREATE TABLE boat_space_application_location_wish (

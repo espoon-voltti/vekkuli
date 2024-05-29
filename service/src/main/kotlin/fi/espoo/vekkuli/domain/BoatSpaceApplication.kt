@@ -36,6 +36,7 @@ data class AddBoatSpaceApplication(
     val boatWeightKg: Int,
     val boatRegistrationCode: String,
     val information: String,
+    val citizenId: Int,
     val locationWishes: List<AddLocationWish>,
 )
 
@@ -50,6 +51,7 @@ data class BoatSpaceApplicationWithId(
     val boatWeightKg: Int,
     val boatRegistrationCode: String,
     val information: String,
+    val citizenId: Int,
     val locationWishes: List<LocationWish>,
 )
 
@@ -64,6 +66,7 @@ data class BoatSpaceApplicationWithTotalCount(
     val boatWeightKg: Int,
     val boatRegistrationCode: String,
     val information: String,
+    val citizenId: Int,
     val locationWishes: List<LocationWish>,
     val totalCount: Int,
 )
@@ -84,6 +87,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
         boat_length_cm, 
         boat_weight_kg, 
         boat_registration_code, 
+        citizen_id,
         information
       ) VALUES ( 
               now(), 
@@ -94,6 +98,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
               :boatLengthCm, 
               :boatWeightKg, 
               :boatRegistrationCode, 
+              :citizenId,
               :information
       )
       RETURNING *
@@ -105,6 +110,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
       .bind("boatLengthCm", app.boatLengthCm)
       .bind("boatWeightKg", app.boatWeightKg)
       .bind("boatRegistrationCode", app.boatRegistrationCode)
+      .bind("citizenId", app.citizenId)
       .bind("information", app.information)
       .map(object : RowMapper<BoatSpaceApplicationWithId> {
           override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithId {
@@ -119,6 +125,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
                   boatWeightKg = app.boatWeightKg,
                   boatRegistrationCode = app.boatRegistrationCode,
                   information = app.information,
+                  citizenId = app.citizenId,
                   locationWishes = emptyList(),
               )
           }
@@ -144,7 +151,6 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
 
 fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<BoatSpaceApplicationWithTotalCount> {
     val offset = (filter.page - 1) * filter.pageSize
-    println("GETTING APPS")
     val sql = StringBuilder("""
         SELECT
             bsa.*, COUNT(*) OVER() AS total_count,

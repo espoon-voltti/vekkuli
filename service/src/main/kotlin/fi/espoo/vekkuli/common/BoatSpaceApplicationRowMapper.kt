@@ -28,8 +28,9 @@ class BoatSpaceApplicationRowMapper : RowMapper<BoatSpaceApplicationWithTotalCou
             boatWeightKg = rs.getInt("boat_weight_kg"),
             boatRegistrationCode = rs.getString("boat_registration_code"),
             information = rs.getString("information"),
+            citizenId = rs.getInt("citizen_id"),
+            locationWishes = locationWishes,
             totalCount = rs.getInt("total_count"),
-            locationWishes = locationWishes
         )
     }
 }
