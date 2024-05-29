@@ -4,12 +4,8 @@
 
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.common.BoatSpaceApplicationRowMapper
-import fi.espoo.vekkuli.common.toPostgresTimestamp
 import org.jdbi.v3.core.Handle
-import org.jdbi.v3.core.mapper.RowMapper
-import org.jdbi.v3.core.statement.StatementContext
-import java.sql.ResultSet
+import org.jdbi.v3.json.Json
 import java.time.LocalDateTime
 
 enum class BoatType {
@@ -56,6 +52,7 @@ data class BoatSpaceApplicationWithId(
     val boatRegistrationCode: String,
     val information: String,
     val citizenId: Int,
+    @Json
     val locationWishes: List<LocationWish>,
 )
 
@@ -71,6 +68,7 @@ data class BoatSpaceApplicationWithTotalCount(
     val boatRegistrationCode: String,
     val information: String,
     val citizenId: Int,
+    @Json
     val locationWishes: List<LocationWish>,
     val totalCount: Int,
 )
@@ -79,6 +77,18 @@ data class BoatSpaceApplicationFilter(
     val page: Int,
     val pageSize: Int,
 )
+
+
+
+
+
+
+
+
+
+
+
+
 
 fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceApplicationWithId {
     val result: BoatSpaceApplicationWithId = createQuery(
@@ -106,7 +116,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
               :citizenId,
               :information
       )
-      RETURNING *
+      RETURNING *, '[]'::jsonb as location_wishes
   """.trimIndent()
     )
         .bind("type", app.type)
@@ -118,24 +128,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
         .bind("boatRegistrationCode", app.boatRegistrationCode)
         .bind("citizenId", app.citizenId)
         .bind("information", app.information)
-        .map(object : RowMapper<BoatSpaceApplicationWithId> {
-            override fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithId {
-                return BoatSpaceApplicationWithId(
-                    id = rs.getInt("id"),
-                    createdAt = rs.getString("created_at").toPostgresTimestamp(),
-                    type = app.type,
-                    boatType = app.boatType,
-                    amenity = app.amenity,
-                    boatWidthCm = app.boatWidthCm,
-                    boatLengthCm = app.boatLengthCm,
-                    boatWeightKg = app.boatWeightKg,
-                    boatRegistrationCode = app.boatRegistrationCode,
-                    information = app.information,
-                    citizenId = app.citizenId,
-                    locationWishes = emptyList(),
-                )
-            }
-        }).toList().first()
+        .mapTo(BoatSpaceApplicationWithId::class.java).toList().first()
 
     prepareBatch(
         """
@@ -189,6 +182,5 @@ fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<Bo
 
     query.bind("size", filter.pageSize)
     query.bind("offset", offset)
-    return query.map(BoatSpaceApplicationRowMapper())
-        .toList()
+    return query.mapTo(BoatSpaceApplicationWithTotalCount::class.java).toList()
 }
