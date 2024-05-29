@@ -1,12 +1,12 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.common.BoatSpaceApplicationRowMapper
+import fi.espoo.vekkuli.common.toPostgresTimestamp
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 import java.time.LocalDateTime
-
 
 enum class BoatType {
     Rowboat,
@@ -17,6 +17,12 @@ enum class BoatType {
 }
 
 data class LocationWish(
+    val locationId: Int,
+    val priority: Int,
+    val name: String,
+)
+
+data class AddLocationWish(
     val locationId: Int,
     val priority: Int,
 )
@@ -30,7 +36,7 @@ data class AddBoatSpaceApplication(
     val boatWeightKg: Int,
     val boatRegistrationCode: String,
     val information: String,
-    val locationWishes: List<LocationWish>,
+    val locationWishes: List<AddLocationWish>,
 )
 
 data class BoatSpaceApplicationWithId(
@@ -104,7 +110,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
           override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithId {
               return BoatSpaceApplicationWithId(
                   id = rs.getInt("id"),
-                  createdAt = LocalDateTime.parse(rs.getString("created_at")),
+                  createdAt = rs.getString("created_at").toPostgresTimestamp(),
                   type = app.type,
                   boatType = app.boatType,
                   amenity = app.amenity,
@@ -138,6 +144,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
 
 fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<BoatSpaceApplicationWithTotalCount> {
     val offset = (filter.page - 1) * filter.pageSize
+    println("GETTING APPS")
     val sql = StringBuilder("""
         SELECT
             bsa.*, COUNT(*) OVER() AS total_count,
@@ -145,14 +152,17 @@ fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<Bo
                 JSON_AGG(
                     JSON_BUILD_OBJECT(
                         'location_id', bsalw.location_id,
-                        'priority', bsalw.priority
+                        'priority', bsalw.priority,
+                        'name', loc.name
                     )
                 ) FILTER (WHERE bsalw.boat_space_application_id IS NOT NULL), '[]'
             ) AS location_wishes
         FROM
             boat_space_application bsa
         LEFT JOIN boat_space_application_location_wish bsalw
-        ON bsa.id = bsalw.boat_space_application_id
+          ON bsa.id = bsalw.boat_space_application_id
+        LEFT JOIN location loc
+          ON bsalw.location_id = loc.id
         GROUP BY
             bsa.id
     """.trimIndent())
