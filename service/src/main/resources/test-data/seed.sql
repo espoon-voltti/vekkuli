@@ -16,6 +16,16 @@ INSERT INTO location (name, address) VALUES
                                          ('Suomenoja', 'Suomenojantie 15, Espoo'),
                                          ('Svinö', 'Svinöntie 8, Espoo');
 
+INSERT INTO citizen (name, phone, email)  VALUES
+    ('Mikko Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi');
+
+INSERT INTO boat_space_application (citizen_id, created_at, type, boat_type, amenity, boat_width_cm, boat_length_cm, boat_weight_kg, boat_registration_code, information) VALUES
+    (1, now(), 'Slip', 'JetSki', 'Buoy', 180, 400, 200, 'A255345', 'Mieluiten laiturin kärjestä');
+
+INSERT INTO boat_space_application_location_wish (boat_space_application_id, location_id, priority) VALUES
+    (1, 1, 1),
+    (1, 2, 2);
+
 -- Populate the boat_space table with 3-7 sections per location and 30-100 boat spaces per section
 DO $$
     DECLARE

@@ -245,7 +245,7 @@ class BoatSpaceApplicationController {
                     boatWeightKg = weightInKg,
                     boatRegistrationCode = registrationCode,
                     information = "Hakija: $name, $email, $phone",
-                    citizenId = 1,
+                    citizenId = 1, // TODO use real user identified when authentication is enabled
                     locationWishes = locationId.mapIndexed { index, id ->
                         AddLocationWish(
                             locationId = id.toInt(),
