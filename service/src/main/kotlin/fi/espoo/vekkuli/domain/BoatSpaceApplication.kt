@@ -5,6 +5,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
+import java.time.LocalDateTime
 
 
 enum class BoatType {
@@ -34,7 +35,7 @@ data class AddBoatSpaceApplication(
 
 data class BoatSpaceApplicationWithId(
     val id: Int,
-    val createdAt: String,
+    val createdAt: LocalDateTime,
     val type: BoatSpaceType,
     val boatType: BoatType,
     val amenity: BoatSpaceAmenity,
@@ -48,7 +49,7 @@ data class BoatSpaceApplicationWithId(
 
 data class BoatSpaceApplicationWithTotalCount(
     val id: Int,
-    val createdAt: String,
+    val createdAt: LocalDateTime,
     val type: BoatSpaceType,
     val boatType: BoatType,
     val amenity: BoatSpaceAmenity,
@@ -103,7 +104,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
           override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithId {
               return BoatSpaceApplicationWithId(
                   id = rs.getInt("id"),
-                  createdAt = rs.getString("created_at"),
+                  createdAt = LocalDateTime.parse(rs.getString("created_at")),
                   type = app.type,
                   boatType = app.boatType,
                   amenity = app.amenity,
