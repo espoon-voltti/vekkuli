@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.Min
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import kotlinx.html.stream.createHTML
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,168 +52,152 @@ class AppController {
             tx.getLocations()
         }
 
-        return createHTML().html {
-            lang = "fi"
-            attributes["class"] = "theme-light"
-            head {
-                title { +"Venepaikat" }
-                link(
-                    rel = "stylesheet",
-                    href = "https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
-                )
-                script(src = "https://unpkg.com/htmx.org@1.9.2") {}
-                meta {
-                    name = "viewport"
-                    content = "width=device-width, initial-scale=1"
-                }
-            }
-            body {
-                section("section") {
-                    div("container") {
-                        h1("title") { +messageUtil.getMessage("boatSpaces.title") }
-                        div("box") {
-                            form {
-                                id = "form"
-                                action = "/"
-                                method = FormMethod.get
-                                attributes["hx-trigger"] = "input delay:1s, change"
-                                attributes["hx-get"] = "/partial/boat-spaces"
-                                attributes["hx-target"] = "#boatSlipTableDiv"
-                                attributes["hx-swap"] = "innerHTML"
-                                div("columns") {
-                                    div("column") {
-                                        div("field") {
-                                            label("label") {
-                                                attributes["for"] = "width"
-                                                +"${messageUtil.getMessage("boatSpaces.widthLabel")}: "
-                                            }
-                                            div("control") {
-                                                consumer.numberInput("width", width)
-                                            }
+        return layout("Venepaikat") {
+            section("section") {
+                div("container") {
+                    h1("title") { +messageUtil.getMessage("boatSpaces.title") }
+                    div("box") {
+                        form {
+                            id = "form"
+                            action = "/"
+                            method = FormMethod.get
+                            attributes["hx-trigger"] = "input delay:1s, change"
+                            attributes["hx-get"] = "/partial/boat-spaces"
+                            attributes["hx-target"] = "#boatSlipTableDiv"
+                            attributes["hx-swap"] = "innerHTML"
+                            div("columns") {
+                                div("column") {
+                                    div("field") {
+                                        label("label") {
+                                            attributes["for"] = "width"
+                                            +"${messageUtil.getMessage("boatSpaces.widthLabel")}: "
                                         }
-                                        div("field") {
-                                            label("label") {
-                                                attributes["for"] = "length"
-                                                +"${messageUtil.getMessage("boatSpaces.lengthLabel")}: "
-                                            }
-                                            div("control") {
-                                                consumer.numberInput("length", length)
+                                        div("control") {
+                                            consumer.numberInput("width", width)
+                                        }
+                                    }
+                                    div("field") {
+                                        label("label") {
+                                            attributes["for"] = "length"
+                                            +"${messageUtil.getMessage("boatSpaces.lengthLabel")}: "
+                                        }
+                                        div("control") {
+                                            consumer.numberInput("length", length)
+                                        }
+                                    }
+                                }
+                                div("column") {
+                                    div("field") {
+                                        label("label") {
+                                            attributes["for"] = "amenity"
+                                            +messageUtil.getMessage("boatSpaces.amenityLabel")
+                                        }
+                                        div("select") {
+                                            select {
+                                                name = "amenity"
+                                                id = "amenity"
+                                                option {
+                                                    value = ""
+                                                    if (amenity == null) {
+                                                        attributes["selected"] = "selected"
+                                                    }
+                                                    +messageUtil.getMessage("boatSpaces.noneOption")
+                                                }
+                                                option {
+                                                    value = "Buoy"
+                                                    if (amenity == BoatSpaceAmenity.Buoy) {
+                                                        attributes["selected"] = "selected"
+                                                    }
+                                                    +messageUtil.getMessage("boatSpaces.buoyOption")
+                                                }
+                                                option {
+                                                    value = "RearBuoy"
+                                                    if (amenity == BoatSpaceAmenity.RearBuoy) {
+                                                        attributes["selected"] = "selected"
+                                                    }
+                                                    +messageUtil.getMessage("boatSpaces.rearBuoyOption")
+                                                }
+                                                option {
+                                                    value = "Beam"
+                                                    if (amenity == BoatSpaceAmenity.Beam) {
+                                                        attributes["selected"] = "selected"
+                                                    }
+                                                    +messageUtil.getMessage("boatSpaces.beamOption")
+                                                }
+                                                option {
+                                                    value = "WalkBeam"
+                                                    if (amenity == BoatSpaceAmenity.WalkBeam) {
+                                                        attributes["selected"] = "selected"
+                                                    }
+                                                    +messageUtil.getMessage("boatSpaces.walkBeamOption")
+                                                }
                                             }
                                         }
                                     }
-                                    div("column") {
-                                        div("field") {
-                                            label("label") {
-                                                attributes["for"] = "amenity"
-                                                +messageUtil.getMessage("boatSpaces.amenityLabel")
-                                            }
-                                            div("select") {
-                                                select {
-                                                    name = "amenity"
-                                                    id = "amenity"
+                                    div("field") {
+                                        label("label") {
+                                            attributes["for"] = "locationId"
+                                            +messageUtil.getMessage("boatSpaces.harborHeader")
+                                        }
+                                        div("select") {
+                                            select {
+                                                name = "locationId"
+                                                id = "locationId"
+                                                option {
+                                                    value = ""
+                                                    +messageUtil.getMessage("boatSpaces.noneOption")
+                                                }
+                                                locations.forEach {
                                                     option {
-                                                        value = ""
-                                                        if (amenity == null) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.noneOption")
-                                                    }
-                                                    option {
-                                                        value = "Buoy"
-                                                        if (amenity == BoatSpaceAmenity.Buoy) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.buoyOption")
-                                                    }
-                                                    option {
-                                                        value = "RearBuoy"
-                                                        if (amenity == BoatSpaceAmenity.RearBuoy) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.rearBuoyOption")
-                                                    }
-                                                    option {
-                                                        value = "Beam"
-                                                        if (amenity == BoatSpaceAmenity.Beam) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.beamOption")
-                                                    }
-                                                    option {
-                                                        value = "WalkBeam"
-                                                        if (amenity == BoatSpaceAmenity.WalkBeam) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.walkBeamOption")
+                                                        value = it.id
+                                                        +it.name
                                                     }
                                                 }
                                             }
                                         }
-                                        div("field") {
-                                            label("label") {
-                                                attributes["for"] = "locationId"
-                                                +messageUtil.getMessage("boatSpaces.harborHeader")
-                                            }
-                                            div("select") {
-                                                select {
-                                                    name = "locationId"
-                                                    id = "locationId"
-                                                    option {
-                                                        value = ""
-                                                        +messageUtil.getMessage("boatSpaces.noneOption")
-                                                    }
-                                                    locations.forEach {
-                                                        option {
-                                                            value = it.id
-                                                            +it.name
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                    }
+
+                                    div("field") {
+                                        label("label") {
+                                            attributes["for"] = "boatSpaceType"
+                                            +messageUtil.getMessage("boatSpaces.typeHeader")
                                         }
-
-                                        div("field") {
-                                            label("label") {
-                                                attributes["for"] = "boatSpaceType"
-                                                +messageUtil.getMessage("boatSpaces.typeHeader")
-                                            }
-                                            div("select") {
-                                                select {
-                                                    name = "boatSpaceType"
-                                                    id = "boatSpaceType"
-                                                    option {
-                                                        value = ""
-                                                        if (boatSpaceType == null) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.noneOption")
+                                        div("select") {
+                                            select {
+                                                name = "boatSpaceType"
+                                                id = "boatSpaceType"
+                                                option {
+                                                    value = ""
+                                                    if (boatSpaceType == null) {
+                                                        attributes["selected"] = "selected"
                                                     }
-                                                    option {
-                                                        value = "Slip"
-                                                        if (boatSpaceType == BoatSpaceType.Slip) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.typeSlipOption")
-                                                    }
-                                                    option {
-                                                        value = "Storage"
-                                                        if (boatSpaceType == BoatSpaceType.Storage) {
-                                                            attributes["selected"] = "selected"
-                                                        }
-                                                        +messageUtil.getMessage("boatSpaces.typeStorageOption")
-                                                    }
-
+                                                    +messageUtil.getMessage("boatSpaces.noneOption")
                                                 }
+                                                option {
+                                                    value = "Slip"
+                                                    if (boatSpaceType == BoatSpaceType.Slip) {
+                                                        attributes["selected"] = "selected"
+                                                    }
+                                                    +messageUtil.getMessage("boatSpaces.typeSlipOption")
+                                                }
+                                                option {
+                                                    value = "Storage"
+                                                    if (boatSpaceType == BoatSpaceType.Storage) {
+                                                        attributes["selected"] = "selected"
+                                                    }
+                                                    +messageUtil.getMessage("boatSpaces.typeStorageOption")
+                                                }
+
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        div {
-                            id = "boatSlipTableDiv"
-                            consumer.boatSpaces(page, pageSize, width, length, amenity, locationId, page, boatSpaceType)
-                        }
+                    }
+                    div {
+                        id = "boatSlipTableDiv"
+                        consumer.boatSpaces(page, pageSize, width, length, amenity, locationId, page, boatSpaceType)
                     }
                 }
             }
@@ -364,7 +347,7 @@ class AppController {
                         td { +slip.locationName }
                         td {
                             +messageUtil.getMessage(
-                                "boatSpaces.type${slip.type.toString()}Option"
+                                "boatSpaces.type${slip.type}Option"
                             )
                         }
                         td { +slip.section }

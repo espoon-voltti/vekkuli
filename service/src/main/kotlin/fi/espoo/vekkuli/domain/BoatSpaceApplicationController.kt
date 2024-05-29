@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.config.MessageUtil
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import kotlinx.html.stream.createHTML
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-
 
 @RestController
 class BoatSpaceApplicationController {
@@ -23,7 +21,7 @@ class BoatSpaceApplicationController {
     lateinit var messageUtil: MessageUtil
 
     @GetMapping("/venepaikkahakemus", produces = [TEXT_HTML_UTF8])
-    fun BoatSpaceApplication(
+    fun boatSpaceApplication(
     ): String {
         val boatTypes = listOf(
             "Rowboat",
@@ -32,78 +30,58 @@ class BoatSpaceApplicationController {
             "Sailboat",
             "JetSki"
         )
-        val locations = jdbi.inTransactionUnchecked { tx ->
-            tx.getLocations()
-        }
-        return createHTML().html {
-            lang = "fi"
-            attributes["class"] = "theme-light"
-            head {
-                title { +"Hae venepaikkaa" }
-                link(
-                    rel = "stylesheet",
-                    href = "https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css"
-                )
-                script(src = "https://unpkg.com/htmx.org@1.9.12") {}
-                meta {
-                    name = "viewport"
-                    content = "width=device-width, initial-scale=1"
-                }
-            }
-            body {
-                section("section") {
-                    div("container") {
-                        h1("title") { +"Hae venepaikkaa" }
-                        form {
-                            action = "/venepaikkahakemus"
-                            method = FormMethod.post
-                            h2("subtitle") { +"Henkilötiedot" }
-                            textField("Nimi", "name")
-                            textField("Sähköposti", "email", InputType.email, ".+@.+")
-                            textField("Puhelinnumero", "phone", InputType.tel)
-                            h2("subtitle") { +"Veneen tiedot" }
+        return layout("Hae venepaikkaa") {
+            section("section") {
+                div("container") {
+                    h1("title") { +"Hae venepaikkaa" }
+                    form {
+                        action = "/venepaikkahakemus"
+                        method = FormMethod.post
+                        h2("subtitle") { +"Henkilötiedot" }
+                        textField("Nimi", "name")
+                        textField("Sähköposti", "email", InputType.email, ".+@.+")
+                        textField("Puhelinnumero", "phone", InputType.tel)
+                        h2("subtitle") { +"Veneen tiedot" }
 
-                            div("field") {
-                                label("label") {
-                                    +"Venetyyppi"
-                                }
-                                div("select") {
-                                    select {
-                                        name = "boatType"
-                                        id = "boatType"
-                                        required = true
+                        div("field") {
+                            label("label") {
+                                +"Venetyyppi"
+                            }
+                            div("select") {
+                                select {
+                                    name = "boatType"
+                                    id = "boatType"
+                                    required = true
+                                    option {
+                                        value = ""
+                                        +"Valitse venetyyppi"
+                                    }
+                                    boatTypes.forEach {
                                         option {
-                                            value = ""
-                                            +"Valitse venetyyppi"
-                                        }
-                                        boatTypes.forEach {
-                                            option {
-                                                value = it
-                                                +it
-                                            }
+                                            value = it
+                                            +it
                                         }
                                     }
                                 }
                             }
-                            textField("Veneen nimi", "boatName")
-                            textField("Rekisteritunnus", "registrationCode")
-                            numberField("Pituus (cm)", "lengthInMeters")
-                            numberField("Leveys (cm)", "widthInMeters")
-                            numberField("Paino (kg)", "weightInKg")
-                            h2("subtitle") { +"Satamatoiveet" }
-                            consumer.harbourOptions(listOf())
+                        }
+                        textField("Veneen nimi", "boatName")
+                        textField("Rekisteritunnus", "registrationCode")
+                        numberField("Pituus (cm)", "lengthInMeters")
+                        numberField("Leveys (cm)", "widthInMeters")
+                        numberField("Paino (kg)", "weightInKg")
+                        h2("subtitle") { +"Satamatoiveet" }
+                        consumer.harbourOptions(listOf())
 
-                            br()
-                            button {
-                                classes = setOf("button", "is-primary")
-                                type = ButtonType.submit
-                                +"Lähetä hakemus"
+                        br()
+                        button {
+                            classes = setOf("button", "is-primary")
+                            type = ButtonType.submit
+                            +"Lähetä hakemus"
 
-                            }
                         }
                     }
                 }
-
             }
         }
     }
@@ -267,6 +245,7 @@ class BoatSpaceApplicationController {
                     boatWeightKg = weightInKg,
                     boatRegistrationCode = registrationCode,
                     information = "Hakija: $name, $email, $phone",
+                    citizenId = 1,
                     locationWishes = locationId.mapIndexed { index, id ->
                         AddLocationWish(
                             locationId = id.toInt(),
