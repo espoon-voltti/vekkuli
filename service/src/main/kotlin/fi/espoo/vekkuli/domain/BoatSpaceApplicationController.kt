@@ -76,7 +76,17 @@ class BoatSpaceApplicationController {
                         numberField("Paino (kg)", "weightInKg")
                         h2("subtitle") { +"Satamatoiveet" }
                         consumer.harbourOptions(listOf())
-
+                        br()
+                        radioButtonGroup(
+                            listOf(
+                                RadioButton("Traileripaikka", "trailer"), RadioButton(
+                                    "Laituripaikka",
+                                    "slip"
+                                )
+                            ),
+                            "boatSpaceType",
+                            "Venetyypit",
+                        )
                         br()
                         button {
                             classes = setOf("button", "is-primary")
@@ -84,6 +94,30 @@ class BoatSpaceApplicationController {
                             +"Lähetä hakemus"
 
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    data class RadioButton(val label: String, val value: String)
+
+    private fun FlowContent.radioButtonGroup(radioButtonTitles: List<RadioButton>, name: String, label: String) {
+        div {
+            p("label") {
+                +label
+            }
+            radioButtonTitles.forEach { rb ->
+                div {
+                    input() {
+                        this.name = name
+                        id = rb.value
+                        type = InputType.radio
+                        value = rb.value
+                    }
+                    label {
+                        attributes["for"] = rb.value
+                        +rb.label
                     }
                 }
             }
