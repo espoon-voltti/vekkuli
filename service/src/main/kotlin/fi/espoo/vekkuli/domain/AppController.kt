@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController
 
 const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
 
-fun Int.cmToM() : Float = this / 100F
+fun Int.cmToM(): Float = this / 100F
 
-fun Float.mToCm() : Int = (this * 100F).toInt()
+fun Float.mToCm(): Int = (this * 100F).toInt()
 
 @RestController
 class AppController {
@@ -247,19 +247,18 @@ class AppController {
             "HX-Push-Url",
             qs
         )
-        return buildString { appendHTML().boatSpaces(page, pageSize, width, length, amenity, locationId, page, boatSpaceType) }
-    }
-
-    private fun FlowContent.boatSpaces(
-        page: Int,
-        pageSize: Int,
-        width: Int,
-        length: Int,
-        amenity: BoatSpaceAmenity,
-        locationId: Int,
-        currentPage: Int
-    ) {
-        consumer.boatSpaces(page, pageSize, width, length, amenity, locationId, page)
+        return buildString {
+            appendHTML().boatSpaces(
+                page,
+                pageSize,
+                width,
+                length,
+                amenity,
+                locationId,
+                page,
+                boatSpaceType
+            )
+        }
     }
 
     private fun TagConsumer<*>.boatSpaces(
