@@ -250,6 +250,18 @@ class AppController {
         return buildString { appendHTML().boatSpaces(page, pageSize, width, length, amenity, locationId, page, boatSpaceType) }
     }
 
+    private fun FlowContent.boatSpaces(
+        page: Int,
+        pageSize: Int,
+        width: Int,
+        length: Int,
+        amenity: BoatSpaceAmenity,
+        locationId: Int,
+        currentPage: Int
+    ) {
+        consumer.boatSpaces(page, pageSize, width, length, amenity, locationId, page)
+    }
+
     private fun TagConsumer<*>.boatSpaces(
         page: Int,
         pageSize: Int,
