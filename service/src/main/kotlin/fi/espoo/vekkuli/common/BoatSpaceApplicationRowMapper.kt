@@ -9,16 +9,17 @@ import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 
-class BoatSpaceApplicationRowMapper : RowMapper<BoatSpaceApplication> {
+class BoatSpaceApplicationRowMapper : RowMapper<BoatSpaceApplicationWithTotalCount> {
     private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
     }
 
-    override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplication {
+    override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithTotalCount {
         val locationWishesJson = rs.getString("location_wishes")
         val locationWishes: List<LocationWish> = objectMapper.readValue(locationWishesJson, object : TypeReference<List<LocationWish>>() {})
 
-        return BoatSpaceApplication(
+        return BoatSpaceApplicationWithTotalCount(
+            id = rs.getInt("id"),
             createdAt = rs.getString("created_at"),
             type = BoatSpaceType.valueOf(rs.getString("type")), // Assuming enum
             boatType = BoatType.valueOf(rs.getString("boat_type")), // Assuming enum

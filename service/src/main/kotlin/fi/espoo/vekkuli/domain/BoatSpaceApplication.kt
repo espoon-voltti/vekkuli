@@ -2,6 +2,9 @@ package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.common.BoatSpaceApplicationRowMapper
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.mapper.RowMapper
+import org.jdbi.v3.core.statement.StatementContext
+import java.sql.ResultSet
 
 
 enum class BoatType {
@@ -17,7 +20,34 @@ data class LocationWish(
     val priority: Int,
 )
 
-data class BoatSpaceApplication(
+data class AddBoatSpaceApplication(
+    val type: BoatSpaceType,
+    val boatType: BoatType,
+    val amenity: BoatSpaceAmenity,
+    val boatWidthCm: Int,
+    val boatLengthCm: Int,
+    val boatWeightKg: Int,
+    val boatRegistrationCode: String,
+    val information: String,
+    val locationWishes: List<LocationWish>,
+)
+
+data class BoatSpaceApplicationWithId(
+    val id: Int,
+    val createdAt: String,
+    val type: BoatSpaceType,
+    val boatType: BoatType,
+    val amenity: BoatSpaceAmenity,
+    val boatWidthCm: Int,
+    val boatLengthCm: Int,
+    val boatWeightKg: Int,
+    val boatRegistrationCode: String,
+    val information: String,
+    val locationWishes: List<LocationWish>,
+)
+
+data class BoatSpaceApplicationWithTotalCount(
+    val id: Int,
     val createdAt: String,
     val type: BoatSpaceType,
     val boatType: BoatType,
@@ -29,14 +59,83 @@ data class BoatSpaceApplication(
     val information: String,
     val locationWishes: List<LocationWish>,
     val totalCount: Int,
-    )
+)
 
 data class BoatSpaceApplicationFilter(
     val page: Int,
     val pageSize: Int,
 )
 
-fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<BoatSpaceApplication> {
+fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceApplicationWithId {
+  val result: BoatSpaceApplicationWithId = createQuery(""" 
+      INSERT INTO boat_space_application (
+        created_at, 
+        type, 
+        boat_type, 
+        amenity, 
+        boat_width_cm, 
+        boat_length_cm, 
+        boat_weight_kg, 
+        boat_registration_code, 
+        information
+      ) VALUES ( 
+              now(), 
+              :type, 
+              :boatType, 
+              :amenity, 
+              :boatWidthCm, 
+              :boatLengthCm, 
+              :boatWeightKg, 
+              :boatRegistrationCode, 
+              :information
+      )
+      RETURNING *
+  """.trimIndent())
+      .bind("type", app.type)
+      .bind("boatType", app.boatType)
+      .bind("amenity", app.amenity)
+      .bind("boatWidthCm", app.boatWidthCm)
+      .bind("boatLengthCm", app.boatLengthCm)
+      .bind("boatWeightKg", app.boatWeightKg)
+      .bind("boatRegistrationCode", app.boatRegistrationCode)
+      .bind("information", app.information)
+      .map(object : RowMapper<BoatSpaceApplicationWithId> {
+          override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithId {
+              return BoatSpaceApplicationWithId(
+                  id = rs.getInt("id"),
+                  createdAt = rs.getString("created_at"),
+                  type = app.type,
+                  boatType = app.boatType,
+                  amenity = app.amenity,
+                  boatWidthCm = app.boatWidthCm,
+                  boatLengthCm = app.boatLengthCm,
+                  boatWeightKg = app.boatWeightKg,
+                  boatRegistrationCode = app.boatRegistrationCode,
+                  information = app.information,
+                  locationWishes = emptyList(),
+              )
+          }
+      }).toList().first()
+
+    prepareBatch("""
+        INSERT INTO boat_space_application_location_wish (boat_space_application_id, location_id, priority)
+        VALUES (:boatSpaceApplicationId, :locationId, :priority)
+    """.trimIndent()).use { batch ->
+        for (locationWish in app.locationWishes) {
+            batch
+                .bind("boatSpaceApplicationId", result.id)
+                .bind("locationId", locationWish.locationId)
+                .bind("priority", locationWish.priority)
+                .add()
+        }
+        batch.execute()
+    }
+        .toList()
+
+    return result
+}
+
+fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<BoatSpaceApplicationWithTotalCount> {
     val offset = (filter.page - 1) * filter.pageSize
     val sql = StringBuilder("""
         SELECT

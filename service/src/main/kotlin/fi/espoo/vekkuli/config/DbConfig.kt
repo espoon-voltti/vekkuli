@@ -6,7 +6,6 @@ package fi.espoo.vekkuli.config
 
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.zaxxer.hikari.HikariDataSource
-import fi.espoo.vekkuli.common.LocationWishListColumnMapper
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.core.mapper.ColumnMappers
@@ -35,6 +34,5 @@ private fun configureJdbi(
         .installPlugin(Jackson2Plugin())
     jdbi.getConfig(ColumnMappers::class.java).coalesceNullPrimitivesToDefaults = false
     jdbi.getConfig(Jackson2Config::class.java).mapper = jsonMapper
-    jdbi.registerColumnMapper(LocationWishListColumnMapper())
     return jdbi
 }
