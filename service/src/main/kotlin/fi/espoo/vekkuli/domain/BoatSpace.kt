@@ -1,5 +1,8 @@
-package fi.espoo.vekkuli.domain
+// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later
 
+package fi.espoo.vekkuli.domain
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
@@ -39,13 +42,15 @@ data class BoatSpaceFilter(
 
 fun Handle.getBoatSpaces(boatSpaceFilter: BoatSpaceFilter): List<BoatSpace> {
     val offset = (boatSpaceFilter.page - 1) * boatSpaceFilter.pageSize
-    val sql = StringBuilder("""
+    val sql = StringBuilder(
+        """
         SELECT boat_space.*, location.name as location_name, location.id as location_id, COUNT(*) OVER() AS total_count
         FROM boat_space
         LEFT JOIN location
         ON location_id = location.id
         WHERE 1=1
-    """.trimIndent())
+    """.trimIndent()
+    )
 
     boatSpaceFilter.minWidth?.let {
         sql.append(" AND width_cm >= :minWidth")

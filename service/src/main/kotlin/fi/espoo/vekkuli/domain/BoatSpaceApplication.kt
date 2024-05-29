@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.common.BoatSpaceApplicationRowMapper
@@ -77,7 +81,8 @@ data class BoatSpaceApplicationFilter(
 )
 
 fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceApplicationWithId {
-  val result: BoatSpaceApplicationWithId = createQuery(""" 
+    val result: BoatSpaceApplicationWithId = createQuery(
+        """ 
       INSERT INTO boat_space_application (
         created_at, 
         type, 
@@ -102,39 +107,42 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
               :information
       )
       RETURNING *
-  """.trimIndent())
-      .bind("type", app.type)
-      .bind("boatType", app.boatType)
-      .bind("amenity", app.amenity)
-      .bind("boatWidthCm", app.boatWidthCm)
-      .bind("boatLengthCm", app.boatLengthCm)
-      .bind("boatWeightKg", app.boatWeightKg)
-      .bind("boatRegistrationCode", app.boatRegistrationCode)
-      .bind("citizenId", app.citizenId)
-      .bind("information", app.information)
-      .map(object : RowMapper<BoatSpaceApplicationWithId> {
-          override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithId {
-              return BoatSpaceApplicationWithId(
-                  id = rs.getInt("id"),
-                  createdAt = rs.getString("created_at").toPostgresTimestamp(),
-                  type = app.type,
-                  boatType = app.boatType,
-                  amenity = app.amenity,
-                  boatWidthCm = app.boatWidthCm,
-                  boatLengthCm = app.boatLengthCm,
-                  boatWeightKg = app.boatWeightKg,
-                  boatRegistrationCode = app.boatRegistrationCode,
-                  information = app.information,
-                  citizenId = app.citizenId,
-                  locationWishes = emptyList(),
-              )
-          }
-      }).toList().first()
+  """.trimIndent()
+    )
+        .bind("type", app.type)
+        .bind("boatType", app.boatType)
+        .bind("amenity", app.amenity)
+        .bind("boatWidthCm", app.boatWidthCm)
+        .bind("boatLengthCm", app.boatLengthCm)
+        .bind("boatWeightKg", app.boatWeightKg)
+        .bind("boatRegistrationCode", app.boatRegistrationCode)
+        .bind("citizenId", app.citizenId)
+        .bind("information", app.information)
+        .map(object : RowMapper<BoatSpaceApplicationWithId> {
+            override fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithId {
+                return BoatSpaceApplicationWithId(
+                    id = rs.getInt("id"),
+                    createdAt = rs.getString("created_at").toPostgresTimestamp(),
+                    type = app.type,
+                    boatType = app.boatType,
+                    amenity = app.amenity,
+                    boatWidthCm = app.boatWidthCm,
+                    boatLengthCm = app.boatLengthCm,
+                    boatWeightKg = app.boatWeightKg,
+                    boatRegistrationCode = app.boatRegistrationCode,
+                    information = app.information,
+                    citizenId = app.citizenId,
+                    locationWishes = emptyList(),
+                )
+            }
+        }).toList().first()
 
-    prepareBatch("""
+    prepareBatch(
+        """
         INSERT INTO boat_space_application_location_wish (boat_space_application_id, location_id, priority)
         VALUES (:boatSpaceApplicationId, :locationId, :priority)
-    """.trimIndent()).use { batch ->
+    """.trimIndent()
+    ).use { batch ->
         for (locationWish in app.locationWishes) {
             batch
                 .bind("boatSpaceApplicationId", result.id)
@@ -151,7 +159,8 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
 
 fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<BoatSpaceApplicationWithTotalCount> {
     val offset = (filter.page - 1) * filter.pageSize
-    val sql = StringBuilder("""
+    val sql = StringBuilder(
+        """
         SELECT
             bsa.*, COUNT(*) OVER() AS total_count,
             COALESCE(
@@ -171,7 +180,8 @@ fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<Bo
           ON bsalw.location_id = loc.id
         GROUP BY
             bsa.id
-    """.trimIndent())
+    """.trimIndent()
+    )
 
     sql.append(" LIMIT :size OFFSET :offset")
 

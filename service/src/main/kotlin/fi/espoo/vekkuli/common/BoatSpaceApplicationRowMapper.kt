@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
 package fi.espoo.vekkuli.common
 
 import com.fasterxml.jackson.core.type.TypeReference
@@ -14,9 +18,10 @@ class BoatSpaceApplicationRowMapper : RowMapper<BoatSpaceApplicationWithTotalCou
         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
     }
 
-    override  fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithTotalCount {
+    override fun map(rs: ResultSet, ctx: StatementContext): BoatSpaceApplicationWithTotalCount {
         val locationWishesJson = rs.getString("location_wishes")
-        val locationWishes: List<LocationWish> = objectMapper.readValue(locationWishesJson, object : TypeReference<List<LocationWish>>() {})
+        val locationWishes: List<LocationWish> =
+            objectMapper.readValue(locationWishesJson, object : TypeReference<List<LocationWish>>() {})
         return BoatSpaceApplicationWithTotalCount(
             id = rs.getInt("id"),
             createdAt = rs.getString("created_at").toPostgresTimestamp(),

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
 package fi.espoo.vekkuli.domain
 
 import org.jdbi.v3.core.Handle
@@ -22,11 +26,13 @@ fun Handle.getCitizen(id: Int): Citizen? {
 }
 
 fun Handle.insertCitizen(citizen: AddCitizen): Citizen {
-    return createQuery("""
+    return createQuery(
+        """
         INSERT INTO citizen (name, email, phone) 
         VALUES (:name, :email, :phone)
         RETURNING *
-    """.trimIndent())
+    """.trimIndent()
+    )
         .bind("name", citizen.name)
         .bind("email", citizen.email)
         .bind("phone", citizen.phone)
