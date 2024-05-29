@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.MessageUtil
-import jakarta.validation.constraints.Min
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import kotlinx.html.stream.createHTML
@@ -257,6 +256,26 @@ class BoatSpaceApplicationController {
         @RequestParam weightInKg: Int,
         @RequestParam locationId: List<String>
     ): String {
+        val application = jdbi.inTransactionUnchecked { tx ->
+            tx.insertBoatSpaceApplication(
+                AddBoatSpaceApplication(
+                    type = BoatSpaceType.Slip,
+                    boatType = BoatType.valueOf(boatType),
+                    amenity = BoatSpaceAmenity.RearBuoy,
+                    boatWidthCm = widthInMeters,
+                    boatLengthCm = lengthInMeters,
+                    boatWeightKg = weightInKg,
+                    boatRegistrationCode = registrationCode,
+                    information = "Hakija: $name, $email, $phone",
+                    locationWishes = locationId.mapIndexed { index, id ->
+                        AddLocationWish(
+                            locationId = id.toInt(),
+                            priority = index,
+                        )
+                    }
+                )
+            )
+        }
         return "Hakemus vastaanotettu"
     }
 }
