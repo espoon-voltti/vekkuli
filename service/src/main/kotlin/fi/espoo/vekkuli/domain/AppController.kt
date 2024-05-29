@@ -39,7 +39,7 @@ class AppController {
     }
 
     @GetMapping("/", produces = [TEXT_HTML_UTF8])
-    fun example(
+    fun boatSpaces(
         @RequestParam @Min(1) page: Int = 1,
         @RequestParam pageSize: Int = 25,
         @RequestParam @Min(0) width: Float?,
