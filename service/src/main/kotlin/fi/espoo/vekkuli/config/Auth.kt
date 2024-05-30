@@ -56,11 +56,11 @@ class HttpAccessControl : HttpFilter() {
         chain.doFilter(request, response)
     }
 
-    private fun HttpServletRequest.requiresAuthentication(): Boolean = false
-    //        when {
-//            requestURI == "/health" || requestURI == "/actuator/health" -> false
-//            else -> true
-//        }
+    private fun HttpServletRequest.requiresAuthentication(): Boolean =
+        when {
+            requestURI == "/" || requestURI == "/health" || requestURI == "/actuator/health" -> false
+            else -> true
+        }
 
     private fun HttpServletRequest.isAuthorized(user: AuthenticatedUser): Boolean =
         when {
