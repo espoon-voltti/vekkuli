@@ -56,9 +56,8 @@ class HttpAccessControl : HttpFilter() {
         chain.doFilter(request, response)
     }
 
-    private fun HttpServletRequest.requiresAuthentication(): Boolean =
-            false
-        //        when {
+    private fun HttpServletRequest.requiresAuthentication(): Boolean = false
+    //        when {
 //            requestURI == "/health" || requestURI == "/actuator/health" -> false
 //            else -> true
 //        }

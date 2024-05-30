@@ -78,63 +78,52 @@ data class BoatSpaceApplicationFilter(
     val pageSize: Int,
 )
 
-
-
-
-
-
-
-
-
-
-
-
-
 fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceApplicationWithId {
-    val result: BoatSpaceApplicationWithId = createQuery(
-        """ 
-      INSERT INTO boat_space_application (
-        created_at, 
-        type, 
-        boat_type, 
-        amenity, 
-        boat_width_cm, 
-        boat_length_cm, 
-        boat_weight_kg, 
-        boat_registration_code, 
-        citizen_id,
-        information
-      ) VALUES ( 
-              now(), 
-              :type, 
-              :boatType, 
-              :amenity, 
-              :boatWidthCm, 
-              :boatLengthCm, 
-              :boatWeightKg, 
-              :boatRegistrationCode, 
-              :citizenId,
-              :information
-      )
-      RETURNING *, '[]'::jsonb as location_wishes
-  """.trimIndent()
-    )
-        .bind("type", app.type)
-        .bind("boatType", app.boatType)
-        .bind("amenity", app.amenity)
-        .bind("boatWidthCm", app.boatWidthCm)
-        .bind("boatLengthCm", app.boatLengthCm)
-        .bind("boatWeightKg", app.boatWeightKg)
-        .bind("boatRegistrationCode", app.boatRegistrationCode)
-        .bind("citizenId", app.citizenId)
-        .bind("information", app.information)
-        .mapTo(BoatSpaceApplicationWithId::class.java).toList().first()
+    val result: BoatSpaceApplicationWithId =
+        createQuery(
+            """ 
+            INSERT INTO boat_space_application (
+              created_at, 
+              type, 
+              boat_type, 
+              amenity, 
+              boat_width_cm, 
+              boat_length_cm, 
+              boat_weight_kg, 
+              boat_registration_code, 
+              citizen_id,
+              information
+            ) VALUES ( 
+                    now(), 
+                    :type, 
+                    :boatType, 
+                    :amenity, 
+                    :boatWidthCm, 
+                    :boatLengthCm, 
+                    :boatWeightKg, 
+                    :boatRegistrationCode, 
+                    :citizenId,
+                    :information
+            )
+            RETURNING *, '[]'::jsonb as location_wishes
+            """.trimIndent()
+        )
+            .bind("type", app.type)
+            .bind("boatType", app.boatType)
+            .bind("amenity", app.amenity)
+            .bind("boatWidthCm", app.boatWidthCm)
+            .bind("boatLengthCm", app.boatLengthCm)
+            .bind("boatWeightKg", app.boatWeightKg)
+            .bind("boatRegistrationCode", app.boatRegistrationCode)
+            .bind("citizenId", app.citizenId)
+            .bind("information", app.information)
+            .mapTo(BoatSpaceApplicationWithId::class.java).toList().first()
 
     prepareBatch(
         """
         INSERT INTO boat_space_application_location_wish (boat_space_application_id, location_id, priority)
         VALUES (:boatSpaceApplicationId, :locationId, :priority)
-    """.trimIndent()
+        """.trimIndent()
     ).use { batch ->
         for (locationWish in app.locationWishes) {
             batch
@@ -152,29 +141,30 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
 
 fun Handle.getBoatSpaceApplications(filter: BoatSpaceApplicationFilter): List<BoatSpaceApplicationWithTotalCount> {
     val offset = (filter.page - 1) * filter.pageSize
-    val sql = StringBuilder(
-        """
-        SELECT
-            bsa.*, COUNT(*) OVER() AS total_count,
-            COALESCE(
-                JSON_AGG(
-                    JSON_BUILD_OBJECT(
-                        'location_id', bsalw.location_id,
-                        'priority', bsalw.priority,
-                        'name', loc.name
-                    )
-                ) FILTER (WHERE bsalw.boat_space_application_id IS NOT NULL), '[]'
-            ) AS location_wishes
-        FROM
-            boat_space_application bsa
-        LEFT JOIN boat_space_application_location_wish bsalw
-          ON bsa.id = bsalw.boat_space_application_id
-        LEFT JOIN location loc
-          ON bsalw.location_id = loc.id
-        GROUP BY
-            bsa.id
-    """.trimIndent()
-    )
+    val sql =
+        StringBuilder(
+            """
+            SELECT
+                bsa.*, COUNT(*) OVER() AS total_count,
+                COALESCE(
+                    JSON_AGG(
+                        JSON_BUILD_OBJECT(
+                            'location_id', bsalw.location_id,
+                            'priority', bsalw.priority,
+                            'name', loc.name
+                        )
+                    ) FILTER (WHERE bsalw.boat_space_application_id IS NOT NULL), '[]'
+                ) AS location_wishes
+            FROM
+                boat_space_application bsa
+            LEFT JOIN boat_space_application_location_wish bsalw
+              ON bsa.id = bsalw.boat_space_application_id
+            LEFT JOIN location loc
+              ON bsalw.location_id = loc.id
+            GROUP BY
+                bsa.id
+            """.trimIndent()
+        )
 
     sql.append(" LIMIT :size OFFSET :offset")
 

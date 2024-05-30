@@ -6,7 +6,10 @@ package fi.espoo.vekkuli.domain
 
 import kotlinx.html.*
 
-fun FlowContent.numberField(label: String, id: String) {
+fun FlowContent.numberField(
+    label: String,
+    id: String
+) {
     div("field") {
         label("label") {
             attributes["for"] = "width"
@@ -18,8 +21,10 @@ fun FlowContent.numberField(label: String, id: String) {
     }
 }
 
-
-private fun TagConsumer<*>.numberInput(id: String, value: Int? = null) {
+private fun TagConsumer<*>.numberInput(
+    id: String,
+    value: Int? = null
+) {
     input(InputType.number, name = id, classes = "input") {
         this.id = id
         style = "width: 100px"
@@ -27,7 +32,12 @@ private fun TagConsumer<*>.numberInput(id: String, value: Int? = null) {
     }
 }
 
-fun FlowContent.textField(label: String, id: String, type: InputType = InputType.text, pattern: String? = null) {
+fun FlowContent.textField(
+    label: String,
+    id: String,
+    type: InputType = InputType.text,
+    pattern: String? = null
+) {
     div("field") {
         label("label") {
             +label

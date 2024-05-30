@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class BoatSpaceApplicationController {
-
     @Autowired
     lateinit var jdbi: Jdbi
 
@@ -25,15 +24,15 @@ class BoatSpaceApplicationController {
     lateinit var messageUtil: MessageUtil
 
     @GetMapping("/venepaikkahakemus", produces = [TEXT_HTML_UTF8])
-    fun boatSpaceApplication(
-    ): String {
-        val boatTypes = listOf(
-            "Rowboat",
-            "OutboardMotor",
-            "InboardMotor",
-            "Sailboat",
-            "JetSki"
-        )
+    fun boatSpaceApplication(): String {
+        val boatTypes =
+            listOf(
+                "Rowboat",
+                "OutboardMotor",
+                "InboardMotor",
+                "Sailboat",
+                "JetSki"
+            )
         return layout("Hae venepaikkaa") {
             section("section") {
                 div("container") {
@@ -79,7 +78,8 @@ class BoatSpaceApplicationController {
                         br()
                         radioButtonGroup(
                             listOf(
-                                RadioButton("Traileripaikka", "trailer"), RadioButton(
+                                RadioButton("Traileripaikka", "trailer"),
+                                RadioButton(
                                     "Laituripaikka",
                                     "slip"
                                 )
@@ -92,7 +92,6 @@ class BoatSpaceApplicationController {
                             classes = setOf("button", "is-primary")
                             type = ButtonType.submit
                             +"Lähetä hakemus"
-
                         }
                     }
                 }
@@ -102,14 +101,18 @@ class BoatSpaceApplicationController {
 
     data class RadioButton(val label: String, val value: String)
 
-    private fun FlowContent.radioButtonGroup(radioButtonTitles: List<RadioButton>, name: String, label: String) {
+    private fun FlowContent.radioButtonGroup(
+        radioButtonTitles: List<RadioButton>,
+        name: String,
+        label: String
+    ) {
         div {
             p("label") {
                 +label
             }
             radioButtonTitles.forEach { rb ->
                 div {
-                    input() {
+                    input {
                         this.name = name
                         id = rb.value
                         type = InputType.radio
@@ -125,16 +128,19 @@ class BoatSpaceApplicationController {
     }
 
     @GetMapping("/partial/venepaikkatoiveet", produces = [TEXT_HTML_UTF8])
-    fun addHarborOption(@RequestParam locationId: List<String>): String {
+    fun addHarborOption(
+        @RequestParam locationId: List<String>
+    ): String {
         return buildString {
             appendHTML().harbourOptions(locationId)
         }
     }
 
     private fun TagConsumer<*>.harbourOptions(harbors: List<String>) {
-        val locations = jdbi.inTransactionUnchecked { tx ->
-            tx.getLocations()
-        }
+        val locations =
+            jdbi.inTransactionUnchecked { tx ->
+                tx.getLocations()
+            }
         div {
             id = "harborOptions"
             harbors.forEachIndexed { index, harborValue ->
@@ -148,7 +154,7 @@ class BoatSpaceApplicationController {
                         div("select") {
                             select {
                                 name = "locationId"
-                                id = "locationId${index}"
+                                id = "locationId$index"
                                 classes = setOf("locationId")
                                 required = true
                                 option {
@@ -199,7 +205,6 @@ class BoatSpaceApplicationController {
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -232,27 +237,30 @@ class BoatSpaceApplicationController {
         @RequestParam weightInKg: Int,
         @RequestParam locationId: List<String>
     ): String {
-        val application = jdbi.inTransactionUnchecked { tx ->
-            tx.insertBoatSpaceApplication(
-                AddBoatSpaceApplication(
-                    type = BoatSpaceType.Slip,
-                    boatType = BoatType.valueOf(boatType),
-                    amenity = BoatSpaceAmenity.RearBuoy,
-                    boatWidthCm = widthInMeters,
-                    boatLengthCm = lengthInMeters,
-                    boatWeightKg = weightInKg,
-                    boatRegistrationCode = registrationCode,
-                    information = "Hakija: $name, $email, $phone",
-                    citizenId = 1, // TODO use real user identified when authentication is enabled
-                    locationWishes = locationId.mapIndexed { index, id ->
-                        AddLocationWish(
-                            locationId = id.toInt(),
-                            priority = index,
-                        )
-                    }
+        val application =
+            jdbi.inTransactionUnchecked { tx ->
+                tx.insertBoatSpaceApplication(
+                    AddBoatSpaceApplication(
+                        type = BoatSpaceType.Slip,
+                        boatType = BoatType.valueOf(boatType),
+                        amenity = BoatSpaceAmenity.RearBuoy,
+                        boatWidthCm = widthInMeters,
+                        boatLengthCm = lengthInMeters,
+                        boatWeightKg = weightInKg,
+                        boatRegistrationCode = registrationCode,
+                        information = "Hakija: $name, $email, $phone",
+                        // TODO use real user identified when authentication is enabled
+                        citizenId = 1,
+                        locationWishes =
+                            locationId.mapIndexed { index, id ->
+                                AddLocationWish(
+                                    locationId = id.toInt(),
+                                    priority = index,
+                                )
+                            }
+                    )
                 )
-            )
-        }
+            }
         return "Hakemus vastaanotettu"
     }
 }

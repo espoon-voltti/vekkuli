@@ -5,3 +5,4 @@
 [*.{kt,kts}]
 ktlint_standard_trailing-comma-on-call-site = disabled
 ktlint_standard_trailing-comma-on-declaration-site = disabled
+ktlint_standard_no-wildcard-imports = disabled

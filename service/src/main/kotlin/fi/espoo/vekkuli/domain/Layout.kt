@@ -7,7 +7,10 @@ package fi.espoo.vekkuli.domain
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 
-fun layout(title: String, block: HtmlBlockTag.() -> Unit): String {
+fun layout(
+    title: String,
+    block: HtmlBlockTag.() -> Unit
+): String {
     return createHTML().html {
         lang = "fi"
         attributes["class"] = "theme-light"

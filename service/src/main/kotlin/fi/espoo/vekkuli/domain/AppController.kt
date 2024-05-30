@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
-
-
 import org.springframework.web.bind.annotation.RestController
 
 const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
@@ -48,9 +46,10 @@ class AppController {
         @RequestParam amenity: BoatSpaceAmenity?,
         @RequestParam boatSpaceType: BoatSpaceType?,
     ): String {
-        val locations = jdbi.inTransactionUnchecked { tx ->
-            tx.getLocations()
-        }
+        val locations =
+            jdbi.inTransactionUnchecked { tx ->
+                tx.getLocations()
+            }
 
         return layout("Venepaikat") {
             section("section") {
@@ -187,7 +186,6 @@ class AppController {
                                                     }
                                                     +messageUtil.getMessage("boatSpaces.typeStorageOption")
                                                 }
-
                                             }
                                         }
                                     }
@@ -204,7 +202,10 @@ class AppController {
         }
     }
 
-    private fun TagConsumer<*>.numberInput(id: String, value: Float? = null) {
+    private fun TagConsumer<*>.numberInput(
+        id: String,
+        value: Float? = null
+    ) {
         input(InputType.number, name = id, classes = "input") {
             this.id = id
             style = "width: 100px"
@@ -254,21 +255,22 @@ class AppController {
         currentPage: Int,
         boatSpaceType: BoatSpaceType?
     ) {
-        val boatSlips = jdbi.inTransactionUnchecked { tx ->
-            tx.getBoatSpaces(
-                BoatSpaceFilter(
-                    page = page,
-                    pageSize = pageSize,
-                    minWidth = width?.mToCm()?.plus(WIDTH_MIN_TOLERANCE),
-                    maxWidth = width?.mToCm()?.plus(WIDTH_MAX_TOLERANCE),
-                    minLength = length?.mToCm(),
-                    maxLength = null,
-                    amenity = amenity,
-                    locationId = locationId,
-                    boatSpaceType = boatSpaceType,
+        val boatSlips =
+            jdbi.inTransactionUnchecked { tx ->
+                tx.getBoatSpaces(
+                    BoatSpaceFilter(
+                        page = page,
+                        pageSize = pageSize,
+                        minWidth = width?.mToCm()?.plus(WIDTH_MIN_TOLERANCE),
+                        maxWidth = width?.mToCm()?.plus(WIDTH_MAX_TOLERANCE),
+                        minLength = length?.mToCm(),
+                        maxLength = null,
+                        amenity = amenity,
+                        locationId = locationId,
+                        boatSpaceType = boatSpaceType,
+                    )
                 )
-            )
-        }
+            }
         if (boatSlips.isEmpty()) {
             div {
                 h2 { +"Ei tuloksia" }
@@ -319,8 +321,8 @@ class AppController {
     ): String {
         val queryString = StringBuilder("?")
         queryString.append("page=$page&pageSize=$pageSize")
-        width?.let { queryString.append("&width=${it}") }
-        length?.let { queryString.append("&length=${it}") }
+        width?.let { queryString.append("&width=$it") }
+        length?.let { queryString.append("&length=$it") }
         locationId?.let { queryString.append("&locationId=$it") }
         amenity?.let { queryString.append("&amenity=$it") }
         return queryString.toString()

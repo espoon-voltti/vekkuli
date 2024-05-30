@@ -31,7 +31,7 @@ fun Handle.insertCitizen(citizen: AddCitizen): Citizen {
         INSERT INTO citizen (name, email, phone) 
         VALUES (:name, :email, :phone)
         RETURNING *
-    """.trimIndent()
+        """.trimIndent()
     )
         .bind("name", citizen.name)
         .bind("email", citizen.email)
