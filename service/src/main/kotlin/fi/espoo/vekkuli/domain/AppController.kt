@@ -36,7 +36,7 @@ class AppController {
         const val WIDTH_MAX_TOLERANCE = 100
     }
 
-    @GetMapping("/", produces = [TEXT_HTML_UTF8])
+    @GetMapping("/venepaikat", produces = [TEXT_HTML_UTF8])
     fun boatSpaces(
         @RequestParam @Min(1) page: Int = 1,
         @RequestParam pageSize: Int = 25,
@@ -58,10 +58,10 @@ class AppController {
                     div("box") {
                         form {
                             id = "form"
-                            action = "/"
+                            action = "/venepaikat"
                             method = FormMethod.get
                             attributes["hx-trigger"] = "input delay:1s, change"
-                            attributes["hx-get"] = "/partial/boat-spaces"
+                            attributes["hx-get"] = "/partial/venepaikat"
                             attributes["hx-target"] = "#boatSlipTableDiv"
                             attributes["hx-swap"] = "innerHTML"
                             div("columns") {
@@ -214,7 +214,7 @@ class AppController {
     }
 
     @GetMapping(
-        "/partial/boat-spaces",
+        "/partial/venepaikat",
     )
     fun partialBoatSlipTable(
         @RequestParam @Min(1) page: Int = 1,
