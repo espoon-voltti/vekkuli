@@ -17,6 +17,9 @@ import { csrf, csrfCookie } from './middleware/csrf.js'
 import { createDevAdRouter } from './auth/dev-ad-auth.js'
 import authStatus from './auth/auth-status.js'
 import { createServiceRequestHeaders } from './clients/service-client.js'
+import createSamlRouter from './auth/saml/saml-routes.js'
+import { createAdSamlStrategy, createSamlConfig } from './auth/saml/index.js'
+import redisCacheProvider from './auth/saml/passport-saml-cache-redis.js'
 
 export function createRouter(config: Config, redisClient: RedisClient): Router {
   const router = Router()
@@ -47,7 +50,21 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   if (config.ad.type === 'mock') {
     router.use('/auth/saml', createDevAdRouter(sessions))
   } else if (config.ad.type === 'saml') {
-    router.use('/auth/saml', proxy)
+    router.use(
+      '/auth/saml',
+      createSamlRouter({
+        sessions,
+        strategyName: 'ead',
+        strategy: createAdSamlStrategy(
+          sessions,
+          config.ad,
+          createSamlConfig(
+            config.ad.saml,
+            redisCacheProvider(redisClient, { keyPrefix: 'ad-saml-resp:' })
+          )
+        )
+      })
+    )
   }
 
   router.get('/auth/status', csrf, csrfCookie(), authStatus(sessions))
@@ -58,19 +75,7 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   router.use(requireAuthentication)
   router.use(csrf)
 
-  router.use(
-    expressHttpProxy(serviceUrl, {
-      parseReqBody: false,
-      proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-        const headers = createServiceRequestHeaders(srcReq)
-        proxyReqOpts.headers = {
-          ...proxyReqOpts.headers,
-          ...headers
-        }
-        return proxyReqOpts
-      }
-    })
-  )
+  router.use(proxy)
   router.use(errorHandler)
 
   return router
