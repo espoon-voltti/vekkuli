@@ -12,25 +12,31 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class LandingPageController {
     @GetMapping("/", produces = [TEXT_HTML_UTF8])
-    fun landingPage(user: AuthenticatedUser?): String {
+    fun landingPage(): String {
         return layout("Vekkuli") {
             div("container") {
                 h1("title") { +"Vekkuli" }
-                if (user != null) {
-                    p {
-                        +"Tervetuloa ${user.id}!"
-                    }
-                    a {
-                        classes = setOf("button")
-                        href = "/auth/saml/logout"
-                        +"Kirjaudu ulos"
-                    }
-                } else {
-                    a {
-                        classes = setOf("button")
-                        href = "/auth/saml/login"
-                        +"Kirjaudu sisään"
-                    }
+                a {
+                    classes = setOf("button")
+                    href = "/auth/saml/login"
+                    +"Kirjaudu sisään"
+                }
+            }
+        }
+    }
+
+    @GetMapping("/loggedin", produces = [TEXT_HTML_UTF8])
+    fun foo(user: AuthenticatedUser): String {
+        return layout("Vekkuli") {
+            div("container") {
+                h1("title") { +"Vekkuli" }
+                p {
+                    +"Tervetuloa ${user.id}!"
+                }
+                a {
+                    classes = setOf("button")
+                    href = "/auth/saml/logout"
+                    +"Kirjaudu ulos"
                 }
             }
         }
