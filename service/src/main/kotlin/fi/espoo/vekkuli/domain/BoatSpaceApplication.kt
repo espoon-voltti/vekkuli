@@ -5,6 +5,7 @@
 package fi.espoo.vekkuli.domain
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.json.Json
 import java.time.LocalDateTime
 
@@ -108,16 +109,8 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
             RETURNING *, '[]'::jsonb as location_wishes
             """.trimIndent()
         )
-            .bind("type", app.type)
-            .bind("boatType", app.boatType)
-            .bind("amenity", app.amenity)
-            .bind("boatWidthCm", app.boatWidthCm)
-            .bind("boatLengthCm", app.boatLengthCm)
-            .bind("boatWeightKg", app.boatWeightKg)
-            .bind("boatRegistrationCode", app.boatRegistrationCode)
-            .bind("citizenId", app.citizenId)
-            .bind("information", app.information)
-            .mapTo(BoatSpaceApplicationWithId::class.java).toList().first()
+            .bindKotlin(app)
+            .mapTo(BoatSpaceApplicationWithId::class.java).one()
 
     prepareBatch(
         """
