@@ -17,6 +17,9 @@ import { csrf, csrfCookie } from './middleware/csrf.js'
 import { createDevAdRouter } from './auth/dev-ad-auth.js'
 import authStatus from './auth/auth-status.js'
 import { createServiceRequestHeaders } from './clients/service-client.js'
+import createSamlRouter from './auth/saml/saml-routes.js'
+import { createAdSamlStrategy, createSamlConfig } from './auth/saml/index.js'
+import redisCacheProvider from './auth/saml/passport-saml-cache-redis.js'
 
 export function createRouter(config: Config, redisClient: RedisClient): Router {
   const router = Router()
