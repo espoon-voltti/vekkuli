@@ -47,7 +47,21 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   if (config.ad.type === 'mock') {
     router.use('/auth/saml', createDevAdRouter(sessions))
   } else if (config.ad.type === 'saml') {
-    router.use('/auth/saml', proxy)
+    router.use(
+      '/auth/saml',
+      createSamlRouter({
+        sessions,
+        strategyName: 'ead',
+        strategy: createAdSamlStrategy(
+          sessions,
+          config.ad,
+          createSamlConfig(
+            config.ad.saml,
+            redisCacheProvider(redisClient, { keyPrefix: 'ad-saml-resp:' })
+          )
+        )
+      })
+    )
   }
 
   router.get('/auth/status', csrf, csrfCookie(), authStatus(sessions))
@@ -58,19 +72,7 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   router.use(requireAuthentication)
   router.use(csrf)
 
-  router.use(
-    expressHttpProxy(serviceUrl, {
-      parseReqBody: false,
-      proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-        const headers = createServiceRequestHeaders(srcReq)
-        proxyReqOpts.headers = {
-          ...proxyReqOpts.headers,
-          ...headers
-        }
-        return proxyReqOpts
-      }
-    })
-  )
+  router.use(proxy)
   router.use(errorHandler)
 
   return router
