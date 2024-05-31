@@ -11,3 +11,7 @@ spring:
     url: "jdbc:postgresql://localhost:5432/vekkuli"
     username: "vekkuli"
     password: "postgres"
+  thymeleaf:
+    check-template-location: true
+    cache: false
+    prefix: file:./src/main/resources/templates/
