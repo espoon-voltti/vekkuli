@@ -51,7 +51,7 @@ app.use(loggingMiddleware)
 passport.serializeUser<Express.User>((user, done) => done(null, user))
 passport.deserializeUser<Express.User>((user, done) => done(null, user))
 
-app.use('/api', createRouter(config, redisClient))
+app.use('/', createRouter(config, redisClient))
 app.use(fallbackErrorHandler)
 
 const server = app.listen(httpPort, () => {

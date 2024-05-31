@@ -26,6 +26,13 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
 
   const sessions = sessionSupport(redisClient, config.session)
 
+  router.use(
+    '/',
+    expressHttpProxy(serviceUrl, {
+      parseReqBody: false
+    })
+  )
+
   router.use(sessions.middleware)
   router.use(passport.session())
   router.use(cookieParser(config.session.cookieSecret))
