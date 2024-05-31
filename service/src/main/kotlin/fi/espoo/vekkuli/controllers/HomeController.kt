@@ -18,7 +18,6 @@ class HomeController() {
         request: HttpServletRequest,
         model: Model
     ): String {
-        println(request.getAuthenticatedUser())
         model.addAttribute("user", request.getAuthenticatedUser())
         return "home"
     }
