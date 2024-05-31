@@ -1,0 +1,14 @@
+<html lang="fi" class="theme-light">
+<head>
+    <title>Vekkuli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="container">
+    <h1 class="title">Vekkuli</h1>
+    <a th:if="${user == null}" class="button" href="/auth/saml/login">Kirjaudu sisään</a></div>
+    <a th:unless="${user == null}" class="button" href="/auth/saml/logout">Kirjaudu ulos</a></div>
+</body>
+</html>
