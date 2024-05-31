@@ -1,0 +1,57 @@
+<html lang="fi" class="theme-light" >
+<head>
+    <title>Venepaikat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <h1 class="title">Venepaikat</h1>
+        <div class="box">
+            <form id="form" action="/venepaikat" method="get" hx-trigger="input delay:1s, change" hx-get="/partial/venepaikat2" hx-target="#boatSlipTableDiv" hx-swap="innerHTML">
+                <div class="columns">
+                    <div class="column">
+                        <div class="field"><label class="label" for="width">Veneen leveys (m): </label>
+                            <div class="control"><input type="number" name="width" class="input" id="width" style="width: 100px" th:value="${width}"></div>
+                        </div>
+                        <div class="field"><label class="label" for="length">Veneen pituus (m): </label>
+                            <div class="control"><input type="number" name="length" class="input" id="length" style="width: 100px" th:value="${length}"></div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field"><label class="label" for="amenity">Varustus</label>
+                            <div class="select">
+                                <select name="amenity" id="amenity">
+                                <option
+                                        th:each="option : ${amenities}"
+                                        th:value="${option}"
+                                        th:text="${option}"
+                                        th:selected="${option} == ${amenity}"></option>
+                                </select></div>
+                        </div>
+                        <div class="field"><label class="label" for="locationId">Satama</label>
+                            <div class="select">
+                                <select name="locationId" id="locationId">
+                                    <option value="" th:selected="${locationId} == null">Ei valittu</option>
+                                    <option th:each="location : ${locations}"
+                                            th:value="${location.id}"
+                                            th:text="${location.name}"
+                                            th:selected="${location.id} == ${locationId}"></option>
+                                </select></div>
+                        </div>
+                        <div class="field"><label class="label" for="boatSpaceType">Paikan tyyppi</label>
+                            <div class="select"><select name="boatSpaceType" id="boatSpaceType"><option value="" selected="selected">Ei valittu</option><option value="Slip">Laituri</option><option value="Storage">Varastointi</option></select></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="boatSlipTableDiv" th:insert="boat-space-table">
+
+        </div>
+    </div>
+</section>
+</body>
+</html>

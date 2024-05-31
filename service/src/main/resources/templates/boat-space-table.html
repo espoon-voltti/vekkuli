@@ -1,0 +1,27 @@
+<table class="table is-fullwidth is-striped is-hoverable " id="boatSlipTable">
+    <thead>
+    <tr>
+        <th>Satama</th>
+        <th>Paikan tyyppi</th>
+        <th>Laituri</th>
+        <th>Paikkanumero</th>
+        <th>Varustus</th>
+        <th>Leveys (m)</th>
+        <th>Pituus (m)</th>
+        <th>Kuvaus</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="result : ${results}">
+        <td th:text="${result.locationName}"></td>
+        <td th:text="${result.type}"></td>
+        <td th:text="${result.section}"></td>
+        <td th:text="${result.placeNumber}"></td>
+        <td th:text="${result.amenity}"></td>
+        <td th:text="${result.widthCm / 100}"></td>
+        <td th:text="${result.lengthCm / 100}"></td>
+        <td th:text="${result.description}"></td>
+    </tr>
+
+    </tbody>
+</table>
