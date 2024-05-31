@@ -26,7 +26,7 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
 
   const sessions = sessionSupport(redisClient, config.session)
 
-  router.use(
+  router.get(
     '/',
     expressHttpProxy(serviceUrl, {
       parseReqBody: false
