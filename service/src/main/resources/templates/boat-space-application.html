@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Hae venepaikkaa</title>
+    <title th:text="#{boatApplication.applyForBoatSpace}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,73 +9,76 @@
 <body>
 <section class="section">
     <div class="container">
-        <h1 class="title">Hae venepaikkaa</h1>
+        <h1 class="title" th:text="#{boatApplication.applyForBoatSpace}">Hae venepaikkaa</h1>
         <form th:action="@{/venepaikkahakemus}" th:method="post">
-            <h2 class="subtitle">Henkilötiedot</h2>
+            <h2 class="subtitle" th:text="#{boatApplication.personalInformation}">Henkilötiedot</h2>
             <div class="field">
-                <label class="label">Nimi</label>
+                <label class="label" th:text="#{boatApplication.name}">Nimi</label>
                 <div class="control">
                     <input class="input" type="text" name="name" required/>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Sähköposti</label>
+                <label class="label" th:text="#{boatApplication.email}">Sähköposti</label>
                 <div class="control">
                     <input class="input" type="email" name="email" pattern=".+@.+"/>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Puhelinnumero</label>
+                <label class="label" th:text="#{boatApplication.phone}">Puhelinnumero</label>
                 <div class="control">
                     <input class="input" type="tel" name="phone" required/>
                 </div>
             </div>
-            <h2 class="subtitle">Veneen tiedot</h2>
+            <h2 class="subtitle" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h2>
             <div class="field">
-                <label class="label">Venetyyppi</label>
+                <label class="label" th:text="#{boatApplication.boatType}">Venetyyppi</label>
                 <div class="select">
                     <select name="boatType" required>
-                        <option value="">Valitse venetyyppi</option>
-                        <option th:each="boatType : ${boatTypes}" th:value="${boatType}" th:text="${boatType}"></option>
+                        <option value="" th:text="#{boatApplication.selectBoatType}">Valitse venetyyppi</option>
+                        <option th:each="boatType : ${boatTypes}" th:value="${boatType}"
+                                th:text="#{${'boatApplication.' + (boatType[0].toLowerCase() + boatType.substring(1))}}"></option>
                     </select>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Veneen nimi</label>
+                <label class="label" th:text="#{boatApplication.boatName}">Veneen nimi</label>
                 <div class="control">
                     <input class="input" type="text" name="boatName" required/>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Rekisteritunnus</label>
+                <label class="label" th:text="#{boatApplication.registrationCode}">Rekisteritunnus</label>
                 <div class="control">
                     <input class="input" type="text" name="registrationCode" required/>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Pituus (cm)</label>
+                <label class="label" th:text="#{boatApplication.lengthInMeters}">Pituus (m)</label>
                 <div class="control">
                     <input class="input" type="number" name="lengthInMeters" required/>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Leveys (cm)</label>
+                <label class="label" th:text="#{boatApplication.widthInMeters}">Leveys (m)</label>
                 <div class="control">
                     <input class="input" type="number" name="widthInMeters" required/>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Paino (kg)</label>
+                <label class="label" th:text="#{boatApplication.weightInKg}">Paino (kg)</label>
                 <div class="control">
                     <input class="input" type="number" name="weightInKg" required/>
                 </div>
             </div>
-            <h2 class="subtitle">Satamatoiveet</h2>
+            <h2 class="subtitle" th:text="#{boatApplication.harborPreferences}">Satamatoiveet</h2>
             <div th:replace="~{fragments/harbor-options :: harborOptions}"></div>
             <br/>
             <div class="field">
                 <div class="control">
-                    <button class="button is-primary" type="submit">Lähetä hakemus</button>
+                    <button class="button is-primary" type="submit" th:text="#{boatApplication.submitApplication}">
+                        Lähetä hakemus
+                    </button>
                 </div>
             </div>
         </form>

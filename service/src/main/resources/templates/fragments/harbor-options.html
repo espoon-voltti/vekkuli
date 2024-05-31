@@ -5,11 +5,11 @@
 <div id="harborOptions" th:fragment="harborOptions">
     <div th:each="harbor, obj : ${harbors}">
         <div class="field" th:id="${'harborOption' + obj.index}">
-            <label class="label">Satamatoive</label>
+            <label class="label" th:text="#{boatApplication.harborOptionHeader}"></label>
             <div class="control">
                 <div class="select">
                     <select name="locationId" th:id="${'locationId' + obj.index}" class="locationId" required>
-                        <option value="" th:text="${messageUtil.getMessage('boatSpaces.noneOption')}"></option>
+                        <option value="" th:text="#{boatApplication.noneOption}"></option>
                         <option th:each="location : ${locations}" th:value="${location.id}"
                                 th:selected="${location.id == harbor}" th:text="${location.name}"></option>
                     </select>
@@ -20,11 +20,11 @@
         </div>
     </div>
     <div class="field">
-        <label class="label">Satamatoive</label>
+        <label class="label" th:text="#{boatApplication.harborOptionLabel}"></label>
         <div class="control">
             <div class="select">
                 <select name="locationId" class="locationId" required>
-                    <option value="none" th:text="${messageUtil.getMessage('boatSpaces.noneOption')}"></option>
+                    <option value="none" th:text="#{boatApplication.noneOption}"></option>
                     <option th:each="location, obj : ${locations}" th:value="${location.id}"
                             th:text="${location.name}"></option>
                 </select>
@@ -35,7 +35,8 @@
     <div class="field">
         <div class="control">
             <button class="button" hx-get="/partial/venepaikkatoiveet" hx-target="#harborOptions"
-                    hx-swap="outerHTML" hx-include=".locationId">Lisää satamatoive
+                    hx-swap="outerHTML" hx-include=".locationId" th:text="#{boatApplication.addHarborOptionButton}">
+                Lisää satamatoive
             </button>
         </div>
     </div>

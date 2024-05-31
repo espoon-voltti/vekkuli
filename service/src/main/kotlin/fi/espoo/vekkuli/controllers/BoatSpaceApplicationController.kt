@@ -24,7 +24,6 @@ class BoatSpaceApplicationController {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         model.addAttribute("boatTypes", boatTypes)
         model.addAttribute("locations", jdbi.inTransactionUnchecked { it.getLocations() })
-        model.addAttribute("messageUtil", messageUtil)
         return "boat-space-application"
     }
 
@@ -32,7 +31,6 @@ class BoatSpaceApplicationController {
     fun addHarborOption(@RequestParam locationId: List<String>, model: Model): String {
         model.addAttribute("harbors", locationId)
         model.addAttribute("locations", jdbi.inTransactionUnchecked { it.getLocations() })
-        model.addAttribute("messageUtil", messageUtil)
         return "fragments/harbor-options :: harborOptions"
     }
 
