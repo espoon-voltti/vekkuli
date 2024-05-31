@@ -4,6 +4,7 @@
 
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.AuthenticatedUser
 import kotlinx.html.*
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,13 +12,25 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class LandingPageController {
     @GetMapping("/", produces = [TEXT_HTML_UTF8])
-    fun landinPage(): String {
+    fun landingPage(user: AuthenticatedUser?): String {
         return layout("Vekkuli") {
             div("container") {
                 h1("title") { +"Vekkuli" }
-                button {
-                    classes = setOf("button")
-                    +"Kirjaudu sisään"
+                if (user != null) {
+                    p {
+                        +"Tervetuloa ${user.id}!"
+                    }
+                    a {
+                        classes = setOf("button")
+                        href = "/auth/saml/logout"
+                        +"Kirjaudu ulos"
+                    }
+                } else {
+                    a {
+                        classes = setOf("button")
+                        href = "/auth/saml/login"
+                        +"Kirjaudu sisään"
+                    }
                 }
             }
         }
