@@ -5,21 +5,8 @@
 version: '3.5'
 
 services:
-  frontend:
-    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/frontend:${TAG:-master}
-    build:
-      context: ../frontend/
-    ports:
-      - "9000:80"
-    environment:
-      RESOLVER: "127.0.0.11 ipv6=off"
-      API_GATEWAY_URL: http://api-gateway:3000
-      HTTP_SCHEME: http
-    depends_on:
-      - api-gateway
-
   api-gateway:
-    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/api-gateway:${TAG:-master}
+    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/api-gateway:${TAG:-master}
     build:
       context: ../api-gateway/
     ports:
@@ -40,7 +27,7 @@ services:
       - redis
 
   service-e2e-tests:
-    image: 095341522062.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/service-builder:${TAG:-master}
+    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/service-builder:${TAG:-master}
     build:
       context: ../service/
       target: builder
