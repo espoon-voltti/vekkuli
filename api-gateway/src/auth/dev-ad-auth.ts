@@ -13,7 +13,6 @@ import { AdUser, userLogin } from '../clients/service-client.js'
 import { Sessions } from './session.js'
 import passport, { Strategy } from 'passport'
 import { AppSessionUser, authenticate, login, logout } from './index.js'
-import { parseRelayState } from './saml/index.js'
 import { appBaseUrl } from '../config.js'
 
 class DevStrategy extends Strategy {
