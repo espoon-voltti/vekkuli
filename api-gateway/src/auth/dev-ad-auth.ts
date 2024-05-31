@@ -103,7 +103,7 @@ export function createDevAdRouter(sessions: Sessions): Router {
           res.redirect(`${appBaseUrl}?loginError=true`)
         } else {
           await login(req, user)
-          res.redirect('/loggedin') //parseRelayState(req) ?? appBaseUrl)
+          res.redirect('/') //parseRelayState(req) ?? appBaseUrl)
         }
       } catch (err) {
         if (!res.headersSent) {

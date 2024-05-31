@@ -4,7 +4,8 @@
 
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.config.AuthenticatedUser
+import fi.espoo.vekkuli.config.getAuthenticatedUser
+import jakarta.servlet.http.HttpServletRequest
 import kotlinx.html.*
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -12,31 +13,30 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class LandingPageController {
     @GetMapping("/", produces = [TEXT_HTML_UTF8])
-    fun landingPage(): String {
+    fun landingPage(request: HttpServletRequest): String {
+        val authenticatedUser = request.getAuthenticatedUser()
+        println(authenticatedUser)
         return layout("Vekkuli") {
-            div("container") {
-                h1("title") { +"Vekkuli" }
-                a {
-                    classes = setOf("button")
-                    href = "/auth/saml/login"
-                    +"Kirjaudu sisään"
+            if (authenticatedUser == null) {
+                div("container") {
+                    h1("title") { +"Vekkuli" }
+                    a {
+                        classes = setOf("button")
+                        href = "/auth/saml/login"
+                        +"Kirjaudu sisään"
+                    }
                 }
-            }
-        }
-    }
-
-    @GetMapping("/loggedin", produces = [TEXT_HTML_UTF8])
-    fun foo(user: AuthenticatedUser): String {
-        return layout("Vekkuli") {
-            div("container") {
-                h1("title") { +"Vekkuli" }
-                p {
-                    +"Tervetuloa ${user.id}!"
-                }
-                a {
-                    classes = setOf("button")
-                    href = "/auth/saml/logout"
-                    +"Kirjaudu ulos"
+            } else {
+                div("container") {
+                    h1("title") { +"Vekkuli" }
+                    p {
+                        +"Tervetuloa ${authenticatedUser.id}!"
+                    }
+                    a {
+                        classes = setOf("button")
+                        href = "/auth/saml/logout"
+                        +"Kirjaudu ulos"
+                    }
                 }
             }
         }
