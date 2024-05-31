@@ -29,7 +29,15 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   router.get(
     '/',
     expressHttpProxy(serviceUrl, {
-      parseReqBody: false
+      parseReqBody: false,
+      proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+        const headers = createServiceRequestHeaders(srcReq)
+        proxyReqOpts.headers = {
+          ...proxyReqOpts.headers,
+          ...headers
+        }
+        return proxyReqOpts
+      }
     })
   )
 
