@@ -20,12 +20,12 @@ VALUES ('Haukilahti', 'Satamatie 1, Espoo'),
        ('Suomenoja', 'Suomenojantie 15, Espoo'),
        ('Svinö', 'Svinöntie 8, Espoo');
 
-INSERT INTO citizen (name, phone, email)
-VALUES ('Mikko Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi');
+INSERT INTO citizen (id, name, phone, email)
+VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', 'Mikko Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi');
 
 INSERT INTO boat_space_application (citizen_id, created_at, type, boat_type, amenity, boat_width_cm, boat_length_cm,
                                     boat_weight_kg, boat_registration_code, information)
-VALUES (1, now(), 'Slip', 'JetSki', 'Buoy', 180, 400, 200, 'A255345', 'Mieluiten laiturin kärjestä');
+VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), 'Slip', 'JetSki', 'Buoy', 180, 400, 200, 'A255345', 'Mieluiten laiturin kärjestä');
 
 INSERT INTO boat_space_application_location_wish (boat_space_application_id, location_id, priority)
 VALUES (1, 1, 1),

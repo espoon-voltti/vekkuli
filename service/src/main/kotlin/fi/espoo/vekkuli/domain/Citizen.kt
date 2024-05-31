@@ -5,6 +5,8 @@
 package fi.espoo.vekkuli.domain
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.kotlin.bindKotlin
+import java.util.UUID
 
 data class AddCitizen(
     val name: String,
@@ -13,16 +15,16 @@ data class AddCitizen(
 )
 
 data class Citizen(
-    val id: Int,
+    val id: UUID,
     val name: String,
     val email: String,
     val phone: String,
 )
 
-fun Handle.getCitizen(id: Int): Citizen? {
+fun Handle.getCitizen(id: UUID): Citizen? {
     return createQuery("SELECT * FROM citizen WHERE id = :id")
         .bind("id", id)
-        .mapTo(Citizen::class.java).toList().first()
+        .mapTo(Citizen::class.java).one()
 }
 
 fun Handle.insertCitizen(citizen: AddCitizen): Citizen {
@@ -36,7 +38,7 @@ fun Handle.insertCitizen(citizen: AddCitizen): Citizen {
         .bind("name", citizen.name)
         .bind("email", citizen.email)
         .bind("phone", citizen.phone)
+        .bindKotlin(citizen)
         .mapTo(Citizen::class.java)
-        .toList()
-        .first()
+        .one()
 }

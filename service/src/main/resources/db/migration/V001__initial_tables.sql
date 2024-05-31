@@ -13,7 +13,7 @@ CREATE TABLE price (
 );
 
 CREATE TABLE citizen (
-    id Serial PRIMARY KEY,
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v1mc(),
     name text NOT NULL,
     phone text NOT NULL,
     email text NOT NULL
@@ -57,7 +57,7 @@ CREATE TABLE boat_space (
 
 CREATE TABLE boat_space_application (
     id Serial PRIMARY KEY,
-    citizen_id int NOT NULL,
+    citizen_id UUID NOT NULL,
     created_at timestamp NOT NULL,
     type BoatSpaceType NOT NULL,
     boat_type BoatType NOT NULL,
