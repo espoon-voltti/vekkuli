@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-package fi.espoo.vekkuli.domain
+package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.domain.*
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import org.jdbi.v3.core.Jdbi

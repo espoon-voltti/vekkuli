@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-package fi.espoo.vekkuli.domain
+package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.domain.layout
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.html.*
 import org.springframework.web.bind.annotation.GetMapping
