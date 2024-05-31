@@ -25,21 +25,17 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   const router = Router()
 
   const sessions = sessionSupport(redisClient, config.session)
-
-  router.get(
-    '/',
-    expressHttpProxy(serviceUrl, {
-      parseReqBody: false,
-      proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-        const headers = createServiceRequestHeaders(srcReq)
-        proxyReqOpts.headers = {
-          ...proxyReqOpts.headers,
-          ...headers
-        }
-        return proxyReqOpts
+  const proxy = expressHttpProxy(serviceUrl, {
+    parseReqBody: false,
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      const headers = createServiceRequestHeaders(srcReq)
+      proxyReqOpts.headers = {
+        ...proxyReqOpts.headers,
+        ...headers
       }
-    })
-  )
+      return proxyReqOpts
+    }
+  })
 
   router.use(sessions.middleware)
   router.use(passport.session())
@@ -47,26 +43,14 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
 
   router.use(cacheControl(() => 'forbid-cache'))
 
+  router.get('/', proxy)
+
   router.all('/system/*', (_, res) => res.sendStatus(404))
 
   if (config.ad.type === 'mock') {
     router.use('/auth/saml', createDevAdRouter(sessions))
   } else if (config.ad.type === 'saml') {
-    router.use(
-      '/auth/saml',
-      createSamlRouter({
-        sessions,
-        strategyName: 'ead',
-        strategy: createAdSamlStrategy(
-          sessions,
-          config.ad,
-          createSamlConfig(
-            config.ad.saml,
-            redisCacheProvider(redisClient, { keyPrefix: 'ad-saml-resp:' })
-          )
-        )
-      })
-    )
+    router.use('/auth/saml', proxy)
   }
 
   router.get('/auth/status', csrf, csrfCookie(), authStatus(sessions))
