@@ -1,5 +1,7 @@
-package fi.espoo.vekkuli.controller
+package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.config.getAuthenticatedUser
+import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -12,8 +14,12 @@ class HomeController() {
     lateinit var jdbi: Jdbi
 
     @GetMapping("/")
-    fun users(model: Model): String {
-        model.addAttribute("user", null)
+    fun users(
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        println(request.getAuthenticatedUser())
+        model.addAttribute("user", request.getAuthenticatedUser())
         return "home"
     }
 }

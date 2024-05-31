@@ -8,7 +8,8 @@
 <body>
 <div class="container">
     <h1 class="title">Vekkuli</h1>
-    <a th:if="${user == null}" class="button" href="/auth/saml/login">Kirjaudu sisään</a></div>
-    <a th:unless="${user == null}" class="button" href="/auth/saml/logout">Kirjaudu ulos</a></div>
+    <div th:if="${user == null}"><a class="button" href="/auth/saml/login">Kirjaudu sisään</a></div>
+    <div th:if="${user != null}"><a class="button" href="/auth/saml/logout">Kirjaudu ulos</a></div>
+</div>
 </body>
 </html>
