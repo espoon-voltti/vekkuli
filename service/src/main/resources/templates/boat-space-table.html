@@ -31,7 +31,8 @@
        hx-target="#boatSlipTableDiv"
        hx-swap="innerHTML"
        hx-include="#form"
-       th:attr="hx-vals=${prevPageVal}">Edellinen</a>
+       th:attr="hx-vals=${prevPageVal}"
+       th:text="#{boatSpaces.previous}"></a>
     <a th:if="${prevPageVal == null}" class="pagination-previous is-disabled">Edellinen</a>
 
     <span th:text="${currentPage}" class="pagination-list"></span>
@@ -42,7 +43,8 @@
        hx-target="#boatSlipTableDiv"
        hx-swap="innerHTML"
        hx-include="#form"
-       th:attr="hx-vals=${nextPageVal}">
-        Seuraava</a>
+       th:attr="hx-vals=${nextPageVal}"
+       th:text="#{boatSpaces.next}">
+    </a>
     <a th:if="${nextPageVal == null}" class="pagination-next is-disabled">Seuraava</a>
 </nav>
