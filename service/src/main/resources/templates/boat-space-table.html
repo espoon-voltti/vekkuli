@@ -1,25 +1,23 @@
 <table class="table is-fullwidth is-striped is-hoverable " id="boatSlipTable">
     <thead>
     <tr>
-        <th>Satama</th>
-        <th>Paikan tyyppi</th>
-        <th>Laituri</th>
-        <th>Paikkanumero</th>
-        <th>Varustus</th>
-        <th>Leveys (m)</th>
-        <th>Pituus (m)</th>
-        <th>Kuvaus</th>
+        <th th:text="#{boatSpaces.harborHeader}"></th>
+        <th th:text="#{boatSpaces.typeHeader}"></th>
+        <th th:text="#{boatSpaces.pierHeader}"></th>
+        <th th:text="#{boatSpaces.placeNumberHeader}"></th>
+        <th th:text="#{boatSpaces.amenityHeader}"></th>
+        <th th:text="#{boatSpaces.widthHeader}">
+        <th th:text="#{boatSpaces.lengthHeader}"></th>
+        <th th:text="#{boatSpaces.descriptionHeader}"></th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="result : ${results}">
         <td th:text="${result.locationName}"></td>
-        <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}"
-        ></td>
+        <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}"></td>
         <td th:text="${result.section}"></td>
         <td th:text="${result.placeNumber}"></td>
-        <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}"
-        ></td>
+        <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}"></td>
         <td th:text="${result.widthCm / 100}"></td>
         <td th:text="${result.lengthCm / 100}"></td>
         <td th:text="${result.description}"></td>
@@ -29,11 +27,11 @@
 </table>
 <nav class="pagination is-centered ">
     <a th:if="${prevPageVal != null}" class="pagination-previous"
-        hx-get="/partial/venepaikat"
-        hx-target="#boatSlipTableDiv"
-        hx-swap="innerHTML"
-        hx-include="#form"
-        th:attr="hx-vals=${prevPageVal}">Edellinen</a>
+       hx-get="/partial/venepaikat"
+       hx-target="#boatSlipTableDiv"
+       hx-swap="innerHTML"
+       hx-include="#form"
+       th:attr="hx-vals=${prevPageVal}">Edellinen</a>
     <a th:if="${prevPageVal == null}" class="pagination-previous is-disabled">Edellinen</a>
 
     <span th:text="${currentPage}" class="pagination-list"></span>
