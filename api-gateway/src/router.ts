@@ -13,9 +13,7 @@ import passport from 'passport'
 import cookieParser from 'cookie-parser'
 import { cacheControl } from './middleware/cache-control.js'
 import { requireAuthentication } from './auth/index.js'
-import { csrf, csrfCookie } from './middleware/csrf.js'
 import { createDevAdRouter } from './auth/dev-ad-auth.js'
-import authStatus from './auth/auth-status.js'
 import { createServiceRequestHeaders } from './clients/service-client.js'
 import createSamlRouter from './auth/saml/saml-routes.js'
 import { createAdSamlStrategy, createSamlConfig } from './auth/saml/index.js'
@@ -67,14 +65,10 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
     )
   }
 
-  router.get('/auth/status', csrf, csrfCookie(), authStatus(sessions))
-
   router.get('/version', (_, res) => {
     res.send({ commitId: appCommit })
   })
   router.use(requireAuthentication)
-  router.use(csrf)
-
   router.use(proxy)
   router.use(errorHandler)
 
