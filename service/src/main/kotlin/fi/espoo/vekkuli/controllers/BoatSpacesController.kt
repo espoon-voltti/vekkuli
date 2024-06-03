@@ -1,24 +1,34 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.controllers.AppController.Companion.WIDTH_MAX_TOLERANCE
-import fi.espoo.vekkuli.controllers.AppController.Companion.WIDTH_MIN_TOLERANCE
 import fi.espoo.vekkuli.domain.*
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
+
+const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
+
+fun Int.cmToM(): Float = this / 100F
+
+fun Float.mToCm(): Int = (this * 100F).toInt()
 
 @Controller
 class BoatSpacesController {
     @Autowired
     lateinit var jdbi: Jdbi
 
-    @GetMapping("/venepaikat2")
+    companion object {
+        const val WIDTH_MIN_TOLERANCE = 40
+        const val WIDTH_MAX_TOLERANCE = 100
+    }
+
+    @GetMapping("/venepaikat")
     fun boatSpaces(
         @RequestParam @Min(1) page: Int = 1,
         @RequestParam pageSize: Int = 25,
@@ -56,7 +66,7 @@ class BoatSpacesController {
         return "boat-spaces"
     }
 
-    @GetMapping("/partial/venepaikat2")
+    @GetMapping("/partial/venepaikat")
     fun boatSpaceTable(
         @RequestParam @Min(1) page: Int = 1,
         @RequestParam pageSize: Int = 25,

@@ -27,7 +27,7 @@
 </table>
 <nav class="pagination is-centered ">
     <a th:if="${prevPageVal != null}" class="pagination-previous"
-        hx-get="/partial/venepaikat2"
+        hx-get="/partial/venepaikat"
         hx-target="#boatSlipTableDiv"
         hx-swap="innerHTML"
         hx-include="#form"
@@ -38,7 +38,7 @@
 
     <a class="pagination-next "
        th:if="${nextPageVal != null}"
-       hx-get="/partial/venepaikat2"
+       hx-get="/partial/venepaikat"
        hx-target="#boatSlipTableDiv"
        hx-swap="innerHTML"
        hx-include="#form"
