@@ -57,7 +57,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.ws:spring-ws-security")
-
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.flywaydb:flyway-core")
     implementation("org.postgresql:postgresql:42.7.0")

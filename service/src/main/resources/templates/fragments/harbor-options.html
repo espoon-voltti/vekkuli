@@ -1,0 +1,48 @@
+<!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
+<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<div id="harborOptions" th:fragment="harborOptions">
+    <div th:each="harbor, obj : ${harbors}">
+        <div class="field" th:id="${'harborOption' + obj.index}">
+            <label class="label" th:text="#{boatApplication.harborOptionHeader}"></label>
+            <div class="control">
+                <div class="select">
+                    <select name="locationId" th:id="${'locationId' + obj.index}" class="locationId" required>
+                        <option value="" th:text="#{boatApplication.noneOption}"></option>
+                        <option th:each="location : ${locations}" th:value="${location.id}"
+                                th:selected="${location.id == harbor}" th:text="${location.name}"></option>
+                    </select>
+                </div>
+                <button class="delete" hx-get="data:text/html," th:hx-target="${'#harborOption' + obj.index}"
+                        hx-swap="outerHTML" style="margin: 10px"></button>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label" th:text="#{boatApplication.harborOptionLabel}"></label>
+        <div class="control">
+            <div class="select">
+                <select name="locationId" class="locationId" required>
+                    <option value="none" th:text="#{boatApplication.noneOption}"></option>
+                    <option th:each="location, obj : ${locations}" th:value="${location.id}"
+                            th:text="${location.name}"></option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="field">
+        <div class="control">
+            <button class="button" hx-get="/partial/venepaikkatoiveet" hx-target="#harborOptions"
+                    hx-swap="outerHTML" hx-include=".locationId" th:text="#{boatApplication.addHarborOptionButton}">
+                Lisää satamatoive
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
