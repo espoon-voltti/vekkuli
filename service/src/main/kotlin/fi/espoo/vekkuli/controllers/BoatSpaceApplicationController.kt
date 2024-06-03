@@ -53,6 +53,7 @@ class BoatSpaceApplicationController {
         @RequestParam widthInMeters: Int,
         @RequestParam weightInKg: Int,
         @RequestParam locationId: List<String>,
+        @RequestParam extraInformation: String,
     ): String {
         jdbi.inTransactionUnchecked { tx ->
             tx.insertBoatSpaceApplication(
@@ -64,14 +65,14 @@ class BoatSpaceApplicationController {
                     boatLengthCm = lengthInMeters * 100,
                     boatWeightKg = weightInKg,
                     boatRegistrationCode = registrationCode,
-                    information = "Hakija: $name, $email, $phone",
+                    information = extraInformation,
                     // TODO use real user identified when authentication is enabled
                     citizenId = 1,
                     locationWishes =
-                        locationId.mapIndexed
-                            { index, id ->
-                                AddLocationWish(locationId = id.toInt(), priority = index)
-                            }
+                    locationId.mapIndexed
+                    { index, id ->
+                        AddLocationWish(locationId = id.toInt(), priority = index)
+                    },
                 )
             )
         }
