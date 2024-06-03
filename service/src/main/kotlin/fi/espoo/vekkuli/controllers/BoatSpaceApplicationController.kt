@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
-//
-// SPDX-License-Identifier: LGPL-2.1-or-later
-
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.MessageUtil
@@ -68,9 +64,10 @@ class BoatSpaceApplicationController {
                     // TODO use real user identified when authentication is enabled
                     citizenId = 1,
                     locationWishes =
-                        locationId.mapIndexed { index, id ->
-                            AddLocationWish(locationId = id.toInt(), priority = index)
-                        }
+                        locationId.mapIndexed
+                            { index, id ->
+                                AddLocationWish(locationId = id.toInt(), priority = index)
+                            }
                 )
             )
         }
