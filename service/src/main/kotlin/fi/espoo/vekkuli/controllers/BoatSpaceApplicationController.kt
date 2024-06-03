@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+//
+// SPDX-License-Identifier: LGPL-2.1-or-later
+
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.MessageUtil
@@ -28,7 +32,10 @@ class BoatSpaceApplicationController {
     }
 
     @GetMapping("/partial/venepaikkatoiveet")
-    fun addHarborOption(@RequestParam locationId: List<String>, model: Model): String {
+    fun addHarborOption(
+        @RequestParam locationId: List<String>,
+        model: Model
+    ): String {
         model.addAttribute("harbors", locationId)
         model.addAttribute("locations", jdbi.inTransactionUnchecked { it.getLocations() })
         return "fragments/harbor-options :: harborOptions"
@@ -60,9 +67,10 @@ class BoatSpaceApplicationController {
                     information = "Hakija: $name, $email, $phone",
                     // TODO use real user identified when authentication is enabled
                     citizenId = 1,
-                    locationWishes = locationId.mapIndexed { index, id ->
-                        AddLocationWish(locationId = id.toInt(), priority = index)
-                    }
+                    locationWishes =
+                        locationId.mapIndexed { index, id ->
+                            AddLocationWish(locationId = id.toInt(), priority = index)
+                        }
                 )
             )
         }
