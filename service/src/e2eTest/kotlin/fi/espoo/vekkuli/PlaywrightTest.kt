@@ -53,6 +53,7 @@ abstract class PlaywrightTest {
         }
 
         playwright = Playwright.create()
+        playwright.selectors().setTestIdAttribute("id")
         browser =
             playwright.chromium().launch(
                 BrowserType.LaunchOptions()
@@ -64,7 +65,20 @@ abstract class PlaywrightTest {
     @BeforeEach
     fun beforeEachSuper() {
         jdbi.withHandleUnchecked { tx ->
-            tx.execute("SELECT reset_database()")
+            tx.execute(
+                """
+                SELECT reset_database();
+                
+                INSERT INTO location (name, address)
+                VALUES ('Haukilahti', 'Satamatie 1, Espoo'),
+                    ('Kivenlahti', 'Kivenlahdentie 10, Espoo'),
+                    ('Laajalahti', 'Laajalahdentie 5, Espoo'),
+                    ('Otsolahti', 'Otsolahdentie 7, Espoo'),
+                    ('Soukka', 'Soukantie 3, Espoo'),
+                    ('Suomenoja', 'Suomenojantie 15, Espoo'),
+                    ('Svinö', 'Svinöntie 8, Espoo');
+                """.trimIndent()
+            )
         }
     }
 

@@ -18,26 +18,26 @@
             <div class="field">
                 <label class="label" th:text="#{boatApplication.name}">Nimi</label>
                 <div class="control">
-                    <input class="input" type="text" name="name" required/>
+                    <input id="name" class="input" type="text" name="name" required/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.email}">Sähköposti</label>
                 <div class="control">
-                    <input class="input" type="email" name="email" pattern=".+@.+"/>
+                    <input id="email" class="input" type="email" name="email" pattern=".+@.+"/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.phone}">Puhelinnumero</label>
                 <div class="control">
-                    <input class="input" type="tel" name="phone" required/>
+                    <input id="phone" class="input" type="tel" name="phone" required/>
                 </div>
             </div>
             <h2 class="subtitle" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h2>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.boatType}">Venetyyppi</label>
                 <div class="select">
-                    <select name="boatType" required>
+                    <select id="boatType" name="boatType" required>
                         <option value="" th:text="#{boatApplication.selectBoatType}">Valitse venetyyppi</option>
                         <option th:each="boatType : ${boatTypes}" th:value="${boatType}"
                                 th:text="#{${'boatApplication.' + (boatType[0].toLowerCase() + boatType.substring(1))}}"></option>
@@ -47,37 +47,37 @@
             <div class="field">
                 <label class="label" th:text="#{boatApplication.boatName}">Veneen nimi</label>
                 <div class="control">
-                    <input class="input" type="text" name="boatName" required/>
+                    <input id="boatName" class="input" type="text" name="boatName" required/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.registrationCode}">Rekisteritunnus</label>
                 <div class="control">
-                    <input class="input" type="text" name="registrationCode" required/>
+                    <input id="registrationCode" class="input" type="text" name="registrationCode" required/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.lengthInMeters}">Pituus (m)</label>
                 <div class="control">
-                    <input class="input" type="number" name="lengthInMeters" step="0.01" required/>
+                    <input id="length" class="input" type="number" name="lengthInMeters" step="0.01" required/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.widthInMeters}">Leveys (m)</label>
                 <div class="control">
-                    <input class="input" type="number" name="widthInMeters" step="0.01" required/>
+                    <input id="width" class="input" type="number" name="widthInMeters" step="0.01" required/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.weightInKg}">Paino (kg)</label>
                 <div class="control">
-                    <input class="input" type="number" name="weightInKg" required/>
+                    <input id="weight" class="input" type="number" name="weightInKg" required/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.boatSpaceType}">Venepaikkatyyppi</label>
                 <div class="select">
-                    <select name="boatType" required>
+                    <select id="boatSpaceType" name="boatSpaceType" required>
                         <option value="" th:text="#{boatApplication.selectBoatSpaceType}">Valitse venepaikkatyyppi
                         </option>
                         <option th:value="trailerSpace"
@@ -92,7 +92,7 @@
             <br/>
             <div class="field">
                 <div class="control">
-                    <button class="button is-primary" type="submit" th:text="#{boatApplication.submitApplication}">
+                    <button id="submit" class="button is-primary" type="submit" th:text="#{boatApplication.submitApplication}">
                         Lähetä hakemus
                     </button>
                 </div>

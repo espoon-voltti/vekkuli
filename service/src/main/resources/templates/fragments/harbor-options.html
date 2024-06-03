@@ -26,7 +26,7 @@
         <label class="label" th:text="#{boatApplication.harborOptionLabel}"></label>
         <div class="control">
             <div class="select">
-                <select name="locationId" class="locationId" required>
+                <select id="locationId" name="locationId" class="locationId" required>
                     <option value="none" th:text="#{boatApplication.noneOption}"></option>
                     <option th:each="location, obj : ${locations}" th:value="${location.id}"
                             th:text="${location.name}"></option>
@@ -37,7 +37,7 @@
     <br/>
     <div class="field">
         <div class="control">
-            <button class="button" hx-get="/partial/venepaikkatoiveet" hx-target="#harborOptions"
+            <button id="addLocationWish" class="button" hx-get="/partial/venepaikkatoiveet" hx-target="#harborOptions"
                     hx-swap="outerHTML" hx-include=".locationId" th:text="#{boatApplication.addHarborOptionButton}">
                 Lisää satamatoive
             </button>

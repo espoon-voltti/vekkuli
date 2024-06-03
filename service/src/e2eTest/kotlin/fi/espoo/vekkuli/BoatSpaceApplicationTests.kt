@@ -1,0 +1,30 @@
+package fi.espoo.vekkuli
+
+import kotlin.test.Test
+
+class BoatSpaceApplicationTests : PlaywrightTest() {
+    @Test
+    fun `submit an application for a boat space`() {
+        val page = browser.newPage()
+        page.navigate("http://localhost:3000")
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        page.navigate("http://localhost:3000/venepaikkahakemus")
+        page.getByTestId("name").fill("Testi")
+        page.getByTestId("email").fill("test@test.com")
+        page.getByTestId("phone").fill("1234567890")
+        page.getByTestId("boatType").selectOption("Rowboat")
+        page.getByTestId("boatName").fill("Testi")
+        page.getByTestId("registrationCode").fill("123456")
+        page.getByTestId("length").fill("5")
+        page.getByTestId("width").fill("2")
+        page.getByTestId("weight").fill("100")
+        page.getByTestId("boatSpaceType").selectOption("Harbor space")
+        page.getByTestId("locationId").selectOption("Kivenlahti")
+        page.getByTestId("addLocationWish").click()
+        page.getByTestId("locationId").selectOption("Soukka")
+        page.getByTestId("submit").click()
+        // check that the application was submitted
+    }
+}
