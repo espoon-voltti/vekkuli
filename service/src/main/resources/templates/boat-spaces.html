@@ -24,6 +24,7 @@
                         <div class="field"><label class="label" for="amenity">Varustus</label>
                             <div class="select">
                                 <select name="amenity" id="amenity">
+                                    <option value="" th:selected="${amenity} == null">Ei valittu</option>
                                 <option
                                         th:each="option : ${amenities}"
                                         th:value="${option}"

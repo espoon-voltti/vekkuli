@@ -287,7 +287,7 @@ class AppController {
             nav("pagination is-centered ") {
                 a(classes = "pagination-previous ${if (prevPage == null) "is-disabled" else ""}") {
                     if (prevPage != null) {
-                        attributes["hx-get"] = "/partial/boat-spaces"
+                        attributes["hx-get"] = "/partial/venepaikat"
                         attributes["hx-target"] = "#boatSlipTableDiv"
                         attributes["hx-swap"] = "innerHTML"
                         attributes["hx-include"] = "#form"
@@ -300,7 +300,7 @@ class AppController {
                 }
                 a(classes = "pagination-next ${if (nextPage == null) "is-disabled" else ""}") {
                     if (nextPage != null) {
-                        attributes["hx-get"] = "/partial/boat-spaces"
+                        attributes["hx-get"] = "/partial/venepaikat"
                         attributes["hx-target"] = "#boatSlipTableDiv"
                         attributes["hx-swap"] = "innerHTML"
                         attributes["hx-include"] = "#form"

@@ -25,3 +25,24 @@
 
     </tbody>
 </table>
+<nav class="pagination is-centered ">
+    <a th:if="${prevPageVal != null}" class="pagination-previous"
+        hx-get="/partial/venepaikat2"
+        hx-target="#boatSlipTableDiv"
+        hx-swap="innerHTML"
+        hx-include="#form"
+        th:attr="hx-vals=${prevPageVal}">Edellinen</a>
+    <a th:if="${prevPageVal == null}" class="pagination-previous is-disabled">Edellinen</a>
+
+    <span th:text="${currentPage}" class="pagination-list"></span>
+
+    <a class="pagination-next "
+       th:if="${nextPageVal != null}"
+       hx-get="/partial/venepaikat2"
+       hx-target="#boatSlipTableDiv"
+       hx-swap="innerHTML"
+       hx-include="#form"
+       th:attr="hx-vals=${nextPageVal}">
+        Seuraava</a>
+    <a th:if="${nextPageVal == null}" class="pagination-next is-disabled">Seuraava</a>
+</nav>
