@@ -71,6 +71,19 @@
                     <input class="input" type="number" name="weightInKg" required/>
                 </div>
             </div>
+            <div class="field">
+                <label class="label" th:text="#{boatApplication.boatSpaceType}">Venepaikkatyyppi</label>
+                <div class="select">
+                    <select name="boatType" required>
+                        <option value="" th:text="#{boatApplication.selectBoatSpaceType}">Valitse venepaikkatyyppi
+                        </option>
+                        <option th:value="trailerSpace"
+                                th:text="#{boatApplication.trailerSpace}"></option>
+                        <option th:value="harborSpace"
+                                th:text="#{boatApplication.harborSpace}"></option>
+                    </select>
+                </div>
+            </div>
             <h2 class="subtitle" th:text="#{boatApplication.harborPreferences}">Satamatoiveet</h2>
             <div th:replace="~{fragments/harbor-options :: harborOptions}"></div>
             <br/>
