@@ -56,13 +56,13 @@
             <div class="field">
                 <label class="label" th:text="#{boatApplication.lengthInMeters}">Pituus (m)</label>
                 <div class="control">
-                    <input class="input" type="number" name="lengthInMeters" required/>
+                    <input class="input" type="number" name="lengthInMeters" step="0.01" required/>
                 </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.widthInMeters}">Leveys (m)</label>
                 <div class="control">
-                    <input class="input" type="number" name="widthInMeters" required/>
+                    <input class="input" type="number" name="widthInMeters" step="0.01" required/>
                 </div>
             </div>
             <div class="field">
