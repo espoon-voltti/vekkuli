@@ -129,11 +129,11 @@ class BoatSpacesController {
         model.addAttribute(
             "amenities",
             listOf(
-                BoatSpaceAmenity.None,
-                BoatSpaceAmenity.Buoy,
-                BoatSpaceAmenity.RearBuoy,
-                BoatSpaceAmenity.Beam,
-                BoatSpaceAmenity.WalkBeam
+                BoatSpaceAmenity.None.toString(),
+                BoatSpaceAmenity.Buoy.toString(),
+                BoatSpaceAmenity.RearBuoy.toString(),
+                BoatSpaceAmenity.Beam.toString(),
+                BoatSpaceAmenity.WalkBeam.toString()
             )
         )
         model.addAttribute("amenity", amenity)

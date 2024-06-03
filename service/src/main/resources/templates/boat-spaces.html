@@ -28,7 +28,7 @@
                                 <option
                                         th:each="option : ${amenities}"
                                         th:value="${option}"
-                                        th:text="${option}"
+                                        th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}"
                                         th:selected="${option} == ${amenity}"></option>
                                 </select></div>
                         </div>
