@@ -14,7 +14,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
-        page.navigate("http://localhost:3000/venepaikkahakemus")
+        page.navigate("$baseUrl/venepaikkahakemus")
         page.getByTestId("name").fill("Testi")
         page.getByTestId("email").fill("test@test.com")
         page.getByTestId("phone").fill("1234567890")

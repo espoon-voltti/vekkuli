@@ -5,6 +5,6 @@
 package fi.espoo.vekkuli
 
 val runningInDocker = System.getenv("E2E_ENV") == "docker"
-val baseUrl = if (runningInDocker) "http://api-gateway" else "http://localhost:3000"
+val baseUrl = if (runningInDocker) "http://api-gateway:3000" else "http://localhost:3000"
 
 const val E2E_DEBUG_LOGGING = false
