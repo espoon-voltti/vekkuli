@@ -19,7 +19,7 @@ export function requireAuthentication(
 ) {
   if (!req.user || !req.user.id) {
     logInfo('Could not find user', req)
-    res.sendStatus(401)
+    res.redirect('/')
     return
   }
   return next()
