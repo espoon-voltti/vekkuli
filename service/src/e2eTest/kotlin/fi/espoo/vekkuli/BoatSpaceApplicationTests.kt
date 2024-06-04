@@ -5,8 +5,8 @@ import kotlin.test.Test
 class BoatSpaceApplicationTests : PlaywrightTest() {
     @Test
     fun `submit an application for a boat space`() {
-        val page = browser.newPage()
-        page.navigate("http://localhost:3000")
+        val page = getPageWithDefaultOptions()
+        page.navigate(baseUrl)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
