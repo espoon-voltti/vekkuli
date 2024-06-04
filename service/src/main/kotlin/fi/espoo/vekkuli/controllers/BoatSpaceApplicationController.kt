@@ -14,6 +14,7 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
+import java.util.UUID
 
 @Controller
 class BoatSpaceApplicationController {
@@ -66,7 +67,7 @@ class BoatSpaceApplicationController {
                     boatRegistrationCode = registrationCode,
                     information = "Hakija: $name, $email, $phone",
                     // TODO use real user identified when authentication is enabled
-                    citizenId = 1,
+                    citizenId = UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"),
                     locationWishes =
                         locationId.mapIndexed
                             { index, id ->

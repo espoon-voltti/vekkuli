@@ -77,6 +77,9 @@ abstract class PlaywrightTest {
                     ('Soukka', 'Soukantie 3, Espoo'),
                     ('Suomenoja', 'Suomenojantie 15, Espoo'),
                     ('Svinö', 'Svinöntie 8, Espoo');
+                 
+                    INSERT INTO citizen (id, name, phone, email)
+                    VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', 'Mikko Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi');
                 """.trimIndent()
             )
         }

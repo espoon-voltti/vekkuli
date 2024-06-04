@@ -8,6 +8,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.json.Json
 import java.time.LocalDateTime
+import java.util.UUID
 
 enum class BoatType {
     Rowboat,
@@ -37,7 +38,7 @@ data class AddBoatSpaceApplication(
     val boatWeightKg: Int,
     val boatRegistrationCode: String,
     val information: String,
-    val citizenId: Int,
+    val citizenId: UUID,
     val locationWishes: List<AddLocationWish>,
 )
 
@@ -52,7 +53,7 @@ data class BoatSpaceApplicationWithId(
     val boatWeightKg: Int,
     val boatRegistrationCode: String,
     val information: String,
-    val citizenId: Int,
+    val citizenId: UUID,
     @Json
     val locationWishes: List<LocationWish>,
 )

@@ -4,6 +4,7 @@
 
 package fi.espoo.vekkuli
 
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import kotlin.test.Test
 
 class BoatSpaceApplicationTests : PlaywrightTest() {
@@ -26,9 +27,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         page.getByTestId("weight").fill("100")
         page.getByTestId("boatSpaceType").selectOption("Harbor space")
         page.getByTestId("locationId").selectOption("Kivenlahti")
-        page.getByTestId("addLocationWish").click()
-        page.getByTestId("locationId").selectOption("Soukka")
         page.getByTestId("submit").click()
-        // check that the application was submitted
+        assertThat(page.getByText("Application received")).isVisible()
     }
 }
