@@ -14,6 +14,19 @@
     <div class="container">
         <h1 class="title" th:text="#{boatApplication.applyForBoatSpace}">Hae venepaikkaa</h1>
         <form th:action="@{/venepaikkahakemus}" th:method="post">
+            <div class="field">
+                <label class="label" th:text="#{boatApplication.boatSpaceType}">Venepaikkatyyppi</label>
+                <div class="select">
+                    <select name="boatSpaceType" id="boatSpaceType" required>
+                        <option value="" th:text="#{boatApplication.selectBoatSpaceType}">Valitse venepaikkatyyppi
+                        </option>
+                        <option th:value="trailerSpace"
+                                th:text="#{boatApplication.trailerSpace}"></option>
+                        <option th:value="harborSpace"
+                                th:text="#{boatApplication.harborSpace}"></option>
+                    </select>
+                </div>
+            </div>
             <h2 class="subtitle" th:text="#{boatApplication.personalInformation}">Henkilötiedot</h2>
             <div class="field">
                 <label class="label" th:text="#{boatApplication.name}">Nimi</label>
@@ -74,22 +87,15 @@
                     <input class="input" type="number" name="weightInKg" required/>
                 </div>
             </div>
-            <div class="field">
-                <label class="label" th:text="#{boatApplication.boatSpaceType}">Venepaikkatyyppi</label>
-                <div class="select">
-                    <select name="boatType" required>
-                        <option value="" th:text="#{boatApplication.selectBoatSpaceType}">Valitse venepaikkatyyppi
-                        </option>
-                        <option th:value="trailerSpace"
-                                th:text="#{boatApplication.trailerSpace}"></option>
-                        <option th:value="harborSpace"
-                                th:text="#{boatApplication.harborSpace}"></option>
-                    </select>
-                </div>
-            </div>
             <h2 class="subtitle" th:text="#{boatApplication.harborPreferences}">Satamatoiveet</h2>
             <div th:replace="~{fragments/harbor-options :: harborOptions}"></div>
             <br/>
+            <div>
+                <label for="extraInformation" th:text="#{boatApplication.extraInformation}">Lisätiedot</label>
+                <textarea class="textarea" type="text" name="extraInformation" id="extraInformation"> </textarea>
+            </div>
+            <br/>
+
             <div class="field">
                 <div class="control">
                     <button class="button is-primary" type="submit" th:text="#{boatApplication.submitApplication}">
