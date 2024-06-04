@@ -49,8 +49,8 @@ class BoatSpaceApplicationController {
         @RequestParam boatType: String,
         @RequestParam boatName: String,
         @RequestParam registrationCode: String,
-        @RequestParam lengthInMeters: Int,
-        @RequestParam widthInMeters: Int,
+        @RequestParam lengthInMeters: Float,
+        @RequestParam widthInMeters: Float,
         @RequestParam weightInKg: Int,
         @RequestParam locationId: List<String>,
         @RequestParam extraInformation: String,
@@ -61,18 +61,18 @@ class BoatSpaceApplicationController {
                     type = BoatSpaceType.Slip,
                     boatType = BoatType.valueOf(boatType),
                     amenity = BoatSpaceAmenity.RearBuoy,
-                    boatWidthCm = widthInMeters * 100,
-                    boatLengthCm = lengthInMeters * 100,
+                    boatWidthCm = widthInMeters.mToCm(),
+                    boatLengthCm = lengthInMeters.mToCm(),
                     boatWeightKg = weightInKg,
                     boatRegistrationCode = registrationCode,
                     information = extraInformation,
                     // TODO use real user identified when authentication is enabled
                     citizenId = 1,
                     locationWishes =
-                        locationId.mapIndexed
-                            { index, id ->
-                                AddLocationWish(locationId = id.toInt(), priority = index)
-                            },
+                    locationId.mapIndexed
+                    { index, id ->
+                        AddLocationWish(locationId = id.toInt(), priority = index)
+                    },
                 )
             )
         }
