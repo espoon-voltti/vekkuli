@@ -50,10 +50,11 @@ class BoatSpaceApplicationController {
         @RequestParam boatType: String,
         @RequestParam boatName: String,
         @RequestParam registrationCode: String,
-        @RequestParam lengthInMeters: Int,
-        @RequestParam widthInMeters: Int,
+        @RequestParam lengthInMeters: Float,
+        @RequestParam widthInMeters: Float,
         @RequestParam weightInKg: Int,
         @RequestParam locationId: List<String>,
+        @RequestParam extraInformation: String,
     ): String {
         jdbi.inTransactionUnchecked { tx ->
             tx.insertBoatSpaceApplication(
@@ -61,18 +62,18 @@ class BoatSpaceApplicationController {
                     type = BoatSpaceType.Slip,
                     boatType = BoatType.valueOf(boatType),
                     amenity = BoatSpaceAmenity.RearBuoy,
-                    boatWidthCm = widthInMeters * 100,
-                    boatLengthCm = lengthInMeters * 100,
+                    boatWidthCm = widthInMeters.mToCm(),
+                    boatLengthCm = lengthInMeters.mToCm(),
                     boatWeightKg = weightInKg,
                     boatRegistrationCode = registrationCode,
-                    information = "Hakija: $name, $email, $phone",
+                    information = extraInformation,
                     // TODO use real user identified when authentication is enabled
                     citizenId = UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"),
                     locationWishes =
                         locationId.mapIndexed
                             { index, id ->
                                 AddLocationWish(locationId = id.toInt(), priority = index)
-                            }
+                            },
                 )
             )
         }
