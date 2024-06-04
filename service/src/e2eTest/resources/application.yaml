@@ -8,6 +8,6 @@ app:
 
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5432/vekkuli"
+    url: "jdbc:postgresql://localhost:5432/vekkuli_it"
     username: "vekkuli"
     password: "postgres"
