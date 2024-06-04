@@ -69,10 +69,10 @@ class BoatSpaceApplicationController {
                     // TODO use real user identified when authentication is enabled
                     citizenId = 1,
                     locationWishes =
-                    locationId.mapIndexed
-                    { index, id ->
-                        AddLocationWish(locationId = id.toInt(), priority = index)
-                    },
+                        locationId.mapIndexed
+                            { index, id ->
+                                AddLocationWish(locationId = id.toInt(), priority = index)
+                            },
                 )
             )
         }
