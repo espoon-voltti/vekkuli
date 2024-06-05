@@ -61,12 +61,15 @@ class BoatSpaceApplicationController {
         @RequestParam phone: String,
         @RequestParam boatType: String,
         @RequestParam boatName: String,
-        @RequestParam registrationCode: String,
+        @RequestParam boatRegistrationCode: String,
         @RequestParam boatLengthInMeters: Float,
         @RequestParam boatWidthInMeters: Float,
         @RequestParam weightInKg: Int,
         @RequestParam locationId: List<String>,
         @RequestParam extraInformation: String,
+        @RequestParam trailerRegistrationCode: String,
+        @RequestParam trailerLengthInMeters: Float,
+        @RequestParam trailerWidthInMeters: Float,
     ): String {
         jdbi.inTransactionUnchecked { tx ->
             tx.insertBoatSpaceApplication(
@@ -77,10 +80,13 @@ class BoatSpaceApplicationController {
                     boatWidthCm = boatWidthInMeters.mToCm(),
                     boatLengthCm = boatLengthInMeters.mToCm(),
                     boatWeightKg = weightInKg,
-                    boatRegistrationCode = registrationCode,
+                    boatRegistrationCode = boatRegistrationCode,
                     information = extraInformation,
                     // TODO use real user identified when authentication is enabled
                     citizenId = UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"),
+                    trailerRegistrationCode = trailerRegistrationCode,
+                    trailerWidthCm = trailerWidthInMeters.mToCm(),
+                    trailerLengthCm = trailerLengthInMeters.mToCm(),
                     locationWishes =
                         locationId.mapIndexed
                             { index, id ->

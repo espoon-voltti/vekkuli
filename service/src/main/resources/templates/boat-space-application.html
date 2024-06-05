@@ -128,14 +128,14 @@
             <div class="field">
                 <label for="registrationCode" class="label" th:text="#{boatApplication.registrationCode}">Rekisteritunnus</label>
                 <div class="control">
-                    <input id="registrationCode" class="input" type="text" name="registrationCode" data-required/>
+                    <input id="registrationCode" class="input" type="text" name="boatRegistrationCode" data-required/>
                 </div>
                 <span class="validation-message help is-danger" th:text="#{validation.required}" id="registrationCode-error"></span>
             </div>
             <div class="field">
                 <label for="length" class="label" th:text="#{boatApplication.boatLengthInMeters}">Pituus (m)</label>
                 <div class="control">
-                    <input id="length" class="input" type="number" name="lengthInMeters" step="0.1" data-required/>
+                    <input id="length" class="input" type="number" name="boatLengthInMeters" step="0.1" data-required/>
                 </div>
 
                 <span class="validation-message help is-danger" th:text="#{validation.required}" id="length-error"></span>
@@ -143,7 +143,7 @@
             <div class="field">
                 <label for="width" class="label" th:text="#{boatApplication.boatWidthInMeters}">Leveys (m)</label>
                 <div class="control">
-                    <input id="width" class="input" type="number" name="widthInMeters" step="0.1" data-required/>
+                    <input id="width" class="input" type="number" name="boatWidthInMeters" step="0.1" data-required/>
                 </div>
                 <span class="validation-message help is-danger" th:text="#{validation.required}" id="width-error"></span>
             </div>
