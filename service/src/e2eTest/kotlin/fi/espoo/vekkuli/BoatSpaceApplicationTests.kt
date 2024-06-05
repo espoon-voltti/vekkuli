@@ -21,6 +21,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
 
         applicationPage.submitButton.click()
 
+        assertThat(applicationPage.amenityRequiredError).isVisible()
         assertThat(applicationPage.nameRequiredError).isVisible()
         assertThat(applicationPage.emailRequiredError).isVisible()
         assertThat(applicationPage.phoneRequiredError).isVisible()
@@ -33,6 +34,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         assertThat(applicationPage.boatSpaceTypeRequiredError).isVisible()
         assertThat(applicationPage.locationRequiredError).isVisible()
 
+        applicationPage.amenitySelect.selectOption("Buoy")
         applicationPage.nameField.fill("Testi")
         applicationPage.emailField.fill("test@test.com")
         applicationPage.phoneField.fill("1234567890")

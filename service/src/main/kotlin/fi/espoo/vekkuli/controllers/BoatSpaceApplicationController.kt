@@ -29,6 +29,17 @@ class BoatSpaceApplicationController {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         model.addAttribute("boatTypes", boatTypes)
         model.addAttribute("locations", jdbi.inTransactionUnchecked { it.getLocations() })
+        model.addAttribute(
+            "amenities",
+            listOf(
+                BoatSpaceAmenity.None.toString(),
+                BoatSpaceAmenity.Buoy.toString(),
+                BoatSpaceAmenity.RearBuoy.toString(),
+                BoatSpaceAmenity.Beam.toString(),
+                BoatSpaceAmenity.WalkBeam.toString()
+            )
+        )
+
         return "boat-space-application"
     }
 
@@ -44,6 +55,7 @@ class BoatSpaceApplicationController {
 
     @PostMapping("/venepaikkahakemus")
     fun submitBoatSpaceApplication(
+        @RequestParam amenity: BoatSpaceAmenity,
         @RequestParam name: String,
         @RequestParam email: String,
         @RequestParam phone: String,
@@ -61,7 +73,7 @@ class BoatSpaceApplicationController {
                 AddBoatSpaceApplication(
                     type = BoatSpaceType.Slip,
                     boatType = BoatType.valueOf(boatType),
-                    amenity = BoatSpaceAmenity.RearBuoy,
+                    amenity = amenity,
                     boatWidthCm = widthInMeters.mToCm(),
                     boatLengthCm = lengthInMeters.mToCm(),
                     boatWeightKg = weightInKg,
