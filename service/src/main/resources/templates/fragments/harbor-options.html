@@ -16,7 +16,7 @@
                 </div>
                 <button type="button" class="delete" hx-get="data:text/html," th:hx-target="${'#harborOption' + obj.index}"
                         hx-swap="outerHTML" style="margin: 10px"></button>
-                <span class="validation-message help is-danger" th:id="${'locationId' + obj.index + '-error'}">This field is required.</span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}" th:id="${'locationId' + obj.index + '-error'}"></span>
             </div>
         </div>
     </div>
@@ -30,7 +30,7 @@
                             th:text="${location.name}"></option>
                 </select>
             </div>
-            <span class="validation-message help is-danger" id="locationId-error">This field is required.</span>
+            <span class="validation-message help is-danger" th:text="#{validation.required}" id="locationId-error"></span>
         </div>
     </div>
     <br/>
