@@ -19,18 +19,14 @@
 
             if (selectedValue === 'Trailer') {
                 trailerSpaceComponent.style.display = 'block';
-            } else {
-                trailerSpaceComponent.style.display = 'none';
-            }
-
-            if (trailerSpaceComponent.style.display === 'none') {
-                trailerRegistrationCode.setAttribute('disabled', 'disabled');
-                trailerLengthInMeters.setAttribute('disabled', 'disabled');
-                trailerWidthInMeters.setAttribute('disabled', 'disabled');
-            } else {
                 trailerRegistrationCode.removeAttribute('disabled');
                 trailerLengthInMeters.removeAttribute('disabled');
                 trailerWidthInMeters.removeAttribute('disabled');
+            } else {
+                trailerSpaceComponent.style.display = 'none';
+                trailerRegistrationCode.setAttribute('disabled', 'disabled');
+                trailerLengthInMeters.setAttribute('disabled', 'disabled');
+                trailerWidthInMeters.setAttribute('disabled', 'disabled');
             }
         }
     </script>
@@ -53,9 +49,9 @@
                     <select name="boatSpaceType" id="boatSpaceType" onchange="handleBoatSpaceTypeChange()" data-required>
                         <option value="" th:text="#{boatApplication.selectBoatSpaceType}">Valitse venepaikkatyyppi
                        </option>
-                        <option th:value="Trailer"
+                        <option value="Trailer"
                                 th:text="#{boatApplication.trailerSpace}"></option>
-                        <option th:value="Slip"
+                        <option value="Slip"
                                 th:text="#{boatApplication.harborSpace}"></option>
                     </select>
                 </div>
@@ -94,8 +90,8 @@
                 <label for="phone" class="label" th:text="#{boatApplication.phone}">Puhelinnumero</label>
                 <div class="control">
                     <input id="phone" class="input" type="tel" name="phone" data-required/>
-                    <span class="validation-message help is-danger" th:text="#{validation.required}" id="phone-error"></span>
                 </div>
+                <span class="validation-message help is-danger" th:text="#{validation.required}" id="phone-error"></span>
             </div>
             <div id="trailerSpaceComponent" style="display: none;">
                 <h2 class="subtitle" th:text="#{boatApplication.trailerInformation}">Trailerin tiedot</h2>
@@ -103,15 +99,15 @@
                     <label class="label" th:text="#{boatApplication.registrationCode}">Rekisteritunnus</label>
                     <div class="control">
                         <input id="trailerRegistrationCode" class="input" type="text" name="trailerRegistrationCode" disabled data-required/>
-                        <span class="validation-message help is-danger" th:text="#{validation.required}" id="trailerRegistrationCode-error"></span>
                     </div>
+                    <span class="validation-message help is-danger" th:text="#{validation.required}" id="trailerRegistrationCode-error"></span>
                 </div>
                 <div class="field">
                     <label class="label" th:text="#{boatApplication.trailerLengthInMeters}">Trailerin pituus (m)</label>
                     <div class="control">
                         <input id="trailerLengthInMeters" class="input" type="number" name="trailerLengthInMeters" step="0.1" disabled data-required/>
-                        <span class="validation-message help is-danger" th:text="#{validation.required}" id="trailerLengthInMeters-error"></span>
                     </div>
+                    <span class="validation-message help is-danger" th:text="#{validation.required}" id="trailerLengthInMeters-error"></span>
                 </div>
                 <div class="field">
                     <label class="label" th:text="#{boatApplication.trailerWidthInMeters}">Trailerin leveys (m)</label>
