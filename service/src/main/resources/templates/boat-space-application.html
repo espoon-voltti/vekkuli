@@ -2,7 +2,7 @@
 <!-- -->
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 <!DOCTYPE html>
-<html class="theme-light" xmlns:th="http://www.thymeleaf.org">
+<html class="theme-light" >
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
@@ -19,7 +19,7 @@
 <section class="section">
     <div class="container">
         <h1 class="title" th:text="#{boatApplication.applyForBoatSpace}">Hae venepaikkaa</h1>
-        <form id="form" th:action="@{/venepaikkahakemus}" th:method="post" novalidate>
+        <form id="form" action="/venepaikkahakemus" method="post" novalidate>
             <div class="field">
                 <label for="boatSpaceType" class="label" th:text="#{boatApplication.boatSpaceType}">Venepaikkatyyppi</label>
                 <div class="select">
@@ -33,6 +33,19 @@
                     </select>
                 </div>
                 <span class="validation-message help is-danger" th:text="#{validation.required}" id="boatSpaceType-error"></span>
+            </div>
+            <div class="field">
+                <label class="label" for="amenity" th:text="#{boatSpaces.amenityHeader}"></label>
+                <div class="select">
+                    <select name="amenity" id="amenity" data-required>
+                        <option value="" th:text="#{boatSpaces.noneOption}"></option>
+                        <option
+                                th:each="option : ${amenities}"
+                                th:value="${option}"
+                                th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}"></option>
+                    </select>
+                </div>
+                <span class="validation-message help is-danger" th:text="#{validation.required}" id="amenity-error"></span>
             </div>
             <h2 class="subtitle" th:text="#{boatApplication.personalInformation}">Henkilötiedot</h2>
             <div class="field">

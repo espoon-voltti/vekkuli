@@ -8,7 +8,10 @@ import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 
 class BoatSpaceApplicationPage(private val page: Page) {
-    val navigateTo = { page.navigate("$baseUrl/venepaikkahakemus") }
+    val navigateTo: () -> Unit = { page.navigate("$baseUrl/venepaikkahakemus") }
+
+    val amenitySelect = page.getByTestId("amenity")
+    val amenityRequiredError = page.getByTestId("amenity-error")
 
     val nameField = page.getByTestId("name")
     val nameRequiredError = page.getByTestId("name-error")
