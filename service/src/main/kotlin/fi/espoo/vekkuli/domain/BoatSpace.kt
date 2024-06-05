@@ -17,7 +17,8 @@ enum class BoatSpaceAmenity {
 
 enum class BoatSpaceType {
     Slip,
-    Storage
+    Storage,
+    Trailer
 }
 
 data class BoatSpace(

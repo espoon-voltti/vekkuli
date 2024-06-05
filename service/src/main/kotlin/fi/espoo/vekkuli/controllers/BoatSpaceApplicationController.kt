@@ -59,6 +59,7 @@ class BoatSpaceApplicationController {
         @RequestParam name: String,
         @RequestParam email: String,
         @RequestParam phone: String,
+        @RequestParam boatSpaceType: String,
         @RequestParam boatType: String,
         @RequestParam boatName: String,
         @RequestParam boatRegistrationCode: String,
@@ -67,14 +68,14 @@ class BoatSpaceApplicationController {
         @RequestParam weightInKg: Int,
         @RequestParam locationId: List<String>,
         @RequestParam extraInformation: String,
-        @RequestParam trailerRegistrationCode: String,
-        @RequestParam trailerLengthInMeters: Float,
-        @RequestParam trailerWidthInMeters: Float,
+        @RequestParam(required = false) trailerRegistrationCode: String?,
+        @RequestParam(required = false) trailerLengthInMeters: Float?,
+        @RequestParam(required = false) trailerWidthInMeters: Float?,
     ): String {
         jdbi.inTransactionUnchecked { tx ->
             tx.insertBoatSpaceApplication(
                 AddBoatSpaceApplication(
-                    type = BoatSpaceType.Slip,
+                    type = BoatSpaceType.valueOf(boatSpaceType),
                     boatType = BoatType.valueOf(boatType),
                     amenity = amenity,
                     boatWidthCm = boatWidthInMeters.mToCm(),
@@ -85,8 +86,8 @@ class BoatSpaceApplicationController {
                     // TODO use real user identified when authentication is enabled
                     citizenId = UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"),
                     trailerRegistrationCode = trailerRegistrationCode,
-                    trailerWidthCm = trailerWidthInMeters.mToCm(),
-                    trailerLengthCm = trailerLengthInMeters.mToCm(),
+                    trailerWidthCm = trailerWidthInMeters?.mToCm(),
+                    trailerLengthCm = trailerLengthInMeters?.mToCm(),
                     locationWishes =
                         locationId.mapIndexed
                             { index, id ->
