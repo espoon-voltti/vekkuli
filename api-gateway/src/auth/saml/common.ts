@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
+// SPDX-FileCopyrightText: 2017-2023 City of Espoo
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
@@ -11,16 +11,23 @@ import {
   Strategy as SamlStrategy,
   VerifyWithRequest
 } from '@node-saml/passport-saml'
-import { logError, logWarn } from '../../logging/index.js'
-import { createLogoutToken, AppSessionUser } from '../index.js'
-import { appBaseUrl, Config, EspooSamlConfig } from '../../config.js'
+
+import { appBaseUrl, EspooSamlConfig } from '../../config.js'
 import { readFileSync } from 'node:fs'
 import certificates, { TrustedCertificates } from './certificates.js'
 import express from 'express'
 import path from 'node:path'
 import { Sessions } from '../session.js'
-import { fromCallback } from '../../utils/promise-utils.js'
-import { userLogin } from '../../clients/service-client.js'
+import { AppSessionUser } from '../index.js'
+
+export function fromCallback<T>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  f: (cb: (err: any, result?: T) => void) => void
+): Promise<T> {
+  return new Promise<T>((resolve, reject) =>
+    f((err, result) => (err ? reject(err) : resolve(result!)))
+  )
+}
 
 export function createSamlConfig(
   config: EspooSamlConfig,
@@ -72,56 +79,30 @@ const SamlProfileId = z.object({
   sessionIndex: z.string().optional()
 })
 
-const AD_GIVEN_NAME_KEY =
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'
-const AD_FAMILY_NAME_KEY =
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
-const AD_EMAIL_KEY =
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
+export function createLogoutToken(
+  nameID: Required<Profile>['nameID'],
+  sessionIndex: Profile['sessionIndex']
+) {
+  return `${nameID}:::${sessionIndex}`
+}
 
-export function createAdSamlStrategy(
+export function createSamlStrategy<T>(
   sessions: Sessions,
-  config: Config['ad'],
-  samlConfig: SamlConfig
+  config: SamlConfig,
+  profileSchema: z.ZodType<T>,
+  login: (profile: T) => Promise<AppSessionUser>
 ): SamlStrategy {
-  const Profile = z.object({
-    [config.userIdKey]: z.string(),
-    [AD_GIVEN_NAME_KEY]: z.string(),
-    [AD_FAMILY_NAME_KEY]: z.string(),
-    [AD_EMAIL_KEY]: z.string().optional()
-  })
-
-  const login = async (profile: Profile): Promise<AppSessionUser> => {
-    const asString = (value: unknown) =>
-      value == null ? undefined : String(value)
-
-    const aad = profile[config.userIdKey]
-    if (!aad) throw Error('No user ID in SAML data')
-    const person = await userLogin({
-      externalId: `${config.externalIdPrefix}:${aad}`,
-      firstName: asString(profile[AD_GIVEN_NAME_KEY]) ?? '',
-      lastName: asString(profile[AD_FAMILY_NAME_KEY]) ?? '',
-      email: asString(profile[AD_EMAIL_KEY])
-    })
-    return {
-      id: person.id
-    }
-  }
-
   const loginVerify: VerifyWithRequest = (req, profile, done) => {
     if (!profile) return done(null, undefined)
-    const parseResult = Profile.safeParse(profile)
+    const parseResult = profileSchema.safeParse(profile)
     if (!parseResult.success) {
-      logWarn(
-        `SAML profile parsing failed: ${parseResult.error.message}`,
-        undefined,
-        {
-          issuer: profile.issuer
-        },
-        parseResult.error
+      return done(
+        new Error(
+          `SAML ${profile.issuer} profile parsing failed: ${parseResult.error.message}`
+        )
       )
     }
-    login(profile)
+    login(parseResult.data)
       .then((user) => {
         // Despite what the typings say, passport-saml assumes
         // we give it back a valid Profile, including at least some of these
@@ -139,7 +120,6 @@ export function createAdSamlStrategy(
       })
       .catch(done)
   }
-
   const logoutVerify: VerifyWithRequest = (req, profile, done) =>
     (async () => {
       if (!profile) return undefined
@@ -169,8 +149,7 @@ export function createAdSamlStrategy(
     })()
       .then((user) => done(null, user))
       .catch((err) => done(err))
-
-  return new SamlStrategy(samlConfig, loginVerify, logoutVerify)
+  return new SamlStrategy(config, loginVerify, logoutVerify)
 }
 
 export function parseRelayState(req: express.Request): string | undefined {
@@ -188,7 +167,7 @@ export function parseRelayState(req: express.Request): string | undefined {
     }
   }
 
-  if (relayState) logError('Invalid RelayState in request', req)
+  // if (relayState) logError('Invalid RelayState in request', req)
 
   return undefined
 }

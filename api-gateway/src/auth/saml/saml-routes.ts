@@ -5,7 +5,7 @@
 import express, { Router, urlencoded } from 'express'
 import passport from 'passport'
 import passportSaml from '@node-saml/passport-saml'
-import { createLogoutToken, login, logout } from '../index.js'
+import { login, logout } from '../index.js'
 import { toMiddleware, toRequestHandler } from '../../utils/express.js'
 import { logDebug, logInfo } from '../../logging/index.js'
 import { fromCallback } from '../../utils/promise-utils.js'
@@ -15,12 +15,12 @@ import type {
   AuthenticateOptions,
   RequestWithUser
 } from '@node-saml/passport-saml/lib/types.js'
-import { parseRelayState } from './index.js'
+import { createLogoutToken } from './common.js'
 
 const urlencodedParser = urlencoded({ extended: false })
 
 function getRedirectUrl(req: express.Request): string {
-  return parseRelayState(req) ?? '/'
+  return '/'
 }
 
 export interface SamlEndpointConfig {

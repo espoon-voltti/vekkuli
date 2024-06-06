@@ -25,6 +25,8 @@ export function requireAuthentication(
   return next()
 }
 
+export type UserType = 'user' | 'citizen'
+
 export interface AppSessionUser {
   id?: string | undefined
 }
@@ -38,6 +40,7 @@ export function createAuthHeader(user: AppSessionUser): string {
 
   const jwtPayload = {
     sub: user.id
+    // type: user.type
   }
   const jwtToken = jwt.sign(jwtPayload, jwtPrivateKeyValue, {
     algorithm: 'RS256',
@@ -45,13 +48,6 @@ export function createAuthHeader(user: AppSessionUser): string {
     keyid: jwtKid
   })
   return `Bearer ${jwtToken}`
-}
-
-export function createLogoutToken(
-  nameID: Required<Profile>['nameID'],
-  sessionIndex: Profile['sessionIndex']
-) {
-  return `${nameID}:::${sessionIndex}`
 }
 
 export const authenticate = async (

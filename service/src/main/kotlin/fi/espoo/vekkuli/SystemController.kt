@@ -4,12 +4,10 @@
 
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.common.AdUser
-import fi.espoo.vekkuli.common.AppUser
-import fi.espoo.vekkuli.common.getAppUser
-import fi.espoo.vekkuli.common.upsertAppUserFromAd
+import fi.espoo.vekkuli.common.*
 import fi.espoo.vekkuli.config.AuthenticatedUser
 import fi.espoo.vekkuli.config.audit
+import fi.espoo.vekkuli.domain.Citizen
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -40,6 +38,15 @@ class SystemController {
     ): AppUser {
         return jdbi.inTransactionUnchecked { it.upsertAppUserFromAd(adUser) }.also {
             logger.audit(AuthenticatedUser(it.id), "USER_LOGIN")
+        }
+    }
+
+    @PostMapping("/citizen-login")
+    fun citizenLogin(
+        @RequestBody adUser: CitizenAdUser
+    ): Citizen {
+        return jdbi.inTransactionUnchecked { it.upsertCitizenUserFromAd(adUser) }.also {
+            logger.audit(AuthenticatedUser(it.id), "CITIZEN_LOGIN")
         }
     }
 
