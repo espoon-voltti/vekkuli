@@ -16,8 +16,11 @@ import { requireAuthentication } from './auth/index.js'
 import { createDevAdRouter } from './auth/dev-ad-auth.js'
 import { createServiceRequestHeaders } from './clients/service-client.js'
 import createSamlRouter from './auth/saml/saml-routes.js'
-import { createAdSamlStrategy, createSamlConfig } from './auth/saml/index.js'
+import { createAdSamlStrategy } from './auth/ad-saml.js'
 import redisCacheProvider from './auth/saml/passport-saml-cache-redis.js'
+import { createDevSfiRouter } from './auth/dev-sfi-auth.js'
+import { createSamlConfig } from './auth/saml/common.js'
+import { createSuomiFiStrategy } from './auth/suomifi-saml.js'
 
 export function createRouter(config: Config, redisClient: RedisClient): Router {
   const router = Router()
@@ -45,6 +48,27 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
 
   router.all('/system/*', (_, res) => res.sendStatus(404))
 
+  if (config.sfi.type === 'mock') {
+    router.use('/auth/saml-suomifi', createDevSfiRouter(sessions))
+  } else {
+    router.use(
+      '/auth/saml-suomifi',
+      createSamlRouter({
+        sessions,
+        strategyName: 'ead',
+        strategy: createSuomiFiStrategy(
+          sessions,
+          createSamlConfig(
+            config.sfi.saml,
+            redisCacheProvider(redisClient, {
+              keyPrefix: 'ad-saml-suomifi-resp:'
+            })
+          )
+        )
+      })
+    )
+  }
+
   if (config.ad.type === 'mock') {
     router.use('/auth/saml', createDevAdRouter(sessions))
   } else if (config.ad.type === 'saml') {
@@ -58,7 +82,9 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
           config.ad,
           createSamlConfig(
             config.ad.saml,
-            redisCacheProvider(redisClient, { keyPrefix: 'ad-saml-resp:' })
+            redisCacheProvider(redisClient, {
+              keyPrefix: 'ad-saml-resp:'
+            })
           )
         )
       })

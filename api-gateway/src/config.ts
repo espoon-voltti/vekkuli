@@ -7,7 +7,11 @@ import { ValidateInResponseTo } from '@node-saml/node-saml'
 
 export interface Config {
   session: SessionConfig
-  ad: AdConfig
+  ad: {
+    externalIdPrefix: string
+    userIdKey: string
+  } & AdConfig
+  sfi: AdConfig
   redis: RedisConfig
 }
 
@@ -19,18 +23,13 @@ export interface SessionConfig {
 
 type AdConfig = MockAdConfig | EspooAdConfig
 
-interface MockAdConfig extends BaseAdConfig {
+interface MockAdConfig {
   type: 'mock'
 }
 
-interface EspooAdConfig extends BaseAdConfig {
+interface EspooAdConfig {
   type: 'saml'
   saml: EspooSamlConfig
-}
-
-interface BaseAdConfig {
-  externalIdPrefix: string
-  userIdKey: string
 }
 
 interface RedisConfig {
@@ -159,6 +158,27 @@ export function configFromEnv(): Config {
         })
   }
 
+  const sfi: Config['sfi'] = {
+    ...(adType !== 'saml'
+      ? { type: adType }
+      : {
+          type: adType,
+          saml: {
+            callbackUrl: required(process.env.SFI_SAML_CALLBACK_URL),
+            entryPoint: required(process.env.SFI_SAML_ENTRYPOINT),
+            logoutUrl: required(process.env.SFI_SAML_LOGOUT_URL),
+            issuer: required(process.env.SFI_SAML_ISSUER),
+            publicCert: required(
+              envArray('SFI_SAML_PUBLIC_CERT', (value) => value)
+            ),
+            privateCert: required(process.env.SFI_SAML_PRIVATE_CERT),
+            validateInResponseTo: ValidateInResponseTo.always,
+            decryptAssertions:
+              env('AD_DECRYPT_ASSERTIONS', parseBoolean) ?? false
+          }
+        })
+  }
+
   const cookieSecret = required(
     process.env.COOKIE_SECRET ??
       ifNodeEnv(['local', 'test'], 'A very hush hush cookie secret.')
@@ -177,6 +197,7 @@ export function configFromEnv(): Config {
         env('SESSION_TIMEOUT_MINUTES', parseInteger) ?? 8 * 60
     },
     ad,
+    sfi,
     redis: {
       host: process.env.REDIS_HOST ?? ifNodeEnv(['local'], '127.0.0.1'),
       port: env('REDIS_PORT', parseInteger) ?? ifNodeEnv(['local'], 6379),

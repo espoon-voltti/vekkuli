@@ -37,27 +37,35 @@ export interface AdUser {
   email?: string | null
 }
 
-// currently same
-export interface AppUser extends AdUser {
-  id: string
+export interface CitizenUser {
+  nationalId: string
+  firstName: string
+  lastName: string
+  email?: string
 }
 
-export async function userLogin(adUser: AdUser): Promise<AppUser> {
-  const res = await client.post<AppUser>(`/system/user-login`, adUser, {
-    headers: createServiceRequestHeaders(undefined, systemUser)
-  })
+export async function userLogin(
+  adUser: AdUser
+): Promise<AdUser & { id: string }> {
+  const res = await client.post<AdUser & { id: string }>(
+    `/system/user-login`,
+    adUser,
+    {
+      headers: createServiceRequestHeaders(undefined, systemUser)
+    }
+  )
   return res.data
 }
 
-export async function getUserDetails(
-  req: express.Request,
-  userId: string
-): Promise<AppUser | undefined> {
-  const { data } = await client.get<AppUser | undefined>(
-    `/system/users/${userId}`,
+export async function citizenLogin(
+  citizen: CitizenUser
+): Promise<CitizenUser & { id: string }> {
+  const res = await client.post<CitizenUser & { id: string }>(
+    `/system/citizen-login`,
+    citizen,
     {
-      headers: createServiceRequestHeaders(req, systemUser)
+      headers: createServiceRequestHeaders(undefined, systemUser)
     }
   )
-  return data
+  return res.data
 }

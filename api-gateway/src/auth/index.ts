@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 import express, { NextFunction, Request, Response } from 'express'
-import { Profile } from '@node-saml/passport-saml'
 import passport, { AuthenticateCallback } from 'passport'
 import { fromCallback } from '../utils/promise-utils.js'
 import { Sessions } from './session.js'
@@ -25,6 +24,8 @@ export function requireAuthentication(
   return next()
 }
 
+export type UserType = 'user' | 'citizen'
+
 export interface AppSessionUser {
   id?: string | undefined
 }
@@ -38,6 +39,7 @@ export function createAuthHeader(user: AppSessionUser): string {
 
   const jwtPayload = {
     sub: user.id
+    // type: user.type
   }
   const jwtToken = jwt.sign(jwtPayload, jwtPrivateKeyValue, {
     algorithm: 'RS256',
@@ -45,13 +47,6 @@ export function createAuthHeader(user: AppSessionUser): string {
     keyid: jwtKid
   })
   return `Bearer ${jwtToken}`
-}
-
-export function createLogoutToken(
-  nameID: Required<Profile>['nameID'],
-  sessionIndex: Profile['sessionIndex']
-) {
-  return `${nameID}:::${sessionIndex}`
 }
 
 export const authenticate = async (
