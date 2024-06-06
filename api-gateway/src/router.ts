@@ -55,13 +55,13 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
       '/auth/saml-suomifi',
       createSamlRouter({
         sessions,
-        strategyName: 'ead',
+        strategyName: 'suomifi',
         strategy: createSuomiFiStrategy(
           sessions,
           createSamlConfig(
             config.sfi.saml,
             redisCacheProvider(redisClient, {
-              keyPrefix: 'ad-saml-suomifi-resp:'
+              keyPrefix: 'suomifi-saml-resp:'
             })
           )
         )
