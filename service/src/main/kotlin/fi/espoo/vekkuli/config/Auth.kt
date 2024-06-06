@@ -31,7 +31,7 @@ class JwtToAuthenticatedUser : HttpFilter() {
         response: HttpServletResponse,
         chain: FilterChain
     ) {
-        val type = request.getDecodedJwt()?.getClaim("type").toString()
+        val type = request.getDecodedJwt()?.getClaim("type").toString().trim('"')
 
         val user =
             request.getDecodedJwt()?.subject?.let { subject ->
