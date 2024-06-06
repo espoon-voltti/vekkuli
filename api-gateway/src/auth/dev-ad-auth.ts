@@ -81,7 +81,8 @@ const verifyUser = async (req: Request): Promise<AppSessionUser> => {
   const preset = assertStringProp(req.body, 'preset')
   const person = await userLogin(JSON.parse(preset))
   return {
-    id: person.id
+    id: person.id,
+    type: 'user'
   }
 }
 

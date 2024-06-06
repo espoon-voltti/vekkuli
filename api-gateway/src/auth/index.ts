@@ -28,6 +28,7 @@ export type UserType = 'user' | 'citizen'
 
 export interface AppSessionUser {
   id?: string | undefined
+  type?: UserType
 }
 
 const jwtPrivateKeyValue = readFileSync(jwtPrivateKey)
@@ -38,8 +39,8 @@ export function createAuthHeader(user: AppSessionUser): string {
   }
 
   const jwtPayload = {
-    sub: user.id
-    // type: user.type
+    sub: user.id,
+    type: user.type
   }
   const jwtToken = jwt.sign(jwtPayload, jwtPrivateKeyValue, {
     algorithm: 'RS256',
