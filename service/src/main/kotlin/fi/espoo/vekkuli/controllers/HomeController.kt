@@ -23,6 +23,15 @@ class HomeController() {
         model: Model
     ): String {
         model.addAttribute("user", request.getAuthenticatedUser())
+        return "citizen-home"
+    }
+
+    @GetMapping("/virkailija")
+    fun citizenHome(
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        model.addAttribute("user", request.getAuthenticatedUser())
         return "home"
     }
 }

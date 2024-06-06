@@ -12,11 +12,12 @@
 <body>
 <div class="container">
     <h1 class="title">Vekkuli</h1>
-    <div th:if="${user == null}"><a id="loginButton" th:text="#{auth.login}" class="button" href="/auth/saml/login">Login</a></div>
+    <div>Kuntalaisen kirjautuminen</div>
+    <div th:if="${user == null}"><a id="loginButton" th:text="#{auth.login}" class="button" href="/auth/saml-suomifi/login">Login</a></div>
     <div th:if="${user != null}">
-        <div><a href="/venepaikat">Venepaikat</a></div>
+        <div><a href="/venepaikkahakemus">Venepaikkahakemus</a></div>
         <br />
-        <a th:text="#{auth.logout}" class="button" href="/auth/saml/logout">Logout</a>
+        <a th:text="#{auth.logout}" class="button" href="/auth/saml-suomifi/logout">Logout</a>
     </div>
 </div>
 </body>
