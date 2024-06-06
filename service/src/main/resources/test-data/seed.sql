@@ -66,7 +66,7 @@ $$
                                 INSERT INTO boat_space (type, location_id, price_id, section, place_number, amenity,
                                                         width_cm, length_cm, description)
                                 VALUES (boat_type, loc_id, price_id, section, place_num, boat_amenity,
-                                        300 + FLOOR(RANDOM() * 200), 600 + FLOOR(RANDOM() * 400), 'Test description');
+                                        300 + cast(10*random() as int) * 20, 500 + cast(20*random() as int) * 20, 'Test description');
                             END LOOP;
                     END LOOP;
             END LOOP;

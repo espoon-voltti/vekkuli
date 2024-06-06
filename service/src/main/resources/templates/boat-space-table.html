@@ -21,8 +21,8 @@
         <td th:text="${result.section}"></td>
         <td th:text="${result.placeNumber}"></td>
         <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}"></td>
-        <td th:text="${result.widthCm / 100}"></td>
-        <td th:text="${result.lengthCm / 100}"></td>
+        <td th:text="${result.widthCm / 100.0}"></td>
+        <td th:text="${result.lengthCm / 100.0}"></td>
         <td th:text="${result.description}"></td>
     </tr>
 
