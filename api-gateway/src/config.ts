@@ -7,7 +7,10 @@ import { ValidateInResponseTo } from '@node-saml/node-saml'
 
 export interface Config {
   session: SessionConfig
-  ad: AdConfig
+  ad: {
+    externalIdPrefix: string
+    userIdKey: string
+  } & AdConfig
   sfi: AdConfig
   redis: RedisConfig
 }
@@ -20,18 +23,13 @@ export interface SessionConfig {
 
 type AdConfig = MockAdConfig | EspooAdConfig
 
-interface MockAdConfig extends BaseAdConfig {
+interface MockAdConfig {
   type: 'mock'
 }
 
-interface EspooAdConfig extends BaseAdConfig {
+interface EspooAdConfig {
   type: 'saml'
   saml: EspooSamlConfig
-}
-
-interface BaseAdConfig {
-  externalIdPrefix: string
-  userIdKey: string
 }
 
 interface RedisConfig {
@@ -161,8 +159,6 @@ export function configFromEnv(): Config {
   }
 
   const sfi: Config['sfi'] = {
-    externalIdPrefix: process.env.AD_SAML_EXTERNAL_ID_PREFIX ?? 'espoo-ad',
-    userIdKey: process.env.AD_USER_ID_KEY ?? defaultUserIdKey,
     ...(adType !== 'saml'
       ? { type: adType }
       : {
