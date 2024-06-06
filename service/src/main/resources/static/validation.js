@@ -20,7 +20,7 @@ const validation = (function() {
     let isValid = true;
 
     if (errorMessageElement) {
-      if (field.hasAttribute('data-required')) {
+      if (field.hasAttribute('data-required') && !field.hasAttribute('disabled')) {
         if (field.tagName === 'SELECT' && field.value === "" || field.value.trim() === "") {
           isValid = false;
           errorMessageElement.style.display = 'block';

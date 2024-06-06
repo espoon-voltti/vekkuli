@@ -22,20 +22,29 @@ class BoatSpaceApplicationPage(private val page: Page) {
     val phoneField = page.getByTestId("phone")
     val phoneRequiredError = page.getByTestId("phone-error")
 
+    val trailerRegistrationCodeField = page.getByTestId("trailerRegistrationCode")
+    val trailerRegistrationCodeRequiredError = page.getByTestId("trailerRegistrationCode-error")
+
+    val trailerLengthInMetersField = page.getByTestId("trailerLengthInMeters")
+    val trailerLengthInMetersRequiredError = page.getByTestId("trailerLengthInMeters-error")
+
+    val trailerWidthInMetersField = page.getByTestId("trailerWidthInMeters")
+    val trailerWidthInMetersRequiredError = page.getByTestId("trailerWidthInMeters-error")
+
     val boatTypeSelect = page.getByTestId("boatType")
     val boatTypeRequiredError = page.getByTestId("boatType-error")
 
     val boatNameField = page.getByTestId("boatName")
     val boatNameRequiredError = page.getByTestId("boatName-error")
 
-    val registrationCodeField = page.getByTestId("registrationCode")
-    val registrationCodeRequiredError = page.getByTestId("registrationCode-error")
+    val registrationCodeField = page.getByTestId("boatRegistrationCode")
+    val registrationCodeRequiredError = page.getByTestId("boatRegistrationCode-error")
 
-    val lengthField = page.getByTestId("length")
-    val lengthRequiredError = page.getByTestId("length-error")
+    val lengthField = page.getByTestId("boatLengthInMeters")
+    val lengthRequiredError = page.getByTestId("boatLengthInMeters-error")
 
-    val widthField = page.getByTestId("width")
-    val widthRequiredError = page.getByTestId("width-error")
+    val widthField = page.getByTestId("boatWidthInMeters")
+    val widthRequiredError = page.getByTestId("boatWidthInMeters-error")
 
     val weightField = page.getByTestId("weight")
     val weightRequiredError = page.getByTestId("weight-error")

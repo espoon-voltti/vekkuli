@@ -36,6 +36,9 @@ data class AddBoatSpaceApplication(
     val boatWidthCm: Int,
     val boatLengthCm: Int,
     val boatWeightKg: Int,
+    val trailerLengthCm: Int?,
+    val trailerWidthCm: Int?,
+    val trailerRegistrationCode: String?,
     val boatRegistrationCode: String,
     val information: String,
     val citizenId: UUID,
@@ -83,7 +86,7 @@ data class BoatSpaceApplicationFilter(
 fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceApplicationWithId {
     val result: BoatSpaceApplicationWithId =
         createQuery(
-            """ 
+            """
             INSERT INTO boat_space_application (
               created_at, 
               type, 
@@ -94,7 +97,10 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
               boat_weight_kg, 
               boat_registration_code, 
               citizen_id,
-              information
+              information,
+              trailer_space_width,
+              trailer_space_length,
+              trailer_space_registration_code
             ) VALUES ( 
                     now(), 
                     :type, 
@@ -105,7 +111,10 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
                     :boatWeightKg, 
                     :boatRegistrationCode, 
                     :citizenId,
-                    :information
+                    :information,
+                    :trailerWidthCm,
+                    :trailerLengthCm,
+                    :trailerRegistrationCode
             )
             RETURNING *, '[]'::jsonb as location_wishes
             """.trimIndent()
@@ -127,8 +136,7 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
                 .add()
         }
         batch.execute()
-    }
-        .toList()
+    }.toList()
 
     return result
 }

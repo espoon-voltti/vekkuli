@@ -10,7 +10,7 @@ import kotlin.test.Test
 
 class BoatSpaceApplicationTests : PlaywrightTest() {
     @Test
-    fun `submit an application for a boat space`() {
+    fun `submit an application for a harbor boat space`() {
         val page = getPageWithDefaultOptions()
         page.navigate(baseUrl)
         page.getByTestId("loginButton").click()
@@ -44,7 +44,55 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         applicationPage.lengthField.fill("5")
         applicationPage.widthField.fill("2")
         applicationPage.weightField.fill("100")
-        applicationPage.boatSpaceTypeSelect.selectOption("Harbor space")
+        applicationPage.boatSpaceTypeSelect.selectOption("Slip")
+        applicationPage.locationSelect.selectOption("Kivenlahti")
+
+        applicationPage.submitButton.click()
+
+        assertThat(page.getByText("Application received")).isVisible()
+    }
+
+    @Test
+    fun `submit an application for a trailer boat space`() {
+        val page = getPageWithDefaultOptions()
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val applicationPage = BoatSpaceApplicationPage(page)
+        applicationPage.navigateTo()
+        applicationPage.boatSpaceTypeSelect.selectOption("Trailer")
+
+        applicationPage.submitButton.click()
+
+        assertThat(applicationPage.amenityRequiredError).isVisible()
+        assertThat(applicationPage.nameRequiredError).isVisible()
+        assertThat(applicationPage.emailRequiredError).isVisible()
+        assertThat(applicationPage.phoneRequiredError).isVisible()
+        assertThat(applicationPage.boatTypeRequiredError).isVisible()
+        assertThat(applicationPage.boatNameRequiredError).isVisible()
+        assertThat(applicationPage.registrationCodeRequiredError).isVisible()
+        assertThat(applicationPage.lengthRequiredError).isVisible()
+        assertThat(applicationPage.widthRequiredError).isVisible()
+        assertThat(applicationPage.weightRequiredError).isVisible()
+        assertThat(applicationPage.locationRequiredError).isVisible()
+        assertThat(applicationPage.trailerRegistrationCodeRequiredError).isVisible()
+        assertThat(applicationPage.trailerLengthInMetersRequiredError).isVisible()
+        assertThat(applicationPage.trailerWidthInMetersRequiredError).isVisible()
+        page.pause()
+        applicationPage.amenitySelect.selectOption("Buoy")
+        applicationPage.nameField.fill("Testi")
+        applicationPage.emailField.fill("test@test.com")
+        applicationPage.phoneField.fill("1234567890")
+        applicationPage.trailerRegistrationCodeField.fill("123456")
+        applicationPage.trailerLengthInMetersField.fill("5")
+        applicationPage.trailerWidthInMetersField.fill("2")
+        applicationPage.boatTypeSelect.selectOption("Rowboat")
+        applicationPage.boatNameField.fill("Testi")
+        applicationPage.registrationCodeField.fill("123456")
+        applicationPage.lengthField.fill("5")
+        applicationPage.widthField.fill("2")
+        applicationPage.weightField.fill("100")
         applicationPage.locationSelect.selectOption("Kivenlahti")
 
         applicationPage.submitButton.click()

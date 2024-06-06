@@ -27,6 +27,10 @@ INSERT INTO boat_space_application (citizen_id, created_at, type, boat_type, ame
                                     boat_weight_kg, boat_registration_code, information)
 VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), 'Slip', 'JetSki', 'Buoy', 180, 400, 200, 'A255345', 'Mieluiten laiturin kärjestä');
 
+INSERT INTO boat_space_application (citizen_id, created_at, type, boat_type, amenity, boat_width_cm, boat_length_cm,
+                                    boat_weight_kg, boat_registration_code, trailer_space_length, trailer_space_width, trailer_space_registration_code, information)
+VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), 'Trailer', 'JetSki', 'Buoy', 180, 400, 200, 'A255345', 200, 500, 'OYJ123', '');
+
 INSERT INTO boat_space_application_location_wish (boat_space_application_id, location_id, priority)
 VALUES (1, 1, 1),
        (1, 2, 2);
@@ -55,7 +59,7 @@ $$
                             LOOP
                                 -- Randomly assign price, type, and amenity
                                 price_id := (SELECT id FROM price ORDER BY RANDOM() LIMIT 1);
-                                boat_type := (ARRAY ['Storage', 'Slip'])[FLOOR(RANDOM() * 2 + 1)];
+                                boat_type := (ARRAY ['Storage', 'Slip', 'Trailer'])[FLOOR(RANDOM() * 3 + 1)];
                                 boat_amenity :=
                                         (ARRAY ['None', 'Buoy', 'RearBuoy', 'Beam', 'WalkBeam'])[FLOOR(RANDOM() * 5 + 1)];
 
