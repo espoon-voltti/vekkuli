@@ -68,16 +68,3 @@ export async function citizenLogin(
   )
   return res.data
 }
-//
-// export async function getUserDetails(
-//   req: express.Request,
-//   userId: string
-// ): Promise<AppUser | undefined> {
-//   const { data } = await client.get<AppUser | undefined>(
-//     `/system/users/${userId}`,
-//     {
-//       headers: createServiceRequestHeaders(req, systemUser)
-//     }
-//   )
-//   return data
-// }

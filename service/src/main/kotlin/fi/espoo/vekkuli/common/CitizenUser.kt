@@ -16,11 +16,6 @@ data class CitizenAdUser(
     val phone: String?
 )
 
-// data class UserBasics(
-//    @PropagateNull val id: UUID,
-//    val name: String
-// )
-//
 fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen =
     createQuery(
         // language=SQL
@@ -36,27 +31,3 @@ fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen =
         .bindKotlin(adUser)
         .mapTo<Citizen>()
         .one()
-
-// fun Handle.getAppUsers(): List<AppUser> =
-//    createQuery(
-//        """
-//    SELECT id, external_id, first_name, last_name, email
-//    FROM app_user
-//    WHERE NOT system_user
-// """
-//    ).mapTo<AppUser>().list()
-//
-// fun Handle.getAppUser(id: UUID) =
-//    createQuery(
-//        // language=SQL
-//        """
-// SELECT id, external_id, first_name, last_name, email
-// FROM app_user
-// WHERE id = :id AND NOT system_user
-//    """
-//            .trimIndent()
-//    )
-//        .bind("id", id)
-//        .mapTo<AppUser>()
-//        .findOne()
-//        .getOrNull()
