@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 import express, { NextFunction, Request, Response } from 'express'
-import { Profile } from '@node-saml/passport-saml'
 import passport, { AuthenticateCallback } from 'passport'
 import { fromCallback } from '../utils/promise-utils.js'
 import { Sessions } from './session.js'

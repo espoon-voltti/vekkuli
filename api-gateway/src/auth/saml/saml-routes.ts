@@ -19,7 +19,7 @@ import { createLogoutToken } from './common.js'
 
 const urlencodedParser = urlencoded({ extended: false })
 
-function getRedirectUrl(req: express.Request): string {
+function getRedirectUrl(): string {
   return '/'
 }
 
@@ -54,7 +54,7 @@ function createLoginHandler({
           if (err.message === 'InResponseTo is not valid' && req.user) {
             // When user uses browse back functionality after login we get invalid InResponseTo
             // This will ignore the error
-            const redirectUrl = getRedirectUrl(req)
+            const redirectUrl = getRedirectUrl()
             logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
             return res.redirect(redirectUrl)
           }
@@ -163,14 +163,14 @@ export default function createSamlRouter(
     `/logout/callback`,
     logoutCallback,
     passport.authenticate(strategyName),
-    (req, res) => res.redirect(getRedirectUrl(req))
+    (req, res) => res.redirect(getRedirectUrl())
   )
   router.post(
     `/logout/callback`,
     urlencodedParser,
     logoutCallback,
     passport.authenticate(strategyName),
-    (req, res) => res.redirect(getRedirectUrl(req))
+    (req, res) => res.redirect(getRedirectUrl())
   )
 
   return router
