@@ -18,8 +18,10 @@ export function requireAuthentication(
 ) {
   if (!req.user || !req.user.id) {
     logInfo('Could not find user', req)
-    res.redirect('/')
-    return
+    if (req.path !== '/virkailija') {
+      res.redirect('/')
+      return
+    }
   }
   return next()
 }

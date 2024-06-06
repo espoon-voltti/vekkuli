@@ -79,7 +79,7 @@ class HttpAccessControl : HttpFilter() {
 
     private fun HttpServletRequest.requiresAuthentication(): Boolean =
         when {
-            requestURI == "/" || requestURI == "/health" || requestURI == "/actuator/health" -> false
+            requestURI == "/" || requestURI == "/virkailija" || requestURI == "/health" || requestURI == "/actuator/health" -> false
             else -> true
         }
 }
