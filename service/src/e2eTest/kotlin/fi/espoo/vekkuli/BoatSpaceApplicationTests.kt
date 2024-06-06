@@ -79,7 +79,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         assertThat(applicationPage.trailerRegistrationCodeRequiredError).isVisible()
         assertThat(applicationPage.trailerLengthInMetersRequiredError).isVisible()
         assertThat(applicationPage.trailerWidthInMetersRequiredError).isVisible()
-        page.pause()
+
         applicationPage.amenitySelect.selectOption("Buoy")
         applicationPage.nameField.fill("Testi")
         applicationPage.emailField.fill("test@test.com")
