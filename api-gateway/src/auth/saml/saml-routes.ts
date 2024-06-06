@@ -80,7 +80,7 @@ function createLoginHandler({
             createLogoutToken(user.nameID, user.sessionIndex)
           )
 
-          const redirectUrl = getRedirectUrl(req)
+          const redirectUrl = getRedirectUrl()
           logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
           return res.redirect(redirectUrl)
         })().catch((err) => {
