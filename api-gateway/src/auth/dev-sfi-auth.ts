@@ -31,17 +31,19 @@ class DevStrategy extends Strategy {
 const devUsers: CitizenUser[] = [
   {
     nationalId: '150499-911U',
-    name: 'Leo Korhonen'
+    firstName: 'Leo',
+    lastName: 'Korhonen'
   },
   {
     nationalId: '031298-988S',
-    name: 'Olivia Virtanen'
+    firstName: 'Olivia',
+    lastName: 'Virtanen'
   }
 ]
 
 const loginFormHandler: AsyncRequestHandler = async (req, res) => {
   const userOptions = devUsers.map((user, idx) => {
-    const { nationalId, name } = user
+    const { nationalId, firstName, lastName } = user
     const json = JSON.stringify(user)
     return `<div>
             <input
@@ -50,7 +52,7 @@ const loginFormHandler: AsyncRequestHandler = async (req, res) => {
               name="preset"
               ${idx == 0 ? 'checked' : ''}
               value="${_.escape(json)}" />
-            <label for="${nationalId}">${name}</label>
+            <label for="${nationalId}">${firstName} ${lastName}</label>
           </div>`
   })
 

@@ -36,7 +36,8 @@ export function createSuomiFiStrategy(
     }
     return await citizenLogin({
       nationalId: socialSecurityNumber,
-      name: `${profile[SUOMI_FI_GIVEN_NAME_KEY]?.trim() ?? ''} ${profile[SUOMI_FI_SURNAME_KEY]?.trim() ?? ''}`
+      firstName: profile[SUOMI_FI_GIVEN_NAME_KEY]?.trim() ?? '',
+      lastName: profile[SUOMI_FI_SURNAME_KEY]?.trim() ?? ''
     })
   })
 }

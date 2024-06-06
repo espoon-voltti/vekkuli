@@ -39,7 +39,8 @@ export interface AdUser {
 
 export interface CitizenUser {
   nationalId: string
-  name: string
+  firstName: string
+  lastName: string
   email?: string
 }
 

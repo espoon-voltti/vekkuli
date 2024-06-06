@@ -9,7 +9,8 @@ import java.util.UUID
 data class Citizen(
     val id: UUID,
     val nationalId: String,
-    val name: String,
+    val firstName: String,
+    val lastName: String,
     val email: String,
     val phone: String,
 )
