@@ -4,7 +4,7 @@
 
 import express from 'express'
 import axios from 'axios'
-import { createAuthHeader, AppSessionUser } from '../auth/index.js'
+import { createAuthHeader, AppSessionUser, UserType } from '../auth/index.js'
 import { serviceUrl } from '../config.js'
 
 export const client = axios.create({
@@ -12,7 +12,8 @@ export const client = axios.create({
 })
 
 const systemUser: AppSessionUser = {
-  id: '00000000-0000-0000-0000-000000000000'
+  id: '00000000-0000-0000-0000-000000000000',
+  type: 'user'
 }
 
 export type ServiceRequestHeader = 'Authorization' | 'X-Request-ID'
@@ -46,8 +47,8 @@ export interface CitizenUser {
 
 export async function userLogin(
   adUser: AdUser
-): Promise<AdUser & { id: string }> {
-  const res = await client.post<AdUser & { id: string }>(
+): Promise<AdUser & { id: string; type: UserType }> {
+  const res = await client.post<AdUser & { id: string; type: UserType }>(
     `/system/user-login`,
     adUser,
     {
@@ -59,8 +60,8 @@ export async function userLogin(
 
 export async function citizenLogin(
   citizen: CitizenUser
-): Promise<CitizenUser & { id: string }> {
-  const res = await client.post<CitizenUser & { id: string }>(
+): Promise<CitizenUser & { id: string; type: UserType }> {
+  const res = await client.post<CitizenUser & { id: string; type: UserType }>(
     `/system/citizen-login`,
     citizen,
     {

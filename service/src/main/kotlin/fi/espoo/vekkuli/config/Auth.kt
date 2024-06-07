@@ -15,9 +15,14 @@ import mu.KotlinLogging
 import java.util.UUID
 
 data class AuthenticatedUser(
-    val id: UUID
+    val id: UUID,
+    val type: String
 ) {
     fun isSystemUser() = id == UUID.fromString("00000000-0000-0000-0000-000000000000")
+
+    fun isCitizen() = type == "citizen"
+
+    fun isEmployee() = type == "user"
 }
 
 class JwtToAuthenticatedUser : HttpFilter() {
@@ -26,9 +31,11 @@ class JwtToAuthenticatedUser : HttpFilter() {
         response: HttpServletResponse,
         chain: FilterChain
     ) {
+        val type = request.getDecodedJwt()?.getClaim("type").toString().trim('"')
+
         val user =
             request.getDecodedJwt()?.subject?.let { subject ->
-                AuthenticatedUser(id = UUID.fromString(subject))
+                AuthenticatedUser(id = UUID.fromString(subject), type = type)
             }
         if (user != null) {
             request.setAttribute(ATTR_USER, user)
@@ -44,12 +51,26 @@ class HttpAccessControl : HttpFilter() {
         chain: FilterChain
     ) {
         if (request.requiresAuthentication()) {
-            val authenticatedUser = request.getAuthenticatedUser()
-            if (authenticatedUser == null) {
-                return response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "fi.espoo.vekkuli.common.Unauthorized")
-            }
-            if (!request.isAuthorized(authenticatedUser)) {
-                return response.sendError(HttpServletResponse.SC_FORBIDDEN, "fi.espoo.vekkuli.common.Forbidden")
+            val authenticatedUser =
+                request.getAuthenticatedUser()
+                    ?: return response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "fi.espoo.vekkuli.common.Unauthorized")
+
+            when {
+                request.requestURI.startsWith("/virkailija/") -> {
+                    if (!authenticatedUser.isEmployee()) {
+                        return response.sendError(HttpServletResponse.SC_FORBIDDEN, "fi.espoo.vekkuli.common.Forbidden")
+                    }
+                }
+                request.requestURI.startsWith("/kuntalainen/") -> {
+                    if (!authenticatedUser.isCitizen()) {
+                        return response.sendError(HttpServletResponse.SC_FORBIDDEN, "fi.espoo.vekkuli.common.Forbidden")
+                    }
+                }
+                request.requestURI.startsWith("/system/") -> {
+                    if (!authenticatedUser.isSystemUser()) {
+                        return response.sendError(HttpServletResponse.SC_FORBIDDEN, "fi.espoo.vekkuli.common.Forbidden")
+                    }
+                }
             }
         }
 
@@ -58,14 +79,8 @@ class HttpAccessControl : HttpFilter() {
 
     private fun HttpServletRequest.requiresAuthentication(): Boolean =
         when {
-            requestURI == "/" || requestURI == "/health" || requestURI == "/actuator/health" -> false
+            requestURI == "/" || requestURI == "/virkailija" || requestURI == "/health" || requestURI == "/actuator/health" -> false
             else -> true
-        }
-
-    private fun HttpServletRequest.isAuthorized(user: AuthenticatedUser): Boolean =
-        when {
-            requestURI.startsWith("/system/") -> user.isSystemUser()
-            else -> !user.isSystemUser()
         }
 }
 

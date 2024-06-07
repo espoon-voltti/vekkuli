@@ -37,7 +37,7 @@ class SystemController {
         @RequestBody adUser: AdUser
     ): AppUser {
         return jdbi.inTransactionUnchecked { it.upsertAppUserFromAd(adUser) }.also {
-            logger.audit(AuthenticatedUser(it.id), "USER_LOGIN")
+            logger.audit(AuthenticatedUser(it.id, "user"), "USER_LOGIN")
         }
     }
 
@@ -46,7 +46,7 @@ class SystemController {
         @RequestBody adUser: CitizenAdUser
     ): Citizen {
         return jdbi.inTransactionUnchecked { it.upsertCitizenUserFromAd(adUser) }.also {
-            logger.audit(AuthenticatedUser(it.id), "CITIZEN_LOGIN")
+            logger.audit(AuthenticatedUser(it.id, "citizen"), "CITIZEN_LOGIN")
         }
     }
 

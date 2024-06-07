@@ -104,7 +104,9 @@ function createLogoutHandler({
     logInfo('Logout endpoint called', req)
     try {
       const redirectUrl = await fromCallback<string | null>((cb) =>
-        req.user ? strategy.logout(req as RequestWithUser, cb) : cb(null, null)
+        req.user
+          ? strategy.logout(req as unknown as RequestWithUser, cb)
+          : cb(null, null)
       )
       logDebug('Logging user out from passport.', req)
       await logout(sessions, req, res)

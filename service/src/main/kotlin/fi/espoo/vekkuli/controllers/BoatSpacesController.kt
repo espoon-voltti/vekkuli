@@ -14,6 +14,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
@@ -23,6 +24,7 @@ fun Int.cmToM(): Float = this / 100F
 fun Float.mToCm(): Int = (this * 100F).toInt()
 
 @Controller
+@RequestMapping("/virkailija")
 class BoatSpacesController {
     @Autowired
     lateinit var jdbi: Jdbi
