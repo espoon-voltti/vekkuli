@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
 <!DOCTYPE html>
-<html class="theme-light" >
+<html class="theme-light">
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
     <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
@@ -45,18 +45,21 @@
         <h1 class="title" th:text="#{boatApplication.applyForBoatSpace}">Hae venepaikkaa</h1>
         <form id="form" action="/venepaikkahakemus" method="post" novalidate>
             <div class="field">
-                <label for="boatSpaceType" class="label" th:text="#{boatApplication.boatSpaceType}">Venepaikkatyyppi</label>
+                <label for="boatSpaceType" class="label"
+                       th:text="#{boatApplication.boatSpaceType}">Venepaikkatyyppi</label>
                 <div class="select">
-                    <select name="boatSpaceType" id="boatSpaceType" onchange="handleBoatSpaceTypeChange()" data-required>
+                    <select name="boatSpaceType" id="boatSpaceType" onchange="handleBoatSpaceTypeChange()"
+                            data-required>
                         <option value="" th:text="#{boatApplication.selectBoatSpaceType}">Valitse venepaikkatyyppi
-                       </option>
+                        </option>
                         <option value="Trailer"
                                 th:text="#{boatApplication.trailerSpace}"></option>
                         <option value="Slip"
                                 th:text="#{boatApplication.harborSpace}"></option>
                     </select>
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="boatSpaceType-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="boatSpaceType-error"></span>
             </div>
             <div class="field">
                 <label class="label" for="amenity" th:text="#{boatSpaces.amenityHeader}"></label>
@@ -69,52 +72,62 @@
                                 th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}"></option>
                     </select>
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="amenity-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="amenity-error"></span>
             </div>
             <h2 class="subtitle" th:text="#{boatApplication.personalInformation}">Henkilötiedot</h2>
             <div class="field">
                 <label for="name" class="label" th:text="#{boatApplication.name}">Nimi</label>
                 <div class="control">
-                    <input id="name" class="input" type="text" name="name" data-required/>
+                    <input id="name" class="input" type="text" name="name" data-required />
                 </div>
                 <span class="validation-message help is-danger" th:text="#{validation.required}" id="name-error"></span>
             </div>
             <div class="field">
                 <label for="email" class="label" th:text="#{boatApplication.email}">Sähköposti</label>
                 <div class="control">
-                    <input id="email" class="input" type="email" name="email" data-required data-pattern=".+@.+"/>
+                    <input id="email" class="input" type="email" name="email" data-required data-pattern=".+@.+" />
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="email-error"></span>
-                <span class="validation-message help is-danger" th:text="#{validation.email}" id="email-pattern-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="email-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.email}"
+                      id="email-pattern-error"></span>
             </div>
             <div class="field">
                 <label for="phone" class="label" th:text="#{boatApplication.phone}">Puhelinnumero</label>
                 <div class="control">
-                    <input id="phone" class="input" type="tel" name="phone" data-required/>
+                    <input id="phone" class="input" type="tel" name="phone" data-required />
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="phone-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="phone-error"></span>
             </div>
             <div id="trailerSpaceComponent" style="display: none;">
                 <h2 class="subtitle" th:text="#{boatApplication.trailerInformation}">Trailerin tiedot</h2>
                 <div class="field">
                     <label class="label" th:text="#{boatApplication.registrationCode}">Rekisteritunnus</label>
                     <div class="control">
-                        <input id="trailerRegistrationCode" class="input" type="text" name="trailerRegistrationCode" disabled data-required/>
+                        <input id="trailerRegistrationCode" class="input" type="text" name="trailerRegistrationCode"
+                               disabled data-required />
                     </div>
-                    <span class="validation-message help is-danger" th:text="#{validation.required}" id="trailerRegistrationCode-error"></span>
+                    <span class="validation-message help is-danger" th:text="#{validation.required}"
+                          id="trailerRegistrationCode-error"></span>
                 </div>
                 <div class="field">
                     <label class="label" th:text="#{boatApplication.trailerLengthInMeters}">Trailerin pituus (m)</label>
                     <div class="control">
-                        <input id="trailerLengthInMeters" class="input" type="number" name="trailerLengthInMeters" step="0.1" disabled data-required/>
+                        <input id="trailerLengthInMeters" class="input" type="number" name="trailerLengthInMeters"
+                               step="0.1" disabled data-required />
                     </div>
-                    <span class="validation-message help is-danger" th:text="#{validation.required}" id="trailerLengthInMeters-error"></span>
+                    <span class="validation-message help is-danger" th:text="#{validation.required}"
+                          id="trailerLengthInMeters-error"></span>
                 </div>
                 <div class="field">
                     <label class="label" th:text="#{boatApplication.trailerWidthInMeters}">Trailerin leveys (m)</label>
                     <div class="control">
-                        <input id="trailerWidthInMeters" class="input" type="number" name="trailerWidthInMeters" step="0.1" disabled data-required/>
-                        <span class="validation-message help is-danger" th:text="#{validation.required}" id="trailerWidthInMeters-error"></span>
+                        <input id="trailerWidthInMeters" class="input" type="number" name="trailerWidthInMeters"
+                               step="0.1" disabled data-required />
+                        <span class="validation-message help is-danger" th:text="#{validation.required}"
+                              id="trailerWidthInMeters-error"></span>
                     </div>
                 </div>
             </div>
@@ -122,6 +135,7 @@
             <h2 class="subtitle" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h2>
             <div class="field">
                 <label for="boatType" class="label" th:text="#{boatApplication.boatType}">Venetyyppi</label>
+
                 <div class="select">
                     <select id="boatType" name="boatType" data-required>
                         <option value="" th:text="#{boatApplication.selectBoatType}">Valitse venetyyppi</option>
@@ -129,56 +143,68 @@
                                 th:text="#{${'boatApplication.' + (boatType[0].toLowerCase() + boatType.substring(1))}}"></option>
                     </select>
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="boatType-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="boatType-error"></span>
             </div>
             <div class="field">
                 <label for="boatName" class="label" th:text="#{boatApplication.boatName}">Veneen nimi</label>
                 <div class="control">
-                    <input id="boatName" class="input" type="text" name="boatName" data-required/>
+                    <input id="boatName" class="input" type="text" name="boatName" data-required />
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="boatName-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="boatName-error"></span>
             </div>
             <div class="field">
                 <label for="boatRegistrationCode" class="label" th:text="#{boatApplication.registrationCode}">Rekisteritunnus</label>
                 <div class="control">
-                    <input id="boatRegistrationCode" class="input" type="text" name="boatRegistrationCode" data-required/>
+                    <input id="boatRegistrationCode" class="input" type="text" name="boatRegistrationCode"
+                           data-required />
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="boatRegistrationCode-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="boatRegistrationCode-error"></span>
             </div>
             <div class="field">
-                <label for="boatLengthInMeters" class="label" th:text="#{boatApplication.boatLengthInMeters}">Pituus (m)</label>
+                <label for="boatLengthInMeters" class="label" th:text="#{boatApplication.boatLengthInMeters}">Pituus
+                    (m)</label>
                 <div class="control">
-                    <input id="boatLengthInMeters" class="input" type="number" name="boatLengthInMeters" step="0.1" data-required/>
+                    <input id="boatLengthInMeters" class="input" type="number" name="boatLengthInMeters" step="0.1"
+                           data-required />
                 </div>
 
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="boatLengthInMeters-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="boatLengthInMeters-error"></span>
             </div>
             <div class="field">
-                <label for="boatWidthInMeters" class="label" th:text="#{boatApplication.boatWidthInMeters}">Leveys (m)</label>
+                <label for="boatWidthInMeters" class="label" th:text="#{boatApplication.boatWidthInMeters}">Leveys
+                    (m)</label>
                 <div class="control">
-                    <input id="boatWidthInMeters" class="input" type="number" name="boatWidthInMeters" step="0.1" data-required/>
+                    <input id="boatWidthInMeters" class="input" type="number" name="boatWidthInMeters" step="0.1"
+                           data-required />
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="boatWidthInMeters-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="boatWidthInMeters-error"></span>
             </div>
             <div class="field">
                 <label for="weight" class="label" th:text="#{boatApplication.weightInKg}">Paino (kg)</label>
                 <div class="control">
-                    <input id="weight" class="input" type="number" name="weightInKg" data-required/>
+                    <input id="weight" class="input" type="number" name="weightInKg" data-required />
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="weight-error"></span>
+                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                      id="weight-error"></span>
             </div>
             <h2 class="subtitle" th:text="#{boatApplication.harborPreferences}">Satamatoiveet</h2>
             <div th:replace="~{fragments/harbor-options :: harborOptions}"></div>
-            <br/>
+            <br />
             <div>
                 <label for="extraInformation" th:text="#{boatApplication.extraInformation}">Lisätiedot</label>
                 <textarea class="textarea" name="extraInformation" id="extraInformation"> </textarea>
             </div>
-            <br/>
+            <br />
 
             <div class="field">
                 <div class="control">
-                    <button id="submit" class="button is-primary" type="submit" th:text="#{boatApplication.submitApplication}">
+                    <button id="submit" class="button is-primary" type="submit"
+                            th:text="#{boatApplication.submitApplication}">
                         Lähetä hakemus
                     </button>
                 </div>
