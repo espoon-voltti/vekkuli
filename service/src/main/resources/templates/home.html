@@ -2,7 +2,7 @@
 <!-- -->
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
-<html class="theme-light" >
+<html class="theme-light">
 <head>
     <title>Vekkuli</title>
     <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
@@ -10,15 +10,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<div class="container">
-    <h1 class="title">Vekkuli</h1>
-    <div>virkailijan kirjautuminen</div>
-    <div th:if="${user == null}"><a id="loginButton" th:text="#{auth.login}" class="button" href="/auth/saml/login">Login</a></div>
-    <div th:if="${user != null}">
-        <div><a href="/virkailija/venepaikat">Venepaikat</a></div>
-        <br />
-        <a th:text="#{auth.logout}" class="button" href="/auth/saml/logout">Logout</a>
+<section class="section">
+    <div class="container">
+        <h1 class="title">Vekkuli</h1>
+        <div>virkailijan kirjautuminen</div>
+        <div th:if="${user == null}"><a id="loginButton" th:text="#{auth.login}" class="button" href="/auth/saml/login">Login</a>
+        </div>
+        <div th:if="${user != null}">
+            <div><a href="/virkailija/venepaikat">Venepaikat</a></div>
+            <br />
+            <a th:text="#{auth.logout}" class="button" href="/auth/saml/logout">Logout</a>
+        </div>
     </div>
-</div>
+</section>
 </body>
 </html>
