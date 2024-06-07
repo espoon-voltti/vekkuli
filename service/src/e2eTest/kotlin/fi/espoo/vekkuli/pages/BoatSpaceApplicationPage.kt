@@ -52,8 +52,9 @@ class BoatSpaceApplicationPage(private val page: Page) {
     val boatSpaceTypeSelect = page.getByTestId("boatSpaceType")
     val boatSpaceTypeRequiredError = page.getByTestId("boatSpaceType-error")
 
-    val locationSelect = page.getByTestId("locationId")
-    val locationRequiredError = page.getByTestId("locationId-error")
+    val locationSelect = { index: Int -> page.getByTestId("locationId$index") }
+    val locationRequiredError = { index: Int -> page.getByTestId("locationId$index-error") }
+    val addLocationWishButton = page.getByTestId("addLocationWish")
 
     val submitButton = page.getByTestId("submit")
 }

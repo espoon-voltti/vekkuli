@@ -32,7 +32,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         assertThat(applicationPage.widthRequiredError).isVisible()
         assertThat(applicationPage.weightRequiredError).isVisible()
         assertThat(applicationPage.boatSpaceTypeRequiredError).isVisible()
-        assertThat(applicationPage.locationRequiredError).isVisible()
+        assertThat(applicationPage.locationRequiredError(0)).isVisible()
 
         applicationPage.amenitySelect.selectOption("Buoy")
         applicationPage.nameField.fill("Testi")
@@ -45,8 +45,9 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         applicationPage.widthField.fill("2")
         applicationPage.weightField.fill("100")
         applicationPage.boatSpaceTypeSelect.selectOption("Slip")
-        applicationPage.locationSelect.selectOption("Kivenlahti")
-
+        applicationPage.locationSelect(0).selectOption("Kivenlahti")
+        applicationPage.addLocationWishButton.click()
+        applicationPage.locationSelect(1).selectOption("Soukka")
         applicationPage.submitButton.click()
 
         assertThat(page.getByText("Application received")).isVisible()
@@ -75,7 +76,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         assertThat(applicationPage.lengthRequiredError).isVisible()
         assertThat(applicationPage.widthRequiredError).isVisible()
         assertThat(applicationPage.weightRequiredError).isVisible()
-        assertThat(applicationPage.locationRequiredError).isVisible()
+        assertThat(applicationPage.locationRequiredError(0)).isVisible()
         assertThat(applicationPage.trailerRegistrationCodeRequiredError).isVisible()
         assertThat(applicationPage.trailerLengthInMetersRequiredError).isVisible()
         assertThat(applicationPage.trailerWidthInMetersRequiredError).isVisible()
@@ -93,7 +94,7 @@ class BoatSpaceApplicationTests : PlaywrightTest() {
         applicationPage.lengthField.fill("5")
         applicationPage.widthField.fill("2")
         applicationPage.weightField.fill("100")
-        applicationPage.locationSelect.selectOption("Kivenlahti")
+        applicationPage.locationSelect(0).selectOption("Kivenlahti")
 
         applicationPage.submitButton.click()
 
