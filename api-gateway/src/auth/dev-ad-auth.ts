@@ -81,7 +81,8 @@ const verifyUser = async (req: Request): Promise<AppSessionUser> => {
   const preset = assertStringProp(req.body, 'preset')
   const person = await userLogin(JSON.parse(preset))
   return {
-    id: person.id
+    id: person.id,
+    type: 'user'
   }
 }
 
@@ -102,7 +103,7 @@ export function createDevAdRouter(sessions: Sessions): Router {
           res.redirect(`${appBaseUrl}?loginError=true`)
         } else {
           await login(req, user)
-          res.redirect('/') //parseRelayState(req) ?? appBaseUrl)
+          res.redirect('/virkailija') //parseRelayState(req) ?? appBaseUrl)
         }
       } catch (err) {
         if (!res.headersSent) {

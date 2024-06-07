@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2017-2023 City of Espoo
+// SPDX-FileCopyrightText: 2023-2024 City of Espoo
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
@@ -137,7 +137,11 @@ export function createSamlStrategy<T>(
         if (user) {
           // Set req.user for *this request only*
           await fromCallback((cb) =>
-            req.login(user, { session: false, keepSessionInfo: false }, cb)
+            req.login(
+              { ...user, type: 'user' },
+              { session: false, keepSessionInfo: false },
+              cb
+            )
           )
         }
       }

@@ -1,4 +1,5 @@
 <!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
+<!-- -->
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
 <html lang="fi" class="theme-light">
@@ -13,8 +14,8 @@
     <div class="container">
         <h1 class="title" th:text="#{boatSpaces.title}"></h1>
         <div class="box">
-            <form id="form" action="/venepaikat" method="get" hx-trigger="input delay:1s, change"
-                  hx-get="/partial/venepaikat" hx-target="#boatSlipTableDiv" hx-swap="innerHTML">
+            <form id="form" action="/virkailija/venepaikat" method="get" hx-trigger="input delay:1s, change"
+                  hx-get="/virkailija/partial/venepaikat" hx-target="#boatSlipTableDiv" hx-swap="innerHTML">
                 <div class="columns">
                     <div class="column">
                         <div class="field"><label class="label" for="width" th:text="#{boatSpaces.widthHeader}"></label>
