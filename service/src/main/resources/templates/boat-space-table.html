@@ -1,4 +1,5 @@
 <!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
+<!-- -->
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
 <table class="table is-fullwidth is-striped is-hoverable " id="boatSlipTable">
@@ -30,7 +31,7 @@
 </table>
 <nav class="pagination is-centered ">
     <a th:if="${prevPageVal != null}" class="pagination-previous"
-       hx-get="/partial/venepaikat"
+       hx-get="/virkailija/partial/venepaikat"
        hx-target="#boatSlipTableDiv"
        hx-swap="innerHTML"
        hx-include="#form"
@@ -42,7 +43,7 @@
 
     <a class="pagination-next "
        th:if="${nextPageVal != null}"
-       hx-get="/partial/venepaikat"
+       hx-get="/virkailija/partial/venepaikat"
        hx-target="#boatSlipTableDiv"
        hx-swap="innerHTML"
        hx-include="#form"
