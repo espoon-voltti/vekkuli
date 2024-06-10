@@ -55,7 +55,7 @@ export async function userLogin(
       headers: createServiceRequestHeaders(undefined, systemUser)
     }
   )
-  return res.data
+  return { ...res.data, type: 'user' }
 }
 
 export async function citizenLogin(
@@ -68,5 +68,5 @@ export async function citizenLogin(
       headers: createServiceRequestHeaders(undefined, systemUser)
     }
   )
-  return res.data
+  return { ...res.data, type: 'citizen' }
 }
