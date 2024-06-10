@@ -22,7 +22,10 @@ class HomeController() {
         request: HttpServletRequest,
         model: Model
     ): String {
-        model.addAttribute("user", request.getAuthenticatedUser())
+        val authenticatedUser = request.getAuthenticatedUser()
+        val isAuthenticatedCitizen = authenticatedUser?.isCitizen() ?: false
+        model.addAttribute("isAuthenticated", isAuthenticatedCitizen)
+        model.addAttribute("user", authenticatedUser)
         return "citizen-home"
     }
 
@@ -31,6 +34,9 @@ class HomeController() {
         request: HttpServletRequest,
         model: Model
     ): String {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val isAuthenticatedEmployee = authenticatedUser?.isEmployee() ?: false
+        model.addAttribute("isAuthenticated", isAuthenticatedEmployee)
         model.addAttribute("user", request.getAuthenticatedUser())
         return "home"
     }
