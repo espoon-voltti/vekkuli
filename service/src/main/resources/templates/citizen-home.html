@@ -17,7 +17,7 @@
         <div th:if="${user == null}"><a id="loginButton" th:text="#{auth.login}" class="button"
                                         href="/auth/saml-suomifi/login">Login</a></div>
         <div th:if="${user != null}">
-            <div><a href="/venepaikkahakemus">Venepaikkahakemus</a></div>
+            <div><a href="/kuntalainen/venepaikkahakemus">Venepaikkahakemus</a></div>
             <br />
             <a th:text="#{auth.logout}" class="button" href="/auth/saml-suomifi/logout">Logout</a>
         </div>
