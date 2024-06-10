@@ -19,6 +19,7 @@ import express from 'express'
 import path from 'node:path'
 import { Sessions } from '../session.js'
 import { AppSessionUser } from '../index.js'
+import { logInfo } from '../../logging/index.js'
 
 export function fromCallback<T>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,6 +95,7 @@ export function createSamlStrategy<T>(
 ): SamlStrategy {
   const loginVerify: VerifyWithRequest = (req, profile, done) => {
     if (!profile) return done(null, undefined)
+    logInfo('Data from SAML', undefined, { profile: profile })
     const parseResult = profileSchema.safeParse(profile)
     if (!parseResult.success) {
       return done(
