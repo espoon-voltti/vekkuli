@@ -4,6 +4,8 @@
 
 package fi.espoo.vekkuli.domain
 
+import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.kotlin.mapTo
 import java.util.UUID
 
 data class Citizen(
@@ -14,3 +16,15 @@ data class Citizen(
     val email: String,
     val phone: String,
 )
+
+fun Handle.getCitizen(id: UUID): Citizen? {
+    val query =
+        createQuery(
+            """
+            SELECT * FROM citizen WHERE id = :id
+            """.trimIndent()
+        )
+    query.bind("id", id)
+    val citizens = query.mapTo<Citizen>().toList()
+    return if (citizens.isEmpty()) null else citizens[0]
+}

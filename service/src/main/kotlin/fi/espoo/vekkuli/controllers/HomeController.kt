@@ -5,8 +5,10 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.domain.getCitizen
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -23,9 +25,13 @@ class HomeController() {
         model: Model
     ): String {
         val authenticatedUser = request.getAuthenticatedUser()
+        val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
         val isAuthenticatedCitizen = authenticatedUser?.isCitizen() ?: false
         model.addAttribute("isAuthenticated", isAuthenticatedCitizen)
         model.addAttribute("user", authenticatedUser)
+        if (user != null) {
+            model.addAttribute("userName", "${user.firstName} ${user.lastName}")
+        }
         return "citizen-home"
     }
 
