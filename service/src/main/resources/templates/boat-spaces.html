@@ -2,15 +2,12 @@
 <!-- -->
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
-<html lang="fi" class="theme-light">
+<html layout:decorate="~{layout}">
 <head>
-    <title>Venepaikat</title>
-    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vekkuli - Venepaikat</title>
 </head>
 <body>
-<section class="section">
+<section class="section" layout:fragment="content">
     <div class="container">
         <h1 class="title" th:text="#{boatSpaces.title}"></h1>
         <div class="box">
@@ -23,16 +20,19 @@
                                 <input type="number" name="width" class="input" id="width" style="width: 100px"
                                        th:value="${width}"></div>
                         </div>
-                        <div class="field"><label class="label" for="length" th:text="#{boatSpaces.lengthHeader}"></label>
+                        <div class="field"><label class="label" for="length"
+                                                  th:text="#{boatSpaces.lengthHeader}"></label>
                             <div class="control"><input type="number" name="length" class="input" id="length"
                                                         style="width: 100px" th:value="${length}"></div>
                         </div>
                     </div>
                     <div class="column">
-                        <div class="field"><label class="label" for="amenity" th:text="#{boatSpaces.amenityHeader}"></label>
+                        <div class="field"><label class="label" for="amenity"
+                                                  th:text="#{boatSpaces.amenityHeader}"></label>
                             <div class="select">
                                 <select name="amenity" id="amenity">
-                                    <option value="" th:selected="${amenity} == null" th:text="#{boatSpaces.noneOption}"></option>
+                                    <option value="" th:selected="${amenity} == null"
+                                            th:text="#{boatSpaces.noneOption}"></option>
                                     <option
                                             th:each="option : ${amenities}"
                                             th:value="${option}"
@@ -40,17 +40,20 @@
                                             th:selected="${option} == ${amenity}"></option>
                                 </select></div>
                         </div>
-                        <div class="field"><label class="label" for="locationId" th:text="#{boatSpaces.harborHeader}"></label>
+                        <div class="field"><label class="label" for="locationId"
+                                                  th:text="#{boatSpaces.harborHeader}"></label>
                             <div class="select">
                                 <select name="locationId" id="locationId">
-                                    <option value="" th:selected="${locationId} == null" th:text="#{boatSpaces.noneOption}"></option>
+                                    <option value="" th:selected="${locationId} == null"
+                                            th:text="#{boatSpaces.noneOption}"></option>
                                     <option th:each="location : ${locations}"
                                             th:value="${location.id}"
                                             th:text="${location.name}"
                                             th:selected="${location.id} == ${locationId}"></option>
                                 </select></div>
                         </div>
-                        <div class="field"><label class="label" for="boatSpaceType" th:text="#{boatSpaces.typeHeader}">Paikan tyyppi</label>
+                        <div class="field"><label class="label" for="boatSpaceType" th:text="#{boatSpaces.typeHeader}">Paikan
+                            tyyppi</label>
                             <div class="select"><select name="boatSpaceType" id="boatSpaceType">
                                 <option value="" selected="selected" th:text="#{boatSpaces.noneOption}"></option>
                                 <option value="Slip" th:text="#{boatSpaces.typeSlipOption}"></option>
