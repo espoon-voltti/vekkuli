@@ -19,13 +19,17 @@ import { createLogoutToken } from './common.js'
 
 const urlencodedParser = urlencoded({ extended: false })
 
-function getRedirectUrl(): string {
+type Role = 'employee' | 'citizen'
+
+function getRedirectUrl(type: Role): string {
+  if (type === 'employee') return '/virkailija'
   return '/'
 }
 
 export interface SamlEndpointConfig {
   sessions: Sessions
   strategyName: string
+  type: Role
   strategy: passportSaml.Strategy
 }
 
@@ -33,7 +37,8 @@ const defaultNoAuthUrl = '/kirjaudu?loginError=true'
 
 function createLoginHandler({
   sessions,
-  strategyName
+  strategyName,
+  type
 }: SamlEndpointConfig): express.RequestHandler {
   return (req, res, next) => {
     logInfo('Login endpoint called', req)
@@ -54,7 +59,7 @@ function createLoginHandler({
           if (err.message === 'InResponseTo is not valid' && req.user) {
             // When user uses browse back functionality after login we get invalid InResponseTo
             // This will ignore the error
-            const redirectUrl = getRedirectUrl()
+            const redirectUrl = getRedirectUrl(type)
             logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
             return res.redirect(redirectUrl)
           }
@@ -80,7 +85,7 @@ function createLoginHandler({
             createLogoutToken(user.nameID, user.sessionIndex)
           )
 
-          const redirectUrl = getRedirectUrl()
+          const redirectUrl = getRedirectUrl(type)
           logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
           return res.redirect(redirectUrl)
         })().catch((err) => {
@@ -108,6 +113,7 @@ function createLogoutHandler({
           ? strategy.logout(req as unknown as RequestWithUser, cb)
           : cb(null, null)
       )
+
       logDebug('Logging user out from passport.', req)
       await logout(sessions, req, res)
       res.redirect(redirectUrl ?? defaultNoAuthUrl)
@@ -165,14 +171,14 @@ export default function createSamlRouter(
     `/logout/callback`,
     logoutCallback,
     passport.authenticate(strategyName),
-    (req, res) => res.redirect(getRedirectUrl())
+    (req, res) => res.redirect(getRedirectUrl(endpointConfig.type))
   )
   router.post(
     `/logout/callback`,
     urlencodedParser,
     logoutCallback,
     passport.authenticate(strategyName),
-    (req, res) => res.redirect(getRedirectUrl())
+    (req, res) => res.redirect(getRedirectUrl(endpointConfig.type))
   )
 
   return router
