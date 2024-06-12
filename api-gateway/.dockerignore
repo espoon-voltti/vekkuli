@@ -9,4 +9,4 @@
 !*.lock
 !config
 !entrypoint.sh
-!eslint.config.js,
+!eslint.config.js
