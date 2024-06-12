@@ -13,11 +13,15 @@
 <section class="section">
     <div class="container">
         <h1 class="title">Vekkuli</h1>
-        <div>Kuntalaisen kirjautuminen</div>
-        <div th:if="${isAuthenticated == false}"><a id="loginButton" th:text="#{auth.login}" class="button"
-                                                    href="/auth/saml-suomifi/login">Login</a></div>
-        <div th:if="${isAuthenticated == true}">
-            <div><a href="/kuntalainen/venepaikkahakemus">Venepaikkahakemus</a></div>
+        <h2 class="subtitle">Kuntalaisen kirjautuminen</h2>
+        <div class="block" th:if="${isAuthenticated == false}">
+            <a id="loginButton" th:text="#{auth.login}"
+               class="button"
+               href="/auth/saml-suomifi/login">Login</a>
+        </div>
+        <div class="block" th:if="${isAuthenticated == true}">
+            <p>Käyttäjä: <strong th:text="${userName}"></strong></p>
+            <div><a href="/kuntalainen/venepaikkahakemus">Hae venepaikkaa</a></div>
             <br />
             <a th:text="#{auth.logout}" class="button" href="/auth/saml-suomifi/logout">Logout</a>
         </div>

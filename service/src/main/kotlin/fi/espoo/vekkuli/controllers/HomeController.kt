@@ -4,16 +4,19 @@
 
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.domain.getCitizen
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 
 @Controller
-class HomeController() {
+class HomeController {
     @Autowired
     lateinit var jdbi: Jdbi
 
@@ -23,9 +26,12 @@ class HomeController() {
         model: Model
     ): String {
         val authenticatedUser = request.getAuthenticatedUser()
-        val isAuthenticatedCitizen = authenticatedUser?.isCitizen() ?: false
-        model.addAttribute("isAuthenticated", isAuthenticatedCitizen)
-        model.addAttribute("user", authenticatedUser)
+        val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        val isAuthenticated = user != null
+        model.addAttribute("isAuthenticated", isAuthenticated)
+        if (user != null) {
+            model.addAttribute("userName", "${user.firstName} ${user.lastName}")
+        }
         return "citizen-home"
     }
 
@@ -35,9 +41,12 @@ class HomeController() {
         model: Model
     ): String {
         val authenticatedUser = request.getAuthenticatedUser()
-        val isAuthenticatedEmployee = authenticatedUser?.isEmployee() ?: false
-        model.addAttribute("isAuthenticated", isAuthenticatedEmployee)
-        model.addAttribute("user", request.getAuthenticatedUser())
+        val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getAppUser(it.id) } }
+        val isAuthenticated = user != null
+        model.addAttribute("isAuthenticated", isAuthenticated)
+        if (user != null) {
+            model.addAttribute("userName", "${user.firstName} ${user.lastName}")
+        }
         return "home"
     }
 }
