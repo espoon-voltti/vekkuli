@@ -2,13 +2,9 @@
 <!-- -->
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
-<!DOCTYPE html>
-<html class="theme-light">
+<html layout:decorate="~{layout}">
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
-    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script th:inline="javascript">
         function handleBoatSpaceTypeChange() {
             const selectedValue = document.getElementById('boatSpaceType').value;
@@ -16,7 +12,6 @@
             const trailerRegistrationCode = document.getElementById('trailerRegistrationCode');
             const trailerLengthInMeters = document.getElementById('trailerLengthInMeters');
             const trailerWidthInMeters = document.getElementById('trailerWidthInMeters');
-
 
             if (selectedValue === 'Trailer') {
                 trailerSpaceComponent.style.display = 'block';
@@ -31,15 +26,13 @@
             }
         }
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
         .validation-message {
             display: none;
         }
     </style>
 </head>
-<body>
+<body layout:fragment="body">
 <section class="section">
     <div class="container">
         <h1 class="title" th:text="#{boatApplication.applyForBoatSpace}">Hae venepaikkaa</h1>
