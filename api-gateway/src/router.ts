@@ -64,7 +64,8 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
               keyPrefix: 'suomifi-saml-resp:'
             })
           )
-        )
+        ),
+        type: 'citizen'
       })
     )
   }
@@ -86,7 +87,8 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
               keyPrefix: 'ad-saml-resp:'
             })
           )
-        )
+        ),
+        type: 'employee'
       })
     )
   }

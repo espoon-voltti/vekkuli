@@ -32,12 +32,14 @@ const devUsers: CitizenUser[] = [
   {
     nationalId: '150499-911U',
     firstName: 'Leo',
-    lastName: 'Korhonen'
+    lastName: 'Korhonen',
+    homeTown: 49
   },
   {
     nationalId: '031298-988S',
     firstName: 'Olivia',
-    lastName: 'Virtanen'
+    lastName: 'Virtanen',
+    homeTown: 49
   }
 ]
 
