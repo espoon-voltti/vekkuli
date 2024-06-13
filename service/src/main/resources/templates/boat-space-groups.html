@@ -14,19 +14,20 @@
             <div class="level-item has-text-centered">
                 <div>
                     <p class="heading">Varustus</p>
-                    <p class="title" th:text="${result.amenity}">Poiju</p>
+                    <p class="title"
+                       th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}"></p>
                 </div>
             </div>
             <div class="level-item has-text-centered">
                 <div>
                     <p class="heading">Pituus</p>
-                    <p class="title" th:text="${result.length_cm}">5 m</p>
+                    <p class="title" th:text="${(result.length_cm * 1.0) /100}">5 m</p>
                 </div>
             </div>
             <div class="level-item has-text-centered">
                 <div>
                     <p class="heading">Leveys</p>
-                    <p class="title" th:text="${result.width_cm}">3 m </p>
+                    <p class="title" th:text="${(result.width_cm * 1.0) /100}">3 m </p>
                 </div>
             </div>
             <div class="level-item has-text-centered">

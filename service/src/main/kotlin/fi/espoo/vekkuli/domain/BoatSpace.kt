@@ -122,6 +122,7 @@ fun Handle.getBoatSpaceGroups(
             ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
             ${if (amenity != null) "AND amenity = :amenity" else ""}
         GROUP BY location.name, length_cm, width_cm, amenity, price
+        ORDER BY price 
         LIMIT 10
         """.trimIndent()
     println(sql)
