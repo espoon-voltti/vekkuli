@@ -5,12 +5,14 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.getBoatSpaceGroups
+import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 @RequestMapping("/kuntalainen")
@@ -34,13 +36,20 @@ class AvailableBoatSpacesController {
     }
 
     @RequestMapping("/partial/vapaat-paikat")
-    fun freeSpaces(model: Model): String {
+    fun freeSpaces(
+        @RequestParam @Min(0) width: Float?,
+        @RequestParam @Min(0) length: Float?,
+        @RequestParam amenity: BoatSpaceAmenity?,
+        model: Model
+    ): String {
         val results =
             jdbi.inTransactionUnchecked {
-                it.getBoatSpaceGroups()
+                it.getBoatSpaceGroups(width.mToCm(), length.mToCm(), amenity)
             }
         println(results)
         model.addAttribute("results", results)
         return "boat-space-groups"
     }
 }
+
+fun Float?.mToCm(): Int? = if (this == null) null else (this * 100F).toInt()

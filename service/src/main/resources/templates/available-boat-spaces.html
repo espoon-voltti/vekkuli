@@ -11,9 +11,14 @@
     <div class="container">
         <h1 class="title">Hae venepaikkaa</h1>
 
-        <form id="form" method="get"
+        <form id="form"
+              method="get"
+              action="/kuntalainen/venepaikat"
               class="block"
-              hx-get="/virkailija/partial/venepaikat" hx-target="#boatSlipTableDiv" hx-swap="innerHTML">
+              hx-get="/kuntalainen/partial/vapaat-paikat"
+              hx-target="#boatSpaces"
+              hx-swap="innerHTML"
+              hx-trigger="change">
             <h2 class="subtitle">Veneen tiedot</h2>
             <div class="field"><label class="label" for="width" th:text="#{boatSpaces.widthHeader}"></label>
                 <div class="control">
@@ -37,17 +42,6 @@
                                 th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}"
                                 th:selected="${option} == ${amenity}"></option>
                     </select></div>
-            </div>
-            <div class="field"><label class="label" for="boatSpaceType" th:text="#{boatSpaces.typeHeader}">Paikan
-                tyyppi</label>
-                <div class="select"><select name="boatSpaceType" id="boatSpaceType">
-
-                    <option value="" selected="selected" th:text="#{boatSpaces.noneOption}"></option>
-                    <option value="Slip" th:text="#{boatSpaces.typeSlipOption}"></option>
-                    <option value="Storage" th:text="#{boatSpaces.typeStorageOption}"></option>
-                    <option value="Trailer" th:text="#{boatSpaces.typeTrailerOption}"></option>
-
-                </select></div>
             </div>
         </form>
 
