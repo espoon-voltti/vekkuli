@@ -2,6 +2,10 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: vekkuli
 Source: https://github.com/espoon-voltti/vekkuli
 
+Files: *
+Copyright: 2023-2024 City of Espoo
+License: LGPL-2.1-or-later
+
 Files: api-gateway/.yarn/*
 Copyright: 2023-present Yarn Contributors
 Comment: Directory may also include code with other licenses and other copyright holders but those are clearly identified
