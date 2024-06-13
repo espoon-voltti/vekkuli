@@ -97,6 +97,7 @@ fun Handle.getBoatSpaces(boatSpaceFilter: BoatSpaceFilter): List<BoatSpace> {
 
 data class BoatSpaceGroup(
     val locationName: String,
+    val section: String,
     val length_cm: Int,
     val width_cm: Int,
     val count: Int,
@@ -111,7 +112,7 @@ fun Handle.getBoatSpaceGroups(
 ): List<BoatSpaceGroup> {
     val sql =
         """
-        SELECT location.name as location_name, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price
+        SELECT location.name as location_name, section, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price
         FROM boat_space
         JOIN location
         ON location_id = location.id
@@ -121,7 +122,7 @@ fun Handle.getBoatSpaceGroups(
             ${if (width != null) "AND width_cm >= :minWidth AND width_cm <= :maxWidth" else ""}
             ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
             ${if (amenity != null) "AND amenity = :amenity" else ""}
-        GROUP BY location.name, length_cm, width_cm, amenity, price
+        GROUP BY location.name, section, length_cm, width_cm, amenity, price
         ORDER BY price 
         LIMIT 10
         """.trimIndent()

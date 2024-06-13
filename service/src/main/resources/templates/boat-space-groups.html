@@ -4,45 +4,49 @@
 
 <div th:each="result : ${results}" class="card">
     <div class="card-content">
-        <div class="level">
-            <div class="level-item has-text-centered">
+        <div class="columns">
+            <div class="column has-text-centered">
                 <div>
                     <p class="heading">Satama</p>
-                    <p class="title" th:text="${result.locationName}"></p>
+                    <p class="subtitle" th:text="${result.locationName}"></p>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
+            <div class="column has-text-centered">
+                <div>
+                    <p class="heading">Laituri</p>
+                    <p class="subtitle"
+                       th:text="${result.section}"></p>
+                </div>
+            </div>
+            <div class="column has-text-centered">
                 <div>
                     <p class="heading">Varustus</p>
-                    <p class="title"
+                    <p class="subtitle"
                        th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}"></p>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
+            <div class="column has-text-centered">
                 <div>
-                    <p class="heading">Pituus</p>
-                    <p class="title" th:text="${(result.length_cm * 1.0) /100}">5 m</p>
+                    <p class="heading">Mitat</p>
+                    <p class="subtitle"><span th:text="${(result.width_cm * 1.0) /100}">3 m</span> x <span
+                            class="subtitle"
+                            th:text="${(result.length_cm * 1.0) /100}">5 m</span>
+                    </p>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Leveys</p>
-                    <p class="title" th:text="${(result.width_cm * 1.0) /100}">3 m </p>
-                </div>
-            </div>
-            <div class="level-item has-text-centered">
+            <div class="column has-text-centered">
                 <div>
                     <p class="heading">Vapaana</p>
-                    <p class="title" th:text="${result.count}">3 m </p>
+                    <p class="subtitle" th:text="${result.count}">3 m </p>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
+            <div class="column has-text-centered">
                 <div>
                     <p class="heading">Hinta</p>
-                    <p class="title" th:text="${result.price}">420€ </p>
+                    <p class="subtitle" th:text="${result.price}">420€ </p>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
+            <div class="column has-text-centered">
                 <div>
                     <a class="button is-primary  " href="/virkailija/venepaikat/1">Varaa</a>
                 </div>
