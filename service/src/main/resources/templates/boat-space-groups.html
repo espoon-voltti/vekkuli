@@ -1,0 +1,45 @@
+<!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
+<!-- -->
+<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
+
+<div th:each="result : ${results}" class="card">
+    <div class="card-content">
+        <div class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Satama</p>
+                    <p class="title" th:text="${result.locationName}"></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Varustus</p>
+                    <p class="title" th:text="${result.amenity}">Poiju</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Pituus</p>
+                    <p class="title" th:text="${result.length_cm}">5 m</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Leveys</p>
+                    <p class="title" th:text="${result.width_cm}">3 m </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Hinta</p>
+                    <p class="title" th:text="${result.price}">420€ </p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <a class="button is-primary  " href="/virkailija/venepaikat/1">Varaa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
