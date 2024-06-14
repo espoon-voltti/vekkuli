@@ -46,7 +46,6 @@ class AvailableBoatSpacesController {
             jdbi.inTransactionUnchecked {
                 it.getBoatSpaceGroups(width.mToCm(), length.mToCm(), amenity)
             }
-        println(results)
         model.addAttribute("results", results)
         return "boat-space-groups"
     }
