@@ -108,7 +108,8 @@ data class BoatSpaceGroup(
 fun Handle.getBoatSpaceGroups(
     width: Int? = null,
     length: Int? = null,
-    amenity: BoatSpaceAmenity? = null
+    amenities: List<BoatSpaceAmenity>? = null,
+    boatSpaceType: BoatSpaceType? = null
 ): List<BoatSpaceGroup> {
     val sql =
         """
@@ -121,7 +122,8 @@ fun Handle.getBoatSpaceGroups(
         WHERE 1=1
             ${if (width != null) "AND width_cm >= :minWidth AND width_cm <= :maxWidth" else ""}
             ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
-            ${if (amenity != null) "AND amenity = :amenity" else ""}
+            ${if (!amenities.isNullOrEmpty()) "AND amenity IN (<amenities>)" else ""}
+            ${if (boatSpaceType != null) "AND type = :boatSpaceType" else ""}
         GROUP BY location.name, section, length_cm, width_cm, amenity, price
         ORDER BY price 
         LIMIT 10
@@ -137,8 +139,11 @@ fun Handle.getBoatSpaceGroups(
         query.bind("minLength", length - 50)
         query.bind("maxLength", length + 50)
     }
-    if (amenity != null) {
-        query.bind("amenity", amenity)
+    if (amenities != null && amenities.isNotEmpty()) {
+        query.bindList("amenities", amenities)
+    }
+    if (boatSpaceType != null) {
+        query.bind("boatSpaceType", boatSpaceType)
     }
 
     return query.mapTo<BoatSpaceGroup>().toList()
