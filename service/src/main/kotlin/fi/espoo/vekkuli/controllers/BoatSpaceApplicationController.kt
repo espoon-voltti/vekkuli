@@ -4,7 +4,6 @@
 
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
