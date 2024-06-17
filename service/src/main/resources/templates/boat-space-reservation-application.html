@@ -5,27 +5,6 @@
 <html layout:decorate="~{layout}">
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
-    <script th:inline="javascript">
-        function handleBoatSpaceTypeChange() {
-            const selectedValue = document.getElementById('boatSpaceType').value;
-            const trailerSpaceComponent = document.getElementById('trailerSpaceComponent');
-            const trailerRegistrationCode = document.getElementById('trailerRegistrationCode');
-            const trailerLengthInMeters = document.getElementById('trailerLengthInMeters');
-            const trailerWidthInMeters = document.getElementById('trailerWidthInMeters');
-
-            if (selectedValue === 'Trailer') {
-                trailerSpaceComponent.style.display = 'block';
-                trailerRegistrationCode.removeAttribute('disabled');
-                trailerLengthInMeters.removeAttribute('disabled');
-                trailerWidthInMeters.removeAttribute('disabled');
-            } else {
-                trailerSpaceComponent.style.display = 'none';
-                trailerRegistrationCode.setAttribute('disabled', 'disabled');
-                trailerLengthInMeters.setAttribute('disabled', 'disabled');
-                trailerWidthInMeters.setAttribute('disabled', 'disabled');
-            }
-        }
-    </script>
     <style>
         .validation-message {
             display: none;
