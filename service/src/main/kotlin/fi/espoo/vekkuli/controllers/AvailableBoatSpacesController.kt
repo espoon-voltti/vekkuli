@@ -100,12 +100,59 @@ class AvailableBoatSpacesController {
     }
 
     @RequestMapping("/venepaikka/varaus/{boatSpaceId}")
-    fun reserVationForm(
+    fun boatSpaceApplication(
         @PathVariable boatSpaceId: Int,
+//        @RequestParam amenity: BoatSpaceAmenity,
+//        @RequestParam boatWidthInMeters: Float,
+//        @RequestParam boatLengthInMeters: Float,
+//        @RequestParam harbor: String,
+//        @RequestParam section: String,
+//        @RequestParam boatSpaceWidthInMeters: Double,
+//        @RequestParam boatSpaceLengthInMeters: Double,
+//        @RequestParam boatType: BoatType,
+//        @RequestParam boatWeightInKg: Int,
+//        @RequestParam boatDepthInMeters: Double,
         model: Model
     ): String {
-        model.addAttribute("boatSpaceId", boatSpaceId)
-        return "boat-space-application"
+        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+        val boatSpaceReservationRequest =
+            BoatSpaceReservationRequest(
+                amenity = BoatSpaceAmenity.Buoy,
+                boatWidthInMeters = 2.0,
+                boatLengthInMeters = 5.0,
+                harbor = "Soukka",
+                section = "B",
+                boatSpaceWidthInMeters = 2.5,
+                boatSpaceLengthInMeters = 10.0,
+                boatType = BoatType.Sailboat,
+                boatWeightInKg = 1500,
+                boatDepthInMeters = 1.5
+            )
+        val boatSpace =
+            BoatSpaceDto(
+                BoatSpaceType.Slip,
+                boatSpaceReservationRequest.section,
+                1,
+                boatSpaceReservationRequest.amenity,
+                boatSpaceReservationRequest.boatSpaceWidthInMeters,
+                boatSpaceReservationRequest.boatSpaceLengthInMeters,
+                "Description",
+                boatSpaceReservationRequest.harbor,
+                250.0
+            )
+        model.addAttribute("boatSpace", boatSpace)
+        val boat =
+            Boat(
+                boatSpaceReservationRequest.boatType,
+                boatSpaceReservationRequest.boatSpaceWidthInMeters,
+                boatSpaceReservationRequest.boatSpaceLengthInMeters,
+                boatSpaceReservationRequest.boatDepthInMeters,
+                boatSpaceReservationRequest.boatWeightInKg,
+            )
+        model.addAttribute("boat", boat)
+        model.addAttribute("user", User("Esko Eukkola", "081285-182", "Maalarinkatu 5, 20700, Turku"))
+
+        return "boat-space-reservation-application"
     }
 }
 

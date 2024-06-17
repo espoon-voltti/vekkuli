@@ -4,6 +4,7 @@
 
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -14,9 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import java.util.UUID
+import java.util.*
 
-private data class Boat(
+data class Boat(
     val type: BoatType,
     val widthInMeters: Double,
     val lengthInMeters: Double,
@@ -24,7 +25,7 @@ private data class Boat(
     val weightInKg: Int
 )
 
-private data class BoatSpace(
+data class BoatSpaceDto(
     val type: BoatSpaceType,
     val section: String,
     val placeNumber: Int,
@@ -36,7 +37,7 @@ private data class BoatSpace(
     val price: Double
 )
 
-private data class User(
+data class User(
     val name: String,
     val ssn: String,
     val address: String,
@@ -60,61 +61,6 @@ data class BoatSpaceReservationRequest(
 class BoatSpaceApplicationController {
     @Autowired
     lateinit var jdbi: Jdbi
-
-    @GetMapping("/venepaikka")
-    fun boatSpaceApplication(
-//        @RequestParam amenity: BoatSpaceAmenity,
-//        @RequestParam boatWidthInMeters: Float,
-//        @RequestParam boatLengthInMeters: Float,
-//        @RequestParam harbor: String,
-//        @RequestParam section: String,
-//        @RequestParam boatSpaceWidthInMeters: Double,
-//        @RequestParam boatSpaceLengthInMeters: Double,
-//        @RequestParam boatType: BoatType,
-//        @RequestParam boatWeightInKg: Int,
-//        @RequestParam boatDepthInMeters: Double,
-        model: Model
-    ): String {
-        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
-        val boatSpaceReservationRequest =
-            BoatSpaceReservationRequest(
-                amenity = BoatSpaceAmenity.Buoy,
-                boatWidthInMeters = 2.0,
-                boatLengthInMeters = 5.0,
-                harbor = "Soukka",
-                section = "B",
-                boatSpaceWidthInMeters = 2.5,
-                boatSpaceLengthInMeters = 10.0,
-                boatType = BoatType.Sailboat,
-                boatWeightInKg = 1500,
-                boatDepthInMeters = 1.5
-            )
-        val boatSpace =
-            BoatSpace(
-                BoatSpaceType.Slip,
-                boatSpaceReservationRequest.section,
-                1,
-                boatSpaceReservationRequest.amenity,
-                boatSpaceReservationRequest.boatSpaceWidthInMeters,
-                boatSpaceReservationRequest.boatSpaceLengthInMeters,
-                "Description",
-                boatSpaceReservationRequest.harbor,
-                250.0
-            )
-        model.addAttribute("boatSpace", boatSpace)
-        val boat =
-            Boat(
-                boatSpaceReservationRequest.boatType,
-                boatSpaceReservationRequest.boatSpaceWidthInMeters,
-                boatSpaceReservationRequest.boatSpaceLengthInMeters,
-                boatSpaceReservationRequest.boatDepthInMeters,
-                boatSpaceReservationRequest.boatWeightInKg,
-            )
-        model.addAttribute("boat", boat)
-        model.addAttribute("user", User("Esko Eukkola", "081285-182", "Maalarinkatu 5, 20700, Turku"))
-
-        return "boat-space-reservation-application"
-    }
 
     @GetMapping("/partial/venepaikkatoiveet")
     fun addHarborOption(
