@@ -107,49 +107,6 @@ data class BoatSpaceGroup(
     val price: Int
 )
 
-fun Handle.getBoatSpaceGroups(
-    width: Int? = null,
-    length: Int? = null,
-    amenities: List<BoatSpaceAmenity>? = null,
-    boatSpaceType: BoatSpaceType? = null
-): List<BoatSpaceGroup> {
-    val sql =
-        """
-        SELECT location.name as location_name, section, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price
-        FROM boat_space
-        JOIN location
-        ON location_id = location.id
-        JOIN price
-        ON price_id = price.id
-        WHERE 1=1
-            ${if (width != null) "AND width_cm >= :minWidth AND width_cm <= :maxWidth" else ""}
-            ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
-            ${if (!amenities.isNullOrEmpty()) "AND amenity IN (<amenities>)" else ""}
-            ${if (boatSpaceType != null) "AND type = :boatSpaceType" else ""}
-        GROUP BY location.name, section, length_cm, width_cm, amenity, price
-        ORDER BY price 
-        LIMIT 10
-        """.trimIndent()
-
-    val query = createQuery(sql)
-    if (width != null) {
-        query.bind("minWidth", width - 50)
-        query.bind("maxWidth", width + 50)
-    }
-    if (length != null) {
-        query.bind("minLength", length - 50)
-        query.bind("maxLength", length + 50)
-    }
-    if (amenities != null && amenities.isNotEmpty()) {
-        query.bindList("amenities", amenities)
-    }
-    if (boatSpaceType != null) {
-        query.bind("boatSpaceType", boatSpaceType)
-    }
-
-    return query.mapTo<BoatSpaceGroup>().toList()
-}
-
 fun Handle.getHarbors(
     width: Int? = null,
     length: Int? = null,

@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.getHarbors
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -40,16 +43,10 @@ class AvailableBoatSpacesController {
         @RequestParam boatSpaceType: BoatSpaceType?,
         model: Model
     ): String {
-        val results =
-            jdbi.inTransactionUnchecked {
-                it.getBoatSpaceGroups(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
-            }
         val harbors =
             jdbi.inTransactionUnchecked {
                 it.getHarbors(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
             }
-        println(results)
-        model.addAttribute("results", results)
         model.addAttribute("harbors", harbors)
         return "boat-space-groups"
     }
