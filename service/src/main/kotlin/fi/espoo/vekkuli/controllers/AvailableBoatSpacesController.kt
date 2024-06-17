@@ -95,8 +95,9 @@ class AvailableBoatSpacesController {
                 )
             }
         println(reservation)
-        // only works locally..
-        return "redirect:http://localhost:3000/kuntalainen/venepaikka/varaus/${boatSpace.id}"
+        val env = System.getenv("VOLTTI_ENV")
+        val baseUrl = if (env == "staging") "https://staging.vekkuli.espoon-voltti.fi" else "http://localhost:3000"
+        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${boatSpace.id}"
     }
 
     @RequestMapping("/venepaikka/varaus/{boatSpaceId}")
