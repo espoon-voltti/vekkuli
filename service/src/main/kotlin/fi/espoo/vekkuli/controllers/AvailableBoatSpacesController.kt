@@ -45,16 +45,11 @@ class AvailableBoatSpacesController {
         @RequestParam boatSpaceType: BoatSpaceType?,
         model: Model
     ): String {
-        val results =
-            jdbi.inTransactionUnchecked {
-                it.getBoatSpaceGroups(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
-            }
         val harbors =
             jdbi.inTransactionUnchecked {
                 it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
             }
-        println(results)
-        model.addAttribute("results", results)
+        model.addAttribute("harbors", harbors)
         model.addAttribute("harbors", harbors)
         return "boat-space-groups"
     }
@@ -89,7 +84,7 @@ class AvailableBoatSpacesController {
             return "redirect:/"
         }
         println(boatSpace)
-        var reservation =
+        val reservation =
             jdbi.inTransactionUnchecked {
                 it.insertBoatSpaceReservation(
                     citizen.id,

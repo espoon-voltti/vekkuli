@@ -109,15 +109,15 @@ data class BoatSpaceGroup(
     val type: BoatSpaceType
 )
 
-fun Handle.getBoatSpaceGroups(
+fun Handle.getHarbors(
     width: Int? = null,
     length: Int? = null,
     amenities: List<BoatSpaceAmenity>? = null,
     boatSpaceType: BoatSpaceType? = null
-): List<BoatSpaceGroup> {
+): List<Harbor> {
     val sql =
         """
-        SELECT location.name as location_name, section, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price, boat_space.type as type 
+        SELECT location.id as location_id, location.name as location_name, section, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price, boat_space.type as type 
         FROM boat_space
         JOIN location
         ON location_id = location.id
@@ -128,9 +128,8 @@ fun Handle.getBoatSpaceGroups(
             ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
             ${if (!amenities.isNullOrEmpty()) "AND amenity IN (<amenities>)" else ""}
             ${if (boatSpaceType != null) "AND type = :boatSpaceType" else ""}
-        GROUP BY boat_space.type, location.name, section, length_cm, width_cm, amenity, price
+        GROUP BY location.id, location.name, section, length_cm, width_cm, amenity, price
         ORDER BY price 
-        LIMIT 10
         """.trimIndent()
 
     val query = createQuery(sql)
@@ -142,14 +141,43 @@ fun Handle.getBoatSpaceGroups(
         query.bind("minLength", length - 50)
         query.bind("maxLength", length + 50)
     }
-    if (amenities != null && amenities.isNotEmpty()) {
+    if (!amenities.isNullOrEmpty()) {
         query.bindList("amenities", amenities)
     }
     if (boatSpaceType != null) {
         query.bind("boatSpaceType", boatSpaceType)
     }
 
-    return query.mapTo<BoatSpaceGroup>().toList()
+    val boatSpaceGroups =
+        query.map { rs, _ ->
+            val location =
+                Location(
+                    id = rs.getInt("location_id"),
+                    name = rs.getString("location_name"),
+                    address = ""
+                )
+            val boatSpaceGroup =
+                BoatSpaceGroup(
+                    locationName = rs.getString("location_name"),
+                    section = rs.getString("section"),
+                    length_cm = rs.getInt("length_cm"),
+                    width_cm = rs.getInt("width_cm"),
+                    count = rs.getInt("count"),
+                    amenity = BoatSpaceAmenity.valueOf(rs.getString("amenity")),
+                    price = rs.getInt("price"),
+                    type = BoatSpaceType.valueOf(rs.getString("type"))
+                )
+            Pair(location, boatSpaceGroup)
+        }.toList()
+
+    val harbors =
+        boatSpaceGroups
+            .groupBy { it.first }
+            .map { (location, groups) ->
+                Harbor(location, groups.map { it.second })
+            }
+
+    return harbors
 }
 
 fun Handle.getUnreservedBoatSpaceOptions(
