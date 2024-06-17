@@ -11,45 +11,103 @@
     <div class="container">
         <h1 class="title" th:text="#{boatApplication.applyForBoatSpace}">Hae venepaikkaa</h1>
 
-        <form id="form"
-              method="get"
-              action="/kuntalainen/venepaikat"
-              class="block"
-              hx-get="/kuntalainen/partial/vapaat-paikat"
-              hx-target="#boatSpaces"
-              hx-swap="innerHTML"
-              hx-trigger="change">
-            <h2 class="subtitle" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h2>
-            <div class="field" style="display: inline-block; margin-right: 20px"><label class="label" for="width"
-                                                                                        th:text="#{boatSpaces.widthHeader}"></label>
-                <div class="control">
-                    <input type="number" name="width" class="input" id="width" style="width: 100px"
-                           th:value="${width}"></div>
-            </div>
-            <div class="field" style="display: inline-block"><label class="label" for="length"
-                                                                    th:text="#{boatSpaces.lengthHeader}"></label>
-                <div class="control"><input type="number" name="length" class="input" id="length"
-                                            style="width: 100px" th:value="${length}"></div>
-            </div>
-            <div class="field"><label class="label" for="amenity"
-                                      th:text="#{boatSpaces.amenityHeader}"></label>
-                <div class="select">
-                    <select name="amenity" id="amenity">
-                        <option value="" th:selected="${amenity} == null"
-                                th:text="#{boatSpaces.noneOption}"></option>
-                        <option
-                                th:each="option : ${amenities}"
-                                th:value="${option}"
-                                th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}"
-                                th:selected="${option} == ${amenity}"></option>
-                    </select></div>
-            </div>
-        </form>
+        <div class="columns">
+            <div class="column is-one-third">
 
-        <div id="boatSpaces" class="block" hx-trigger="load" hx-get="/kuntalainen/partial/vapaat-paikat"
-             hx-swap="innerHTML">
+                <form id="form"
+                      method="get"
+                      action="/kuntalainen/venepaikat"
+                      class="block"
+                      hx-get="/kuntalainen/partial/vapaat-paikat"
+                      hx-target="#boatSpaces"
+                      hx-swap="innerHTML"
+                      hx-trigger="change">
+
+                    <h2 class="subtitle" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h2>
+
+                    <div class="field">
+                        <label class="label" for="boatType"
+                               th:text="#{boatApplication.boatType}"></label>
+                        <div class="control">
+                            <div class="select">
+                                <select name="boatType" id="boatType">
+                                    <option value=""
+                                            th:text="#{boatSpaces.noneOption}"></option>
+                                    <option
+                                            th:each="option : ${boatTypes}"
+                                            th:value="${option}"
+                                            th:text="#{${'boatApplication.' + (option[0].toLowerCase() + option.substring(1))}}"
+                                    ></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="field" style="display: inline-block; margin-right: 20px">
+                            <label class="label" for="width" th:text="#{boatSpaces.widthHeader}"></label>
+                            <div class="control">
+                                <input type="number" name="width" class="input" id="width" style="width: 100px">
+                            </div>
+                        </div>
+
+                        <div class="field" style="display: inline-block">
+                            <label class="label" for="length" th:text="#{boatSpaces.lengthHeader}"></label>
+                            <div class="control">
+                                <input type="number" name="length" class="input" id="length" style="width: 100px">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="field" style="display: inline-block; margin-right: 20px">
+                            <label class="label" for="depth">Syväys</label>
+                            <div class="control">
+                                <input type="number" name="depth" class="input" id="depth" style="width: 100px">
+                            </div>
+                        </div>
+
+                        <div class="field" style="clear: left; display: inline-block">
+                            <label class="label" for="weight">Paino</label>
+                            <div class="control">
+                                <input type="number" name="weight" class="input" id="weight" style="width: 100px">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Haettava paikka</label>
+                        <div class="control">
+                            <label class="radio">
+                                <input type="radio" name="boatSpaceType" value="Slip" />
+                                Laituripaikka
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="boatSpaceType" value="Trailer" />
+                                Traileripaikka
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label" th:text="#{boatSpaces.amenityHeader}"></label>
+                        <label th:each="option : ${amenities}" class="checkbox mr-4">
+                            <input name="amenities" th:value="${option}" type="checkbox" />
+                            <span th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}">>
+                </span>
+                        </label>
+                    </div>
+
+                </form>
+
+            </div>
+            <div class="column">
+
+                <div id="boatSpaces" class="block" hx-trigger="load" hx-get="/kuntalainen/partial/vapaat-paikat"
+                     hx-swap="innerHTML">
+                </div>
+            </div>
         </div>
-
     </div>
 </section>
 </body>

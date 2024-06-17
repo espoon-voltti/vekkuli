@@ -8,7 +8,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 
 data class Location(
-    val id: String,
+    val id: Int,
     val name: String,
     val address: String
 )
