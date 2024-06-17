@@ -50,7 +50,6 @@ class AvailableBoatSpacesController {
                 it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
             }
         model.addAttribute("harbors", harbors)
-        model.addAttribute("harbors", harbors)
         return "boat-space-groups"
     }
 

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
 
-fun Int.cmToM(): Float = this / 100F
+fun Int.cmToM(): Double = this / 100.0
 
 fun Float.mToCm(): Int = (this * 100F).toInt()
 
