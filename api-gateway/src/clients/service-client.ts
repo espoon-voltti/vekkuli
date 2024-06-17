@@ -1,10 +1,6 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
-//
-// SPDX-License-Identifier: LGPL-2.1-or-later
-
 import express from 'express'
 import axios from 'axios'
-import { createAuthHeader, AppSessionUser, UserType } from '../auth/index.js'
+import { AppSessionUser, createAuthHeader, UserType } from '../auth/index.js'
 import { serviceUrl } from '../config.js'
 
 export const client = axios.create({
