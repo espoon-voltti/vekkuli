@@ -4,7 +4,9 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.getBoatSpaceGroups
+import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.getHarbors
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -24,13 +26,11 @@ class AvailableBoatSpacesController {
     fun availableBoatSpaces(model: Model): String {
         model.addAttribute(
             "amenities",
-            listOf(
-                BoatSpaceAmenity.None.toString(),
-                BoatSpaceAmenity.Buoy.toString(),
-                BoatSpaceAmenity.RearBuoy.toString(),
-                BoatSpaceAmenity.Beam.toString(),
-                BoatSpaceAmenity.WalkBeam.toString()
-            )
+            BoatSpaceAmenity.entries.map { it.toString() }
+        )
+        model.addAttribute(
+            "boatTypes",
+            BoatType.entries.map { it.toString() }
         )
         return "available-boat-spaces"
     }
@@ -39,15 +39,15 @@ class AvailableBoatSpacesController {
     fun freeSpaces(
         @RequestParam @Min(0) width: Float?,
         @RequestParam @Min(0) length: Float?,
-        @RequestParam amenity: BoatSpaceAmenity?,
+        @RequestParam amenities: List<BoatSpaceAmenity>?,
+        @RequestParam boatSpaceType: BoatSpaceType?,
         model: Model
     ): String {
-        val results =
+        val harbors =
             jdbi.inTransactionUnchecked {
-                it.getBoatSpaceGroups(width.mToCm(), length.mToCm(), amenity)
+                it.getHarbors(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
             }
-        println(results)
-        model.addAttribute("results", results)
+        model.addAttribute("harbors", harbors)
         return "boat-space-groups"
     }
 }

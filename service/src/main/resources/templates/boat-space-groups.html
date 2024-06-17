@@ -2,56 +2,39 @@
 <!-- -->
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
-<div th:each="result : ${results}" class="card">
-    <div class="card-content">
-        <div class="columns">
-            <div class="column has-text-centered">
-                <div>
-                    <p class="heading" th:text="#{boatSpaces.harborHeader}">Satama</p>
-                    <p class="subtitle" th:text="${result.locationName}"></p>
-                </div>
-            </div>
-            <div class="column has-text-centered">
-                <div>
-                    <p class="heading" th:text="#{boatSpaces.pierHeader}">Laituri</p>
-                    <p class="subtitle"
-                       th:text="${result.section}"></p>
-                </div>
-            </div>
-            <div class="column has-text-centered">
-                <div>
-                    <p class="heading" th:text="#{boatSpaces.amenityHeader}">Varustus</p>
-                    <p class="subtitle"
-                       th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}"></p>
-                </div>
-            </div>
-            <div class="column has-text-centered">
-                <div>
-                    <p class="heading" th:text="#{boatSpaces.dimensions}">Mitat</p>
-                    <p class="subtitle"><span th:text="${(result.width_cm * 1.0) /100}">3 m</span> x <span
-                            class="subtitle"
-                            th:text="${(result.length_cm * 1.0) /100}">5 m</span>
-                    </p>
-                </div>
-            </div>
-            <div class="column has-text-centered">
-                <div>
-                    <p class="heading" th:text="#{boatSpaces.free}">Vapaana</p>
-                    <p class="subtitle" th:text="${result.count}">3 m </p>
-                </div>
-            </div>
-            <div class="column has-text-centered">
-                <div>
-                    <p class="heading" th:text="#{boatSpaces.price}">Hinta</p>
-                    <p class="subtitle" th:text="${result.price}">420€ </p>
-                </div>
-            </div>
-            <div class="column has-text-centered">
-                <div>
-                    <a class="button is-primary" href="/virkailija/venepaikat/1"
-                       th:text="#{boatSpaces.reserve}">Varaa</a>
-                </div>
-            </div>
-        </div>
+<div class="block" th:each="harbor : ${harbors}" x-data="{ showAll: false }">
+    <h2 class="label" th:text="${harbor.location.name}">Satama</h2>
+    <table class="table is-striped is-hoverable is-fullwidth">
+        <thead>
+        <tr>
+            <th th:text="#{boatSpaces.pierHeader}">Laituri</th>
+            <th th:text="#{boatSpaces.amenityHeader}">Varustus</th>
+            <th th:text="#{boatSpaces.dimensions}">Mitat</th>
+            <th th:text="#{boatSpaces.free}">Vapaana</th>
+            <th th:text="#{boatSpaces.price}">Hinta</th>
+            <th th:text="#{boatSpaces.reserve}">Varaa</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result, iterStat : ${harbor.boatSpaceGroups}" :class="{'is-hidden': !showAll && $el.rowIndex > 3}">
+            <td th:text="${result.section}">Laituri</td>
+            <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}">
+                Varustus
+            </td>
+            <td>
+                <span th:text="${(result.width_cm * 1.0) / 100}">3 m</span> x
+                <span th:text="${(result.length_cm * 1.0) / 100}">5 m</span>
+            </td>
+            <td th:text="${result.count}">3 m</td>
+            <td th:text="${result.price}">420€</td>
+            <td>
+                <a class="button is-primary" href="/virkailija/venepaikat/1" th:text="#{boatSpaces.reserve}">Varaa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${harbor.boatSpaceGroups.size > 3}">
+        <a @click="showAll = !showAll"
+           x-text="showAll ? '△ Näytä vähemmän' : '▽ Näytä lisää'"></a>
     </div>
 </div>
