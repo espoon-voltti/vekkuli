@@ -116,41 +116,48 @@ class AvailableBoatSpacesController {
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         val boatSpaceReservationRequest =
-            BoatSpaceReservationRequest(
-                amenity = BoatSpaceAmenity.Buoy,
-                boatWidthInMeters = 2.0,
-                boatLengthInMeters = 5.0,
-                harbor = "Soukka",
-                section = "B",
-                boatSpaceWidthInMeters = 2.5,
-                boatSpaceLengthInMeters = 10.0,
-                boatType = BoatType.Sailboat,
-                boatWeightInKg = 1500,
-                boatDepthInMeters = 1.5
-            )
+            object {
+                val amenity = BoatSpaceAmenity.Buoy
+                val boatWidthInMeters = 2.0
+                val boatLengthInMeters = 5.0
+                val harbor = "Soukka"
+                val section = "B"
+                val boatSpaceWidthInMeters = 2.5
+                val boatSpaceLengthInMeters = 10.0
+                val boatType = BoatType.Sailboat
+                val boatWeightInKg = 1500
+                val boatDepthInMeters = 1.5
+            }
         val boatSpace =
-            BoatSpaceDto(
-                BoatSpaceType.Slip,
-                boatSpaceReservationRequest.section,
-                1,
-                boatSpaceReservationRequest.amenity,
-                boatSpaceReservationRequest.boatSpaceWidthInMeters,
-                boatSpaceReservationRequest.boatSpaceLengthInMeters,
-                "Description",
-                boatSpaceReservationRequest.harbor,
-                250.0
-            )
+            object {
+                val type = BoatSpaceType.Slip
+                val section = boatSpaceReservationRequest.section
+                val placeNumber = 1
+                val amenity = boatSpaceReservationRequest.amenity
+                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
+                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
+                val description = "Description"
+                val harbor = boatSpaceReservationRequest.harbor
+                val price = 250.0
+            }
         model.addAttribute("boatSpace", boatSpace)
         val boat =
-            Boat(
-                boatSpaceReservationRequest.boatType,
-                boatSpaceReservationRequest.boatSpaceWidthInMeters,
-                boatSpaceReservationRequest.boatSpaceLengthInMeters,
-                boatSpaceReservationRequest.boatDepthInMeters,
-                boatSpaceReservationRequest.boatWeightInKg,
-            )
+            object {
+                val type = boatSpaceReservationRequest.boatType
+                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
+                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
+                val depthInMeters = boatSpaceReservationRequest.boatDepthInMeters
+                val weightInKg = boatSpaceReservationRequest.boatWeightInKg
+            }
         model.addAttribute("boat", boat)
-        model.addAttribute("user", User("Esko Eukkola", "081285-182", "Maalarinkatu 5, 20700, Turku"))
+        model.addAttribute(
+            "user",
+            object {
+                val name = "Esko Eukkola"
+                val ssn = "081285-182"
+                val address = "Maalarinkatu 5, 20700, Turku"
+            }
+        )
 
         return "boat-space-reservation-application"
     }
