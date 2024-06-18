@@ -18,13 +18,13 @@ enum class ReservationStatus {
 
 data class BoatSpaceReservation(
     val id: Int,
-    val citizenId: UUID,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val created: LocalDateTime,
     val updated: LocalDateTime,
-    val status: ReservationStatus
+    val status: ReservationStatus,
+    val citizenId: UUID,
 )
 
 fun Handle.insertBoatSpaceReservation(
@@ -48,4 +48,33 @@ fun Handle.insertBoatSpaceReservation(
     query.bind("endDate", endDate)
     query.bind("status", status)
     return query.mapTo<BoatSpaceReservation>().one()
+}
+
+data class BoatSpaceReservationWithCitizen(
+    val id: Int,
+    val boatSpaceId: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val created: LocalDateTime,
+    val updated: LocalDateTime,
+    val status: ReservationStatus,
+    val citizenId: UUID,
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val phone: String
+)
+
+fun Handle.getReservationWithCitizen(id: Int): BoatSpaceReservationWithCitizen? {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.*, c.id as citizen_id, c.first_name, c.last_name, c.email, c.phone
+            FROM boat_space_reservation bsr
+            JOIN citizen c ON boat_space_reservation.citizen_id = citizen.id 
+            WHERE id = :id
+            """.trimIndent()
+        )
+    query.bind("id", id)
+    return query.mapTo<BoatSpaceReservationWithCitizen>().findOne().orElse(null)
 }

@@ -6,16 +6,15 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @Controller
@@ -93,15 +92,14 @@ class AvailableBoatSpacesController {
                     ReservationStatus.Info
                 )
             }
-        println(reservation)
         val env = System.getenv("VOLTTI_ENV")
         val baseUrl = if (env == "staging") "https://staging.vekkuli.espoon-voltti.fi" else "http://localhost:3000"
-        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${boatSpace.id}"
+        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
     }
 
-    @RequestMapping("/venepaikka/varaus/{boatSpaceId}")
+    @RequestMapping("/venepaikka/varaus/{reservationId}")
     fun boatSpaceApplication(
-        @PathVariable boatSpaceId: Int,
+        @PathVariable reservationId: Int,
 //        @RequestParam amenity: BoatSpaceAmenity,
 //        @RequestParam boatWidthInMeters: Float,
 //        @RequestParam boatLengthInMeters: Float,
@@ -112,8 +110,21 @@ class AvailableBoatSpacesController {
 //        @RequestParam boatType: BoatType,
 //        @RequestParam boatWeightInKg: Int,
 //        @RequestParam boatDepthInMeters: Double,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
         model: Model
     ): String {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getReservationWithCitizen(reservationId)
+            }
+
+        if (user == null || reservation == null || reservation.citizenId != user.id) {
+            throw UnauthorizedException()
+        }
+
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         val boatSpaceReservationRequest =
             object {
@@ -153,9 +164,9 @@ class AvailableBoatSpacesController {
         model.addAttribute(
             "user",
             object {
-                val name = "Esko Eukkola"
-                val ssn = "081285-182"
-                val address = "Maalarinkatu 5, 20700, Turku"
+                val name = "${user.firstName} ${user.lastName}"
+                val ssn = user.nationalId
+                val address = ""
             }
         )
 
@@ -164,3 +175,6 @@ class AvailableBoatSpacesController {
 }
 
 fun Float?.mToCm(): Int? = if (this == null) null else (this * 100F).toInt()
+
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+internal class UnauthorizedException : RuntimeException()
