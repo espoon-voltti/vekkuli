@@ -6,16 +6,15 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @Controller
@@ -93,15 +92,14 @@ class AvailableBoatSpacesController {
                     ReservationStatus.Info
                 )
             }
-        println(reservation)
         val env = System.getenv("VOLTTI_ENV")
         val baseUrl = if (env == "staging") "https://staging.vekkuli.espoon-voltti.fi" else "http://localhost:3000"
-        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${boatSpace.id}"
+        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
     }
 
-    @RequestMapping("/venepaikka/varaus/{boatSpaceId}")
+    @RequestMapping("/venepaikka/varaus/{reservationId}")
     fun boatSpaceApplication(
-        @PathVariable boatSpaceId: Int,
+        @PathVariable reservationId: Int,
 //        @RequestParam amenity: BoatSpaceAmenity,
 //        @RequestParam boatWidthInMeters: Float,
 //        @RequestParam boatLengthInMeters: Float,
@@ -112,48 +110,71 @@ class AvailableBoatSpacesController {
 //        @RequestParam boatType: BoatType,
 //        @RequestParam boatWeightInKg: Int,
 //        @RequestParam boatDepthInMeters: Double,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
         model: Model
     ): String {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getReservationWithCitizen(reservationId)
+            }
+
+        if (user == null || reservation == null || reservation.citizenId != user.id) {
+            throw UnauthorizedException()
+        }
+
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         val boatSpaceReservationRequest =
-            BoatSpaceReservationRequest(
-                amenity = BoatSpaceAmenity.Buoy,
-                boatWidthInMeters = 2.0,
-                boatLengthInMeters = 5.0,
-                harbor = "Soukka",
-                section = "B",
-                boatSpaceWidthInMeters = 2.5,
-                boatSpaceLengthInMeters = 10.0,
-                boatType = BoatType.Sailboat,
-                boatWeightInKg = 1500,
-                boatDepthInMeters = 1.5
-            )
+            object {
+                val amenity = BoatSpaceAmenity.Buoy
+                val boatWidthInMeters = 2.0
+                val boatLengthInMeters = 5.0
+                val harbor = "Soukka"
+                val section = "B"
+                val boatSpaceWidthInMeters = 2.5
+                val boatSpaceLengthInMeters = 10.0
+                val boatType = BoatType.Sailboat
+                val boatWeightInKg = 1500
+                val boatDepthInMeters = 1.5
+            }
         val boatSpace =
-            BoatSpaceDto(
-                BoatSpaceType.Slip,
-                boatSpaceReservationRequest.section,
-                1,
-                boatSpaceReservationRequest.amenity,
-                boatSpaceReservationRequest.boatSpaceWidthInMeters,
-                boatSpaceReservationRequest.boatSpaceLengthInMeters,
-                "Description",
-                boatSpaceReservationRequest.harbor,
-                250.0
-            )
+            object {
+                val type = BoatSpaceType.Slip
+                val section = boatSpaceReservationRequest.section
+                val placeNumber = 1
+                val amenity = boatSpaceReservationRequest.amenity
+                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
+                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
+                val description = "Description"
+                val harbor = boatSpaceReservationRequest.harbor
+                val price = 250.0
+            }
         model.addAttribute("boatSpace", boatSpace)
         val boat =
-            Boat(
-                boatSpaceReservationRequest.boatType,
-                boatSpaceReservationRequest.boatSpaceWidthInMeters,
-                boatSpaceReservationRequest.boatSpaceLengthInMeters,
-                boatSpaceReservationRequest.boatDepthInMeters,
-                boatSpaceReservationRequest.boatWeightInKg,
-            )
+            object {
+                val type = boatSpaceReservationRequest.boatType
+                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
+                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
+                val depthInMeters = boatSpaceReservationRequest.boatDepthInMeters
+                val weightInKg = boatSpaceReservationRequest.boatWeightInKg
+            }
         model.addAttribute("boat", boat)
-        model.addAttribute("user", User("Esko Eukkola", "081285-182", "Maalarinkatu 5, 20700, Turku"))
+        model.addAttribute(
+            "user",
+            object {
+                val name = "${user.firstName} ${user.lastName}"
+                val ssn = user.nationalId
+                val address = ""
+            }
+        )
 
         return "boat-space-reservation-application"
     }
 }
 
 fun Float?.mToCm(): Int? = if (this == null) null else (this * 100F).toInt()
+
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+internal class UnauthorizedException : RuntimeException()
