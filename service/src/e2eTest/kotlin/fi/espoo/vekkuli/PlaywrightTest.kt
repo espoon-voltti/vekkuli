@@ -85,7 +85,8 @@ abstract class PlaywrightTest {
         val sql =
             buildString {
                 appendLine(
-                    "INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) VALUES"
+                    "INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, " +
+                        "width_cm, length_cm, description) VALUES"
                 )
                 for ((index, line) in csvFile.readLines().withIndex()) {
                     if (index > 1000) break
