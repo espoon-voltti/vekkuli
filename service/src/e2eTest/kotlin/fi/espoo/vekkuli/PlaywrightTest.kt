@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
-//
-// SPDX-License-Identifier: LGPL-2.1-or-later
-
 package fi.espoo.vekkuli
 
 import com.microsoft.playwright.Browser
@@ -52,6 +48,43 @@ abstract class PlaywrightTest {
                 END ${'$'}${'$'} LANGUAGE plpgsql;
                 """.trimIndent()
             )
+
+            jdbi.withHandleUnchecked { tx ->
+                tx.execute(
+                    """
+                    SELECT reset_database();
+                    """.trimIndent()
+                )
+            }
+
+            // execute seed.sql
+            val file = File("src/e2eTest/resources/seed.sql").readText()
+            jdbi.withHandleUnchecked { h ->
+                h.createScript(file).execute()
+            }
+
+            // add boat spaces from csv
+            val csvFilePath = Paths.get("src/e2eTest/resources/boat_space.csv").toAbsolutePath().toString()
+            val csvFile = File(csvFilePath)
+            val sql =
+                buildString {
+                    appendLine(
+                        "INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, " +
+                            "width_cm, length_cm, description) VALUES"
+                    )
+                    for ((index, line) in csvFile.readLines().withIndex()) {
+                        if (index > 1000) break
+                        val values = line.split(",").map { "'$it'" }
+                        appendLine("(${values.joinToString(", ")}),")
+                    }
+                }.trimEnd(',', '\n') + ";"
+
+            jdbi.withHandleUnchecked { transactionHandle ->
+                if (csvFile.exists()) {
+                    transactionHandle.execute(sql)
+                    println("CSV data inserted successfully.")
+                }
+            }
         }
 
         playwright = Playwright.create()
@@ -66,41 +99,6 @@ abstract class PlaywrightTest {
 
     @BeforeEach
     fun beforeEachSuper() {
-        jdbi.withHandleUnchecked { tx ->
-            tx.execute(
-                """
-                SELECT reset_database();
-                """.trimIndent()
-            )
-        }
-        // execute seed.sql
-        val file = File("src/e2eTest/resources/seed.sql").readText()
-        jdbi.withHandleUnchecked { h ->
-            h.createScript(file).execute()
-        }
-
-        // add boat spaces from csv
-        val csvFilePath = Paths.get("src/e2eTest/resources/boat_space.csv").toAbsolutePath().toString()
-        val csvFile = File(csvFilePath)
-        val sql =
-            buildString {
-                appendLine(
-                    "INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, " +
-                        "width_cm, length_cm, description) VALUES"
-                )
-                for ((index, line) in csvFile.readLines().withIndex()) {
-                    if (index > 1000) break
-                    val values = line.split(",").map { "'$it'" }
-                    appendLine("(${values.joinToString(", ")}),")
-                }
-            }.trimEnd(',', '\n') + ";"
-
-        jdbi.withHandleUnchecked { transactionHandle ->
-            if (csvFile.exists()) {
-                transactionHandle.execute(sql)
-                println("CSV data inserted successfully.")
-            }
-        }
     }
 
     @AfterAll

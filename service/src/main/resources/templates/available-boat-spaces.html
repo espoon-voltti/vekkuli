@@ -59,31 +59,15 @@
                         </div>
                     </div>
 
-                    <div>
-                        <div class="field" style="display: inline-block; margin-right: 20px">
-                            <label class="label" for="depth">Syväys</label>
-                            <div class="control">
-                                <input type="number" name="depth" class="input" id="depth" style="width: 100px">
-                            </div>
-                        </div>
-
-                        <div class="field" style="clear: left; display: inline-block">
-                            <label class="label" for="weight">Paino</label>
-                            <div class="control">
-                                <input type="number" name="weight" class="input" id="weight" style="width: 100px">
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="field">
                         <label class="label">Haettava paikka</label>
                         <div class="control">
                             <label class="radio">
-                                <input type="radio" name="boatSpaceType" value="Slip" />
+                                <input type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip" />
                                 Laituripaikka
                             </label>
                             <label class="radio">
-                                <input type="radio" name="boatSpaceType" value="Trailer" />
+                                <input type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer" />
                                 Traileripaikka
                             </label>
                         </div>
@@ -92,12 +76,26 @@
                     <div class="field">
                         <label class="label" th:text="#{boatSpaces.amenityHeader}"></label>
                         <label th:each="option : ${amenities}" class="checkbox mr-4">
-                            <input name="amenities" th:value="${option}" type="checkbox" />
+                            <input name="amenities"
+                                   th:id="${option[0].toLowerCase() + option.substring(1) + '-checkbox'}"
+                                   th:value="${option}"
+                                   type="checkbox" />
                             <span th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}">>
-                </span>
+                        </span>
                         </label>
                     </div>
 
+                    <div class="field">
+                        <label class="label" th:text="#{boatSpaces.harborHeader}"></label>
+                        <label th:each="option : ${harbors}" class="checkbox mr-4">
+                            <input name="harbors"
+                                   th:id="${option[0].toLowerCase() + option.substring(1) + '-checkbox'}"
+                                   th:value="${option.id}"
+                                   type="checkbox" />
+                            <span th:text="${option.name}">>
+                        </span>
+                        </label>
+                    </div>
                 </form>
 
             </div>
