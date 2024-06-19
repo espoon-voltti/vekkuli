@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# SPDX-FileCopyrightText: 2023-2024 City of Espoo
-#
-# SPDX-License-Identifier: LGPL-2.1-or-later
-
 set -euo pipefail
 
 # For log tagging (with a default value and error logging without crashing)

@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# SPDX-FileCopyrightText: 2023-2024 City of Espoo
-#
-# SPDX-License-Identifier: LGPL-2.1-or-later
-
 url="$1"
 code="${2:-200}"
 healthcheck() {

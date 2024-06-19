@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2023-2024 City of Espoo
-
-SPDX-License-Identifier: LGPL-2.1-or-later
--->
-
 # Vekkuli
 
 [![REUSE status](https://api.reuse.software/badge/github.com/espoon-voltti/vekkuli)](https://api.reuse.software/info/github.com/espoon-voltti/vekkuli)
