@@ -28,7 +28,19 @@
             <td th:text="${result.count}">3 m</td>
             <td th:text="${result.price}">420€</td>
             <td>
-                <a class="button is-primary" href="/virkailija/venepaikat/1" th:text="#{boatSpaces.reserve}">Varaa</a>
+                <form action="/kuntalainen/venepaikka/varaus" method="post">
+                    <input type="hidden" name="width" th:value="${result.width_cm}" />
+                    <input type="hidden" name="length" th:value="${result.length_cm}" />
+                    <input type="hidden" name="amenity" th:value="${result.amenity}" />
+                    <input type="hidden" name="boatSpaceType" th:value="${result.type}" />
+                    <input type="hidden" name="section" th:value="${result.section}" />
+                    <button hx-post="/kuntalainen/venepaikka/varaus"
+                            hx-swap="outerHTML"
+                            hx-target="body"
+                            class="button is-primary"
+                            th:text="#{boatSpaces.reserve}">Varaa
+                    </button>
+                </form>
             </td>
         </tr>
         </tbody>

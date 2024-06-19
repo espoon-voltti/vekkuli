@@ -18,6 +18,7 @@ enum class BoatSpaceType {
 }
 
 data class BoatSpace(
+    val id: Int,
     val type: BoatSpaceType,
     val section: String,
     val placeNumber: Int,
@@ -100,7 +101,8 @@ data class BoatSpaceGroup(
     val width_cm: Int,
     val count: Int,
     val amenity: BoatSpaceAmenity,
-    val price: Int
+    val price: Int,
+    val type: BoatSpaceType
 )
 
 fun Handle.getHarbors(
@@ -111,7 +113,7 @@ fun Handle.getHarbors(
 ): List<Harbor> {
     val sql =
         """
-        SELECT location.id as location_id, location.name as location_name, section, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price
+        SELECT location.id as location_id, location.name as location_name, section, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price, boat_space.type as type 
         FROM boat_space
         JOIN location
         ON location_id = location.id
@@ -158,7 +160,8 @@ fun Handle.getHarbors(
                     width_cm = rs.getInt("width_cm"),
                     count = rs.getInt("count"),
                     amenity = BoatSpaceAmenity.valueOf(rs.getString("amenity")),
-                    price = rs.getInt("price")
+                    price = rs.getInt("price"),
+                    type = BoatSpaceType.valueOf(rs.getString("type"))
                 )
             Pair(location, boatSpaceGroup)
         }.toList()
@@ -171,4 +174,105 @@ fun Handle.getHarbors(
             }
 
     return harbors
+}
+
+fun Handle.getUnreservedBoatSpaceOptions(
+    width: Int? = null,
+    length: Int? = null,
+    amenities: List<BoatSpaceAmenity>? = null,
+    boatSpaceType: BoatSpaceType? = null
+): List<Harbor> {
+    val sql =
+        """
+        SELECT location.id as location_id,type , location.name as location_name, section, length_cm, width_cm, COUNT(*) as count, amenity, price.price as price
+        FROM boat_space
+        JOIN location
+        ON location_id = location.id
+        JOIN price
+        ON price_id = price.id
+        WHERE 1=1
+            ${if (width != null) "AND width_cm >= :minWidth AND width_cm <= :maxWidth" else ""}
+            ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
+            ${if (!amenities.isNullOrEmpty()) "AND amenity IN (<amenities>)" else ""}
+            ${if (boatSpaceType != null) "AND type = :boatSpaceType" else ""}
+        GROUP BY location.id, location.name, type, section, length_cm, width_cm, amenity, price
+        ORDER BY price 
+        """.trimIndent()
+
+    val query = createQuery(sql)
+    if (width != null) {
+        query.bind("minWidth", width - 50)
+        query.bind("maxWidth", width + 50)
+    }
+    if (length != null) {
+        query.bind("minLength", length - 50)
+        query.bind("maxLength", length + 50)
+    }
+    if (!amenities.isNullOrEmpty()) {
+        query.bindList("amenities", amenities)
+    }
+    if (boatSpaceType != null) {
+        query.bind("boatSpaceType", boatSpaceType)
+    }
+
+    val boatSpaceGroups =
+        query.map { rs, _ ->
+            val location =
+                Location(
+                    id = rs.getInt("location_id"),
+                    name = rs.getString("location_name"),
+                    address = ""
+                )
+            val boatSpaceGroup =
+                BoatSpaceGroup(
+                    locationName = rs.getString("location_name"),
+                    section = rs.getString("section"),
+                    length_cm = rs.getInt("length_cm"),
+                    width_cm = rs.getInt("width_cm"),
+                    count = rs.getInt("count"),
+                    amenity = BoatSpaceAmenity.valueOf(rs.getString("amenity")),
+                    price = rs.getInt("price"),
+                    type = BoatSpaceType.valueOf(rs.getString("type"))
+                )
+            Pair(location, boatSpaceGroup)
+        }.toList()
+
+    val harbors =
+        boatSpaceGroups
+            .groupBy { it.first }
+            .map { (location, groups) ->
+                Harbor(location, groups.map { it.second })
+            }
+
+    return harbors
+}
+
+fun Handle.getUnreservedBoatSpace(
+    width: Int,
+    length: Int,
+    amenity: BoatSpaceAmenity,
+    boatSpaceType: BoatSpaceType,
+    section: String
+): BoatSpace? {
+    val sql =
+        """
+        SELECT boat_space.*, location.name as location_name, location.id as location_id, COUNT(*) OVER() AS total_count
+        FROM boat_space
+        LEFT JOIN location
+        ON location_id = location.id
+        WHERE 1=1
+            AND width_cm = :width
+            AND length_cm = :length
+            AND amenity = :amenity
+            AND type = :boatSpaceType
+            AND section = :section
+        """.trimIndent()
+    val query = createQuery(sql)
+    query.bind("width", width)
+    query.bind("length", length)
+    query.bind("amenity", amenity)
+    query.bind("boatSpaceType", boatSpaceType)
+    query.bind("section", section)
+
+    return query.mapTo<BoatSpace>().first()
 }

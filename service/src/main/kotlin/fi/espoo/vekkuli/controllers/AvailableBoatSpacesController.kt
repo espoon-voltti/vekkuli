@@ -3,18 +3,19 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.getHarbors
+import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.domain.*
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 
 @Controller
 @RequestMapping("/kuntalainen")
@@ -45,11 +46,135 @@ class AvailableBoatSpacesController {
     ): String {
         val harbors =
             jdbi.inTransactionUnchecked {
-                it.getHarbors(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
+                it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
             }
         model.addAttribute("harbors", harbors)
         return "boat-space-groups"
     }
+
+    @PostMapping("/venepaikka/varaus")
+    fun reserveBoatSpace(
+        @RequestParam width: Int,
+        @RequestParam length: Int,
+        @RequestParam amenity: BoatSpaceAmenity,
+        @RequestParam boatSpaceType: BoatSpaceType,
+        @RequestParam section: String,
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val citizen = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        if (citizen == null) {
+            return "redirect:/"
+        }
+        println(citizen)
+        val boatSpace =
+            jdbi.inTransactionUnchecked {
+                it.getUnreservedBoatSpace(
+                    width,
+                    length,
+                    amenity,
+                    boatSpaceType,
+                    section
+                )
+            }
+        if (boatSpace == null) {
+            return "redirect:/"
+        }
+        println(boatSpace)
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.insertBoatSpaceReservation(
+                    citizen.id,
+                    boatSpace.id,
+                    LocalDate.now(),
+                    LocalDate.now().plusYears(1),
+                    ReservationStatus.Info
+                )
+            }
+        val env = System.getenv("VOLTTI_ENV")
+        val baseUrl = if (env == "staging") "https://staging.vekkuli.espoon-voltti.fi" else "http://localhost:3000"
+        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
+    }
+
+    @RequestMapping("/venepaikka/varaus/{reservationId}")
+    fun boatSpaceApplication(
+        @PathVariable reservationId: Int,
+//        @RequestParam amenity: BoatSpaceAmenity,
+//        @RequestParam boatWidthInMeters: Float,
+//        @RequestParam boatLengthInMeters: Float,
+//        @RequestParam harbor: String,
+//        @RequestParam section: String,
+//        @RequestParam boatSpaceWidthInMeters: Double,
+//        @RequestParam boatSpaceLengthInMeters: Double,
+//        @RequestParam boatType: BoatType,
+//        @RequestParam boatWeightInKg: Int,
+//        @RequestParam boatDepthInMeters: Double,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        model: Model
+    ): String {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getReservationWithCitizen(reservationId)
+            }
+
+        if (user == null || reservation == null || reservation.citizenId != user.id) {
+            throw UnauthorizedException()
+        }
+
+        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+        val boatSpaceReservationRequest =
+            object {
+                val amenity = BoatSpaceAmenity.Buoy
+                val boatWidthInMeters = 2.0
+                val boatLengthInMeters = 5.0
+                val harbor = "Soukka"
+                val section = "B"
+                val boatSpaceWidthInMeters = 2.5
+                val boatSpaceLengthInMeters = 10.0
+                val boatType = BoatType.Sailboat
+                val boatWeightInKg = 1500
+                val boatDepthInMeters = 1.5
+            }
+        val boatSpace =
+            object {
+                val type = BoatSpaceType.Slip
+                val section = boatSpaceReservationRequest.section
+                val placeNumber = 1
+                val amenity = boatSpaceReservationRequest.amenity
+                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
+                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
+                val description = "Description"
+                val harbor = boatSpaceReservationRequest.harbor
+                val price = 250.0
+            }
+        model.addAttribute("boatSpace", boatSpace)
+        val boat =
+            object {
+                val type = boatSpaceReservationRequest.boatType
+                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
+                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
+                val depthInMeters = boatSpaceReservationRequest.boatDepthInMeters
+                val weightInKg = boatSpaceReservationRequest.boatWeightInKg
+            }
+        model.addAttribute("boat", boat)
+        model.addAttribute(
+            "user",
+            object {
+                val name = "${user.firstName} ${user.lastName}"
+                val ssn = user.nationalId
+                val address = ""
+            }
+        )
+
+        return "boat-space-reservation-application"
+    }
 }
 
 fun Float?.mToCm(): Int? = if (this == null) null else (this * 100F).toInt()
+
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+internal class UnauthorizedException : RuntimeException()
