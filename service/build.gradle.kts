@@ -146,6 +146,10 @@ tasks {
         classpath = sourceSets["e2eTest"].runtimeClasspath
         shouldRunAfter("test")
         outputs.upToDateWhen { false }
+        testLogging {
+            showStandardStreams = true
+            events("passed", "skipped", "failed")
+        }
     }
 }
 

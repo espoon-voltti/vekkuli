@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.io.File
+import java.nio.file.Paths
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
@@ -68,20 +70,35 @@ abstract class PlaywrightTest {
             tx.execute(
                 """
                 SELECT reset_database();
-                
-                INSERT INTO location (name, address)
-                VALUES ('Haukilahti', 'Satamatie 1, Espoo'),
-                    ('Kivenlahti', 'Kivenlahdentie 10, Espoo'),
-                    ('Laajalahti', 'Laajalahdentie 5, Espoo'),
-                    ('Otsolahti', 'Otsolahdentie 7, Espoo'),
-                    ('Soukka', 'Soukantie 3, Espoo'),
-                    ('Suomenoja', 'Suomenojantie 15, Espoo'),
-                    ('Svinö', 'Svinöntie 8, Espoo');
-                 
-                    INSERT INTO citizen (id, first_name, last_name, phone, email)
-                    VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi');
                 """.trimIndent()
             )
+        }
+        // execute seed.sql
+        val file = File("src/e2eTest/resources/seed.sql").readText()
+        jdbi.withHandleUnchecked { h ->
+            h.createScript(file).execute()
+        }
+
+        // add boat spaces from csv
+        val csvFilePath = Paths.get("src/e2eTest/resources/boat_space.csv").toAbsolutePath().toString()
+        val csvFile = File(csvFilePath)
+        val sql =
+            buildString {
+                appendLine(
+                    "INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) VALUES"
+                )
+                for ((index, line) in csvFile.readLines().withIndex()) {
+                    if (index > 1000) break
+                    val values = line.split(",").map { "'$it'" }
+                    appendLine("(${values.joinToString(", ")}),")
+                }
+            }.trimEnd(',', '\n') + ";"
+
+        jdbi.withHandleUnchecked { transactionHandle ->
+            if (csvFile.exists()) {
+                transactionHandle.execute(sql)
+                println("CSV data inserted successfully.")
+            }
         }
     }
 
