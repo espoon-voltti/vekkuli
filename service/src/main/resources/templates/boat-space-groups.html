@@ -7,33 +7,27 @@
     <table class="table is-striped is-hoverable is-fullwidth">
         <thead>
         <tr>
-            <th th:text="#{boatSpaces.pierHeader}">Laituri</th>
-            <th th:text="#{boatSpaces.amenityHeader}">Varustus</th>
-            <th th:text="#{boatSpaces.dimensions}">Mitat</th>
-            <th th:text="#{boatSpaces.free}">Vapaana</th>
-            <th th:text="#{boatSpaces.price}">Hinta</th>
-            <th th:text="#{boatSpaces.reserve}">Varaa</th>
+            <th>Paikan koko</th>
+            <th>Varuste</th>
+            <th>Hinta</th>
+            <th>Paikka</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="result, iterStat : ${harbor.boatSpaceGroups}" :class="{'is-hidden': !showAll && $el.rowIndex > 3}">
-            <td th:text="${result.section}">Laituri</td>
-            <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}">
-                Varustus
-            </td>
+        <tr th:each="result, iterStat : ${harbor.boatSpaces}" :class="{'is-hidden': !showAll && $el.rowIndex > 3}">
             <td>
-                <span th:text="${(result.width_cm * 1.0) / 100}">3 m</span> x
-                <span th:text="${(result.length_cm * 1.0) / 100}">5 m</span>
+                <span th:text="${(result.widthCm * 1.0) / 100}">3 m</span> x
+                <span th:text="${(result.lengthCm * 1.0) / 100}">5 m</span>
             </td>
-            <td th:text="${result.count}">3 m</td>
+            <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}">
+            </td>
             <td th:text="${result.price}">420€</td>
+            <td th:text="${result.section}"><span th:text="${result.section}"></span><span
+                    th:text="${result.placeNumber}"></span>
+            </td>
             <td>
                 <form action="/kuntalainen/venepaikka/varaus" method="post">
-                    <input type="hidden" name="width" th:value="${result.width_cm}" />
-                    <input type="hidden" name="length" th:value="${result.length_cm}" />
-                    <input type="hidden" name="amenity" th:value="${result.amenity}" />
-                    <input type="hidden" name="boatSpaceType" th:value="${result.type}" />
-                    <input type="hidden" name="section" th:value="${result.section}" />
+                    <input type="hidden" name="id" th:value="${result.id}" />
                     <button hx-post="/kuntalainen/venepaikka/varaus"
                             hx-swap="outerHTML"
                             hx-target="body"
@@ -45,7 +39,7 @@
         </tr>
         </tbody>
     </table>
-    <div th:if="${harbor.boatSpaceGroups.size > 3}">
+    <div th:if="${harbor.boatSpaces.size > 3}">
         <a @click="showAll = !showAll"
            x-text="showAll ? '△ Näytä vähemmän' : '▽ Näytä lisää'"></a>
     </div>
