@@ -180,7 +180,8 @@ fun Handle.getUnreservedBoatSpaceOptions(
     width: Int? = null,
     length: Int? = null,
     amenities: List<BoatSpaceAmenity>? = null,
-    boatSpaceType: BoatSpaceType? = null
+    boatSpaceType: BoatSpaceType? = null,
+    locationIds: List<Int>? = null
 ): List<Harbor> {
     val sql =
         """
@@ -195,6 +196,7 @@ fun Handle.getUnreservedBoatSpaceOptions(
             ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
             ${if (!amenities.isNullOrEmpty()) "AND amenity IN (<amenities>)" else ""}
             ${if (boatSpaceType != null) "AND type = :boatSpaceType" else ""}
+            ${if (!locationIds.isNullOrEmpty()) "AND location.id IN (<locationIds>)" else ""}
         GROUP BY location.id, location.name, type, section, length_cm, width_cm, amenity, price
         ORDER BY price 
         """.trimIndent()
@@ -213,6 +215,9 @@ fun Handle.getUnreservedBoatSpaceOptions(
     }
     if (boatSpaceType != null) {
         query.bind("boatSpaceType", boatSpaceType)
+    }
+    if (!locationIds.isNullOrEmpty()) {
+        query.bindList("locationIds", locationIds)
     }
 
     val boatSpaceGroups =

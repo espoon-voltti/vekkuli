@@ -25,6 +25,10 @@ class AvailableBoatSpacesController {
 
     @RequestMapping("/venepaikat")
     fun availableBoatSpaces(model: Model): String {
+        val locations =
+            jdbi.inTransactionUnchecked { tx ->
+                tx.getLocations()
+            }
         model.addAttribute(
             "amenities",
             BoatSpaceAmenity.entries.map { it.toString() }
@@ -33,6 +37,8 @@ class AvailableBoatSpacesController {
             "boatTypes",
             BoatType.entries.map { it.toString() }
         )
+        model.addAttribute("locations", locations)
+
         return "available-boat-spaces"
     }
 
@@ -42,11 +48,12 @@ class AvailableBoatSpacesController {
         @RequestParam @Min(0) length: Float?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
         @RequestParam boatSpaceType: BoatSpaceType?,
+        @RequestParam harbor: List<String>?,
         model: Model
     ): String {
         val harbors =
             jdbi.inTransactionUnchecked {
-                it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType)
+                it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
             }
         model.addAttribute("harbors", harbors)
         return "boat-space-groups"
