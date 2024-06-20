@@ -23,7 +23,7 @@
             <p th:text="#{${'boatSpaces.' + (boatSpace.amenity.toString()[0].toLowerCase() + boatSpace.amenity.toString().substring(1))}}"></p>
             <p th:text="#{boatApplication.boatSpacePrice} + ' ' + ${boatSpace.price}">Hinta</p>
         </div>
-            <br/>
+            
 
             <h4 class="label" th:text="#{boatApplication.ownerShipTitle}">Veneen omistussuhde</h4>
             <div class="control is-flex-direction-row" >
@@ -44,9 +44,8 @@
                     <label for="futureOwner">Olen ostamassa veneen</label>
                 </div>
             </div>
-            <br />
             <h4 class="label" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h4>
-            <div class="field">
+            <div>
                 <p th:text="#{${'boatApplication.' + (boat.type.toString()[0].toLowerCase() + boat.type.toString().substring(1))}}">Tyyppi</p>
 
                 <div>
@@ -77,20 +76,20 @@
                       id="boatName-error"></span>
             </div>
             </div>
-
+            
                 <h4 class="label"th:text="#{boatApplication.personalInformation}">Vuokraaja</h4>
-            <div class="field">
+            <div>
                 <p th:text="${user.name}">Testi Testaaja</p>
                 <p th:text="${user.ssn}">Testi Testaaja</p>
                 <p th:text="${user.address}">Testi Testaaja</p>
             </div>
 
-            <br/>
+            
             <div>
                 <label for="extraInformation" th:text="#{boatApplication.extraInformation}">Lisätiedot</label>
                 <textarea class="textarea" rows="1" name="extraInformation" id="extraInformation" th:placeholder="#{boatApplication.extraInformationPlaceHolder}"></textarea>
             </div>
-            <br/>
+            
             <div>
             <label class="checkbox justify-content-space-between">
                 <input type="checkbox" >
@@ -102,7 +101,7 @@
                 <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
             </label>
             </div>
-            <br/>
+            
             <div class="field">
                 <div class="control">
                     <button id="submit" class="button is-primary" type="submit"
