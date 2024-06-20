@@ -69,10 +69,10 @@ fun Handle.getReservationWithCitizen(id: Int): BoatSpaceReservationWithCitizen? 
     val query =
         createQuery(
             """
-            SELECT bsr.*, c.id as citizen_id, c.first_name, c.last_name, c.email, c.phone
+            SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone
             FROM boat_space_reservation bsr
-            JOIN citizen c ON boat_space_reservation.citizen_id = citizen.id 
-            WHERE id = :id
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            WHERE bsr.id = :id
             """.trimIndent()
         )
     query.bind("id", id)
