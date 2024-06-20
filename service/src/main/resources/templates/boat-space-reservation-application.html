@@ -15,9 +15,7 @@
 <section class="section">
     <div class="container">
         <form id="form" action="/kuntalainen/venepaikkahakemus" method="post" novalidate x-data="{ownerShip: ''}">
-        <h3 class="header" th:text="#{boatApplication.boatSpaceInformation}">Veneen ja varaajan tiedot</h3>
-        <br/>
-            <h4 class="label" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h4>
+        <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
         <div>
             <p><span th:text="${boatSpace.harbor}"></span></p>
             <p th:text="#{boatApplication.boatSpaceSection} + ' '+  ${boatSpace.section}"></p>
@@ -27,16 +25,24 @@
         </div>
             <br/>
 
-            <h4 class="label"th:text="#{boatApplication.ownerShipTitle}">Veneen omistussuhde</h4>
+            <h4 class="label" th:text="#{boatApplication.ownerShipTitle}">Veneen omistussuhde</h4>
             <div class="control is-flex-direction-row" >
-                <input type="radio" id="owner" name="ownerShip" value="owner" x-model="ownerShip">
-                <label class="radio" for="owner">Olen veneen omistaja</label><br>
-                <input type="radio" id="user" name="ownerShip" value="user" x-model="ownerShip">
-                <label class="radio" for="user">Olen veneen haltija</label><br>
-                <input type="radio" id="coOwner" name="ownerShip" value="coOwner" x-model="ownerShip">
-                <label class="radio" for="coOwner">Yhteisomistajuus</label><br>
-                <input type="radio" id="futureOwner" name="ownerShip" value="futureOwner" x-model="ownerShip">
-                <label class="radio" for="futureOwner">Olen ostamassa veneen</label>
+                <div class="radio">
+                    <input type="radio" id="owner" name="ownerShip" value="owner" x-model="ownerShip">
+                    <label for="owner">Olen veneen omistaja</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" id="user" name="ownerShip" value="user" x-model="ownerShip">
+                    <label for="user">Olen veneen haltija</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" id="coOwner" name="ownerShip" value="coOwner" x-model="ownerShip">
+                    <label for="coOwner">Yhteisomistajuus</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" id="futureOwner" name="ownerShip" value="futureOwner" x-model="ownerShip">
+                    <label for="futureOwner">Olen ostamassa veneen</label>
+                </div>
             </div>
             <br />
             <h4 class="label" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h4>
@@ -82,7 +88,7 @@
             <br/>
             <div>
                 <label for="extraInformation" th:text="#{boatApplication.extraInformation}">Lisätiedot</label>
-                <textarea class="textarea" name="extraInformation" id="extraInformation" th:placeholder="#{boatApplication.extraInformationPlaceHolder}"></textarea>
+                <textarea class="textarea" rows="1" name="extraInformation" id="extraInformation" th:placeholder="#{boatApplication.extraInformationPlaceHolder}"></textarea>
             </div>
             <br/>
             <div>
