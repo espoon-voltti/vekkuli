@@ -188,32 +188,17 @@ fun Handle.getUnreservedBoatSpaceOptions(
     return harbors
 }
 
-fun Handle.getUnreservedBoatSpace(
-    width: Int,
-    length: Int,
-    amenity: BoatSpaceAmenity,
-    boatSpaceType: BoatSpaceType,
-    section: String
-): BoatSpace? {
+fun Handle.getUnreservedBoatSpace(id: Int,): BoatSpace? {
     val sql =
         """
         SELECT boat_space.*, location.name as location_name, location.id as location_id, COUNT(*) OVER() AS total_count
         FROM boat_space
         LEFT JOIN location
         ON location_id = location.id
-        WHERE 1=1
-            AND width_cm = :width
-            AND length_cm = :length
-            AND amenity = :amenity
-            AND type = :boatSpaceType
-            AND section = :section
+        WHERE boat_space.id = :id
         """.trimIndent()
     val query = createQuery(sql)
-    query.bind("width", width)
-    query.bind("length", length)
-    query.bind("amenity", amenity)
-    query.bind("boatSpaceType", boatSpaceType)
-    query.bind("section", section)
+    query.bind("id", id)
 
     return query.mapTo<BoatSpace>().first()
 }

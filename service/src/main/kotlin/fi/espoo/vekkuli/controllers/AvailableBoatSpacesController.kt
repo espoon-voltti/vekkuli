@@ -61,11 +61,7 @@ class AvailableBoatSpacesController {
 
     @PostMapping("/venepaikka/varaus")
     fun reserveBoatSpace(
-        @RequestParam width: Int,
-        @RequestParam length: Int,
-        @RequestParam amenity: BoatSpaceAmenity,
-        @RequestParam boatSpaceType: BoatSpaceType,
-        @RequestParam section: String,
+        @RequestParam id: Int,
         request: HttpServletRequest,
         model: Model
     ): String {
@@ -77,14 +73,9 @@ class AvailableBoatSpacesController {
         println(citizen)
         val boatSpace =
             jdbi.inTransactionUnchecked {
-                it.getUnreservedBoatSpace(
-                    width,
-                    length,
-                    amenity,
-                    boatSpaceType,
-                    section
-                )
+                it.getUnreservedBoatSpace(id)
             }
+
         if (boatSpace == null) {
             return "redirect:/"
         }
