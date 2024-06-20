@@ -140,7 +140,10 @@ fun Handle.getUnreservedBoatSpaceOptions(
         ON location_id = location.id
         JOIN price
         ON price_id = price.id
-        WHERE 1=1
+        LEFT JOIN boat_space_reservation
+        ON boat_space.id = boat_space_reservation.boat_space_id
+        WHERE 
+            boat_space_reservation.id IS NULL
             ${if (width != null) "AND width_cm >= :minWidth AND width_cm <= :maxWidth" else ""}
             ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
             ${if (!amenities.isNullOrEmpty()) "AND amenity IN (<amenities>)" else ""}
@@ -189,13 +192,17 @@ fun Handle.getUnreservedBoatSpaceOptions(
 }
 
 fun Handle.getUnreservedBoatSpace(id: Int,): BoatSpace? {
+    // get only a space that has no reference in the reservations table
     val sql =
         """
         SELECT boat_space.*, location.name as location_name, location.id as location_id, COUNT(*) OVER() AS total_count
         FROM boat_space
         LEFT JOIN location
         ON location_id = location.id
+        LEFT JOIN boat_space_reservation
+        ON boat_space.id = boat_space_reservation.boat_space_id
         WHERE boat_space.id = :id
+        AND boat_space_reservation.id IS NULL
         """.trimIndent()
     val query = createQuery(sql)
     query.bind("id", id)

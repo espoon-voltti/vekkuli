@@ -22,8 +22,8 @@
             <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}">
             </td>
             <td th:text="${result.price}">420€</td>
-            <td th:text="${result.section}"><span th:text="${result.section}"></span><span
-                    th:text="${result.placeNumber}"></span>
+            <td><span th:text="${result.section}"></span><span
+                    th:text="${result.placeNumber.toString()}"></span>
             </td>
             <td>
                 <form action="/kuntalainen/venepaikka/varaus" method="post">
