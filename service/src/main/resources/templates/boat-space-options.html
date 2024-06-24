@@ -1,0 +1,46 @@
+<!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
+<!-- -->
+<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
+
+<div class="block" th:each="harbor : ${harbors}" x-data="{ showAll: false }">
+    <h2 class="label harbor-header" th:text="${harbor.location.name}">Satama</h2>
+    <table class="table is-striped is-hoverable is-fullwidth">
+        <thead>
+        <tr>
+            <th th:text="#{boatSpaces.size}">Paikan koko</th>
+            <th th:text="#{boatSpaces.amenityLabel}">Varuste</th>
+            <th th:text="#{boatSpaces.price}">Hinta</th>
+            <th th:text="#{boatSpaces.place}">Paikka</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result, iterStat : ${harbor.boatSpaces}" :class="{'is-hidden': !showAll && $el.rowIndex > 3}">
+            <td>
+                <span th:text="${(result.widthCm * 1.0) / 100 }"></span> x
+                <span th:text="${(result.lengthCm * 1.0) / 100}"></span> <span> m</span>
+            </td>
+            <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}">
+            </td>
+            <td th:text="${result.price}">420€</td>
+            <td><span th:text="${result.section}"></span><span
+                    th:text="${result.placeNumber.toString()}"></span>
+            </td>
+            <td>
+                <form action="/kuntalainen/venepaikka/varaus" method="post">
+                    <input type="hidden" name="id" th:value="${result.id}" />
+                    <button hx-post="/kuntalainen/venepaikka/varaus"
+                            hx-swap="outerHTML"
+                            hx-target="body"
+                            class="button is-primary reserve-button"
+                            th:text="#{boatSpaces.reserve}">Varaa
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:if="${harbor.boatSpaces.size > 3}">
+        <a @click="showAll = !showAll"
+           x-text="showAll ? '△ Näytä vähemmän' : '▽ Näytä lisää'"></a>
+    </div>
+</div>
