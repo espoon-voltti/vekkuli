@@ -79,6 +79,7 @@ class AvailableBoatSpacesController {
         if (boatSpace == null) {
             return "redirect:/"
         }
+
         println(boatSpace)
         val reservation =
             jdbi.inTransactionUnchecked {
@@ -91,7 +92,7 @@ class AvailableBoatSpacesController {
                 )
             }
         val env = System.getenv("VOLTTI_ENV")
-        val baseUrl = if (env == "staging") "https://staging.vekkuli.espoon-voltti.fi" else "http://localhost:3000"
+        val baseUrl = if (env == "staging") "https://staging.varaukset.espoo.fi" else "http://localhost:3000"
         return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
     }
 
