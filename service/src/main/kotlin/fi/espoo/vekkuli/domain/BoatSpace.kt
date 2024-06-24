@@ -191,7 +191,7 @@ fun Handle.getUnreservedBoatSpaceOptions(
     return harbors
 }
 
-fun Handle.getUnreservedBoatSpace(id: Int,): BoatSpace? {
+fun Handle.getUnreservedBoatSpace(id: Int): BoatSpace? {
     // get only a space that has no reference in the reservations table
     val sql =
         """
