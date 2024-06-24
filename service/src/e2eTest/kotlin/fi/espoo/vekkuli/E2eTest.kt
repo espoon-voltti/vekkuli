@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
 import org.junit.jupiter.api.Test
 
@@ -24,6 +25,13 @@ class E2eTest : PlaywrightTest() {
         reservationPage.amenityBeamCheckbox.check()
         reservationPage.amenityWalkBeamCheckbox.check()
 
-        page.pause()
+        assertThat(reservationPage.harborHeaders).hasCount(4)
+        reservationPage.haukilahtiCheckbox.check()
+        reservationPage.laajalahtiCheckbox.check()
+        assertThat(reservationPage.harborHeaders).hasCount(2)
+
+        reservationPage.firstReserveButton.click()
+
+        // todo fill the reservation form and submit
     }
 }

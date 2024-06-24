@@ -89,7 +89,7 @@
                         <label class="label" th:text="#{boatSpaces.harborHeader}"></label>
                         <label th:each="option : ${locations}" class="checkbox mr-4">
                             <input name="harbor"
-                                   th:id="${option.name.toLowerCase() + option.name.substring(1) + '-checkbox'}"
+                                   th:id="${option.name[0].toLowerCase() + option.name.substring(1) + '-checkbox'}"
                                    th:value="${option.id}"
                                    type="checkbox" />
                             <span th:text="${option.name}">>

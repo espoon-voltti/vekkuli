@@ -18,4 +18,8 @@ class ReserveBoatSpacePage(private val page: Page) {
     val amenityRearBuoyCheckbox = page.getByTestId("rearBuoy-checkbox")
     val amenityBeamCheckbox = page.getByTestId("beam-checkbox")
     val amenityWalkBeamCheckbox = page.getByTestId("walkBeam-checkbox")
+    val haukilahtiCheckbox = page.getByTestId("haukilahti-checkbox")
+    val laajalahtiCheckbox = page.getByTestId("laajalahti-checkbox")
+    val harborHeaders = page.locator(".harbor-header")
+    val firstReserveButton = page.locator(".reserve-button").first()
 }

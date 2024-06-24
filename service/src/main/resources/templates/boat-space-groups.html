@@ -3,7 +3,7 @@
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
 <div class="block" th:each="harbor : ${harbors}" x-data="{ showAll: false }">
-    <h2 class="label" th:text="${harbor.location.name}">Satama</h2>
+    <h2 class="label harbor-header" th:text="${harbor.location.name}">Satama</h2>
     <table class="table is-striped is-hoverable is-fullwidth">
         <thead>
         <tr>
@@ -31,7 +31,7 @@
                     <button hx-post="/kuntalainen/venepaikka/varaus"
                             hx-swap="outerHTML"
                             hx-target="body"
-                            class="button is-primary"
+                            class="button is-primary reserve-button"
                             th:text="#{boatSpaces.reserve}">Varaa
                     </button>
                 </form>
