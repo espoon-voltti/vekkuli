@@ -142,6 +142,11 @@ fun Handle.getUnreservedBoatSpaceOptions(
         ON price_id = price.id
         LEFT JOIN boat_space_reservation
         ON boat_space.id = boat_space_reservation.boat_space_id
+        AND (
+            (boat_space_reservation.status = 'Info' AND boat_space_reservation.created > NOW() - INTERVAL '30 minutes') OR
+            (boat_space_reservation.status = 'Payment' AND boat_space_reservation.created > NOW() - INTERVAL '24 hours') OR
+            (boat_space_reservation.status = 'Confirmed') 
+        )
         WHERE 
             boat_space_reservation.id IS NULL
             ${if (width != null) "AND width_cm >= :minWidth AND width_cm <= :maxWidth" else ""}
@@ -201,6 +206,11 @@ fun Handle.getUnreservedBoatSpace(id: Int): BoatSpace? {
         ON location_id = location.id
         LEFT JOIN boat_space_reservation
         ON boat_space.id = boat_space_reservation.boat_space_id
+        AND (
+            (boat_space_reservation.status = 'Info' AND boat_space_reservation.created > NOW() - INTERVAL '30 minutes') OR
+            (boat_space_reservation.status = 'Payment' AND boat_space_reservation.created > NOW() - INTERVAL '24 hours') OR
+            (boat_space_reservation.status = 'Confirmed') 
+        )
         WHERE boat_space.id = :id
         AND boat_space_reservation.id IS NULL
         """.trimIndent()
