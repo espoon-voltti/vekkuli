@@ -7,17 +7,17 @@
     <table class="table is-striped is-hoverable is-fullwidth">
         <thead>
         <tr>
-            <th>Paikan koko</th>
-            <th>Varuste</th>
-            <th>Hinta</th>
-            <th>Paikka</th>
+            <th th:text="#{boatSpaces.size}">Paikan koko</th>
+            <th th:text="#{boatSpaces.amenityLabel}">Varuste</th>
+            <th th:text="#{boatSpaces.price}">Hinta</th>
+            <th th:text="#{boatSpaces.place}">Paikka</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="result, iterStat : ${harbor.boatSpaces}" :class="{'is-hidden': !showAll && $el.rowIndex > 3}">
             <td>
-                <span th:text="${(result.widthCm * 1.0) / 100}">3 m</span> x
-                <span th:text="${(result.lengthCm * 1.0) / 100}">5 m</span>
+                <span th:text="${(result.widthCm * 1.0) / 100 }"></span> x
+                <span th:text="${(result.lengthCm * 1.0) / 100}"></span> <span> m</span>
             </td>
             <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}">
             </td>

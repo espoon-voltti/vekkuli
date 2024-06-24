@@ -56,7 +56,7 @@ class AvailableBoatSpacesController {
                 it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
             }
         model.addAttribute("harbors", harbors)
-        return "boat-space-groups"
+        return "boat-space-options"
     }
 
     @PostMapping("/venepaikka/varaus")
