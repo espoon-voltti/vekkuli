@@ -55,6 +55,7 @@ class AvailableBoatSpacesController {
             jdbi.inTransactionUnchecked {
                 it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
             }
+
         model.addAttribute("harbors", harbors)
         return "boat-space-options"
     }
@@ -70,7 +71,6 @@ class AvailableBoatSpacesController {
         if (citizen == null) {
             return "redirect:/"
         }
-        println(citizen)
         val boatSpace =
             jdbi.inTransactionUnchecked {
                 it.getUnreservedBoatSpace(id)
@@ -80,7 +80,6 @@ class AvailableBoatSpacesController {
             return "redirect:/"
         }
 
-        println(boatSpace)
         val reservation =
             jdbi.inTransactionUnchecked {
                 it.insertBoatSpaceReservation(
