@@ -148,7 +148,9 @@ class AvailableBoatSpacesController {
                 val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
                 val description = "Description"
                 val harbor = boatSpaceReservationRequest.harbor
-                val price = 250.0
+                val priceWithoutAlv = 250.0
+                val priceAlv = 25
+                val priceTotal = 275.0
             }
         model.addAttribute("boatSpace", boatSpace)
         val boat =

@@ -52,6 +52,10 @@ h3 {
     text-align: left;
 }
 
+.textarea {
+    resize: none;
+}
+
 .textarea,
 .input {
     border: none;
@@ -59,6 +63,7 @@ h3 {
     border-radius: 0;
     box-shadow: none;
     width: fit-content;
+    min-width: auto;
 }
 
 .checkmark {
