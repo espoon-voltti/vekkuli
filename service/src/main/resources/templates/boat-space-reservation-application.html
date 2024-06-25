@@ -1,7 +1,3 @@
-<!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
-<!-- -->
-<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
-
 <html layout:decorate="~{layout}">
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
@@ -15,101 +11,181 @@
 <section class="section">
     <div class="container">
         <form id="form" action="/kuntalainen/venepaikkahakemus" method="post" novalidate x-data="{ownerShip: ''}">
-        <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
-        <div>
-            <p><span th:text="${boatSpace.harbor}"></span></p>
-            <p th:text="#{boatApplication.boatSpaceSection} + ' '+  ${boatSpace.section}"></p>
-            <p th:text="${boatSpace.widthInMeters} + ' m x ' + ${boatSpace.lengthInMeters} + ' m'"></p>
-            <p th:text="#{${'boatSpaces.' + (boatSpace.amenity.toString()[0].toLowerCase() + boatSpace.amenity.toString().substring(1))}}"></p>
-            <p th:text="#{boatApplication.boatSpacePrice} + ' ' + ${boatSpace.price}">Hinta</p>
-        </div>
-            
-
-            <h4 class="label" th:text="#{boatApplication.ownerShipTitle}">Veneen omistussuhde</h4>
-            <div class="control is-flex-direction-row" >
-                <div class="radio">
-                    <input type="radio" id="owner" name="ownerShip" value="owner" x-model="ownerShip">
-                    <label for="owner">Olen veneen omistaja</label>
-                </div>
-                <div class="radio">
-                    <input type="radio" id="user" name="ownerShip" value="user" x-model="ownerShip">
-                    <label for="user">Olen veneen haltija</label>
-                </div>
-                <div class="radio">
-                    <input type="radio" id="coOwner" name="ownerShip" value="coOwner" x-model="ownerShip">
-                    <label for="coOwner">Yhteisomistajuus</label>
-                </div>
-                <div class="radio">
-                    <input type="radio" id="futureOwner" name="ownerShip" value="futureOwner" x-model="ownerShip">
-                    <label for="futureOwner">Olen ostamassa veneen</label>
-                </div>
-            </div>
-            <h4 class="label" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h4>
             <div>
-                <p th:text="#{${'boatApplication.' + (boat.type.toString()[0].toLowerCase() + boat.type.toString().substring(1))}}">Tyyppi</p>
+                <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
 
+                <p><span th:text="${boatSpace.harbor}">Haukilahti</span></p>
+                <p th:text="|#{boatApplication.boatSpaceSection} ${boatSpace.section}|">Laituri B</p>
+                <p th:text="|#{boatApplication.boatSpacePlace} ${boatSpace.section}${boatSpace.placeNumber}|">Paikka
+                    B22</p>
+                <p th:text="|${boatSpace.widthInMeters} m x ${boatSpace.lengthInMeters} m|">3 m x 7 m</p>
+                <p th:text="#{${'boatSpaces.' + (boatSpace.amenity.toString()[0].toLowerCase() + boatSpace.amenity.toString().substring(1))}}">
+                    Aisa</p>
+            </div>
                 <div>
-                    <p th:text="#{boatApplication.boatWidthInMeters} +': ' +${boat.widthInMeters}">Leveys:</p>
-                    <p th:text="#{boatApplication.boatLengthInMeters}  +': ' +${boat.lengthInMeters}">Pituus:</p>
-                    <p th:text="#{boatApplication.boatDepthInMeters}  +': '+${boat.depthInMeters}">Syväys:</p>
-                    <p th:text="#{boatApplication.boatWeightInKg}  +': ' +${boat.weightInKg}">Paino:</p>
+                    <h4 class="label" th:text="#{boatApplication.boatSpacePrice}">Hinta</h4>
+                    <p th:text="|#{boatApplication.boatSpaceFee}: ${boatSpace.priceWithoutAlv} €|">Maksu: 350 €</p>
+                    <p th:text="|#{boatApplication.boatSpaceFeeAlv}: ${boatSpace.priceAlv} €|">Alv: 75 €</p>
+                    <p th:text="|#{boatApplication.boatSpaceFeeTotal}: ${boatSpace.priceTotal} €|">Yhteensä: 425 €</p>
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}"
-                      id="boatType-error"></span>
-            </div>
-            <div x-show="ownerShip !== 'futureOwner'">
+             <div>
+                 <h3 class="header" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h3>
+
+                <div class="field">
+                    <label class="label required" for="boatType"
+                           th:text="#{boatApplication.boatType}"></label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="boatType" id="boatType"  data-required>
+                                <option value=""
+                                        th:text="#{boatSpaces.noneOption}"></option>
+                                <option
+                                        th:each="option : ${boatTypes}"
+                                        th:value="${option}"
+                                        th:text="#{${'boatApplication.' + (option[0].toLowerCase() + option.substring(1))}}"
+                                ></option>
+                            </select>
+                        </div>
+                    </div>
+                    <span class="validation-message help is-danger" th:text="#{validation.required}"
+                          id="boatType-error"></span>
+                </div>
+                 <div class="field">
+                     <div class="field is-grouped">
+                         <div class="control">
+                             <label class="label required" for="width" th:text="#{boatApplication.boatWidthInMeters}">Leveys (m)</label>
+                             <input type="number" min="0" step="0.1" name="width" class="input" id="width" style="width: 100px"  data-required>
+                             <span class="validation-message help is-danger" th:text="#{validation.required}"
+                                   id="width-error"></span>
+                         </div>
+                         <div class="control">
+                             <label class="label required" for="length" th:text="#{boatApplication.boatLengthInMeters}">Pituus (m)</label>
+                             <input type="number" min="0" step="0.1" name="length" class="input" id="length" style="width: 100px"  data-required>
+                             <span class="validation-message help is-danger" th:text="#{validation.required}"
+                                   id="length-error"></span>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="field">
+                     <div class="field is-grouped">
+                         <div class="control">
+                             <label class="label required" for="depth" th:text="#{boatApplication.boatDepthInMeters}">Syväys (m)</label>
+                             <input type="number" min="0" step="0.1" name="depth" class="input" id="depth" style="width: 100px"  data-required>
+                             <span class="validation-message help is-danger" th:text="#{validation.required}"
+                                   id="depth-error"></span>
+                         </div>
+                         <div class="control">
+                             <label class="label required" for="weight" th:text="#{boatApplication.boatWeightInKg}">Paino (kg)</label>
+                             <input type="number" min="0" name="weight" class="input" id="weight" style="width: 100px"  data-required>
+                             <span class="validation-message help is-danger" th:text="#{validation.required}"
+                                   id="weight-error"></span>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="field" x-data="{ noRegistration: false }">
+                     <h4 class="label required" th:text="#{boatApplication.boatIdentificationTitle}">Veneen rekisteritunnus / tunnistenumero</h4>
+                     <label class="checkbox">
+                         <input type="checkbox" x-model="noRegistration"/>
+                         <span th:text="#{boatApplication.noRegistrationNumber}" >Ei rekisteritunnusta</span>
+                     </label>
+                             <input x-show="!noRegistration" id="boatRegistrationNumber" class="input" type="text" name="boatRegistrationNumber"
+                                    data-required th:placeholder="#{boatApplication.registrationNumberPlaceHolder}" />
+                 </div>
+                 <div class="field">
+                     <label for="boatName" class="label" th:text="#{boatApplication.boatName}">Veneen nimi</label>
+                     <div class="control">
+                         <input id="boatName" class="input" type="text" name="boatName"/>
+                     </div>
+                     <span class="validation-message help is-danger" th:text="#{validation.required}"
+                           id="boatName-error"></span>
+                 </div>
+
+                 <div class="field">
+                     <label for="otherIdentification" class="label" th:text="#{boatApplication.otherIdentification}">Muu tunniste</label>
+                     <div class="control">
+                         <input id="otherIdentification" class="input" type="text" name="otherIdentification"  th:placeholder="#{boatApplication.otherIdentificationPlaceholder}"/>
+                     </div>
+                     <span class="validation-message help is-danger" th:text="#{validation.required}"
+                           id="otherIdentification-error"></span>
+                 </div>
+                 <div class="field">
+                     <label class="label" for="extraInformation" th:text="#{boatApplication.extraInformation}">Lisätiedot</label>
+                     <textarea class="textarea" rows="1" name="extraInformation" id="extraInformation"
+                               th:placeholder="#{boatApplication.extraInformationPlaceHolder}" style="width: 350px"></textarea>
+                 </div>
             <div class="field">
-                <label for="boatRegistrationCode" class="label" th:text="#{boatApplication.registrationCode}">Rekisteritunnus</label>
-                <div class="control">
-                    <input id="boatRegistrationCode" class="input" type="text" name="boatRegistrationCode"
-                    data-required />
+                <h4 class="label" th:text="#{boatApplication.ownerShipTitle}">Veneen omistussuhde</h4>
+                <div class="control is-flex-direction-row">
+                    <div class="radio">
+                        <input type="radio" id="owner" name="ownerShip" value="owner" x-model="ownerShip">
+                        <label for="owner" th:text="#{boatApplication.ownerOption}">Omistaja</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" id="user" name="ownerShip" value="user" x-model="ownerShip">
+                        <label for="user" th:text="#{boatApplication.userOption}">Haltija</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" id="coOwner" name="ownerShip" value="coOwner" x-model="ownerShip">
+                        <label for="coOwner" th:text="#{boatApplication.coOwnerOption}">Yhteisomistajuus</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" id="futureOwner" name="ownerShip" value="futureOwner" x-model="ownerShip">
+                        <label for="futureOwner" th:text="#{boatApplication.futureOwnerOption}">Olen ostamassa veneen</label>
+                    </div>
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}"
-                      id="boatRegistrationCode-error"></span>
             </div>
+             </div>
+<div>
+            <h3 class="header" th:text="#{boatApplication.personalInformation}">Vuokraaja</h3>
             <div class="field">
-                <label for="boatName" class="label" th:text="#{boatApplication.boatName}">Veneen nimi</label>
-                <div class="control">
-                    <input id="boatName" class="input" type="text" name="boatName" data-required />
-                </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}"
-                      id="boatName-error"></span>
-            </div>
-            </div>
-            
-                <h4 class="label"th:text="#{boatApplication.personalInformation}">Vuokraaja</h4>
-            <div>
                 <p th:text="${user.name}">Testi Testaaja</p>
-                <p th:text="${user.ssn}">Testi Testaaja</p>
-                <p th:text="${user.address}">Testi Testaaja</p>
+                <p th:text="${user.ssn}">030594-6943</p>
+                <p th:text="${user.address}">Kenttätie 5B 34</p>
+                <p th:text="|${user.postalCode} ${user.municipal}|">02501 Espoo</p>
+            </div>
+                <div class="field">
+                    <label for="email" class="label required" th:text="#{boatApplication.email}">Sähköposti</label>
+                    <div class="control">
+                        <input id="email" class="input" type="text" name="email"  th:placeholder="#{boatApplication.email}" data-required/>
+                    </div>
+                    <span class="validation-message help is-danger" th:text="#{validation.required}"
+                          id="email-error"></span>
+                </div>
+                <div class="field">
+                    <label for="phone" class="label required" th:text="#{boatApplication.phone}">Puhelinnumero</label>
+                    <div class="control">
+                        <input id="phone" class="input" type="text" name="phone"  th:placeholder="#{boatApplication.phone}" data-required/>
+                    </div>
+                    <span class="validation-message help is-danger" th:text="#{validation.required}"
+                          id="phone-error"></span>
+                </div>
+</div>
+
+            <div>
+                <label class="checkbox justify-content-space-between">
+                    <input type="checkbox">
+                    <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
+                </label>
+
+                <label class="checkbox">
+                    <input type="checkbox"/>
+                    <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
+                </label>
             </div>
 
-            
-            <div>
-                <label for="extraInformation" th:text="#{boatApplication.extraInformation}">Lisätiedot</label>
-                <textarea class="textarea" rows="1" name="extraInformation" id="extraInformation" th:placeholder="#{boatApplication.extraInformationPlaceHolder}"></textarea>
-            </div>
-            
-            <div>
-            <label class="checkbox justify-content-space-between">
-                <input type="checkbox" >
-                <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
-            </label>
-
-            <label class="checkbox">
-                <input type="checkbox" />
-                <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
-            </label>
-            </div>
-            
             <div class="field">
                 <div class="control">
+                    <button id="cancel" class="button is-secondary" type="cancel"
+                            th:text="#{boatApplication.cancelReservation}">
+                        Peruuta varaus
+                    </button>
                     <button id="submit" class="button is-primary" type="submit"
                             th:text="#{boatApplication.continueToPaymentButton}">
                         Lähetä hakemus
                     </button>
                 </div>
             </div>
+
         </form>
     </div>
 </section>

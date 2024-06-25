@@ -12,6 +12,7 @@
     --spacing-extralarge: 32px;
     --control-padding-vertical: 8px;
     --control-padding-horizontal: 8px;
+    --bulma-block-spacing: 16px;
 }
 
 .input,
@@ -52,13 +53,18 @@ h3 {
     text-align: left;
 }
 
+.textarea {
+    resize: none;
+}
+
 .textarea,
 .input {
     border: none;
     border-bottom: 2px solid var(--black);
     border-radius: 0;
     box-shadow: none;
-    width: fit-content;
+    width: 250px;
+    min-width: auto;
 }
 
 .checkmark {
@@ -137,6 +143,7 @@ input[type=radio]:checked{
     width: 36px;
     height: 36px;
     accent-color: var(--bulma-primary);
+    border-radius: 4px;
 }
 
 .checkbox span {
@@ -147,3 +154,7 @@ form>div {
     margin-bottom: var(--spacing-extralarge);
 }
 
+.required::after {
+    content: ' *';
+    margin-left: 0.25em; /* Optional: add some spacing */
+}
