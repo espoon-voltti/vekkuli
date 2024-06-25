@@ -125,6 +125,7 @@ class AvailableBoatSpacesController {
         }
 
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+        model.addAttribute("boatTypes", boatTypes)
         val boatSpaceReservationRequest =
             object {
                 val amenity = BoatSpaceAmenity.Buoy
@@ -167,7 +168,9 @@ class AvailableBoatSpacesController {
             object {
                 val name = "${user.firstName} ${user.lastName}"
                 val ssn = user.nationalId
-                val address = ""
+                val address = "Miestentie 2 A 23"
+                val postalCode = "02150"
+                val municipal = "Espoo"
             }
         )
 
