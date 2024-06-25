@@ -13,7 +13,6 @@ class ReserveBoatSpacePage(private val page: Page) {
     val lenghtInput = page.getByTestId("length")
     val boatSpaceTypeSlipRadio = page.getByTestId("boatSpaceType-slip")
     val boatSpaceTypeTrailerRadio = page.getByTestId("boatSpaceType-trailer")
-    val amenityNoneCheckbox = page.getByTestId("none-checkbox")
     val amenityBuoyCheckbox = page.getByTestId("buoy-checkbox")
     val amenityRearBuoyCheckbox = page.getByTestId("rearBuoy-checkbox")
     val amenityBeamCheckbox = page.getByTestId("beam-checkbox")
