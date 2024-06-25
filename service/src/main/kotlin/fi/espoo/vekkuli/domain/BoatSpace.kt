@@ -95,17 +95,6 @@ fun Handle.getBoatSpaces(boatSpaceFilter: BoatSpaceFilter): List<BoatSpace> {
 
 data class Harbor(val location: Location, val boatSpaces: List<BoatSpaceOption>)
 
-data class BoatSpaceGroup(
-    val locationName: String,
-    val section: String,
-    val length_cm: Int,
-    val width_cm: Int,
-    val count: Int,
-    val amenity: BoatSpaceAmenity,
-    val price: Int,
-    val type: BoatSpaceType
-)
-
 data class BoatSpaceOption(
     val id: Int,
     val section: String,
@@ -114,7 +103,8 @@ data class BoatSpaceOption(
     val lengthCm: Int,
     val price: Int,
     val locationName: String,
-    val amenity: BoatSpaceAmenity
+    val amenity: BoatSpaceAmenity,
+    val formattedSizes: String = "${widthCm / 100.0} x ${lengthCm / 100.0} m".replace('.', ',')
 )
 
 fun Handle.getUnreservedBoatSpaceOptions(
