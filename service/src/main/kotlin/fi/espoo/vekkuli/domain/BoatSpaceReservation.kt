@@ -73,6 +73,8 @@ fun Handle.getReservationWithCitizen(id: Int): BoatSpaceReservationWithCitizen? 
             FROM boat_space_reservation bsr
             JOIN citizen c ON bsr.citizen_id = c.id 
             WHERE bsr.id = :id
+                AND bsr.status = 'Info' 
+                AND bsr.created > NOW() - INTERVAL '30 minutes'
             """.trimIndent()
         )
     query.bind("id", id)
