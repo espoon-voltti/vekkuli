@@ -31,3 +31,24 @@ fun Handle.getCitizen(id: UUID): Citizen? {
     val citizens = query.mapTo<Citizen>().toList()
     return if (citizens.isEmpty()) null else citizens[0]
 }
+
+fun Handle.updateCitizen(
+    id: Int,
+    phone: String,
+    email: String,
+): Citizen {
+    val query =
+        createQuery(
+            """
+            UPDATE citizen
+            SET phone = :phone, email = :email
+            WHERE id = :id
+            RETURNING *
+            """.trimIndent()
+        )
+    query.bind("id", id)
+    query.bind("phone", phone)
+    query.bind("email", email)
+
+    return query.mapTo<Citizen>().one()
+}

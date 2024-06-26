@@ -68,6 +68,49 @@ class AvailableBoatSpacesController {
         return "boat-space-options"
     }
 
+    @PostMapping("/venepaikka/varaus/{reservationId}")
+    fun reserveBoatSpace(
+        @PathVariable reservationId: Int,
+        @RequestParam boatType: BoatType,
+        @RequestParam width: Double,
+        @RequestParam length: Double,
+        @RequestParam depth: Double,
+        @RequestParam weight: Int,
+        @RequestParam boatRegistrationNumber: String,
+        @RequestParam boatName: String,
+        @RequestParam otherIdentification: String,
+        @RequestParam extraInformation: String,
+        @RequestParam ownerShip: OwnershipStatus,
+        @RequestParam email: String,
+        @RequestParam phone: String,
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val citizen = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        if (citizen == null) {
+            return "redirect:/"
+        }
+        val boat =
+            jdbi.inTransactionUnchecked {
+                it.insertBoat(
+                    citizen.id,
+                    boatRegistrationNumber,
+                    boatName,
+                    width.mToCm(),
+                    length.mToCm(),
+                    depth.mToCm(),
+                    weight,
+                    boatType,
+                    otherIdentification,
+                    extraInformation,
+                    ownerShip
+                )
+            }
+        jdbi.inTransactionUnchecked { it.updatetBoatSpaceReservation(reservationId, boat.id) }
+        return "payment"
+    }
+
     @PostMapping("/venepaikka/varaus")
     fun reserveBoatSpace(
         @RequestParam id: Int,

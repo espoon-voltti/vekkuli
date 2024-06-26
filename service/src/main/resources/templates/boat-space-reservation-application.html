@@ -10,7 +10,7 @@
 <body layout:fragment="body">
 <section class="section">
     <div class="container">
-        <form id="form" action="/kuntalainen/venepaikkahakemus" method="post" novalidate x-data="{ownerShip: ''}">
+        <form id="form" th:action="|/kuntalainen/venepaikka/varaus/${reservationId}|" method="post" novalidate x-data="{ownerShip: ''}">
             <div>
                 <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
 
@@ -115,22 +115,22 @@
                                th:placeholder="#{boatApplication.extraInformationPlaceHolder}" style="width: 350px"></textarea>
                  </div>
             <div class="field">
-                <h4 class="label" th:text="#{boatApplication.ownerShipTitle}">Veneen omistussuhde</h4>
+                <h4 class="label required" th:text="#{boatApplication.ownerShipTitle}">Veneen omistussuhde</h4>
                 <div class="control is-flex-direction-row">
                     <div class="radio">
-                        <input type="radio" id="owner" name="ownerShip" value="owner" x-model="ownerShip">
+                        <input type="radio" id="owner" name="ownerShip" value="Owner" x-model="ownerShip">
                         <label for="owner" th:text="#{boatApplication.ownerOption}">Omistaja</label>
                     </div>
                     <div class="radio">
-                        <input type="radio" id="user" name="ownerShip" value="user" x-model="ownerShip">
+                        <input type="radio" id="user" name="ownerShip" value="User" x-model="ownerShip">
                         <label for="user" th:text="#{boatApplication.userOption}">Haltija</label>
                     </div>
                     <div class="radio">
-                        <input type="radio" id="coOwner" name="ownerShip" value="coOwner" x-model="ownerShip">
+                        <input type="radio" id="coOwner" name="ownerShip" value="CoOwner" x-model="ownerShip">
                         <label for="coOwner" th:text="#{boatApplication.coOwnerOption}">Yhteisomistajuus</label>
                     </div>
                     <div class="radio">
-                        <input type="radio" id="futureOwner" name="ownerShip" value="futureOwner" x-model="ownerShip">
+                        <input type="radio" id="futureOwner" name="ownerShip" value="FutureOwner" x-model="ownerShip">
                         <label for="futureOwner" th:text="#{boatApplication.futureOwnerOption}">Olen ostamassa veneen</label>
                     </div>
                 </div>
@@ -164,12 +164,12 @@
 
             <div>
                 <label class="checkbox justify-content-space-between">
-                    <input type="checkbox">
+                    <input type="checkbox" data-required>
                     <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
                 </label>
 
                 <label class="checkbox">
-                    <input type="checkbox"/>
+                    <input type="checkbox" data-required/>
                     <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
                 </label>
             </div>
