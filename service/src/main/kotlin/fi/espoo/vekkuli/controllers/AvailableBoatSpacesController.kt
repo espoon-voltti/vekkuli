@@ -5,6 +5,8 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.mToCm
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.Min
@@ -223,8 +225,6 @@ class AvailableBoatSpacesController {
         return "boat-space-reservation-application"
     }
 }
-
-fun Float?.mToCm(): Int? = if (this == null) null else (this * 100F).toInt()
 
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 internal class UnauthorizedException : RuntimeException()
