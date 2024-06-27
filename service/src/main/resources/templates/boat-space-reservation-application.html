@@ -86,7 +86,7 @@
                  <div class="field" x-data="{ noRegistration: false }">
                      <h4 class="label required" th:text="#{boatApplication.boatIdentificationTitle}">Veneen rekisteritunnus / tunnistenumero</h4>
                      <label class="checkbox">
-                         <input type="checkbox" x-model="noRegistration"/>
+                         <input id="noRegistration" type="checkbox" x-model="noRegistration"/>
                          <span th:text="#{boatApplication.noRegistrationNumber}" >Ei rekisteritunnusta</span>
                      </label>
                              <input x-show="!noRegistration" id="boatRegistrationNumber" class="input" type="text" name="boatRegistrationNumber"
@@ -164,12 +164,12 @@
 
             <div>
                 <label class="checkbox justify-content-space-between">
-                    <input type="checkbox" data-required>
+                    <input type="checkbox" id="certifyInfoCheckbox" data-required>
                     <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
                 </label>
 
                 <label class="checkbox">
-                    <input type="checkbox" data-required/>
+                    <input type="checkbox" id="agreementCheckbox" data-required/>
                     <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
                 </label>
             </div>
