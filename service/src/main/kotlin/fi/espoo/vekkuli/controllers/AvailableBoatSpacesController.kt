@@ -106,7 +106,7 @@ class AvailableBoatSpacesController {
                 )
             }
         jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, phone, email) }
-        jdbi.inTransactionUnchecked { it.updatetBoatSpaceReservation(reservationId, boat.id) }
+        jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
         return "payment"
     }
 

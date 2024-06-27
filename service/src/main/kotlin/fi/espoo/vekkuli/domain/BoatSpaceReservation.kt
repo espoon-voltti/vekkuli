@@ -50,7 +50,7 @@ fun Handle.insertBoatSpaceReservation(
     return query.mapTo<BoatSpaceReservation>().one()
 }
 
-fun Handle.updatetBoatSpaceReservation(
+fun Handle.updateBoatSpaceReservation(
     reservationId: Int,
     boatId: Int,
 ): BoatSpaceReservation {
