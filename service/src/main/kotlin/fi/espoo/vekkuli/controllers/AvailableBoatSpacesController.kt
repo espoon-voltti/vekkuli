@@ -88,11 +88,7 @@ class AvailableBoatSpacesController {
         request: HttpServletRequest,
         model: Model
     ): String {
-        val authenticatedUser = request.getAuthenticatedUser()
-        val citizen = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
-        if (citizen == null) {
-            return "redirect:/"
-        }
+        val citizen = getCitizen(request) ?: return "redirect:/"
         val boat =
             jdbi.inTransactionUnchecked {
                 it.insertBoat(
@@ -122,11 +118,7 @@ class AvailableBoatSpacesController {
         request: HttpServletRequest,
         model: Model
     ): String {
-        val authenticatedUser = request.getAuthenticatedUser()
-        val citizen = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
-        if (citizen == null) {
-            return "redirect:/"
-        }
+        val citizen = getCitizen(request) ?: return "redirect:/"
         val boatSpace =
             jdbi.inTransactionUnchecked {
                 it.getUnreservedBoatSpace(id)
@@ -174,8 +166,7 @@ class AvailableBoatSpacesController {
         response: HttpServletResponse,
         model: Model
     ): String {
-        val authenticatedUser = request.getAuthenticatedUser()
-        val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        val user = getCitizen(request)
         val reservation =
             jdbi.inTransactionUnchecked {
                 it.getReservationWithCitizen(reservationId)
@@ -223,6 +214,12 @@ class AvailableBoatSpacesController {
         )
 
         return "boat-space-reservation-application"
+    }
+
+    private fun getCitizen(request: HttpServletRequest): Citizen? {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val citizen = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+        return citizen
     }
 }
 
