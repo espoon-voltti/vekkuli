@@ -1,9 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2023-2024 City of Espoo
- *
- * SPDX-License-Identifier: LGPL-2.1-or-later
- */
-
 CREATE TYPE OwnershipStatus AS ENUM ('Owner', 'User', 'CoOwner', 'FutureOwner', 'JetSki');
 
 CREATE TABLE boat (

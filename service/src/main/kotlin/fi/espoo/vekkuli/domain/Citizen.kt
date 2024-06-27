@@ -6,6 +6,7 @@ package fi.espoo.vekkuli.domain
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import java.time.LocalDate
 import java.util.UUID
 
 data class Citizen(
@@ -33,7 +34,7 @@ fun Handle.getCitizen(id: UUID): Citizen? {
 }
 
 fun Handle.updateCitizen(
-    id: Int,
+    id: UUID,
     phone: String,
     email: String,
 ): Citizen {
@@ -41,7 +42,7 @@ fun Handle.updateCitizen(
         createQuery(
             """
             UPDATE citizen
-            SET phone = :phone, email = :email
+            SET phone = :phone, email = :email, updated = :updated
             WHERE id = :id
             RETURNING *
             """.trimIndent()
@@ -49,6 +50,7 @@ fun Handle.updateCitizen(
     query.bind("id", id)
     query.bind("phone", phone)
     query.bind("email", email)
+    query.bind("updated", LocalDate.now())
 
     return query.mapTo<Citizen>().one()
 }
