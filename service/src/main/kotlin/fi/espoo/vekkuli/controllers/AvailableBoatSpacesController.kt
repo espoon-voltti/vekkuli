@@ -50,8 +50,9 @@ class AvailableBoatSpacesController {
 
     @RequestMapping("/partial/vapaat-paikat")
     fun freeSpaces(
-        @RequestParam @Min(0) width: Float?,
-        @RequestParam @Min(0) length: Float?,
+        @RequestParam(required = false) boatType: BoatType?,
+        @RequestParam @Min(0) width: Double?,
+        @RequestParam @Min(0) length: Double?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
         @RequestParam boatSpaceType: BoatSpaceType?,
         @RequestParam harbor: List<String>?,
@@ -59,10 +60,11 @@ class AvailableBoatSpacesController {
     ): String {
         val harbors =
             jdbi.inTransactionUnchecked {
-                it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
+                it.getUnreservedBoatSpaceOptions(width?.mToCm(), length?.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
             }
 
         model.addAttribute("harbors", harbors)
+        model.addAttribute("boat", BoatFilter(width, length, boatType))
         return "boat-space-options"
     }
 
@@ -101,12 +103,28 @@ class AvailableBoatSpacesController {
             }
         val env = System.getenv("VOLTTI_ENV")
         val baseUrl = if (env == "staging") "https://staging.varaukset.espoo.fi" else "http://localhost:3000"
-        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
+        // Construct the query parameters
+        val queryParams = mutableListOf<String>()
+        boatType?.let { queryParams.add("boatType=${it.name}") }
+        width?.let { queryParams.add("width=$it") }
+        length?.let { queryParams.add("length=$it") }
+
+        // Join the query parameters with '&'
+        val queryString = queryParams.joinToString("&")
+
+        // Construct the redirect URL
+        val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
+        val fullUrl = if (queryString.isNotEmpty()) "$redirectUrl?$queryString" else redirectUrl
+
+        return "redirect:$fullUrl"
     }
 
     @RequestMapping("/venepaikka/varaus/{reservationId}")
     fun boatSpaceApplication(
         @PathVariable reservationId: Int,
+        @RequestParam(required = false) boatType: BoatType?,
+        @RequestParam(required = false) width: Double?,
+        @RequestParam(required = false) length: Double?,
         request: HttpServletRequest,
         response: HttpServletResponse,
         model: Model
@@ -119,7 +137,7 @@ class AvailableBoatSpacesController {
             }
 
         if (reservation == null) return "redirect:/"
-        val boat = BoatFilter(6.0, 8.0, BoatType.Sailboat)
+        val boat = BoatFilter(width, length, boatType)
 
         if (user == null || reservation == null || reservation.citizenId != user.id) {
             throw UnauthorizedException()
