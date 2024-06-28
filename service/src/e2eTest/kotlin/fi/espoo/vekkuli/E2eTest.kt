@@ -32,9 +32,6 @@ class E2eTest : PlaywrightTest() {
         reservationPage.firstReserveButton.click()
 
         // Fill in the boat information
-        reservationPage.boatTypeSelect.selectOption("Sailboat")
-        reservationPage.widthInput.fill("3")
-        reservationPage.lenghtInput.fill("6")
         reservationPage.depthInput.fill("1.5")
         reservationPage.weightInput.fill("2000")
         reservationPage.boatName.fill("My Boat")

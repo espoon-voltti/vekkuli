@@ -42,7 +42,7 @@
                                 <option
                                         th:each="option : ${boatTypes}"
                                         th:value="${option}"
-                                        th:selected="${option==boat.type.toString()}"
+                                        th:selected="${option==boat.type?.toString()}"
                                         th:text="#{${'boatApplication.' + (option[0].toLowerCase() + option.substring(1))}}"
                                 ></option>
                             </select>
