@@ -50,7 +50,7 @@ fun Handle.insertBoatSpaceReservation(
     return query.mapTo<BoatSpaceReservation>().one()
 }
 
-data class BoatSpaceReservationWithCitizen(
+data class ReservationWithDependencies(
     val id: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
@@ -62,21 +62,36 @@ data class BoatSpaceReservationWithCitizen(
     val firstName: String,
     val lastName: String,
     val email: String,
-    val phone: String
+    val phone: String,
+    val type: BoatSpaceType,
+    val section: String,
+    val placeNumber: Int,
+    val amenity: BoatSpaceAmenity,
+    val widthCm: Int,
+    val lengthCm: Int,
+    val description: String,
+    val locationName: String,
+    val price: Int
 )
 
-fun Handle.getReservationWithCitizen(id: Int): BoatSpaceReservationWithCitizen? {
+fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
     val query =
         createQuery(
             """
-            SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone
+            SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                location.name as location_name, price.price as price, 
+                bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                  bs.description
             FROM boat_space_reservation bsr
             JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location_id = location.id
+            JOIN price ON price_id = price.id
             WHERE bsr.id = :id
                 AND bsr.status = 'Info' 
                 AND bsr.created > NOW() - INTERVAL '30 minutes'
             """.trimIndent()
         )
     query.bind("id", id)
-    return query.mapTo<BoatSpaceReservationWithCitizen>().findOne().orElse(null)
+    return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
 }

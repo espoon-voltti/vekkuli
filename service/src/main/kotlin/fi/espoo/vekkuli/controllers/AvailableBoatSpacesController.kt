@@ -17,6 +17,12 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
+data class BoatFilter(
+    val width: Double?,
+    val length: Double?,
+    val type: BoatType?
+)
+
 @Controller
 @RequestMapping("/kuntalainen")
 class AvailableBoatSpacesController {
@@ -44,8 +50,9 @@ class AvailableBoatSpacesController {
 
     @RequestMapping("/partial/vapaat-paikat")
     fun freeSpaces(
-        @RequestParam @Min(0) width: Float?,
-        @RequestParam @Min(0) length: Float?,
+        @RequestParam(required = false) boatType: BoatType?,
+        @RequestParam @Min(0) width: Double?,
+        @RequestParam @Min(0) length: Double?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
         @RequestParam boatSpaceType: BoatSpaceType?,
         @RequestParam harbor: List<String>?,
@@ -53,16 +60,20 @@ class AvailableBoatSpacesController {
     ): String {
         val harbors =
             jdbi.inTransactionUnchecked {
-                it.getUnreservedBoatSpaceOptions(width.mToCm(), length.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
+                it.getUnreservedBoatSpaceOptions(width?.mToCm(), length?.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
             }
 
         model.addAttribute("harbors", harbors)
+        model.addAttribute("boat", BoatFilter(width, length, boatType))
         return "boat-space-options"
     }
 
     @PostMapping("/venepaikka/varaus")
     fun reserveBoatSpace(
         @RequestParam id: Int,
+        @RequestParam(required = false) boatType: BoatType?,
+        @RequestParam(required = false) width: Double?,
+        @RequestParam(required = false) length: Double?,
         request: HttpServletRequest,
         model: Model
     ): String {
@@ -92,22 +103,28 @@ class AvailableBoatSpacesController {
             }
         val env = System.getenv("VOLTTI_ENV")
         val baseUrl = if (env == "staging") "https://staging.varaukset.espoo.fi" else "http://localhost:3000"
-        return "redirect:$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
+        // Construct the query parameters
+        val queryParams = mutableListOf<String>()
+        boatType?.let { queryParams.add("boatType=${it.name}") }
+        width?.let { queryParams.add("width=$it") }
+        length?.let { queryParams.add("length=$it") }
+
+        // Join the query parameters with '&'
+        val queryString = queryParams.joinToString("&")
+
+        // Construct the redirect URL
+        val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
+        val fullUrl = if (queryString.isNotEmpty()) "$redirectUrl?$queryString" else redirectUrl
+
+        return "redirect:$fullUrl"
     }
 
     @RequestMapping("/venepaikka/varaus/{reservationId}")
     fun boatSpaceApplication(
         @PathVariable reservationId: Int,
-//        @RequestParam amenity: BoatSpaceAmenity,
-//        @RequestParam boatWidthInMeters: Float,
-//        @RequestParam boatLengthInMeters: Float,
-//        @RequestParam harbor: String,
-//        @RequestParam section: String,
-//        @RequestParam boatSpaceWidthInMeters: Double,
-//        @RequestParam boatSpaceLengthInMeters: Double,
-//        @RequestParam boatType: BoatType,
-//        @RequestParam boatWeightInKg: Int,
-//        @RequestParam boatDepthInMeters: Double,
+        @RequestParam(required = false) boatType: BoatType?,
+        @RequestParam(required = false) width: Double?,
+        @RequestParam(required = false) length: Double?,
         request: HttpServletRequest,
         response: HttpServletResponse,
         model: Model
@@ -119,58 +136,45 @@ class AvailableBoatSpacesController {
                 it.getReservationWithCitizen(reservationId)
             }
 
+        if (reservation == null) return "redirect:/"
+        val boat = BoatFilter(width, length, boatType)
+
         if (user == null || reservation == null || reservation.citizenId != user.id) {
             throw UnauthorizedException()
         }
+        val mockedUser =
+            // Todo: fetch real data here
+            user.copy(
+                address = "Miestentie 2 A 23",
+                postalCode = "02150",
+                municipality = "Espoo"
+            )
+
+        // Todo: do not calculate alv here
+        val calculatedAlv = reservation.price * 0.1
+        val boatSpaceFront =
+            object {
+                val type = reservation.type
+                val section = reservation.section
+                val placeNumber = reservation.placeNumber
+                val amenity = reservation.amenity
+                val widthInMeters = reservation.widthCm.cmToM()
+                val lengthInMeters = reservation.lengthCm.cmToM()
+                val description: String = reservation.description
+                val harbor = reservation.locationName
+
+                val priceWithoutAlv = (reservation.price * 1.0) - calculatedAlv
+                val priceAlv = calculatedAlv
+                val priceTotal = reservation.price
+            }
 
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         model.addAttribute("boatTypes", boatTypes)
-        val boatSpaceReservationRequest =
-            object {
-                val amenity = BoatSpaceAmenity.Buoy
-                val boatWidthInMeters = 2.0
-                val boatLengthInMeters = 5.0
-                val harbor = "Soukka"
-                val section = "B"
-                val boatSpaceWidthInMeters = 2.5
-                val boatSpaceLengthInMeters = 10.0
-                val boatType = BoatType.Sailboat
-                val boatWeightInKg = 1500
-                val boatDepthInMeters = 1.5
-            }
-        val boatSpace =
-            object {
-                val type = BoatSpaceType.Slip
-                val section = boatSpaceReservationRequest.section
-                val placeNumber = 1
-                val amenity = boatSpaceReservationRequest.amenity
-                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
-                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
-                val description = "Description"
-                val harbor = boatSpaceReservationRequest.harbor
-                val priceWithoutAlv = 250.0
-                val priceAlv = 25
-                val priceTotal = 275.0
-            }
-        model.addAttribute("boatSpace", boatSpace)
-        val boat =
-            object {
-                val type = boatSpaceReservationRequest.boatType
-                val widthInMeters = boatSpaceReservationRequest.boatSpaceWidthInMeters
-                val lengthInMeters = boatSpaceReservationRequest.boatSpaceLengthInMeters
-                val depthInMeters = boatSpaceReservationRequest.boatDepthInMeters
-                val weightInKg = boatSpaceReservationRequest.boatWeightInKg
-            }
+        model.addAttribute("boatSpace", boatSpaceFront)
         model.addAttribute("boat", boat)
         model.addAttribute(
             "user",
-            object {
-                val name = "${user.firstName} ${user.lastName}"
-                val ssn = user.nationalId
-                val address = "Miestentie 2 A 23"
-                val postalCode = "02150"
-                val municipal = "Espoo"
-            }
+            mockedUser
         )
 
         return "boat-space-reservation-application"

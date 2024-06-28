@@ -23,6 +23,8 @@ fun Int.cmToM(): Double = this / 100.0
 
 fun Float.mToCm(): Int = (this * 100F).toInt()
 
+fun Double.mToCm(): Int = (this * 100F).toInt()
+
 @Controller
 @RequestMapping("/virkailija")
 class BoatSpacesController {

@@ -15,6 +15,9 @@ data class Citizen(
     val lastName: String,
     val email: String,
     val phone: String,
+    val address: String?,
+    val postalCode: String?,
+    val municipality: String?,
 )
 
 fun Handle.getCitizen(id: UUID): Citizen? {
