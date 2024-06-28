@@ -27,6 +27,9 @@
             <td>
                 <form action="/kuntalainen/venepaikka/varaus" method="post">
                     <input type="hidden" name="id" th:value="${result.id}" />
+                    <input type="hidden" name="boatType" th:value="${boatType}" />
+                    <input type="hidden" name="width" th:value="${width}" />
+                    <input type="hidden" name="length" th:value="${length}" />
                     <button hx-post="/kuntalainen/venepaikka/varaus"
                             hx-swap="outerHTML"
                             hx-target="body"

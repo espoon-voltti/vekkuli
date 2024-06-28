@@ -138,10 +138,10 @@
 <div>
             <h3 class="header" th:text="#{boatApplication.personalInformation}">Vuokraaja</h3>
             <div class="field">
-                <p th:text="${user.name}">Testi Testaaja</p>
-                <p th:text="${user.ssn}">030594-6943</p>
+                <p th:text="|${user.firstName} ${user.lastName}|">Testi Testaaja</p>
+                <p th:text="${user.nationalId}">030594-6943</p>
                 <p th:text="${user.address}">Kenttätie 5B 34</p>
-                <p th:text="|${user.postalCode} ${user.municipal}|">02501 Espoo</p>
+                <p th:text="|${user.postalCode} ${user.municipality}|">02501 Espoo</p>
             </div>
                 <div class="field">
                     <label for="email" class="label required" th:text="#{boatApplication.email}">Sähköposti</label>
