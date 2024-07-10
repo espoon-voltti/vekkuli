@@ -20,6 +20,7 @@ data class Boat(
 )
 
 enum class BoatType {
+    Unknown,
     Rowboat,
     OutboardMotor,
     InboardMotor,
@@ -31,8 +32,7 @@ enum class OwnershipStatus {
     Owner,
     User,
     CoOwner,
-    FutureOwner,
-    JetSki
+    FutureOwner
 }
 
 fun Handle.insertBoat(
