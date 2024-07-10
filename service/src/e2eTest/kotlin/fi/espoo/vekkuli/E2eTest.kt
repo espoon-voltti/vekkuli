@@ -32,7 +32,7 @@ class E2eTest : PlaywrightTest() {
 
         // Fill in the boat information
         scrollIntoView(reservationPage.boatTypeSelect).selectOption("Sailboat")
-        scrollIntoView(reservationPage.widthInput).fill("3")
+        //       scrollIntoView(reservationPage.widthInput).fill("3")
 //        scrollIntoView(reservationPage.lengthInput).fill("6")
 //        scrollIntoView(reservationPage.depthInput).fill("1.5")
 //        scrollIntoView(reservationPage.weightInput).fill("2000")
