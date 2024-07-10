@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 class E2eTest : PlaywrightTest() {
     @Test
     fun reservingABoatSpace() {
-        val page = browser.newPage()
         page.navigate(baseUrl)
 
         page.getByTestId("loginButton").click()
@@ -32,16 +31,16 @@ class E2eTest : PlaywrightTest() {
         reservationPage.firstReserveButton.click()
 
         // Fill in the boat information
-//        reservationPage.boatTypeSelect.selectOption("Sailboat")
-//        reservationPage.widthInput.fill("3")
-//        reservationPage.lenghtInput.fill("6")
-//        reservationPage.depthInput.fill("1.5")
-//        reservationPage.weightInput.fill("2000")
-//        reservationPage.boatName.fill("My Boat")
-//        reservationPage.otherIdentification.fill("ID12345")
+        reservationPage.boatTypeSelect.selectOption("Sailboat")
+        reservationPage.widthInput.fill("3")
+        reservationPage.lenghtInput.fill("6")
+        reservationPage.depthInput.fill("1.5")
+        reservationPage.weightInput.fill("2000")
+        reservationPage.boatName.fill("My Boat")
+        reservationPage.otherIdentification.fill("ID12345")
 //        reservationPage.noRegistrationCheckbox.check()
 //        reservationPage.ownerRadioButton.check()
-
+//
 //        reservationPage.email.fill("test@example.com")
 //        reservationPage.phone.fill("123456789")
 //        reservationPage.certifyInfoCheckbox.check()
