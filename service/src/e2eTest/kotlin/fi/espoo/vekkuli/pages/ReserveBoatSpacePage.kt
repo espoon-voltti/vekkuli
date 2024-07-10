@@ -25,7 +25,7 @@ class ReserveBoatSpacePage(private val page: Page) {
     val paymentPageTitle = page.locator("text='Maksunäkymä'")
     val boatTypeSelect = page.getByTestId("boatType")
     val widthInput = page.getByTestId("width")
-    val lenghtInput = page.getByTestId("length")
+    val lengthInput = page.getByTestId("length")
     val depthInput = page.getByTestId("depth")
     val weightInput = page.getByTestId("weight")
     val noRegistrationCheckbox = page.getByTestId("noRegistrationNumber1")

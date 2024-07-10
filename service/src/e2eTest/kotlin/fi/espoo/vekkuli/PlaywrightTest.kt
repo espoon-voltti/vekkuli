@@ -110,4 +110,9 @@ abstract class PlaywrightTest {
     fun closeContext() {
         context.close()
     }
+
+    fun scrollIntoView(l: Locator): Locator {
+        l.scrollIntoViewIfNeeded()
+        return l
+    }
 }
