@@ -92,7 +92,7 @@ data class ReservationInput(
         fun emptyInput(): ReservationInput {
             return ReservationInput(
                 reservationId = null,
-                boatType = BoatType.Unknown,
+                boatType = BoatType.OutboardMotor,
                 width = null,
                 length = null,
                 depth = null,
@@ -279,7 +279,7 @@ class AvailableBoatSpacesController {
                 val priceWithoutAlv = (reservation.price * 1.0) - calculatedAlv
             }
 
-        model.addAttribute("boatTypes", listOf("Unknown", "Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki"))
+        model.addAttribute("boatTypes", listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki"))
         model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
         model.addAttribute("input", input)
         model.addAttribute("boatSpace", boatSpaceFront)

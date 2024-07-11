@@ -20,7 +20,6 @@ data class Boat(
 )
 
 enum class BoatType {
-    Unknown,
     Rowboat,
     OutboardMotor,
     InboardMotor,
