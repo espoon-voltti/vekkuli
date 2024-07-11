@@ -5,6 +5,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.mToCm
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
@@ -18,12 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 const val TEXT_HTML_UTF8 = "${MediaType.TEXT_HTML_VALUE};charset=UTF-8"
-
-fun Int.cmToM(): Double = this / 100.0
-
-fun Float.mToCm(): Int = (this * 100F).toInt()
-
-fun Double.mToCm(): Int = (this * 100F).toInt()
 
 @Controller
 @RequestMapping("/virkailija")

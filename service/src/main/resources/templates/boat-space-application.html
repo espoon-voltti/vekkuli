@@ -26,11 +26,6 @@
             }
         }
     </script>
-    <style>
-        .validation-message {
-            display: none;
-        }
-    </style>
 </head>
 <body layout:fragment="body">
 <section class="section">
@@ -51,7 +46,7 @@
                                 th:text="#{boatApplication.harborSpace}"></option>
                     </select>
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                <span class="help is-danger" th:text="#{validation.required}"
                       id="boatSpaceType-error"></span>
             </div>
             <div class="field">
@@ -65,7 +60,7 @@
                                 th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}"></option>
                     </select>
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}"
+                <span class="help is-danger" th:text="#{validation.required}"
                       id="amenity-error"></span>
             </div>
             <h2 class="subtitle" th:text="#{boatApplication.personalInformation}">Henkilötiedot</h2>
@@ -74,7 +69,7 @@
                 <div class="control">
                     <input id="name" class="input" type="text" name="name" data-required />
                 </div>
-                <span class="validation-message help is-danger" th:text="#{validation.required}" id="name-error"></span>
+                <span class="help is-danger" th:text="#{validation.required}" id="name-error"></span>
             </div>
             <div class="field">
                 <label for="email" class="label" th:text="#{boatApplication.email}">Sähköposti</label>

@@ -10,14 +10,6 @@ import org.jdbi.v3.json.Json
 import java.time.LocalDateTime
 import java.util.UUID
 
-enum class BoatType {
-    Rowboat,
-    OutboardMotor,
-    InboardMotor,
-    Sailboat,
-    JetSki
-}
-
 data class LocationWish(
     val locationId: Int,
     val priority: Int,

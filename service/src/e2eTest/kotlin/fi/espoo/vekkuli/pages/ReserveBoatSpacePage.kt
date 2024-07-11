@@ -8,9 +8,10 @@ class ReserveBoatSpacePage(private val page: Page) {
         page.navigate("$baseUrl/kuntalainen/venepaikat")
     }
 
-    val boatTypeSelect = page.getByTestId("boatType")
-    val widthInput = page.getByTestId("width")
-    val lenghtInput = page.getByTestId("length")
+    val boatTypeSelectFilter = page.getByTestId("boatTypeFilter")
+    val widthFilterInput = page.getByTestId("widthFilter")
+    val lenghtFilterInput = page.getByTestId("lengthFilter")
+
     val boatSpaceTypeSlipRadio = page.getByTestId("boatSpaceType-slip")
     val boatSpaceTypeTrailerRadio = page.getByTestId("boatSpaceType-trailer")
     val amenityBuoyCheckbox = page.getByTestId("buoy-checkbox")
@@ -21,4 +22,19 @@ class ReserveBoatSpacePage(private val page: Page) {
     val laajalahtiCheckbox = page.getByTestId("laajalahti-checkbox")
     val harborHeaders = page.locator(".harbor-header")
     val firstReserveButton = page.locator(".reserve-button").first()
+    val paymentPageTitle = page.locator("text='Maksunäkymä'")
+    val boatTypeSelect = page.getByTestId("boatType")
+    val widthInput = page.getByTestId("width")
+    val lengthInput = page.getByTestId("length")
+    val depthInput = page.getByTestId("depth")
+    val weightInput = page.getByTestId("weight")
+    val noRegistrationCheckbox = page.getByTestId("noRegistrationNumber1")
+    val boatName = page.getByTestId("boatName")
+    val otherIdentification = page.getByTestId("otherIdentification")
+    val email = page.getByTestId("email")
+    val phone = page.getByTestId("phone")
+    val certifyInfoCheckbox = page.getByTestId("certifyInformation1")
+    val agreementCheckbox = page.getByTestId("agreeToRules1")
+    val submitButton = page.getByTestId("submit")
+    val ownerRadioButton = page.getByTestId("ownerShip1")
 }

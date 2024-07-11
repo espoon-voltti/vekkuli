@@ -50,6 +50,28 @@ fun Handle.insertBoatSpaceReservation(
     return query.mapTo<BoatSpaceReservation>().one()
 }
 
+fun Handle.updateBoatSpaceReservation(
+    reservationId: Int,
+    boatId: Int,
+): BoatSpaceReservation {
+    val query =
+        createQuery(
+            """
+            UPDATE boat_space_reservation
+            SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
+            WHERE id = :id
+                AND status = 'Info' 
+                AND created > NOW() - INTERVAL '30 minutes'
+            RETURNING *
+            """.trimIndent()
+        )
+    query.bind("updatedTime", LocalDate.now())
+    query.bind("id", reservationId)
+    query.bind("boatId", boatId)
+
+    return query.mapTo<BoatSpaceReservation>().one()
+}
+
 data class ReservationWithDependencies(
     val id: Int,
     val boatSpaceId: Int,

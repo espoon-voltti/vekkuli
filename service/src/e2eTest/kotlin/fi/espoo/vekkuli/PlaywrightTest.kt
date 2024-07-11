@@ -1,15 +1,9 @@
 package fi.espoo.vekkuli
 
-import com.microsoft.playwright.Browser
-import com.microsoft.playwright.BrowserType
-import com.microsoft.playwright.Page
-import com.microsoft.playwright.Playwright
+import com.microsoft.playwright.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.io.File
@@ -25,6 +19,10 @@ abstract class PlaywrightTest {
 
     protected lateinit var playwright: Playwright
     protected lateinit var browser: Browser
+
+    // New instance for each test method.
+    protected lateinit var context: BrowserContext
+    protected lateinit var page: Page
 
     @BeforeAll
     fun beforeAllSuper() {
@@ -97,32 +95,24 @@ abstract class PlaywrightTest {
             )
     }
 
-    @BeforeEach
-    fun beforeEachSuper() {
-    }
-
     @AfterAll
     fun afterAllSuper() {
-        browser.close()
         playwright.close()
     }
 
-    protected fun getPageWithDefaultOptions(): Page {
-        val page = browser.newPage()
-        val timeout = if (runningInDocker) 10_000.0 else 2000.0
-        page.setDefaultTimeout(timeout)
-        page.setDefaultNavigationTimeout(timeout)
-        if (E2E_DEBUG_LOGGING) {
-            page.onDOMContentLoaded {
-                println("DOMContentLoaded")
-            }
-            page.onConsoleMessage { println("Console ${it.type()}: ${it.text()}") }
-            page.onPageError { println("PageError") }
-            page.onRequest { println("Request ${it.method()} ${it.url()}") }
-            page.onResponse { println("Response ${it.status()} ${it.url()}") }
-            page.onRequestFailed { println("RequestFailed") }
-            page.onRequestFinished { println("RequestFinished") }
-        }
-        return page
+    @BeforeEach
+    fun createContextAndPage() {
+        context = browser.newContext()
+        page = context.newPage()
+    }
+
+    @AfterEach
+    fun closeContext() {
+        context.close()
+    }
+
+    fun scrollIntoView(l: Locator): Locator {
+        l.scrollIntoViewIfNeeded()
+        return l
     }
 }
