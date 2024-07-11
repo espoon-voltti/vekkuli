@@ -32,8 +32,8 @@
                     <div class="control">
                         <div class="select">
                             <select th:field="*{boatType}" >
-                                <option
-                                        th:each="option : ${boatTypes}"
+                                <option value="" th:text="#{'boatApplication.noneOption'}"></option>
+                                <option th:each="option : ${boatTypes}"
                                         th:value="${option}"
                                         th:text="#{${'boatApplication.boatTypeOption.' + option}}"
                                 ></option>
