@@ -8,11 +8,8 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.validation.Valid
-import jakarta.validation.constraints.AssertTrue
-import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
+import jakarta.validation.*
+import jakarta.validation.constraints.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +19,7 @@ import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
+import kotlin.reflect.KClass
 
 data class BoatFilter(
     val width: Double?,
@@ -29,57 +27,84 @@ data class BoatFilter(
     val type: BoatType?
 )
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Constraint(validatedBy = [BoatRegistrationValidator::class])
+annotation class ValidBoatRegistration(
+    val message: String = "{validation.required}",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+
+class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, ReservationInput> {
+    override fun isValid(
+        value: ReservationInput,
+        context: ConstraintValidatorContext
+    ): Boolean {
+        if (value.noRegistrationNumber != true && value.boatRegistrationNumber.isNullOrBlank()) {
+            context.disableDefaultConstraintViolation()
+            context.buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate)
+                .addPropertyNode("boatRegistrationNumber")
+                .addConstraintViolation()
+            return false
+        }
+        return true
+    }
+}
+
+@ValidBoatRegistration
 data class ReservationInput(
-    @field:NotNull(message = "Varaus ID tarvitaan")
+    @field:NotNull(message = "{validation.required}")
     private val reservationId: Int?,
-    @field:NotNull(message = "Venetyyppi tarvitaan")
+    @field:NotNull(message = "{validation.required}")
     val boatType: BoatType?,
-    @field:NotNull(message = "Veneen leveys tarvitaan")
+    @field:NotNull(message = "{validation.required}")
+    @field:Positive(message = "{validation.positiveNumber}")
     val width: Double?,
-    @field:NotNull(message = "Veneen pituus tarvitaan")
+    @field:NotNull(message = "{validation.required}")
+    @field:Positive(message = "{validation.positiveNumber}")
     val length: Double?,
-    @field:NotNull(message = "{validation.age.NotNull}")
+    @field:NotNull(message = "{validation.required}")
+    @field:Positive(message = "{validation.positiveNumber}")
     val depth: Double?,
-    @field:NotNull(message = "{validation.age.NotNull}")
+    @field:NotNull(message = "{validation.required}")
+    @field:Positive(message = "{validation.positiveNumber}")
     val weight: Int?,
     val noRegistrationNumber: Boolean?,
     val boatRegistrationNumber: String?,
     val boatName: String?,
-    @field:NotNull(message = "{validation.age.NotNull}")
+    @field:NotNull(message = "{validation.required}")
     val otherIdentification: String?,
     val extraInformation: String?,
-    @field:NotNull(message = "{validation.age.NotNull}")
+    @field:NotNull(message = "{validation.required}")
     val ownerShip: OwnershipStatus?,
-    @field:NotBlank(message = "{validation.age.NotNull}")
+    @field:NotBlank(message = "{validation.required}")
+    @field:Email(message = "{validation.email}")
     val email: String?,
-    @field:NotBlank(message = "{validation.age.NotNull}")
+    @field:NotBlank(message = "{validation.required}")
     val phone: String?,
+    @field:AssertTrue(message = "{validation.certifyInformation}")
     val certifyInformation: Boolean?,
+    @field:AssertTrue(message = "{validation.agreeToRules}")
     val agreeToRules: Boolean?,
 ) {
-    @AssertTrue
-    private fun isOk(): Boolean {
-        val res = noRegistrationNumber == true || !boatRegistrationNumber.isNullOrBlank()
-        return res
-    }
-
     companion object {
         fun emptyInput(): ReservationInput {
             return ReservationInput(
                 reservationId = null,
-                boatType = BoatType.InboardMotor,
-                width = 1.2,
-                length = 3.0,
-                depth = 0.5,
-                weight = 100,
+                boatType = BoatType.Unknown,
+                width = null,
+                length = null,
+                depth = null,
+                weight = null,
                 noRegistrationNumber = false,
-                boatRegistrationNumber = "A12345",
-                boatName = "Mun vene",
-                otherIdentification = "Tää on kiva",
-                extraInformation = "joo",
+                boatRegistrationNumber = null,
+                boatName = null,
+                otherIdentification = null,
+                extraInformation = null,
                 ownerShip = OwnershipStatus.Owner,
-                email = "foo@bar.com",
-                phone = "1234567890",
+                email = null,
+                phone = null,
                 agreeToRules = false,
                 certifyInformation = false,
             )

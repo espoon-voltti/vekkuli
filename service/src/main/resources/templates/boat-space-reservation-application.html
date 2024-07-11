@@ -14,7 +14,7 @@
                 <p th:text="|#{boatApplication.boatSpacePlace} ${boatSpace.section}${boatSpace.placeNumber}|">Paikka
                     B22</p>
                 <p th:text="|${boatSpace.widthInMeters} m x ${boatSpace.lengthInMeters} m|">3 m x 7 m</p>
-                <p th:text="#{${'boatSpaces.' + (boatSpace.amenity.toString()[0].toLowerCase() + boatSpace.amenity.toString().substring(1))}}">
+                <p th:text="#{${'boatSpaces.amenityOption.' + boatSpace.amenity}}">
                     Aisa</p>
             </div>
                 <div>
@@ -71,15 +71,17 @@
                          </div>
                      </div>
                  </div>
-                 <div class="field">
+                 <div class="field" th:attr="x-data='{&quot;noReg&quot:'+${input.noRegistrationNumber}+'}'">
                      <h4 class="label required" th:text="#{boatApplication.boatIdentificationTitle}">Veneen rekisteritunnus / tunnistenumero</h4>
                      <label class="checkbox">
-                         <input type="checkbox" th:field="*{noRegistrationNumber}"/>
+                         <input type="checkbox" th:field="*{noRegistrationNumber}" @click="noReg = ! noReg"/>
                          <span th:text="#{boatApplication.noRegistrationNumber}" >Ei rekisteritunnusta</span>
                      </label>
-                     <input x-show="!noRegistration"  class="input" type="text"
+                     <div x-show="!noReg">
+                        <input class="input" type="text"
                                     data-required th:placeholder="#{boatApplication.registrationNumberPlaceHolder}" th:field="*{boatRegistrationNumber}"/>
-                     <span class="help is-danger" th:if="${#fields.hasErrors('boatRegistrationNumber')}" th:errors="*{boatRegistrationNumber}">Registration number required</span>
+                        <span class="help is-danger" th:if="${#fields.hasErrors('boatRegistrationNumber')}" th:errors="*{boatRegistrationNumber}">Registration number required</span>
+                     </div>
                  </div>
                  <div class="field">
                      <label th:for="boatName"  class="label" th:text="#{boatApplication.boatName}">Veneen nimi</label>
@@ -142,11 +144,13 @@
                     <input type="checkbox"  data-required th:field="*{certifyInformation}">
                     <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
                 </label>
+                <span class="help is-danger" th:if="${#fields.hasErrors('certifyInformation')}" th:errors="*{certifyInformation}">Certification required</span>
 
                 <label class="checkbox">
                     <input type="checkbox" data-required th:field="*{agreeToRules}"/>
                     <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
                 </label>
+                <span class="help is-danger" th:if="${#fields.hasErrors('agreeToRules')}" th:errors="*{agreeToRules}">Agreement required</span>
             </div>
 
             <div class="field">

@@ -57,7 +57,7 @@
                         <option
                                 th:each="option : ${amenities}"
                                 th:value="${option}"
-                                th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}"></option>
+                                th:text="#{${'boatSpaces.amenityOption.' + option}}"></option>
                     </select>
                 </div>
                 <span class="help is-danger" th:text="#{validation.required}"
