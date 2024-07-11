@@ -199,12 +199,28 @@ class AvailableBoatSpacesController {
                     ReservationStatus.Info
                 )
             }
-        val env = System.getenv("VOLTTI_ENV")
-        val baseUrl = if (env == "staging") "https://staging.varaukset.espoo.fi" else "http://localhost:3000"
+
+        val baseUrl = getBaseUrl()
 
         // Construct the redirect URL
         val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
         return "redirect:$redirectUrl"
+    }
+
+    fun getBaseUrl(): String {
+        val env = System.getenv("VOLTTI_ENV")
+        val runningInDocker = System.getenv("E2E_ENV") == "docker"
+        when (env) {
+            "production" -> return "https://varaukset.espoo.fi"
+            "staging" -> return "https://staging.varaukset.espoo.fi"
+            else -> {
+                if (runningInDocker) {
+                    return "http://api-gateway:3000"
+                } else {
+                    return "http://localhost:3000"
+                }
+            }
+        }
     }
 
     fun renderBoatSpaceReservationApplication(
