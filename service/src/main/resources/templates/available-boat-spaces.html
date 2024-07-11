@@ -36,7 +36,7 @@
                                     <option
                                             th:each="option : ${boatTypes}"
                                             th:value="${option}"
-                                            th:text="#{${'boatApplication.' + (option[0].toLowerCase() + option.substring(1))}}"
+                                            th:text="#{${'boatApplication.boatTypeOption.' + option}}"
                                     ></option>
                                 </select>
                             </div>
@@ -82,7 +82,7 @@
                                    th:id="${option[0].toLowerCase() + option.substring(1) + '-checkbox'}"
                                    th:value="${option}"
                                    type="checkbox" />
-                            <span th:text="#{${'boatSpaces.' + (option[0].toLowerCase() + option.substring(1))}}">>
+                            <span th:text="#{${'boatSpaces.amenityOption.' + option}}">>
                         </span>
                         </label>
                     </div>

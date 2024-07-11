@@ -18,7 +18,7 @@
             <td>
                 <span th:text="${result.formattedSizes}"></span>
             </td>
-            <td th:text="#{${'boatSpaces.' + (result.amenity.toString()[0].toLowerCase() + result.amenity.toString().substring(1))}}">
+            <td th:text="#{${'boatSpaces.amenityOption.' + result.amenity}}">
             </td>
             <td th:text="${result.price}">420€</td>
             <td><span th:text="${result.section}"></span><span
