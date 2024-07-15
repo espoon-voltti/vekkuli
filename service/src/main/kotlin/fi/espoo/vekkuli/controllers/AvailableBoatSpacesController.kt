@@ -89,12 +89,16 @@ data class ReservationInput(
     val agreeToRules: Boolean?,
 ) {
     companion object {
-        fun emptyInput(): ReservationInput {
+        fun initializeInput(
+            boatType: BoatType?,
+            width: Double?,
+            length: Double?
+        ): ReservationInput {
             return ReservationInput(
                 reservationId = null,
-                boatType = BoatType.OutboardMotor,
-                width = null,
-                length = null,
+                boatType = boatType ?: BoatType.OutboardMotor,
+                width = width,
+                length = length,
                 depth = null,
                 weight = null,
                 noRegistrationNumber = false,
@@ -157,6 +161,30 @@ class AvailableBoatSpacesController {
         return "boat-space-options"
     }
 
+    @RequestMapping("/venepaikka/varaus/{reservationId}")
+    fun boatSpaceApplication(
+        @PathVariable reservationId: Int,
+        @RequestParam boatType: BoatType?,
+        @RequestParam width: Double?,
+        @RequestParam length: Double?,
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val user = getCitizen(request)
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getReservationWithCitizen(reservationId)
+            }
+
+        if (reservation == null) return "redirect:/"
+
+        if (user == null || reservation.citizenId != user.id) {
+            throw UnauthorizedException()
+        }
+
+        return renderBoatSpaceReservationApplication(reservation, user, model, ReservationInput.initializeInput(boatType, width, length))
+    }
+
     @PostMapping("/venepaikka/varaus/{reservationId}")
     fun reserveBoatSpace(
         @PathVariable reservationId: Int,
@@ -201,24 +229,19 @@ class AvailableBoatSpacesController {
     @PostMapping("/venepaikka/varaus")
     fun reserveBoatSpace(
         @RequestParam spaceId: Int,
+        @RequestParam boatType: BoatType?,
+        @RequestParam width: Double?,
+        @RequestParam length: Double?,
         request: HttpServletRequest,
         model: Model
     ): String {
         val citizen = getCitizen(request) ?: return "redirect:/"
-        val boatSpace =
-            jdbi.inTransactionUnchecked {
-                it.getUnreservedBoatSpace(spaceId)
-            }
-
-        if (boatSpace == null) {
-            return "redirect:/"
-        }
 
         val reservation =
             jdbi.inTransactionUnchecked {
                 it.insertBoatSpaceReservation(
                     citizen.id,
-                    boatSpace.id,
+                    spaceId,
                     LocalDate.now(),
                     LocalDate.now().plusYears(1),
                     ReservationStatus.Info
@@ -227,8 +250,16 @@ class AvailableBoatSpacesController {
 
         val baseUrl = getBaseUrl()
 
+        val queryParams = mutableListOf<String>()
+        boatType?.let { queryParams.add("boatType=${it.name}") }
+        width?.let { queryParams.add("width=$it") }
+        length?.let { queryParams.add("length=$it") }
+
+        // Join the query parameters with '&'
+        val queryString = queryParams.joinToString("&")
+
         // Construct the redirect URL
-        val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
+        val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}?$queryString"
         return "redirect:$redirectUrl"
     }
 
@@ -288,27 +319,6 @@ class AvailableBoatSpacesController {
             mockedUser
         )
         return "boat-space-reservation-application"
-    }
-
-    @RequestMapping("/venepaikka/varaus/{reservationId}")
-    fun boatSpaceApplication(
-        @PathVariable reservationId: Int,
-        request: HttpServletRequest,
-        model: Model
-    ): String {
-        val user = getCitizen(request)
-        val reservation =
-            jdbi.inTransactionUnchecked {
-                it.getReservationWithCitizen(reservationId)
-            }
-
-        if (reservation == null) return "redirect:/"
-
-        if (user == null || reservation.citizenId != user.id) {
-            throw UnauthorizedException()
-        }
-
-        return renderBoatSpaceReservationApplication(reservation, user, model, ReservationInput.emptyInput())
     }
 
     private fun getCitizen(request: HttpServletRequest): Citizen? {
