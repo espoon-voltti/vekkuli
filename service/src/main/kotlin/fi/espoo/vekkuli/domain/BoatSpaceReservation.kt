@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import java.time.LocalDate
@@ -61,13 +62,14 @@ fun Handle.updateBoatSpaceReservation(
             SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
             WHERE id = :id
                 AND status = 'Info' 
-                AND created > NOW() - INTERVAL '30 minutes'
+                AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
             RETURNING *
             """.trimIndent()
         )
     query.bind("updatedTime", LocalDate.now())
     query.bind("id", reservationId)
     query.bind("boatId", boatId)
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
 
     return query.mapTo<BoatSpaceReservation>().one()
 }
@@ -111,9 +113,10 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
             JOIN price ON price_id = price.id
             WHERE bsr.id = :id
                 AND bsr.status = 'Info' 
-                AND bsr.created > NOW() - INTERVAL '30 minutes'
+                AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
             """.trimIndent()
         )
     query.bind("id", id)
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
     return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
 }

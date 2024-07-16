@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.cmToM
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.reflect.KClass
 
 data class BoatFilter(
@@ -189,7 +192,8 @@ class AvailableBoatSpacesController {
         if (user == null || reservation.citizenId != user.id) {
             throw UnauthorizedException()
         }
-
+        val reservationTimePassed = Duration.between(reservation.created, LocalDateTime.now()).toSeconds()
+        model.addAttribute("reservationTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds - reservationTimePassed)
         return renderBoatSpaceReservationApplication(reservation, user, model, ReservationInput.initializeInput(boatType, width, length))
     }
 
