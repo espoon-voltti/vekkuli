@@ -153,7 +153,15 @@ class AvailableBoatSpacesController {
     ): String {
         val harbors =
             jdbi.inTransactionUnchecked {
-                it.getUnreservedBoatSpaceOptions(width?.mToCm(), length?.mToCm(), amenities, boatSpaceType, harbor?.map { it.toInt() })
+                it.getUnreservedBoatSpaceOptions(
+                    BoatSpaceFilter(
+                        width?.mToCm(),
+                        length?.mToCm(),
+                        amenities,
+                        boatSpaceType,
+                        harbor?.map { it.toInt() }
+                    )
+                )
             }
 
         model.addAttribute("harbors", harbors)

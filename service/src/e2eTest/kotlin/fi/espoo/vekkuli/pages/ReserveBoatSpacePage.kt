@@ -3,7 +3,9 @@ package fi.espoo.vekkuli.pages
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 
-class ReserveBoatSpacePage(private val page: Page) {
+class ReserveBoatSpacePage(
+    private val page: Page
+) {
     fun navigateTo() {
         page.navigate("$baseUrl/kuntalainen/venepaikat")
     }
@@ -19,7 +21,7 @@ class ReserveBoatSpacePage(private val page: Page) {
     val amenityBeamCheckbox = page.getByTestId("beam-checkbox")
     val amenityWalkBeamCheckbox = page.getByTestId("walkBeam-checkbox")
     val haukilahtiCheckbox = page.getByTestId("haukilahti-checkbox")
-    val laajalahtiCheckbox = page.getByTestId("laajalahti-checkbox")
+    val kivenlahtiCheckbox = page.getByTestId("kivenlahti-checkbox")
     val harborHeaders = page.locator(".harbor-header")
     val firstReserveButton = page.locator(".reserve-button").first()
     val paymentPageTitle = page.locator("text='Maksunäkymä'")
