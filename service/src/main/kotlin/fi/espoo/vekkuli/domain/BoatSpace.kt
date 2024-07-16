@@ -147,7 +147,6 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
         query.bindList("locationIds", params.locationIds)
     }
 
-    println(query)
     val boatSpaces = query.mapTo<BoatSpaceOption>().toList()
 
     val harbors =
