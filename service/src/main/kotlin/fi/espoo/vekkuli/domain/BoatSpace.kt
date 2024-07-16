@@ -49,9 +49,9 @@ fun beamFilter(
 ): SqlExpr =
     AndExpr(
         listOf(
-            stringOperatorExp("amenity", "=", "Beam"),
-            intOperatorExp("width_cm", ">=", boatWidth?.plus(40)),
-            intOperatorExp("length_cm", ">=", boatLength?.minus(100))
+            OperatorExpr("amenity", "=", BoatSpaceAmenity.Beam),
+            OperatorExpr("width_cm", ">=", boatWidth?.plus(40)),
+            OperatorExpr("length_cm", ">=", boatLength?.minus(100))
         )
     )
 
@@ -61,9 +61,9 @@ fun walkBeamFilter(
 ): SqlExpr =
     AndExpr(
         listOf(
-            stringOperatorExp("amenity", "=", "WalkBeam"),
-            intOperatorExp("width_cm", ">=", boatWidth?.plus(75)),
-            intOperatorExp("length_cm", ">=", boatLength?.minus(100))
+            OperatorExpr("amenity", "=", BoatSpaceAmenity.WalkBeam),
+            OperatorExpr("width_cm", ">=", boatWidth?.plus(75)),
+            OperatorExpr("length_cm", ">=", boatLength?.minus(100))
         )
     )
 
@@ -73,9 +73,9 @@ fun rearBuoyFilter(
 ): SqlExpr =
     AndExpr(
         listOf(
-            stringOperatorExp("amenity", "=", "RearBuoy"),
-            intOperatorExp("width_cm", ">=", boatWidth?.plus(50)),
-            intOperatorExp("length_cm", ">=", boatLength?.plus(300))
+            OperatorExpr("amenity", "=", BoatSpaceAmenity.RearBuoy),
+            OperatorExpr("width_cm", ">=", boatWidth?.plus(50)),
+            OperatorExpr("length_cm", ">=", boatLength?.plus(300))
         )
     )
 
@@ -84,11 +84,11 @@ fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
     return OrExpr(
         amenitites.map {
             when (it) {
-                BoatSpaceAmenity.None -> stringOperatorExp("amenity", "=", "None")
+                BoatSpaceAmenity.None -> OperatorExpr("amenity", "=", BoatSpaceAmenity.None)
                 BoatSpaceAmenity.Beam -> beamFilter(filter.boatWidth, filter.boatLength)
                 BoatSpaceAmenity.WalkBeam -> walkBeamFilter(filter.boatWidth, filter.boatLength)
                 BoatSpaceAmenity.RearBuoy -> rearBuoyFilter(filter.boatWidth, filter.boatLength)
-                BoatSpaceAmenity.Buoy -> stringOperatorExp("amenity", "=", "Buoy")
+                BoatSpaceAmenity.Buoy -> OperatorExpr("amenity", "=", BoatSpaceAmenity.Buoy)
             }
         }
     )
@@ -98,10 +98,10 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
     val filter =
         if (params.boatLength != null && params.boatLength > 1500) {
             // Boats over 15 meters will only fit in buoys
-            stringOperatorExp(
+            OperatorExpr(
                 "amenity",
                 "=",
-                "Buoy"
+                BoatSpaceAmenity.Buoy,
             )
         } else {
             createAmenityFilter(params)
@@ -146,6 +146,7 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
     if (!params.locationIds.isNullOrEmpty()) {
         query.bindList("locationIds", params.locationIds)
     }
+    filter.bind(query)
 
     val boatSpaces = query.mapTo<BoatSpaceOption>().toList()
 

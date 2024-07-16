@@ -1,7 +1,14 @@
 package fi.espoo.vekkuli.utils
 
+import org.jdbi.v3.core.statement.Query
+import java.util.concurrent.atomic.AtomicInteger
+
+val nameIndex: AtomicInteger = AtomicInteger(1)
+
 abstract class SqlExpr {
     abstract fun toSql(): String
+
+    abstract fun bind(query: Query)
 }
 
 class OrExpr(
@@ -14,6 +21,10 @@ class OrExpr(
             1 -> return filtered[0]
             else -> "(" + filtered.joinToString(" OR ") + ")"
         }
+    }
+
+    override fun bind(query: Query) {
+        items.forEach { it.bind(query) }
     }
 }
 
@@ -28,38 +39,28 @@ class AndExpr(
             else -> "(" + filtered.joinToString(" AND ") + ")"
         }
     }
-}
 
-class StringOperatorExpr(
-    private val columnName: String,
-    private val operator: String,
-    private val value: String?
-) : SqlExpr() {
-    override fun toSql(): String {
-        if (value == null) return ""
-        return "$columnName $operator '$value'"
+    override fun bind(query: Query) {
+        items.forEach { it.bind(query) }
     }
 }
 
-class IntOperatorExpr(
+class OperatorExpr(
     private val columnName: String,
     private val operator: String,
-    private val value: Int?
+    private val value: Any?
 ) : SqlExpr() {
+    lateinit var name: String
+
     override fun toSql(): String {
         if (value == null) return ""
-        return "$columnName $operator $value"
+        name = "op_${nameIndex.getAndIncrement()}"
+        return "$columnName $operator :$name"
+    }
+
+    override fun bind(query: Query) {
+        if (value != null) {
+            query.bind(name, value)
+        }
     }
 }
-
-fun stringOperatorExp(
-    columnName: String,
-    operator: String,
-    value: String?
-): SqlExpr = StringOperatorExpr(columnName, operator, value)
-
-fun intOperatorExp(
-    columnName: String,
-    operator: String,
-    value: Int?
-): SqlExpr = IntOperatorExpr(columnName, operator, value)
