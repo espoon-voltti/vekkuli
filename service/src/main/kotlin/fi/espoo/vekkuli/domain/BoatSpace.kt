@@ -104,7 +104,11 @@ class LocationExpr(
 
     override fun toSql(): String {
         if (boatTypeVar != null) {
-            return "(location.id = :$name AND :$boatTypeVar NOT IN (SELECT denied_type FROM harbor_restriction WHERE location_id = :$name))"
+            return """
+                (location.id = :$name AND 
+                :$boatTypeVar NOT IN 
+                  (SELECT excluded_boat_type FROM harbor_restriction WHERE location_id = :$name))
+                """.trimIndent()
         }
         return "location.id = :$name"
     }
