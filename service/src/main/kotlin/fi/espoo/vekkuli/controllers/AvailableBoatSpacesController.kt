@@ -43,7 +43,8 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Res
     ): Boolean {
         if (value.noRegistrationNumber != true && value.boatRegistrationNumber.isNullOrBlank()) {
             context.disableDefaultConstraintViolation()
-            context.buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate)
+            context
+                .buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate)
                 .addPropertyNode("boatRegistrationNumber")
                 .addConstraintViolation()
             return false
@@ -93,8 +94,8 @@ data class ReservationInput(
             boatType: BoatType?,
             width: Double?,
             length: Double?
-        ): ReservationInput {
-            return ReservationInput(
+        ): ReservationInput =
+            ReservationInput(
                 reservationId = null,
                 boatType = boatType ?: BoatType.OutboardMotor,
                 width = width,
@@ -112,7 +113,6 @@ data class ReservationInput(
                 agreeToRules = false,
                 certifyInformation = false,
             )
-        }
     }
 }
 
@@ -155,6 +155,7 @@ class AvailableBoatSpacesController {
             jdbi.inTransactionUnchecked {
                 it.getUnreservedBoatSpaceOptions(
                     BoatSpaceFilter(
+                        boatType,
                         width?.mToCm(),
                         length?.mToCm(),
                         amenities,

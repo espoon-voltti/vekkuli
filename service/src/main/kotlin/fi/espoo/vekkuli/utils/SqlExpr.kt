@@ -3,12 +3,16 @@ package fi.espoo.vekkuli.utils
 import org.jdbi.v3.core.statement.Query
 import java.util.concurrent.atomic.AtomicInteger
 
-val nameIndex: AtomicInteger = AtomicInteger(1)
-
 abstract class SqlExpr {
     abstract fun toSql(): String
 
     abstract fun bind(query: Query)
+
+    companion object {
+        private val nameIndex: AtomicInteger = AtomicInteger(1)
+
+        fun getNextIndex(): Int = nameIndex.getAndIncrement()
+    }
 }
 
 class OrExpr(
@@ -54,7 +58,7 @@ class OperatorExpr(
 
     override fun toSql(): String {
         if (value == null) return ""
-        name = "op_${nameIndex.getAndIncrement()}"
+        name = "op_${getNextIndex()}"
         return "$columnName $operator :$name"
     }
 
@@ -62,5 +66,12 @@ class OperatorExpr(
         if (value != null) {
             query.bind(name, value)
         }
+    }
+}
+
+class EmptyExpr : SqlExpr() {
+    override fun toSql(): String = ""
+
+    override fun bind(query: Query) {
     }
 }
