@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.utils.*
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 
@@ -17,7 +18,10 @@ enum class BoatSpaceType {
     Trailer
 }
 
-data class Harbor(val location: Location, val boatSpaces: List<BoatSpaceOption>)
+data class Harbor(
+    val location: Location,
+    val boatSpaces: List<BoatSpaceOption>
+)
 
 data class BoatSpaceOption(
     val id: Int,
@@ -31,13 +35,78 @@ data class BoatSpaceOption(
     val formattedSizes: String = "${widthCm / 100.0} x ${lengthCm / 100.0} m".replace('.', ',')
 )
 
-fun Handle.getUnreservedBoatSpaceOptions(
-    width: Int? = null,
-    length: Int? = null,
-    amenities: List<BoatSpaceAmenity>? = null,
-    boatSpaceType: BoatSpaceType? = null,
-    locationIds: List<Int>? = null
-): List<Harbor> {
+data class BoatSpaceFilter(
+    val boatWidth: Int? = null,
+    val boatLength: Int? = null,
+    val amenities: List<BoatSpaceAmenity>? = null,
+    val boatSpaceType: BoatSpaceType? = null,
+    val locationIds: List<Int>? = null
+)
+
+fun beamFilter(
+    boatWidth: Int?,
+    boatLength: Int?
+): SqlExpr =
+    AndExpr(
+        listOf(
+            stringOperatorExp("amenity", "=", "Beam"),
+            intOperatorExp("width_cm", ">=", boatWidth?.plus(40)),
+            intOperatorExp("length_cm", ">=", boatLength?.minus(100))
+        )
+    )
+
+fun walkBeamFilter(
+    boatWidth: Int?,
+    boatLength: Int?
+): SqlExpr =
+    AndExpr(
+        listOf(
+            stringOperatorExp("amenity", "=", "WalkBeam"),
+            intOperatorExp("width_cm", ">=", boatWidth?.plus(75)),
+            intOperatorExp("length_cm", ">=", boatLength?.minus(100))
+        )
+    )
+
+fun rearBuoyFilter(
+    boatWidth: Int?,
+    boatLength: Int?
+): SqlExpr =
+    AndExpr(
+        listOf(
+            stringOperatorExp("amenity", "=", "RearBuoy"),
+            intOperatorExp("width_cm", ">=", boatWidth?.plus(50)),
+            intOperatorExp("length_cm", ">=", boatLength?.plus(300))
+        )
+    )
+
+fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
+    val amenitites = if (filter.amenities == null || filter.amenities.isEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
+    return OrExpr(
+        amenitites.map {
+            when (it) {
+                BoatSpaceAmenity.None -> stringOperatorExp("amenity", "=", "None")
+                BoatSpaceAmenity.Beam -> beamFilter(filter.boatWidth, filter.boatLength)
+                BoatSpaceAmenity.WalkBeam -> walkBeamFilter(filter.boatWidth, filter.boatLength)
+                BoatSpaceAmenity.RearBuoy -> rearBuoyFilter(filter.boatWidth, filter.boatLength)
+                BoatSpaceAmenity.Buoy -> stringOperatorExp("amenity", "=", "Buoy")
+            }
+        }
+    )
+}
+
+fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> {
+    val filter =
+        if (params.boatLength != null && params.boatLength > 1500) {
+            // Boats over 15 meters will only fit in buoys
+            stringOperatorExp(
+                "amenity",
+                "=",
+                "Buoy"
+            )
+        } else {
+            createAmenityFilter(params)
+        }
+
     val sql =
         """
         SELECT 
@@ -63,31 +132,19 @@ fun Handle.getUnreservedBoatSpaceOptions(
         )
         WHERE 
             boat_space_reservation.id IS NULL
-            ${if (width != null) "AND width_cm >= :minWidth AND width_cm <= :maxWidth" else ""}
-            ${if (length != null) "AND length_cm >= :minLength AND length_cm <= :maxLength" else ""}
-            ${if (!amenities.isNullOrEmpty()) "AND amenity IN (<amenities>)" else ""}
-            ${if (boatSpaceType != null) "AND type = :boatSpaceType" else ""}
-            ${if (!locationIds.isNullOrEmpty()) "AND location.id IN (<locationIds>)" else ""}
+            ${if (params.boatSpaceType !== null) "AND type = :boatSpaceType" else ""}
+            ${if (!params.locationIds.isNullOrEmpty()) "AND location.id IN (<locationIds>)" else ""}
+            AND ${filter.toSql()}
+            
         ORDER BY price 
         """.trimIndent()
 
     val query = createQuery(sql)
-    if (width != null) {
-        query.bind("minWidth", width - 50)
-        query.bind("maxWidth", width + 50)
+    if (params.boatSpaceType != null) {
+        query.bind("boatSpaceType", params.boatSpaceType)
     }
-    if (length != null) {
-        query.bind("minLength", length - 50)
-        query.bind("maxLength", length + 50)
-    }
-    if (!amenities.isNullOrEmpty()) {
-        query.bindList("amenities", amenities)
-    }
-    if (boatSpaceType != null) {
-        query.bind("boatSpaceType", boatSpaceType)
-    }
-    if (!locationIds.isNullOrEmpty()) {
-        query.bindList("locationIds", locationIds)
+    if (!params.locationIds.isNullOrEmpty()) {
+        query.bindList("locationIds", params.locationIds)
     }
 
     val boatSpaces = query.mapTo<BoatSpaceOption>().toList()

@@ -25,7 +25,7 @@ class E2eTest : PlaywrightTest() {
 
         assertThat(reservationPage.harborHeaders).hasCount(4)
         reservationPage.haukilahtiCheckbox.check()
-        reservationPage.laajalahtiCheckbox.check()
+        reservationPage.kivenlahtiCheckbox.check()
         assertThat(reservationPage.harborHeaders).hasCount(2)
 
         reservationPage.firstReserveButton.click()
