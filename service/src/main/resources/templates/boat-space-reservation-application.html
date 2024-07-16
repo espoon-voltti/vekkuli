@@ -2,9 +2,12 @@
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
 </head>
+
 <body layout:fragment="body">
+
 <section class="section">
     <div class="container">
+        <div th:replace="~{fragments/session-timer :: sessionTimer}"></div>
         <form id="form" th:action="|/kuntalainen/venepaikka/varaus/${reservationId}|" method="post" novalidate  th:object="${input}">
             <div>
                 <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
@@ -138,6 +141,7 @@
                     <span class="help is-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Phone number required</span>
                 </div>
 </div>
+
 
             <div>
                 <label class="checkbox justify-content-space-between">
