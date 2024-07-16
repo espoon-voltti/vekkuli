@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.utils.*
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
+import org.jdbi.v3.core.statement.Query
 
 enum class BoatSpaceAmenity {
     None,
@@ -36,6 +37,7 @@ data class BoatSpaceOption(
 )
 
 data class BoatSpaceFilter(
+    val boatType: BoatType? = null,
     val boatWidth: Int? = null,
     val boatLength: Int? = null,
     val amenities: List<BoatSpaceAmenity>? = null,
@@ -94,8 +96,52 @@ fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
     )
 }
 
+class LocationExpr(
+    private val locationId: Int,
+    private val boatTypeVar: String?
+) : SqlExpr() {
+    private val name: String = "li_${getNextIndex()}"
+
+    override fun toSql(): String {
+        if (boatTypeVar != null) {
+            return """
+                (location.id = :$name AND 
+                :$boatTypeVar NOT IN 
+                  (SELECT excluded_boat_type FROM harbor_restriction WHERE location_id = :$name))
+                """.trimIndent()
+        }
+        return "location.id = :$name"
+    }
+
+    override fun bind(query: Query) {
+        query.bind(name, locationId)
+    }
+}
+
+class LocationFilter(
+    private val locationIds: List<Int>?,
+    private val boatType: BoatType?
+) : SqlExpr() {
+    private val boatTypeVar: String? = if (boatType != null) "bs_${getNextIndex()}" else null
+    private val expr =
+        if (!locationIds.isNullOrEmpty()) {
+            OrExpr(locationIds.map { LocationExpr(it, boatTypeVar) })
+        } else {
+            EmptyExpr()
+        }
+
+    override fun toSql(): String = expr.toSql()
+
+    override fun bind(query: Query) {
+        if (boatType !== null && boatTypeVar !== null) {
+            query.bind(boatTypeVar, boatType)
+        }
+        expr.bind(query)
+    }
+}
+
 fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> {
-    val filter =
+    val amenityFilter =
         if (params.boatLength != null && params.boatLength > 1500) {
             // Boats over 15 meters will only fit in buoys
             OperatorExpr(
@@ -106,6 +152,16 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
         } else {
             createAmenityFilter(params)
         }
+    val locationFilter = LocationFilter(params.locationIds, params.boatType)
+    val boatSpaceTypeFilter = OperatorExpr("type", "=", params.boatSpaceType)
+    val combinedFilter =
+        AndExpr(
+            listOf(
+                amenityFilter,
+                locationFilter,
+                boatSpaceTypeFilter
+            )
+        )
 
     val sql =
         """
@@ -132,21 +188,14 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
         )
         WHERE 
             boat_space_reservation.id IS NULL
-            ${if (params.boatSpaceType !== null) "AND type = :boatSpaceType" else ""}
-            ${if (!params.locationIds.isNullOrEmpty()) "AND location.id IN (<locationIds>)" else ""}
-            AND ${filter.toSql()}
+            AND ${combinedFilter.toSql()}
             
         ORDER BY price 
         """.trimIndent()
 
     val query = createQuery(sql)
-    if (params.boatSpaceType != null) {
-        query.bind("boatSpaceType", params.boatSpaceType)
-    }
-    if (!params.locationIds.isNullOrEmpty()) {
-        query.bindList("locationIds", params.locationIds)
-    }
-    filter.bind(query)
+
+    combinedFilter.bind(query)
 
     val boatSpaces = query.mapTo<BoatSpaceOption>().toList()
 
