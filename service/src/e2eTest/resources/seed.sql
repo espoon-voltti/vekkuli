@@ -21,6 +21,11 @@ VALUES ('Haukilahti', 'Satamatie 1, Espoo'),
        ('Suomenoja', 'Suomenojantie 15, Espoo'),
        ('Svinö', 'Svinöntie 8, Espoo');
 
+INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (1, 'JetSki');
+INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sailboat');
+INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
+INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
+
 INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, email)
 VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), '010106A957V', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi');
 

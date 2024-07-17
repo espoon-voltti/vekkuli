@@ -70,8 +70,7 @@ abstract class PlaywrightTest {
                         "INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, " +
                             "width_cm, length_cm, description) VALUES"
                     )
-                    for ((index, line) in csvFile.readLines().withIndex()) {
-                        if (index > 1000) break
+                    for (line in csvFile.readLines()) {
                         val values = line.split(",").map { "'$it'" }
                         appendLine("(${values.joinToString(", ")}),")
                     }
@@ -89,7 +88,8 @@ abstract class PlaywrightTest {
         playwright.selectors().setTestIdAttribute("id")
         browser =
             playwright.chromium().launch(
-                BrowserType.LaunchOptions()
+                BrowserType
+                    .LaunchOptions()
                     .setHeadless(runningInDocker)
                     .setTimeout(10_000.0)
             )

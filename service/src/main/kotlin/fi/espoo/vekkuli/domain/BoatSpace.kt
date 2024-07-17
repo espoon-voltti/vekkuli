@@ -119,12 +119,12 @@ class LocationExpr(
 }
 
 class LocationFilter(
-    private val locationIds: List<Int>?,
+    private val locationIds: List<Int>,
     private val boatType: BoatType?
 ) : SqlExpr() {
     private val boatTypeVar: String? = if (boatType != null) "bs_${getNextIndex()}" else null
     private val expr =
-        if (!locationIds.isNullOrEmpty()) {
+        if (!locationIds.isEmpty()) {
             OrExpr(locationIds.map { LocationExpr(it, boatTypeVar) })
         } else {
             EmptyExpr()
@@ -152,7 +152,15 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
         } else {
             createAmenityFilter(params)
         }
-    val locationFilter = LocationFilter(params.locationIds, params.boatType)
+    val locationIds =
+        if (params.locationIds.isNullOrEmpty()) {
+            createQuery(
+                "SELECT id FROM location"
+            ).mapTo<Int>().toList()
+        } else {
+            params.locationIds
+        }
+    val locationFilter = LocationFilter(locationIds, params.boatType)
     val boatSpaceTypeFilter = OperatorExpr("type", "=", params.boatSpaceType)
     val combinedFilter =
         AndExpr(
