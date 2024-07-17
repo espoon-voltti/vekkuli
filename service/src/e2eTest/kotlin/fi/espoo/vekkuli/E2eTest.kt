@@ -26,7 +26,7 @@ class E2eTest : PlaywrightTest() {
             reservationPage.amenityBeamCheckbox.check()
             reservationPage.amenityWalkBeamCheckbox.check()
 
-            assertThat(reservationPage.harborHeaders).hasCount(3)
+            assertThat(reservationPage.harborHeaders).hasCount(4)
             reservationPage.haukilahtiCheckbox.check()
             reservationPage.kivenlahtiCheckbox.check()
             assertThat(reservationPage.harborHeaders).hasCount(2)
