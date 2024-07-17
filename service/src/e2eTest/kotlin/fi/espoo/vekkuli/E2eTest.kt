@@ -53,7 +53,7 @@ class E2eTest : PlaywrightTest() {
             // assert that payment title is shown
             assertThat(reservationPage.paymentPageTitle).hasCount(1)
         } catch (e: AssertionError) {
-            page.screenshot(Page.ScreenshotOptions().setPath(Path("failure-screenshot.png")))
+            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
             throw e
         }
     }

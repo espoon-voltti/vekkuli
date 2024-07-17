@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jammy as base
+FROM eclipse-temurin:17-jammy AS base
 
 LABEL maintainer="https://github.com/espoon-voltti/vekkuli"
 
@@ -19,14 +19,15 @@ RUN apt-get update \
        -o /bin/s3download \
  && chmod +x /bin/s3download
 
-FROM base as builder
+FROM base AS builder
 
 WORKDIR /app
 
 COPY ./gradle/ ./gradle/
 COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./
 
-RUN ./gradlew --no-daemon resolveDependencies
+RUN ./gradlew --no-daemon resolveDependencies \
+ && ./gradlew e2eTestDeps
 
 COPY . .
 

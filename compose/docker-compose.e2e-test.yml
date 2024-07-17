@@ -29,6 +29,8 @@ services:
       target: builder
     ports:
       - "8080:8080"
+    volumes:
+      - ./service-build:/app/build
     environment:
       JAVA_OPTS: -server -Djava.security.egd=file:/dev/./urandom -Xms1024m -Xss512k -Xmx1024m -XX:TieredStopAtLevel=1
       SPRING_DATASOURCE_URL: jdbc:postgresql://vekkuli-db:5432/vekkuli
@@ -38,3 +40,5 @@ services:
     entrypoint: ./e2e-test-entrypoint.sh
     depends_on:
       - vekkuli-db
+      - api-gateway
+      - redis
