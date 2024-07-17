@@ -173,6 +173,11 @@ class AvailableBoatSpacesController {
         return "boat-space-options"
     }
 
+    private fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
+        val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
+        return (BoatSpaceConfig.sessionTimeInSeconds - reservationTimePassed)
+    }
+
     @RequestMapping("/venepaikka/varaus/{reservationId}")
     fun boatSpaceApplication(
         @PathVariable reservationId: Int,
@@ -193,8 +198,7 @@ class AvailableBoatSpacesController {
         if (user == null || reservation.citizenId != user.id) {
             throw UnauthorizedException()
         }
-        val reservationTimePassed = Duration.between(reservation.created, LocalDateTime.now()).toSeconds()
-        model.addAttribute("reservationTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds - reservationTimePassed)
+        model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created))
         return renderBoatSpaceReservationApplication(reservation, user, model, ReservationInput.initializeInput(boatType, width, length))
     }
 
@@ -215,6 +219,11 @@ class AvailableBoatSpacesController {
                 }
 
             if (reservation == null) return "redirect:/"
+            model.addAttribute(
+                "reservationTimeInSeconds",
+                getReservationTimeInSeconds(reservation.created)
+            )
+
             return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
         }
 
@@ -234,6 +243,7 @@ class AvailableBoatSpacesController {
                     input.ownerShip!!
                 )
             }
+
         jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
         jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
         return "payment"
