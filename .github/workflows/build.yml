@@ -225,6 +225,7 @@ jobs:
           path: |
             compose/tests.log
             compose/tests-all.log
+            compose/failure-screenshot.png
           retention-days: 2
 
   deploy:
