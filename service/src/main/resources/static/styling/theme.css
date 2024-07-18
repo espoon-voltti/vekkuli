@@ -173,3 +173,11 @@ form>div {
 #step-indicator p {
     color: var(--black)
 }
+.icon-text {
+    --bulma-icon-text-spacing: var(--spacing-small);
+    color: var(--bulma-primary)
+}
+.icon-text, .icon {
+    --bulma-icon-dimensions: var(--spacing-medium);
+}
+
