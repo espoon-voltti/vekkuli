@@ -198,7 +198,6 @@ class AvailableBoatSpacesController {
         if (user == null || reservation.citizenId != user.id) {
             throw UnauthorizedException()
         }
-        model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created))
         return renderBoatSpaceReservationApplication(reservation, user, model, ReservationInput.initializeInput(boatType, width, length))
     }
 
@@ -219,10 +218,6 @@ class AvailableBoatSpacesController {
                 }
 
             if (reservation == null) return "redirect:/"
-            model.addAttribute(
-                "reservationTimeInSeconds",
-                getReservationTimeInSeconds(reservation.created)
-            )
 
             return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
         }
@@ -333,6 +328,10 @@ class AvailableBoatSpacesController {
                 val priceWithoutAlv = (reservation.price * 1.0) - calculatedAlv
             }
 
+        model.addAttribute(
+            "reservationTimeInSeconds",
+            getReservationTimeInSeconds(reservation.created)
+        )
         model.addAttribute("boatTypes", listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki"))
         model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
         model.addAttribute("input", input)
