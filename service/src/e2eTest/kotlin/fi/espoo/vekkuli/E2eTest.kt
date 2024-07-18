@@ -34,20 +34,20 @@ class E2eTest : PlaywrightTest() {
             reservationPage.firstReserveButton.click()
 
             // Fill in the boat information
-            scrollIntoView(reservationPage.boatTypeSelect).selectOption("Sailboat")
-            scrollIntoView(reservationPage.widthInput).fill("3")
-            scrollIntoView(reservationPage.lengthInput).fill("6")
-            scrollIntoView(reservationPage.depthInput).fill("1.5")
-            scrollIntoView(reservationPage.weightInput).fill("2000")
-            scrollIntoView(reservationPage.boatName).fill("My Boat")
-            scrollIntoView(reservationPage.otherIdentification).fill("ID12345")
-            scrollIntoView(reservationPage.noRegistrationCheckbox).check()
-            scrollIntoView(reservationPage.ownerRadioButton).check()
+            reservationPage.boatTypeSelect.selectOption("Sailboat")
+            reservationPage.widthInput.fill("3")
+            reservationPage.lengthInput.fill("6")
+            reservationPage.depthInput.fill("1.5")
+            reservationPage.weightInput.fill("2000")
+            reservationPage.boatName.fill("My Boat")
+            reservationPage.otherIdentification.fill("ID12345")
+            reservationPage.noRegistrationCheckbox.check()
+            reservationPage.ownerRadioButton.check()
 
-            scrollIntoView(reservationPage.email).fill("test@example.com")
-            scrollIntoView(reservationPage.phone).fill("123456789")
-            scrollIntoView(reservationPage.certifyInfoCheckbox).check()
-            scrollIntoView(reservationPage.agreementCheckbox).check()
+            reservationPage.email.fill("test@example.com")
+            reservationPage.phone.fill("123456789")
+            reservationPage.certifyInfoCheckbox.check()
+            reservationPage.agreementCheckbox.check()
             reservationPage.submitButton.click()
 
             // assert that payment title is shown
