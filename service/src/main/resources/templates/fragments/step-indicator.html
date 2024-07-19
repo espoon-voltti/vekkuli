@@ -1,0 +1,36 @@
+<div class="container mb-5" id="header" th:fragment="stepIndicator(currentStep)">
+    <div th:if="${currentStep > 1}" class="mb-5">
+        <button onClick="goBack()" class="icon-text">
+            <span class="icon">
+                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+            </span>
+            <span th:text="#{boatSpaces.goBack}">Takaisin</span>
+        </button>
+    </div>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    <div class="columns" id="step-indicator">
+        <div class="column">
+            <div id="chooseBoatSpace" class="step mb-4" th:classappend="${currentStep >= 1} ? ' visited' : ''"></div>
+            <p class="is-uppercase has-text-centered title is-7" th:text="#{boatApplication.boatSpaceChooseHeader}">Paikan valinta</p>
+        </div>
+        <div class="column">
+            <div id="fillInformation" class="step mb-4" th:classappend="${currentStep >= 2} ? ' visited' : ''"></div>
+            <p class="is-uppercase has-text-centered title is-7" th:text="#{boatApplication.fillingInformationHeader}">Tietojen täyttäminen</p>
+        </div>
+        <div class="column">
+            <div id="payment" class="step mb-4" th:classappend="${currentStep >= 3} ? ' visited' : ''"></div>
+            <p class="is-uppercase has-text-centered title is-7" th:text="#{boatApplication.paymentHeader}">Maksaminen</p>
+        </div>
+        <div class="column">
+            <div id="confirmation" class="step mb-4" th:classappend="${currentStep >= 4} ? ' visited' : ''"></div>
+            <p class="is-uppercase has-text-centered title is-7" th:text="#{boatApplication.confirmationHeader}">Vahvistus</p>
+        </div>
+    </div>
+    <div th:if="${currentStep == 2}">
+        <div th:replace="~{fragments/session-timer :: sessionTimer}"></div>
+    </div>
+</div>

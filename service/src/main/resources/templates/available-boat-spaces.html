@@ -8,6 +8,7 @@
 </head>
 <body layout:fragment="body">
 <section class="section">
+    <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=1)}"></div>
     <div class="container">
         <h1 class="title" th:text="#{boatApplication.applyForBoatSpace}">Hae venepaikkaa</h1>
 

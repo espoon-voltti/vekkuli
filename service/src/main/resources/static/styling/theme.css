@@ -6,6 +6,7 @@
     --bulma-primary-l: 36%;
     --white: #ffff;
     --black: #536076;
+    --grey: #A9B0BB;
     --spacing-small: 8px;
     --spacing-medium: 16px;
     --spacing-large:24px;
@@ -158,3 +159,25 @@ form>div {
     content: ' *';
     margin-left: 0.25em; /* Optional: add some spacing */
 }
+#step-indicator {
+    gap: var(--spacing-extralarge)
+}
+#step-indicator .step {
+    border-radius: 5px;
+    height: var(--spacing-small);
+    background-color: var(--grey)
+}
+#step-indicator .step.visited {
+    background-color: var(--bulma-primary)
+}
+#step-indicator p {
+    color: var(--black)
+}
+.icon-text {
+    --bulma-icon-text-spacing: var(--spacing-small);
+    color: var(--bulma-primary)
+}
+.icon-text, .icon {
+    --bulma-icon-dimensions: var(--spacing-medium);
+}
+

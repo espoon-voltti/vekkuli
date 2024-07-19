@@ -7,7 +7,7 @@
 
 <section class="section">
     <div class="container">
-        <div th:replace="~{fragments/session-timer :: sessionTimer}"></div>
+        <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=2)}"></div>
         <form id="form" th:action="|/kuntalainen/venepaikka/varaus/${reservationId}|" method="post" novalidate  th:object="${input}">
             <div>
                 <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
