@@ -41,6 +41,7 @@
     </table>
     <div th:if="${harbor.boatSpaces.size > 3}">
         <a @click="showAll = !showAll"
-           x-text="showAll ? '△ Näytä vähemmän' : '▽ Näytä lisää'"></a>
+           th:attr="x-text='showAll ? \'' + #{showLess} + '\' : \'' + #{showMore} +'\''"
+        ></a>
     </div>
 </div>
