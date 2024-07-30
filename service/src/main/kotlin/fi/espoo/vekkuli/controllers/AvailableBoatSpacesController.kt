@@ -128,7 +128,22 @@ class AvailableBoatSpacesController {
     lateinit var jdbi: Jdbi
 
     @RequestMapping("/venepaikat")
-    fun availableBoatSpaces(model: Model): String {
+    fun availableBoatSpaces(
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val citizen = getCitizen(request)
+        if (citizen != null) {
+            val reservation =
+                jdbi.inTransactionUnchecked {
+                    it.getReservationForCitizen(citizen.id)
+                }
+            if (reservation != null) {
+                val baseUrl = getBaseUrl()
+                val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
+                return "redirect:$redirectUrl"
+            }
+        }
         val locations =
             jdbi.inTransactionUnchecked { tx ->
                 tx.getLocations()
@@ -268,7 +283,6 @@ class AvailableBoatSpacesController {
                     )
                 }
             } else {
-                println("Updating boat: $input")
                 jdbi.inTransactionUnchecked {
                     it.updateBoat(
                         Boat(
@@ -305,15 +319,22 @@ class AvailableBoatSpacesController {
     ): String {
         val citizen = getCitizen(request) ?: return "redirect:/"
 
-        val reservation =
-            jdbi.inTransactionUnchecked {
-                it.insertBoatSpaceReservation(
-                    citizen.id,
-                    spaceId,
-                    LocalDate.now(),
-                    LocalDate.now().plusYears(1),
-                    ReservationStatus.Info
-                )
+        val existingReservation = jdbi.inTransactionUnchecked { it.getReservationForCitizen(citizen.id) }
+
+        val reservationId =
+            if (existingReservation != null) {
+                existingReservation.id
+            } else {
+                jdbi
+                    .inTransactionUnchecked {
+                        it.insertBoatSpaceReservation(
+                            citizen.id,
+                            spaceId,
+                            LocalDate.now(),
+                            LocalDate.now().plusYears(1),
+                            ReservationStatus.Info
+                        )
+                    }.id
             }
 
         val baseUrl = getBaseUrl()
@@ -327,7 +348,7 @@ class AvailableBoatSpacesController {
         val queryString = queryParams.joinToString("&")
 
         // Construct the redirect URL
-        val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}?$queryString"
+        val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/$reservationId?$queryString"
         return "redirect:$redirectUrl"
     }
 

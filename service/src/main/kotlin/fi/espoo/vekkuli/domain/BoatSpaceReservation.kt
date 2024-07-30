@@ -98,6 +98,29 @@ data class ReservationWithDependencies(
     val price: Int
 )
 
+fun Handle.getReservationForCitizen(id: UUID): ReservationWithDependencies? {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                location.name as location_name, price.price as price, 
+                bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                  bs.description
+            FROM boat_space_reservation bsr
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location_id = location.id
+            JOIN price ON price_id = price.id
+            WHERE bsr.citizen_id = :id
+                AND bsr.status = 'Info' 
+                AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+            """.trimIndent()
+        )
+    query.bind("id", id)
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
+    return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+}
+
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
     val query =
         createQuery(
