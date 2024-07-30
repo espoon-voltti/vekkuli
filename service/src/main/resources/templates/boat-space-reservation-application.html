@@ -74,7 +74,7 @@
                                     hx-target="closest div"
                                     hx-select-oob="width-control"
                             />
-                            <span class="help is-danger" th:if="${#fields.hasErrors('width')}"
+                            <span id="width-error" class="help is-danger" th:if="${#fields.hasErrors('width')}"
                                   th:errors="*{width}">Boat width required</span>
                         </div>
                         <div class="control" id="length-control">
@@ -93,7 +93,7 @@
                                     hx-target="closest div"
                                     hx-select-oob="#length-control"
                             />
-                            <span class="help is-danger" th:if="${#fields.hasErrors('length')}"
+                            <span id="length-error" class="help is-danger" th:if="${#fields.hasErrors('length')}"
                                   th:errors="*{length}">Boat length required</span>
 
                         </div>
@@ -102,23 +102,23 @@
                 <div class="field">
                     <div class="field is-grouped">
                         <div class="control" id="depth-control">
-                            <label class="label required" th:for="depth"
+                            <label class="label required" for="depth"
                                    th:text="#{boatApplication.boatDepthInMeters}">Syväys
                                 (m)</label>
                             <input
+                                    th:field="*{depth}"
                                     type="number"
                                     min="0"
                                     step="0.1"
                                     class="input"
                                     style="width: 100px"
-                                    th:field="*{depth}"
                                     hx-trigger="blur"
                                     th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
                                     hx-swap-oob="outerHTML"
                                     hx-target="closest div"
                                     hx-select-oob="#depth-control"
                             />
-                            <span class="help is-danger" th:if="${#fields.hasErrors('depth')}"
+                            <span id="depth-error" class="help is-danger" th:if="${#fields.hasErrors('depth')}"
                                   th:errors="*{depth}">Depth required</span>
                         </div>
                         <div class="control" id="weight-control">
@@ -137,7 +137,7 @@
                                     hx-target="closest div"
                                     hx-select-oob="#weight-control"
                             />
-                            <span class="help is-danger" th:if="${#fields.hasErrors('weight')}"
+                            <span id="weight-error" class="help is-danger" th:if="${#fields.hasErrors('weight')}"
                                   th:errors="*{weight}">Weight required</span>
                         </div>
                     </div>
@@ -162,7 +162,8 @@
                                 hx-target="closest div"
                                 hx-select-oob="#registrationNumber-control"
                         />
-                        <span class="help is-danger" th:if="${#fields.hasErrors('boatRegistrationNumber')}"
+                        <span id="boatRegistrationNumber-error" class="help is-danger"
+                              th:if="${#fields.hasErrors('boatRegistrationNumber')}"
                               th:errors="*{boatRegistrationNumber}">Registration number required</span>
                     </div>
                 </div>
@@ -179,7 +180,7 @@
                                 hx-swap-oob="outerHTML"
                         />
                     </div>
-                    <span class="help is-danger" th:if="${#fields.hasErrors('boatName')}"
+                    <span id="boatName-error" class="help is-danger" th:if="${#fields.hasErrors('boatName')}"
                           th:errors="*{boatName}">Boat name number required</span>
                 </div>
 
@@ -246,7 +247,8 @@
                                 hx-target="closest div"
                                 hx-select-oob="#email-control"
                         />
-                        <span class="help is-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email required</span>
+                        <span id="email-error" class="help is-danger" th:if="${#fields.hasErrors('email')}"
+                              th:errors="*{email}">Email required</span>
                     </div>
                 </div>
                 <div class="field">
@@ -263,7 +265,8 @@
                                 hx-target="closest div"
                                 hx-select-oob="#phone-control"
                         />
-                        <span class="help is-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Phone number required</span>
+                        <span id="phone-error" class="help is-danger" th:if="${#fields.hasErrors('phone')}"
+                              th:errors="*{phone}">Phone number required</span>
                     </div>
                 </div>
             </div>
@@ -283,7 +286,7 @@
                         >
                         <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
                     </label>
-                    <span class="help is-danger" th:if="${#fields.hasErrors('certifyInformation')}"
+                    <span id="certify-error" class="help is-danger" th:if="${#fields.hasErrors('certifyInformation')}"
                           th:errors="*{certifyInformation}">Certification required</span>
                 </div>
 
@@ -301,7 +304,7 @@
                         />
                         <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
                     </label>
-                    <span class="help is-danger" th:if="${#fields.hasErrors('agreeToRules')}"
+                    <span id="agree-error" class="help is-danger" th:if="${#fields.hasErrors('agreeToRules')}"
                           th:errors="*{agreeToRules}">Agreement required</span>
                 </div>
             </div>

@@ -1,0 +1,30 @@
+package fi.espoo.vekkuli.pages
+
+import com.microsoft.playwright.Page
+
+class BoatSpaceForm(private val page: Page) {
+    val boatTypeSelect = page.getByTestId("boatType")
+    val widthInput = page.getByTestId("width")
+    val widthError = page.getByTestId("width-error")
+    val lengthInput = page.getByTestId("length")
+    val lengthError = page.getByTestId("length-error")
+    val depthInput = page.getByTestId("depth")
+    val depthError = page.getByTestId("depth-error")
+    val weightInput = page.getByTestId("weight")
+    val weightError = page.getByTestId("weight-error")
+    val noRegistrationCheckbox = page.getByTestId("noRegistrationNumber1")
+    val boatRegistrationNumberError = page.getByTestId("boatRegistrationNumber-error")
+    val boatNameInput = page.getByTestId("boatName")
+    val boatNameError = page.getByTestId("boatName-error")
+    val otherIdentification = page.getByTestId("otherIdentification")
+    val emailInput = page.getByTestId("email")
+    val emailError = page.getByTestId("email-error")
+    val phoneInput = page.getByTestId("phone")
+    val phoneError = page.getByTestId("phone-error")
+    val certifyInfoCheckbox = page.getByTestId("certifyInformation1")
+    val certifyInfoError = page.getByTestId("certify-error")
+    val agreementCheckbox = page.getByTestId("agreeToRules1")
+    val agreementError = page.getByTestId("agree-error")
+    val submitButton = page.getByTestId("submit")
+    val ownerRadioButton = page.getByTestId("ownerShip1")
+}
