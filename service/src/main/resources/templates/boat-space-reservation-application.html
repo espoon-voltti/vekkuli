@@ -329,10 +329,15 @@
 
             <div class="field">
                 <div class="control">
-                    <button id="cancel" class="button is-secondary" type="cancel"
-                            th:text="#{boatApplication.cancelReservation}">
+                    <button id="cancel" class="button is-secondary"
+                            th:text="#{boatApplication.cancelReservation}"
+                            th:attr="hx-delete=|/kuntalainen/venepaikka/varaus/${reservationId}|"
+                            hx-on-htmx-after-request="window.location = '/';">
+                        >
                         Peruuta varaus
                     </button>
+
+
                     <button id="submit" class="button is-primary" type="submit"
                             th:text="#{boatApplication.continueToPaymentButton}"
                             th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
