@@ -91,7 +91,7 @@ data class ReservationInput(
     @field:AssertTrue(message = "{validation.certifyInformation}")
     val certifyInformation: Boolean?,
     @field:AssertTrue(message = "{validation.agreeToRules}")
-    val agreeToRules: Boolean?,
+    val agreeToRules: Boolean?
 ) {
     companion object {
         fun initializeInput(
@@ -165,7 +165,7 @@ class AvailableBoatSpacesController {
                         length?.mToCm(),
                         amenities,
                         boatSpaceType,
-                        harbor?.map { it.toInt() }
+                        harbor?.map { s -> s.toInt() }
                     )
                 )
             }
@@ -302,7 +302,7 @@ class AvailableBoatSpacesController {
         @RequestParam width: Double?,
         @RequestParam length: Double?,
         request: HttpServletRequest,
-        model: Model,
+        model: Model
     ): String {
         val citizen = getCitizen(request) ?: return "redirect:/"
 
@@ -335,14 +335,14 @@ class AvailableBoatSpacesController {
     fun getBaseUrl(): String {
         val env = System.getenv("VOLTTI_ENV")
         val runningInDocker = System.getenv("E2E_ENV") == "docker"
-        when (env) {
-            "production" -> return "https://varaukset.espoo.fi"
-            "staging" -> return "https://staging.varaukset.espoo.fi"
+        return when (env) {
+            "production" -> "https://varaukset.espoo.fi"
+            "staging" -> "https://staging.varaukset.espoo.fi"
             else -> {
                 if (runningInDocker) {
-                    return "http://api-gateway:3000"
+                    "http://api-gateway:3000"
                 } else {
-                    return "http://localhost:3000"
+                    "http://localhost:3000"
                 }
             }
         }
