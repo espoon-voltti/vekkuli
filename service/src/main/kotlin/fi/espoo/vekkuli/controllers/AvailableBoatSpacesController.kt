@@ -235,11 +235,12 @@ class AvailableBoatSpacesController {
         @Valid @ModelAttribute("input") input: ReservationInput,
         bindingResult: BindingResult,
         request: HttpServletRequest,
-        model: Model
+        model: Model,
+        @RequestParam(required = false, defaultValue = "false") validate: Boolean
     ): String {
         val citizen = getCitizen(request) ?: return "redirect:/"
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors() || validate) {
             val reservation =
                 jdbi.inTransactionUnchecked {
                     it.getReservationWithCitizen(reservationId)
@@ -301,7 +302,7 @@ class AvailableBoatSpacesController {
         @RequestParam width: Double?,
         @RequestParam length: Double?,
         request: HttpServletRequest,
-        model: Model
+        model: Model,
     ): String {
         val citizen = getCitizen(request) ?: return "redirect:/"
 
