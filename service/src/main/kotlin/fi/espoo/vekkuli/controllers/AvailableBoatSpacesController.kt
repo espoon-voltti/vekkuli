@@ -268,7 +268,6 @@ class AvailableBoatSpacesController {
                     )
                 }
             } else {
-                println("Updating boat: $input")
                 jdbi.inTransactionUnchecked {
                     it.updateBoat(
                         Boat(
