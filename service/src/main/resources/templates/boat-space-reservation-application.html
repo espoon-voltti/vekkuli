@@ -211,7 +211,7 @@
                                     type="radio"
                                     th:field="*{ownerShip}"
                                     th:value="${opt}"
-                                    hx-trigger="blur"
+                                    hx-trigger="change"
                                     th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
                                     hx-swap-oob="outerHTML"
                             />
@@ -269,26 +269,41 @@
             </div>
 
             <div>
-                <label class="checkbox justify-content-space-between">
-                    <input type="checkbox" data-required th:field="*{certifyInformation}">/> <span
-                        th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
-                </label>
-                <span class="help is-danger" th:if="${#fields.hasErrors('certifyInformation')}"
-                      th:errors="*{certifyInformation}">Certification required</span>
+                <div id="certify-control">
+                    <label class="checkbox justify-content-space-between">
+                        <input
+                                type="checkbox"
+                                data-required
+                                th:field="*{certifyInformation}"
+                                hx-trigger="change"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
+                                hx-swap-oob="outerHTML"
+                                hx-target="closest div"
+                                hx-select-oob="#certify-control"
+                        >
+                        <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
+                    </label>
+                    <span class="help is-danger" th:if="${#fields.hasErrors('certifyInformation')}"
+                          th:errors="*{certifyInformation}">Certification required</span>
+                </div>
 
-                <label class="checkbox">
-                    <input
-                            type="checkbox"
-                            data-required
-                            th:field="*{agreeToRules}"
-                            hx-trigger="input"
-                            th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
-                            hx-swap-oob="outerHTML"
-                    />
-                    <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
-                </label>
-                <span class="help is-danger" th:if="${#fields.hasErrors('agreeToRules')}"
-                      th:errors="*{agreeToRules}">Agreement required</span>
+                <div id="agree-control">
+                    <label class="checkbox">
+                        <input
+                                type="checkbox"
+                                data-required
+                                th:field="*{agreeToRules}"
+                                hx-trigger="change"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
+                                hx-swap-oob="outerHTML"
+                                hx-target="closest div"
+                                hx-select-oob="#agree-control"
+                        />
+                        <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
+                    </label>
+                    <span class="help is-danger" th:if="${#fields.hasErrors('agreeToRules')}"
+                          th:errors="*{agreeToRules}">Agreement required</span>
+                </div>
             </div>
 
             <div class="field">
