@@ -1,8 +1,6 @@
 <html layout:decorate="~{layout}">
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
-    <script>
-    </script>
 </head>
 
 <body layout:fragment="body">
@@ -37,27 +35,27 @@
             </div>
             <div>
                 <h3 class="header" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h3>
-                 <div class="field" th:if="${not boats.isEmpty()}">
-                     <div class="radio">
-                         <input type="radio" th:field="*{boatId}" value="0"
-                                hx-trigger="change"
-                                th:attr="hx-get=|/kuntalainen/venepaikka/varaus/${reservationId}?boatId=0|"
-                                hx-target="body"
-                                hx-swap="outerHTML"
-                           />
-                         <label th:for="${#ids.prev('boatId')}" th:text="#{boatApplication.newBoat}">Uusi vene</label>
-                     </div>
-                     <div class="radio" th:each="boat : ${boats}">
-                         <input type="radio" th:field="*{boatId}" th:value="${boat.id}"
-                                hx-trigger="change"
-                                th:attr="hx-get=|/kuntalainen/venepaikka/varaus/${reservationId}?boatId=${boat.id}|"
-                                hx-target="body"
-                                hx-swap="outerHTML"
-                         />
-                         <label th:for="${#ids.prev('boatId')}"
-                                th:text="${boat.name}">Mun vene</label>
-                     </div>
-                 </div>
+                <div class="field" th:if="${not boats.isEmpty()}">
+                    <div class="radio">
+                        <input type="radio" th:field="*{boatId}" value="0"
+                               hx-trigger="change"
+                               th:attr="hx-get=|/kuntalainen/venepaikka/varaus/${reservationId}?boatId=0|"
+                               hx-target="body"
+                               hx-swap="outerHTML"
+                        />
+                        <label th:for="${#ids.prev('boatId')}" th:text="#{boatApplication.newBoat}">Uusi vene</label>
+                    </div>
+                    <div class="radio" th:each="boat : ${boats}">
+                        <input type="radio" th:field="*{boatId}" th:value="${boat.id}"
+                               hx-trigger="change"
+                               th:attr="hx-get=|/kuntalainen/venepaikka/varaus/${reservationId}?boatId=${boat.id}|"
+                               hx-target="body"
+                               hx-swap="outerHTML"
+                        />
+                        <label th:for="${#ids.prev('boatId')}"
+                               th:text="${boat.name}">Mun vene</label>
+                    </div>
+                </div>
                 <div class="field">
                     <label class="label required" th:for="boatType"
                            th:text="#{boatApplication.boatType}"></label>
