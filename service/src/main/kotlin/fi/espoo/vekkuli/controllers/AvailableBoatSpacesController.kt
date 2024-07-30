@@ -204,7 +204,7 @@ class AvailableBoatSpacesController {
 
         var input = ReservationInput.initializeInput(boatType, width, length)
 
-        if (boatId !== null) {
+        if (boatId != null && boatId != 0) {
             val boat = jdbi.inTransactionUnchecked { it.getBoat(boatId) }
             if (boat != null) {
                 input =
@@ -218,6 +218,7 @@ class AvailableBoatSpacesController {
                         otherIdentification = boat.otherIdentification,
                         extraInformation = boat.extraInformation,
                         ownerShip = boat.ownership,
+                        boatType = boat.type,
                         boatRegistrationNumber = boat.registrationCode,
                     )
             }
@@ -250,20 +251,42 @@ class AvailableBoatSpacesController {
         }
 
         val boat =
-            jdbi.inTransactionUnchecked {
-                it.insertBoat(
-                    citizen.id,
-                    input.boatRegistrationNumber!!,
-                    input.boatName!!,
-                    input.width!!.mToCm(),
-                    input.length!!.mToCm(),
-                    input.depth!!.mToCm(),
-                    input.weight!!,
-                    input.boatType!!,
-                    input.otherIdentification ?: "",
-                    input.extraInformation ?: "",
-                    input.ownerShip!!
-                )
+            if (input.boatId == 0 || input.boatId == null) {
+                jdbi.inTransactionUnchecked {
+                    it.insertBoat(
+                        citizen.id,
+                        input.boatRegistrationNumber!!,
+                        input.boatName!!,
+                        input.width!!.mToCm(),
+                        input.length!!.mToCm(),
+                        input.depth!!.mToCm(),
+                        input.weight!!,
+                        input.boatType!!,
+                        input.otherIdentification ?: "",
+                        input.extraInformation ?: "",
+                        input.ownerShip!!
+                    )
+                }
+            } else {
+                println("Updating boat: $input")
+                jdbi.inTransactionUnchecked {
+                    it.updateBoat(
+                        Boat(
+                            id = input.boatId,
+                            citizenId = citizen.id,
+                            registrationCode = input.boatRegistrationNumber!!,
+                            name = input.boatName!!,
+                            widthCm = input.width!!.mToCm(),
+                            lengthCm = input.length!!.mToCm(),
+                            depthCm = input.depth!!.mToCm(),
+                            weightKg = input.weight!!,
+                            type = input.boatType!!,
+                            otherIdentification = input.otherIdentification ?: "",
+                            extraInformation = input.extraInformation ?: "",
+                            ownership = input.ownerShip!!
+                        )
+                    )
+                }
             }
 
         jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
