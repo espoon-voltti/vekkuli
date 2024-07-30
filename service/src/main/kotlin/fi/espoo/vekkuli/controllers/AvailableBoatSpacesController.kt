@@ -60,6 +60,7 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Res
 data class ReservationInput(
     @field:NotNull(message = "{validation.required}")
     private val reservationId: Int?,
+    val boatId: Int?,
     @field:NotNull(message = "{validation.required}")
     val boatType: BoatType?,
     @field:NotNull(message = "{validation.required}")
@@ -100,6 +101,7 @@ data class ReservationInput(
         ): ReservationInput =
             ReservationInput(
                 reservationId = null,
+                boatId = null,
                 boatType = boatType ?: BoatType.OutboardMotor,
                 width = width,
                 length = length,
@@ -182,6 +184,7 @@ class AvailableBoatSpacesController {
     fun boatSpaceApplication(
         @PathVariable reservationId: Int,
         @RequestParam boatType: BoatType?,
+        @RequestParam boatId: Int?,
         @RequestParam width: Double?,
         @RequestParam length: Double?,
         request: HttpServletRequest,
@@ -198,7 +201,32 @@ class AvailableBoatSpacesController {
         if (user == null || reservation.citizenId != user.id) {
             throw UnauthorizedException()
         }
-        return renderBoatSpaceReservationApplication(reservation, user, model, ReservationInput.initializeInput(boatType, width, length))
+
+        var input = ReservationInput.initializeInput(boatType, width, length)
+
+        if (boatId != null && boatId != 0) {
+            val boat = jdbi.inTransactionUnchecked { it.getBoat(boatId) }
+            if (boat != null) {
+                input =
+                    input.copy(
+                        boatId = boat.id,
+                        depth = boat.depthCm.cmToM(),
+                        boatName = boat.name,
+                        weight = boat.weightKg,
+                        width = boat.widthCm.cmToM(),
+                        length = boat.lengthCm.cmToM(),
+                        otherIdentification = boat.otherIdentification,
+                        extraInformation = boat.extraInformation,
+                        ownerShip = boat.ownership,
+                        boatType = boat.type,
+                        boatRegistrationNumber = boat.registrationCode,
+                    )
+            }
+        } else {
+            input = input.copy(boatId = 0)
+        }
+
+        return renderBoatSpaceReservationApplication(reservation, user, model, input)
     }
 
     @PostMapping("/venepaikka/varaus/{reservationId}")
@@ -223,20 +251,42 @@ class AvailableBoatSpacesController {
         }
 
         val boat =
-            jdbi.inTransactionUnchecked {
-                it.insertBoat(
-                    citizen.id,
-                    input.boatRegistrationNumber!!,
-                    input.boatName!!,
-                    input.width!!.mToCm(),
-                    input.length!!.mToCm(),
-                    input.depth!!.mToCm(),
-                    input.weight!!,
-                    input.boatType!!,
-                    input.otherIdentification ?: "",
-                    input.extraInformation ?: "",
-                    input.ownerShip!!
-                )
+            if (input.boatId == 0 || input.boatId == null) {
+                jdbi.inTransactionUnchecked {
+                    it.insertBoat(
+                        citizen.id,
+                        input.boatRegistrationNumber!!,
+                        input.boatName!!,
+                        input.width!!.mToCm(),
+                        input.length!!.mToCm(),
+                        input.depth!!.mToCm(),
+                        input.weight!!,
+                        input.boatType!!,
+                        input.otherIdentification ?: "",
+                        input.extraInformation ?: "",
+                        input.ownerShip!!
+                    )
+                }
+            } else {
+                println("Updating boat: $input")
+                jdbi.inTransactionUnchecked {
+                    it.updateBoat(
+                        Boat(
+                            id = input.boatId,
+                            citizenId = citizen.id,
+                            registrationCode = input.boatRegistrationNumber!!,
+                            name = input.boatName!!,
+                            widthCm = input.width!!.mToCm(),
+                            lengthCm = input.length!!.mToCm(),
+                            depthCm = input.depth!!.mToCm(),
+                            weightKg = input.weight!!,
+                            type = input.boatType!!,
+                            otherIdentification = input.otherIdentification ?: "",
+                            extraInformation = input.extraInformation ?: "",
+                            ownership = input.ownerShip!!
+                        )
+                    )
+                }
             }
 
         jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
@@ -311,6 +361,10 @@ class AvailableBoatSpacesController {
                 municipality = "Espoo"
             )
 
+        val boats =
+            jdbi.inTransactionUnchecked {
+                it.getBoatsForCitizen(user.id)
+            }
         // Todo: do not calculate alv here
         val calculatedAlv = reservation.price * 0.1
         val boatSpaceFront =
@@ -336,6 +390,7 @@ class AvailableBoatSpacesController {
         model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
         model.addAttribute("input", input)
         model.addAttribute("boatSpace", boatSpaceFront)
+        model.addAttribute("boats", boats)
         model.addAttribute(
             "user",
             mockedUser
