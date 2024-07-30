@@ -1,3 +1,4 @@
+import com.github.gradle.node.npm.task.NpxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
@@ -8,8 +9,16 @@ plugins {
     kotlin("plugin.spring") version "1.9.20"
     id("org.flywaydb.flyway") version "10.12.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("com.github.node-gradle.node") version "7.0.2"
 
     idea
+}
+node {
+    version.set("16.13.0")
+    npmVersion.set("8.1.0")
+    download.set(true)
+    workDir = file("${project.projectDir}/.gradle/nodejs") // Set the node work directory
+    npmWorkDir = file("${project.projectDir}/.gradle/npm") // Set the npm work directory
 }
 
 java {
@@ -123,8 +132,15 @@ tasks.register("resolveDependencies") {
     }
 }
 
+tasks.register("compileSass", NpxTask::class) {
+    dependsOn("npmInstall") // Dependencies from package.json are installed
+    command = "sass"
+    args = listOf("--load-path=node_modules", "src/main/resources/static/sass:src/main/resources/static/css")
+}
+
 tasks {
     bootRun {
+        dependsOn("compileSass")
         systemProperty("spring.profiles.active", "local")
     }
 
