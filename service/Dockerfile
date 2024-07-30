@@ -26,10 +26,13 @@ WORKDIR /app
 COPY ./gradle/ ./gradle/
 COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./
 
+
 RUN ./gradlew --no-daemon resolveDependencies \
  && ./gradlew e2eTestDeps
 
 COPY . .
+
+RUN ./gradlew compileSass
 
 # --offline is used to be sure that all dependencies are installed in previous steps
 RUN ./gradlew --offline --no-daemon ktlintCheck
