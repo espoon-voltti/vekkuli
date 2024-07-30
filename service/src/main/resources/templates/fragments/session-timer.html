@@ -1,7 +1,7 @@
 <div class="container p-3" id="sessionTimer" th:fragment="sessionTimer">
     <div role="timer" id="timer" class="timer has-text-centered" th:text="#{boatApplication.timer}">Sinulla on x minuuttia ja x sekuntia aikaa vahvistaa venepaikkavaraus maksamalla.</div>
     <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', (event) => {
+        htmx.onLoad(() => {
             let startingTime = [[${reservationTimeInSeconds}]];
             const timerElement = document.getElementById('timer');
             const timerMessageTemplate = /*[[#{boatApplication.timer}]]*/ 'Sinulla on {0} ja {1} aikaa vahvistaa venepaikkavaraus maksamalla.';
