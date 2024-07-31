@@ -184,7 +184,10 @@ class AvailableBoatSpacesController {
                 )
             }
 
-        model.addAttribute("harbors", harbors)
+        println("COUNT ${harbors.first.size}")
+
+        model.addAttribute("harbors", harbors.first)
+        model.addAttribute("spaceCount", harbors.second)
         model.addAttribute("boat", BoatFilter(width, length, boatType))
         return "boat-space-options"
     }

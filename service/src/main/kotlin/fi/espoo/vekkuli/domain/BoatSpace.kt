@@ -140,7 +140,7 @@ class LocationFilter(
     }
 }
 
-fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> {
+fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
     val amenityFilter =
         if (params.boatLength != null && params.boatLength > 1500) {
             // Boats over 15 meters will only fit in buoys
@@ -206,6 +206,7 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
     combinedFilter.bind(query)
 
     val boatSpaces = query.mapTo<BoatSpaceOption>().toList()
+    val count = boatSpaces.size
 
     val harbors =
         boatSpaces
@@ -222,5 +223,5 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): List<Harbor> 
                 )
             }
 
-    return harbors
+    return Pair(harbors, count)
 }
