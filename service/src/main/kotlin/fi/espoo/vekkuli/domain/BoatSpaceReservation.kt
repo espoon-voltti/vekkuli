@@ -121,6 +121,22 @@ fun Handle.getReservationForCitizen(id: UUID): ReservationWithDependencies? {
     return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
 }
 
+fun Handle.removeBoatSpaceReservation(
+    id: Int,
+    citizenId: UUID
+) {
+    val query =
+        createUpdate(
+            """
+            DELETE FROM boat_space_reservation
+            WHERE id = :id AND citizen_id = :citizenId
+            """.trimIndent()
+        )
+    query.bind("id", id)
+    query.bind("citizenId", citizenId)
+    query.execute()
+}
+
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
     val query =
         createQuery(

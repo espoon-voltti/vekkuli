@@ -15,6 +15,7 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -139,9 +140,7 @@ class AvailableBoatSpacesController {
                     it.getReservationForCitizen(citizen.id)
                 }
             if (reservation != null) {
-                val baseUrl = getBaseUrl()
-                val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/${reservation.id}"
-                return "redirect:$redirectUrl"
+                return redirectUrl("/kuntalainen/venepaikka/varaus/${reservation.id}")
             }
         }
         val locations =
@@ -211,7 +210,7 @@ class AvailableBoatSpacesController {
                 it.getReservationWithCitizen(reservationId)
             }
 
-        if (reservation == null) return "redirect:/"
+        if (reservation == null) return redirectUrl("/")
 
         if (user == null || reservation.citizenId != user.id) {
             throw UnauthorizedException()
@@ -244,6 +243,16 @@ class AvailableBoatSpacesController {
         return renderBoatSpaceReservationApplication(reservation, user, model, input)
     }
 
+    @DeleteMapping("/venepaikka/varaus/{reservationId}")
+    fun removeBoatSpaceReservation(
+        @PathVariable reservationId: Int,
+        request: HttpServletRequest
+    ): ResponseEntity<Void> {
+        val citizen = getCitizen(request) ?: return ResponseEntity.noContent().build()
+        jdbi.inTransactionUnchecked { it.removeBoatSpaceReservation(reservationId, citizen.id) }
+        return ResponseEntity.noContent().build()
+    }
+
     @PostMapping("/venepaikka/varaus/{reservationId}")
     fun reserveBoatSpace(
         @PathVariable reservationId: Int,
@@ -253,7 +262,7 @@ class AvailableBoatSpacesController {
         model: Model,
         @RequestParam(required = false, defaultValue = "false") validate: Boolean
     ): String {
-        val citizen = getCitizen(request) ?: return "redirect:/"
+        val citizen = getCitizen(request) ?: return redirectUrl("/")
 
         if (bindingResult.hasErrors() || validate) {
             val reservation =
@@ -261,7 +270,7 @@ class AvailableBoatSpacesController {
                     it.getReservationWithCitizen(reservationId)
                 }
 
-            if (reservation == null) return "redirect:/"
+            if (reservation == null) return redirectUrl("/")
 
             return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
         }
@@ -318,7 +327,7 @@ class AvailableBoatSpacesController {
         request: HttpServletRequest,
         model: Model
     ): String {
-        val citizen = getCitizen(request) ?: return "redirect:/"
+        val citizen = getCitizen(request) ?: return redirectUrl("/")
 
         val existingReservation = jdbi.inTransactionUnchecked { it.getReservationForCitizen(citizen.id) }
 
@@ -338,8 +347,6 @@ class AvailableBoatSpacesController {
                     }.id
             }
 
-        val baseUrl = getBaseUrl()
-
         val queryParams = mutableListOf<String>()
         boatType?.let { queryParams.add("boatType=${it.name}") }
         width?.let { queryParams.add("width=$it") }
@@ -349,8 +356,12 @@ class AvailableBoatSpacesController {
         val queryString = queryParams.joinToString("&")
 
         // Construct the redirect URL
-        val redirectUrl = "$baseUrl/kuntalainen/venepaikka/varaus/$reservationId?$queryString"
-        return "redirect:$redirectUrl"
+        return redirectUrl("/kuntalainen/venepaikka/varaus/$reservationId?$queryString")
+    }
+
+    fun redirectUrl(path: String): String {
+        val baseUrl = getBaseUrl()
+        return "redirect:$baseUrl$path"
     }
 
     fun getBaseUrl(): String {
