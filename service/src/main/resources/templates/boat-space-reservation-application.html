@@ -6,7 +6,7 @@
 <body layout:fragment="body">
 
 <section class="section">
-    <div class="container">
+    <div class="container" id="container">
         <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=2)}"></div>
         <form
                 id="form"
@@ -28,9 +28,9 @@
             </div>
             <div>
                 <h4 class="label" th:text="#{boatApplication.boatSpacePrice}">Hinta</h4>
-                <p th:text="|#{boatApplication.boatSpaceFee}: ${boatSpace.priceWithoutAlv} €|">Maksu: 350 €</p>
-                <p th:text="|#{boatApplication.boatSpaceFeeAlv}: ${boatSpace.priceAlv} €|">Alv: 75 €</p>
-                <p th:text="|#{boatApplication.boatSpaceFeeTotal}: ${boatSpace.priceTotal} €|">Yhteensä: 425
+                <p th:text="|#{boatApplication.boatSpaceFee}: ${boatSpace.priceWithoutAlv} &euro;|">Maksu: 350 €</p>
+                <p th:text="|#{boatApplication.boatSpaceFeeAlv}: ${boatSpace.priceAlv} &euro;|">Alv: 75 €</p>
+                <p th:text="|#{boatApplication.boatSpaceFeeTotal}: ${boatSpace.priceTotal} &euro;|">Yhteensä: 425
                     €</p>
             </div>
             <div>
@@ -244,16 +244,11 @@
                                     type="radio"
                                     th:field="*{ownerShip}"
                                     th:value="${opt}"
-                                    hx-trigger="change"
-                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
-                                    hx-swap-oob="outerHTML"
                             />
                             <label th:for="${#ids.prev('ownerShip')}"
                                    th:text="#{${'boatApplication.ownershipOption.' + opt}}">Owner</label>
                         </div>
                     </div>
-                    <span class="help is-danger" th:if="${#fields.hasErrors('ownerShip')}"
-                          th:errors="*{ownerShip}">Ownership info required</span>
                 </div>
             </div>
             <div>
@@ -361,12 +356,15 @@
                     </button>
 
 
-                    <button id="submit" class="button is-primary" type="submit"
+                    <button id="submit"
+                            class="button is-primary"
+                            type="button"
                             th:text="#{boatApplication.continueToPaymentButton}"
                             th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
-                            hx-swap-oob="outerHTML"
+                            hx-swap="outerHTML"
                             hx-trigger="click"
-                            hx-select-oob="#form"
+                            hx-select="#container"
+                            hx-target="#container"
                     >
                         Lähetä hakemus
                     </button>
