@@ -258,7 +258,7 @@ class BoatSpaceFormController {
             "user",
             mockedUser
         )
-        return "boat-space-reservation-application"
+        return "boat-space-form"
     }
 
     private fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {

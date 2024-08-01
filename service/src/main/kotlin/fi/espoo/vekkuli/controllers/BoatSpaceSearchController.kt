@@ -55,7 +55,7 @@ class BoatSpaceSearchController {
         )
         model.addAttribute("locations", locations)
 
-        return "available-boat-spaces"
+        return "boat-space-search"
     }
 
     @RequestMapping("/partial/vapaat-paikat")
@@ -84,6 +84,6 @@ class BoatSpaceSearchController {
 
         model.addAttribute("harbors", harbors)
         model.addAttribute("boat", BoatFilter(width, length, boatType))
-        return "boat-space-options"
+        return "boat-space-search-results"
     }
 }
