@@ -1,10 +1,8 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
-//
-// SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
+import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
@@ -25,11 +23,252 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.KClass
 
-data class BoatFilter(
-    val width: Double?,
-    val length: Double?,
-    val type: BoatType?
-)
+@Controller
+@RequestMapping("/kuntalainen")
+class BoatSpaceFormController {
+    @Autowired
+    lateinit var jdbi: Jdbi
+
+    @RequestMapping("/venepaikka/varaus/{reservationId}")
+    fun boatSpaceFormPage(
+        @PathVariable reservationId: Int,
+        @RequestParam boatType: BoatType?,
+        @RequestParam boatId: Int?,
+        @RequestParam width: Double?,
+        @RequestParam length: Double?,
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val user = getCitizen(request, jdbi)
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getReservationWithCitizen(reservationId)
+            }
+
+        if (reservation == null) return redirectUrl("/")
+
+        if (user == null || reservation.citizenId != user.id) {
+            throw UnauthorizedException()
+        }
+
+        var input = ReservationInput.initializeInput(boatType, width, length)
+
+        if (boatId != null && boatId != 0) {
+            val boat = jdbi.inTransactionUnchecked { it.getBoat(boatId) }
+            if (boat != null) {
+                input =
+                    input.copy(
+                        boatId = boat.id,
+                        depth = boat.depthCm.cmToM(),
+                        boatName = boat.name,
+                        weight = boat.weightKg,
+                        width = boat.widthCm.cmToM(),
+                        length = boat.lengthCm.cmToM(),
+                        otherIdentification = boat.otherIdentification,
+                        extraInformation = boat.extraInformation,
+                        ownerShip = boat.ownership,
+                        boatType = boat.type,
+                        boatRegistrationNumber = boat.registrationCode,
+                    )
+            }
+        } else {
+            input = input.copy(boatId = 0)
+        }
+
+        return renderBoatSpaceReservationApplication(reservation, user, model, input)
+    }
+
+    @DeleteMapping("/venepaikka/varaus/{reservationId}")
+    fun removeBoatSpaceReservation(
+        @PathVariable reservationId: Int,
+        request: HttpServletRequest
+    ): ResponseEntity<Void> {
+        val citizen = getCitizen(request, jdbi) ?: return ResponseEntity.noContent().build()
+        jdbi.inTransactionUnchecked { it.removeBoatSpaceReservation(reservationId, citizen.id) }
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/venepaikka/varaus/{reservationId}/validate")
+    fun validateForm(
+        @PathVariable reservationId: Int,
+        @Valid @ModelAttribute("input") input: ReservationInput,
+        bindingResult: BindingResult,
+        request: HttpServletRequest,
+        model: Model,
+    ): String {
+        val citizen = getCitizen(request, jdbi) ?: return redirectUrl("/")
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getReservationWithCitizen(reservationId)
+            }
+
+        if (reservation == null) return redirectUrl("/")
+
+        return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+    }
+
+    @PostMapping("/venepaikka/varaus/{reservationId}")
+    fun reserveBoatSpace(
+        @PathVariable reservationId: Int,
+        @Valid @ModelAttribute("input") input: ReservationInput,
+        bindingResult: BindingResult,
+        request: HttpServletRequest,
+        model: Model,
+    ): String {
+        val citizen = getCitizen(request, jdbi) ?: return redirectUrl("/")
+
+        if (bindingResult.hasErrors()) {
+            val reservation =
+                jdbi.inTransactionUnchecked {
+                    it.getReservationWithCitizen(reservationId)
+                }
+
+            if (reservation == null) return redirectUrl("/")
+
+            return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+        }
+
+        val boat =
+            if (input.boatId == 0 || input.boatId == null) {
+                jdbi.inTransactionUnchecked {
+                    it.insertBoat(
+                        citizen.id,
+                        input.boatRegistrationNumber!!,
+                        input.boatName!!,
+                        input.width!!.mToCm(),
+                        input.length!!.mToCm(),
+                        input.depth!!.mToCm(),
+                        input.weight!!,
+                        input.boatType!!,
+                        input.otherIdentification ?: "",
+                        input.extraInformation ?: "",
+                        input.ownerShip!!
+                    )
+                }
+            } else {
+                jdbi.inTransactionUnchecked {
+                    it.updateBoat(
+                        Boat(
+                            id = input.boatId,
+                            citizenId = citizen.id,
+                            registrationCode = input.boatRegistrationNumber!!,
+                            name = input.boatName!!,
+                            widthCm = input.width!!.mToCm(),
+                            lengthCm = input.length!!.mToCm(),
+                            depthCm = input.depth!!.mToCm(),
+                            weightKg = input.weight!!,
+                            type = input.boatType!!,
+                            otherIdentification = input.otherIdentification ?: "",
+                            extraInformation = input.extraInformation ?: "",
+                            ownership = input.ownerShip!!
+                        )
+                    )
+                }
+            }
+
+        jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
+        jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
+        return "payment"
+    }
+
+    @PostMapping("/venepaikka/varaus")
+    fun reserveBoatSpace(
+        @RequestParam spaceId: Int,
+        @RequestParam boatType: BoatType?,
+        @RequestParam width: Double?,
+        @RequestParam length: Double?,
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val citizen = getCitizen(request, jdbi) ?: return redirectUrl("/")
+
+        val existingReservation = jdbi.inTransactionUnchecked { it.getReservationForCitizen(citizen.id) }
+
+        val reservationId =
+            if (existingReservation != null) {
+                existingReservation.id
+            } else {
+                jdbi
+                    .inTransactionUnchecked {
+                        it.insertBoatSpaceReservation(
+                            citizen.id,
+                            spaceId,
+                            LocalDate.now(),
+                            LocalDate.now().plusYears(1),
+                            ReservationStatus.Info
+                        )
+                    }.id
+            }
+
+        val queryParams = mutableListOf<String>()
+        boatType?.let { queryParams.add("boatType=${it.name}") }
+        width?.let { queryParams.add("width=$it") }
+        length?.let { queryParams.add("length=$it") }
+
+        val queryString = queryParams.joinToString("&")
+
+        return redirectUrl("/kuntalainen/venepaikka/varaus/$reservationId?$queryString")
+    }
+
+    fun renderBoatSpaceReservationApplication(
+        reservation: ReservationWithDependencies,
+        user: Citizen,
+        model: Model,
+        input: ReservationInput
+    ): String {
+        val mockedUser =
+            // Todo: fetch real data here
+            user.copy(
+                address = "Miestentie 2 A 23",
+                postalCode = "02150",
+                municipality = "Espoo"
+            )
+
+        val boats =
+            jdbi.inTransactionUnchecked {
+                it.getBoatsForCitizen(user.id)
+            }
+        // Todo: do not calculate alv here
+        val calculatedAlv = reservation.price * 0.1
+        val boatSpaceFront =
+            object {
+                val type = reservation.type
+                val section = reservation.section
+                val placeNumber = reservation.placeNumber
+                val amenity = reservation.amenity
+                val widthInMeters = reservation.widthCm.cmToM()
+                val lengthInMeters = reservation.lengthCm.cmToM()
+                val description: String = reservation.description
+                val harbor = reservation.locationName
+                val priceTotal = reservation.price
+                val priceAlv = calculatedAlv
+                val priceWithoutAlv = (reservation.price * 1.0) - calculatedAlv
+            }
+
+        model.addAttribute(
+            "reservationTimeInSeconds",
+            getReservationTimeInSeconds(reservation.created)
+        )
+        model.addAttribute("boatTypes", listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki"))
+        model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
+        model.addAttribute("input", input)
+        model.addAttribute("boatSpace", boatSpaceFront)
+        model.addAttribute("boats", boats)
+        model.addAttribute(
+            "user",
+            mockedUser
+        )
+        return "boat-space-reservation-application"
+    }
+
+    private fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
+        val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
+        return (BoatSpaceConfig.sessionTimeInSeconds - reservationTimePassed)
+    }
+}
+
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+internal class UnauthorizedException : RuntimeException()
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -121,340 +360,3 @@ data class ReservationInput(
             )
     }
 }
-
-@Controller
-@RequestMapping("/kuntalainen")
-class AvailableBoatSpacesController {
-    @Autowired
-    lateinit var jdbi: Jdbi
-
-    @RequestMapping("/venepaikat")
-    fun availableBoatSpaces(
-        request: HttpServletRequest,
-        model: Model
-    ): String {
-        val citizen = getCitizen(request)
-        if (citizen != null) {
-            val reservation =
-                jdbi.inTransactionUnchecked {
-                    it.getReservationForCitizen(citizen.id)
-                }
-            if (reservation != null) {
-                return redirectUrl("/kuntalainen/venepaikka/varaus/${reservation.id}")
-            }
-        }
-        val locations =
-            jdbi.inTransactionUnchecked { tx ->
-                tx.getLocations()
-            }
-        model.addAttribute(
-            "amenities",
-            BoatSpaceAmenity.entries.map { it.toString() }
-        )
-        model.addAttribute(
-            "boatTypes",
-            BoatType.entries.map { it.toString() }
-        )
-        model.addAttribute("locations", locations)
-
-        return "available-boat-spaces"
-    }
-
-    @RequestMapping("/partial/vapaat-paikat")
-    fun freeSpaces(
-        @RequestParam(required = false) boatType: BoatType?,
-        @RequestParam @Min(0) width: Double?,
-        @RequestParam @Min(0) length: Double?,
-        @RequestParam amenities: List<BoatSpaceAmenity>?,
-        @RequestParam boatSpaceType: BoatSpaceType?,
-        @RequestParam harbor: List<String>?,
-        model: Model
-    ): String {
-        val harbors =
-            jdbi.inTransactionUnchecked {
-                it.getUnreservedBoatSpaceOptions(
-                    BoatSpaceFilter(
-                        boatType,
-                        width?.mToCm(),
-                        length?.mToCm(),
-                        amenities,
-                        boatSpaceType,
-                        harbor?.map { s -> s.toInt() }
-                    )
-                )
-            }
-
-        model.addAttribute("harbors", harbors)
-        model.addAttribute("boat", BoatFilter(width, length, boatType))
-        return "boat-space-options"
-    }
-
-    private fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
-        val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
-        return (BoatSpaceConfig.sessionTimeInSeconds - reservationTimePassed)
-    }
-
-    @RequestMapping("/venepaikka/varaus/{reservationId}")
-    fun boatSpaceApplication(
-        @PathVariable reservationId: Int,
-        @RequestParam boatType: BoatType?,
-        @RequestParam boatId: Int?,
-        @RequestParam width: Double?,
-        @RequestParam length: Double?,
-        request: HttpServletRequest,
-        model: Model
-    ): String {
-        val user = getCitizen(request)
-        val reservation =
-            jdbi.inTransactionUnchecked {
-                it.getReservationWithCitizen(reservationId)
-            }
-
-        if (reservation == null) return redirectUrl("/")
-
-        if (user == null || reservation.citizenId != user.id) {
-            throw UnauthorizedException()
-        }
-
-        var input = ReservationInput.initializeInput(boatType, width, length)
-
-        if (boatId != null && boatId != 0) {
-            val boat = jdbi.inTransactionUnchecked { it.getBoat(boatId) }
-            if (boat != null) {
-                input =
-                    input.copy(
-                        boatId = boat.id,
-                        depth = boat.depthCm.cmToM(),
-                        boatName = boat.name,
-                        weight = boat.weightKg,
-                        width = boat.widthCm.cmToM(),
-                        length = boat.lengthCm.cmToM(),
-                        otherIdentification = boat.otherIdentification,
-                        extraInformation = boat.extraInformation,
-                        ownerShip = boat.ownership,
-                        boatType = boat.type,
-                        boatRegistrationNumber = boat.registrationCode,
-                    )
-            }
-        } else {
-            input = input.copy(boatId = 0)
-        }
-
-        return renderBoatSpaceReservationApplication(reservation, user, model, input)
-    }
-
-    @DeleteMapping("/venepaikka/varaus/{reservationId}")
-    fun removeBoatSpaceReservation(
-        @PathVariable reservationId: Int,
-        request: HttpServletRequest
-    ): ResponseEntity<Void> {
-        val citizen = getCitizen(request) ?: return ResponseEntity.noContent().build()
-        jdbi.inTransactionUnchecked { it.removeBoatSpaceReservation(reservationId, citizen.id) }
-        return ResponseEntity.noContent().build()
-    }
-
-    @PostMapping("/venepaikka/varaus/{reservationId}/validate")
-    fun validate(
-        @PathVariable reservationId: Int,
-        @Valid @ModelAttribute("input") input: ReservationInput,
-        bindingResult: BindingResult,
-        request: HttpServletRequest,
-        model: Model,
-    ): String {
-        val citizen = getCitizen(request) ?: return redirectUrl("/")
-        val reservation =
-            jdbi.inTransactionUnchecked {
-                it.getReservationWithCitizen(reservationId)
-            }
-
-        if (reservation == null) return redirectUrl("/")
-
-        return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
-    }
-
-    @PostMapping("/venepaikka/varaus/{reservationId}")
-    fun reserveBoatSpace(
-        @PathVariable reservationId: Int,
-        @Valid @ModelAttribute("input") input: ReservationInput,
-        bindingResult: BindingResult,
-        request: HttpServletRequest,
-        model: Model,
-    ): String {
-        val citizen = getCitizen(request) ?: return redirectUrl("/")
-
-        if (bindingResult.hasErrors()) {
-            val reservation =
-                jdbi.inTransactionUnchecked {
-                    it.getReservationWithCitizen(reservationId)
-                }
-
-            if (reservation == null) return redirectUrl("/")
-
-            return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
-        }
-
-        val boat =
-            if (input.boatId == 0 || input.boatId == null) {
-                jdbi.inTransactionUnchecked {
-                    it.insertBoat(
-                        citizen.id,
-                        input.boatRegistrationNumber!!,
-                        input.boatName!!,
-                        input.width!!.mToCm(),
-                        input.length!!.mToCm(),
-                        input.depth!!.mToCm(),
-                        input.weight!!,
-                        input.boatType!!,
-                        input.otherIdentification ?: "",
-                        input.extraInformation ?: "",
-                        input.ownerShip!!
-                    )
-                }
-            } else {
-                jdbi.inTransactionUnchecked {
-                    it.updateBoat(
-                        Boat(
-                            id = input.boatId,
-                            citizenId = citizen.id,
-                            registrationCode = input.boatRegistrationNumber!!,
-                            name = input.boatName!!,
-                            widthCm = input.width!!.mToCm(),
-                            lengthCm = input.length!!.mToCm(),
-                            depthCm = input.depth!!.mToCm(),
-                            weightKg = input.weight!!,
-                            type = input.boatType!!,
-                            otherIdentification = input.otherIdentification ?: "",
-                            extraInformation = input.extraInformation ?: "",
-                            ownership = input.ownerShip!!
-                        )
-                    )
-                }
-            }
-
-        jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
-        jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
-        return "payment"
-    }
-
-    @PostMapping("/venepaikka/varaus")
-    fun reserveBoatSpace(
-        @RequestParam spaceId: Int,
-        @RequestParam boatType: BoatType?,
-        @RequestParam width: Double?,
-        @RequestParam length: Double?,
-        request: HttpServletRequest,
-        model: Model
-    ): String {
-        val citizen = getCitizen(request) ?: return redirectUrl("/")
-
-        val existingReservation = jdbi.inTransactionUnchecked { it.getReservationForCitizen(citizen.id) }
-
-        val reservationId =
-            if (existingReservation != null) {
-                existingReservation.id
-            } else {
-                jdbi
-                    .inTransactionUnchecked {
-                        it.insertBoatSpaceReservation(
-                            citizen.id,
-                            spaceId,
-                            LocalDate.now(),
-                            LocalDate.now().plusYears(1),
-                            ReservationStatus.Info
-                        )
-                    }.id
-            }
-
-        val queryParams = mutableListOf<String>()
-        boatType?.let { queryParams.add("boatType=${it.name}") }
-        width?.let { queryParams.add("width=$it") }
-        length?.let { queryParams.add("length=$it") }
-
-        // Join the query parameters with '&'
-        val queryString = queryParams.joinToString("&")
-
-        // Construct the redirect URL
-        return redirectUrl("/kuntalainen/venepaikka/varaus/$reservationId?$queryString")
-    }
-
-    fun redirectUrl(path: String): String {
-        val baseUrl = getBaseUrl()
-        return "redirect:$baseUrl$path"
-    }
-
-    fun getBaseUrl(): String {
-        val env = System.getenv("VOLTTI_ENV")
-        val runningInDocker = System.getenv("E2E_ENV") == "docker"
-        return when (env) {
-            "production" -> "https://varaukset.espoo.fi"
-            "staging" -> "https://staging.varaukset.espoo.fi"
-            else -> {
-                if (runningInDocker) {
-                    "http://api-gateway:3000"
-                } else {
-                    "http://localhost:3000"
-                }
-            }
-        }
-    }
-
-    fun renderBoatSpaceReservationApplication(
-        reservation: ReservationWithDependencies,
-        user: Citizen,
-        model: Model,
-        input: ReservationInput
-    ): String {
-        val mockedUser =
-            // Todo: fetch real data here
-            user.copy(
-                address = "Miestentie 2 A 23",
-                postalCode = "02150",
-                municipality = "Espoo"
-            )
-
-        val boats =
-            jdbi.inTransactionUnchecked {
-                it.getBoatsForCitizen(user.id)
-            }
-        // Todo: do not calculate alv here
-        val calculatedAlv = reservation.price * 0.1
-        val boatSpaceFront =
-            object {
-                val type = reservation.type
-                val section = reservation.section
-                val placeNumber = reservation.placeNumber
-                val amenity = reservation.amenity
-                val widthInMeters = reservation.widthCm.cmToM()
-                val lengthInMeters = reservation.lengthCm.cmToM()
-                val description: String = reservation.description
-                val harbor = reservation.locationName
-                val priceTotal = reservation.price
-                val priceAlv = calculatedAlv
-                val priceWithoutAlv = (reservation.price * 1.0) - calculatedAlv
-            }
-
-        model.addAttribute(
-            "reservationTimeInSeconds",
-            getReservationTimeInSeconds(reservation.created)
-        )
-        model.addAttribute("boatTypes", listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki"))
-        model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
-        model.addAttribute("input", input)
-        model.addAttribute("boatSpace", boatSpaceFront)
-        model.addAttribute("boats", boats)
-        model.addAttribute(
-            "user",
-            mockedUser
-        )
-        return "boat-space-reservation-application"
-    }
-
-    private fun getCitizen(request: HttpServletRequest): Citizen? {
-        val authenticatedUser = request.getAuthenticatedUser()
-        val citizen = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
-        return citizen
-    }
-}
-
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
-internal class UnauthorizedException : RuntimeException()
