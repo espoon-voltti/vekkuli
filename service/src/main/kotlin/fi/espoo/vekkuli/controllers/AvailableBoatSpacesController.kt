@@ -253,6 +253,25 @@ class AvailableBoatSpacesController {
         return ResponseEntity.noContent().build()
     }
 
+    @PostMapping("/venepaikka/varaus/{reservationId}/validate")
+    fun validate(
+        @PathVariable reservationId: Int,
+        @Valid @ModelAttribute("input") input: ReservationInput,
+        bindingResult: BindingResult,
+        request: HttpServletRequest,
+        model: Model,
+    ): String {
+        val citizen = getCitizen(request) ?: return redirectUrl("/")
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getReservationWithCitizen(reservationId)
+            }
+
+        if (reservation == null) return redirectUrl("/")
+
+        return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+    }
+
     @PostMapping("/venepaikka/varaus/{reservationId}")
     fun reserveBoatSpace(
         @PathVariable reservationId: Int,
@@ -260,11 +279,10 @@ class AvailableBoatSpacesController {
         bindingResult: BindingResult,
         request: HttpServletRequest,
         model: Model,
-        @RequestParam(required = false, defaultValue = "false") validate: Boolean
     ): String {
         val citizen = getCitizen(request) ?: return redirectUrl("/")
 
-        if (bindingResult.hasErrors() || validate) {
+        if (bindingResult.hasErrors()) {
             val reservation =
                 jdbi.inTransactionUnchecked {
                     it.getReservationWithCitizen(reservationId)
