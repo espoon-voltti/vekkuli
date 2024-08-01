@@ -87,13 +87,15 @@
                                     class="input"
                                     style="width: 100px"
                                     hx-trigger="blur"
-                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                    hx-swap-oob="outerHTML"
-                                    hx-target="closest div"
-                                    hx-select-oob="width-control"
+                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                    hx-swap="outerHTML"
+                                    hx-target="#width-error-container"
+                                    hx-select="#width-error-container"
                             />
+                            <div id="width-error-container">
                             <span id="width-error" class="help is-danger" th:if="${#fields.hasErrors('width')}"
                                   th:errors="*{width}">Boat width required</span>
+                            </div>
                         </div>
                         <div class="control" id="length-control">
                             <label class="label required" th:for="length"
@@ -106,14 +108,15 @@
                                     class="input"
                                     style="width: 100px"
                                     hx-trigger="blur"
-                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                    hx-swap-oob="outerHTML"
-                                    hx-target="closest div"
-                                    hx-select-oob="#length-control"
+                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                    hx-swap="outerHTML"
+                                    hx-target="#length-error-container"
+                                    hx-select="#length-error-container"
                             />
-                            <span id="length-error" class="help is-danger" th:if="${#fields.hasErrors('length')}"
-                                  th:errors="*{length}">Boat length required</span>
-
+                            <div id="length-error-container">
+                                <span id="length-error" class="help is-danger" th:if="${#fields.hasErrors('length')}"
+                                      th:errors="*{length}">Boat length required</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -131,13 +134,15 @@
                                     class="input"
                                     style="width: 100px"
                                     hx-trigger="blur"
-                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                    hx-swap-oob="outerHTML"
-                                    hx-target="closest div"
-                                    hx-select-oob="#depth-control"
+                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                    hx-swap="outerHTML"
+                                    hx-target="#depth-error-container"
+                                    hx-select="#depth-error-container"
                             />
+                            <div id="depth-error-container">
                             <span id="depth-error" class="help is-danger" th:if="${#fields.hasErrors('depth')}"
                                   th:errors="*{depth}">Depth required</span>
+                            </div>
                         </div>
                         <div class="control" id="weight-control">
                             <label class="label required" th:for="weight"
@@ -150,13 +155,16 @@
                                     style="width: 100px"
                                     th:field="*{weight}"
                                     hx-trigger="blur"
-                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                    hx-swap-oob="outerHTML"
-                                    hx-target="closest div"
-                                    hx-select-oob="#weight-control"
+                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                    hx-swap="outerHTML"
+                                    hx-target="#weight-error-container"
+                                    hx-select="#weight-error-container"
                             />
-                            <span id="weight-error" class="help is-danger" th:if="${#fields.hasErrors('weight')}"
-                                  th:errors="*{weight}">Weight required</span>
+                            <div id="weight-error-container">
+                                    <span id="weight-error" class="help is-danger"
+                                          th:if="${#fields.hasErrors('weight')}"
+                                          th:errors="*{weight}">Weight required</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -175,14 +183,16 @@
                                 th:placeholder="#{boatApplication.registrationNumberPlaceHolder}"
                                 th:field="*{boatRegistrationNumber}"
                                 hx-trigger="blur"
-                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                hx-swap-oob="outerHTML"
-                                hx-target="closest div"
-                                hx-select-oob="#registrationNumber-control"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                hx-swap="outerHTML"
+                                hx-target="#boatRegistrationNumber-error-container"
+                                hx-select="#boatRegistrationNumber-error-container"
                         />
-                        <span id="boatRegistrationNumber-error" class="help is-danger"
-                              th:if="${#fields.hasErrors('boatRegistrationNumber')}"
-                              th:errors="*{boatRegistrationNumber}">Registration number required</span>
+                        <div id="boatRegistrationNumber-error-container">
+                                <span id="boatRegistrationNumber-error" class="help is-danger"
+                                      th:if="${#fields.hasErrors('boatRegistrationNumber')}"
+                                      th:errors="*{boatRegistrationNumber}">Registration number required</span>
+                        </div>
                     </div>
                 </div>
                 <div class="field">
@@ -194,12 +204,16 @@
                                 type="text"
                                 th:field="*{boatName}"
                                 hx-trigger="blur"
-                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                hx-swap-oob="outerHTML"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                hx-swap="outerHTML"
+                                hx-target="#boatName-error-container"
+                                hx-select="#boatName-error-container"
                         />
                     </div>
-                    <span id="boatName-error" class="help is-danger" th:if="${#fields.hasErrors('boatName')}"
-                          th:errors="*{boatName}">Boat name number required</span>
+                    <div id="boatName-error-container">
+                            <span id="boatName-error" class="help is-danger" th:if="${#fields.hasErrors('boatName')}"
+                                  th:errors="*{boatName}">Boat name number required</span>
+                    </div>
                 </div>
 
                 <div class="field">
@@ -231,7 +245,7 @@
                                     th:field="*{ownerShip}"
                                     th:value="${opt}"
                                     hx-trigger="change"
-                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
+                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
                                     hx-swap-oob="outerHTML"
                             />
                             <label th:for="${#ids.prev('ownerShip')}"
@@ -260,13 +274,15 @@
                                 th:placeholder="#{boatApplication.email}"
                                 th:field="*{email}"
                                 hx-trigger="blur"
-                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                hx-swap-oob="outerHTML"
-                                hx-target="closest div"
-                                hx-select-oob="#email-control"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                hx-swap="outerHTML"
+                                hx-target="#email-error-container"
+                                hx-select="#email-error-container"
                         />
-                        <span id="email-error" class="help is-danger" th:if="${#fields.hasErrors('email')}"
-                              th:errors="*{email}">Email required</span>
+                        <div id="email-error-container">
+                                <span id="email-error" class="help is-danger" th:if="${#fields.hasErrors('email')}"
+                                      th:errors="*{email}">Email required</span>
+                        </div>
                     </div>
                 </div>
                 <div class="field">
@@ -278,13 +294,15 @@
                                 type="text"
                                 th:placeholder="#{boatApplication.phone}"
                                 th:field="*{phone}"
-                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                hx-swap-oob="outerHTML"
-                                hx-target="closest div"
-                                hx-select-oob="#phone-control"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                hx-swap="outerHTML"
+                                hx-target="#phone-error-container"
+                                hx-select="#phone-error-container"
                         />
-                        <span id="phone-error" class="help is-danger" th:if="${#fields.hasErrors('phone')}"
-                              th:errors="*{phone}">Phone number required</span>
+                        <div id="phone-error-container">
+                                <span id="phone-error" class="help is-danger" th:if="${#fields.hasErrors('phone')}"
+                                      th:errors="*{phone}">Phone number required</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -297,15 +315,18 @@
                                 data-required
                                 th:field="*{certifyInformation}"
                                 hx-trigger="change"
-                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                hx-swap-oob="outerHTML"
-                                hx-target="closest div"
-                                hx-select-oob="#certify-control"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                hx-swap="outerHTML"
+                                hx-target="#certify-error-container"
+                                hx-select="#certify-error-container"
                         >
                         <span th:text="#{boatApplication.certifyInfoCheckbox}">Vakuutan antamani tiedot oikeiksi.</span>
                     </label>
-                    <span id="certify-error" class="help is-danger" th:if="${#fields.hasErrors('certifyInformation')}"
-                          th:errors="*{certifyInformation}">Certification required</span>
+                    <div id="certify-error-container">
+                            <span id="certify-error" class="help is-danger"
+                                  th:if="${#fields.hasErrors('certifyInformation')}"
+                                  th:errors="*{certifyInformation}">Certification required</span>
+                    </div>
                 </div>
 
                 <div id="agree-control">
@@ -315,15 +336,17 @@
                                 data-required
                                 th:field="*{agreeToRules}"
                                 hx-trigger="change"
-                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
-                                hx-swap-oob="outerHTML"
-                                hx-target="closest div"
-                                hx-select-oob="#agree-control"
+                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                hx-swap="outerHTML"
+                                hx-target="#agree-error-container"
+                                hx-select="#agree-error-container"
                         />
                         <span th:text="#{boatApplication.agreementCheckbox}">Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.</span>
                     </label>
-                    <span id="agree-error" class="help is-danger" th:if="${#fields.hasErrors('agreeToRules')}"
-                          th:errors="*{agreeToRules}">Agreement required</span>
+                    <div id="agree-error-container">
+                            <span id="agree-error" class="help is-danger" th:if="${#fields.hasErrors('agreeToRules')}"
+                                  th:errors="*{agreeToRules}">Agreement required</span>
+                    </div>
                 </div>
             </div>
 
@@ -340,7 +363,7 @@
 
                     <button id="submit" class="button is-primary" type="submit"
                             th:text="#{boatApplication.continueToPaymentButton}"
-                            th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}?validate|"
+                            th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
                             hx-swap-oob="outerHTML"
                             hx-trigger="click"
                             hx-select-oob="#form"
@@ -349,7 +372,6 @@
                     </button>
                 </div>
             </div>
-
         </form>
     </div>
 </section>
