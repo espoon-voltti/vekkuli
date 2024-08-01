@@ -1,7 +1,3 @@
-<!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
-<!-- -->
-<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
-
 <div class="block" th:each="harbor : ${harbors}" x-data="{ showAll: false }">
     <h2 class="label harbor-header" th:text="${harbor.location.name}">Satama</h2>
     <table class="table is-striped is-hoverable is-fullwidth">
