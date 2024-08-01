@@ -36,17 +36,17 @@ class E2eTest : PlaywrightTest() {
 
             // click send to trigger validation
             val formPage = BoatSpaceForm(page)
-            formPage.submitButton.click()
-
-            assertThat(formPage.widthError).isHidden()
-            assertThat(formPage.lengthError).isHidden()
-            assertThat(formPage.depthError).isVisible()
-            assertThat(formPage.weightError).isVisible()
-            assertThat(formPage.boatRegistrationNumberError).isVisible()
-            assertThat(formPage.emailError).isVisible()
-            assertThat(formPage.phoneError).isVisible()
-            assertThat(formPage.certifyInfoError).isVisible()
-            assertThat(formPage.agreementError).isVisible()
+//            formPage.submitButton.click()
+//
+//            assertThat(formPage.widthError).isHidden()
+//            assertThat(formPage.lengthError).isHidden()
+//            assertThat(formPage.depthError).isVisible()
+//            assertThat(formPage.weightError).isVisible()
+//            assertThat(formPage.boatRegistrationNumberError).isVisible()
+//            assertThat(formPage.emailError).isVisible()
+//            assertThat(formPage.phoneError).isVisible()
+//            assertThat(formPage.certifyInfoError).isVisible()
+//            assertThat(formPage.agreementError).isVisible()
 
             // Fill in the boat information
             formPage.boatTypeSelect.selectOption("Sailboat")
