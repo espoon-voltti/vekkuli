@@ -120,6 +120,15 @@
                         </div>
                     </div>
                 </div>
+
+                <div id="warning" hx-swap-oob="outerHTML">
+                    <div class="warning"
+                         th:if="${showSizeWarning}">
+                        <p class="block" th:text="#{boatSpaceApplication.boatSizeWarning}"></p>
+                        <p class="block" th:text="#{boatSpaceApplication.boatSizeWarningExplanation}"></p>
+                    </div>
+                </div>
+
                 <div class="field">
                     <div class="field is-grouped">
                         <div class="control" id="depth-control">

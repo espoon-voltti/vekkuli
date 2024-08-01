@@ -176,3 +176,10 @@ form > div {
 .icon-text {
   color: $bulma-primary;
 }
+
+.warning {
+  padding: 16px;
+  gap: 64px;
+  border-radius: 4px;
+  border: 1px solid #FF8E31;
+}
