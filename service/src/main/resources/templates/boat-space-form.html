@@ -86,7 +86,7 @@
                                     step="0.1"
                                     class="input"
                                     style="width: 100px"
-                                    hx-trigger="blur"
+                                    hx-trigger="blur:delay 100ms"
                                     th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
                                     hx-swap="outerHTML"
                                     hx-target="#width-error-container"
@@ -107,7 +107,7 @@
                                     th:field="*{length}"
                                     class="input"
                                     style="width: 100px"
-                                    hx-trigger="blur"
+                                    hx-trigger="blur:delay 100ms"
                                     th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
                                     hx-swap="outerHTML"
                                     hx-target="#length-error-container"
@@ -126,6 +126,16 @@
                          th:if="${showSizeWarning}">
                         <p class="block" th:text="#{boatSpaceApplication.boatSizeWarning}"></p>
                         <p class="block" th:text="#{boatSpaceApplication.boatSizeWarningExplanation}"></p>
+                        <button class="icon-text"
+                                id="size-warning-back-button"
+                                th:attr="hx-delete=|/kuntalainen/venepaikka/varaus/${reservationId}|"
+                                hx-sync="closest form:replace"
+                                hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
+                            <span class="icon">
+                                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+                            </span>
+                            <span th:text="#{boatSpaces.goBack}">Takaisin</span>
+                        </button>
                     </div>
                 </div>
 
