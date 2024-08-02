@@ -7,16 +7,18 @@ $spacing-small: 8px;
 $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-extralarge: 32px;
+$block-spacing: $spacing-medium;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
-  $spacing-shortcuts: ("margin": "mg"),
+  $spacing-shortcuts: ("margin": "m", "padding": "p"),
   $spacing-horizontal: "h",
   $spacing-vertical: "v",
-  $spacing-values: ("s": $spacing-small, "m": $spacing-medium,
+  $spacing-values: ("none": 0, "s": $spacing-small, "m": $spacing-medium,
           "l": $spacing-large, "xl": $spacing-extralarge),
   $icon-text-spacing: $spacing-small,
   $icon-dimensions: $spacing-medium,
+  $block-spacing: $block-spacing,
 );
 
 // Custom styles
@@ -135,7 +137,6 @@ input[type="radio"]:checked {
   align-items: center;
   justify-content: space-between;
   gap: $spacing-small;
-  padding-bottom: $spacing-small;
 }
 
 .checkbox input[type="checkbox"] {
@@ -147,10 +148,6 @@ input[type="radio"]:checked {
 
 .checkbox span {
   flex: 1;
-}
-
-form > div {
-  margin-bottom: $spacing-extralarge;
 }
 
 .required::after {
@@ -170,9 +167,11 @@ form > div {
 #step-indicator .step.visited {
   background-color: $bulma-primary;
 }
+
 #step-indicator p {
   color: $black;
 }
+
 .icon-text {
   color: $bulma-primary;
 }
@@ -182,4 +181,22 @@ form > div {
   gap: 64px;
   border-radius: 4px;
   border: 1px solid #FF8E31;
+}
+
+.field.is-grouped.is-grouped-no-spacing-v {
+  gap: 0;
+  column-gap: 0;
+  row-gap: $block-spacing/2;
+}
+
+.select {
+  width: 80%;
+}
+.select select {
+  width: 100%;
+}
+
+form .block:not(:last-child),
+form .subtitle:not(:last-child) {
+  margin-bottom: $block-spacing*2;
 }

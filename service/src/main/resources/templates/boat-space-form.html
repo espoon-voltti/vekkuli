@@ -10,12 +10,13 @@
         <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=2)}"></div>
         <form
                 id="form"
+                class="column is-half"
                 th:action="|/kuntalainen/venepaikka/varaus/${reservationId}|"
                 method="post"
                 novalidate
                 th:object="${input}"
         >
-            <div>
+            <div class="block">
                 <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
 
                 <p><span th:text="${boatSpace.harbor}">Haukilahti</span></p>
@@ -26,14 +27,14 @@
                 <p th:text="#{${'boatSpaces.amenityOption.' + boatSpace.amenity}}">
                     Aisa</p>
             </div>
-            <div>
+            <div class="block">
                 <h4 class="label" th:text="#{boatApplication.boatSpacePrice}">Hinta</h4>
                 <p th:text="|#{boatApplication.boatSpaceFee}: ${boatSpace.priceWithoutAlv} &euro;|">Maksu: 350 €</p>
                 <p th:text="|#{boatApplication.boatSpaceFeeAlv}: ${boatSpace.priceAlv} &euro;|">Alv: 75 €</p>
                 <p th:text="|#{boatApplication.boatSpaceFeeTotal}: ${boatSpace.priceTotal} &euro;|">Yhteensä: 425
                     €</p>
             </div>
-            <div>
+            <div class="block">
                 <h3 class="header" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h3>
                 <div class="field" th:if="${not boats.isEmpty()}">
                     <div class="radio">
@@ -273,7 +274,7 @@
                     </div>
                 </div>
             </div>
-            <div>
+            <div class="block">
                 <h3 class="header" th:text="#{boatApplication.personalInformation}">Vuokraaja</h3>
                 <div class="field">
                     <p th:text="|${user.firstName} ${user.lastName}|">Testi Testaaja</p>
@@ -324,7 +325,7 @@
                 </div>
             </div>
 
-            <div>
+            <div class="block">
                 <div id="certify-control">
                     <label class="checkbox justify-content-space-between">
                         <input
@@ -367,7 +368,7 @@
                 </div>
             </div>
 
-            <div class="field">
+            <div class="field block">
                 <div class="control">
                     <button id="cancel" class="button is-secondary"
                             th:text="#{boatApplication.cancelReservation}"
