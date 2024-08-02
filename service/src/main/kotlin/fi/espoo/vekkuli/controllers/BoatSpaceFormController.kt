@@ -274,25 +274,25 @@ class BoatSpaceFormController {
         spaceWidth: Double,
         spaceLength: Double
     ): Boolean {
-        if (width == null || length == null) {
-            return false
-        }
-        if (boatSpaceAmenity != BoatSpaceAmenity.Buoy && length > 15.0) {
+        if (boatSpaceAmenity != BoatSpaceAmenity.Buoy && length != null && length > 15.0) {
             return true
         }
 
         when (boatSpaceAmenity) {
-            BoatSpaceAmenity.Buoy -> {
-                return width + 0.4 > spaceWidth || length > spaceLength + 1.0
+            BoatSpaceAmenity.Buoy, BoatSpaceAmenity.Beam -> {
+                val widthTooLarge = width != null && width + 0.4 > spaceWidth
+                val lengthTooLarge = length != null && length > spaceLength + 1.0
+                return widthTooLarge || lengthTooLarge
             }
             BoatSpaceAmenity.RearBuoy -> {
-                return width + 0.5 > spaceWidth || length > spaceLength - 3.0
-            }
-            BoatSpaceAmenity.Beam -> {
-                return width + 0.4 > spaceWidth || length > spaceLength + 1.0
+                val widthTooLarge = width != null && width + 0.5 > spaceWidth
+                val lengthTooLarge = length != null && length > spaceLength - 3.0
+                return widthTooLarge || lengthTooLarge
             }
             BoatSpaceAmenity.WalkBeam -> {
-                return width + 0.75 > spaceWidth || length > spaceLength + 1.0
+                val widthTooLarge = width != null && width + 0.75 > spaceWidth
+                val lengthTooLarge = length != null && length > spaceLength + 1.0
+                return widthTooLarge || lengthTooLarge
             }
             else -> {
                 return false
