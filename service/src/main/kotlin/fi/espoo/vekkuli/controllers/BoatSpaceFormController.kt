@@ -258,7 +258,46 @@ class BoatSpaceFormController {
             "user",
             mockedUser
         )
+
+        model.addAttribute(
+            "showSizeWarning",
+            showBoatSizeWarning(input.width, input.length, reservation.amenity, reservation.widthCm.cmToM(), reservation.lengthCm.cmToM())
+        )
+
         return "boat-space-form"
+    }
+
+    private fun showBoatSizeWarning(
+        width: Double?,
+        length: Double?,
+        boatSpaceAmenity: BoatSpaceAmenity,
+        spaceWidth: Double,
+        spaceLength: Double
+    ): Boolean {
+        if (boatSpaceAmenity != BoatSpaceAmenity.Buoy && length != null && length > 15.0) {
+            return true
+        }
+
+        when (boatSpaceAmenity) {
+            BoatSpaceAmenity.Buoy, BoatSpaceAmenity.Beam -> {
+                val widthTooLarge = width != null && width + 0.4 > spaceWidth
+                val lengthTooLarge = length != null && length > spaceLength + 1.0
+                return widthTooLarge || lengthTooLarge
+            }
+            BoatSpaceAmenity.RearBuoy -> {
+                val widthTooLarge = width != null && width + 0.5 > spaceWidth
+                val lengthTooLarge = length != null && length > spaceLength - 3.0
+                return widthTooLarge || lengthTooLarge
+            }
+            BoatSpaceAmenity.WalkBeam -> {
+                val widthTooLarge = width != null && width + 0.75 > spaceWidth
+                val lengthTooLarge = length != null && length > spaceLength + 1.0
+                return widthTooLarge || lengthTooLarge
+            }
+            else -> {
+                return false
+            }
+        }
     }
 
     private fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {

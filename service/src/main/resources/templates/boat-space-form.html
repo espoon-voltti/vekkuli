@@ -74,6 +74,7 @@
                     <span class="help is-danger" th:if="${#fields.hasErrors('boatType')}"
                           th:errors="*{boatType}">Boat type error</span>
                 </div>
+
                 <div class="field">
                     <div class="field is-grouped">
                         <div class="control" id="width-control">
@@ -87,11 +88,12 @@
                                     step="0.1"
                                     class="input"
                                     style="width: 100px"
-                                    hx-trigger="blur"
+                                    hx-trigger="blur delay:100ms"
                                     th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
                                     hx-swap="outerHTML"
                                     hx-target="#width-error-container"
                                     hx-select="#width-error-container"
+                                    hx-select-oob="#warning"
                             />
                             <div id="width-error-container">
                             <span id="width-error" class="help is-danger" th:if="${#fields.hasErrors('width')}"
@@ -108,11 +110,12 @@
                                     th:field="*{length}"
                                     class="input"
                                     style="width: 100px"
-                                    hx-trigger="blur"
+                                    hx-trigger="blur delay:100ms"
                                     th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
                                     hx-swap="outerHTML"
                                     hx-target="#length-error-container"
                                     hx-select="#length-error-container"
+                                    hx-select-oob="#warning"
                             />
                             <div id="length-error-container">
                                 <span id="length-error" class="help is-danger" th:if="${#fields.hasErrors('length')}"
@@ -121,6 +124,25 @@
                         </div>
                     </div>
                 </div>
+
+                <div id="warning" style="border: 2px solid orange" hx-swap-oob="true">
+                    <div class="warning"
+                         id="boatSize-warning"
+                         th:if="${showSizeWarning}">
+                        <p class="block" th:text="#{boatSpaceApplication.boatSizeWarning}"></p>
+                        <p class="block" th:text="#{boatSpaceApplication.boatSizeWarningExplanation}"></p>
+                        <button class="icon-text"
+                                id="size-warning-back-button"
+                                th:attr="hx-delete=|/kuntalainen/venepaikka/varaus/${reservationId}|"
+                                hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
+                            <span class="icon">
+                                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+                            </span>
+                            <span th:text="#{boatSpaces.goBack}">Takaisin</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="field">
                     <div class="field is-grouped">
                         <div class="control" id="depth-control">
