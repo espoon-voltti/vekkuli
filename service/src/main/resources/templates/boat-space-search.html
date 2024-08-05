@@ -6,6 +6,17 @@
 <section class="section">
     <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=1)}"></div>
     <div class="container">
+        <div>
+            <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
+            <div class="reservation-info">
+                <div class="info-icon" th:replace="~{fragments/icons :: info}"></div>
+                <div class="info-content" th:utext="#{boatSpaces.infoText}">
+                    <p>Venepaikkoja voivat varata vain espoolaiset 01.02.2024-31.3.2024.</p>
+                    <p>Muut kuin espoolaiset voivat varata venepaikkoja 01.04.2024 klo 12:00 alkaen.</p>
+                    <p>Venepaikan varaaminen vaatii vahvan tunnistautumisen</p>
+                </div>
+            </div>
+        </div>
         <div class="columns">
             <div class="column is-two-fifths">
 

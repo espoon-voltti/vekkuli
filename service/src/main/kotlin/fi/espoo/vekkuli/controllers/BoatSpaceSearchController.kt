@@ -82,7 +82,8 @@ class BoatSpaceSearchController {
                 )
             }
 
-        model.addAttribute("harbors", harbors)
+        model.addAttribute("harbors", harbors.first)
+        model.addAttribute("spaceCount", harbors.second)
         model.addAttribute("boat", BoatFilter(width, length, boatType))
         return "boat-space-search-results"
     }

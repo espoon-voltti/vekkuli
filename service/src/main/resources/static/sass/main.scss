@@ -209,3 +209,22 @@ form .block:not(:last-child),
 form .subtitle:not(:last-child) {
   margin-bottom: $block-spacing*2;
 }
+
+.reservation-info {
+  width: 830px;
+  padding: $spacing-medium;
+  border: 1px solid $bulma-primary;
+  border-radius: 4px;
+  display: flex;
+  margin-bottom: $spacing-large;
+
+
+  .info-icon {
+    flex: 1;
+  }
+
+  .info-content {
+    flex: 1;
+    margin-left: $spacing-medium;
+  }
+}
