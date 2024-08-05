@@ -1,6 +1,21 @@
 <html layout:decorate="~{layout}">
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
+    <script>
+        const confirmCancel = () => Swal.fire({
+            template: '#cancel-confirmation',
+            animation: false,
+            reverseButtons: true,
+            customClass: {
+                confirmButton: 'button is-primary',
+                cancelButton: 'button is-secondary',
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                htmx.trigger(this, 'confirmed');
+            }
+        })
+    </script>
 </head>
 
 <body layout:fragment="body">
@@ -370,10 +385,14 @@
 
             <div class="field block">
                 <div class="control">
-                    <button id="cancel" class="button is-secondary"
+                    <button id="cancel"
+                            class="button is-secondary"
+                            type="button"
                             th:text="#{boatApplication.cancelReservation}"
                             th:attr="hx-delete=|/kuntalainen/venepaikka/varaus/${reservationId}|"
-                            hx-on-htmx-after-request="window.location = '/';">
+                            hx-on-htmx-after-request="window.location = '/';"
+                            hx-trigger="confirmed"
+                            onClick="confirmCancel()">
                         >
                         Peruuta varaus
                     </button>
@@ -396,6 +415,17 @@
         </form>
     </div>
 </section>
-
+<template id="cancel-confirmation">
+    <swal-html>
+        <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation}"></p>
+        <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation2}"></p>
+    </swal-html>
+    <swal-button type="cancel">
+        Peruuta
+    </swal-button>
+    <swal-button type="confirm">
+        Jatka
+    </swal-button>
+</template>
 </body>
 </html>
