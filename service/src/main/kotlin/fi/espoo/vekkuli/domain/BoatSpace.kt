@@ -198,7 +198,7 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Har
             boat_space_reservation.id IS NULL
             AND ${combinedFilter.toSql()}
             
-        ORDER BY price 
+        ORDER BY price, length_cm, width_cm
         """.trimIndent()
 
     val query = createQuery(sql)

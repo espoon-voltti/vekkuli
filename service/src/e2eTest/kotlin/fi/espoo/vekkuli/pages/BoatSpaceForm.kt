@@ -12,6 +12,7 @@ class BoatSpaceForm(private val page: Page) {
     val depthError = page.getByTestId("depth-error")
     val weightInput = page.getByTestId("weight")
     val weightError = page.getByTestId("weight-error")
+    val boatSizeWarning = page.getByTestId("boatSize-warning")
     val noRegistrationCheckbox = page.getByTestId("noRegistrationNumber1")
     val boatRegistrationNumberError = page.getByTestId("boatRegistrationNumber-error")
     val boatNameInput = page.getByTestId("boatName")
