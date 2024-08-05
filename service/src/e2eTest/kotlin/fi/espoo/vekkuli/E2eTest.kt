@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test
 import kotlin.io.path.Path
 
 class E2eTest : PlaywrightTest() {
+    @Test
     fun reservingABoatSpace() {
         try {
             page.navigate(baseUrl)
