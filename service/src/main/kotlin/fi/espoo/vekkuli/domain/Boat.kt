@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.utils.cmToM
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import java.util.UUID
@@ -16,8 +17,15 @@ data class Boat(
     val type: BoatType,
     val otherIdentification: String?,
     val extraInformation: String?,
-    val ownership: OwnershipStatus
-)
+    val ownership: OwnershipStatus,
+) {
+    val displayName: String
+        get() {
+            if (!name.isNullOrBlank()) return name
+            if (!registrationCode.isNullOrBlank()) return registrationCode
+            return "${widthCm.cmToM()} x ${lengthCm.cmToM()}"
+        }
+}
 
 enum class BoatType {
     Rowboat,
