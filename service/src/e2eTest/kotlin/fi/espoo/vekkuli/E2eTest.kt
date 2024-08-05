@@ -138,6 +138,6 @@ class E2eTest : PlaywrightTest() {
         formPage.cancelButton.click()
         assertThat(formPage.confirmCancelModal).isVisible()
         formPage.confirmCancelModalConfirm.click()
-        page.pause()
+        assertThat(reservationPage.header).isVisible()
     }
 }

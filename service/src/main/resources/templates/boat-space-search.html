@@ -18,44 +18,44 @@
                       hx-swap="innerHTML"
                       hx-trigger="input delay:1s, change">
 
-                    <h2 class="subtitle" th:text="#{boatApplication.boatPlaceSearchTitle}"></h2>
+                    <h2 class="subtitle" id="search-page-header" th:text="#{boatApplication.boatPlaceSearchTitle}"></h2>
 
                     <div class="block">
-                    <div class="field">
-                        <label class="label">Haettava paikka</label>
-                        <div class="control">
-                            <label class="radio">
-                                <input type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"
-                                       th:text="#{boatSpaces.typeSlipOption}" />
+                        <div class="field">
+                            <label class="label">Haettava paikka</label>
+                            <div class="control">
+                                <label class="radio">
+                                    <input type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"
+                                           th:text="#{boatSpaces.typeSlipOption}" />
 
-                            </label>
-                            <label class="radio">
-                                <input type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"
-                                       th:text="#{boatSpaces.typeTrailerOption}" />
+                                </label>
+                                <label class="radio">
+                                    <input type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"
+                                           th:text="#{boatSpaces.typeTrailerOption}" />
 
-                            </label>
-                        </div>
-                    </div>
-                    </div>
-
-                    <div class="block">
-                    <div class="field">
-                        <label class="label" for="boatTypeFilter"
-                               th:text="#{boatApplication.boatType}"></label>
-                        <div class="control">
-                            <div class="select">
-                                <select name="boatType" id="boatTypeFilter">
-                                    <option value=""
-                                            th:text="#{boatSpaces.noneOption}"></option>
-                                    <option
-                                            th:each="option : ${boatTypes}"
-                                            th:value="${option}"
-                                            th:text="#{${'boatApplication.boatTypeOption.' + option}}"
-                                    ></option>
-                                </select>
+                                </label>
                             </div>
                         </div>
                     </div>
+
+                    <div class="block">
+                        <div class="field">
+                            <label class="label" for="boatTypeFilter"
+                                   th:text="#{boatApplication.boatType}"></label>
+                            <div class="control">
+                                <div class="select">
+                                    <select name="boatType" id="boatTypeFilter">
+                                        <option value=""
+                                                th:text="#{boatSpaces.noneOption}"></option>
+                                        <option
+                                                th:each="option : ${boatTypes}"
+                                                th:value="${option}"
+                                                th:text="#{${'boatApplication.boatTypeOption.' + option}}"
+                                        ></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="block">
@@ -75,35 +75,35 @@
                     </div>
 
                     <div class="block">
-                    <label class="label" th:text="#{boatSpaces.amenityHeader}"></label>
-                    <div class="field is-grouped is-grouped-multiline is-grouped-no-spacing-v">
-                        <div class="column is-half p-none" th:each="option : ${amenities}">
-                        <label class="checkbox">
-                            <input name="amenities"
-                                   th:id="${option[0].toLowerCase() + option.substring(1) + '-checkbox'}"
-                                   th:value="${option}"
-                                   type="checkbox" />
-                            <span th:text="#{${'boatSpaces.amenityOption.' + option}}">
+                        <label class="label" th:text="#{boatSpaces.amenityHeader}"></label>
+                        <div class="field is-grouped is-grouped-multiline is-grouped-no-spacing-v">
+                            <div class="column is-half p-none" th:each="option : ${amenities}">
+                                <label class="checkbox">
+                                    <input name="amenities"
+                                           th:id="${option[0].toLowerCase() + option.substring(1) + '-checkbox'}"
+                                           th:value="${option}"
+                                           type="checkbox" />
+                                    <span th:text="#{${'boatSpaces.amenityOption.' + option}}">
                         </span>
-                        </label>
+                                </label>
+                            </div>
                         </div>
-                    </div>
                     </div>
 
                     <div class="block">
-                    <label class="label" th:text="#{boatSpaces.harborHeader}"></label>
-                    <div class="field is-grouped is-grouped-multiline is-grouped-no-spacing-v">
-                        <div class="column is-half p-none" th:each="option : ${locations}">
-                        <label class="checkbox">
-                            <input name="harbor"
-                                   th:id="${option.name[0].toLowerCase() + option.name.substring(1) + '-checkbox'}"
-                                   th:value="${option.id}"
-                                   type="checkbox" />
-                            <span th:text="${option.name}">>
+                        <label class="label" th:text="#{boatSpaces.harborHeader}"></label>
+                        <div class="field is-grouped is-grouped-multiline is-grouped-no-spacing-v">
+                            <div class="column is-half p-none" th:each="option : ${locations}">
+                                <label class="checkbox">
+                                    <input name="harbor"
+                                           th:id="${option.name[0].toLowerCase() + option.name.substring(1) + '-checkbox'}"
+                                           th:value="${option.id}"
+                                           type="checkbox" />
+                                    <span th:text="${option.name}">>
                         </span>
-                        </label>
+                                </label>
                             </div>
-                    </div>
+                        </div>
                     </div>
 
                 </form>
