@@ -6,7 +6,7 @@
 <body layout:fragment="body">
 
 <section class="section">
-    <div class="container" id="container" x-data="{modalOpen: false}">
+    <div class="container" id="container" x-data="{ modalOpen: false }">
         <div class="mb-l">
             <button x-on:click="modalOpen = true"
                     class="icon-text">
@@ -404,7 +404,7 @@
                 </div>
             </div>
         </form>
-        <div id="confirm-cancel-modal" class="modal" x-show="modalOpen">
+        <div id="confirm-cancel-modal" class="modal" x-show="modalOpen" style="display:none;">
             <div class="modal-underlay" _="on click trigger closeModal"></div>
             <div class="modal-content">
                 <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation}"></p>
