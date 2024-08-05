@@ -1,27 +1,21 @@
 <html layout:decorate="~{layout}">
 <head>
     <title th:text="#{boatApplication.applyForBoatSpace}"></title>
-    <script>
-        const confirmCancel = () => Swal.fire({
-            template: '#cancel-confirmation',
-            animation: false,
-            reverseButtons: true,
-            customClass: {
-                confirmButton: 'button is-primary',
-                cancelButton: 'button is-secondary',
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                htmx.trigger(this, 'confirmed');
-            }
-        })
-    </script>
 </head>
 
 <body layout:fragment="body">
 
 <section class="section">
     <div class="container" id="container" x-data="{modalOpen: false}">
+        <div class="mb-l">
+            <button x-on:click="modalOpen = true"
+                    class="icon-text">
+                <span class="icon">
+                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+            </span>
+                <span th:text="#{boatSpaces.goBack}">Takaisin</span>
+            </button>
+        </div>
         <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=2)}"></div>
         <form
                 id="form"
@@ -147,9 +141,9 @@
                         <p class="block" th:text="#{boatSpaceApplication.boatSizeWarning}"></p>
                         <p class="block" th:text="#{boatSpaceApplication.boatSizeWarningExplanation}"></p>
                         <button class="icon-text"
+                                type="button"
                                 id="size-warning-back-button"
-                                th:attr="hx-delete=|/kuntalainen/venepaikka/varaus/${reservationId}|"
-                                hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
+                                x-on:click="modalOpen = true">
                             <span class="icon">
                                 <div th:replace="~{fragments/icons :: chevron-left}"></div>
                             </span>
@@ -389,9 +383,6 @@
                             class="button is-secondary"
                             type="button"
                             th:text="#{boatApplication.cancelReservation}"
-                            th:attr="hx-delete=|/kuntalainen/venepaikka/varaus/${reservationId}|"
-                            hx-on-htmx-after-request="window.location = '/';"
-                            hx-trigger="confirmed"
                             x-on:click="modalOpen = true"
                     >
                         Peruuta varaus
@@ -413,7 +404,7 @@
                 </div>
             </div>
         </form>
-        <div id="confirm-cancel-modal" x-show="modalOpen">
+        <div id="confirm-cancel-modal" class="modal" x-show="modalOpen">
             <div class="modal-underlay" _="on click trigger closeModal"></div>
             <div class="modal-content">
                 <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation}"></p>
