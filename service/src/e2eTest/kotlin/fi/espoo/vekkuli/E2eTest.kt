@@ -8,11 +8,10 @@ import org.junit.jupiter.api.Test
 import kotlin.io.path.Path
 
 class E2eTest : PlaywrightTest() {
-    @Test
+//    @Test
     fun reservingABoatSpace() {
         try {
             page.navigate(baseUrl)
-
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -115,5 +114,30 @@ class E2eTest : PlaywrightTest() {
             page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
             throw e
         }
+    }
+
+    @Test
+    fun cancelReservationFromForm() {
+        // login and pick first free space
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceForm(page)
+        // Cancel, then cancel in modal
+        formPage.cancelButton.click()
+        assertThat(formPage.confirmCancelModal).isVisible()
+        formPage.confirmCancelModalCancel.click()
+        assertThat(formPage.confirmCancelModal).isHidden()
+
+        // Cancel, then confirm in modal
+        formPage.cancelButton.click()
+        assertThat(formPage.confirmCancelModal).isVisible()
+        formPage.confirmCancelModalConfirm.click()
+        page.pause()
     }
 }

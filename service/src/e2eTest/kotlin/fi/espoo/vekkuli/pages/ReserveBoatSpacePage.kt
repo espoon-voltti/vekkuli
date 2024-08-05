@@ -10,6 +10,8 @@ class ReserveBoatSpacePage(
         page.navigate("$baseUrl/kuntalainen/venepaikat")
     }
 
+    val reservationPageHeader = page.getByTestId("reservation-page-header")
+
     val boatTypeSelectFilter = page.getByTestId("boatTypeFilter")
     val widthFilterInput = page.getByTestId("widthFilter")
     val lenghtFilterInput = page.getByTestId("lengthFilter")
