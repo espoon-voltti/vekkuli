@@ -381,7 +381,7 @@ data class ReservationInput(
             ReservationInput(
                 reservationId = null,
                 boatId = null,
-                boatType = boatType ?: BoatType.OutboardMotor,
+                boatType = boatType,
                 width = width,
                 length = length,
                 depth = null,
