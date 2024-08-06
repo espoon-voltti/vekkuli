@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
@@ -28,6 +29,9 @@ import kotlin.reflect.KClass
 class BoatSpaceFormController {
     @Autowired
     lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var messageUtil: MessageUtil
 
     @RequestMapping("/venepaikka/varaus/{reservationId}")
     fun boatSpaceFormPage(
@@ -224,9 +228,11 @@ class BoatSpaceFormController {
                 municipality = "Espoo"
             )
 
-        val boats =
+        var boats =
             jdbi.inTransactionUnchecked {
                 it.getBoatsForCitizen(user.id)
+            }.map { boat ->
+                boat.updateBoatDisplayName(messageUtil)
             }
         // Todo: do not calculate alv here
         val calculatedAlv = reservation.price * 0.1
