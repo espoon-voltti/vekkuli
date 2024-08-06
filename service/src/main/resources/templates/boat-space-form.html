@@ -409,15 +409,18 @@
             <div class="modal-content">
                 <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation}"></p>
                 <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation2}"></p>
-                <button id="confirm-cancel-modal-cancel" class="button " x-on:click="modalOpen = false" type="button">
-                    Peruuta
+                <button id="confirm-cancel-modal-cancel"
+                        th:text="#{cancel}"
+                        class="button "
+                        x-on:click="modalOpen = false"
+                        type="button">
                 </button>
                 <button id="confirm-cancel-modal-confirm"
+                        th:text="#{confirm}"
                         class="button is-primary"
                         type="button"
                         th:attr="hx-delete=|/kuntalainen/venepaikka/varaus/${reservationId}|"
-                        hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';"
-                >Jatka
+                        hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
                 </button>
             </div>
         </div>
