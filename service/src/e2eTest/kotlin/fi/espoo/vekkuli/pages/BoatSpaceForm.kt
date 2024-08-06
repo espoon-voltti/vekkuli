@@ -27,5 +27,9 @@ class BoatSpaceForm(private val page: Page) {
     val agreementCheckbox = page.getByTestId("agreeToRules1")
     val agreementError = page.getByTestId("agree-error")
     val submitButton = page.getByTestId("submit")
+    val cancelButton = page.getByTestId("cancel")
+    val confirmCancelModal = page.getByTestId("confirm-cancel-modal")
     val ownerRadioButton = page.getByTestId("ownerShip1")
+    val confirmCancelModalCancel = page.getByTestId("confirm-cancel-modal-cancel")
+    val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
 }
