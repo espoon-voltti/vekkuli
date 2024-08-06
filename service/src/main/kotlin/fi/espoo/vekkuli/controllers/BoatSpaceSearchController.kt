@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
@@ -66,7 +67,8 @@ class BoatSpaceSearchController {
         @RequestParam amenities: List<BoatSpaceAmenity>?,
         @RequestParam boatSpaceType: BoatSpaceType?,
         @RequestParam harbor: List<String>?,
-        model: Model
+        model: Model,
+        request: HttpServletRequest
     ): String {
         val harbors =
             jdbi.inTransactionUnchecked {
@@ -85,6 +87,7 @@ class BoatSpaceSearchController {
         model.addAttribute("harbors", harbors.first)
         model.addAttribute("spaceCount", harbors.second)
         model.addAttribute("boat", BoatFilter(width, length, boatType))
+        model.addAttribute("isAuthenticated", request.getAuthenticatedUser() != null)
         return "boat-space-search-results"
     }
 }

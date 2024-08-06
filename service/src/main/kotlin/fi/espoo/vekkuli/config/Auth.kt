@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpFilter
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
-import java.util.UUID
+import java.util.*
 
 data class AuthenticatedUser(
     val id: UUID,
@@ -77,10 +77,12 @@ class HttpAccessControl : HttpFilter() {
         chain.doFilter(request, response)
     }
 
+    private val unautheticatedRoutes =
+        setOf("/", "/static", "/virkailija", "/kuntalainen/venepaikat", "/kuntalainen/partial/vapaat-paikat", "/health", "/actuator/health")
+
     private fun HttpServletRequest.requiresAuthentication(): Boolean =
         when {
-            requestURI == "/" || requestURI.startsWith("/static") || requestURI == "/virkailija" || requestURI == "/health" ||
-                requestURI == "/actuator/health" -> false
+            unautheticatedRoutes.contains(requestURI) || requestURI.startsWith("/static") -> false
             else -> true
         }
 }

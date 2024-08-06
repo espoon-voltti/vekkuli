@@ -1,5 +1,6 @@
 <div>
-    <h3><span th:text="#{boatApplication.freeSpaceCount}">Hakuehtoihin sopivat vapaat paikat</span> <span th:text="${spaceCount}">0</span></h3>
+    <h3><span th:text="#{boatApplication.freeSpaceCount}">Hakuehtoihin sopivat vapaat paikat</span> <span
+            th:text="${spaceCount}">0</span></h3>
     <div class="block" th:each="harbor : ${harbors}" x-data="{ showAll: false }">
         <h2 class="label harbor-header" th:text="${harbor.location.name}">Satama</h2>
         <table class="table is-striped is-hoverable is-fullwidth">
@@ -23,7 +24,7 @@
                         th:text="${result.placeNumber.toString()}"></span>
                 </td>
                 <td>
-                    <form action="/kuntalainen/venepaikka/varaus" method="post">
+                    <form th:if="${isAuthenticated}" action="/kuntalainen/venepaikka/varaus" method="post">
                         <input type="hidden" name="spaceId" th:value="${result.id}" />
                         <input type="hidden" name="boatType" th:value="${boat.type}" />
                         <input type="hidden" name="width" th:value="${boat.width}" />
@@ -33,6 +34,11 @@
                                 th:text="#{boatSpaces.reserve}">Varaa
                         </button>
                     </form>
+                    <a th:if="${!isAuthenticated}"
+                       href="/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikat"
+                       class="button is-secondary reserve-button"
+                       th:text="#{boatSpaces.reserve}" @click="showLoginModal = true">Varaa
+                    </a>
                 </td>
             </tr>
             </tbody>

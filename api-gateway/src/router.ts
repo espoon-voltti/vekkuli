@@ -41,6 +41,9 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   router.use(cacheControl(() => 'forbid-cache'))
 
   router.get('/static/*', proxy)
+  router.get('/kuntalainen/venepaikat/*', proxy)
+  router.get('/kuntalainen/venepaikat', proxy)
+  router.get('/kuntalainen/partial/vapaat-paikat', proxy)
   router.get('/', proxy)
 
   router.all('/system/*', (_, res) => res.sendStatus(404))
