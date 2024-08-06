@@ -135,7 +135,7 @@ tasks.register("resolveDependencies") {
 tasks.register("compileSass", NpxTask::class) {
     dependsOn("npmInstall") // Dependencies from package.json are installed
     command = "sass"
-    args = listOf("--load-path=node_modules", "src/main/resources/static/sass:src/main/resources/static/css")
+    args = listOf("--load-path=node_modules", "src/main/resources/public/static/sass:src/main/resources/public/static/css")
 }
 
 tasks {

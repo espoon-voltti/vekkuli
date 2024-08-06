@@ -13,3 +13,6 @@ spring:
     init:
       continue-on-error: false
       encoding: "UTF-8"
+  web:
+    resources:
+      static-locations: classpath:/public/
