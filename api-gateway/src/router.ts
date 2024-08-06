@@ -40,6 +40,7 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
 
   router.use(cacheControl(() => 'forbid-cache'))
 
+  router.get('/static/*', proxy)
   router.get('/', proxy)
 
   router.all('/system/*', (_, res) => res.sendStatus(404))
