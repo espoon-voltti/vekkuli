@@ -24,8 +24,8 @@
                         th:text="${result.placeNumber.toString()}"></span>
                 </td>
                 <td>
-                    <form th:if="${isAuthenticated}" action="/kuntalainen/venepaikka/varaus" method="post">
-                        <input type="hidden" name="spaceId" th:value="${result.id}" />
+                    <form th:if="${isAuthenticated}" th:action="|/kuntalainen/venepaikka/varaa/${result.id}|"
+                          method="get">
                         <input type="hidden" name="boatType" th:value="${boat.type}" />
                         <input type="hidden" name="width" th:value="${boat.width}" />
                         <input type="hidden" name="length" th:value="${boat.length}" />
@@ -35,9 +35,9 @@
                         </button>
                     </form>
                     <a th:if="${!isAuthenticated}"
-                       href="/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikat"
+                       th:href="|/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikka/varaa/${result.id}|"
                        class="button is-secondary reserve-button"
-                       th:text="#{boatSpaces.reserve}" @click="showLoginModal = true">Varaa
+                       th:text="#{boatSpaces.reserve}">Varaa
                     </a>
                 </td>
             </tr>

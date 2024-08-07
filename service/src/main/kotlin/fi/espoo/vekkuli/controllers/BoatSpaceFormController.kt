@@ -171,9 +171,9 @@ class BoatSpaceFormController {
         return "payment"
     }
 
-    @PostMapping("/venepaikka/varaus")
+    @GetMapping("/venepaikka/varaa/{spaceId}")
     fun reserveBoatSpace(
-        @RequestParam spaceId: Int,
+        @PathVariable spaceId: Int,
         @RequestParam boatType: BoatType?,
         @RequestParam width: Double?,
         @RequestParam length: Double?,
