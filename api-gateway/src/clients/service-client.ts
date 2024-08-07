@@ -35,13 +35,13 @@ export interface AdUser {
 }
 
 export interface CitizenUser {
-  address?: { swedish: string; finnish: string }
+  address?: { sv: string; fi: string }
   email?: string
   firstName: string
   lastName: string
   nationalId: string
   postalCode?: string
-  town?: { swedish: string; finnish: string }
+  town?: { sv: string; fi: string }
   // homeTown?: number
 }
 
