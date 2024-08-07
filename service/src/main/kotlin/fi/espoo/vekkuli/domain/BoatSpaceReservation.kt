@@ -166,7 +166,8 @@ data class BoatSpaceReservationItem(
     val endDate: LocalDate,
     val status: ReservationStatus,
     val citizenId: UUID,
-    val name: String,
+    val firstName: String,
+    val lastName: String,
     val homeTown: String,
     val email: String,
     val phone: String,
@@ -215,7 +216,7 @@ fun Handle.getBoatSpaceReservations(sort: BoatSpaceSort): List<BoatSpaceReservat
               bsr.status != 'Info' 
                 OR
               bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
-            ${createFilterSql(sort)}
+            ${getSortingSql(sort)}
             """.trimIndent()
         )
     query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
