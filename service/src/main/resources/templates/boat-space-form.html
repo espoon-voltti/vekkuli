@@ -26,7 +26,8 @@
                 th:object="${input}"
         >
             <div class="block">
-                <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
+                <h3 id="boat-space-form-header" class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava
+                    paikka</h3>
 
                 <p><span th:text="${boatSpace.harbor}">Haukilahti</span></p>
                 <p th:text="|#{boatApplication.boatSpaceSection} ${boatSpace.section}|">Laituri B</p>

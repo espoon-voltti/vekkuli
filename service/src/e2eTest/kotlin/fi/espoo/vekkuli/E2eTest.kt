@@ -128,6 +128,7 @@ class E2eTest : PlaywrightTest() {
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceForm(page)
+        assertThat(formPage.header).isVisible()
         // Cancel, then cancel in modal
         formPage.cancelButton.click()
         assertThat(formPage.confirmCancelModal).isVisible()
@@ -139,5 +140,24 @@ class E2eTest : PlaywrightTest() {
         assertThat(formPage.confirmCancelModal).isVisible()
         formPage.confirmCancelModalConfirm.click()
         assertThat(reservationPage.header).isVisible()
+    }
+
+    @Test
+    fun authenticationOnReservation() {
+        // go directly to reservation page
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+
+        reservationPage.firstReserveButton.click()
+        assertThat(reservationPage.authModal).isVisible()
+
+        reservationPage.authModalCancel.click()
+        assertThat(reservationPage.authModal).isHidden()
+
+        reservationPage.firstReserveButton.click()
+        reservationPage.authModalContinue.click()
+        page.getByText("Kirjaudu").click()
+        val formPage = BoatSpaceForm(page)
+        assertThat(formPage.header).isVisible()
     }
 }

@@ -60,7 +60,7 @@
             ></a>
         </div>
     </div>
-    <div th:if="${!isAuthenticated}" id="authentication-modal" class="modal" x-show="openModal" style="display:none;">
+    <div th:if="${!isAuthenticated}" id="auth-modal" class="modal" x-show="openModal" style="display:none;">
         <div class="modal-underlay" @click="openModal = false"></div>
         <div class="modal-content">
             <p class="block has-text-left" th:text="#{auth.reservingBoatSpace}">Olet varaamassa paikkaa:</p>
