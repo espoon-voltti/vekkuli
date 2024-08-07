@@ -45,6 +45,7 @@
             </div>
             <div class="block">
                 <h3 class="header" th:text="#{boatApplication.boatInformation}">Veneen tiedot</h3>
+
                 <div class="field" th:if="${not boats.isEmpty()}">
                     <div class="radio">
                         <input type="radio" th:field="*{boatId}" value="0"
@@ -155,7 +156,7 @@
                 <div class="field">
                     <div class="field is-grouped">
                         <div class="control" id="depth-control">
-                            <label class="label required" for="depth"
+                            <label class="label required" th:for="depth"
                                    th:text="#{boatApplication.boatDepthInMeters}">Syväys
                                 (m)</label>
                             <input
@@ -200,33 +201,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="field" th:attr="x-data='{&quot;noReg&quot:'+${input.noRegistrationNumber}+'}'">
-                    <h4 class="label required" th:text="#{boatApplication.boatIdentificationTitle}">Veneen
-                        rekisteritunnus / tunnistenumero</h4>
-                    <label class="checkbox">
-                        <input type="checkbox" th:field="*{noRegistrationNumber}" @click="noReg = ! noReg" />
-                        <span th:text="#{boatApplication.noRegistrationNumber}">Ei rekisteritunnusta</span>
-                    </label>
-                    <div x-show="!noReg" class="control" id="registrationNumber-control">
-                        <input
-                                class="input"
-                                type="text"
-                                data-required
-                                th:placeholder="#{boatApplication.registrationNumberPlaceHolder}"
-                                th:field="*{boatRegistrationNumber}"
-                                hx-trigger="blur"
-                                th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
-                                hx-swap="outerHTML"
-                                hx-target="#boatRegistrationNumber-error-container"
-                                hx-select="#boatRegistrationNumber-error-container"
-                        />
-                        <div id="boatRegistrationNumber-error-container">
-                                <span id="boatRegistrationNumber-error" class="help is-danger"
-                                      th:if="${#fields.hasErrors('boatRegistrationNumber')}"
-                                      th:errors="*{boatRegistrationNumber}">Registration number required</span>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="field">
                     <label th:for="boatName" class="label" th:text="#{boatApplication.boatName}">Veneen
                         nimi</label>
@@ -248,18 +223,60 @@
                     </div>
                 </div>
 
-                <div class="field">
-                    <label th:for="otherIdentification" class="label"
-                           th:text="#{boatApplication.otherIdentification}">Muu
-                        tunniste</label>
-                    <div class="control">
-                        <input class="input" type="text"
-                               th:placeholder="#{boatApplication.otherIdentificationPlaceholder}"
-                               th:field="*{otherIdentification}" />
+                <div class="field" th:attr="x-data='{&quot;noReg&quot:'+${input.noRegistrationNumber}+'}'">
+                    <div class="field">
+                        <h4 class="label required" th:text="#{boatApplication.boatIdentificationTitle}">Veneen
+                            rekisteritunnus / tunnistenumero</h4>
+                        <label class="checkbox">
+                            <input type="checkbox" th:field="*{noRegistrationNumber}" x-model="noReg"/>
+                            <span th:text="#{boatApplication.noRegistrationNumber}">Ei rekisteritunnusta</span>
+                        </label>
+                        <div x-show="!noReg" class="control" id="registrationNumber-control">
+                            <input
+                                    class="input"
+                                    type="text"
+                                    data-required
+                                    th:placeholder="#{boatApplication.registrationNumberPlaceHolder}"
+                                    th:field="*{boatRegistrationNumber}"
+                                    hx-trigger="blur"
+                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                    hx-swap="outerHTML"
+                                    hx-target="#boatRegistrationNumber-error-container"
+                                    hx-select="#boatRegistrationNumber-error-container"
+                            />
+                            <div id="boatRegistrationNumber-error-container">
+                                    <span id="boatRegistrationNumber-error" class="help is-danger"
+                                          th:if="${#fields.hasErrors('boatRegistrationNumber')}"
+                                          th:errors="*{boatRegistrationNumber}">Registration number required</span>
+                            </div>
+                        </div>
                     </div>
-                    <span class="help is-danger" th:if="${#fields.hasErrors('otherIdentification')}"
-                          th:errors="*{otherIdentification}">Other identification required</span>
+
+
+                    <div class="field">
+                        <label th:for="otherIdentification" class="label" :class="{required: noReg}"
+                               th:text="#{boatApplication.otherIdentification}">Muu tunniste</label>
+                        <div class="control">
+                            <input
+                                    class="input"
+                                    type="text"
+                                    data-required
+                                    th:placeholder="#{boatApplication.otherIdentificationPlaceholder}"
+                                    th:field="*{otherIdentification}"
+                                    hx-trigger="blur"
+                                    th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                                    hx-swap="outerHTML"
+                                    hx-target="#otherIdentification-error-container"
+                                    hx-select="#otherIdentification-error-container"/>
+                        </div>
+                        <div id="otherIdentification-error-container">
+                            <span id="otherIdentification-error" class="help is-danger"
+                                  th:if="${#fields.hasErrors('otherIdentification')}"
+                                  th:errors="*{otherIdentification}">Other identification required</span>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="field">
                     <label class="label" th:for="extraInformation"
                            th:text="#{boatApplication.extraInformation}">Lisätiedot</label>
@@ -336,7 +353,7 @@
 
             <div class="block">
                 <div id="certify-control">
-                    <label class="checkbox justify-content-space-between">
+                    <label class="checkbox">
                         <input
                                 type="checkbox"
                                 data-required
