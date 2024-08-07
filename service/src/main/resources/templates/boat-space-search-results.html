@@ -1,4 +1,8 @@
-<div>
+<div x-data="{
+    openModal: false,
+    boatSpace: {
+        id: 0
+    } }">
     <h3><span th:text="#{boatApplication.freeSpaceCount}">Hakuehtoihin sopivat vapaat paikat</span> <span
             th:text="${spaceCount}">0</span></h3>
     <div class="block" th:each="harbor : ${harbors}" x-data="{ showAll: false }">
@@ -34,8 +38,15 @@
                                 th:text="#{boatSpaces.reserve}">Varaa
                         </button>
                     </form>
+                    <!--                       -->
                     <a th:if="${!isAuthenticated}"
-                       th:href="|/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikka/varaa/${result.id}|"
+                       th:attr="${'x-on:click'}=|openModal = true; boatSpace = {
+                            id: ${result.id},
+                            place: '${harbor.location.name} ${result.section}${result.placeNumber.toString()}',
+                            size: '${result.formattedSizes}',
+                            amenity: '#{${'boatSpaces.amenityOption.' + result.amenity}}',
+                            price: '${result.price}'
+                       };|"
                        class="button is-secondary reserve-button"
                        th:text="#{boatSpaces.reserve}">Varaa
                     </a>
@@ -47,6 +58,31 @@
             <a @click="showAll = !showAll"
                th:attr="x-text='showAll ? \'' + #{showLess} + '\' : \'' + #{showMore} +'\''"
             ></a>
+        </div>
+    </div>
+    <div th:if="${!isAuthenticated}" id="authentication-modal" class="modal" x-show="openModal" style="display:none;">
+        <div class="modal-underlay" @click="openModal = false"></div>
+        <div class="modal-content">
+            <p class="block has-text-left" th:text="#{auth.reservingBoatSpace}">Olet varaamassa paikkaa:</p>
+            <p class="has-text-left" x-text="boatSpace.place"></p>
+            <p class="has-text-left" x-text="boatSpace.size"></p>
+            <p class="has-text-left" x-text="boatSpace.amenity"></p>
+            <p class="has-text-left block" x-text="boatSpace.price + '&euro;'"></p>
+            <p class="has-text-left block" th:text="#{auth.reservingRequiresAuth}"></p>
+
+            <button id="auth-modal-cancel"
+                    th:text="#{cancel}"
+                    class="button "
+                    @click="openModal = false"
+                    type="button">
+            </button>
+            <a id="auth-modal-continue"
+               th:text="#{auth.continue}"
+               class="button is-primary"
+               type="button"
+               x-bind:href="'/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikka/varaa/' + boatSpace.id"
+            >
+            </a>
         </div>
     </div>
 </div>
