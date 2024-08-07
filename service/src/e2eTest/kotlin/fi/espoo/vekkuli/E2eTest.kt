@@ -158,6 +158,21 @@ class E2eTest : PlaywrightTest() {
         reservationPage.authModalContinue.click()
         page.getByText("Kirjaudu").click()
         val formPage = BoatSpaceForm(page)
+
         assertThat(formPage.header).isVisible()
+        formPage.boatTypeSelect.selectOption("Sailboat")
+        formPage.widthInput.fill("3")
+        formPage.lengthInput.fill("6")
+        formPage.depthInput.fill("1.5")
+        formPage.weightInput.fill("2000")
+        formPage.boatNameInput.fill("My Boat")
+        formPage.otherIdentification.fill("ID12345")
+        formPage.noRegistrationCheckbox.check()
+        formPage.ownerRadioButton.check()
+        formPage.emailInput.fill("test@example.com")
+        formPage.phoneInput.fill("123456789")
+        formPage.certifyInfoCheckbox.check()
+        formPage.agreementCheckbox.check()
+        formPage.submitButton.click()
     }
 }
