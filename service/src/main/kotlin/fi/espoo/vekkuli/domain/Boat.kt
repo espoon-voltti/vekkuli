@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.utils.cmToM
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
@@ -18,13 +19,21 @@ data class Boat(
     val otherIdentification: String?,
     val extraInformation: String?,
     val ownership: OwnershipStatus,
+    val displayName: String? = null
 ) {
-    val displayName: String
-        get() {
-            if (!name.isNullOrBlank()) return name
-            if (!registrationCode.isNullOrBlank()) return registrationCode
-            return "${widthCm.cmToM()} x ${lengthCm.cmToM()}"
-        }
+    fun updateBoatDisplayName(messageUtil: MessageUtil): Boat =
+        this.copy(
+            displayName =
+                when {
+                    !name.isNullOrBlank() -> name
+                    !registrationCode.isNullOrBlank() -> registrationCode
+                    else -> {
+                        messageUtil.getMessage(
+                            "boatApplication.boatTypeOption.$type"
+                        ) + " " + widthCm.cmToM() + " x " + lengthCm.cmToM() + " m"
+                    }
+                }
+        )
 }
 
 enum class BoatType {
