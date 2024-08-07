@@ -159,3 +159,67 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
     query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
     return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
 }
+
+data class BoatSpaceReservationItem(
+    val boatSpaceId: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val status: ReservationStatus,
+    val citizenId: UUID,
+    val name: String,
+    val homeTown: String,
+    val email: String,
+    val phone: String,
+    val type: BoatSpaceType,
+    val place: String,
+    val locationName: String,
+    val boatRegistrationCode: String?,
+    val boatOwnership: OwnershipStatus?
+)
+
+enum class BoatSpaceFilterColumn {
+    START_DATE,
+    END_DATE,
+    PLACE,
+    CUSTOMER,
+}
+
+fun createFilterSql(sort: BoatSpaceSort?): String {
+    if (sort == null) return ""
+    return when (sort.column) {
+        BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date"
+        BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date"
+        BoatSpaceFilterColumn.PLACE -> "ORDER BY place"
+        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY name"
+    } + if (!sort.ascending) " DESC" else ""
+}
+
+data class BoatSpaceSort(
+    val column: BoatSpaceFilterColumn,
+    val ascending: Boolean,
+)
+
+fun Handle.getBoatSpaceReservations(sort: BoatSpaceSort?): List<BoatSpaceReservationItem> {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as name, c.email, c.phone, '' as home_town,
+                b.registration_code as boat_registration_code,
+                b.ownership as boat_ownership,
+                location.name as location_name, 
+                bs.type, CONCAT(bs.section, bs.place_number) as place
+            FROM boat_space_reservation bsr
+            JOIN boat b on b.id = bsr.boat_id
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location_id = location.id
+            WHERE
+              bsr.status != 'Info' 
+                OR
+              bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+            ${createFilterSql(sort)}
+            """.trimIndent()
+        )
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
+    return query.mapTo<BoatSpaceReservationItem>().list()
+}
