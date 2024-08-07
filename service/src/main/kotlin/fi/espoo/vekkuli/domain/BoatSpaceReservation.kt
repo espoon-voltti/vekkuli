@@ -184,26 +184,24 @@ enum class BoatSpaceFilterColumn {
     CUSTOMER,
 }
 
-fun createFilterSql(sort: BoatSpaceSort?): String {
-    if (sort == null) return ""
-    return when (sort.column) {
+fun getSortingSql(sort: BoatSpaceSort): String =
+    when (sort.column) {
         BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date"
         BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date"
         BoatSpaceFilterColumn.PLACE -> "ORDER BY place"
-        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY name"
+        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name"
     } + if (!sort.ascending) " DESC" else ""
-}
 
 data class BoatSpaceSort(
     val column: BoatSpaceFilterColumn,
     val ascending: Boolean,
 )
 
-fun Handle.getBoatSpaceReservations(sort: BoatSpaceSort?): List<BoatSpaceReservationItem> {
+fun Handle.getBoatSpaceReservations(sort: BoatSpaceSort): List<BoatSpaceReservationItem> {
     val query =
         createQuery(
             """
-            SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as name, c.email, c.phone, '' as home_town,
+            SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as full_name, c.first_name, c.last_name, c.email, c.phone, '' as home_town,
                 b.registration_code as boat_registration_code,
                 b.ownership as boat_ownership,
                 location.name as location_name, 

@@ -3,45 +3,38 @@
     <title>Vekkuli - Venepaikat</title>
 </head>
 <body layout:fragment="body">
-    <nav role="navigation">
-        <ul>
-            <li><a href="/virkailija/venepaikat/listaus" >Venepaikat</a></li>
-            <li><a href="/virkailija/venepaikat/varaukset" aria-current="page">Venepaikkavaraukset</a></li>
-            <li><a href="/virkailija/asiakastiedot/">Asiakastiedot</a></li>
-        </ul>
-    </nav>
     <div class="reservation-list">
         <table>
                 <thead>
                 <tr>
-                    <th th:text="#{boatSpaceReservation.title.harbor}">Satama</th>
+                    <th><span th:text="#{boatSpaceReservation.title.harbor}">Satama</span></th>
                     <th><span th:text="#{boatSpaceReservation.title.place}">Paikka</span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='PLACE',asc=${not (sort?.column.toString() == 'PLACE' and sort?.ascending)})}">
+                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='PLACE',asc=${not (sort.column.toString() == 'PLACE' and sort.ascending)})}">
                             <div
-                                th:replace="~{fragments/icons :: sort(dir=${sort?.column.toString() == 'PLACE' ? (sort?.ascending ? 'asc' : 'desc') : ''})}"
+                                th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'PLACE' ? (sort.ascending ? 'asc' : 'desc') : ''})}"
                             ></div>
                         </a>
                     </th>
-                    <th th:text="#{boatSpaceReservation.title.type}">Paikan tyyppi</th>
+                    <th><span th:text="#{boatSpaceReservation.title.type}">Paikan tyyppi</span></th>
                     <th><span th:text="#{boatSpaceReservation.title.subject}">Varaaja</span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='CUSTOMER',asc=${not (sort?.column.toString() == 'CUSTOMER' and sort?.ascending)})}">
-                            <div th:replace="~{fragments/icons :: sort(dir=${sort?.column.toString() == 'CUSTOMER' ? (sort?.ascending ? 'asc' : 'desc') : ''})}"></div>
+                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='CUSTOMER',asc=${not (sort.column.toString() == 'CUSTOMER' and sort.ascending)})}">
+                            <div th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'CUSTOMER' ? (sort.ascending ? 'asc' : 'desc') : ''})}"></div>
                         </a>
                     </th>
-                    <th th:text="#{boatSpaceReservation.title.homeTown}">Kotikunta</th>
-                    <th th:text="#{boatSpaceReservation.title.boat}">Vene</th>
-                    <th th:text="#{boatSpaceReservation.title.payment}">Maksu</th>
-                    <th><span  th:text="#{boatSpaceReservation.title.startDate}">Varaus tehty</span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='START_DATE',asc=${not (sort?.column.toString() == 'START_DATE' and sort?.ascending)})}">
-                          <div th:replace="~{fragments/icons :: sort(dir=${sort?.column.toString() == 'START_DATE' ? (sort?.ascending ? 'asc' : 'desc') : ''})}"></div>
+                    <th><span th:text="#{boatSpaceReservation.title.homeTown}">Kotikunta</span></th>
+                    <th><span th:text="#{boatSpaceReservation.title.boat}">Vene</span></th>
+                    <th><span th:text="#{boatSpaceReservation.title.payment}">Maksu</span></th>
+                    <th><span  th:text="#{boatSpaceReservation.title.startDate}">Varaus tehty</span></span>
+                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='START_DATE',asc=${not (sort.column.toString() == 'START_DATE' and sort.ascending)})}">
+                          <div th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'START_DATE' ? (sort.ascending ? 'asc' : 'desc') : ''})}"></div>
                         </a>
                     </th>
                     <th><span th:text="#{boatSpaceReservation.title.endDate}">Varaus päättyy</span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='END_DATE',asc=${not (sort?.column.toString() == 'END_DATE' and sort?.ascending)})}">
-                            <div th:replace="~{fragments/icons :: sort(dir=${sort?.column.toString() == 'END_DATE' ? (sort?.ascending ? 'asc' : 'desc') : ''})}"></div>
+                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='END_DATE',asc=${not (sort.column.toString() == 'END_DATE' and sort.ascending)})}">
+                            <div th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'END_DATE' ? (sort.ascending ? 'asc' : 'desc') : ''})}"></div>
                         </a>
                     </th>
-                    <th th:text="#{boatSpaceReservation.title.ownership}">Omistussuhde</th>
+                    <th><span th:text="#{boatSpaceReservation.title.ownership}">Omistussuhde</span></th>
                 </tr>
             </thead>
             <tbody>

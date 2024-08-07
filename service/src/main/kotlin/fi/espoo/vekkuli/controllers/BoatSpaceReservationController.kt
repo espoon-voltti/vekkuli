@@ -26,7 +26,7 @@ class BoatSpaceReservationController {
         @RequestParam asc: Boolean?,
         model: Model
     ): String {
-        val sort = if (sortBy != null) BoatSpaceSort(sortBy, asc ?: false) else null
+        val sort = BoatSpaceSort(sortBy ?: BoatSpaceFilterColumn.START_DATE, asc ?: false)
         val reservations =
             jdbi.inTransactionUnchecked {
                 it.getBoatSpaceReservations(sort)
