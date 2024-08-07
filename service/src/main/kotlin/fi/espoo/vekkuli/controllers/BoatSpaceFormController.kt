@@ -137,7 +137,7 @@ class BoatSpaceFormController {
                 jdbi.inTransactionUnchecked {
                     it.insertBoat(
                         citizen.id,
-                        input.boatRegistrationNumber!!,
+                        input.boatRegistrationNumber ?: "",
                         input.boatName!!,
                         input.width!!.mToCm(),
                         input.length!!.mToCm(),
@@ -385,7 +385,6 @@ data class ReservationInput(
     val noRegistrationNumber: Boolean?,
     val boatRegistrationNumber: String?,
     val boatName: String?,
-//    @field:NotBlank(message = "{validation.required}")
     val otherIdentification: String?,
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
