@@ -10,8 +10,8 @@ import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.core.kotlin.mapTo
 
 data class LocalizedName(
-    val swedish: String,
-    val finnish: String
+    val sv: String,
+    val fi: String
 )
 
 data class CitizenAdUser(
@@ -30,7 +30,7 @@ fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen =
         // language=SQL
         """
  INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality)
- VALUES (:nationalId, :firstName, :lastName, COALESCE(:phone, ''), COALESCE(:email, ''), :address.finnish, :postalCode, :town.finnish)
+ VALUES (:nationalId, :firstName, :lastName, COALESCE(:phone, ''), COALESCE(:email, ''), :address.fi, :postalCode, :town.fi)
  ON CONFLICT (national_id) DO UPDATE
  SET updated = now(), first_name = :firstName, last_name = :lastName, email = COALESCE(:email, ''), phone = COALESCE(:phone, '')
  RETURNING *
