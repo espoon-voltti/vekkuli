@@ -10,5 +10,6 @@ class ReservationListPage(
         page.navigate("$baseUrl/virkailija/venepaikat/varaukset")
     }
 
-    val harborHeaders = page.locator(".reservation-item")
+    val boatSpace1 = page.locator("#boat-space-1")
+    val boatSpace2 = page.locator("#boat-space-2")
 }

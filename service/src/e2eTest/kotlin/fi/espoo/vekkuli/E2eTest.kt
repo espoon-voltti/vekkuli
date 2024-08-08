@@ -18,6 +18,8 @@ class E2eTest : PlaywrightTest() {
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
+            assertThat(listingPage.boatSpace1).isVisible()
+            assertThat(listingPage.boatSpace2).isVisible()
         } catch (e: AssertionError) {
             page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
             throw e
