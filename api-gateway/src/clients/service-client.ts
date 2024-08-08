@@ -35,11 +35,14 @@ export interface AdUser {
 }
 
 export interface CitizenUser {
-  nationalId: string
+  address?: { sv: string; fi: string }
+  email?: string
   firstName: string
   lastName: string
-  homeTown?: number
-  email?: string
+  nationalId: string
+  postalCode?: string
+  town?: { sv: string; fi: string }
+  // homeTown?: number
 }
 
 export async function userLogin(

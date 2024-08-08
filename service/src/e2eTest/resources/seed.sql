@@ -12,22 +12,22 @@ VALUES ('ML1', 100.00),
        ('ML6', 290.00);
 
 -- Populate the location table with 7 different locations with made-up Finnish addresses
-INSERT INTO location (name, address)
-VALUES ('Haukilahti', 'Satamatie 1, Espoo'),
-       ('Kivenlahti', 'Kivenlahdentie 10, Espoo'),
-       ('Laajalahti', 'Laajalahdentie 5, Espoo'),
-       ('Otsolahti', 'Otsolahdentie 7, Espoo'),
-       ('Soukka', 'Soukantie 3, Espoo'),
-       ('Suomenoja', 'Suomenojantie 15, Espoo'),
-       ('Svinö', 'Svinöntie 8, Espoo');
+INSERT INTO location (id, name, address)
+VALUES (1, 'Haukilahti', 'Satamatie 1, Espoo'),
+       (2, 'Kivenlahti', 'Kivenlahdentie 10, Espoo'),
+       (3, 'Laajalahti', 'Laajalahdentie 5, Espoo'),
+       (4, 'Otsolahti', 'Otsolahdentie 7, Espoo'),
+       (5, 'Soukka', 'Soukantie 3, Espoo'),
+       (6, 'Suomenoja', 'Suomenojantie 15, Espoo'),
+       (7, 'Svinö', 'Svinöntie 8, Espoo');
 
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (1, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sailboat');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
-INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, email)
-VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), '010106A957V', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi');
+INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, email, address, postal_code, municipality)
+VALUES ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), '010106A957V', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 'Helsinki');
 
 INSERT INTO boat_space_application (citizen_id, created_at, type, boat_type, amenity, boat_width_cm, boat_length_cm,
                                     boat_weight_kg, boat_registration_code, information)
