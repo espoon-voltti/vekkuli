@@ -69,7 +69,7 @@ fun Handle.updateBoatSpaceReservation(
     query.bind("updatedTime", LocalDate.now())
     query.bind("id", reservationId)
     query.bind("boatId", boatId)
-    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
 
     return query.mapTo<BoatSpaceReservation>().one()
 }
@@ -117,7 +117,7 @@ fun Handle.getReservationForCitizen(id: UUID): ReservationWithDependencies? {
             """.trimIndent()
         )
     query.bind("id", id)
-    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
     return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
 }
 
@@ -156,7 +156,7 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
             """.trimIndent()
         )
     query.bind("id", id)
-    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
     return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
 }
 
@@ -219,6 +219,6 @@ fun Handle.getBoatSpaceReservations(sort: BoatSpaceSort): List<BoatSpaceReservat
             ${getSortingSql(sort)}
             """.trimIndent()
         )
-    query.bind("sessionTimeInSeconds", BoatSpaceConfig.sessionTimeInSeconds)
+    query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
     return query.mapTo<BoatSpaceReservationItem>().list()
 }
