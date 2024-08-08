@@ -2476,5 +2476,5 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
     ('2436', 'Slip', '7', '3', 'E', '68', 'WalkBeam', '320', '1000', 'none');
 
 INSERT INTO boat_space_reservation (citizen_id, boat_space_id, start_date, end_date,  status, boat_id)
-VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1, now(), '2021-01-02', 'Confirmed', 1),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, now(), '2021-01-02', 'Confirmed', 1);
+VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1, now(), now() + INTERVAL '1year', 'Confirmed', 1),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, now(), now() + INTERVAL '1year', 'Confirmed', 1);
