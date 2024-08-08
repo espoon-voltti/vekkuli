@@ -272,7 +272,7 @@ form .subtitle:not(:last-child) {
   th, td {
     border-bottom: 1px solid #dddddd;
     text-align: left;
-    padding: 8px;
+    padding: $spacing-small;
     vertical-align: middle;
   }
 
@@ -283,7 +283,6 @@ form .subtitle:not(:last-child) {
   }
 
   a {
-    color: blue;
     text-decoration: none;
   }
 }
