@@ -220,7 +220,15 @@ class BoatSpaceFormController {
         model: Model,
         input: ReservationInput
     ): String {
-        val boats =
+        val mockedUser =
+            // Todo: fetch real data here
+            user.copy(
+                address = "Miestentie 2 A 23",
+                postalCode = "02150",
+                municipality = "Espoo"
+            )
+
+        var boats =
             jdbi.inTransactionUnchecked {
                 it.getBoatsForCitizen(user.id)
             }.map { boat ->
@@ -252,17 +260,14 @@ class BoatSpaceFormController {
         model.addAttribute("input", input)
         model.addAttribute("boatSpace", boatSpaceFront)
         model.addAttribute("boats", boats)
-        model.addAttribute("user", user)
+        model.addAttribute(
+            "user",
+            mockedUser
+        )
 
         model.addAttribute(
             "showSizeWarning",
-            showBoatSizeWarning(
-                input.width,
-                input.length,
-                reservation.amenity,
-                reservation.widthCm.cmToM(),
-                reservation.lengthCm.cmToM()
-            )
+            showBoatSizeWarning(input.width, input.length, reservation.amenity, reservation.widthCm.cmToM(), reservation.lengthCm.cmToM())
         )
 
         return "boat-space-form"
@@ -285,19 +290,16 @@ class BoatSpaceFormController {
                 val lengthTooLarge = length != null && length > spaceLength + 1.0
                 return widthTooLarge || lengthTooLarge
             }
-
             BoatSpaceAmenity.RearBuoy -> {
                 val widthTooLarge = width != null && width + 0.5 > spaceWidth
                 val lengthTooLarge = length != null && length > spaceLength - 3.0
                 return widthTooLarge || lengthTooLarge
             }
-
             BoatSpaceAmenity.WalkBeam -> {
                 val widthTooLarge = width != null && width + 0.75 > spaceWidth
                 val lengthTooLarge = length != null && length > spaceLength + 1.0
                 return widthTooLarge || lengthTooLarge
             }
-
             else -> {
                 return false
             }
