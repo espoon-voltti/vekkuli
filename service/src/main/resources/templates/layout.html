@@ -10,12 +10,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/css/main.css">
     <title>Vekkuli</title>
-    <style>
-        .validation-message {
-            display: none;
-        }
-    </style>
 </head>
-<body layout:fragment="body">
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+        </a>
+    </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary">
+                        <strong>Sign up</strong>
+                    </a>
+                    <a class="button is-light">
+                        Log in
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div layout:fragment="body">
+
+</div>
+
 </body>
 </html>

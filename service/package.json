@@ -7,7 +7,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bulma": "^1.0.1",
+    "bulma": "^1.0.2",
     "sass": "^1.77.8"
+  },
+  scritps: {
+    "sass": "sass --watch  --load-path=node_modules src/main/resources/public/static/sass:src/main/resources/public/static/css"
   }
+
 }
