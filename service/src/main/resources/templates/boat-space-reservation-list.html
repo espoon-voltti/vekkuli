@@ -38,7 +38,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="result : ${reservations}">
+                <tr class="reservation-item" th:each="result : ${reservations}">
                     <td th:text="${result.locationName}">Kivenlahti</td>
                     <td th:text="${result.place}">A135</td>
                     <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}">Laituripaikka</td>
