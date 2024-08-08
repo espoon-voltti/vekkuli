@@ -26,4 +26,7 @@ class ReserveBoatSpacePage(
     val harborHeaders = page.locator(".harbor-header")
     val firstReserveButton = page.locator(".reserve-button").first()
     val paymentPageTitle = page.locator("text='Maksunäkymä'")
+    val authModal = page.getByTestId("auth-modal")
+    val authModalCancel = page.getByTestId("auth-modal-cancel")
+    val authModalContinue = page.getByTestId("auth-modal-continue")
 }

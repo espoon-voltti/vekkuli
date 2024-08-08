@@ -128,6 +128,7 @@ class E2eTest : PlaywrightTest() {
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceForm(page)
+        assertThat(formPage.header).isVisible()
         // Cancel, then cancel in modal
         formPage.cancelButton.click()
         assertThat(formPage.confirmCancelModal).isVisible()
@@ -139,5 +140,39 @@ class E2eTest : PlaywrightTest() {
         assertThat(formPage.confirmCancelModal).isVisible()
         formPage.confirmCancelModalConfirm.click()
         assertThat(reservationPage.header).isVisible()
+    }
+
+    @Test
+    fun authenticationOnReservation() {
+        // go directly to reservation page
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+
+        reservationPage.firstReserveButton.click()
+        assertThat(reservationPage.authModal).isVisible()
+
+        reservationPage.authModalCancel.click()
+        assertThat(reservationPage.authModal).isHidden()
+
+        reservationPage.firstReserveButton.click()
+        reservationPage.authModalContinue.click()
+        page.getByText("Kirjaudu").click()
+        val formPage = BoatSpaceForm(page)
+
+        assertThat(formPage.header).isVisible()
+        formPage.boatTypeSelect.selectOption("Sailboat")
+        formPage.widthInput.fill("3")
+        formPage.lengthInput.fill("6")
+        formPage.depthInput.fill("1.5")
+        formPage.weightInput.fill("2000")
+        formPage.boatNameInput.fill("My Boat")
+        formPage.otherIdentification.fill("ID12345")
+        formPage.noRegistrationCheckbox.check()
+        formPage.ownerRadioButton.check()
+        formPage.emailInput.fill("test@example.com")
+        formPage.phoneInput.fill("123456789")
+        formPage.certifyInfoCheckbox.check()
+        formPage.agreementCheckbox.check()
+        formPage.submitButton.click()
     }
 }
