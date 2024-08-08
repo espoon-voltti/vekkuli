@@ -17,7 +17,7 @@
         </div>
         <div class="block" th:if="${isAuthenticated == true}">
             <p>Käyttäjä: <strong th:text="${userName}"></strong></p>
-            <div><a href="/virkailija/venepaikat">Venepaikat</a></div>
+            <div><a href="/virkailija/venepaikat/varaukset">Venepaikat</a></div>
             <br />
             <a th:text="#{auth.logout}" class="button" href="/auth/saml/logout">Logout</a>
         </div>

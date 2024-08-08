@@ -14,6 +14,7 @@ import { Sessions } from './session.js'
 import passport, { Strategy } from 'passport'
 import { AppSessionUser, authenticate, login, logout } from './index.js'
 import { appBaseUrl } from '../config.js'
+import { parseRelayState } from './saml/common.js'
 
 class DevStrategy extends Strategy {
   constructor(private verifyUser: (req: Request) => Promise<AppSessionUser>) {
@@ -33,22 +34,13 @@ const devUsers: CitizenUser[] = [
     nationalId: '150499-911U',
     firstName: 'Leo',
     lastName: 'Korhonen',
-    postalCode: '00370',
-    address: { fi: 'Ahertajankuja 1', sv: 'Flitargränden 1' },
-    town: { fi: 'Espoo', sv: 'Esbo' }
-    // homeTown: 49,
+    homeTown: 49
   },
   {
     nationalId: '031298-988S',
     firstName: 'Olivia',
     lastName: 'Virtanen',
-    postalCode: '02130',
-    address: {
-      fi: 'Hämeenkyläntie 2B 56',
-      sv: 'Tavastbyvägen 2B 56'
-    },
-    town: { fi: 'Espoo', sv: 'Esbo' }
-    // homeTown: 49,
+    homeTown: 49
   }
 ]
 
@@ -114,7 +106,8 @@ export function createDevSfiRouter(sessions: Sessions): Router {
           res.redirect(`${appBaseUrl}?loginError=true`)
         } else {
           await login(req, user)
-          res.redirect('/') //parseRelayState(req) ?? appBaseUrl)
+          const redirectUrl = parseRelayState(req) ?? '/'
+          res.redirect(redirectUrl)
         }
       } catch (err) {
         if (!res.headersSent) {

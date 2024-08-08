@@ -7,7 +7,6 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.io.File
-import java.nio.file.Paths
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
@@ -59,28 +58,6 @@ abstract class PlaywrightTest {
             val file = File("src/e2eTest/resources/seed.sql").readText()
             jdbi.withHandleUnchecked { h ->
                 h.createScript(file).execute()
-            }
-
-            // add boat spaces from csv
-            val csvFilePath = Paths.get("src/e2eTest/resources/boat_space.csv").toAbsolutePath().toString()
-            val csvFile = File(csvFilePath)
-            val sql =
-                buildString {
-                    appendLine(
-                        "INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, " +
-                            "width_cm, length_cm, description) VALUES"
-                    )
-                    for (line in csvFile.readLines()) {
-                        val values = line.split(",").map { "'$it'" }
-                        appendLine("(${values.joinToString(", ")}),")
-                    }
-                }.trimEnd(',', '\n') + ";"
-
-            jdbi.withHandleUnchecked { transactionHandle ->
-                if (csvFile.exists()) {
-                    transactionHandle.execute(sql)
-                    println("CSV data inserted successfully.")
-                }
             }
         }
 

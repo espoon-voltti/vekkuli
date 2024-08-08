@@ -9,28 +9,20 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.core.kotlin.mapTo
 
-data class LocalizedName(
-    val sv: String,
-    val fi: String
-)
-
 data class CitizenAdUser(
     val nationalId: String,
     val firstName: String,
     val lastName: String,
     val email: String?,
-    val phone: String?,
-    val address: LocalizedName?,
-    val postalCode: String? = null,
-    val town: LocalizedName?,
+    val phone: String?
 )
 
 fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen =
     createQuery(
         // language=SQL
         """
- INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality)
- VALUES (:nationalId, :firstName, :lastName, COALESCE(:phone, ''), COALESCE(:email, ''), :address.fi, :postalCode, :town.fi)
+ INSERT INTO citizen (national_id, first_name, last_name, phone, email)
+ VALUES (:nationalId, :firstName, :lastName, COALESCE(:phone, ''), COALESCE(:email, ''))
  ON CONFLICT (national_id) DO UPDATE
  SET updated = now(), first_name = :firstName, last_name = :lastName, email = COALESCE(:email, ''), phone = COALESCE(:phone, '')
  RETURNING *

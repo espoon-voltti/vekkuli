@@ -262,3 +262,28 @@ form .subtitle:not(:last-child) {
     margin-left: $spacing-medium;
   }
 }
+
+.reservation-list {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  th, td {
+    border-bottom: 1px solid #dddddd;
+    text-align: left;
+    padding: $spacing-small;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    color: $grey;
+    font-weight: normal;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
