@@ -3,11 +3,29 @@ package fi.espoo.vekkuli
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.BoatSpaceForm
+import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
 import org.junit.jupiter.api.Test
 import kotlin.io.path.Path
 
 class E2eTest : PlaywrightTest() {
+    @Test
+    fun listingReservations() {
+        try {
+            page.navigate(baseUrl + "/virkailija")
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            assertThat(listingPage.boatSpace1).isVisible()
+            assertThat(listingPage.boatSpace2).isVisible()
+        } catch (e: AssertionError) {
+            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
+            throw e
+        }
+    }
+
     @Test
     fun reservingABoatSpace() {
         try {
