@@ -14,7 +14,6 @@ import { Sessions } from './session.js'
 import passport, { Strategy } from 'passport'
 import { AppSessionUser, authenticate, login, logout } from './index.js'
 import { appBaseUrl } from '../config.js'
-import { parseRelayState } from './saml/common.js'
 
 class DevStrategy extends Strategy {
   constructor(private verifyUser: (req: Request) => Promise<AppSessionUser>) {
@@ -115,8 +114,7 @@ export function createDevSfiRouter(sessions: Sessions): Router {
           res.redirect(`${appBaseUrl}?loginError=true`)
         } else {
           await login(req, user)
-          const redirectUrl = parseRelayState(req) ?? '/'
-          res.redirect(redirectUrl)
+          res.redirect('/') //parseRelayState(req) ?? appBaseUrl)
         }
       } catch (err) {
         if (!res.headersSent) {

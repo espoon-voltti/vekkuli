@@ -26,8 +26,7 @@
                 th:object="${input}"
         >
             <div class="block">
-                <h3 id="boat-space-form-header" class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava
-                    paikka</h3>
+                <h3 class="header" th:text="#{boatApplication.boatSpaceToApply}">Varattava paikka</h3>
 
                 <p><span th:text="${boatSpace.harbor}">Haukilahti</span></p>
                 <p th:text="|#{boatApplication.boatSpaceSection} ${boatSpace.section}|">Laituri B</p>
@@ -406,7 +405,7 @@
             </div>
         </form>
         <div id="confirm-cancel-modal" class="modal" x-show="modalOpen" style="display:none;">
-            <div class="modal-underlay" @click="modalOpen = false"></div>
+            <div class="modal-underlay" _="on click trigger closeModal"></div>
             <div class="modal-content">
                 <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation}"></p>
                 <p class="block has-text-left" th:text="#{boatSpaceApplication.cancelConfirmation2}"></p>

@@ -14,14 +14,14 @@
         <div class="block" th:if="${isAuthenticated == false}">
             <a id="loginButton" th:text="#{auth.login}"
                class="button"
-               href="/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikat">Login</a>
+               href="/auth/saml-suomifi/login">Login</a>
         </div>
         <div class="block" th:if="${isAuthenticated == true}">
             <p>Käyttäjä: <strong th:text="${userName}"></strong></p>
+            <div><a href="/kuntalainen/venepaikat">Hae venepaikkaa</a></div>
             <br />
             <a th:text="#{auth.logout}" class="button" href="/auth/saml-suomifi/logout">Logout</a>
         </div>
-        <div><a href="/kuntalainen/venepaikat">Hae venepaikkaa</a></div>
     </div>
 </section>
 </body>

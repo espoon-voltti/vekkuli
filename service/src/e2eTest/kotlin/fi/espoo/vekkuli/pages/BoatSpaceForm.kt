@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.pages
 import com.microsoft.playwright.Page
 
 class BoatSpaceForm(private val page: Page) {
-    val header = page.getByTestId("boat-space-form-header")
     val boatTypeSelect = page.getByTestId("boatType")
     val widthInput = page.getByTestId("width")
     val widthError = page.getByTestId("width-error")
