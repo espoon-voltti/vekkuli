@@ -11,15 +11,15 @@ import type {
   AuthenticateOptions,
   RequestWithUser
 } from '@node-saml/passport-saml/lib/types.js'
-import { createLogoutToken } from './common.js'
+import { createLogoutToken, parseRelayState } from './common.js'
 
 const urlencodedParser = urlencoded({ extended: false })
 
 type Role = 'employee' | 'citizen'
 
-function getRedirectUrl(type: Role): string {
+function getRedirectUrl(type: Role, req: express.Request): string {
   if (type === 'employee') return '/virkailija'
-  return '/'
+  return parseRelayState(req) ?? '/'
 }
 
 export interface SamlEndpointConfig {
@@ -55,7 +55,7 @@ function createLoginHandler({
           if (err.message === 'InResponseTo is not valid' && req.user) {
             // When user uses browse back functionality after login we get invalid InResponseTo
             // This will ignore the error
-            const redirectUrl = getRedirectUrl(type)
+            const redirectUrl = getRedirectUrl(type, req)
             logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
             return res.redirect(redirectUrl)
           }
@@ -81,7 +81,7 @@ function createLoginHandler({
             createLogoutToken(user.nameID, user.sessionIndex)
           )
 
-          const redirectUrl = getRedirectUrl(type)
+          const redirectUrl = getRedirectUrl(type, req)
           logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
           return res.redirect(redirectUrl)
         })().catch((err) => {
@@ -167,14 +167,14 @@ export default function createSamlRouter(
     `/logout/callback`,
     logoutCallback,
     passport.authenticate(strategyName),
-    (req, res) => res.redirect(getRedirectUrl(endpointConfig.type))
+    (req, res) => res.redirect(getRedirectUrl(endpointConfig.type, req))
   )
   router.post(
     `/logout/callback`,
     urlencodedParser,
     logoutCallback,
     passport.authenticate(strategyName),
-    (req, res) => res.redirect(getRedirectUrl(endpointConfig.type))
+    (req, res) => res.redirect(getRedirectUrl(endpointConfig.type, req))
   )
 
   return router
