@@ -69,6 +69,22 @@ class OperatorExpr(
     }
 }
 
+data class InExpr<T>(
+    private val columnName: String,
+    private val data: List<T>,
+    private val convert: (v: T) -> String = fun (v) = v.toString(),
+) : SqlExpr() {
+    override fun toSql(): String =
+        if (data.isNotEmpty()) {
+            "$columnName IN (${data.map { convert(it) }.joinToString(", ")})"
+        } else {
+            ""
+        }
+
+    override fun bind(query: Query) {
+    }
+}
+
 class EmptyExpr : SqlExpr() {
     override fun toSql(): String = ""
 

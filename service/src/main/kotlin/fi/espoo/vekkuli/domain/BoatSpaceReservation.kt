@@ -4,6 +4,8 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.utils.AndExpr
+import fi.espoo.vekkuli.utils.InExpr
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import java.time.LocalDate
@@ -185,20 +187,82 @@ enum class BoatSpaceFilterColumn {
     CUSTOMER,
 }
 
-fun getSortingSql(sort: BoatSpaceSort): String =
-    when (sort.column) {
+data class BoatSpaceReservationFilter(
+    val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.START_DATE,
+    val ascending: Boolean = false,
+    val amenity: List<BoatSpaceAmenity> = emptyList(),
+    val harbor: List<Int> = emptyList(),
+) {
+    fun toggleSort(name: String): String {
+        val value = BoatSpaceFilterColumn.valueOf(name)
+        if (sortBy == value) {
+            return this.copy(ascending = !ascending).getQueryParams()
+        } else {
+            return this.copy(sortBy = value).getQueryParams()
+        }
+    }
+
+    fun toggleHarbor(id: Int): String {
+        if (harbor.contains(id)) {
+            return this.copy(harbor = harbor - id).getQueryParams()
+        } else {
+            return this.copy(harbor = harbor + id).getQueryParams()
+        }
+    }
+
+    fun toggleAmenity(name: String): String {
+        val value = BoatSpaceAmenity.valueOf(name)
+        if (amenity.contains(value)) {
+            return this.copy(amenity = amenity - value).getQueryParams()
+        } else {
+            return this.copy(amenity = amenity + value).getQueryParams()
+        }
+    }
+
+    fun hasHarbor(id: Int): Boolean = harbor.contains(id)
+
+    fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
+
+    fun getQueryParams(): String {
+        val params = mutableListOf<String>()
+        params.add("sortBy=$sortBy")
+        params.add("ascending=$ascending")
+        amenity.forEach {
+            params.add("amenity=$it")
+        }
+        harbor.forEach {
+            params.add("harbor=$it")
+        }
+        return "?${params.joinToString("&")}"
+    }
+
+    fun getSortForColumn(name: String): String {
+        val value = BoatSpaceFilterColumn.valueOf(name)
+        return if (sortBy == value) {
+            if (ascending) "asc" else "desc"
+        } else {
+            ""
+        }
+    }
+}
+
+fun getSortingSql(sort: BoatSpaceReservationFilter): String =
+    when (sort.sortBy) {
         BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date"
         BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date"
         BoatSpaceFilterColumn.PLACE -> "ORDER BY place"
         BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name"
     } + if (!sort.ascending) " DESC" else ""
 
-data class BoatSpaceSort(
-    val column: BoatSpaceFilterColumn,
-    val ascending: Boolean,
-)
+fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> {
+    val filter =
+        AndExpr(
+            listOf(
+                InExpr("bs.location_id", params.harbor),
+                InExpr("bs.amenity", params.amenity) { "'$it'" },
+            )
+        )
 
-fun Handle.getBoatSpaceReservations(sort: BoatSpaceSort): List<BoatSpaceReservationItem> {
     val query =
         createQuery(
             """
@@ -213,12 +277,15 @@ fun Handle.getBoatSpaceReservations(sort: BoatSpaceSort): List<BoatSpaceReservat
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location_id = location.id
             WHERE
-              bsr.status != 'Info' 
+              (bsr.status != 'Info' 
                 OR
-              bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
-            ${getSortingSql(sort)}
+              bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds))
+            AND ${filter.toSql().ifBlank { "true" }}
+            ${getSortingSql(params)}
             """.trimIndent()
         )
+
     query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+    filter.bind(query)
     return query.mapTo<BoatSpaceReservationItem>().list()
 }

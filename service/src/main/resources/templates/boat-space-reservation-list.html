@@ -3,55 +3,78 @@
     <title>Vekkuli - Venepaikat</title>
 </head>
 <body layout:fragment="body">
-    <div class="reservation-list">
-        <table>
-                <thead>
-                <tr>
-                    <th><span th:text="#{boatSpaceReservation.title.harbor}">Satama</span></th>
-                    <th><span th:text="#{boatSpaceReservation.title.place}">Paikka</span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='PLACE',asc=${not (sort.column.toString() == 'PLACE' and sort.ascending)})}">
-                            <div
-                                th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'PLACE' ? (sort.ascending ? 'asc' : 'desc') : ''})}"
-                            ></div>
-                        </a>
-                    </th>
-                    <th><span th:text="#{boatSpaceReservation.title.type}">Paikan tyyppi</span></th>
-                    <th><span th:text="#{boatSpaceReservation.title.subject}">Varaaja</span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='CUSTOMER',asc=${not (sort.column.toString() == 'CUSTOMER' and sort.ascending)})}">
-                            <div th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'CUSTOMER' ? (sort.ascending ? 'asc' : 'desc') : ''})}"></div>
-                        </a>
-                    </th>
-                    <th><span th:text="#{boatSpaceReservation.title.homeTown}">Kotikunta</span></th>
-                    <th><span th:text="#{boatSpaceReservation.title.boat}">Vene</span></th>
-                    <th><span th:text="#{boatSpaceReservation.title.payment}">Maksu</span></th>
-                    <th><span  th:text="#{boatSpaceReservation.title.startDate}">Varaus tehty</span></span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='START_DATE',asc=${not (sort.column.toString() == 'START_DATE' and sort.ascending)})}">
-                          <div th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'START_DATE' ? (sort.ascending ? 'asc' : 'desc') : ''})}"></div>
-                        </a>
-                    </th>
-                    <th><span th:text="#{boatSpaceReservation.title.endDate}">Varaus päättyy</span>
-                        <a th:href="@{/virkailija/venepaikat/varaukset(sortBy='END_DATE',asc=${not (sort.column.toString() == 'END_DATE' and sort.ascending)})}">
-                            <div th:replace="~{fragments/icons :: sort(dir=${sort.column.toString() == 'END_DATE' ? (sort.ascending ? 'asc' : 'desc') : ''})}"></div>
-                        </a>
-                    </th>
-                    <th><span th:text="#{boatSpaceReservation.title.ownership}">Omistussuhde</span></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="reservation-item" th:id="'boat-space-' + ${result.boatSpaceId}" th:each="result : ${reservations}">
-                    <td th:text="${result.locationName}">Kivenlahti</td>
-                    <td th:text="${result.place}">A135</td>
-                    <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}">Laituripaikka</td>
-                    <td><a href="#"><span th:text="${result.firstName}">Veikko</span><br/><span th:text="${result.lastName}">Veneilijä</span></a></td>
-                    <td th:text="${result.homeTown}">Espoo</td>
-                    <td th:text="${result.boatRegistrationCode}">P567123</td>
-                    <td><!-- TODO payment date --></td>
-                    <td th:text="${#temporals.format(result.startDate, 'yyyy-MM-dd HH:mm')}">03.06.2024 14:56</td>
-                    <td th:text="${#temporals.format(result.endDate, 'yyyy-MM-dd HH:mm')}">01.02.2025</td>
-                    <td th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+   <div class="section">
+        <div class="block">
+            <h1>Satama</h1>
+            <div class="tag-container">
+                <a th:each="harbor : ${harbors}" class="button is-rounded is-primary is-outlined" th:id="'harbor-' + ${harbor.id}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleHarbor(harbor.id)}}">
+                    <span class="icon is-small" th:if="${params.hasHarbor(harbor.id)}">
+                      <div th:replace="~{fragments/icons :: check}"></div>
+                    </span>
+                    <span th:text="${harbor.name}">Haukilahti</span>
+                </a>
+            </div>
+        </div>
+        <div class="block">
+            <h1>Paikan varuste</h1>
+            <div class="tag-container">
+                <a th:each="amenity : ${amenities}" class="button is-rounded is-primary is-outlined" th:id="'amenity-' + ${amenity.toString()}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleAmenity(amenity)}}">
+                    <span class="icon is-small" th:if="${params.hasAmenity(amenity)}">
+                      <div th:replace="~{fragments/icons :: check}"></div>
+                    </span>
+                    <span th:text="#{${'boatSpaces.amenityOption.' + amenity}}">Buoy</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="reservation-list block">
+            <table>
+                    <thead>
+                    <tr>
+                        <th><span th:text="#{boatSpaceReservation.title.harbor}">Satama</span></th>
+                        <th><span th:text="#{boatSpaceReservation.title.place}">Paikka</span>
+                            <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('PLACE')}}">
+                                <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('PLACE')})}"></div>
+                            </a>
+                        </th>
+                        <th><span th:text="#{boatSpaceReservation.title.type}">Paikan tyyppi</span></th>
+                        <th><span th:text="#{boatSpaceReservation.title.subject}">Varaaja</span>
+                            <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('CUSTOMER')}}">
+                                <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('CUSTOMER')})}"></div>
+                            </a>
+                        </th>
+                        <th><span th:text="#{boatSpaceReservation.title.homeTown}">Kotikunta</span></th>
+                        <th><span th:text="#{boatSpaceReservation.title.boat}">Vene</span></th>
+                        <th><span th:text="#{boatSpaceReservation.title.payment}">Maksu</span></th>
+                        <th><span  th:text="#{boatSpaceReservation.title.startDate}">Varaus tehty</span></span>
+                            <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('START_DATE')}}">
+                              <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('START_DATE')})}"></div>
+                            </a>
+                        </th>
+                        <th><span th:text="#{boatSpaceReservation.title.endDate}">Varaus päättyy</span>
+                            <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('END_DATE')}}">
+                                <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('END_DATE')})}"></div>
+                            </a>
+                        </th>
+                        <th><span th:text="#{boatSpaceReservation.title.ownership}">Omistussuhde</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="reservation-item" th:id="'boat-space-' + ${result.boatSpaceId}" th:each="result : ${reservations}">
+                        <td th:text="${result.locationName}">Kivenlahti</td>
+                        <td th:text="${result.place}">A135</td>
+                        <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}">Laituripaikka</td>
+                        <td><a href="#"><span th:text="${result.firstName}">Veikko</span><br/><span th:text="${result.lastName}">Veneilijä</span></a></td>
+                        <td th:text="${result.homeTown}">Espoo</td>
+                        <td th:text="${result.boatRegistrationCode}">P567123</td>
+                        <td><!-- TODO payment date --></td>
+                        <td th:text="${#temporals.format(result.startDate, 'yyyy-MM-dd HH:mm')}">03.06.2024 14:56</td>
+                        <td th:text="${#temporals.format(result.endDate, 'yyyy-MM-dd HH:mm')}">01.02.2025</td>
+                        <td th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+   </div>
 </body>
 </html>

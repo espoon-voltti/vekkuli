@@ -286,3 +286,11 @@ form .subtitle:not(:last-child) {
     text-decoration: none;
   }
 }
+
+.tag-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-small;
+  justify-content: flex-start;
+}
