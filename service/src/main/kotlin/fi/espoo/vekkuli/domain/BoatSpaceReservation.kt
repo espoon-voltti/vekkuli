@@ -163,6 +163,7 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
 }
 
 data class BoatSpaceReservationItem(
+    val id: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -291,4 +292,32 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
     query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
     filter.bind(query)
     return query.mapTo<BoatSpaceReservationItem>().list()
+}
+
+fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationItem {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.*, 
+                   CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                   c.first_name, 
+                   c.last_name, 
+                   c.email, 
+                   c.phone, 
+                   '' as home_town,
+                   b.registration_code as boat_registration_code,
+                   b.ownership as boat_ownership,
+                   location.name as location_name, 
+                   bs.type, 
+                   CONCAT(bs.section, bs.place_number) as place
+            FROM boat_space_reservation bsr
+            JOIN boat b ON b.id = bsr.boat_id
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location.id = bs.location_id
+            WHERE bsr.id = :reservationId
+            """.trimIndent()
+        )
+    query.bind("reservationId", reservationId)
+    return query.mapTo<BoatSpaceReservationItem>().findOne().orElse(null)
 }
