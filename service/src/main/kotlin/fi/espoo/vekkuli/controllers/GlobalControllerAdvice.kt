@@ -34,18 +34,17 @@ class GlobalControllerAdvice
                 if (user != null) {
                     model.addAttribute("userName", "${user.firstName} ${user.lastName}")
                 }
-            } else if (authenticatedUser?.type == "employee")
-                {
-                    val user =
-                        authenticatedUser.let {
-                            jdbi.inTransactionUnchecked { tx ->
-                                tx.getAppUser(authenticatedUser.id)
-                            }
+            } else if (authenticatedUser?.type == "employee") {
+                val user =
+                    authenticatedUser.let {
+                        jdbi.inTransactionUnchecked { tx ->
+                            tx.getAppUser(authenticatedUser.id)
                         }
-
-                    if (user != null) {
-                        model.addAttribute("userName", "${user.firstName} ${user.lastName}")
                     }
+
+                if (user != null) {
+                    model.addAttribute("userName", "${user.firstName} ${user.lastName}")
                 }
+            }
         }
     }
