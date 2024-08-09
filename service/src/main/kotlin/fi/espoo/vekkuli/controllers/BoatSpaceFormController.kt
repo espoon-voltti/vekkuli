@@ -137,7 +137,7 @@ class BoatSpaceFormController {
                 jdbi.inTransactionUnchecked {
                     it.insertBoat(
                         citizen.id,
-                        input.boatRegistrationNumber!!,
+                        input.boatRegistrationNumber ?: "",
                         input.boatName!!,
                         input.width!!.mToCm(),
                         input.length!!.mToCm(),
@@ -220,22 +220,15 @@ class BoatSpaceFormController {
         model: Model,
         input: ReservationInput
     ): String {
-        val mockedUser =
-            // Todo: fetch real data here
-            user.copy(
-                address = "Miestentie 2 A 23",
-                postalCode = "02150",
-                municipality = "Espoo"
-            )
-
-        var boats =
+        val boats =
             jdbi.inTransactionUnchecked {
                 it.getBoatsForCitizen(user.id)
             }.map { boat ->
                 boat.updateBoatDisplayName(messageUtil)
             }
-        // Todo: do not calculate alv here
-        val calculatedAlv = reservation.price * 0.1
+
+        val calculatedAlv = reservation.price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100)
+
         val boatSpaceFront =
             object {
                 val type = reservation.type
@@ -248,7 +241,7 @@ class BoatSpaceFormController {
                 val harbor = reservation.locationName
                 val priceTotal = reservation.price
                 val priceAlv = calculatedAlv
-                val priceWithoutAlv = (reservation.price * 1.0) - calculatedAlv
+                val priceWithoutAlv = reservation.price.toDouble() - calculatedAlv
             }
 
         model.addAttribute(
@@ -260,46 +253,54 @@ class BoatSpaceFormController {
         model.addAttribute("input", input)
         model.addAttribute("boatSpace", boatSpaceFront)
         model.addAttribute("boats", boats)
-        model.addAttribute(
-            "user",
-            mockedUser
-        )
+        model.addAttribute("user", user)
 
         model.addAttribute(
             "showSizeWarning",
-            showBoatSizeWarning(input.width, input.length, reservation.amenity, reservation.widthCm.cmToM(), reservation.lengthCm.cmToM())
+            showBoatSizeWarning(
+                input.width?.mToCm(),
+                input.length?.mToCm(),
+                reservation.amenity,
+                reservation.widthCm,
+                reservation.lengthCm
+            )
         )
 
         return "boat-space-form"
     }
 
     private fun showBoatSizeWarning(
-        width: Double?,
-        length: Double?,
+        widthInCm: Int?,
+        lengthInCm: Int?,
         boatSpaceAmenity: BoatSpaceAmenity,
-        spaceWidth: Double,
-        spaceLength: Double
+        spaceWidthInCm: Int,
+        spaceLengthInCm: Int
     ): Boolean {
-        if (boatSpaceAmenity != BoatSpaceAmenity.Buoy && length != null && length > 15.0) {
+        if (boatSpaceAmenity != BoatSpaceAmenity.Buoy && lengthInCm != null && lengthInCm > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
             return true
         }
 
         when (boatSpaceAmenity) {
             BoatSpaceAmenity.Buoy, BoatSpaceAmenity.Beam -> {
-                val widthTooLarge = width != null && width + 0.4 > spaceWidth
-                val lengthTooLarge = length != null && length > spaceLength + 1.0
+                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val lengthTooLarge = lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
             }
+
             BoatSpaceAmenity.RearBuoy -> {
-                val widthTooLarge = width != null && width + 0.5 > spaceWidth
-                val lengthTooLarge = length != null && length > spaceLength - 3.0
+                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val lengthTooLarge =
+                    lengthInCm != null && lengthInCm > spaceLengthInCm - BoatSpaceConfig.REAR_BUOY_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
             }
+
             BoatSpaceAmenity.WalkBeam -> {
-                val widthTooLarge = width != null && width + 0.75 > spaceWidth
-                val lengthTooLarge = length != null && length > spaceLength + 1.0
+                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val lengthTooLarge =
+                    lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.WALK_BEAM_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
             }
+
             else -> {
                 return false
             }
@@ -308,7 +309,7 @@ class BoatSpaceFormController {
 
     private fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
         val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
-        return (BoatSpaceConfig.sessionTimeInSeconds - reservationTimePassed)
+        return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
     }
 }
 
@@ -329,15 +330,28 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Res
         value: ReservationInput,
         context: ConstraintValidatorContext
     ): Boolean {
+        var isValid = true
+
+        // If registration number is selected, it must be filled
         if (value.noRegistrationNumber != true && value.boatRegistrationNumber.isNullOrBlank()) {
             context.disableDefaultConstraintViolation()
             context
                 .buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate)
                 .addPropertyNode("boatRegistrationNumber")
                 .addConstraintViolation()
-            return false
+            isValid = false
         }
-        return true
+
+        // If no registration number is selected, other identification field must be filled
+        if (value.noRegistrationNumber == true && value.otherIdentification.isNullOrBlank()) {
+            context.disableDefaultConstraintViolation()
+            context
+                .buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate)
+                .addPropertyNode("otherIdentification")
+                .addConstraintViolation()
+            isValid = false
+        }
+        return isValid
     }
 }
 
@@ -363,7 +377,6 @@ data class ReservationInput(
     val noRegistrationNumber: Boolean?,
     val boatRegistrationNumber: String?,
     val boatName: String?,
-    @field:NotNull(message = "{validation.required}")
     val otherIdentification: String?,
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")

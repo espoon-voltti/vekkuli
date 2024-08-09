@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.utils.*
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
@@ -33,7 +34,7 @@ data class BoatSpaceOption(
     val price: Int,
     val locationName: String,
     val amenity: BoatSpaceAmenity,
-    val formattedSizes: String = "${widthCm / 100.0} x ${lengthCm / 100.0} m".replace('.', ',')
+    val formattedSizes: String = "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',')
 )
 
 data class BoatSpaceFilter(
@@ -52,8 +53,8 @@ fun beamFilter(
     AndExpr(
         listOf(
             OperatorExpr("amenity", "=", BoatSpaceAmenity.Beam),
-            OperatorExpr("width_cm", ">=", boatWidth?.plus(40)),
-            OperatorExpr("length_cm", ">=", boatLength?.minus(100))
+            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.BEAM_WIDTH_ADJUSTMENT_CM)),
+            OperatorExpr("length_cm", ">=", boatLength?.minus(BoatSpaceConfig.BEAM_LENGTH_ADJUSTMENT_CM))
         )
     )
 
@@ -64,8 +65,8 @@ fun walkBeamFilter(
     AndExpr(
         listOf(
             OperatorExpr("amenity", "=", BoatSpaceAmenity.WalkBeam),
-            OperatorExpr("width_cm", ">=", boatWidth?.plus(75)),
-            OperatorExpr("length_cm", ">=", boatLength?.minus(100))
+            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM)),
+            OperatorExpr("length_cm", ">=", boatLength?.minus(BoatSpaceConfig.WALK_BEAM_LENGTH_ADJUSTMENT_CM))
         )
     )
 
@@ -76,15 +77,15 @@ fun rearBuoyFilter(
     AndExpr(
         listOf(
             OperatorExpr("amenity", "=", BoatSpaceAmenity.RearBuoy),
-            OperatorExpr("width_cm", ">=", boatWidth?.plus(50)),
-            OperatorExpr("length_cm", ">=", boatLength?.plus(300))
+            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM)),
+            OperatorExpr("length_cm", ">=", boatLength?.plus(BoatSpaceConfig.REAR_BUOY_LENGTH_ADJUSTMENT_CM))
         )
     )
 
 fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
-    val amenitites = if (filter.amenities == null || filter.amenities.isEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
+    val amenities = if (filter.amenities.isNullOrEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
     return OrExpr(
-        amenitites.map {
+        amenities.map {
             when (it) {
                 BoatSpaceAmenity.None -> OperatorExpr("amenity", "=", BoatSpaceAmenity.None)
                 BoatSpaceAmenity.Beam -> beamFilter(filter.boatWidth, filter.boatLength)
@@ -119,12 +120,12 @@ class LocationExpr(
 }
 
 class LocationFilter(
-    private val locationIds: List<Int>,
+    locationIds: List<Int>,
     private val boatType: BoatType?
 ) : SqlExpr() {
     private val boatTypeVar: String? = if (boatType != null) "bs_${getNextIndex()}" else null
     private val expr =
-        if (!locationIds.isEmpty()) {
+        if (locationIds.isNotEmpty()) {
             OrExpr(locationIds.map { LocationExpr(it, boatTypeVar) })
         } else {
             EmptyExpr()
@@ -142,7 +143,7 @@ class LocationFilter(
 
 fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
     val amenityFilter =
-        if (params.boatLength != null && params.boatLength > 1500) {
+        if (params.boatLength != null && params.boatLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
             // Boats over 15 meters will only fit in buoys
             OperatorExpr(
                 "amenity",

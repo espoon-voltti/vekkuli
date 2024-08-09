@@ -12,25 +12,25 @@ VALUES ('ML1', 100.00),
        ('ML6', 290.00);
 
 -- Populate the location table with 7 different locations with made-up Finnish addresses
-INSERT INTO location (name, address)
-VALUES ('Haukilahti', 'Satamatie 1, Espoo'),
-       ('Kivenlahti', 'Kivenlahdentie 10, Espoo'),
-       ('Laajalahti', 'Laajalahdentie 5, Espoo'),
-       ('Otsolahti', 'Otsolahdentie 7, Espoo'),
-       ('Soukka', 'Soukantie 3, Espoo'),
-       ('Suomenoja', 'Suomenojantie 15, Espoo'),
-       ('Svinö', 'Svinöntie 8, Espoo');
+INSERT INTO location (id, name, address)
+VALUES (1, 'Haukilahti', 'Satamatie 1, Espoo'),
+       (2, 'Kivenlahti', 'Kivenlahdentie 10, Espoo'),
+       (3, 'Laajalahti', 'Laajalahdentie 5, Espoo'),
+       (4, 'Otsolahti', 'Otsolahdentie 7, Espoo'),
+       (5, 'Soukka', 'Soukantie 3, Espoo'),
+       (6, 'Suomenoja', 'Suomenojantie 15, Espoo'),
+       (7, 'Svinö', 'Svinöntie 8, Espoo');
 
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (1, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sailboat');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
-INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, email)
+INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, email, address, postal_code, municipality)
 VALUES
-    ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), '010106A957V', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi'),
-    ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', now(), '150499-911U', 'Leo', 'Korhonen', '0405623462', 'leo@noreplytest.fi'),
-    ('509edb00-5549-11ef-a1c7-776e76028a49', now(), '031298-988S', 'Olivia', 'Virtanen', '04083677348', 'olivia@noreplytest.fi');
+    ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), '010106A957V', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 'Helsinki'),
+    ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', now(), '150499-911U', 'Leo', 'Korhonen', '0405623462', 'leo@noreplytest.fi', '', '' , ''),
+    ('509edb00-5549-11ef-a1c7-776e76028a49', now(), '031298-988S', 'Olivia', 'Virtanen', '04083677348', 'olivia@noreplytest.fi', '', '' , '');
 
 INSERT INTO boat (registration_code, citizen_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
 VALUES
