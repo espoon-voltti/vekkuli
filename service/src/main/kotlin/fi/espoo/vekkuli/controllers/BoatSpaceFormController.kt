@@ -137,7 +137,7 @@ class BoatSpaceFormController {
                 jdbi.inTransactionUnchecked {
                     it.insertBoat(
                         citizen.id,
-                        input.boatRegistrationNumber!!,
+                        input.boatRegistrationNumber ?: "",
                         input.boatName!!,
                         input.width!!.mToCm(),
                         input.length!!.mToCm(),
@@ -267,7 +267,13 @@ class BoatSpaceFormController {
 
         model.addAttribute(
             "showSizeWarning",
-            showBoatSizeWarning(input.width, input.length, reservation.amenity, reservation.widthCm.cmToM(), reservation.lengthCm.cmToM())
+            showBoatSizeWarning(
+                input.width,
+                input.length,
+                reservation.amenity,
+                reservation.widthCm.cmToM(),
+                reservation.lengthCm.cmToM()
+            )
         )
 
         return "boat-space-form"
@@ -290,16 +296,19 @@ class BoatSpaceFormController {
                 val lengthTooLarge = length != null && length > spaceLength + 1.0
                 return widthTooLarge || lengthTooLarge
             }
+
             BoatSpaceAmenity.RearBuoy -> {
                 val widthTooLarge = width != null && width + 0.5 > spaceWidth
                 val lengthTooLarge = length != null && length > spaceLength - 3.0
                 return widthTooLarge || lengthTooLarge
             }
+
             BoatSpaceAmenity.WalkBeam -> {
                 val widthTooLarge = width != null && width + 0.75 > spaceWidth
                 val lengthTooLarge = length != null && length > spaceLength + 1.0
                 return widthTooLarge || lengthTooLarge
             }
+
             else -> {
                 return false
             }
@@ -329,15 +338,28 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Res
         value: ReservationInput,
         context: ConstraintValidatorContext
     ): Boolean {
+        var isValid = true
+
+        // If registration number is selected, it must be filled
         if (value.noRegistrationNumber != true && value.boatRegistrationNumber.isNullOrBlank()) {
             context.disableDefaultConstraintViolation()
             context
                 .buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate)
                 .addPropertyNode("boatRegistrationNumber")
                 .addConstraintViolation()
-            return false
+            isValid = false
         }
-        return true
+
+        // If no registration number is selected, other identification field must be filled
+        if (value.noRegistrationNumber == true && value.otherIdentification.isNullOrBlank()) {
+            context.disableDefaultConstraintViolation()
+            context
+                .buildConstraintViolationWithTemplate(context.defaultConstraintMessageTemplate)
+                .addPropertyNode("otherIdentification")
+                .addConstraintViolation()
+            isValid = false
+        }
+        return isValid
     }
 }
 
@@ -363,7 +385,6 @@ data class ReservationInput(
     val noRegistrationNumber: Boolean?,
     val boatRegistrationNumber: String?,
     val boatName: String?,
-    @field:NotNull(message = "{validation.required}")
     val otherIdentification: String?,
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
