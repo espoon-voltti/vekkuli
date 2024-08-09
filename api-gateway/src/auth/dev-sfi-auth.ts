@@ -34,13 +34,22 @@ const devUsers: CitizenUser[] = [
     nationalId: '150499-911U',
     firstName: 'Leo',
     lastName: 'Korhonen',
-    homeTown: 49
+    postalCode: '00370',
+    address: { fi: 'Ahertajankuja 1', sv: 'Flitargränden 1' },
+    town: { fi: 'Espoo', sv: 'Esbo' }
+    // homeTown: 49,
   },
   {
     nationalId: '031298-988S',
     firstName: 'Olivia',
     lastName: 'Virtanen',
-    homeTown: 49
+    postalCode: '02130',
+    address: {
+      fi: 'Hämeenkyläntie 2B 56',
+      sv: 'Tavastbyvägen 2B 56'
+    },
+    town: { fi: 'Espoo', sv: 'Esbo' }
+    // homeTown: 49,
   }
 ]
 

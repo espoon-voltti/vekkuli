@@ -220,15 +220,7 @@ class BoatSpaceFormController {
         model: Model,
         input: ReservationInput
     ): String {
-        val mockedUser =
-            // Todo: fetch real data here
-            user.copy(
-                address = "Miestentie 2 A 23",
-                postalCode = "02150",
-                municipality = "Espoo"
-            )
-
-        var boats =
+        val boats =
             jdbi.inTransactionUnchecked {
                 it.getBoatsForCitizen(user.id)
             }.map { boat ->
@@ -260,10 +252,7 @@ class BoatSpaceFormController {
         model.addAttribute("input", input)
         model.addAttribute("boatSpace", boatSpaceFront)
         model.addAttribute("boats", boats)
-        model.addAttribute(
-            "user",
-            mockedUser
-        )
+        model.addAttribute("user", user)
 
         model.addAttribute(
             "showSizeWarning",
