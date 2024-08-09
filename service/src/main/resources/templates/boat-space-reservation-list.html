@@ -67,10 +67,20 @@
                         <td><a href="#"><span th:text="${result.firstName}">Veikko</span><br/><span th:text="${result.lastName}">Veneilijä</span></a></td>
                         <td th:text="${result.homeTown}">Espoo</td>
                         <td th:text="${result.boatRegistrationCode}">P567123</td>
-                        <td><!-- TODO payment date --></td>
+                        <td><!-- TODO payment date and warning --></td>
                         <td th:text="${#temporals.format(result.startDate, 'yyyy-MM-dd HH:mm')}">03.06.2024 14:56</td>
                         <td th:text="${#temporals.format(result.endDate, 'yyyy-MM-dd HH:mm')}">01.02.2025</td>
-                        <td th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</td>
+                        <td class="has-text-centered">
+                        <div class="is-flex is-align-items-center is-justify-content-center">
+                            <p th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</p>
+                            <span class="icon ml-s" >
+                                <div th:if="${result.showOwnershipWarning}">
+                                <div th:replace="~{fragments/icons :: warning-exclamation}"></div>
+                                    </div>
+                            </span>
+                        </div>
+                    </td>
+
                     </tr>
                 </tbody>
             </table>
