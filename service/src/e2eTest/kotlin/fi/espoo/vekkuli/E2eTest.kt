@@ -13,7 +13,7 @@ class E2eTest : PlaywrightTest() {
     fun listingReservations() {
         try {
             page.navigate(baseUrl + "/virkailija")
-            page.getByTestId("loginButton").click()
+            page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
 
             val listingPage = ReservationListPage(page)

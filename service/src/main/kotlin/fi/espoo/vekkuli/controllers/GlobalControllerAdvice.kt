@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.getCitizen
 import jakarta.servlet.http.HttpServletRequest
@@ -21,9 +22,30 @@ class GlobalControllerAdvice
         ) {
             val authenticatedUser = request.getAuthenticatedUser()
             model.addAttribute("isAuthenticated", authenticatedUser != null)
-            val user = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
-            if (user != null) {
-                model.addAttribute("userName", "${user.firstName} ${user.lastName}")
-            }
+
+            if (authenticatedUser?.type == "citizen") {
+                val user =
+                    authenticatedUser.let {
+                        jdbi.inTransactionUnchecked { tx ->
+                            tx.getCitizen(authenticatedUser.id)
+                        }
+                    }
+
+                if (user != null) {
+                    model.addAttribute("userName", "${user.firstName} ${user.lastName}")
+                }
+            } else if (authenticatedUser?.type == "employee")
+                {
+                    val user =
+                        authenticatedUser.let {
+                            jdbi.inTransactionUnchecked { tx ->
+                                tx.getAppUser(authenticatedUser.id)
+                            }
+                        }
+
+                    if (user != null) {
+                        model.addAttribute("userName", "${user.firstName} ${user.lastName}")
+                    }
+                }
         }
     }
