@@ -277,7 +277,7 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location_id = location.id
             WHERE
-              (bsr.status != 'Info' 
+              (bsr.status = 'Confirmed' 
                 OR
               bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds))
             AND ${filter.toSql().ifBlank { "true" }}
