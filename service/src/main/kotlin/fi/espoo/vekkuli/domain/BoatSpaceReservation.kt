@@ -177,8 +177,11 @@ data class BoatSpaceReservationItem(
     val place: String,
     val locationName: String,
     val boatRegistrationCode: String?,
-    val boatOwnership: OwnershipStatus?
-)
+    val boatOwnership: OwnershipStatus?,
+) {
+    val showOwnershipWarning: Boolean
+        get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
+}
 
 enum class BoatSpaceFilterColumn {
     START_DATE,
