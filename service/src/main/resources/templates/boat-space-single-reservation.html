@@ -1,16 +1,72 @@
-<!-- SPDX-FileCopyrightText: 2023-2024 City of Espoo -->
-<!-- -->
-<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
-
+<html layout:decorate="~{layout}">
 <head>
-    <title>Venepaikan tiedot ja varaus</title>
+    <title th:text="#{boatApplication.applyForBoatSpace}"></title>
 </head>
+
+<body layout:fragment="body">
+
 <section class="section">
     <div class="container">
-        <h1 class="title">Vekkuli</h1>
-        <h2 class="subtitle">Venepaikan tiedot</h2>
 
-    </div>
-</section>
-</body>
+        <div class="box">
+            <button class="icon-text">
+                <span class="icon">
+                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+            </span>
+                <span th:text="#{boatSpaces.goBack}">Takaisin</span>
+            </button>
+            <h2 th:text="|${reservation.firstName} ${reservation.lastName}|"></h2>
+        </div>
+        <div class="box">
+            <div class="columns">
+                <div class="column is-narrow">
+                    <h3 th:text="#{boatSpaceReservation.title.customerInformation}">Asiakkaan tiedot</h3>
+                </div>
+                <div class="column">
+                    <a class="is-small is-link">
+                        <span class="icon ml-s" >
+                                <div th:replace="~{fragments/icons :: letter}"></div>
+                            </span>
+                        <span>Lähetä viesti</span>
+                    </a>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <div class="field">
+                        <label class="label" th:for="boatType"
+                               th:text="#{boatSpaceReservation.title.name}">Nimi</label>
+                        <p th:text="|${reservation.firstName} ${reservation.lastName}|">Pate Paatti</p>
+                    </div>
+                    <div class="field">
+                        <label class="label" th:for="boatType"
+                               th:text="#{boatSpaceReservation.title.address}">Kotiosoite</label>
+                        <p th:text="|${reservation.address} ${reservation.postalCode}|">Vuorimiehentie 2 A 23 02150</p>
+                    </div>
+                    <div class="field">
+                        <label class="label" th:for="boatType"
+                               th:text="#{boatSpaceReservation.title.email}">Sähköposti</label>
+                        <p th:text="${reservation.email}">patepaatti@gmail.com</p>
+                    </div>
+
+                </div>
+                <div class="column">
+                    <div class="field">
+                        <label class="label" th:for="boatType"
+                               th:text="#{boatSpaceReservation.title.ssn}">Henkilötunnus</label>
+                        <p th:text="${reservation.nationalId}">090990-123Y</p>
+                    </div>
+                    <div class="field">
+                        <label class="label" th:for="boatType"
+                               th:text="#{boatSpaceReservation.title.municipality}">Kotikunta</label>
+                        <p th:text="${reservation.municipality}">Espoo</p>
+                    </div>
+                    <div class="field">
+                        <label class="label" th:for="boatType"
+                               th:text="#{boatSpaceReservation.title.phoneNumber}">Puhelinnumero</label>
+                        <p th:text="${reservation.phone}">0450992354</p>
+                    </div>
+                </div>
+            </div>
+    </body>
 </html>

@@ -171,9 +171,13 @@ data class BoatSpaceReservationItem(
     val citizenId: UUID,
     val firstName: String,
     val lastName: String,
+    val nationalId: String,
     val homeTown: String,
     val email: String,
     val phone: String,
+    val address: String?,
+    val postalCode: String?,
+    val municipality: String?,
     val type: BoatSpaceType,
     val place: String,
     val locationName: String,
@@ -270,22 +274,13 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
     val query =
         createQuery(
             """
-            SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as full_name, c.first_name, c.last_name, c.email, c.phone, '' as home_town,
-                b.registration_code as boat_registration_code,
-                b.ownership as boat_ownership,
-                location.name as location_name, 
-                bs.type, CONCAT(bs.section, bs.place_number) as place
-            FROM boat_space_reservation bsr
-            JOIN boat b on b.id = bsr.boat_id
-            JOIN citizen c ON bsr.citizen_id = c.id 
-            JOIN boat_space bs ON bsr.boat_space_id = bs.id
-            JOIN location ON location_id = location.id
-            WHERE
-              (bsr.status = 'Confirmed' 
-                OR
-              bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds))
-            AND ${filter.toSql().ifBlank { "true" }}
-            ${getSortingSql(params)}
+            ${getReservationDetails()}
+             WHERE
+               (bsr.status = 'Confirmed' 
+                 OR
+               bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds))
+             AND ${filter.toSql().ifBlank { "true" }}
+             ${getSortingSql(params)}
             """.trimIndent()
         )
 
@@ -298,12 +293,25 @@ fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationItem
     val query =
         createQuery(
             """
-            SELECT bsr.*, 
+            ${getReservationDetails()}
+            WHERE bsr.id = :reservationId
+            """.trimIndent()
+        )
+    query.bind("reservationId", reservationId)
+    return query.mapTo<BoatSpaceReservationItem>().findOne().orElse(null)
+}
+
+private fun getReservationDetails() =
+    """SELECT bsr.*, 
                    CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                    c.first_name, 
                    c.last_name, 
                    c.email, 
-                   c.phone, 
+                   c.phone,
+                   c.national_id,
+                   c.address,
+                   c.postal_code,
+                   c.municipality,
                    '' as home_town,
                    b.registration_code as boat_registration_code,
                    b.ownership as boat_ownership,
@@ -314,10 +322,4 @@ fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationItem
             JOIN boat b ON b.id = bsr.boat_id
             JOIN citizen c ON bsr.citizen_id = c.id 
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
-            JOIN location ON location.id = bs.location_id
-            WHERE bsr.id = :reservationId
-            """.trimIndent()
-        )
-    query.bind("reservationId", reservationId)
-    return query.mapTo<BoatSpaceReservationItem>().findOne().orElse(null)
-}
+            JOIN location ON location.id = bs.location_id"""
