@@ -293,4 +293,9 @@ form .subtitle:not(:last-child) {
   flex-wrap: wrap;
   gap: $spacing-small;
   justify-content: flex-start;
+
+  .icon {
+    stroke: $white;
+  }
 }
+
