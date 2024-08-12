@@ -290,6 +290,14 @@ form .subtitle:not(:last-child) {
   }
 }
 
+.tag-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-small;
+  justify-content: flex-start;
+}
+
 .dropdown-content {
   border: 1px solid #A9B0BB;
   border-top: 0;
