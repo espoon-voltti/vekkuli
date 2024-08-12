@@ -287,6 +287,23 @@ form .subtitle:not(:last-child) {
   }
 }
 
+.reservation-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-large;
+
+  .add-reservation {
+    display: flex;
+    align-items: center;
+    gap: $spacing-small;
+  }
+  
+  .label {
+    color: $bulma-primary;
+  }
+}
+
 .tag-container {
   align-items: center;
   display: flex;

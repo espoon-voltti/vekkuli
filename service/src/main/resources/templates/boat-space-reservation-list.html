@@ -4,6 +4,20 @@
 </head>
 <body layout:fragment="body">
    <div class="section">
+       <div class="block reservation-list-header">
+           <div class="control has-icons-left">
+               <input class="input" type="text" />
+               <span class="icon is-small is-left">
+                   <div th:replace="~{fragments/icons :: search}"></div>
+               </span>
+           </div>
+           <div class="add-reservation">
+               <span class="icon is-large">
+                   <div th:replace="~{fragments/icons :: plus-round}"></div>
+               </span>
+               <span class="label">Luo varaus</span>
+           </div>
+       </div>
         <div class="block">
             <h1 class="label" th:text="#{boatSpaceReservation.title.harbor}">Satama</h1>
             <div class="tag-container">
