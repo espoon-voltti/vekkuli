@@ -30,7 +30,8 @@ INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, ema
 VALUES
     ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), '010106A957V', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 'Helsinki'),
     ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', now(), '150499-911U', 'Leo', 'Korhonen', '0405623462', 'leo@noreplytest.fi', '', '' , ''),
-    ('509edb00-5549-11ef-a1c7-776e76028a49', now(), '031298-988S', 'Olivia', 'Virtanen', '04083677348', 'olivia@noreplytest.fi', '', '' , '');
+    ('509edb00-5549-11ef-a1c7-776e76028a49', now(), '031298-988S', 'Olivia', 'Virtanen', '04083677348', 'olivia@noreplytest.fi', '', '' , '')
+ON CONFLICT (national_id) DO NOTHING;
 
 INSERT INTO boat (registration_code, citizen_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
 VALUES
