@@ -7,7 +7,7 @@
         <div class="block">
             <h1 class="label" th:text="#{boatSpaceReservation.title.harbor}">Satama</h1>
             <div class="tag-container">
-                <a th:each="harbor : ${harbors}" class="button is-rounded is-primary is-outlined" th:id="'harbor-' + ${harbor.id}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleHarbor(harbor.id)}}">
+                <a th:each="harbor : ${harbors}" th:class="'button is-rounded is-primary ' + ${not params.hasHarbor(harbor.id) ? 'is-outlined' : ''}" th:id="'harbor-' + ${harbor.id}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleHarbor(harbor.id)}}">
                     <span class="icon is-small" th:if="${params.hasHarbor(harbor.id)}">
                       <div th:replace="~{fragments/icons :: check}"></div>
                     </span>
@@ -18,8 +18,8 @@
         <div class="block">
             <h1 class="label" th:text="#{boatSpaceReservation.title.amenity}">Paikan varuste</h1>
             <div class="tag-container">
-                <a th:each="amenity : ${amenities}" class="button is-rounded is-primary is-outlined" th:id="'amenity-' + ${amenity.toString()}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleAmenity(amenity)}}">
-                    <span class="icon is-small" th:if="${params.hasAmenity(amenity)}">
+                <a th:each="amenity : ${amenities}" th:class="'button is-rounded is-primary ' + ${not params.hasAmenity(amenity) ? 'is-outlined' : ''}" th:id="'amenity-' + ${amenity.toString()}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleAmenity(amenity)}}">
+                    <span class="icon is-small" style="stroke: white" th:if="${params.hasAmenity(amenity)}">
                       <div th:replace="~{fragments/icons :: check}"></div>
                     </span>
                     <span th:text="#{${'boatSpaces.amenityOption.' + amenity}}">Buoy</span>
