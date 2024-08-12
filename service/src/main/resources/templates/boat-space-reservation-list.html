@@ -5,7 +5,7 @@
 <body layout:fragment="body">
    <div class="section">
         <div class="block">
-            <h1>Satama</h1>
+            <h1 class="label" th:text="#{boatSpaceReservation.title.harbor}">Satama</h1>
             <div class="tag-container">
                 <a th:each="harbor : ${harbors}" class="button is-rounded is-primary is-outlined" th:id="'harbor-' + ${harbor.id}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleHarbor(harbor.id)}}">
                     <span class="icon is-small" th:if="${params.hasHarbor(harbor.id)}">
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="block">
-            <h1>Paikan varuste</h1>
+            <h1 class="label" th:text="#{boatSpaceReservation.title.amenity}">Paikan varuste</h1>
             <div class="tag-container">
                 <a th:each="amenity : ${amenities}" class="button is-rounded is-primary is-outlined" th:id="'amenity-' + ${amenity.toString()}" th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleAmenity(amenity)}}">
                     <span class="icon is-small" th:if="${params.hasAmenity(amenity)}">
