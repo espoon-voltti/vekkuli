@@ -20,6 +20,7 @@ $block-spacing: $spacing-medium;
   $icon-text-spacing: $spacing-small,
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
+  $box-radius: 0,
 );
 
 // Custom styles
@@ -285,6 +286,7 @@ form .subtitle:not(:last-child) {
 
   a {
     text-decoration: none;
+    color: $grey;
   }
 }
 
