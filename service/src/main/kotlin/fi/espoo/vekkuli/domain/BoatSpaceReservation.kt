@@ -6,6 +6,7 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.InExpr
+import fi.espoo.vekkuli.utils.cmToM
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import java.time.LocalDate
@@ -162,7 +163,57 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
     return query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
 }
 
+data class BoatSpaceReservationDetails(
+    val id: Int,
+    val price: Double,
+    val boatSpaceId: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val status: ReservationStatus,
+    val fullName: String,
+    val firstName: String,
+    val lastName: String,
+    val nationalId: String,
+    val homeTown: String,
+    val email: String,
+    val phone: String,
+    val address: String?,
+    val postalCode: String?,
+    val municipality: String?,
+    val type: BoatSpaceType,
+    val place: String,
+    val locationName: String,
+    val registrationCode: String?,
+    val boatOwnership: OwnershipStatus?,
+    val boatRegistrationCode: String?,
+    val boatName: String?,
+    val boatWidthCm: Int,
+    val boatLengthCm: Int,
+    val boatWeightKg: Int,
+    val boatDepthCm: Int,
+    val boatType: BoatType,
+    val boatOtherIdentification: String?,
+    val boatExtraInformation: String?,
+    val boatSpaceLengthCm: Int,
+    val boatSpaceWidthCm: Int,
+    val amenity: BoatSpaceAmenity,
+) {
+    val boatLengthInM: Double
+        get() = boatLengthCm.cmToM()
+    val boatWidthInM: Double
+        get() = boatWidthCm.cmToM()
+    val boatDepthInM: Double
+        get() = boatDepthCm.cmToM()
+    val boatSpaceLengthInM: Double
+        get() = boatSpaceLengthCm.cmToM()
+    val boatSpaceWidthInM: Double
+        get() = boatSpaceWidthCm.cmToM()
+    val showOwnershipWarning: Boolean
+        get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
+}
+
 data class BoatSpaceReservationItem(
+    val id: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -291,4 +342,56 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
     query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
     filter.bind(query)
     return query.mapTo<BoatSpaceReservationItem>().list()
+}
+
+fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.id,
+                   bsr.start_date,
+                   bsr.end_date,
+                   bsr.created,
+                   bsr.updated,
+                   bsr.status,
+                   bsr.boat_space_id,
+                   CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                   c.first_name, 
+                   c.last_name, 
+                   c.email, 
+                   c.phone,
+                   c.national_id,
+                   c.address,
+                   c.postal_code,
+                   c.municipality,
+                   '' as home_town,
+                   b.registration_code as boat_registration_code,
+                   b.ownership as boat_ownership,
+                   b.id as boat_id,
+                   b.name as boat_name,
+                   b.width_cm as boat_width_cm,
+                   b.length_cm as boat_length_cm,
+                   b.weight_kg as boat_weight_kg,
+                   b.depth_cm as boat_depth_cm,
+                   b.type as boat_type,
+                   b.other_identification as boat_other_identification,
+                   b.extra_information as boat_extra_information,
+                   location.name as location_name, 
+                   bs.type,
+                    bs.length_cm as boat_space_length_cm,
+                    bs.width_cm as boat_space_width_cm,
+                    bs.amenity,
+                   price.price as price,
+                   CONCAT(bs.section, bs.place_number) as place
+            FROM boat_space_reservation bsr
+            JOIN boat b ON b.id = bsr.boat_id
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location.id = bs.location_id
+            JOIN price ON price_id = price.id
+            WHERE bsr.id = :reservationId
+            """.trimIndent()
+        )
+    query.bind("reservationId", reservationId)
+    return query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
 }
