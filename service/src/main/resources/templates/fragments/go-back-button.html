@@ -1,0 +1,11 @@
+<button
+        th:fragment="goBack"
+        class="icon-text"
+        type="button"
+        id="size-warning-back-button"
+        x-on:click="modalOpen = true">
+                            <span class="icon">
+                                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+                            </span>
+    <span th:text="#{boatSpaces.goBack}">Takaisin</span>
+</button>
