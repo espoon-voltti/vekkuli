@@ -1,4 +1,5 @@
 $bulma-primary: #0047B6;
+$light-blue: #D9E4F4;
 $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
@@ -21,6 +22,7 @@ $block-spacing: $spacing-medium;
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
   $box-radius: 0,
+  $table-row-hover-background-color: $light-blue,
   $navbar-item-img-max-height: 107px,
   $dropdown-content-radius: 0,
   $dropdown-content-shadow: none,
