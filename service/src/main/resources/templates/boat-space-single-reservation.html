@@ -44,13 +44,13 @@
 						<div class="field">
 							<label class="label" th:for="boatType"
 							       th:text="#{boatSpaceReservation.title.address}">Kotiosoite</label>
-							<p th:text="|${reservation.address} ${reservation.postalCode}|">Vuorimiehentie 2 A 23
+							<p th:text="|${reservation.address ?: '-'} ${reservation.postalCode}|">Vuorimiehentie 2 A 23
 								02150</p>
 						</div>
 						<div class="field">
 							<label class="label" th:for="boatType"
 							       th:text="#{boatSpaceReservation.title.email}">Sähköposti</label>
-							<p th:text="${reservation.email}">patepaatti@gmail.com</p>
+							<p th:text="${reservation.email ?: '-'}">patepaatti@gmail.com</p>
 						</div>
 					</div>
 					<div class="column is-one-quarter">
@@ -62,12 +62,12 @@
 						<div class="field">
 							<label class="label" th:for="boatType"
 							       th:text="#{boatSpaceReservation.title.municipality}">Kotikunta</label>
-							<p th:text="${reservation.municipality}">Espoo</p>
+							<p th:text="${reservation.municipality ?: '-'}">Espoo</p>
 						</div>
 						<div class="field">
 							<label class="label" th:for="boatType"
 							       th:text="#{boatSpaceReservation.title.phoneNumber}">Puhelinnumero</label>
-							<p th:text="${reservation.phone}">0450992354</p>
+							<p th:text="${reservation.phone ?: '-'}">0450992354</p>
 						</div>
 					</div>
 				</div>
@@ -111,7 +111,7 @@
 					</div>
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.width}">Leveys (m)</label>
-						<p th:text="${reservation.boatWidthInM}">3,50</p>
+						<p th:text="${reservation.boatSpaceWidthInM}">3,50</p>
 					</div>
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.reservationDate}">Varaus
@@ -126,7 +126,7 @@
 					</div>
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.length}">Pituus (m)</label>
-						<p th:text="${reservation.boatLengthInM}">9,50</p>
+						<p th:text="${reservation.boatSpaceLengthInM}">9,50</p>
 					</div>
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.contractValidity}">Sopimus
@@ -137,7 +137,7 @@
 				<div class="column">
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.placeType}">Paikan tyyppi</label>
-						<p th:text="${reservation.type.toString()}">Laituripaikka</p>
+						<p th:text="#{${'boatSpaces.typeOption.' + reservation.type.toString()}}">Laituripaikka</p>
 					</div>
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.payment}">Maksu</label>
@@ -146,13 +146,14 @@
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.boatPresent}">Paikalla oleva
 							vene</label>
-						<p th:text="${reservation.boatName}">Vene 1: Vivados</p>
+						<p th:text="${reservation.boatName}"
+						>Vene 1: Vivados</p>
 					</div>
 				</div>
 				<div class="column">
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.equipment}">Varuste</label>
-						<p th:text="${reservation.type.toString()}">Kävelyaisa</p>
+						<p th:text="#{${'boatSpaces.amenityOption.' + reservation.amenity.toString()}}">Kävelyaisa</p>
 					</div>
 					<div class="field">
 						<label class="label" th:text="#{boatSpaceReservation.title.paid}">Maksettu</label>

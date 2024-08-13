@@ -194,6 +194,9 @@ data class BoatSpaceReservationDetails(
     val boatType: BoatType,
     val boatOtherIdentification: String?,
     val boatExtraInformation: String?,
+    val boatSpaceLengthCm: Int,
+    val boatSpaceWidthCm: Int,
+    val amenity: BoatSpaceAmenity,
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
@@ -201,6 +204,10 @@ data class BoatSpaceReservationDetails(
         get() = boatWidthCm.cmToM()
     val boatDepthInM: Double
         get() = boatDepthCm.cmToM()
+    val boatSpaceLengthInM: Double
+        get() = boatSpaceLengthCm.cmToM()
+    val boatSpaceWidthInM: Double
+        get() = boatSpaceWidthCm.cmToM()
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
 }
@@ -370,7 +377,10 @@ fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDeta
                    b.other_identification as boat_other_identification,
                    b.extra_information as boat_extra_information,
                    location.name as location_name, 
-                   bs.type, 
+                   bs.type,
+                    bs.length_cm as boat_space_length_cm,
+                    bs.width_cm as boat_space_width_cm,
+                    bs.amenity,
                    price.price as price,
                    CONCAT(bs.section, bs.place_number) as place
             FROM boat_space_reservation bsr
