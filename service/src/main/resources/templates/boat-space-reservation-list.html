@@ -4,6 +4,26 @@
 </head>
 <body layout:fragment="body">
    <div class="section">
+       <div class="block reservation-list-header">
+           <div class="field">
+               <p class="control has-icons-left has-icons-right">
+                   <input class="input search-input" type="text" />
+                   <span class="icon is-small is-left">
+                       <div th:replace="~{fragments/icons :: search}"></div>
+                   </span>
+                   <span class="icon is-small is-right">
+                       <div th:replace="~{fragments/icons :: cross}"></div>
+                   </span>
+               </p>
+           </div>
+
+           <a class="add-reservation" th:href="@{'/virkailija/venepaikat/varaukset/luo'}">
+               <span class="icon is-large">
+                   <div th:replace="~{fragments/icons :: plus-round}"></div>
+               </span>
+               <span class="label">Luo varaus</span>
+           </a>
+       </div>
         <div class="block">
             <h1 class="label" th:text="#{boatSpaceReservation.title.harbor}">Satama</h1>
             <div class="tag-container">

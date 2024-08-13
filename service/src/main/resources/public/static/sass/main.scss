@@ -2,6 +2,7 @@ $bulma-primary: #0047B6;
 $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
+$lightGray: #F7F7F7;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
@@ -286,6 +287,30 @@ form .subtitle:not(:last-child) {
   a {
     text-decoration: none;
     color: $grey;
+  }
+}
+
+.reservation-list-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-large;
+
+  .add-reservation {
+    display: flex;
+    align-items: center;
+    gap: $spacing-small;
+  }
+  
+  .label {
+    color: $bulma-primary;
+  }
+
+  .search-input {
+    background-color: $lightGray;
+    border: none;
+    width: 564px;
   }
 }
 
