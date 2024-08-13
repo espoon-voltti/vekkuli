@@ -18,7 +18,7 @@ class BoatSpaceReservationController {
     lateinit var jdbi: Jdbi
 
     @GetMapping("/varaukset")
-    fun boatSpaceSearchPage(
+    fun reservationSearchPage(
         request: HttpServletRequest,
         @ModelAttribute params: BoatSpaceReservationFilter,
         model: Model
@@ -38,4 +38,11 @@ class BoatSpaceReservationController {
         model.addAttribute("amenities", BoatSpaceAmenity.entries.toList())
         return "boat-space-reservation-list"
     }
+
+    @GetMapping("/varaukset/luo")
+    fun reservationCreatePage(
+        request: HttpServletRequest,
+        @ModelAttribute params: BoatSpaceReservationFilter,
+        model: Model
+    ): String = "boat-space-reservation-create"
 }

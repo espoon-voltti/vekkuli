@@ -11,12 +11,12 @@
                    <div th:replace="~{fragments/icons :: search}"></div>
                </span>
            </div>
-           <div class="add-reservation">
+           <a class="add-reservation" th:href="@{'/virkailija/venepaikat/varaukset/luo'}">
                <span class="icon is-large">
                    <div th:replace="~{fragments/icons :: plus-round}"></div>
                </span>
                <span class="label">Luo varaus</span>
-           </div>
+           </a>
        </div>
         <div class="block">
             <h1 class="label" th:text="#{boatSpaceReservation.title.harbor}">Satama</h1>
