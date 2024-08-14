@@ -42,6 +42,21 @@ $block-spacing: $spacing-medium;
   border-color: $bulma-primary;
   color: $bulma-primary;
 }
+html, body {
+  min-height: 100%;
+}
+
+body{
+  background: $lightGray;
+}
+
+.container {
+  background: $white;
+  padding: $spacing-large;
+}
+.section {
+  padding-top: $spacing-medium;
+}
 
 h2 {
   /* font-family: Lato; */
