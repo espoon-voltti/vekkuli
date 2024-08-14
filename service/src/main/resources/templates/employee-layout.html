@@ -15,7 +15,8 @@
             <div class="menu-container">
                 <p class="menu-label" th:text="#{menu.marineOutdoor}">Merellinen ulkoilu</p>
                 <ul class="menu-list">
-                    <li><a th:text="#{menu.boatSpaceReservations}">Venepaikkavaraukset</a></li>
+                    <li><a href="/virkailija/venepaikat/varaukset" th:text="#{menu.boatSpaceReservations}">
+                        Venepaikkavaraukset</a></li>
                 </ul>
             </div>
             <div class="block" th:if="${!isAuthenticated}">
