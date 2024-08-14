@@ -155,7 +155,7 @@ class BoatSpaceFormController {
                         Boat(
                             id = input.boatId,
                             citizenId = citizen.id,
-                            registrationCode = input.boatRegistrationNumber!!,
+                            registrationCode = input.boatRegistrationNumber ?: "",
                             name = input.boatName!!,
                             widthCm = input.width!!.mToCm(),
                             lengthCm = input.length!!.mToCm(),
