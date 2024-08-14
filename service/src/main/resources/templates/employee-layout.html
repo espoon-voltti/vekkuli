@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html class="theme-light">
+<head>
+    <title>Vekkuli</title>
+    <th:block th:insert="~{fragments/head :: headResources}"></th:block>
+</head>
+<body>
+<div class="columns">
+    <div class="column is-one-fifth">
+        <aside class="menu container">
+
+            <p class="menu-label">
+                <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+            </p>
+            <div class="menu-container">
+                <p class="menu-label" th:text="#{menu.marineOutdoor}">Merellinen ulkoilu</p>
+                <ul class="menu-list">
+                    <li><a th:text="#{menu.boatSpaceReservations}">Venepaikkavaraukset</a></li>
+                </ul>
+            </div>
+            <div class="block" th:if="${!isAuthenticated}">
+                <a id="employeeLoginButton" th:text="#{auth.login}"
+                   href="/auth/saml/login">Login</a>
+            </div>
+            <div class="block" th:if="${isAuthenticated}">
+                <a th:text="#{auth.logout}" href="/auth/saml/logout">Logout</a>
+            </div>
+        </aside>
+    </div>
+
+    <div class="column">
+        <div layout:fragment="body"></div>
+    </div>
+</div>
+</body>
+</html>
