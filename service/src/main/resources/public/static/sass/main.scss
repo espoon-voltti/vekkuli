@@ -347,8 +347,8 @@ form .subtitle:not(:last-child) {
 .dropdown-content {
   border: 1px solid #A9B0BB;
   border-top: 0;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding-left: $spacing-extralarge;
+  padding-right: $spacing-extralarge;
 }
 
 .dropdown-item{
