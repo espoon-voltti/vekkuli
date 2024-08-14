@@ -2,6 +2,8 @@ import com.github.gradle.node.npm.task.NpxTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
+val ktorVersion: String by project
+
 plugins {
     id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
@@ -10,7 +12,7 @@ plugins {
     id("org.flywaydb.flyway") version "10.12.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.0.2"
-
+    kotlin("plugin.serialization") version "2.0.0"
     idea
 }
 node {
@@ -55,6 +57,15 @@ dependencies {
     // cve fixes
     api("org.yaml:snakeyaml:2.2")
 
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
+    implementation("org.reactivestreams:reactive-streams:1.0.3")
+    implementation("io.ktor:ktor-client-serialization:2.0.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation("io.ktor:ktor-client-content-negotiation:2.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     api("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -122,8 +133,7 @@ tasks.register("resolveDependencies") {
             .map {
                 val files = it.resolve()
                 it.name to files.size
-            }
-            .groupBy({ (_, count) -> count }) { (name, _) -> name }
+            }.groupBy({ (_, count) -> count }) { (name, _) -> name }
             .forEach { (count, names) ->
                 println(
                     "Resolved $count dependency files for configurations: ${names.joinToString(", ")}"
