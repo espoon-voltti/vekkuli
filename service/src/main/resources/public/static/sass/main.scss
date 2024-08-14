@@ -21,6 +21,9 @@ $block-spacing: $spacing-medium;
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
   $box-radius: 0,
+  $navbar-item-img-max-height: 107px,
+  $dropdown-content-radius: 0,
+  $dropdown-content-shadow: none,
 );
 
 // Custom styles
@@ -38,6 +41,21 @@ $block-spacing: $spacing-medium;
   background-color: $white;
   border-color: $bulma-primary;
   color: $bulma-primary;
+}
+html, body {
+  min-height: 100%;
+}
+
+body{
+  background: $lightGray;
+}
+
+.container {
+  background: $white;
+  padding: $spacing-large;
+}
+.section {
+  padding-top: $spacing-medium;
 }
 
 h2 {
@@ -302,7 +320,7 @@ form .subtitle:not(:last-child) {
     align-items: center;
     gap: $spacing-small;
   }
-  
+
   .label {
     color: $bulma-primary;
   }
@@ -326,3 +344,17 @@ form .subtitle:not(:last-child) {
   }
 }
 
+.dropdown-content {
+  border: 1px solid #A9B0BB;
+  border-top: 0;
+  padding-left: $spacing-extralarge;
+  padding-right: $spacing-extralarge;
+}
+
+.dropdown-item{
+  color: $bulma-primary;
+}
+.dropdown-item:hover{
+  background: $white;
+
+}

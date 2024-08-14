@@ -10,12 +10,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/css/main.css">
     <title>Vekkuli</title>
-    <style>
-        .validation-message {
-            display: none;
-        }
-    </style>
 </head>
-<body layout:fragment="body">
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+        </a>
+    </div>
+    <div class="navbar-end" style="margin-right: 132px">
+        <div class="navbar-item">
+            <div class="buttons">
+                <div th:if="${!isAuthenticated}">
+                    <a id="loginButton" th:text="#{auth.login}"
+                       class="link"
+                       href="/auth/saml-suomifi/login">Login</a>
+                </div>
+                <div th:if="${isAuthenticated}">
+                    <div class="container" x-data="{ open: false }">
+                        <div class="dropdown" :class="{ 'is-active': open }">
+                            <div class="dropdown-trigger">
+                                <a
+                                        aria-haspopup="true"
+                                        aria-controls="dropdown-menu"
+                                        @click="open = !open"
+                                >
+                                    <span th:text="${userName}">Dropdown</span>
+                                    <span class="icon is-small">
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                                </a>
+                            </div>
+                            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                <div class="dropdown-content">
+                                    <a th:text="#{auth.logout}" href="/auth/saml-suomifi/logout" class="dropdown-item">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+<div layout:fragment="body">
+
+</div>
+
 </body>
 </html>

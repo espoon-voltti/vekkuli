@@ -12,7 +12,7 @@
         <h1 class="title">Vekkuli</h1>
         <h2 class="subtitle">Kuntalaisen kirjautuminen</h2>
         <div class="block" th:if="${isAuthenticated == false}">
-            <a id="loginButton" th:text="#{auth.login}"
+            <a th:text="#{auth.login}"
                class="button"
                href="/auth/saml-suomifi/login">Login</a>
         </div>
