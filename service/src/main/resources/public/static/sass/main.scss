@@ -356,7 +356,17 @@ form .subtitle:not(:last-child) {
 .dropdown-item{
   color: $bulma-primary;
 }
+
 .dropdown-item:hover{
   background: $white;
+}
 
+.payment-form,
+.payment-form button {
+  width: 100%;
+  height: 100%;
+}
+.payment-form button {
+  box-shadow: none;
+  border: 0;
 }
