@@ -24,6 +24,8 @@ $block-spacing: $spacing-medium;
   $navbar-item-img-max-height: 107px,
   $dropdown-content-radius: 0,
   $dropdown-content-shadow: none,
+  $button-padding-vertical: calc($spacing-small * 2),
+  $button-padding-horizontal: calc($spacing-small * 4)
 );
 
 // Custom styles
@@ -31,10 +33,6 @@ $block-spacing: $spacing-medium;
 .textarea,
 .select select {
   padding: $spacing-small $spacing-small;
-}
-
-.button {
-  padding: calc($spacing-small * 2) calc($spacing-small * 4);
 }
 
 .is-secondary {
