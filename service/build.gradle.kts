@@ -10,6 +10,7 @@ plugins {
     id("org.flywaydb.flyway") version "10.12.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.0.2"
+    kotlin("plugin.serialization") version "1.8.0"
 
     idea
 }
@@ -90,6 +91,14 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.microsoft.playwright:playwright:1.42.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
+    implementation("io.ktor:ktor-client-core:2.3.1") // Core Ktor client
+    implementation("io.ktor:ktor-client-cio:2.3.1") // CIO engine
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.1") // Content negotiation
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1") // kotlinx serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
+    implementation("org.reactivestreams:reactive-streams:1.0.4")
 }
 
 tasks.withType<KotlinCompile> {
@@ -122,8 +131,7 @@ tasks.register("resolveDependencies") {
             .map {
                 val files = it.resolve()
                 it.name to files.size
-            }
-            .groupBy({ (_, count) -> count }) { (name, _) -> name }
+            }.groupBy({ (_, count) -> count }) { (name, _) -> name }
             .forEach { (count, names) ->
                 println(
                     "Resolved $count dependency files for configurations: ${names.joinToString(", ")}"
