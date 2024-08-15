@@ -7,7 +7,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.20"
     kotlin("plugin.spring") version "1.9.20"
-    id("org.flywaydb.flyway") version "10.12.0"
+    id("org.flywaydb.flyway") version "10.17.1"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.0.2"
     kotlin("plugin.serialization") version "1.8.0"
