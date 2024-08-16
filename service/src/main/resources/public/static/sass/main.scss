@@ -368,6 +368,10 @@ form .subtitle:not(:last-child) {
   font-weight: 700;
     text-transform: uppercase;
 }
+.menu-container{
+  height: $menu-container-height;
+  overflow-y: auto;
+}
 
 .menu-label {
   font-size: 1em;
