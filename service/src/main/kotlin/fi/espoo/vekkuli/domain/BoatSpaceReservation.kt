@@ -331,15 +331,12 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location_id = location.id
             WHERE
-              (bsr.status = 'Confirmed' 
-                OR
-              bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds))
+              bsr.status = 'Confirmed'
             AND ${filter.toSql().ifBlank { "true" }}
             ${getSortingSql(params)}
             """.trimIndent()
         )
 
-    query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
     filter.bind(query)
     return query.mapTo<BoatSpaceReservationItem>().list()
 }
