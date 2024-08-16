@@ -32,7 +32,7 @@ data class PaytrailCallbackUrl(
 data class PaytrailPurchaseItem(
     val unitPrice: Int,
     val units: Int,
-    val vatPercentage: Int,
+    val vatPercentage: Double,
     val productCode: String,
     val description: String? = null,
     val category: String? = null,

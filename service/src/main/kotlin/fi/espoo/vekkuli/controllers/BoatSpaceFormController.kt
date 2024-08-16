@@ -174,7 +174,7 @@ class BoatSpaceFormController {
         jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
 
         // redirect to payments page with reservation id and slip type
-        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BOAT_SPACE_RESERVATION}")
+        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
 
     @GetMapping("/venepaikka/varaa/{spaceId}")
@@ -223,11 +223,12 @@ class BoatSpaceFormController {
         input: ReservationInput
     ): String {
         val boats =
-            jdbi.inTransactionUnchecked {
-                it.getBoatsForCitizen(user.id)
-            }.map { boat ->
-                boat.updateBoatDisplayName(messageUtil)
-            }
+            jdbi
+                .inTransactionUnchecked {
+                    it.getBoatsForCitizen(user.id)
+                }.map { boat ->
+                    boat.updateBoatDisplayName(messageUtil)
+                }
 
         val calculatedAlv = reservation.price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100)
 
@@ -284,20 +285,24 @@ class BoatSpaceFormController {
 
         when (boatSpaceAmenity) {
             BoatSpaceAmenity.Buoy, BoatSpaceAmenity.Beam -> {
-                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
-                val lengthTooLarge = lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM
+                val widthTooLarge =
+                    widthInCm != null && widthInCm + BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val lengthTooLarge =
+                    lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
             }
 
             BoatSpaceAmenity.RearBuoy -> {
-                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val widthTooLarge =
+                    widthInCm != null && widthInCm + BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
                 val lengthTooLarge =
                     lengthInCm != null && lengthInCm > spaceLengthInCm - BoatSpaceConfig.REAR_BUOY_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
             }
 
             BoatSpaceAmenity.WalkBeam -> {
-                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val widthTooLarge =
+                    widthInCm != null && widthInCm + BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
                 val lengthTooLarge =
                     lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.WALK_BEAM_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
