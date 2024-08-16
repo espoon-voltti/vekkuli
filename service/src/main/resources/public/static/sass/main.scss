@@ -12,6 +12,7 @@ $spacing-large: 24px;
 $spacing-extralarge: 32px;
 $block-spacing: $spacing-medium;
 $menu-container-height: 1000px;
+$activeColor: #D9E4F4;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
