@@ -8,7 +8,7 @@
 <div class="container">
 	<h2 th:text="#{boatSpaceReservation.title.resourceReservation}">Espoon resurssivarausjärjestelmä</h2>
 
-	<div class="columns is-multiline" id="payment_method_list">
+	<div class="columns is-multiline" id="payment-method-list">
 		<div class="column is-one-quarter" th:each="provider : ${providers}">
 			<form method="POST" th:action="${provider.url}" class="payment-form">
 				<!-- Render hidden inputs for each parameter -->
