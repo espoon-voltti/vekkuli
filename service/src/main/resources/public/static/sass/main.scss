@@ -3,6 +3,7 @@ $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
 $lightGray: #F7F7F7;
+$activeColor: #D9E4F4;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
@@ -365,6 +366,10 @@ form .subtitle:not(:last-child) {
 .menu-label {
   font-size: 1em;
   color: $black;
+}
+
+a.active {
+  background: $activeColor;
 }
 
 .menu-container {

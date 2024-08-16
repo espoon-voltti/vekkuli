@@ -15,7 +15,10 @@
             <div class="menu-container">
                 <p class="menu-label" th:text="#{menu.marineOutdoor}">Merellinen ulkoilu</p>
                 <ul class="menu-list">
-                    <li><a href="/virkailija/venepaikat/varaukset" th:text="#{menu.boatSpaceReservations}">
+                    <li><a
+                            th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
+                            href="/virkailija/venepaikat/varaukset"
+                            th:text="#{menu.boatSpaceReservations}">
                         Venepaikkavaraukset</a></li>
                 </ul>
             </div>

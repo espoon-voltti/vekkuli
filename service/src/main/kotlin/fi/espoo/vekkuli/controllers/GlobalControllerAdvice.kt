@@ -47,4 +47,9 @@ class GlobalControllerAdvice
                 }
             }
         }
+
+        @ModelAttribute("currentUri")
+        fun currentUri(request: HttpServletRequest): String {
+            return request.requestURI
+        }
     }
