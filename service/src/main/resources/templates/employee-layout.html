@@ -28,13 +28,13 @@
             <div class="block" th:if="${!isAuthenticated}">
                 <a id="employeeLoginButton"
                    href="/auth/saml/login">
-                    <span th:text="#{auth.login}"></span>
+                    <span class="login-link" th:text="#{auth.login}"></span>
                 </a>
             </div>
             <div class="block" th:if="${isAuthenticated}">
 
                 <a href="/auth/saml/logout">
-                    <span th:text="#{auth.logout}"></span>
+                    <span class="login-link" th:text="#{auth.logout}"></span>
                     <span th:replace="~{fragments/icons :: logout}"></span>
                 </a>
             </div>

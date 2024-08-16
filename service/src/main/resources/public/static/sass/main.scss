@@ -382,6 +382,14 @@ a.active {
   background: $activeColor;
 }
 
+.login-link {
+  text-transform: none;
+  font-weight: 600;
+}
+.logout-icon{
+  vertical-align: text-bottom;
+}
+
 .payment-form,
 .payment-form button {
   width: 100%;
