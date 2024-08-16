@@ -9,6 +9,11 @@ import org.junit.jupiter.api.Test
 import kotlin.io.path.Path
 
 class E2eTest : PlaywrightTest() {
+    fun handleError(e: AssertionError) {
+        page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
+        throw e
+    }
+
     @Test
     fun listingReservations() {
         try {
@@ -20,9 +25,10 @@ class E2eTest : PlaywrightTest() {
             listingPage.navigateTo()
             assertThat(listingPage.boatSpace1).isVisible()
             assertThat(listingPage.boatSpace2).isVisible()
+            listingPage.boatSpace1.click()
+            assertThat(listingPage.boatSpace1Details).isVisible()
         } catch (e: AssertionError) {
-            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
-            throw e
+            handleError(e)
         }
     }
 
@@ -129,8 +135,7 @@ class E2eTest : PlaywrightTest() {
             // assert that payment title is shown
             assertThat(reservationPage.paymentPageTitle).hasCount(1)
         } catch (e: AssertionError) {
-            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
-            throw e
+            handleError(e)
         }
     }
 

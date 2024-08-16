@@ -5,8 +5,8 @@
 
 <body layout:fragment="body">
 
-<section class="section">
-    <div class="container">
+<section class="section" th:id="|boat-space-${reservation.id}-details|">
+	<div class="container">
 
         <div class="box">
             <button class="icon-text">
@@ -97,67 +97,68 @@
                         <span class="icon ml-s">
                                 <div th:replace="~{fragments/icons :: x-mark}"></div>
                             </span>
-                            <span>Irtisano varaus</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="columns">
-                <div class="column">
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.harbor}">Satama</label>
-                        <p th:text="${reservation.locationName}">Haukilahti</p>
-                    </div>
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.width}">Leveys (m)</label>
-                        <p th:text="${reservation.boatSpaceWidthInM}">3,50</p>
-                    </div>
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.reservationDate}">Varaus
-                            tehty</label>
-                        <p th:text="${reservation.startDate}">03.06.2024 14:56</p>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.place}">Paikka</label>
-                        <p th:text="${reservation.boatSpaceId}">B105</p>
-                    </div>
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.length}">Pituus (m)</label>
-                        <p th:text="${reservation.boatSpaceLengthInM}">9,50</p>
-                    </div>
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.contractValidity}">Sopimus
-                            voimassa</label>
-                        <p th:text="${reservation.endDate}">31.01.2025 23:59</p>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.placeType}">Paikan tyyppi</label>
-                        <p th:text="#{${'boatSpaces.typeOption.' + reservation.type.toString()}}">Laituripaikka</p>
-                    </div>
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.payment}">Maksu</label>
-                        <p th:text="${reservation.price}">333,06€ (+alv 79,93€)</p>
-                    </div>
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.boatPresent}">Paikalla oleva
-                            vene</label>
-                        <p th:text="${reservation.boatName}"
-                        >Vene 1: Vivados</p>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.equipment}">Varuste</label>
-                        <p th:text="#{${'boatSpaces.amenityOption.' + reservation.amenity.toString()}}">Kävelyaisa</p>
-                    </div>
-                    <div class="field">
-                        <label class="label" th:text="#{boatSpaceReservation.title.paid}">Maksettu</label>
-                        <!--	//TODO: Add payment date-->
-                        <p>03.06.2024 14:56</p>
+							<span>Irtisano varaus</span>
+						</a>
+					</div>
+
+				</div>
+			</div>
+			<div class="columns">
+				<div class="column">
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.harbor}">Satama</label>
+						<p th:text="${reservation.locationName}">Haukilahti</p>
+					</div>
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.width}">Leveys (m)</label>
+						<p th:text="${reservation.boatSpaceWidthInM}">3,50</p>
+					</div>
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.reservationDate}">Varaus
+							tehty</label>
+						<p th:text="${reservation.startDate}">03.06.2024 14:56</p>
+					</div>
+				</div>
+				<div class="column">
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.place}">Paikka</label>
+						<p th:text="${reservation.place}">B105</p>
+					</div>
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.length}">Pituus (m)</label>
+						<p th:text="${reservation.boatSpaceLengthInM}">9,50</p>
+					</div>
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.contractValidity}">Sopimus
+							voimassa</label>
+						<p th:text="${reservation.endDate}">31.01.2025 23:59</p>
+					</div>
+				</div>
+				<div class="column">
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.placeType}">Paikan tyyppi</label>
+						<p th:text="#{${'boatSpaces.typeOption.' + reservation.type.toString()}}">Laituripaikka</p>
+					</div>
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.payment}">Maksu</label>
+						<p th:text="${reservation.price}">333,06€ (+alv 79,93€)</p>
+					</div>
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.boatPresent}">Paikalla oleva
+							vene</label>
+						<p th:text="${reservation.boatName}"
+						>Vene 1: Vivados</p>
+					</div>
+				</div>
+				<div class="column">
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.equipment}">Varuste</label>
+						<p th:text="#{${'boatSpaces.amenityOption.' + reservation.amenity.toString()}}">Kävelyaisa</p>
+					</div>
+					<div class="field">
+						<label class="label" th:text="#{boatSpaceReservation.title.paid}">Maksettu</label>
+						<!--	//TODO: Add payment date-->
+						<p>03.06.2024 14:56</p>
 
                     </div>
                 </div>

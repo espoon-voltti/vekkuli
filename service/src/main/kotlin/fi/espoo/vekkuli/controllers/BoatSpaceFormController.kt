@@ -172,7 +172,9 @@ class BoatSpaceFormController {
 
         jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
         jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
-        return "payment"
+
+        // redirect to payments page with reservation id and slip type
+        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BOAT_SPACE_RESERVATION}")
     }
 
     @GetMapping("/venepaikka/varaa/{spaceId}")

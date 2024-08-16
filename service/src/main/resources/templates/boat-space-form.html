@@ -410,13 +410,8 @@
 
                     <button id="submit"
                             class="button is-primary"
-                            type="button"
+                            type="submit"
                             th:text="#{boatApplication.continueToPaymentButton}"
-                            th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}|"
-                            hx-swap="outerHTML"
-                            hx-trigger="click"
-                            hx-select="#container"
-                            hx-target="#container"
                     >
                         Lähetä hakemus
                     </button>

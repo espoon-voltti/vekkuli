@@ -1,9 +1,9 @@
 $bulma-primary: #0047B6;
+$light-blue: #D9E4F4;
 $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
 $lightGray: #F7F7F7;
-$activeColor: #D9E4F4;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
@@ -23,9 +23,13 @@ $menu-container-height: 1000px;
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
   $box-radius: 0,
+  $table-row-hover-background-color: $light-blue,
+  $table-head-cell-color: $darkGray,
   $navbar-item-img-max-height: 107px,
   $dropdown-content-radius: 0,
   $dropdown-content-shadow: none,
+  $button-padding-vertical: calc($spacing-small * 2),
+  $button-padding-horizontal: calc($spacing-small * 4)
 );
 
 // Custom styles
@@ -33,10 +37,6 @@ $menu-container-height: 1000px;
 .textarea,
 .select select {
   padding: $spacing-small $spacing-small;
-}
-
-.button {
-  padding: calc($spacing-small * 2) calc($spacing-small * 4);
 }
 
 .is-secondary {
@@ -297,13 +297,12 @@ form .subtitle:not(:last-child) {
 
   th {
     text-transform: uppercase;
-    color: $grey;
     font-weight: normal;
   }
 
-  a {
+  th a {
     text-decoration: none;
-    color: $grey;
+    color: $darkGray;
   }
 }
 
@@ -329,6 +328,10 @@ form .subtitle:not(:last-child) {
     border: none;
     width: 564px;
   }
+}
+
+.reservation-item {
+  cursor: pointer;
 }
 
 .tag-container {
@@ -373,10 +376,12 @@ a.active {
   background: $activeColor;
 }
 
-.menu-container {
-  min-height: $menu-container-height;
+.payment-form,
+.payment-form button {
+  width: 100%;
+  height: 100%;
 }
-
-.menu-collapse-header {
-  background: $lightGray;
+.payment-form button {
+  box-shadow: none;
+  border: 0;
 }
