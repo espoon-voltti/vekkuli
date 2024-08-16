@@ -19,15 +19,24 @@
                             th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
                             href="/virkailija/venepaikat/varaukset"
                             th:text="#{menu.boatSpaceReservations}">
-                        Venepaikkavaraukset</a></li>
+                        Venepaikkavaraukset
+                    </a>
+
+                    </li>
                 </ul>
             </div>
             <div class="block" th:if="${!isAuthenticated}">
-                <a id="employeeLoginButton" th:text="#{auth.login}"
-                   href="/auth/saml/login">Login</a>
+                <a id="employeeLoginButton"
+                   href="/auth/saml/login">
+                    <span th:text="#{auth.login}"></span>
+                </a>
             </div>
             <div class="block" th:if="${isAuthenticated}">
-                <a th:text="#{auth.logout}" href="/auth/saml/logout">Logout</a>
+
+                <a href="/auth/saml/logout">
+                    <span th:text="#{auth.logout}"></span>
+                    <span th:replace="~{fragments/icons :: logout}"></span>
+                </a>
             </div>
         </aside>
     </div>
