@@ -45,24 +45,23 @@ class PaymentController {
         // TODO get correct product code
         val productCode = "Venepaikka A 100"
 
-        val stamp = UUID.randomUUID().toString()
-
-        jdbi.inTransactionUnchecked {
-            it.insertPayment(
-                CreatePaymentParams(
-                    citizenId = citizen.id,
-                    reference = reference,
-                    totalCents = amount,
-                    vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                    productCode = productCode
+        val payment =
+            jdbi.inTransactionUnchecked {
+                it.insertPayment(
+                    CreatePaymentParams(
+                        citizenId = citizen.id,
+                        reference = reference,
+                        totalCents = amount,
+                        vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
+                        productCode = productCode
+                    )
                 )
-            )
-        }
+            }
 
         val response =
             Paytrail.createPayment(
                 PaytrailPaymentParams(
-                    stamp = stamp,
+                    stamp = payment.id.toString(),
                     reference = reference,
                     amount = amount,
                     language = "FI",
