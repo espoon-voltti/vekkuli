@@ -1,8 +1,10 @@
 $bulma-primary: #0047B6;
+$light-blue: #D9E4F4;
 $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
 $lightGray: #F7F7F7;
+$darkGray: #536076;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
@@ -21,6 +23,8 @@ $block-spacing: $spacing-medium;
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
   $box-radius: 0,
+  $table-row-hover-background-color: $light-blue,
+  $table-head-cell-color: $darkGray,
   $navbar-item-img-max-height: 107px,
   $dropdown-content-radius: 0,
   $dropdown-content-shadow: none,
@@ -293,13 +297,12 @@ form .subtitle:not(:last-child) {
 
   th {
     text-transform: uppercase;
-    color: $grey;
     font-weight: normal;
   }
 
-  a {
+  th a {
     text-decoration: none;
-    color: $grey;
+    color: $darkGray;
   }
 }
 
@@ -325,6 +328,10 @@ form .subtitle:not(:last-child) {
     border: none;
     width: 564px;
   }
+}
+
+.reservation-item {
+  cursor: pointer;
 }
 
 .tag-container {
