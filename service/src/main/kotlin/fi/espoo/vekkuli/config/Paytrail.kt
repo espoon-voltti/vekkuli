@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import io.ktor.client.call.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable

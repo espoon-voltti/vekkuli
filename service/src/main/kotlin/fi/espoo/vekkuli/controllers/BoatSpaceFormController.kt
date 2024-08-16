@@ -172,7 +172,9 @@ class BoatSpaceFormController {
 
         jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
         jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
-        return "payment"
+
+        // redirect to payments page with reservation id and slip type
+        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
 
     @GetMapping("/venepaikka/varaa/{spaceId}")
@@ -221,11 +223,12 @@ class BoatSpaceFormController {
         input: ReservationInput
     ): String {
         val boats =
-            jdbi.inTransactionUnchecked {
-                it.getBoatsForCitizen(user.id)
-            }.map { boat ->
-                boat.updateBoatDisplayName(messageUtil)
-            }
+            jdbi
+                .inTransactionUnchecked {
+                    it.getBoatsForCitizen(user.id)
+                }.map { boat ->
+                    boat.updateBoatDisplayName(messageUtil)
+                }
 
         val calculatedAlv = reservation.price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100)
 
