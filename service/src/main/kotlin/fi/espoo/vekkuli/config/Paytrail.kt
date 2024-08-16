@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
+import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
@@ -92,8 +93,8 @@ const val MERCHANT_SECRET = "SAIPPUAKAUPPIAS"
 const val MERCHANT_ID = "375917"
 
 const val BASE_URL = "https://services.paytrail.com"
-const val SUCCESS_URL = "http://localhost:3000/maksut/onnistui"
-const val CANCEL_URL = "http://localhost:3000/maksut/peruuntui"
+val SUCCESS_URL = getServiceUrl("/kuntalainen/maksut/onnistunut")
+val CANCEL_URL = getServiceUrl("/kuntalainen/maksut/peruuntunut")
 const val CURRENCY = "EUR"
 const val HASH_ALGORITHM_NAME = "sha512"
 val HASH_ALGORITHM =

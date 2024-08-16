@@ -25,10 +25,12 @@ class Utils {
             }
         }
 
-        fun redirectUrl(path: String): String {
+        fun getServiceUrl(path: String): String {
             val baseUrl = getBaseUrl()
-            return "redirect:$baseUrl$path"
+            return "$baseUrl$path"
         }
+
+        fun redirectUrl(path: String): String = "redirect:${getServiceUrl(path)}"
 
         fun getCitizen(
             request: HttpServletRequest,
