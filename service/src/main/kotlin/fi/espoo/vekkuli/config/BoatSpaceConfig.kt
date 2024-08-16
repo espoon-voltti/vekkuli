@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.config
 
 object BoatSpaceConfig {
     const val SESSION_TIME_IN_SECONDS = 20 * 60
+    const val PAYMENT_TIMEOUT = 24 * 60 * 60
     const val BOAT_RESERVATION_ALV_PERCENTAGE = 10.0
 
     const val BUOY_WIDTH_ADJUSTMENT_CM = 40

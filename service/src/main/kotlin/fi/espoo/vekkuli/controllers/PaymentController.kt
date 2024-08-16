@@ -7,8 +7,7 @@ import fi.espoo.vekkuli.config.PaytrailPaymentParams
 import fi.espoo.vekkuli.config.PaytrailPurchaseItem
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
-import fi.espoo.vekkuli.domain.CreatePaymentParams
-import fi.espoo.vekkuli.domain.insertPayment
+import fi.espoo.vekkuli.domain.*
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -32,7 +31,7 @@ class PaymentController {
 
     @GetMapping("/maksa")
     suspend fun payment(
-        @RequestParam id: String,
+        @RequestParam id: Int,
         @RequestParam type: PaymentType,
         model: Model,
         request: HttpServletRequest
@@ -57,6 +56,7 @@ class PaymentController {
                     )
                 )
             }
+        jdbi.inTransactionUnchecked { it.updateReservationWithPayment(id, payment.id) }
 
         val response =
             Paytrail.createPayment(
@@ -80,12 +80,29 @@ class PaymentController {
     }
 
     @GetMapping("/onnistunut")
-    fun success(): String {
-        return "boat-space-reservation-payment-success"
+    fun success(
+        @RequestParam(name = "checkout-stamp") checkoutStamp: UUID,
+    ): String {
+        jdbi.inTransactionUnchecked {
+            it.updatePayment(checkoutStamp, PaymentStatus.Success)
+        }
+        val reservation =
+            jdbi.inTransactionUnchecked {
+                it.getBoatSpaceReservationForPayment(
+                    checkoutStamp
+                )
+            } ?: return redirectUrl("/error")
+        // TODO: check signature
+        return redirectUrl("/kuntalainen/venepaikka/varaus/${reservation?.id}/vahvistus")
     }
 
     @GetMapping("/peruuntunut")
-    fun cancel(): String {
+    fun cancel(
+        @RequestParam(name = "checkout-stamp") checkoutStamp: UUID,
+    ): String {
+        jdbi.inTransactionUnchecked {
+            it.updatePayment(checkoutStamp, PaymentStatus.Failed)
+        }
         return "boat-space-reservation-payment-cancel"
     }
 }
