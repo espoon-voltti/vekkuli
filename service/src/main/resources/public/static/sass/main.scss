@@ -10,6 +10,7 @@ $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-extralarge: 32px;
 $block-spacing: $spacing-medium;
+$menu-container-height: 1000px;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
@@ -373,7 +374,7 @@ a.active {
 }
 
 .menu-container {
-  min-height: 1000px;
+  min-height: $menu-container-height;
 }
 
 .menu-collapse-header {
