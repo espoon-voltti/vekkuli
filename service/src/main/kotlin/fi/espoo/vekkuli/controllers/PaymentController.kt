@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.config.Paytrail
 import fi.espoo.vekkuli.config.PaytrailCustomer
 import fi.espoo.vekkuli.config.PaytrailPaymentParams
+import fi.espoo.vekkuli.config.PaytrailPurchaseItem
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.CreatePaymentParams
@@ -46,19 +47,17 @@ class PaymentController {
 
         val stamp = UUID.randomUUID().toString()
 
-        val payment =
-            jdbi.inTransactionUnchecked {
-                it.insertPayment(
-                    CreatePaymentParams(
-                        citizenId = citizen.id,
-                        reference = reference,
-                        total_cents = amount,
-                        vat_percentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        // TODO: get product code from somewhere
-                        product_code = productCode
-                    )
+        jdbi.inTransactionUnchecked {
+            it.insertPayment(
+                CreatePaymentParams(
+                    citizenId = citizen.id,
+                    reference = reference,
+                    totalCents = amount,
+                    vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
+                    productCode = productCode
                 )
-            }
+            )
+        }
 
         val response =
             Paytrail.createPayment(
@@ -74,10 +73,10 @@ class PaymentController {
                             lastName = citizen.lastName,
                             phone = citizen.phone
                         ),
+                    items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode))
                 )
             )
 
-        println(payment)
         model.addAttribute("providers", response.providers)
         return "boat-space-reservation-payment"
     }

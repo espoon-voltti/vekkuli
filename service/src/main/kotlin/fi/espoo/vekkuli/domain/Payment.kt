@@ -19,17 +19,17 @@ data class Payment(
     val updated: LocalDateTime,
     val status: PaymentStatus,
     val reference: String,
-    val total_cents: Int,
-    val vat_percentage: Double,
-    val product_code: String,
+    val totalCents: Int,
+    val vatPercentage: Double,
+    val productCode: String,
 )
 
 data class CreatePaymentParams(
     val citizenId: UUID,
     val reference: String,
-    val total_cents: Int,
-    val vat_percentage: Double,
-    val product_code: String,
+    val totalCents: Int,
+    val vatPercentage: Double,
+    val productCode: String,
 )
 
 fun Handle.insertPayment(params: CreatePaymentParams): Payment {
@@ -38,7 +38,7 @@ fun Handle.insertPayment(params: CreatePaymentParams): Payment {
         createQuery(
             """
         INSERT INTO payment (id, citizen_id, reference, total_cents, vat_percentage, product_code)
-        VALUES (:id, :citizenId,  :reference, :total_cents, :vat_percentage, :product_code)
+        VALUES (:id, :citizenId,  :reference, :totalCents, :vatPercentage, :productCode)
         RETURNING *
         """
         ).bindKotlin(params)

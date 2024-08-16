@@ -285,20 +285,24 @@ class BoatSpaceFormController {
 
         when (boatSpaceAmenity) {
             BoatSpaceAmenity.Buoy, BoatSpaceAmenity.Beam -> {
-                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
-                val lengthTooLarge = lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM
+                val widthTooLarge =
+                    widthInCm != null && widthInCm + BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val lengthTooLarge =
+                    lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
             }
 
             BoatSpaceAmenity.RearBuoy -> {
-                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val widthTooLarge =
+                    widthInCm != null && widthInCm + BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
                 val lengthTooLarge =
                     lengthInCm != null && lengthInCm > spaceLengthInCm - BoatSpaceConfig.REAR_BUOY_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
             }
 
             BoatSpaceAmenity.WalkBeam -> {
-                val widthTooLarge = widthInCm != null && widthInCm + BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
+                val widthTooLarge =
+                    widthInCm != null && widthInCm + BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
                 val lengthTooLarge =
                     lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.WALK_BEAM_LENGTH_ADJUSTMENT_CM
                 return widthTooLarge || lengthTooLarge
