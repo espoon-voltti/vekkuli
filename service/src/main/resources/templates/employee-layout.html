@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="theme-light">
+<head>
+    <title>Vekkuli</title>
+    <th:block th:insert="~{fragments/head :: headResources}"></th:block>
+</head>
+<body>
+<div class="columns">
+    <div class="menu">
+        <aside class="container">
+
+            <p class="menu-label">
+                <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+            </p>
+            <div class="menu-container">
+                <p class="menu-label" th:text="#{menu.marineOutdoor}">Merellinen ulkoilu</p>
+                <ul class="menu-list">
+                    <li><a
+                            th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
+                            href="/virkailija/venepaikat/varaukset"
+                            th:text="#{menu.boatSpaceReservations}">
+                        Venepaikkavaraukset
+                    </a>
+
+                    </li>
+                </ul>
+            </div>
+            <div class="block" th:if="${!isAuthenticated}">
+                <a id="employeeLoginButton"
+                   href="/auth/saml/login">
+                    <span class="login-link" th:text="#{auth.login}"></span>
+                </a>
+            </div>
+            <div class="block" th:if="${isAuthenticated}">
+
+                <a href="/auth/saml/logout">
+                    <span class="login-link" th:text="#{auth.logout}"></span>
+                    <span th:replace="~{fragments/icons :: logout}"></span>
+                </a>
+            </div>
+        </aside>
+    </div>
+
+    <div class="column">
+        <div layout:fragment="body"></div>
+    </div>
+</div>
+</body>
+</html>

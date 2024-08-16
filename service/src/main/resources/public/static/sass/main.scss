@@ -11,6 +11,8 @@ $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-extralarge: 32px;
 $block-spacing: $spacing-medium;
+$menu-container-height: 1000px;
+$activeColor: #D9E4F4;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
@@ -359,6 +361,33 @@ form .subtitle:not(:last-child) {
 
 .dropdown-item:hover{
   background: $white;
+}
+
+.menu {
+  width: 280px;
+  font-weight: 700;
+    text-transform: uppercase;
+}
+.menu-container{
+  height: $menu-container-height;
+  overflow-y: auto;
+}
+
+.menu-label {
+  font-size: 1em;
+  color: $black;
+}
+
+a.active {
+  background: $activeColor;
+}
+
+.login-link {
+  text-transform: none;
+  font-weight: 600;
+}
+.logout-icon{
+  vertical-align: text-bottom;
 }
 
 .payment-form,
