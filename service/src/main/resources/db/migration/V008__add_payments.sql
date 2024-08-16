@@ -25,7 +25,7 @@ CREATE TABLE payment (
     -- The reference number of the payment (shown to the customer)
     reference TEXT NOT NULL,
 
-    -- The total amount of the payment in cents (without VAT)
+    -- The total amount of the payment in cents (including VAT)
     total_cents INT NOT NULL,
 
     -- The VAT percentage of the payment
