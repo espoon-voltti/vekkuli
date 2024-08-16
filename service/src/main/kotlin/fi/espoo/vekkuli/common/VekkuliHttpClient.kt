@@ -20,6 +20,7 @@ class VekkuliHttpClient {
         ): HttpResponse {
             val client =
                 HttpClient(CIO) {
+                    expectSuccess = true
                     install(ContentNegotiation) {
                         json(
                             Json {
@@ -50,7 +51,10 @@ class VekkuliHttpClient {
             url: String,
             headers: Map<String, String> = emptyMap(),
         ): HttpResponse {
-            val client = HttpClient(CIO)
+            val client =
+                HttpClient(CIO) {
+                    expectSuccess = true
+                }
             val response =
                 client.get(url) {
                     headers {
