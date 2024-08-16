@@ -75,8 +75,17 @@ class PaymentController {
                     items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode))
                 )
             )
-
         model.addAttribute("providers", response.providers)
         return "boat-space-reservation-payment"
+    }
+
+    @GetMapping("/onnistunut")
+    fun success(): String {
+        return "boat-space-reservation-payment-success"
+    }
+
+    @GetMapping("/peruuntunut")
+    fun cancel(): String {
+        return "boat-space-reservation-payment-cancel"
     }
 }

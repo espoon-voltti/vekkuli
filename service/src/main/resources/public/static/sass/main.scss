@@ -31,7 +31,8 @@ $activeColor: #D9E4F4;
   $dropdown-content-radius: 0,
   $dropdown-content-shadow: none,
   $button-padding-vertical: calc($spacing-small * 2),
-  $button-padding-horizontal: calc($spacing-small * 4)
+  $button-padding-horizontal: calc($spacing-small * 4),
+  $box-padding: $spacing-extralarge,
 );
 
 // Custom styles
@@ -398,4 +399,9 @@ a.active {
 .payment-form button {
   box-shadow: none;
   border: 0;
+}
+
+#reservation-confirmation-container {
+    min-width: 500px;
+    width: 50%;
 }
