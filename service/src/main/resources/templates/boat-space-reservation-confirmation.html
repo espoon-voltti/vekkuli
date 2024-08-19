@@ -7,11 +7,7 @@
 
     <div class="box">
         <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=4)}"></div>
-        <form id="reservation-confirmation-container"
-              method="get"
-              action="/kuntalainen/venepaikat"
-              class="block"
-        >
+        <div id="reservation-confirmation-container" class="block">
             <h2 th:text="#{boatSpaceReservation.title.confirmation}">Varausvahvistus</h2>
 
             <div class="block" th:text="#{boatSpaceReservation.message.successfulReservation}">
@@ -41,25 +37,24 @@
                 <label th:text="#{boatSpaceReservation.label.price}">Venepaikan hinta:</label>
                 <div>
                     <label th:text="#{boatSpaceReservation.label.payment}">Maksu:</label>
-                    <span th:text="${reservation.priceWithoutAlv}">333,06 €</span>
+                    <span th:text="|${reservation.priceWithoutAlvInEuro} &euro;|">333,06 €</span>
                 </div>
                 <div>
                     <label th:text="#{boatSpaceReservation.label.vat}">Alv.:</label>
-                    <span th:text="${reservation.alvAmount}">79,93 €</span>
+                    <span th:text="|${reservation.alvPriceInEuro} &euro;|">79,93 €</span>
                 </div>
                 <div>
                     <label th:text="#{boatSpaceReservation.label.total}">Yhteensä:</label>
-                    <span th:text="${reservation.price}">413 €</span>
+                    <span th:text="|${reservation.price} &euro;|">413 €</span>
                 </div>
             </div>
             <div class="block">
                 <label th:text="#{boatSpaceReservation.label.reservationValidity}">Varaus voimassa:</label>
                 <span th:text="#{${'boatSpaceReservation.validity.' + reservation.validity.toString()}}">Toistaiseksi voimassa</span>
             </div>
-            <button class="button is-primary block" th:text="#{boatSpaceReservation.button.back}"
-                    type="submit">
-            </button>
-        </form>
+            <a class="button is-primary block" href="/kuntalainen/venepaikat"
+               th:text="#{boatSpaceReservation.button.back}">Takaisin etusivulle</a>
+        </div>
 
     </div>
 </div>

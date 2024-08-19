@@ -87,6 +87,7 @@ fun Handle.updateReservationWithPayment(
             UPDATE boat_space_reservation
             SET status = 'Payment', updated = :updatedTime, payment_id = :paymentId
             WHERE id = :id
+                AND status = 'Payment'
                 AND created > NOW() - make_interval(secs => :paymentTimeout)
             RETURNING *
             """.trimIndent()
@@ -95,26 +96,6 @@ fun Handle.updateReservationWithPayment(
     query.bind("id", reservationId)
     query.bind("paymentId", paymentId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
-
-    return query.mapTo<BoatSpaceReservation>().one()
-}
-
-fun Handle.changeReservationStatusWithPayment(
-    paymentId: UUID,
-    status: ReservationStatus,
-): BoatSpaceReservation {
-    val query =
-        createQuery(
-            """
-            UPDATE boat_space_reservation
-            SET status = :status, updated = :updatedTime
-            WHERE payment_id = :paymentId
-            RETURNING *
-            """.trimIndent()
-        )
-    query.bind("updatedTime", LocalDate.now())
-    query.bind("paymentId", paymentId)
-    query.bind("status", status)
 
     return query.mapTo<BoatSpaceReservation>().one()
 }
@@ -182,20 +163,22 @@ fun Handle.removeBoatSpaceReservation(
     query.execute()
 }
 
-fun Handle.getBoatSpaceReservationForPayment(paymentId: UUID): BoatSpaceReservation? {
+fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): String? {
     val query =
         createQuery(
             """
-            SELECT bsr.*
-            FROM boat_space_reservation bsr
-            WHERE bsr.payment_id = :paymentId
-                AND bsr.status = 'Payment' 
-                AND bsr.created > NOW() - make_interval(secs => :paymentTimeout)
+            UPDATE boat_space_reservation
+            SET status = 'Confirmed', updated = :updatedTime
+            WHERE payment_id = :paymentId
+                AND status = 'Payment' 
+                AND created > NOW() - make_interval(secs => :paymentTimeout)
+            RETURNING id
             """.trimIndent()
         )
     query.bind("paymentId", paymentId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
-    return query.mapTo<BoatSpaceReservation>().findOne().orElse(null)
+    query.bind("updatedTime", LocalDate.now())
+    return query.mapTo<String>().findOne().orElse(null)
 }
 
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
@@ -223,7 +206,7 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
 
 data class BoatSpaceReservationDetails(
     val id: Int,
-    val price: Double,
+    val price: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -267,10 +250,10 @@ data class BoatSpaceReservationDetails(
         get() = boatSpaceLengthCm.cmToM()
     val boatSpaceWidthInM: Double
         get() = boatSpaceWidthCm.cmToM()
-    val alvAmount: Double
-        get() = price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100.0)
-    val priceWithoutAlv: Double
-        get() = price - alvAmount
+    val alvPriceInEuro: Int
+        get() = (price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100)).toInt()
+    val priceWithoutAlvInEuro: Int
+        get() = price - alvPriceInEuro
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
 }

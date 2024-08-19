@@ -86,14 +86,14 @@ class PaymentController {
         jdbi.inTransactionUnchecked {
             it.updatePayment(checkoutStamp, PaymentStatus.Success)
         }
-        val reservation =
+        val reservationId =
             jdbi.inTransactionUnchecked {
-                it.getBoatSpaceReservationForPayment(
+                it.updateBoatSpaceReservationOnPaymentSuccess(
                     checkoutStamp
                 )
             } ?: return redirectUrl("/error")
         // TODO: check signature
-        return redirectUrl("/kuntalainen/venepaikka/varaus/${reservation?.id}/vahvistus")
+        return redirectUrl("/kuntalainen/venepaikka/varaus/$reservationId/vahvistus")
     }
 
     @GetMapping("/peruuntunut")
