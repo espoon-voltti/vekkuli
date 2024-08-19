@@ -20,6 +20,11 @@ enum class BoatSpaceType {
     Trailer
 }
 
+enum class ReservationValidity {
+    ValidUntilFurtherNotice,
+    ValidUntilNextSeason,
+}
+
 data class Harbor(
     val location: Location,
     val boatSpaces: List<BoatSpaceOption>

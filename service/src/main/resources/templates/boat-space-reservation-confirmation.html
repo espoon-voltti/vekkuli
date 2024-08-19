@@ -1,6 +1,6 @@
 <html layout:decorate="~{layout}">
 <head>
-    <title>Venepaikkahakemus</title>
+    <title th:text="#{boatSpaceReservation.title.reservationConfirmation}">Venepaikkahakemus</title>
 </head>
 <body layout:fragment="body">
 <div class="section">
@@ -8,50 +8,52 @@
     <div class="box">
         <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=4)}"></div>
         <div id="reservation-confirmation-container">
-            <h2>Varausvahvistus</h2>
+            <h2 th:text="#{boatSpaceReservation.title.confirmation}">Varausvahvistus</h2>
 
-            <div class="block">Venepaikan varaus onnistui. Saat viestin vahvistuksesta myös ilmoittamaasi
+            <div class="block" th:text="#{boatSpaceReservation.message.successfulReservation}">
+                Venepaikan varaus onnistui. Saat viestin vahvistuksesta myös ilmoittamaasi
                 sähköpostiosoitteeseen.
             </div>
             <div class="field">
-                <label>Paikan tiedot:</label>
+                <label th:text="#{boatSpaceReservation.label.placeDetails}">Paikan tiedot:</label>
                 <div>
-                    <label>Venepaikan nimi:</label>
-                    <span>HAUKILAHTI A 14</span>
+                    <label th:text="#{boatSpaceReservation.label.placeName}">Venepaikan nimi:</label>
+                    <span th:text="|${reservation.locationName} ${reservation.place}|">HAUKILAHTI A 14</span>
                 </div>
                 <div>
-                    <label>Venepaikan leveys:</label>
-                    <span>3,50 m</span>
+                    <label th:text="#{boatSpaceReservation.label.placeWidth}">Venepaikan leveys:</label>
+                    <span th:text="${reservation.boatWidthInM}">3,50 m</span>
                 </div>
                 <div>
-                    <label>Venepaikan pituus:</label>
-                    <span>10,50 m</span>
+                    <label th:text="#{boatSpaceReservation.label.placeLength}">Venepaikan pituus:</label>
+                    <span th:text="${reservation.boatLengthInM}">10,50 m</span>
                 </div>
                 <div>
-                    <label>Venepaikan varustus:</label>
-                    <span>Peräpoiju</span>
-                </div>
-            </div>
-            <div class="field">
-                <label>Venepaikan hinta:</label>
-                <div>
-                    <label>Maksu:</label>
-                    <span>333,06 €</span>
-                </div>
-                <div>
-                    <label>Alv.:</label>
-                    <span>79,93 €</span>
-                </div>
-                <div>
-                    <label>Yhteensä:</label>
-                    <span>413 €</span>
+                    <label th:text="#{boatSpaceReservation.label.placeEquipment}">Venepaikan varustus:</label>
+                    <span th:text="#{${'boatSpaces.amenityOption.' + reservation.amenity}}">Peräpoiju</span>
                 </div>
             </div>
             <div class="field">
-                <label>Varaus voimassa:</label>
-                <span>Toistaiseksi voimassa</span>
+                <label th:text="#{boatSpaceReservation.label.price}">Venepaikan hinta:</label>
+                <div>
+                    <label th:text="#{boatSpaceReservation.label.payment}">Maksu:</label>
+                    <span th:text="${reservation.priceWithoutAlv}">333,06 €</span>
+                </div>
+                <div>
+                    <label th:text="#{boatSpaceReservation.label.vat}">Alv.:</label>
+                    <span th:text="${reservation.alvAmount}">79,93 €</span>
+                </div>
+                <div>
+                    <label th:text="#{boatSpaceReservation.label.total}">Yhteensä:</label>
+                    <span th:text="${reservation.price}">413 €</span>
+                </div>
+            </div>
+            <div class="field">
+                <label th:text="#{boatSpaceReservation.label.reservationValidity}">Varaus voimassa:</label>
+                <span th:text="#{${'boatSpaceReservation.validity.' + reservation.validity.toString()}}">Toistaiseksi voimassa</span>
             </div>
         </div>
     </div>
 </div>
+</body>
 </html>

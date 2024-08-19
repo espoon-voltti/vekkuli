@@ -255,6 +255,7 @@ data class BoatSpaceReservationDetails(
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
+    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
@@ -266,6 +267,10 @@ data class BoatSpaceReservationDetails(
         get() = boatSpaceLengthCm.cmToM()
     val boatSpaceWidthInM: Double
         get() = boatSpaceWidthCm.cmToM()
+    val alvAmount: Double
+        get() = price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100.0)
+    val priceWithoutAlv: Double
+        get() = price - alvAmount
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
 }
