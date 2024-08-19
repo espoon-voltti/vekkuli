@@ -7,14 +7,18 @@
 
     <div class="box">
         <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=4)}"></div>
-        <div id="reservation-confirmation-container">
+        <form id="reservation-confirmation-container"
+              method="get"
+              action="/kuntalainen/venepaikat"
+              class="block"
+        >
             <h2 th:text="#{boatSpaceReservation.title.confirmation}">Varausvahvistus</h2>
 
             <div class="block" th:text="#{boatSpaceReservation.message.successfulReservation}">
                 Venepaikan varaus onnistui. Saat viestin vahvistuksesta myös ilmoittamaasi
                 sähköpostiosoitteeseen.
             </div>
-            <div class="field">
+            <div class="block">
                 <label th:text="#{boatSpaceReservation.label.placeDetails}">Paikan tiedot:</label>
                 <div>
                     <label th:text="#{boatSpaceReservation.label.placeName}">Venepaikan nimi:</label>
@@ -33,7 +37,7 @@
                     <span th:text="#{${'boatSpaces.amenityOption.' + reservation.amenity}}">Peräpoiju</span>
                 </div>
             </div>
-            <div class="field">
+            <div class="block">
                 <label th:text="#{boatSpaceReservation.label.price}">Venepaikan hinta:</label>
                 <div>
                     <label th:text="#{boatSpaceReservation.label.payment}">Maksu:</label>
@@ -48,11 +52,15 @@
                     <span th:text="${reservation.price}">413 €</span>
                 </div>
             </div>
-            <div class="field">
+            <div class="block">
                 <label th:text="#{boatSpaceReservation.label.reservationValidity}">Varaus voimassa:</label>
                 <span th:text="#{${'boatSpaceReservation.validity.' + reservation.validity.toString()}}">Toistaiseksi voimassa</span>
             </div>
-        </div>
+            <button class="button is-primary block" th:text="#{boatSpaceReservation.button.back}"
+                    type="submit">
+            </button>
+        </form>
+
     </div>
 </div>
 </body>
