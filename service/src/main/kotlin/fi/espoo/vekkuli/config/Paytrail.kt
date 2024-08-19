@@ -93,6 +93,7 @@ const val MERCHANT_SECRET = "SAIPPUAKAUPPIAS"
 const val MERCHANT_ID = "375917"
 
 const val BASE_URL = "https://services.paytrail.com"
+
 val SUCCESS_URL = getServiceUrl("/kuntalainen/maksut/onnistunut")
 val CANCEL_URL = getServiceUrl("/kuntalainen/maksut/peruuntunut")
 const val CURRENCY = "EUR"

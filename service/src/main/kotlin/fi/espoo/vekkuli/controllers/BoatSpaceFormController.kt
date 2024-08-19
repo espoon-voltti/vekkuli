@@ -111,6 +111,17 @@ class BoatSpaceFormController {
         return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
     }
 
+    @GetMapping("/venepaikka/varaus/{reservationId}/vahvistus")
+    fun confirmBoatSpaceReservation(
+        @PathVariable reservationId: Int,
+        model: Model
+    ): String {
+        val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservation(reservationId) }
+        if (reservation == null) return redirectUrl("/")
+        model.addAttribute("reservation", reservation)
+        return "boat-space-reservation-confirmation"
+    }
+
     @PostMapping("/venepaikka/varaus/{reservationId}")
     fun reserveBoatSpace(
         @PathVariable reservationId: Int,
@@ -171,7 +182,7 @@ class BoatSpaceFormController {
             }
 
         jdbi.inTransactionUnchecked { it.updateCitizen(citizen.id, input.phone!!, input.email!!) }
-        jdbi.inTransactionUnchecked { it.updateBoatSpaceReservation(reservationId, boat.id) }
+        jdbi.inTransactionUnchecked { it.updateBoatInBoatSpaceReservation(reservationId, boat.id) }
 
         // redirect to payments page with reservation id and slip type
         return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
