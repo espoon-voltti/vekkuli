@@ -36,7 +36,7 @@ fun Handle.insertBoatSpaceReservation(
     boatSpaceId: Int,
     startDate: LocalDate,
     endDate: LocalDate,
-    status: ReservationStatus
+    status: ReservationStatus,
 ): BoatSpaceReservation {
     val query =
         createQuery(
@@ -54,7 +54,7 @@ fun Handle.insertBoatSpaceReservation(
     return query.mapTo<BoatSpaceReservation>().one()
 }
 
-fun Handle.updateBoatSpaceReservation(
+fun Handle.updateBoatInBoatSpaceReservation(
     reservationId: Int,
     boatId: Int,
 ): BoatSpaceReservation {
@@ -73,6 +73,29 @@ fun Handle.updateBoatSpaceReservation(
     query.bind("id", reservationId)
     query.bind("boatId", boatId)
     query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+
+    return query.mapTo<BoatSpaceReservation>().one()
+}
+
+fun Handle.updateReservationWithPayment(
+    reservationId: Int,
+    paymentId: UUID,
+): BoatSpaceReservation {
+    val query =
+        createQuery(
+            """
+            UPDATE boat_space_reservation
+            SET status = 'Payment', updated = :updatedTime, payment_id = :paymentId
+            WHERE id = :id
+                AND status = 'Payment'
+                AND created > NOW() - make_interval(secs => :paymentTimeout)
+            RETURNING *
+            """.trimIndent()
+        )
+    query.bind("updatedTime", LocalDate.now())
+    query.bind("id", reservationId)
+    query.bind("paymentId", paymentId)
+    query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
 
     return query.mapTo<BoatSpaceReservation>().one()
 }
@@ -98,7 +121,7 @@ data class ReservationWithDependencies(
     val lengthCm: Int,
     val description: String,
     val locationName: String,
-    val price: Int
+    val price: Int,
 )
 
 fun Handle.getReservationForCitizen(id: UUID): ReservationWithDependencies? {
@@ -126,7 +149,7 @@ fun Handle.getReservationForCitizen(id: UUID): ReservationWithDependencies? {
 
 fun Handle.removeBoatSpaceReservation(
     id: Int,
-    citizenId: UUID
+    citizenId: UUID,
 ) {
     val query =
         createUpdate(
@@ -138,6 +161,24 @@ fun Handle.removeBoatSpaceReservation(
     query.bind("id", id)
     query.bind("citizenId", citizenId)
     query.execute()
+}
+
+fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): String? {
+    val query =
+        createQuery(
+            """
+            UPDATE boat_space_reservation
+            SET status = 'Confirmed', updated = :updatedTime
+            WHERE payment_id = :paymentId
+                AND status = 'Payment' 
+                AND created > NOW() - make_interval(secs => :paymentTimeout)
+            RETURNING id
+            """.trimIndent()
+        )
+    query.bind("paymentId", paymentId)
+    query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+    query.bind("updatedTime", LocalDate.now())
+    return query.mapTo<String>().findOne().orElse(null)
 }
 
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
@@ -165,7 +206,7 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
 
 data class BoatSpaceReservationDetails(
     val id: Int,
-    val price: Double,
+    val price: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -197,6 +238,7 @@ data class BoatSpaceReservationDetails(
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
+    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
@@ -208,6 +250,10 @@ data class BoatSpaceReservationDetails(
         get() = boatSpaceLengthCm.cmToM()
     val boatSpaceWidthInM: Double
         get() = boatSpaceWidthCm.cmToM()
+    val alvPriceInEuro: Int
+        get() = (price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100)).toInt()
+    val priceWithoutAlvInEuro: Int
+        get() = price - alvPriceInEuro
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
 }
