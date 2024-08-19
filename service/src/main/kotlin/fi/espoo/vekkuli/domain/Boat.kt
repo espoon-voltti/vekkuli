@@ -3,8 +3,10 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.utils.cmToM
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
-import java.util.UUID
+import java.util.*
 
 data class Boat(
     val id: Int,
@@ -49,6 +51,15 @@ enum class OwnershipStatus {
     User,
     CoOwner,
     FutureOwner
+}
+
+fun getBoatsForCitizen(
+    citizenId: UUID,
+    jdbi: Jdbi
+): List<Boat> {
+    return jdbi.inTransactionUnchecked {
+        it.getBoatsForCitizen(citizenId)
+    }
 }
 
 fun Handle.getBoatsForCitizen(citizenId: UUID): List<Boat> {

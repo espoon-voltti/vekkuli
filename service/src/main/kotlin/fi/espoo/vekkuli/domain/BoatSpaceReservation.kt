@@ -8,6 +8,8 @@ import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.InExpr
 import fi.espoo.vekkuli.utils.cmToM
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,7 +31,18 @@ data class BoatSpaceReservation(
     val updated: LocalDateTime,
     val status: ReservationStatus,
     val citizenId: UUID,
-)
+) {
+    companion object {
+        fun getReservationsForCitizen(
+            id: UUID,
+            jdbi: Jdbi
+        ): List<BoatSpaceReservationDetails> {
+            return jdbi.inTransactionUnchecked { tx ->
+                tx.getBoatSpaceReservationsForCitizen(id)
+            }
+        }
+    }
+}
 
 fun Handle.insertBoatSpaceReservation(
     citizenId: UUID,
@@ -391,4 +404,56 @@ fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDeta
         )
     query.bind("reservationId", reservationId)
     return query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
+}
+
+fun Handle.getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.id,
+                   bsr.start_date,
+                   bsr.end_date,
+                   bsr.created,
+                   bsr.updated,
+                   bsr.status,
+                   bsr.boat_space_id,
+                   CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                   c.first_name, 
+                   c.last_name, 
+                   c.email, 
+                   c.phone,
+                   c.national_id,
+                   c.address,
+                   c.postal_code,
+                   c.municipality,
+                   '' as home_town,
+                   b.registration_code as boat_registration_code,
+                   b.ownership as boat_ownership,
+                   b.id as boat_id,
+                   b.name as boat_name,
+                   b.width_cm as boat_width_cm,
+                   b.length_cm as boat_length_cm,
+                   b.weight_kg as boat_weight_kg,
+                   b.depth_cm as boat_depth_cm,
+                   b.type as boat_type,
+                   b.other_identification as boat_other_identification,
+                   b.extra_information as boat_extra_information,
+                   location.name as location_name, 
+                   bs.type,
+                    bs.length_cm as boat_space_length_cm,
+                    bs.width_cm as boat_space_width_cm,
+                    bs.amenity,
+                   price.price as price,
+                   CONCAT(bs.section, bs.place_number) as place
+            FROM boat_space_reservation bsr
+            JOIN boat b ON b.id = bsr.boat_id
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location.id = bs.location_id
+            JOIN price ON price_id = price.id
+            WHERE c.id = :citizenId
+            """.trimIndent()
+        )
+    query.bind("citizenId", citizenId)
+    return query.mapTo<BoatSpaceReservationDetails>().list()
 }
