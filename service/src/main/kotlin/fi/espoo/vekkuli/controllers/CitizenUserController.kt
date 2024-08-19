@@ -32,6 +32,6 @@ class CitizenUserController {
         model.addAttribute("reservations", boatSpaceReservations)
         val boats = getBoatsForCitizen(citizenId, jdbi)
         model.addAttribute("boats", boats)
-        return "citizen-details"
+        return "employee/citizen-details"
     }
 }

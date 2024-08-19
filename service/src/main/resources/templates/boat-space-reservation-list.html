@@ -96,7 +96,8 @@
                     hx-trigger="click"
                     th:attr="hx-get=|/virkailija/kayttaja/${result.citizenId}|"
                     hx-push-url="true"
-                    hx-target="body"
+                    hx-target=".section"
+                    hx-select=".section"
                 >
                     <td th:text="${result.locationName}">Kivenlahti</td>
                     <td th:text="${result.place}">A135</td>

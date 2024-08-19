@@ -3,6 +3,7 @@ package fi.espoo.vekkuli
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.BoatSpaceForm
+import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
 import org.junit.jupiter.api.Test
@@ -26,7 +27,8 @@ class E2eTest : PlaywrightTest() {
             assertThat(listingPage.boatSpace1).isVisible()
             assertThat(listingPage.boatSpace2).isVisible()
             listingPage.boatSpace1.click()
-            assertThat(listingPage.boatSpace1Details).isVisible()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
