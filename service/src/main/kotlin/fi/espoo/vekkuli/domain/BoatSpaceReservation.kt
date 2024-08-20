@@ -497,7 +497,7 @@ fun Handle.getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceRe
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location.id = bs.location_id
             JOIN price ON price_id = price.id
-            WHERE c.id = :citizenId
+            WHERE c.id = :citizenId AND bsr.status = 'Confirmed'
             """.trimIndent()
         )
     query.bind("citizenId", citizenId)
