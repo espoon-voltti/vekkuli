@@ -31,7 +31,12 @@ class JwtToAuthenticatedUser : HttpFilter() {
         response: HttpServletResponse,
         chain: FilterChain
     ) {
-        val type = request.getDecodedJwt()?.getClaim("type").toString().trim('"')
+        val type =
+            request
+                .getDecodedJwt()
+                ?.getClaim("type")
+                .toString()
+                .trim('"')
 
         val user =
             request.getDecodedJwt()?.subject?.let { subject ->
@@ -78,16 +83,28 @@ class HttpAccessControl : HttpFilter() {
     }
 
     private val unautheticatedRoutes =
-        setOf("/", "/static", "/virkailija", "/kuntalainen/venepaikat", "/kuntalainen/partial/vapaat-paikat", "/health", "/actuator/health")
+        setOf(
+            "/",
+            "/static",
+            "/virkailija",
+            "/kuntalainen/venepaikat",
+            "/kuntalainen/partial/vapaat-paikat",
+            "/health",
+            "/actuator/health",
+        )
 
     private fun HttpServletRequest.requiresAuthentication(): Boolean =
         when {
-            unautheticatedRoutes.contains(requestURI) || requestURI.startsWith("/static") -> false
+            unautheticatedRoutes.contains(requestURI) ||
+                requestURI.startsWith("/static") ||
+                requestURI.startsWith("/ext") -> false
             else -> true
         }
 }
 
-class JwtTokenDecoder(private val jwtVerifier: JWTVerifier) : HttpFilter() {
+class JwtTokenDecoder(
+    private val jwtVerifier: JWTVerifier
+) : HttpFilter() {
     private val logger = KotlinLogging.logger {}
 
     override fun doFilter(
@@ -96,7 +113,8 @@ class JwtTokenDecoder(private val jwtVerifier: JWTVerifier) : HttpFilter() {
         chain: FilterChain
     ) {
         try {
-            request.getBearerToken()
+            request
+                .getBearerToken()
                 ?.takeIf { it.isNotEmpty() }
                 ?.let { request.setDecodedJwt(jwtVerifier.verify(it)) }
         } catch (e: JWTVerificationException) {

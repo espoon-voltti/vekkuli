@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.config.Paytrail
+import fi.espoo.vekkuli.config.Paytrail.Companion.checkSignature
 import fi.espoo.vekkuli.config.PaytrailCustomer
 import fi.espoo.vekkuli.config.PaytrailPaymentParams
 import fi.espoo.vekkuli.config.PaytrailPurchaseItem
@@ -81,27 +82,31 @@ class PaymentController {
 
     @GetMapping("/onnistunut")
     fun success(
-        @RequestParam(name = "checkout-stamp") checkoutStamp: UUID,
+        @RequestParam params: Map<String, String>
     ): String {
-        jdbi.inTransactionUnchecked {
-            it.updatePayment(checkoutStamp, PaymentStatus.Success)
+        if (!checkSignature(params)) {
+            return redirectUrl("/")
         }
+
+        val stamp = UUID.fromString(params.get("checkout-stamp"))
         val reservationId =
             jdbi.inTransactionUnchecked {
-                it.updateBoatSpaceReservationOnPaymentSuccess(
-                    checkoutStamp
-                )
-            } ?: return redirectUrl("/error")
-        // TODO: check signature
+                it.handleReservationPaymentResult(stamp, PaymentStatus.Success)
+            }
+        if (reservationId == null) return redirectUrl("/")
         return redirectUrl("/kuntalainen/venepaikka/varaus/$reservationId/vahvistus")
     }
 
     @GetMapping("/peruuntunut")
     fun cancel(
-        @RequestParam(name = "checkout-stamp") checkoutStamp: UUID,
+        @RequestParam params: Map<String, String>
     ): String {
+        if (!checkSignature(params)) {
+            return redirectUrl("/")
+        }
+        val stamp = UUID.fromString(params.get("checkout-stamp"))
         jdbi.inTransactionUnchecked {
-            it.updatePayment(checkoutStamp, PaymentStatus.Failed)
+            it.handleReservationPaymentResult(stamp, PaymentStatus.Failed)
         }
         return "boat-space-reservation-payment-cancel"
     }
