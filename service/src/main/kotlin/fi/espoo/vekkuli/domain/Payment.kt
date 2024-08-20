@@ -48,17 +48,40 @@ fun Handle.insertPayment(params: CreatePaymentParams): Payment {
     return result
 }
 
+// Update payment only if it is 'Created' state
 fun Handle.updatePayment(
     id: UUID,
     status: PaymentStatus
-) {
-    createUpdate(
+): Payment? =
+    createQuery(
         """
         UPDATE payment
         SET status = :status, updated = now()
-        WHERE id = :id
+        WHERE id = :id AND status = 'Created'
+        RETURNING *
         """
     ).bind("id", id)
         .bind("status", status)
-        .execute()
+        .mapTo<Payment>()
+        .firstOrNull()
+
+fun Handle.handleReservationPaymentResult(
+    id: UUID,
+    status: PaymentStatus
+): String? {
+    val payment = updatePayment(id, status)
+    if (payment == null) {
+        // Payment was updated already
+        return null
+    }
+
+    if (status == PaymentStatus.Failed) return null
+
+    val reservationId =
+        updateBoatSpaceReservationOnPaymentSuccess(
+            id
+        )
+
+    // TODO send email to citizen
+    return reservationId
 }

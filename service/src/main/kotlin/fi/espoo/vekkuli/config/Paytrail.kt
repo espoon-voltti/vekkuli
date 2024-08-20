@@ -94,8 +94,18 @@ const val MERCHANT_ID = "375917"
 
 const val BASE_URL = "https://services.paytrail.com"
 
-val SUCCESS_URL = getServiceUrl("/kuntalainen/maksut/onnistunut")
-val CANCEL_URL = getServiceUrl("/kuntalainen/maksut/peruuntunut")
+val redirectUrls =
+    PaytrailCallbackUrl(
+        getServiceUrl("/kuntalainen/maksut/onnistunut"),
+        getServiceUrl("/kuntalainen/maksut/peruuntunut")
+    )
+
+val callbackUrls =
+    PaytrailCallbackUrl(
+        getServiceUrl("/ext/payments/paytrail/success"),
+        getServiceUrl("/ext/payments/paytrail/cancel")
+    )
+
 const val CURRENCY = "EUR"
 const val HASH_ALGORITHM_NAME = "sha512"
 val HASH_ALGORITHM =
@@ -127,9 +137,9 @@ class Paytrail {
                     currency = CURRENCY,
                     language = params.language,
                     customer = params.customer,
-                    redirectUrls = PaytrailCallbackUrl(SUCCESS_URL, CANCEL_URL),
-                    callbackUrls = null,
-                    callbackDelay = null,
+                    redirectUrls = redirectUrls,
+                    callbackUrls = callbackUrls,
+                    callbackDelay = 1,
                     items = params.items,
                 )
 
@@ -151,6 +161,11 @@ class Paytrail {
             return runBlocking {
                 VekkuliHttpClient.makePostRequest("${BASE_URL}/payments", encodedBody, headers).body()
             }
+        }
+
+        fun checkSignature(params: Map<String, String>): Boolean {
+            val signature = calculateHmac(params, "")
+            return signature == params["signature"]
         }
 
         private fun calculateHmac(
