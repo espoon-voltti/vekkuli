@@ -5,9 +5,11 @@
 package fi.espoo.vekkuli.domain
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 data class Citizen(
     val id: UUID,
@@ -19,7 +21,16 @@ data class Citizen(
     val address: String?,
     val postalCode: String?,
     val municipality: String?,
-)
+) {
+    companion object {
+        fun getById(
+            id: UUID,
+            jdbi: Jdbi
+        ): Citizen? {
+            return jdbi.inTransactionUnchecked { tx -> tx.getCitizen(id) }
+        }
+    }
+}
 
 fun Handle.getCitizen(id: UUID): Citizen? {
     val query =

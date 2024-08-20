@@ -93,11 +93,16 @@
                 <tbody>
                 <tr class="reservation-item" th:id="'boat-space-' + ${result.boatSpaceId}"
                     th:each="result : ${reservations}"
-                    th:onclick="|window.location='/virkailija/venepaikat/varaukset/${result.id}'|">
+                    hx-trigger="click"
+                    th:attr="hx-get=|/virkailija/kayttaja/${result.citizenId}|"
+                    hx-push-url="true"
+                    hx-target=".section"
+                    hx-select=".section"
+                >
                     <td th:text="${result.locationName}">Kivenlahti</td>
                     <td th:text="${result.place}">A135</td>
                     <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}">Laituripaikka</td>
-                    <td><a th:href="|/virkailija/venepaikat/varaukset/${result.id}|"><span
+                    <td><a th:href="|/virkailija/kayttaja/${result.citizenId}|"><span
                             th:text="${result.firstName}">Veikko</span><br /><span
                             th:text="${result.lastName}">Veneilijä</span></a></td>
                     <td th:text="${result.homeTown}">Espoo</td>
