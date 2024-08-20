@@ -5,7 +5,8 @@
     <title>Maksaminen</title>
 </head>
 <body layout:fragment="body">
-<div class="box">
+<div class="box" x-data="{ modalOpen: false }">
+    <div th:replace="~{fragments/confirm-cancellation-modal :: backButton}"></div>
     <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=3)}"></div>
 
     <div class="container">
@@ -17,9 +18,16 @@
                     <div th:replace="~{fragments/icons :: warning-exclamation(isError=true)}"></div>
                 </span>
             <div class="column">
-                <p class="block" th:text="${error}"></p>
-
+                <p>
+                    <span th:text="${error}"></span>
+                    <a class="has-text-link"
+                       id="size-warning-back-button"
+                       x-on:click="modalOpen = true">
+                        <span th:text="#{boatSpaceReservation.returnToFrontPage}">tai palaa takaisin etusivulle.</span>
+                    </a>
+                </p>
             </div>
+
         </div>
         <div class="columns is-multiline" id="payment-method-list">
             <div class="column is-one-quarter" th:each="provider : ${providers}">
@@ -37,6 +45,7 @@
             </div>
         </div>
     </div>
+    <div th:replace="~{fragments/confirm-cancellation-modal :: confirmCancellationModal}"></div>
 </div>
 </body>
 </html>

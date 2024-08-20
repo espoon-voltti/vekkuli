@@ -122,17 +122,6 @@ class BoatSpaceFormController {
         return "boat-space-reservation-confirmation"
     }
 
-    @GetMapping("/venepaikka/varaus/{reservationId}/virhe")
-    fun errorBoatSpaceReservation(
-        @PathVariable reservationId: Int,
-        model: Model
-    ): String {
-        val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservation(reservationId) }
-        if (reservation == null) return redirectUrl("/")
-        model.addAttribute("reservation", reservation)
-        return "boat-space-reservation-payment-error"
-    }
-
     @PostMapping("/venepaikka/varaus/{reservationId}")
     fun reserveBoatSpace(
         @PathVariable reservationId: Int,

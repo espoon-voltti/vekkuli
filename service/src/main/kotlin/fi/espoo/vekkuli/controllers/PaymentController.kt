@@ -34,7 +34,7 @@ class PaymentController {
     suspend fun payment(
         @RequestParam id: Int,
         @RequestParam type: PaymentType,
-        @RequestParam error: Boolean? = false,
+        @RequestParam cancelled: Boolean? = false,
         model: Model,
         request: HttpServletRequest,
     ): String {
@@ -79,7 +79,7 @@ class PaymentController {
                     items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode))
                 )
             )
-        val errorMessage = if (error == true) messageUtil.getMessage("payment.cancelled") else null
+        val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled") else null
         model.addAttribute("providers", response.providers)
         model.addAttribute("error", errorMessage)
         model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created))
@@ -117,6 +117,6 @@ class PaymentController {
                 it.handleReservationPaymentResult(stamp, PaymentStatus.Failed)
             }
 
-        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=BoatSpaceReservation&error=true")
+        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=BoatSpaceReservation&cancelled=true")
     }
 }
