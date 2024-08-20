@@ -1,0 +1,77 @@
+<form>
+    <div class="columns is-vcentered">
+        <div class="column is-narrow ">
+            <h4 th:text="|#{citizenDetails.boat} : ${boat.name}|"></h4>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column">
+
+            <div class="field">
+                <label class="label" th:text="#{boatSpaceReservation.title.boatName}">Veneen
+                    nimi</label>
+                <input
+                        class="input"
+                        type="text"
+                        th:id="${boat.name}"
+                        hx-trigger="blur"
+                        th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
+                        hx-swap="outerHTML"
+                        hx-target="#boatName-error-container"
+                        hx-select="#boatName-error-container"
+                />
+            </div>
+            <div class="field">
+                <label class="label" th:text="#{boatSpaceReservation.title.weight}">Paino (kg)</label>
+                <p th:text="${boat.weightKg}">4500</p>
+            </div>
+
+        </div>
+        <div class="column">
+            <div class="field">
+                <label class="label" th:text="#{boatSpaceReservation.title.boatType}">Veneen
+                    tyyppi</label>
+                <p th:text="${boat.type}">Purjevene</p>
+            </div>
+            <div class="field">
+                <label class="label" th:text="#{boatSpaceReservation.title.draft}">Syväys (m)</label>
+                <p th:text="${boat.depthCm}">1,5</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="field">
+                <label class="label" th:text="#{boatSpaceReservation.title.boatWidth}">Leveys
+                    (m)</label>
+                <p th:text="${boat.widthCm}">2,91</p>
+            </div>
+            <div class="field">
+                <label class="label"
+                       th:text="#{boatSpaceReservation.title.registrationNumber}">Rekisteritunnus</label>
+                <p th:text="${boat.registrationCode}">P12345</p>
+            </div>
+        </div>
+        <div class="column">
+            <div class="field">
+                <label class="label" th:text="#{boatSpaceReservation.title.boatLength}">Pituus
+                    (m)</label>
+                <p th:text="${boat.lengthCm}">8,45</p>
+            </div>
+            <div class="field">
+                <label class="label"
+                       th:text="#{boatSpaceReservation.title.ownershipStatus}">Omistussuhde</label>
+                <p th:text="#{${'boatApplication.ownershipOption.' + boat.ownership}}">
+                    Olen ostamassa veneen <span class="icon has-text-warning"><i
+                        class="fas fa-exclamation-circle"></i></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="buttons">
+        <button class="button" th:text="#{cancel}" type="button"
+                th:attr="hx-get=|/virkailija/kayttaja/${citizenId}|"
+                hx-target=".section"
+                hx-select=".section"
+        ></button>
+        <button class="button is-primary" th:text="#{citizenDetails.saveChanges}"></button>
+    </div>
+</form>

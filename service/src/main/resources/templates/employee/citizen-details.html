@@ -176,92 +176,103 @@
             </div>
             <!-- Boats-->
             <div th:each="boat, iter : ${boats}" class="block">
-                <div class="columns is-vcentered">
-                    <div class="column is-narrow ">
-                        <h4 th:text="|#{citizenDetails.boat} ${iter.index + 1}: ${boat.name}|"></h4>
-                    </div>
-                    <div class="column is-narrow">
-                        <a class="is-link">
+                <div th:id="|boat-${iter.index}|">
+                    <div class="columns is-vcentered">
+                        <div class="column is-narrow ">
+                            <h4 th:text="|#{citizenDetails.boat} ${iter.index + 1}: ${boat.name}|"></h4>
+                        </div>
+                        <div class="column is-narrow">
+                            <a class="is-link"
+                               th:attr="
+                                 hx-get=|/virkailija/kayttaja/${citizenId}/vene/${boat.id}/muokkaa|,
+                                 hx-target=|${'#'}boat-${iter.index}|"
+                               hx-swap="innerHTML"
+                            >
                                     <span class="icon ml-s">
                                             <div th:replace="~{fragments/icons :: edit}"></div>
                                         </span>
-                            <span th:text="#{boatSpaceReservation.button.editBoatDetails}">Muokkaa veneen tietoja</span>
-                        </a>
-                    </div>
-                    <div class="column">
-                        <a class="is-link has-text-danger">
+                                <span th:text="#{boatSpaceReservation.button.editBoatDetails}">Muokkaa veneen tietoja</span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a class="is-link has-text-danger">
                                     <span class="icon ml-s">
                                             <div th:replace="~{fragments/icons :: remove}"></div>
                                         </span>
-                            <span th:text="#{boatSpaceReservation.button.deleteBoat}">Poista vene</span>
-                        </a>
+                                <span th:text="#{boatSpaceReservation.button.deleteBoat}">Poista vene</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="columns">
-                    <div class="column">
+                    <div class="columns">
+                        <div class="column">
 
-                        <div class="field">
-                            <label class="label" th:text="#{boatSpaceReservation.title.boatName}">Veneen nimi</label>
-                            <p th:text="${boat.name}">Vivados</p>
-                        </div>
-                        <div class="field">
-                            <label class="label" th:text="#{boatSpaceReservation.title.weight}">Paino (kg)</label>
-                            <p th:text="${boat.weightKg}">4500</p>
-                        </div>
+                            <div class="field">
+                                <label class="label" th:text="#{boatSpaceReservation.title.boatName}">Veneen
+                                    nimi</label>
+                                <p th:text="${boat.name}">Vivados</p>
+                            </div>
+                            <div class="field">
+                                <label class="label" th:text="#{boatSpaceReservation.title.weight}">Paino (kg)</label>
+                                <p th:text="${boat.weightKg}">4500</p>
+                            </div>
 
+                        </div>
+                        <div class="column">
+                            <div class="field">
+                                <label class="label" th:text="#{boatSpaceReservation.title.boatType}">Veneen
+                                    tyyppi</label>
+                                <p th:text="${boat.type}">Purjevene</p>
+                            </div>
+                            <div class="field">
+                                <label class="label" th:text="#{boatSpaceReservation.title.draft}">Syväys (m)</label>
+                                <p th:text="${boat.depthCm}">1,5</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field">
+                                <label class="label" th:text="#{boatSpaceReservation.title.boatWidth}">Leveys
+                                    (m)</label>
+                                <p th:text="${boat.widthCm}">2,91</p>
+                            </div>
+                            <div class="field">
+                                <label class="label"
+                                       th:text="#{boatSpaceReservation.title.registrationNumber}">Rekisteritunnus</label>
+                                <p th:text="${boat.registrationCode}">P12345</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field">
+                                <label class="label" th:text="#{boatSpaceReservation.title.boatLength}">Pituus
+                                    (m)</label>
+                                <p th:text="${boat.lengthCm}">8,45</p>
+                            </div>
+                            <div class="field">
+                                <label class="label"
+                                       th:text="#{boatSpaceReservation.title.ownershipStatus}">Omistussuhde</label>
+                                <p th:text="#{${'boatApplication.ownershipOption.' + boat.ownership}}">
+                                    Olen ostamassa veneen <span class="icon has-text-warning"><i
+                                        class="fas fa-exclamation-circle"></i></span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="column">
-                        <div class="field">
-                            <label class="label" th:text="#{boatSpaceReservation.title.boatType}">Veneen tyyppi</label>
-                            <p th:text="${boat.type}">Purjevene</p>
+
+                    <div class="columns">
+                        <div class="column is-one-quarter">
+                            <label class="label" th:text="#{boatSpaceReservation.title.otherIdentifier}">Muu
+                                tunniste</label>
+                            <p th:text="${boat.otherIdentification}">-</p>
                         </div>
-                        <div class="field">
-                            <label class="label" th:text="#{boatSpaceReservation.title.draft}">Syväys (m)</label>
-                            <p th:text="${boat.depthCm}">1,5</p>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="field">
-                            <label class="label" th:text="#{boatSpaceReservation.title.boatWidth}">Leveys (m)</label>
-                            <p th:text="${boat.widthCm}">2,91</p>
-                        </div>
-                        <div class="field">
+                        <div class="column">
                             <label class="label"
-                                   th:text="#{boatSpaceReservation.title.registrationNumber}">Rekisteritunnus</label>
-                            <p th:text="${boat.registrationCode}">P12345</p>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="field">
-                            <label class="label" th:text="#{boatSpaceReservation.title.boatLength}">Pituus (m)</label>
-                            <p th:text="${boat.lengthCm}">8,45</p>
-                        </div>
-                        <div class="field">
-                            <label class="label"
-                                   th:text="#{boatSpaceReservation.title.ownershipStatus}">Omistussuhde</label>
-                            <p th:text="#{${'boatApplication.ownershipOption.' + boat.ownership}}">
-                                Olen ostamassa veneen <span class="icon has-text-warning"><i
-                                    class="fas fa-exclamation-circle"></i></span>
+                                   th:text="#{boatSpaceReservation.title.additionalInfo}">Lisätiedot</label>
+                            <p th:text="${boat.extraInformation}">
+                                Olen ostamassa veneen kesäkuussa, Jeanneau Sun Odyssey 350.
+                                <span class="icon has-text-warning"><i class="fas fa-exclamation-circle"></i></span>
                             </p>
                         </div>
                     </div>
                 </div>
-
-                <div class="columns">
-                    <div class="column is-one-quarter">
-                        <label class="label" th:text="#{boatSpaceReservation.title.otherIdentifier}">Muu
-                            tunniste</label>
-                        <p th:text="${boat.otherIdentification}">-</p>
-                    </div>
-                    <div class="column">
-                        <label class="label" th:text="#{boatSpaceReservation.title.additionalInfo}">Lisätiedot</label>
-                        <p th:text="${boat.extraInformation}">
-                            Olen ostamassa veneen kesäkuussa, Jeanneau Sun Odyssey 350.
-                            <span class="icon has-text-warning"><i class="fas fa-exclamation-circle"></i></span>
-                        </p>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>

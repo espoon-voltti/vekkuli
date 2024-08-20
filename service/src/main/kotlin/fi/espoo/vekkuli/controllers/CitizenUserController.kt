@@ -34,4 +34,17 @@ class CitizenUserController {
         model.addAttribute("boats", boats)
         return "employee/citizen-details"
     }
+
+    @GetMapping("/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
+    fun boatEditPage(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable boatId: Int,
+        model: Model
+    ): String {
+        val boats = getBoatsForCitizen(citizenId, jdbi)
+        val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+        model.addAttribute("boat", boat)
+        return "employee/edit-boat"
+    }
 }
