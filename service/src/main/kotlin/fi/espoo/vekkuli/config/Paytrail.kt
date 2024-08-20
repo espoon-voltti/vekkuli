@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
+import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
@@ -101,19 +102,20 @@ val redirectUrls =
     )
 
 val callbackUrls =
-    PaytrailCallbackUrl(
-        getServiceUrl("/ext/payments/paytrail/success"),
-        getServiceUrl("/ext/payments/paytrail/cancel")
-    )
+    if (isStagingOrProduction()) {
+        PaytrailCallbackUrl(
+            getServiceUrl("/ext/payments/paytrail/success"),
+            getServiceUrl("/ext/payments/paytrail/cancel")
+        )
+    } else {
+        null
+    }
 
 const val CURRENCY = "EUR"
+
+// HASH_ALGORITHM_NAME and HASH_ALGORITHM must be changed together
 const val HASH_ALGORITHM_NAME = "sha512"
-val HASH_ALGORITHM =
-    when (HASH_ALGORITHM_NAME) {
-        "sha256" -> HmacAlgorithms.HMAC_SHA_256
-        "sha512" -> HmacAlgorithms.HMAC_SHA_512
-        else -> throw IllegalArgumentException("Unsupported hash algorithm: $HASH_ALGORITHM_NAME")
-    }
+val HASH_ALGORITHM = HmacAlgorithms.HMAC_SHA_512
 
 class Paytrail {
     companion object {
