@@ -21,7 +21,7 @@
                 Vahvistus</p>
         </div>
     </div>
-    <div th:if="${currentStep == 2}">
+    <div th:if="${currentStep != 1 && currentStep != 4}">
         <div th:replace="~{fragments/session-timer :: sessionTimer}"></div>
     </div>
 </div>

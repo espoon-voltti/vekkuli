@@ -5,6 +5,8 @@ $black: #536076;
 $grey: #A9B0BB;
 $lightGray: #F7F7F7;
 $darkGray: #536076;
+$warning: #FF8E31;
+$error: #FF3D3D;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
@@ -206,12 +208,19 @@ input[type="radio"]:checked {
   color: $bulma-primary;
 }
 
-.warning {
+.warning, .error {
   padding: 16px;
   gap: 64px;
   border-radius: 4px;
-  border: 1px solid #FF8E31;
 }
+
+.warning {
+  border: 1px solid $warning;
+}
+.error {
+  border: 1px solid $error;
+}
+
 
 .field.is-grouped.is-grouped-no-spacing-v {
   gap: 0;

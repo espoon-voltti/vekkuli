@@ -10,7 +10,17 @@
 
     <div class="container">
         <h2 th:text="#{boatSpaceReservation.title.resourceReservation}">Espoon resurssivarausjärjestelmä</h2>
+        <div class="error columns is-vcentered"
+             id="boatSize-warning"
+             th:if="${error}">
+                 <span class="column is-vcentered is-narrow">
+                    <div th:replace="~{fragments/icons :: warning-exclamation(isError=true)}"></div>
+                </span>
+            <div class="column">
+                <p class="block" th:text="${error}"></p>
 
+            </div>
+        </div>
         <div class="columns is-multiline" id="payment-method-list">
             <div class="column is-one-quarter" th:each="provider : ${providers}">
                 <form method="POST" th:action="${provider.url}" class="payment-form">
