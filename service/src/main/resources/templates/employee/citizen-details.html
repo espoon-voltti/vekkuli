@@ -82,10 +82,12 @@
                     <h3 class="mb-none">Venepaikat</h3>
                 </div>
 
-                <div th:each="reservation : ${reservations}">
+                <div th:each="reservation, iter : ${reservations}">
                     <div class="columns is-vcentered">
                         <div class="column is-narrow">
-                            <h4>Venepaikka 1: Haukilahden B105</h4>
+                            <h4
+                                    th:text="|#{citizenDetails.boatSpace} ${iter.index + 1}: ${reservation.locationName} ${reservation.place}|">
+                                Venepaikka 1: Haukilahden B105</h4>
                         </div>
                         <div class="column is-narrow">
                             <a class="is-link">
@@ -173,10 +175,10 @@
 
             </div>
             <!-- Boats-->
-            <div th:each="boat : ${boats}" class="block">
+            <div th:each="boat, iter : ${boats}" class="block">
                 <div class="columns is-vcentered">
                     <div class="column is-narrow ">
-                        <h4 th:text="${boat.name}">Vene 1: Vivados</h4>
+                        <h4 th:text="|#{citizenDetails.boat} ${iter.index + 1}: ${boat.name}|"></h4>
                     </div>
                     <div class="column is-narrow">
                         <a class="is-link">
