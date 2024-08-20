@@ -21,6 +21,7 @@
                 <p>
                     <span th:text="${error}"></span>
                     <a class="has-text-link"
+                       tabindex="0"
                        id="size-warning-back-button"
                        x-on:click="modalOpen = true">
                         <span th:text="#{boatSpaceReservation.returnToFrontPage}">tai palaa takaisin etusivulle.</span>
@@ -38,7 +39,7 @@
                     </div>
                     <!-- Render payment method button -->
                     <button class="button is-flex-direction-column">
-                        <img class="row" th:src="${provider.svg}" alt.="Payment Icon"/>
+                        <img class="row" th:src="${provider.svg}" alt="Payment Icon"/>
                         <span class="row" th:text="${provider.name} ?: ''">Payment Method</span>
                     </button>
                 </form>
