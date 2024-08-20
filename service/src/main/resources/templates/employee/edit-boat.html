@@ -1,4 +1,4 @@
-<form>
+<form id="form">
     <div class="columns is-vcentered">
         <div class="column is-narrow ">
             <h4 th:text="|#{citizenDetails.boat} : ${boat.name}|"></h4>
@@ -75,3 +75,9 @@
         <button class="button is-primary" th:text="#{citizenDetails.saveChanges}"></button>
     </div>
 </form>
+<a class="edit-link is-link is-disabled" hx-swap-oob="outerHTML:.edit-link">
+    <span class="icon ml-s">
+        <div th:replace="~{fragments/icons :: edit}"></div>
+    </span>
+    <span> muokkaus estetty</span>
+</a>
