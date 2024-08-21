@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.BoatSpaceReservation
 import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.domain.getBoatsForCitizen
+import fi.espoo.vekkuli.domain.updateBoat
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
@@ -69,7 +70,7 @@ class CitizenUserController {
     }
 
     @PatchMapping("/kayttaja/{citizenId}/vene/{boatId}")
-    fun updateBoat(
+    fun updateBoatPatch(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
@@ -84,6 +85,10 @@ class CitizenUserController {
             model.addAttribute("errors", errors)
             return ModelAndView("employee/edit-boat", model.asMap(), HttpStatus.OK)
         }
+
+        val updatedBoat = boat.copy(name = input.name)
+        updateBoat(updatedBoat, jdbi)
+
         val headers = HttpHeaders()
         headers.add("HX-Redirect", "/virkailija/kayttaja/$citizenId")
 
