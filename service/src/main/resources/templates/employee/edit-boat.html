@@ -1,4 +1,7 @@
-<form id="form">
+<form id="form"
+      th:attr="hx-patch=|/virkailija/kayttaja/${citizenId}/vene/${boat.id}|"
+      novalidate
+>
     <div class="columns is-vcentered">
         <div class="column is-narrow ">
             <h4 th:text="|#{citizenDetails.boat} : ${boat.name}|"></h4>
@@ -10,16 +13,18 @@
             <div class="field">
                 <label class="label" th:text="#{boatSpaceReservation.title.boatName}">Veneen
                     nimi</label>
-                <input
-                        class="input"
-                        type="text"
-                        th:id="${boat.name}"
-                        hx-trigger="blur"
-                        th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
-                        hx-swap="outerHTML"
-                        hx-target="#boatName-error-container"
-                        hx-select="#boatName-error-container"
-                />
+                <div class="control">
+                    <input
+                            class="input"
+                            type="text"
+                            id="name"
+                            name="name"
+                    />
+                    <div id="boatName-error-container">
+                            <span id="boatName-error" class="help is-danger" th:if="${errors.containsKey('name')}"
+                                  th:text="${errors.get('name')}">Boat name number required</span>
+                    </div>
+                </div>
             </div>
             <div class="field">
                 <label class="label" th:text="#{boatSpaceReservation.title.weight}">Paino (kg)</label>
@@ -67,12 +72,19 @@
         </div>
     </div>
     <div class="buttons">
-        <button class="button" th:text="#{cancel}" type="button"
+        <button
+                id="cancel"
+                class="button" th:text="#{cancel}" type="button"
                 th:attr="hx-get=|/virkailija/kayttaja/${citizenId}|"
                 hx-target=".section"
                 hx-select=".section"
         ></button>
-        <button class="button is-primary" th:text="#{citizenDetails.saveChanges}"></button>
+        <button
+                id="submit"
+                class="button is-primary"
+                th:text="#{citizenDetails.saveChanges}"
+                type="submit"
+        ></button>
     </div>
 </form>
 <a class="edit-link is-link is-disabled" hx-swap-oob="outerHTML:.edit-link">
