@@ -80,7 +80,7 @@ fun Handle.handleReservationPaymentResult(
 ): Int? {
     updatePayment(id, status)
 
-    if (status == PaymentStatus.Failed) return null
+    if (status == PaymentStatus.Failed) return getBoatSpaceReservationIdForPayment(id)
 
     val reservationId =
         updateBoatSpaceReservationOnPaymentSuccess(

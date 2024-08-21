@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
@@ -14,7 +15,6 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import java.util.*
 
 enum class PaymentType {
     BoatSpaceReservation
@@ -29,12 +29,16 @@ class PaymentController {
     @Autowired
     lateinit var paytrail: Paytrail
 
+    @Autowired
+    lateinit var messageUtil: MessageUtil
+
     @GetMapping("/maksa")
     suspend fun payment(
         @RequestParam id: Int,
         @RequestParam type: PaymentType,
+        @RequestParam cancelled: Boolean? = false,
         model: Model,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): String {
         val citizen = getCitizen(request, jdbi) ?: return redirectUrl("/")
         // TODO get correct reference
@@ -44,19 +48,21 @@ class PaymentController {
         // TODO get correct product code
         val productCode = "Venepaikka A 100"
 
-        val payment =
+        val (payment, reservation) =
             jdbi.inTransactionUnchecked {
-                it.insertPayment(
-                    CreatePaymentParams(
-                        citizenId = citizen.id,
-                        reference = reference,
-                        totalCents = amount,
-                        vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        productCode = productCode
+                val payment =
+                    it.insertPayment(
+                        CreatePaymentParams(
+                            citizenId = citizen.id,
+                            reference = reference,
+                            totalCents = amount,
+                            vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
+                            productCode = productCode
+                        )
                     )
-                )
+                val reservation = it.updateReservationWithPayment(id, payment.id)
+                return@inTransactionUnchecked payment to reservation
             }
-        jdbi.inTransactionUnchecked { it.updateReservationWithPayment(id, payment.id) }
 
         val response =
             paytrail.createPayment(
@@ -75,13 +81,16 @@ class PaymentController {
                     items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode))
                 )
             )
+        val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled") else null
         model.addAttribute("providers", response.providers)
+        model.addAttribute("error", errorMessage)
+        model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created))
         return "boat-space-reservation-payment"
     }
 
     @GetMapping("/onnistunut")
     fun success(
-        @RequestParam params: Map<String, String>
+        @RequestParam params: Map<String, String>,
     ): String {
         val result =
             paytrail.handlePaymentResult(params, true)
@@ -95,7 +104,7 @@ class PaymentController {
 
     @GetMapping("/peruuntunut")
     fun cancel(
-        @RequestParam params: Map<String, String>
+        @RequestParam params: Map<String, String>,
     ): String {
         paytrail.handlePaymentResult(params, false)
         return "boat-space-reservation-payment-cancel"

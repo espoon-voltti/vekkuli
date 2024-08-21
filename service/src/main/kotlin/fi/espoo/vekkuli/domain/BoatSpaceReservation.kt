@@ -193,6 +193,22 @@ fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int? {
     return query.mapTo<Int>().findOne().orElse(null)
 }
 
+fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): String? {
+    val query =
+        createQuery(
+            """
+            SELECT id
+            FROM boat_space_reservation
+            WHERE payment_id = :paymentId
+                AND status = 'Payment' 
+                AND created > NOW() - make_interval(secs => :paymentTimeout)
+            """.trimIndent()
+        )
+    query.bind("paymentId", paymentId)
+    query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+    return query.mapTo<String>().findOne().orElse(null)
+}
+
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
     val query =
         createQuery(

@@ -327,11 +327,11 @@ class BoatSpaceFormController {
             }
         }
     }
+}
 
-    private fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
-        val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
-        return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
-    }
+fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
+    val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
+    return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
 }
 
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
