@@ -107,17 +107,14 @@ val redirectUrls =
         getServiceUrl("/kuntalainen/maksut/peruuntunut")
     )
 
-val callbackUrls: PaytrailCallbackUrl =
+val callbackUrls: PaytrailCallbackUrl? =
     if (isStagingOrProduction()) {
         PaytrailCallbackUrl(
             getServiceUrl("/ext/payments/paytrail/success"),
             getServiceUrl("/ext/payments/paytrail/cancel")
         )
     } else {
-        PaytrailCallbackUrl(
-            "https://603c-2001-14ba-a4f7-5e00-3c13-9660-e276-df79.ngrok-free.app/ext/payments/paytrail/success",
-            "https://603c-2001-14ba-a4f7-5e00-3c13-9660-e276-df79.ngrok-free.app/ext/payments/paytrail/cancel"
-        )
+        null
     }
 
 const val CURRENCY = "EUR"
