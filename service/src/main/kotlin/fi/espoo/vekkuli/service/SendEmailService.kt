@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
+import fi.espoo.vekkuli.controllers.EnvType
+import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.ses.SesClient
@@ -14,7 +15,7 @@ class SendEmailService {
         subject: String,
         body: String
     ): String? {
-        if (!isStagingOrProduction()) {
+        if (getEnv() != EnvType.Production) {
             println("Sending email to $recipient with subject $subject and content $body")
             return null
         }
