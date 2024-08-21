@@ -193,7 +193,7 @@ fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int? {
     return query.mapTo<Int>().findOne().orElse(null)
 }
 
-fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): String? {
+fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): Int? {
     val query =
         createQuery(
             """
@@ -206,7 +206,7 @@ fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): String? {
         )
     query.bind("paymentId", paymentId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
-    return query.mapTo<String>().findOne().orElse(null)
+    return query.mapTo<Int>().findOne().orElse(null)
 }
 
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
