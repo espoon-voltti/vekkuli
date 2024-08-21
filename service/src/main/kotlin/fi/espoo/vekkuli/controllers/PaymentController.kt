@@ -1,14 +1,10 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
-import fi.espoo.vekkuli.config.Paytrail
-import fi.espoo.vekkuli.config.Paytrail.Companion.checkSignature
-import fi.espoo.vekkuli.config.PaytrailCustomer
-import fi.espoo.vekkuli.config.PaytrailPaymentParams
-import fi.espoo.vekkuli.config.PaytrailPurchaseItem
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.*
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -29,6 +25,9 @@ enum class PaymentType {
 class PaymentController {
     @Autowired
     lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var paytrail: Paytrail
 
     @GetMapping("/maksa")
     suspend fun payment(
@@ -60,7 +59,7 @@ class PaymentController {
         jdbi.inTransactionUnchecked { it.updateReservationWithPayment(id, payment.id) }
 
         val response =
-            Paytrail.createPayment(
+            paytrail.createPayment(
                 PaytrailPaymentParams(
                     stamp = payment.id.toString(),
                     reference = reference,
@@ -84,30 +83,21 @@ class PaymentController {
     fun success(
         @RequestParam params: Map<String, String>
     ): String {
-        if (!checkSignature(params)) {
-            return redirectUrl("/")
-        }
+        val result =
+            paytrail.handlePaymentResult(params, true)
 
-        val stamp = UUID.fromString(params.get("checkout-stamp"))
-        val reservationId =
-            jdbi.inTransactionUnchecked {
-                it.handleReservationPaymentResult(stamp, PaymentStatus.Success)
-            }
-        if (reservationId == null) return redirectUrl("/")
-        return redirectUrl("/kuntalainen/venepaikka/varaus/$reservationId/vahvistus")
+        when (result) {
+            is PaymentProcessResult.Success -> return redirectUrl("/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus")
+            is PaymentProcessResult.Failure -> return redirectUrl("/")
+            is PaymentProcessResult.HandledAlready -> return redirectUrl("/")
+        }
     }
 
     @GetMapping("/peruuntunut")
     fun cancel(
         @RequestParam params: Map<String, String>
     ): String {
-        if (!checkSignature(params)) {
-            return redirectUrl("/")
-        }
-        val stamp = UUID.fromString(params.get("checkout-stamp"))
-        jdbi.inTransactionUnchecked {
-            it.handleReservationPaymentResult(stamp, PaymentStatus.Failed)
-        }
+        paytrail.handlePaymentResult(params, false)
         return "boat-space-reservation-payment-cancel"
     }
 }

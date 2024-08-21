@@ -65,15 +65,20 @@ fun Handle.updatePayment(
         .mapTo<Payment>()
         .firstOrNull()
 
+fun Handle.getPayment(id: UUID): Payment? =
+    createQuery(
+        """
+        SELECT * FROM payment WHERE id = :id
+        """.trimIndent()
+    ).bind("id", id)
+        .mapTo<Payment>()
+        .firstOrNull()
+
 fun Handle.handleReservationPaymentResult(
     id: UUID,
-    status: PaymentStatus
-): String? {
-    val payment = updatePayment(id, status)
-    if (payment == null) {
-        // Payment was updated already
-        return null
-    }
+    status: PaymentStatus,
+): Int? {
+    updatePayment(id, status)
 
     if (status == PaymentStatus.Failed) return null
 
@@ -82,6 +87,5 @@ fun Handle.handleReservationPaymentResult(
             id
         )
 
-    // TODO send email to citizen
     return reservationId
 }

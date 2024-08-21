@@ -1,8 +1,10 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.config.Paytrail.Companion.checkSignature
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.domain.handleReservationPaymentResult
+import fi.espoo.vekkuli.service.Paytrail
+import fi.espoo.vekkuli.service.TemplateEmailService
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,17 +22,20 @@ class PaymentApiController {
     @Autowired
     lateinit var jdbi: Jdbi
 
+    @Autowired
+    lateinit var emailService: TemplateEmailService
+
+    @Autowired
+    lateinit var messageUtil: MessageUtil
+
+    @Autowired
+    lateinit var paytrail: Paytrail
+
     @GetMapping("/paytrail/success")
     fun apiSuccess(
         @RequestParam params: Map<String, String>
     ): ResponseEntity<Void> {
-        if (!checkSignature(params)) {
-            return ResponseEntity(HttpStatus.UNAUTHORIZED)
-        }
-        val stamp = UUID.fromString(params.get("checkout-stamp"))
-        jdbi.inTransactionUnchecked {
-            it.handleReservationPaymentResult(stamp, PaymentStatus.Success)
-        }
+        paytrail.handlePaymentResult(params, true)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
@@ -38,7 +43,7 @@ class PaymentApiController {
     fun apiCancel(
         @RequestParam params: Map<String, String>
     ): ResponseEntity<Void> {
-        if (!checkSignature(params)) {
+        if (!paytrail.checkSignature(params)) {
             return ResponseEntity(HttpStatus.UNAUTHORIZED)
         }
         val stamp = UUID.fromString(params.get("checkout-stamp"))

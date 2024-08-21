@@ -1,5 +1,6 @@
-package fi.espoo.vekkuli.config
+package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.ses.SesClient
@@ -11,8 +12,13 @@ class SendEmailService {
         sender: String,
         recipient: String,
         subject: String,
-        message: String
+        body: String
     ): String? {
+        if (!isStagingOrProduction()) {
+            println("Sending email to $recipient with subject $subject and content $body")
+            return null
+        }
+
         val sesClient =
             SesClient
                 .builder()
@@ -30,7 +36,7 @@ class SendEmailService {
                         .body(
                             Body
                                 .builder()
-                                .text(Content.builder().data(message).build())
+                                .text(Content.builder().data(body).build())
                                 .build()
                         ).build()
                 ).source(sender)
