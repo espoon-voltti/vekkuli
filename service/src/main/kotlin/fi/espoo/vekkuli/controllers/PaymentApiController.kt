@@ -1,8 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.service.Paytrail
-import fi.espoo.vekkuli.service.TemplateEmailService
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -11,19 +9,12 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import java.util.*
 
 @Controller
 @RequestMapping("/ext/payments")
 class PaymentApiController {
     @Autowired
     lateinit var jdbi: Jdbi
-
-    @Autowired
-    lateinit var emailService: TemplateEmailService
-
-    @Autowired
-    lateinit var messageUtil: MessageUtil
 
     @Autowired
     lateinit var paytrail: Paytrail
