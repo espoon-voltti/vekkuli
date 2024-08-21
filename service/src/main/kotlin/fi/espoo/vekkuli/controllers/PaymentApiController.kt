@@ -1,12 +1,9 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.domain.PaymentStatus
-import fi.espoo.vekkuli.domain.handleReservationPaymentResult
 import fi.espoo.vekkuli.service.Paytrail
 import fi.espoo.vekkuli.service.TemplateEmailService
 import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -43,13 +40,7 @@ class PaymentApiController {
     fun apiCancel(
         @RequestParam params: Map<String, String>
     ): ResponseEntity<Void> {
-        if (!paytrail.checkSignature(params)) {
-            return ResponseEntity(HttpStatus.UNAUTHORIZED)
-        }
-        val stamp = UUID.fromString(params.get("checkout-stamp"))
-        jdbi.inTransactionUnchecked {
-            it.handleReservationPaymentResult(stamp, PaymentStatus.Failed)
-        }
+        paytrail.handlePaymentResult(params, false)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }
