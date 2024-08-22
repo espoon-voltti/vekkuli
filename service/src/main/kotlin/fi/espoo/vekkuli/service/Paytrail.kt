@@ -1,10 +1,8 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
-import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
-import fi.espoo.vekkuli.domain.*
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
@@ -13,9 +11,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.commons.codec.digest.HmacAlgorithms
 import org.apache.commons.codec.digest.HmacUtils
-import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.kotlin.inTransactionUnchecked
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -123,29 +118,8 @@ const val CURRENCY = "EUR"
 const val HASH_ALGORITHM_NAME = "sha512"
 val HASH_ALGORITHM = HmacAlgorithms.HMAC_SHA_512
 
-sealed class PaymentProcessResult {
-    data class Success(
-        val reservation: BoatSpaceReservationDetails
-    ) : PaymentProcessResult()
-
-    object Failure : PaymentProcessResult()
-
-    data class HandledAlready(
-        val reservation: BoatSpaceReservationDetails
-    ) : PaymentProcessResult()
-}
-
 @Service
 class Paytrail {
-    @Autowired
-    lateinit var jdbi: Jdbi
-
-    @Autowired
-    lateinit var emailService: TemplateEmailService
-
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
     fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
         val nonce = UUID.randomUUID().toString()
         val timestamp = LocalDateTime.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
@@ -230,46 +204,5 @@ class Paytrail {
         val hmac = HmacUtils(HASH_ALGORITHM, MERCHANT_SECRET)
         val outMsg = hmac.hmacHex(message)
         return outMsg.replace("-", "").lowercase(Locale.getDefault())
-    }
-
-    fun handlePaymentResult(
-        params: Map<String, String>,
-        success: Boolean
-    ): PaymentProcessResult {
-        if (!checkSignature(params)) {
-            return PaymentProcessResult.Failure
-        }
-        val stamp = UUID.fromString(params.get("checkout-stamp"))
-
-        val payment = jdbi.inTransactionUnchecked { it.getPayment(stamp) }
-        if (payment == null) return PaymentProcessResult.Failure
-
-        val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservationWithPaymentId(stamp) }
-        if (reservation == null) return PaymentProcessResult.Failure
-
-        if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
-
-        jdbi.inTransactionUnchecked {
-            it.handleReservationPaymentResult(stamp, success)
-        }
-
-        if (!success) {
-            return PaymentProcessResult.Success(reservation)
-        }
-
-        emailService.sendEmail(
-            "reservationSuccess",
-            reservation.email,
-            messageUtil.getMessage("boatSpaceReservation.title.confirmation"),
-            mapOf(
-                "name" to " ${reservation.locationName} ${reservation.place}",
-                "width" to reservation.boatSpaceWidthInM,
-                "length" to reservation.boatSpaceLengthInM,
-                "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${reservation.amenity}"),
-                "endDate" to reservation.endDate
-            )
-        )
-
-        return PaymentProcessResult.Success(reservation)
     }
 }

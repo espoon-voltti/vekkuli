@@ -90,6 +90,18 @@ fun rearBuoyFilter(
         )
     )
 
+fun buoyFilter(
+    boatWidth: Int?,
+    boatLength: Int?
+): SqlExpr =
+    AndExpr(
+        listOf(
+            OperatorExpr("amenity", "=", BoatSpaceAmenity.Buoy),
+            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM)),
+            OperatorExpr("length_cm", ">=", boatLength?.plus(BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM))
+        )
+    )
+
 fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
     val amenities = if (filter.amenities.isNullOrEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
     return OrExpr(
@@ -99,7 +111,7 @@ fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
                 BoatSpaceAmenity.Beam -> beamFilter(filter.boatWidth, filter.boatLength)
                 BoatSpaceAmenity.WalkBeam -> walkBeamFilter(filter.boatWidth, filter.boatLength)
                 BoatSpaceAmenity.RearBuoy -> rearBuoyFilter(filter.boatWidth, filter.boatLength)
-                BoatSpaceAmenity.Buoy -> OperatorExpr("amenity", "=", BoatSpaceAmenity.Buoy)
+                BoatSpaceAmenity.Buoy -> buoyFilter(filter.boatWidth, filter.boatLength)
             }
         }
     )

@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
+import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
@@ -293,39 +295,9 @@ class BoatSpaceFormController {
         spaceWidthInCm: Int,
         spaceLengthInCm: Int,
     ): Boolean {
-        if (boatSpaceAmenity != BoatSpaceAmenity.Buoy && lengthInCm != null && lengthInCm > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
-            return true
-        }
-
-        when (boatSpaceAmenity) {
-            BoatSpaceAmenity.Buoy, BoatSpaceAmenity.Beam -> {
-                val widthTooLarge =
-                    widthInCm != null && widthInCm + BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
-                val lengthTooLarge =
-                    lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM
-                return widthTooLarge || lengthTooLarge
-            }
-
-            BoatSpaceAmenity.RearBuoy -> {
-                val widthTooLarge =
-                    widthInCm != null && widthInCm + BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
-                val lengthTooLarge =
-                    lengthInCm != null && lengthInCm > spaceLengthInCm - BoatSpaceConfig.REAR_BUOY_LENGTH_ADJUSTMENT_CM
-                return widthTooLarge || lengthTooLarge
-            }
-
-            BoatSpaceAmenity.WalkBeam -> {
-                val widthTooLarge =
-                    widthInCm != null && widthInCm + BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM > spaceWidthInCm
-                val lengthTooLarge =
-                    lengthInCm != null && lengthInCm > spaceLengthInCm + BoatSpaceConfig.WALK_BEAM_LENGTH_ADJUSTMENT_CM
-                return widthTooLarge || lengthTooLarge
-            }
-
-            else -> {
-                return false
-            }
-        }
+        val boatDimensions = Dimensions(widthInCm ?: 0, lengthInCm ?: 0)
+        val spaceDimensions = Dimensions(spaceWidthInCm, spaceLengthInCm)
+        return !doesBoatFit(spaceDimensions, boatSpaceAmenity, boatDimensions)
     }
 }
 

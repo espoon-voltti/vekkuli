@@ -97,7 +97,7 @@ class E2eTest : PlaywrightTest() {
             formPage.lengthInput.blur()
             assertThat(formPage.boatSizeWarning).isVisible()
 
-            formPage.lengthInput.fill("6")
+            formPage.lengthInput.fill("5")
             formPage.lengthInput.blur()
             assertThat(formPage.boatSizeWarning).isHidden()
 
