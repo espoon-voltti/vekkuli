@@ -246,8 +246,6 @@ class BoatSpaceFormController {
                     boat.updateBoatDisplayName(messageUtil)
                 }
 
-        val calculatedAlv = reservation.price * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100)
-
         val boatSpaceFront =
             object {
                 val type = reservation.type
@@ -258,9 +256,9 @@ class BoatSpaceFormController {
                 val lengthInMeters = reservation.lengthCm.cmToM()
                 val description: String = reservation.description
                 val harbor = reservation.locationName
-                val priceTotal = reservation.price
-                val priceAlv = calculatedAlv
-                val priceWithoutAlv = reservation.price.toDouble() - calculatedAlv
+                val priceTotal = reservation.priceInEuro
+                val priceAlv = reservation.alvPriceInEuro
+                val priceWithoutAlv = reservation.priceWithoutAlvInEuro
             }
 
         model.addAttribute(
