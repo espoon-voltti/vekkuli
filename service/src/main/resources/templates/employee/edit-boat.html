@@ -11,14 +11,15 @@
         <div class="column">
 
             <div class="field">
-                <label class="label" th:text="#{boatSpaceReservation.title.boatName}">Veneen
-                    nimi</label>
                 <div class="control">
+                    <label class="label" th:text="#{boatSpaceReservation.title.boatName}" for="name">Veneen
+                        nimi</label>
                     <input
                             class="input"
                             type="text"
                             id="name"
                             name="name"
+                            th:value="${boat.name}"
                     />
                     <div id="boatName-error-container">
                             <span id="boatName-error" class="help is-danger" th:if="${errors.containsKey('name')}"
@@ -27,48 +28,188 @@
                 </div>
             </div>
             <div class="field">
-                <label class="label" th:text="#{boatSpaceReservation.title.weight}">Paino (kg)</label>
-                <p th:text="${boat.weightKg}">4500</p>
+                <div class="control" id="weight-control">
+                    <label class="label required" th:for="weight"
+                           th:text="#{boatApplication.boatWeightInKg}">
+                        (m)</label>
+                    <input
+                            class="input"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            id="weight"
+                            name="weight"
+                            th:value="${boat.weightKg}"
+                    />
+                    <div id="weight-error-container">
+                            <span id="weight-error" class="help is-danger" th:if="${errors.containsKey('weight')}"
+                            ></span>
+                    </div>
+                </div>
             </div>
 
         </div>
         <div class="column">
             <div class="field">
-                <label class="label" th:text="#{boatSpaceReservation.title.boatType}">Veneen
-                    tyyppi</label>
-                <p th:text="${boat.type}">Purjevene</p>
+                <div class="control">
+                    <label class="label" for="boatType"
+                           th:text="#{boatApplication.boatType}"></label>
+                    <div class="select">
+                        <select name="boatType" id="boatType">
+                            <option
+                                    th:each="option : ${boatTypes}"
+                                    th:value="${option}"
+                                    th:text="#{${'boatApplication.boatTypeOption.' + option}}"
+                                    th:selected="${option == boat.type}"
+                            ></option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="field">
-                <label class="label" th:text="#{boatSpaceReservation.title.draft}">Syväys (m)</label>
-                <p th:text="${boat.depthCm}">1,5</p>
+                <div class="control" id="depth-control">
+                    <label class="label required" for="depth"
+                           th:text="#{boatApplication.boatDepthInMeters}">
+                        (m)</label>
+                    <input
+                            class="input"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            id="depth"
+                            name="depth"
+                            th:value="${boat.depthCm / 100}"
+                    />
+                    <div id="depth-error-container">
+                            <span id="depth-error" class="help is-danger" th:if="${errors.containsKey('depth')}"
+                            ></span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="column">
             <div class="field">
-                <label class="label" th:text="#{boatSpaceReservation.title.boatWidth}">Leveys
-                    (m)</label>
-                <p th:text="${boat.widthCm}">2,91</p>
+
+
+                <div class="control" id="width-control">
+                    <label class="label required" for="width"
+                           th:text="#{boatApplication.boatWidthInMeters}">
+                        (m)</label>
+                    <input
+                            class="input"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            id="width"
+                            name="width"
+                            th:value="${boat.widthCm / 100}"
+                    />
+                    <div id="width-error-container">
+                            <span id="width-error" class="help is-danger" th:if="${errors.containsKey('width')}"
+                            ></span>
+                    </div>
+                </div>
+
             </div>
             <div class="field">
-                <label class="label"
-                       th:text="#{boatSpaceReservation.title.registrationNumber}">Rekisteritunnus</label>
-                <p th:text="${boat.registrationCode}">P12345</p>
+
+                <div class="control">
+                    <label class="label" th:text="#{boatSpaceReservation.title.registrationNumber}"
+                           for="registrationNumber"></label>
+                    <input
+                            class="input"
+                            type="text"
+                            id="registrationNumber"
+                            name="registrationNumber"
+                            th:value="${boat.registrationCode}"
+                    />
+                    <div id="registrationNumber-error-container">
+                            <span id="registrationNumber-error" class="help is-danger"
+                                  th:if="${errors.containsKey('registrationNumber')}"
+                                  th:text="${errors.get('registrationNumber')}">Boat name number required</span>
+                    </div>
+                </div>
+
             </div>
         </div>
         <div class="column">
             <div class="field">
-                <label class="label" th:text="#{boatSpaceReservation.title.boatLength}">Pituus
-                    (m)</label>
-                <p th:text="${boat.lengthCm}">8,45</p>
+                <div class="control" id="length-control">
+                    <label class="label required" for="length"
+                           th:text="#{boatApplication.boatLengthInMeters}">
+                        (m)</label>
+                    <input
+                            class="input"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            id="length"
+                            name="length"
+                            th:value="${boat.lengthCm / 100}"
+                    />
+                    <div id="length-error-container">
+                            <span id="length-error" class="help is-danger" th:if="${errors.containsKey('length')}"
+                            ></span>
+                    </div>
+                </div>
+
             </div>
             <div class="field">
-                <label class="label"
-                       th:text="#{boatSpaceReservation.title.ownershipStatus}">Omistussuhde</label>
-                <p th:text="#{${'boatApplication.ownershipOption.' + boat.ownership}}">
-                    Olen ostamassa veneen <span class="icon has-text-warning"><i
-                        class="fas fa-exclamation-circle"></i></span>
-                </p>
+                <div class="control">
+                    <label class="label" for="ownership"
+                           th:text="#{boatSpaceReservation.title.ownershipStatus}"></label>
+                    <div class="select">
+                        <select name="ownership" id="ownership">
+                            <option
+                                    th:each="option : ${ownershipOptions}"
+                                    th:value="${option}"
+                                    th:text="#{${'boatApplication.ownershipOption.' + option}}"
+                                    th:selected="${option == boat.ownership}"
+                            ></option>
+                        </select>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column is-one-quarter">
+            <div class="control">
+                <label class="label" th:text="#{boatSpaceReservation.title.otherIdentifier}"
+                       for="otherIdentifier"></label>
+                <input
+                        class="input"
+                        type="text"
+                        id="otherIdentifier"
+                        name="otherIdentifier"
+                        th:value="${boat.otherIdentification}"
+                />
+                <div id="otherIdentification-error-container">
+                            <span id="otherIdentification-error" class="help is-danger"
+                                  th:if="${errors.containsKey('otherIdentifier')}"
+                                  th:text="${errors.get('otherIdentifier')}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="control">
+                <label class="label" th:text="#{boatSpaceReservation.title.additionalInfo}"
+                       for="extraInformation"></label>
+                <input
+                        class="input"
+                        type="text"
+                        id="extraInformation"
+                        name="extraInformation"
+                        th:value="${boat.extraInformation}"
+                />
+                <div id="extraInformation-error-container">
+                            <span id="extraInformation-error" class="help is-danger"
+                                  th:if="${errors.containsKey('extraInformation')}"
+                                  th:text="${errors.get('extraInformation')}"></span>
+                </div>
+            </div>
+
         </div>
     </div>
     <div class="buttons">
