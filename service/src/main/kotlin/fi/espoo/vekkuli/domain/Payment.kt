@@ -51,7 +51,7 @@ fun Handle.insertPayment(params: CreatePaymentParams): Payment {
 // Update payment only if it is 'Created' state
 fun Handle.updatePayment(
     id: UUID,
-    status: PaymentStatus
+    success: Boolean
 ): Payment? =
     createQuery(
         """
@@ -61,7 +61,7 @@ fun Handle.updatePayment(
         RETURNING *
         """
     ).bind("id", id)
-        .bind("status", status)
+        .bind("status", if (success) PaymentStatus.Success else PaymentStatus.Failed)
         .mapTo<Payment>()
         .firstOrNull()
 
@@ -76,11 +76,11 @@ fun Handle.getPayment(id: UUID): Payment? =
 
 fun Handle.handleReservationPaymentResult(
     id: UUID,
-    status: PaymentStatus,
+    success: Boolean,
 ): Int? {
-    updatePayment(id, status)
+    updatePayment(id, success)
 
-    if (status == PaymentStatus.Failed) return getBoatSpaceReservationIdForPayment(id)
+    if (!success) return getBoatSpaceReservationIdForPayment(id)
 
     val reservationId =
         updateBoatSpaceReservationOnPaymentSuccess(
