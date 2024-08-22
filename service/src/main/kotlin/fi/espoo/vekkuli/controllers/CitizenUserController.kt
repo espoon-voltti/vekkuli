@@ -5,17 +5,15 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.servlet.ModelAndView
 import java.util.*
 
 @Controller
@@ -117,16 +115,14 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
         input: BoatUpdateForm,
-        model: Model
-    ): Any {
+        model: Model,
+        response: HttpServletResponse
+    ): String {
         val boats = getBoatsForCitizen(citizenId, jdbi)
-        model.addAttribute("boats", boats)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
         val citizen = Citizen.getById(citizenId, jdbi)
         model.addAttribute("citizen", citizen)
-        val boatSpaceReservations = BoatSpaceReservation.getReservationsForCitizen(citizenId, jdbi)
-        model.addAttribute("reservations", boatSpaceReservations)
 
         val errors = validateBoatUpdateInput(input)
         model.addAttribute("errors", errors)
@@ -139,7 +135,7 @@ class CitizenUserController {
             )
             model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
             model.addAttribute("boat", input)
-            return ModelAndView("employee/edit-boat", model.asMap(), HttpStatus.OK)
+            return "employee/edit-boat"
         }
 
         val updatedBoat =
@@ -156,9 +152,13 @@ class CitizenUserController {
                 ownership = input.ownership
             )
         updateBoat(updatedBoat, jdbi)
-        val headers = org.springframework.http.HttpHeaders()
-        headers.add("HX-Redirect", "/virkailija/kayttaja/$citizenId")
 
-        return ResponseEntity<Any>(headers, HttpStatus.OK)
+        val boatSpaceReservations = BoatSpaceReservation.getReservationsForCitizen(citizenId, jdbi)
+        model.addAttribute("reservations", boatSpaceReservations)
+        model.addAttribute("boats", boats)
+        response.addHeader("HX-Retarget", "#citizen-details")
+        response.addHeader("HX-Reselect", "#citizen-details")
+
+        return "/employee/citizen-details"
     }
 }
