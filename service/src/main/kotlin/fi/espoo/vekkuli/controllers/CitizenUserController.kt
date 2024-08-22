@@ -1,14 +1,10 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.mToCm
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,9 +18,6 @@ import java.util.*
 class CitizenUserController {
     @Autowired
     lateinit var jdbi: Jdbi
-
-    @Autowired
-    lateinit var messageUtil: MessageUtil
 
     @GetMapping("/kayttaja/{citizenId}")
     fun boatSpaceSearchPage(
@@ -83,10 +76,16 @@ class CitizenUserController {
         @PathVariable boatId: Int,
         input: BoatUpdateInput,
         model: Model
-    ): Any {
+    ): String {
         val boats = getBoatsForCitizen(citizenId, jdbi)
+        model.addAttribute("boats", boats)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
         model.addAttribute("boat", boat)
+
+        val citizen = Citizen.getById(citizenId, jdbi)
+        model.addAttribute("citizen", citizen)
+        val boatSpaceReservations = BoatSpaceReservation.getReservationsForCitizen(citizenId, jdbi)
+        model.addAttribute("reservations", boatSpaceReservations)
 
         val updatedBoat =
             boat.copy(
@@ -103,9 +102,6 @@ class CitizenUserController {
             )
         updateBoat(updatedBoat, jdbi)
 
-        val headers = HttpHeaders()
-        headers.add("HX-Redirect", "/virkailija/kayttaja/$citizenId")
-
-        return ResponseEntity<Any>(headers, HttpStatus.OK)
+        return "employee/citizen-details"
     }
 }

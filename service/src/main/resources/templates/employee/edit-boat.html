@@ -1,6 +1,8 @@
 <form id="form"
       th:attr="hx-patch=|/virkailija/kayttaja/${citizenId}/vene/${boat.id}|"
       novalidate
+      hx-target="#citizen-details"
+      hx-select="#citizen-details"
 >
     <div class="columns is-vcentered">
         <div class="column is-narrow ">
@@ -217,14 +219,16 @@
                 id="cancel"
                 class="button" th:text="#{cancel}" type="button"
                 th:attr="hx-get=|/virkailija/kayttaja/${citizenId}|"
-                hx-target=".section"
-                hx-select=".section"
+                hx-target="#citizen-details"
+                hx-select="#citizen-details"
         ></button>
         <button
                 id="submit"
                 class="button is-primary"
                 th:text="#{citizenDetails.saveChanges}"
                 type="submit"
+                hx-target="#citizen-details"
+                hx-select="#citizen-details"
         ></button>
     </div>
 </form>
