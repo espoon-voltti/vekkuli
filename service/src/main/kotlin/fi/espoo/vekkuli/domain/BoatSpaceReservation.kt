@@ -519,7 +519,7 @@ fun Handle.getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceRe
     return query.mapTo<BoatSpaceReservationDetails>().list()
 }
 
-fun Handle.getBoatSpaceReservationsWithPaymentId(paymentId: UUID): BoatSpaceReservationDetails? {
+fun Handle.getBoatSpaceReservationWithPaymentId(paymentId: UUID): BoatSpaceReservationDetails? {
     val query =
         createQuery(
             """

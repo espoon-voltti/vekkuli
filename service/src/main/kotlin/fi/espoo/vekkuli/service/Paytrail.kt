@@ -248,7 +248,7 @@ class Paytrail {
             it.handleReservationPaymentResult(stamp, PaymentStatus.Success)
         }
 
-        val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservationsWithPaymentId(stamp) }
+        val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservationWithPaymentId(stamp) }
         if (reservation == null) return PaymentProcessResult.Failure
 
         emailService.sendEmail(
