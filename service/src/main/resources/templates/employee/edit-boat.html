@@ -1,9 +1,8 @@
 <form id="form"
       th:attr="hx-patch=|/virkailija/kayttaja/${citizenId}/vene/${boat.id}|"
       novalidate
-      hx-target="#citizen-details"
-      hx-select="#citizen-details"
 >
+    <input type="hidden" name="id" th:value="${boat.id}" />
     <div class="columns is-vcentered">
         <div class="column is-narrow ">
             <h4 th:text="|#{citizenDetails.boat} : ${boat.name}|"></h4>
@@ -22,6 +21,7 @@
                             id="name"
                             name="name"
                             th:value="${boat.name}"
+
                     />
                     <div id="boatName-error-container">
                             <span id="boatName-error" class="help is-danger" th:if="${errors.containsKey('name')}"
@@ -41,10 +41,11 @@
                             step="0.01"
                             id="weight"
                             name="weight"
-                            th:value="${boat.weightKg}"
+                            th:value="${boat.weight}"
                     />
                     <div id="weight-error-container">
                             <span id="weight-error" class="help is-danger" th:if="${errors.containsKey('weight')}"
+                                  th:text="${errors.get('weight')}"
                             ></span>
                     </div>
                 </div>
@@ -54,10 +55,10 @@
         <div class="column">
             <div class="field">
                 <div class="control">
-                    <label class="label" for="boatType"
+                    <label class="label" for="type"
                            th:text="#{boatApplication.boatType}"></label>
                     <div class="select">
-                        <select name="boatType" id="boatType">
+                        <select name="type" id="type">
                             <option
                                     th:each="option : ${boatTypes}"
                                     th:value="${option}"
@@ -80,10 +81,11 @@
                             step="0.01"
                             id="depth"
                             name="depth"
-                            th:value="${boat.depthCm / 100}"
+                            th:value="${boat.depth}"
                     />
                     <div id="depth-error-container">
-                            <span id="depth-error" class="help is-danger" th:if="${errors.containsKey('depth')}"
+                            <span id="depth-error" class="help is-danger"
+                                  th:if="${errors.containsKey('depth')}" th:text="${errors.get('depth')}"
                             ></span>
                     </div>
                 </div>
@@ -104,10 +106,11 @@
                             step="0.01"
                             id="width"
                             name="width"
-                            th:value="${boat.widthCm / 100}"
+                            th:value="${boat.width}"
                     />
                     <div id="width-error-container">
                             <span id="width-error" class="help is-danger" th:if="${errors.containsKey('width')}"
+                                  th:text="${errors.get('width')}"
                             ></span>
                     </div>
                 </div>
@@ -123,7 +126,7 @@
                             type="text"
                             id="registrationNumber"
                             name="registrationNumber"
-                            th:value="${boat.registrationCode}"
+                            th:value="${boat.registrationNumber}"
                     />
                     <div id="registrationNumber-error-container">
                             <span id="registrationNumber-error" class="help is-danger"
@@ -147,10 +150,11 @@
                             step="0.01"
                             id="length"
                             name="length"
-                            th:value="${boat.lengthCm / 100}"
+                            th:value="${boat.length}"
                     />
                     <div id="length-error-container">
                             <span id="length-error" class="help is-danger" th:if="${errors.containsKey('length')}"
+                                  th:text="${errors.get('length')}"
                             ></span>
                     </div>
                 </div>
@@ -185,7 +189,7 @@
                         type="text"
                         id="otherIdentifier"
                         name="otherIdentifier"
-                        th:value="${boat.otherIdentification}"
+                        th:value="${boat.otherIdentifier}"
                 />
                 <div id="otherIdentification-error-container">
                             <span id="otherIdentification-error" class="help is-danger"
