@@ -221,18 +221,18 @@
                             <div class="field">
                                 <label class="label" th:text="#{boatSpaceReservation.title.boatType}">Veneen
                                     tyyppi</label>
-                                <p th:text="${boat.type}">Purjevene</p>
+                                <p th:text="#{${'boatApplication.boatTypeOption.' + boat.type}}">Purjevene</p>
                             </div>
                             <div class="field">
                                 <label class="label" th:text="#{boatSpaceReservation.title.draft}">Syväys (m)</label>
-                                <p th:text="${boat.depthCm}">1,5</p>
+                                <p th:text="${boat.depthCm / 100}">1,5</p>
                             </div>
                         </div>
                         <div class="column">
                             <div class="field">
                                 <label class="label" th:text="#{boatSpaceReservation.title.boatWidth}">Leveys
                                     (m)</label>
-                                <p th:text="${boat.widthCm}">2,91</p>
+                                <p th:text="${boat.widthCm / 100}">2,91</p>
                             </div>
                             <div class="field">
                                 <label class="label"
@@ -244,7 +244,7 @@
                             <div class="field">
                                 <label class="label" th:text="#{boatSpaceReservation.title.boatLength}">Pituus
                                     (m)</label>
-                                <p th:text="${boat.lengthCm}">8,45</p>
+                                <p th:text="${boat.lengthCm / 100}">8,45</p>
                             </div>
                             <div class="field">
                                 <label class="label"

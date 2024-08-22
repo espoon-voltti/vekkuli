@@ -60,7 +60,7 @@
                                     th:each="option : ${boatTypes}"
                                     th:value="${option}"
                                     th:text="#{${'boatApplication.boatTypeOption.' + option}}"
-                                    th:selected="${option == boat.type}"
+                                    th:selected="${option == boat.type.toString()}"
                             ></option>
                         </select>
                     </div>
@@ -164,7 +164,7 @@
                                     th:each="option : ${ownershipOptions}"
                                     th:value="${option}"
                                     th:text="#{${'boatApplication.ownershipOption.' + option}}"
-                                    th:selected="${option == boat.ownership}"
+                                    th:selected="${option == boat.ownership.toString()}"
                             ></option>
                         </select>
                     </div>
