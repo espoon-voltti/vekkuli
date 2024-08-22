@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Month
 import kotlin.reflect.KClass
 
 @Controller
@@ -205,13 +206,15 @@ class BoatSpaceFormController {
             if (existingReservation != null) {
                 existingReservation.id
             } else {
+                val today = LocalDate.now()
+                val endOfYear = LocalDate.of(today.getYear(), Month.DECEMBER, 31)
                 jdbi
                     .inTransactionUnchecked {
                         it.insertBoatSpaceReservation(
                             citizen.id,
                             spaceId,
-                            LocalDate.now(),
-                            LocalDate.now().plusYears(1),
+                            today,
+                            endOfYear,
                             ReservationStatus.Info
                         )
                     }.id

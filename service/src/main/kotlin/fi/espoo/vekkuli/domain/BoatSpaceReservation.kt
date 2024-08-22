@@ -36,11 +36,10 @@ data class BoatSpaceReservation(
         fun getReservationsForCitizen(
             id: UUID,
             jdbi: Jdbi
-        ): List<BoatSpaceReservationDetails> {
-            return jdbi.inTransactionUnchecked { tx ->
+        ): List<BoatSpaceReservationDetails> =
+            jdbi.inTransactionUnchecked { tx ->
                 tx.getBoatSpaceReservationsForCitizen(id)
             }
-        }
     }
 }
 
@@ -176,7 +175,7 @@ fun Handle.removeBoatSpaceReservation(
     query.execute()
 }
 
-fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): String? {
+fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int? {
     val query =
         createQuery(
             """
@@ -191,10 +190,10 @@ fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): String? 
     query.bind("paymentId", paymentId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
     query.bind("updatedTime", LocalDate.now())
-    return query.mapTo<String>().findOne().orElse(null)
+    return query.mapTo<Int>().findOne().orElse(null)
 }
 
-fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): String? {
+fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): Int? {
     val query =
         createQuery(
             """
@@ -207,7 +206,7 @@ fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): String? {
         )
     query.bind("paymentId", paymentId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
-    return query.mapTo<String>().findOne().orElse(null)
+    return query.mapTo<Int>().findOne().orElse(null)
 }
 
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
@@ -518,4 +517,56 @@ fun Handle.getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceRe
         )
     query.bind("citizenId", citizenId)
     return query.mapTo<BoatSpaceReservationDetails>().list()
+}
+
+fun Handle.getBoatSpaceReservationWithPaymentId(paymentId: UUID): BoatSpaceReservationDetails? {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.id,
+                   bsr.start_date,
+                   bsr.end_date,
+                   bsr.created,
+                   bsr.updated,
+                   bsr.status,
+                   bsr.boat_space_id,
+                   CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                   c.first_name, 
+                   c.last_name, 
+                   c.email, 
+                   c.phone,
+                   c.national_id,
+                   c.address,
+                   c.postal_code,
+                   c.municipality,
+                   '' as home_town,
+                   b.registration_code as boat_registration_code,
+                   b.ownership as boat_ownership,
+                   b.id as boat_id,
+                   b.name as boat_name,
+                   b.width_cm as boat_width_cm,
+                   b.length_cm as boat_length_cm,
+                   b.weight_kg as boat_weight_kg,
+                   b.depth_cm as boat_depth_cm,
+                   b.type as boat_type,
+                   b.other_identification as boat_other_identification,
+                   b.extra_information as boat_extra_information,
+                   location.name as location_name, 
+                   bs.type,
+                    bs.length_cm as boat_space_length_cm,
+                    bs.width_cm as boat_space_width_cm,
+                    bs.amenity,
+                   price.price as price,
+                   CONCAT(bs.section, bs.place_number) as place
+            FROM boat_space_reservation bsr
+            JOIN boat b ON b.id = bsr.boat_id
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location.id = bs.location_id
+            JOIN price ON price_id = price.id
+            WHERE bsr.payment_id = :paymentId
+            """.trimIndent()
+        )
+    query.bind("paymentId", paymentId)
+    return query.mapTo<BoatSpaceReservationDetails>().one()
 }

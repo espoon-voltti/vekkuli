@@ -99,6 +99,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
+    implementation("software.amazon.awssdk:ses:2.20.0")
+    implementation("software.amazon.awssdk:core:2.20.0")
+    implementation("software.amazon.awssdk:regions:2.20.0")
 }
 
 tasks.withType<KotlinCompile> {

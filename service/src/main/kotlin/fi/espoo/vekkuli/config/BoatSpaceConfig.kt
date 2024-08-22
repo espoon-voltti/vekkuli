@@ -14,4 +14,6 @@ object BoatSpaceConfig {
     const val REAR_BUOY_WIDTH_ADJUSTMENT_CM = 50
     const val REAR_BUOY_LENGTH_ADJUSTMENT_CM = 300
     const val BOAT_LENGTH_THRESHOLD_CM = 1500
+
+    const val EMAIL_SENDER = "varaukset@espoo.fi"
 }

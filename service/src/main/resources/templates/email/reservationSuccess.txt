@@ -1,0 +1,10 @@
+Hyvä asiakas,
+
+Sinulle on varattu alla oleva venepaikka:
+
+Venepaikan nimi [[${name}]]
+Venepaikan leveys [[${width}]]
+Venepaikan pituus [[${length}]]
+Venepaikan varustus [[${amenity}]]
+Varauksen voimassaolo päättyy [[${endDate}]]
+
