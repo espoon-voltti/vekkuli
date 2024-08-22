@@ -23,7 +23,7 @@
                 </td>
                 <td th:text="#{${'boatSpaces.amenityOption.' + result.amenity}}">
                 </td>
-                <td th:text="${result.price}">420€</td>
+                <td th:text="|${result.priceInEuro} &euro;|">420€</td>
                 <td><span th:text="${result.section}"></span><span
                         th:text="${result.placeNumber.toString()}"></span>
                 </td>
@@ -45,7 +45,7 @@
                             place: '${harbor.location.name} ${result.section}${result.placeNumber.toString()}',
                             size: '${result.formattedSizes}',
                             amenity: '#{${'boatSpaces.amenityOption.' + result.amenity}}',
-                            price: '${result.price}'
+                            price: '${result.priceInEuro}'
                        };|"
                        class="button is-secondary reserve-button"
                        th:text="#{boatSpaces.reserve}">Varaa

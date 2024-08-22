@@ -36,11 +36,14 @@ data class BoatSpaceOption(
     val placeNumber: Int,
     val widthCm: Int,
     val lengthCm: Int,
-    val price: Int,
+    val priceCents: Int,
     val locationName: String,
     val amenity: BoatSpaceAmenity,
     val formattedSizes: String = "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',')
-)
+) {
+    val priceInEuro: Double
+        get() = priceCents / 100.0
+}
 
 data class BoatSpaceFilter(
     val boatType: BoatType? = null,
@@ -186,7 +189,7 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Har
             place_number,
             length_cm, 
             width_cm, 
-            price.price as price,
+            price.price_cents,
             amenity
         FROM boat_space
         JOIN location

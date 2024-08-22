@@ -3,13 +3,13 @@
 -- SPDX-License-Identifier: LGPL-2.1-or-later
 
 -- Populate the price table with 5 different prices
-INSERT INTO price (name, price)
-VALUES ('ML1', 100.00),
-       ('ML2', 150.00),
-       ('ML3', 200.00),
-       ('ML4', 80.00),
-       ('ML5', 250.00),
-       ('ML6', 290.00);
+INSERT INTO price (name, price_cents)
+VALUES ('ML1', 10000),
+       ('ML2', 15000),
+       ('ML3', 20000),
+       ('ML4', 25000),
+       ('ML5', 30000),
+       ('ML6', 35000);
 
 -- Populate the location table with 7 different locations with made-up Finnish addresses
 INSERT INTO location (id, name, address)
