@@ -35,12 +35,11 @@ data class BoatSpaceReservation(
     companion object {
         fun getReservationsForCitizen(
             id: UUID,
-            jdbi: Jdbi
-        ): List<BoatSpaceReservationDetails> {
-            return jdbi.inTransactionUnchecked { tx ->
+            jdbi: Jdbi,
+        ): List<BoatSpaceReservationDetails> =
+            jdbi.inTransactionUnchecked { tx ->
                 tx.getBoatSpaceReservationsForCitizen(id)
             }
-        }
     }
 }
 
@@ -93,6 +92,7 @@ fun Handle.updateBoatInBoatSpaceReservation(
 fun Handle.updateReservationWithPayment(
     reservationId: Int,
     paymentId: UUID,
+    citizenId: UUID,
 ): BoatSpaceReservation {
     val query =
         createQuery(
@@ -102,12 +102,14 @@ fun Handle.updateReservationWithPayment(
             WHERE id = :id
                 AND status = 'Payment'
                 AND created > NOW() - make_interval(secs => :paymentTimeout)
+                AND citizen_id = :citizenId
             RETURNING *
             """.trimIndent()
         )
     query.bind("updatedTime", LocalDate.now())
     query.bind("id", reservationId)
     query.bind("paymentId", paymentId)
+    query.bind("citizenId", citizenId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
 
     return query.mapTo<BoatSpaceReservation>().one()
@@ -176,7 +178,7 @@ fun Handle.removeBoatSpaceReservation(
     query.execute()
 }
 
-fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): String? {
+fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int? {
     val query =
         createQuery(
             """
@@ -191,7 +193,23 @@ fun Handle.updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): String? 
     query.bind("paymentId", paymentId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
     query.bind("updatedTime", LocalDate.now())
-    return query.mapTo<String>().findOne().orElse(null)
+    return query.mapTo<Int>().findOne().orElse(null)
+}
+
+fun Handle.getBoatSpaceReservationIdForPayment(paymentId: UUID): Int? {
+    val query =
+        createQuery(
+            """
+            SELECT id
+            FROM boat_space_reservation
+            WHERE payment_id = :paymentId
+                AND status = 'Payment' 
+                AND created > NOW() - make_interval(secs => :paymentTimeout)
+            """.trimIndent()
+        )
+    query.bind("paymentId", paymentId)
+    query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+    return query.mapTo<Int>().findOne().orElse(null)
 }
 
 fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
@@ -251,7 +269,7 @@ data class BoatSpaceReservationDetails(
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
-    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice
+    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice,
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
@@ -400,7 +418,10 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
     return query.mapTo<BoatSpaceReservationItem>().list()
 }
 
-fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails {
+fun Handle.getBoatSpaceReservation(
+    reservationId: Int,
+    citizenId: UUID,
+): BoatSpaceReservationDetails? {
     val query =
         createQuery(
             """
@@ -446,9 +467,12 @@ fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDeta
             JOIN location ON location.id = bs.location_id
             JOIN price ON price_id = price.id
             WHERE bsr.id = :reservationId
+            AND bsr.status = 'Confirmed' 
+            AND c.id = :citizenId
             """.trimIndent()
         )
     query.bind("reservationId", reservationId)
+    query.bind("citizenId", citizenId)
     return query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
 }
 
@@ -502,4 +526,56 @@ fun Handle.getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceRe
         )
     query.bind("citizenId", citizenId)
     return query.mapTo<BoatSpaceReservationDetails>().list()
+}
+
+fun Handle.getBoatSpaceReservationWithPaymentId(paymentId: UUID): BoatSpaceReservationDetails? {
+    val query =
+        createQuery(
+            """
+            SELECT bsr.id,
+                   bsr.start_date,
+                   bsr.end_date,
+                   bsr.created,
+                   bsr.updated,
+                   bsr.status,
+                   bsr.boat_space_id,
+                   CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                   c.first_name, 
+                   c.last_name, 
+                   c.email, 
+                   c.phone,
+                   c.national_id,
+                   c.address,
+                   c.postal_code,
+                   c.municipality,
+                   '' as home_town,
+                   b.registration_code as boat_registration_code,
+                   b.ownership as boat_ownership,
+                   b.id as boat_id,
+                   b.name as boat_name,
+                   b.width_cm as boat_width_cm,
+                   b.length_cm as boat_length_cm,
+                   b.weight_kg as boat_weight_kg,
+                   b.depth_cm as boat_depth_cm,
+                   b.type as boat_type,
+                   b.other_identification as boat_other_identification,
+                   b.extra_information as boat_extra_information,
+                   location.name as location_name, 
+                   bs.type,
+                    bs.length_cm as boat_space_length_cm,
+                    bs.width_cm as boat_space_width_cm,
+                    bs.amenity,
+                   price.price as price,
+                   CONCAT(bs.section, bs.place_number) as place
+            FROM boat_space_reservation bsr
+            JOIN boat b ON b.id = bsr.boat_id
+            JOIN citizen c ON bsr.citizen_id = c.id 
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location.id = bs.location_id
+            JOIN price ON price_id = price.id
+            WHERE bsr.payment_id = :paymentId
+            """.trimIndent()
+        )
+    query.bind("paymentId", paymentId)
+    return query.mapTo<BoatSpaceReservationDetails>().one()
 }
