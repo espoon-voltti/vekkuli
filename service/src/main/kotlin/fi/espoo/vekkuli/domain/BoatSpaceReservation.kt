@@ -35,7 +35,7 @@ data class BoatSpaceReservation(
     companion object {
         fun getReservationsForCitizen(
             id: UUID,
-            jdbi: Jdbi
+            jdbi: Jdbi,
         ): List<BoatSpaceReservationDetails> =
             jdbi.inTransactionUnchecked { tx ->
                 tx.getBoatSpaceReservationsForCitizen(id)
@@ -92,6 +92,7 @@ fun Handle.updateBoatInBoatSpaceReservation(
 fun Handle.updateReservationWithPayment(
     reservationId: Int,
     paymentId: UUID,
+    citizenId: UUID,
 ): BoatSpaceReservation {
     val query =
         createQuery(
@@ -101,12 +102,14 @@ fun Handle.updateReservationWithPayment(
             WHERE id = :id
                 AND status = 'Payment'
                 AND created > NOW() - make_interval(secs => :paymentTimeout)
+                AND citizen_id = :citizenId
             RETURNING *
             """.trimIndent()
         )
     query.bind("updatedTime", LocalDate.now())
     query.bind("id", reservationId)
     query.bind("paymentId", paymentId)
+    query.bind("citizenId", citizenId)
     query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
 
     return query.mapTo<BoatSpaceReservation>().one()
@@ -266,7 +269,7 @@ data class BoatSpaceReservationDetails(
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
-    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice
+    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice,
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
@@ -415,7 +418,10 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
     return query.mapTo<BoatSpaceReservationItem>().list()
 }
 
-fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails {
+fun Handle.getBoatSpaceReservation(
+    reservationId: Int,
+    citizenId: UUID,
+): BoatSpaceReservationDetails? {
     val query =
         createQuery(
             """
@@ -461,9 +467,12 @@ fun Handle.getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDeta
             JOIN location ON location.id = bs.location_id
             JOIN price ON price_id = price.id
             WHERE bsr.id = :reservationId
+            AND bsr.status = 'Confirmed' 
+            AND c.id = :citizenId
             """.trimIndent()
         )
     query.bind("reservationId", reservationId)
+    query.bind("citizenId", citizenId)
     return query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
 }
 

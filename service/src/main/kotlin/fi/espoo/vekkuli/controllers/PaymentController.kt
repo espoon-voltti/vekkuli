@@ -60,7 +60,7 @@ class PaymentController {
                             productCode = productCode
                         )
                     )
-                val reservation = it.updateReservationWithPayment(id, payment.id)
+                val reservation = it.updateReservationWithPayment(id, payment.id, citizen.id)
                 return@inTransactionUnchecked payment to reservation
             }
 

@@ -42,7 +42,7 @@ class BoatSpaceFormController {
         @RequestParam width: Double?,
         @RequestParam length: Double?,
         request: HttpServletRequest,
-        model: Model
+        model: Model,
     ): String {
         val user = getCitizen(request, jdbi)
         val reservation =
@@ -86,7 +86,7 @@ class BoatSpaceFormController {
     @DeleteMapping("/venepaikka/varaus/{reservationId}")
     fun removeBoatSpaceReservation(
         @PathVariable reservationId: Int,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): ResponseEntity<Void> {
         val citizen = getCitizen(request, jdbi) ?: return ResponseEntity.noContent().build()
         jdbi.inTransactionUnchecked { it.removeBoatSpaceReservation(reservationId, citizen.id) }
@@ -115,9 +115,11 @@ class BoatSpaceFormController {
     @GetMapping("/venepaikka/varaus/{reservationId}/vahvistus")
     fun confirmBoatSpaceReservation(
         @PathVariable reservationId: Int,
-        model: Model
+        model: Model,
+        request: HttpServletRequest,
     ): String {
-        val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservation(reservationId) }
+        val citizen = getCitizen(request, jdbi) ?: return redirectUrl("/")
+        val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservation(reservationId, citizen.id) }
         if (reservation == null) return redirectUrl("/")
         model.addAttribute("reservation", reservation)
         return "boat-space-reservation-confirmation"
@@ -196,7 +198,7 @@ class BoatSpaceFormController {
         @RequestParam width: Double?,
         @RequestParam length: Double?,
         request: HttpServletRequest,
-        model: Model
+        model: Model,
     ): String {
         val citizen = getCitizen(request, jdbi) ?: return redirectUrl("/")
 
@@ -234,7 +236,7 @@ class BoatSpaceFormController {
         reservation: ReservationWithDependencies,
         user: Citizen,
         model: Model,
-        input: ReservationInput
+        input: ReservationInput,
     ): String {
         val boats =
             jdbi
@@ -291,7 +293,7 @@ class BoatSpaceFormController {
         lengthInCm: Int?,
         boatSpaceAmenity: BoatSpaceAmenity,
         spaceWidthInCm: Int,
-        spaceLengthInCm: Int
+        spaceLengthInCm: Int,
     ): Boolean {
         if (boatSpaceAmenity != BoatSpaceAmenity.Buoy && lengthInCm != null && lengthInCm > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
             return true
@@ -343,13 +345,13 @@ internal class UnauthorizedException : RuntimeException()
 annotation class ValidBoatRegistration(
     val message: String = "{validation.required}",
     val groups: Array<KClass<*>> = [],
-    val payload: Array<KClass<out Payload>> = []
+    val payload: Array<KClass<out Payload>> = [],
 )
 
 class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, ReservationInput> {
     override fun isValid(
         value: ReservationInput,
-        context: ConstraintValidatorContext
+        context: ConstraintValidatorContext,
     ): Boolean {
         var isValid = true
 
@@ -410,13 +412,13 @@ data class ReservationInput(
     @field:AssertTrue(message = "{validation.certifyInformation}")
     val certifyInformation: Boolean?,
     @field:AssertTrue(message = "{validation.agreeToRules}")
-    val agreeToRules: Boolean?
+    val agreeToRules: Boolean?,
 ) {
     companion object {
         fun initializeInput(
             boatType: BoatType?,
             width: Double?,
-            length: Double?
+            length: Double?,
         ): ReservationInput =
             ReservationInput(
                 reservationId = null,
