@@ -4,12 +4,12 @@
 
 -- Populate the price table with 5 different prices
 INSERT INTO price (name, price_cents)
-VALUES ('ML1', 1000),
-       ('ML2', 1500),
-       ('ML3', 2000),
-       ('ML4', 2500),
-       ('ML5', 3000),
-       ('ML6', 3500);
+VALUES ('ML1', 10000),
+       ('ML2', 15000),
+       ('ML3', 20000),
+       ('ML4', 25000),
+       ('ML5', 30000),
+       ('ML6', 35000);
 
 -- Populate the location table with 7 different locations with made-up Finnish addresses
 INSERT INTO location (id, name, address)

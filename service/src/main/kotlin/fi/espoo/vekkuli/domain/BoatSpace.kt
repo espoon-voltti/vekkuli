@@ -189,7 +189,7 @@ fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Har
             place_number,
             length_cm, 
             width_cm, 
-            price.price_cents as priceCents,
+            price.price_cents,
             amenity
         FROM boat_space
         JOIN location

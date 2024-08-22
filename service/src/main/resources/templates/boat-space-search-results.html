@@ -23,7 +23,7 @@
                 </td>
                 <td th:text="#{${'boatSpaces.amenityOption.' + result.amenity}}">
                 </td>
-                <td th:text="${result.priceInEuro}">420€</td>
+                <td th:text="|${result.priceInEuro} &euro;|">420€</td>
                 <td><span th:text="${result.section}"></span><span
                         th:text="${result.placeNumber.toString()}"></span>
                 </td>

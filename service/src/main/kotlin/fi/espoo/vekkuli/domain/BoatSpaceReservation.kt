@@ -45,7 +45,7 @@ data class BoatSpaceReservation(
     }
 }
 
-fun getAlvPriceInCents(priceCents: Int) = (priceCents * (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100)).roundToInt()
+fun getAlvPriceInCents(priceCents: Int) = (priceCents / (1.0 + (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100.0))).roundToInt()
 
 fun Handle.insertBoatSpaceReservation(
     citizenId: UUID,
@@ -155,7 +155,7 @@ fun Handle.getReservationForCitizen(id: UUID): ReservationWithDependencies? {
         createQuery(
             """
             SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
-                location.name as location_name, price.price_cents as priceCents, 
+                location.name as location_name, price.price_cents, 
                 bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                   bs.description
             FROM boat_space_reservation bsr
@@ -228,7 +228,7 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
         createQuery(
             """
             SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
-                location.name as location_name, price.price_cents as priceCents, 
+                location.name as location_name, price.price_cents, 
                 bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                   bs.description
             FROM boat_space_reservation bsr
@@ -471,7 +471,7 @@ fun Handle.getBoatSpaceReservation(
                     bs.length_cm as boat_space_length_cm,
                     bs.width_cm as boat_space_width_cm,
                     bs.amenity,
-                   price.price_cents as priceCents,
+                   price.price_cents,
                    CONCAT(bs.section, bs.place_number) as place
             FROM boat_space_reservation bsr
             JOIN boat b ON b.id = bsr.boat_id
@@ -526,7 +526,7 @@ fun Handle.getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceRe
                     bs.length_cm as boat_space_length_cm,
                     bs.width_cm as boat_space_width_cm,
                     bs.amenity,
-                   price.price_cents as priceCents,
+                   price.price_cents,
                    CONCAT(bs.section, bs.place_number) as place
             FROM boat_space_reservation bsr
             JOIN boat b ON b.id = bsr.boat_id
@@ -578,7 +578,7 @@ fun Handle.getBoatSpaceReservationWithPaymentId(paymentId: UUID): BoatSpaceReser
                     bs.length_cm as boat_space_length_cm,
                     bs.width_cm as boat_space_width_cm,
                     bs.amenity,
-                   price.price_cents as priceCents,
+                   price.price_cents,
                    CONCAT(bs.section, bs.place_number) as place
             FROM boat_space_reservation bsr
             JOIN boat b ON b.id = bsr.boat_id
