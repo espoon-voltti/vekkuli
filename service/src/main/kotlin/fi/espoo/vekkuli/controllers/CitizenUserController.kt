@@ -128,7 +128,6 @@ class CitizenUserController {
         model.addAttribute("errors", errors)
 
         if (errors.isNotEmpty()) {
-            println("errors found")
             model.addAttribute(
                 "boatTypes",
                 BoatType.entries.map { it.toString() }
@@ -152,7 +151,6 @@ class CitizenUserController {
                 extraInformation = input.extraInformation,
                 ownership = input.ownership
             )
-        println(updatedBoat)
         updateBoat(updatedBoat, jdbi)
 
         val boatSpaceReservations = BoatSpaceReservation.getReservationsForCitizen(citizenId, jdbi)
