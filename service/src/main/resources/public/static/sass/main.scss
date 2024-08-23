@@ -96,8 +96,11 @@ h3 {
   border-bottom: 2px solid $black;
   border-radius: 0;
   box-shadow: none;
-  width: 250px;
   min-width: auto;
+}
+
+.input.compact, .textarea.compact{
+  width: 250px;
 }
 
 .checkmark {

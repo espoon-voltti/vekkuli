@@ -68,6 +68,7 @@ fun Handle.getBoatsForCitizen(citizenId: UUID): List<Boat> {
             """
             SELECT * FROM boat
             WHERE citizen_id = :citizenId
+            ORDER BY id
             """.trimIndent()
         )
     query.bind("citizenId", citizenId)
@@ -84,6 +85,15 @@ fun Handle.getBoat(boatId: Int): Boat? {
         )
     query.bind("id", boatId)
     return query.mapTo<Boat>().findOne().orElse(null)
+}
+
+fun updateBoat(
+    boat: Boat,
+    jdbi: Jdbi
+): Boat {
+    return jdbi.inTransactionUnchecked {
+        it.updateBoat(boat)
+    }
 }
 
 fun Handle.updateBoat(boat: Boat): Boat {
