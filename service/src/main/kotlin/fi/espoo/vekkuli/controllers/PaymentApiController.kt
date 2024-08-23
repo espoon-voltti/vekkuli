@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.service.Paytrail
+import fi.espoo.vekkuli.service.BoatReservationService
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -17,13 +17,13 @@ class PaymentApiController {
     lateinit var jdbi: Jdbi
 
     @Autowired
-    lateinit var paytrail: Paytrail
+    lateinit var reservationService: BoatReservationService
 
     @GetMapping("/paytrail/success")
     fun apiSuccess(
         @RequestParam params: Map<String, String>
     ): ResponseEntity<Void> {
-        paytrail.handlePaymentResult(params, true)
+        reservationService.handlePaymentResult(params, true)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
@@ -31,7 +31,7 @@ class PaymentApiController {
     fun apiCancel(
         @RequestParam params: Map<String, String>
     ): ResponseEntity<Void> {
-        paytrail.handlePaymentResult(params, false)
+        reservationService.handlePaymentResult(params, false)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }

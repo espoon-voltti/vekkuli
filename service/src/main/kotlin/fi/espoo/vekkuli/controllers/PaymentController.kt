@@ -27,6 +27,9 @@ class PaymentController {
     lateinit var jdbi: Jdbi
 
     @Autowired
+    lateinit var reservationService: BoatReservationService
+
+    @Autowired
     lateinit var paytrail: Paytrail
 
     @Autowired
@@ -93,7 +96,7 @@ class PaymentController {
         @RequestParam params: Map<String, String>,
     ): String {
         val result =
-            paytrail.handlePaymentResult(params, true)
+            reservationService.handlePaymentResult(params, true)
 
         when (result) {
             is PaymentProcessResult.Success -> return redirectUrl("/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus")
@@ -106,7 +109,7 @@ class PaymentController {
     fun cancel(
         @RequestParam params: Map<String, String>,
     ): String {
-        return when (val result = paytrail.handlePaymentResult(params, false)) {
+        return when (val result = reservationService.handlePaymentResult(params, false)) {
             is PaymentProcessResult.Failure -> return redirectUrl("/")
             is PaymentProcessResult.Success -> return redirectUrl(
                 "/kuntalainen/maksut/maksa?id=${result.reservation.id}&type=BoatSpaceReservation&cancelled=true"

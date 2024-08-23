@@ -15,21 +15,28 @@ data class ReservationWarning(
     val note: String,
 )
 
-fun Handle.addReservationWarning(
+fun Handle.addReservationWarnings(
     reservationId: Int,
-    key: String,
-): ReservationWarning =
-    createQuery(
-        """
-        INSERT INTO reservation_warning (reservation_id, key)
-        VALUES (:reservationId, :key)
-        ON CONFLICT (reservation_id, key) DO NOTHING
-        RETURNING *
-        """
-    ).bind("reservationId", reservationId)
-        .bind("key", key)
-        .mapTo<ReservationWarning>()
-        .one()
+    keys: List<String>,
+) {
+    val sql = StringBuilder()
+
+    sql.append("INSERT INTO reservation_warning (reservation_id, key) VALUES ")
+    sql.append(
+        keys
+            .mapIndexed { index, _ ->
+                "(:reservationId, :key$index)"
+            }.joinToString(", ")
+    )
+    sql.append(" ON CONFLICT (reservation_id, key) DO NOTHING")
+
+    val query = createUpdate(sql.toString())
+    query.bind("reservationId", reservationId)
+    keys.forEachIndexed { index, key ->
+        query.bind("key$index", key)
+    }
+    query.execute()
+}
 
 fun Handle.getUnAcknowledgedReservationWarnings(reservationId: Int): List<ReservationWarning> =
     createQuery(
