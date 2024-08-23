@@ -130,7 +130,9 @@ sealed class PaymentProcessResult {
 
     object Failure : PaymentProcessResult()
 
-    object HandledAlready : PaymentProcessResult()
+    data class HandledAlready(
+        val reservation: BoatSpaceReservationDetails
+    ) : PaymentProcessResult()
 }
 
 @Service
@@ -242,14 +244,18 @@ class Paytrail {
         val payment = jdbi.inTransactionUnchecked { it.getPayment(stamp) }
         if (payment == null) return PaymentProcessResult.Failure
 
-        if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready
-
-        jdbi.inTransactionUnchecked {
-            it.handleReservationPaymentResult(stamp, PaymentStatus.Success)
-        }
-
         val reservation = jdbi.inTransactionUnchecked { it.getBoatSpaceReservationWithPaymentId(stamp) }
         if (reservation == null) return PaymentProcessResult.Failure
+
+        if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
+
+        jdbi.inTransactionUnchecked {
+            it.handleReservationPaymentResult(stamp, success)
+        }
+
+        if (!success) {
+            return PaymentProcessResult.Success(reservation)
+        }
 
         emailService.sendEmail(
             "reservationSuccess",
