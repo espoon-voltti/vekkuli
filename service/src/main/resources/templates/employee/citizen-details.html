@@ -180,29 +180,31 @@
                     <div class="column is-narrow ">
                         <h4 th:text="|#{citizenDetails.boat} ${iter.index + 1}: ${boat.name}|"></h4>
                     </div>
-                    <div class="column is-narrow">
-                        <a class="edit-link s-link"
-                           th:attr="
+                    <span class="edit-buttons column columns">
+                        <div class="column is-narrow">
+                            <a class="edit-link s-link"
+                               th:attr="
                                  hx-get=|/virkailija/kayttaja/${citizenId}/vene/${boat.id}/muokkaa|,
                                  hx-target=|${'#'}boat-${iter.index}|"
-                           hx-swap="innerHTML"
-                        >
+                               hx-swap="innerHTML"
+                            >
                                     <span class="icon ml-s">
                                             <div th:replace="~{fragments/icons :: edit}"></div>
                                         </span>
-                            <span th:id="|edit-boat-${iter.index}|"
-                                  th:text="#{boatSpaceReservation.button.editBoatDetails}">Muokkaa veneen
+                                <span th:id="|edit-boat-${iter.index}|"
+                                      th:text="#{boatSpaceReservation.button.editBoatDetails}">Muokkaa veneen
                                 tietoja</span>
-                        </a>
-                    </div>
-                    <div class="column">
-                        <a class="is-link has-text-danger">
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a class="is-link has-text-danger">
                                     <span class="icon ml-s">
                                             <div th:replace="~{fragments/icons :: remove}"></div>
                                         </span>
-                            <span th:text="#{boatSpaceReservation.button.deleteBoat}">Poista vene</span>
-                        </a>
-                    </div>
+                                <span th:text="#{boatSpaceReservation.button.deleteBoat}">Poista vene</span>
+                            </a>
+                        </div>
+                    </span>
                 </div>
                 <div class="columns">
                     <div class="column">
@@ -260,6 +262,7 @@
                             </p>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="columns">

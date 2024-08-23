@@ -215,8 +215,9 @@
                                   th:text="${errors.get('extraInformation')}"></span>
                 </div>
             </div>
-
         </div>
+        <div class="column"></div>
+        <div class="column"></div>
     </div>
     <div class="buttons">
         <button
@@ -242,3 +243,6 @@
     </span>
     <span> muokkaus estetty</span>
 </a>
+<div class="edit-buttons"
+     hx-swap-oob="outerHTML:.edit-buttons">
+</div>
