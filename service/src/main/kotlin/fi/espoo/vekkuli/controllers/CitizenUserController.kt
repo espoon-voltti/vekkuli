@@ -37,7 +37,7 @@ class CitizenUserController {
         val boatSpaceReservations = BoatSpaceReservation.getReservationsForCitizen(citizenId, jdbi)
         model.addAttribute("reservations", boatSpaceReservations)
         val boats = getBoatsForCitizen(citizenId, jdbi)
-        model.addAttribute("boats", boats)
+        model.addAttribute("boats", boats.map { toUpdateForm(it) })
         return "employee/citizen-details"
     }
 
@@ -135,6 +135,7 @@ class CitizenUserController {
             )
             model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
             model.addAttribute("boat", input)
+
             return "employee/edit-boat"
         }
 
@@ -151,11 +152,14 @@ class CitizenUserController {
                 extraInformation = input.extraInformation,
                 ownership = input.ownership
             )
+        println(updatedBoat)
         updateBoat(updatedBoat, jdbi)
 
         val boatSpaceReservations = BoatSpaceReservation.getReservationsForCitizen(citizenId, jdbi)
         model.addAttribute("reservations", boatSpaceReservations)
-        model.addAttribute("boats", boats)
+
+        val updatedBoats = getBoatsForCitizen(citizenId, jdbi)
+        model.addAttribute("boats", updatedBoats.map { toUpdateForm(it) })
         response.addHeader("HX-Retarget", "#citizen-details")
         response.addHeader("HX-Reselect", "#citizen-details")
 
