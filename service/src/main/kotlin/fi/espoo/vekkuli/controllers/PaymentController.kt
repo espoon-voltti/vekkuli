@@ -106,7 +106,15 @@ class PaymentController {
     fun cancel(
         @RequestParam params: Map<String, String>,
     ): String {
-        paytrail.handlePaymentResult(params, false)
-        return "boat-space-reservation-payment-cancel"
+        return when (val result = paytrail.handlePaymentResult(params, false)) {
+            is PaymentProcessResult.Failure -> return redirectUrl("/")
+            is PaymentProcessResult.Success -> return redirectUrl(
+                "/kuntalainen/maksut/maksa?id=${result.reservation.id}&type=BoatSpaceReservation&cancelled=true"
+            )
+            is PaymentProcessResult.HandledAlready ->
+                redirectUrl(
+                    "/kuntalainen/maksut/maksa?id=${result.reservation.id}&type=BoatSpaceReservation&cancelled=true"
+                )
+        }
     }
 }
