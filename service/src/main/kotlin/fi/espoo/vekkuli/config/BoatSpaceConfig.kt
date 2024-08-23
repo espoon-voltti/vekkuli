@@ -7,6 +7,12 @@ data class Dimensions(
     val length: Int
 )
 
+enum class ReservationWarning {
+    BoatDimensions,
+    BoatFutureOwner,
+    BoatCoOwner
+}
+
 object BoatSpaceConfig {
     const val SESSION_TIME_IN_SECONDS = 20 * 60
     const val PAYMENT_TIMEOUT = 24 * 60 * 60
