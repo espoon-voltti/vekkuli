@@ -4,6 +4,7 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.config.ReservationWarning
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.InExpr
 import fi.espoo.vekkuli.utils.centsToEuro
@@ -319,10 +320,31 @@ data class BoatSpaceReservationItem(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
+    val warnings: List<ReservationWarning> = emptyList()
 ) {
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
 }
+
+data class BoatSpaceReservationItemWithWarning(
+    val id: Int,
+    val boatSpaceId: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val status: ReservationStatus,
+    val citizenId: UUID,
+    val firstName: String,
+    val lastName: String,
+    val homeTown: String,
+    val email: String,
+    val phone: String,
+    val type: BoatSpaceType,
+    val place: String,
+    val locationName: String,
+    val boatRegistrationCode: String?,
+    val boatOwnership: OwnershipStatus?,
+    val warning: ReservationWarning?
+)
 
 enum class BoatSpaceFilterColumn {
     START_DATE,
@@ -414,12 +436,14 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
                 b.registration_code as boat_registration_code,
                 b.ownership as boat_ownership,
                 location.name as location_name, 
-                bs.type, CONCAT(bs.section, bs.place_number) as place
+                bs.type, CONCAT(bs.section, bs.place_number) as place,
+                rw.key as warning
             FROM boat_space_reservation bsr
             JOIN boat b on b.id = bsr.boat_id
             JOIN citizen c ON bsr.citizen_id = c.id 
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location_id = location.id
+            LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
             WHERE
               bsr.status = 'Confirmed'
             AND ${filter.toSql().ifBlank { "true" }}
@@ -428,7 +452,32 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
         )
 
     filter.bind(query)
-    return query.mapTo<BoatSpaceReservationItem>().list()
+    return query
+        .mapTo<BoatSpaceReservationItemWithWarning>()
+        .list()
+        .groupBy { it.id }
+        .map { (id, warnings) ->
+            val row = warnings.first()
+            BoatSpaceReservationItem(
+                id = id,
+                boatSpaceId = row.boatSpaceId,
+                startDate = row.startDate,
+                endDate = row.endDate,
+                status = row.status,
+                citizenId = row.citizenId,
+                firstName = row.firstName,
+                lastName = row.lastName,
+                homeTown = row.homeTown,
+                email = row.email,
+                phone = row.phone,
+                type = row.type,
+                place = row.place,
+                locationName = row.locationName,
+                boatRegistrationCode = row.boatRegistrationCode,
+                boatOwnership = row.boatOwnership,
+                warnings = warnings.mapNotNull { it.warning }
+            )
+        }
 }
 
 fun Handle.getBoatSpaceReservation(

@@ -115,7 +115,7 @@
                             <p th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</p>
                             <span class="icon ml-s">
                                 <div th:if="${result.showOwnershipWarning}">
-                                <div th:replace="~{fragments/icons :: warning-exclamation}"></div>
+                                <div th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
                                     </div>
                             </span>
                         </div>
