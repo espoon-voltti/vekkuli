@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.getAppUser
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.getCitizen
 import jakarta.servlet.http.HttpServletRequest
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute
 @ControllerAdvice
 class GlobalControllerAdvice
     @Autowired
-    constructor(private val jdbi: Jdbi) {
+    constructor(private val jdbi: Jdbi, private val messageUtil: MessageUtil) {
         @ModelAttribute
         fun addAttributes(
             model: Model,
@@ -51,5 +52,12 @@ class GlobalControllerAdvice
         @ModelAttribute("currentUri")
         fun currentUri(request: HttpServletRequest): String {
             return request.requestURI
+        }
+
+        @ModelAttribute("lang")
+        fun setLanguage(request: HttpServletRequest): String {
+            val locale = messageUtil.getLocale()
+            // Get the first language from the Accept-Language header
+            return locale.split("_")[0]
         }
     }

@@ -5,7 +5,8 @@
     <title>Maksaminen</title>
 </head>
 <body layout:fragment="body">
-<div class="box" x-data="{ modalOpen: false }">
+<section class="section" x-data="{ modalOpen: false }">
+    <div class="container">
     <div th:replace="~{fragments/confirm-cancellation-modal :: backButton}"></div>
     <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=3)}"></div>
 
@@ -47,6 +48,7 @@
         </div>
     </div>
     <div th:replace="~{fragments/confirm-cancellation-modal :: confirmCancellationModal}"></div>
-</div>
+    </div>
+</section>
 </body>
 </html>
