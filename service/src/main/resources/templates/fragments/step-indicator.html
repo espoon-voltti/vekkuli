@@ -25,14 +25,3 @@
         <div th:replace="~{fragments/session-timer :: sessionTimer}"></div>
     </div>
 </div>
-<div class="container" th:fragment="backButton(buttonText, url)">
-    <button
-            class="icon-text">
-                <span class="icon">
-                <div th:replace="~{fragments/icons :: chevron-left}"></div>
-            </span>
-        <a th:href="${url}">
-            <span th:text="${buttonText}">Takaisin</span>
-        </a>
-    </button>
-</div>

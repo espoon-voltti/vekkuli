@@ -7,10 +7,18 @@
 <body layout:fragment="body">
 <section class="section" x-data="{ modalOpen: false }">
     <div class="container">
-        <div th:replace="~{fragments/step-indicator :: backButton(
-        buttonText=#{boatSpaceReservation.button.backToApplication},
-        url='/kuntalainen/venepaikka/varaus/'+${reservationId}
-        )}"></div>
+        <div class="container" >
+            <button
+                    id="back-to-application"
+                    class="icon-text">
+                <span class="icon">
+                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+            </span>
+                <a th:href="|/kuntalainen/venepaikka/varaus/${reservationId}|">
+                    <span th:text="#{boatSpaceReservation.button.backToApplication}">Takaisin</span>
+                </a>
+            </button>
+        </div>
         <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=3)}"></div>
 
         <div class="container">
