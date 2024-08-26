@@ -80,7 +80,7 @@ fun Handle.updateBoatInBoatSpaceReservation(
             UPDATE boat_space_reservation
             SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
             WHERE id = :id
-                AND status = 'Info' 
+                AND (status = 'Info' OR status = 'Payment')
                 AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
             RETURNING *
             """.trimIndent()
@@ -121,6 +121,7 @@ fun Handle.updateReservationWithPayment(
 
 data class ReservationWithDependencies(
     val id: Int,
+    val boatId: Int?,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -237,7 +238,7 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
             JOIN location ON location_id = location.id
             JOIN price ON price_id = price.id
             WHERE bsr.id = :id
-                AND bsr.status = 'Info' 
+                AND (bsr.status = 'Info' OR bsr.status = 'Payment')
                 AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
             """.trimIndent()
         )
