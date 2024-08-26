@@ -12,22 +12,22 @@
         <div class="column">
 
             <div class="field">
-                <div class="control">
-                    <label class="label" th:text="#{boatSpaceReservation.title.boatName}" for="name">Veneen
-                        nimi</label>
-                    <input
-                            class="input"
-                            type="text"
-                            id="name"
-                            name="name"
-                            th:value="${boat.name}"
-
-                    />
-                    <div id="boatName-error-container">
-                            <span id="boatName-error" class="help is-danger" th:if="${errors.containsKey('name')}"
-                                  th:text="${errors.get('name')}">Boat name number required</span>
-                    </div>
-                </div>
+                <!--                <div class="control">-->
+                <!--                    <label class="label" th:text="#{boatSpaceReservation.title.boatName}" for="name">Veneen-->
+                <!--                        nimi</label>-->
+                <!--                    <input-->
+                <!--                            class="input"-->
+                <!--                            type="text"-->
+                <!--                            id="name"-->
+                <!--                            name="name"-->
+                <!--                            th:value="${boat.name}"-->
+                <!--                    />-->
+                <!--                    <div id="boatName-error-container">-->
+                <!--                            <span id="boatName-error" class="help is-danger" th:if="${errors.containsKey('name')}"-->
+                <!--                                  th:text="${errors.get('name')}">Boat name number required</span>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+                <div th:utext="${@formComponents.textInput('boatSpaceReservation.title.boatName', 'name', boat.name, errors)}"></div>
             </div>
             <div class="field">
                 <div class="control" id="weight-control">
@@ -236,6 +236,9 @@
         ></button>
     </div>
 </form>
+<script>
+    validation.init({forms: ['form']})
+</script>
 <a class="edit-link is-link is-disabled" hx-swap-oob="outerHTML:.edit-link">
     <span class="icon ml-s">
         <div th:replace="~{fragments/icons :: edit}"></div>
