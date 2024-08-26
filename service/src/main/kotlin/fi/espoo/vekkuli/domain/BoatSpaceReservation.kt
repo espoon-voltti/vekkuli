@@ -319,7 +319,7 @@ data class BoatSpaceReservationItem(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
-    val warnings: List<ReservationWarning> = emptyList()
+    val warnings: List<String> = emptyList()
 ) {
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
@@ -342,7 +342,7 @@ data class BoatSpaceReservationItemWithWarning(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
-    val warning: ReservationWarning?
+    val warning: String?
 )
 
 enum class BoatSpaceFilterColumn {
