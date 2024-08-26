@@ -151,4 +151,40 @@ class FormComponents {
             </div>
             """.trimIndent()
     }
+
+    fun radioButtons(
+        labelKey: String,
+        id: String,
+        value: String?,
+        options: List<Pair<String, String>>,
+        required: Boolean? = false,
+        errors: Map<String, String>
+    ): String {
+        val display = if (required == true && errors[id] != null) "visible" else "hidden"
+
+        //language=HTML
+        val opts =
+            options.joinToString("\n") { (key, value) ->
+                """<input type="radio" id="$id" name="$id" value="$key" ${if (key == value) "checked" else ""}>
+                <label for="$key">$value</label>"""
+            }
+
+        //language=HTML
+        return """
+            <div class="field">
+                <div class="control">
+                    <label class="label" for="$id">${t(labelKey)}</label>
+                    <div class="select">
+                        $opts
+                    </div>
+                    <div id="$id-error-container">
+                        <span id="$id-error" class="help is-danger" 
+                            style="visibility: $display">
+                            ${t("validation.required")} 
+                        </span>
+                    </div> 
+                </div>
+            </div>
+            """.trimIndent()
+    }
 }
