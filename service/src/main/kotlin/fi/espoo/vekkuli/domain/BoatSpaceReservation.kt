@@ -4,7 +4,6 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.config.ReservationWarning
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.InExpr
 import fi.espoo.vekkuli.utils.centsToEuro
