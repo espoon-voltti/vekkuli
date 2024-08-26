@@ -349,11 +349,14 @@ enum class BoatSpaceFilterColumn {
     START_DATE,
     END_DATE,
     PLACE,
+    PLACE_TYPE,
+    HOME_TOWN,
     CUSTOMER,
+    BOAT,
 }
 
 data class BoatSpaceReservationFilter(
-    val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.START_DATE,
+    val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
     val ascending: Boolean = false,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
@@ -411,13 +414,18 @@ data class BoatSpaceReservationFilter(
     }
 }
 
-fun getSortingSql(sort: BoatSpaceReservationFilter): String =
-    when (sort.sortBy) {
-        BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date"
-        BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date"
-        BoatSpaceFilterColumn.PLACE -> "ORDER BY place"
-        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name"
-    } + if (!sort.ascending) " DESC" else ""
+fun getSortingSql(sort: BoatSpaceReservationFilter): String {
+    val sortDir = if (!sort.ascending) " DESC" else ""
+    return when (sort.sortBy) {
+        BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date$sortDir"
+        BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date$sortDir"
+        BoatSpaceFilterColumn.PLACE -> "ORDER BY location_name$sortDir, place$sortDir"
+        BoatSpaceFilterColumn.PLACE_TYPE -> "ORDER BY type$sortDir"
+        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name$sortDir"
+        BoatSpaceFilterColumn.HOME_TOWN -> "ORDER BY home_town$sortDir"
+        BoatSpaceFilterColumn.BOAT -> "ORDER BY boat_registration_code$sortDir"
+    }
+}
 
 fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> {
     val filter =
