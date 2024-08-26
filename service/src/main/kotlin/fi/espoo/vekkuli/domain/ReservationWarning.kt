@@ -3,16 +3,11 @@ package fi.espoo.vekkuli.domain
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
 import java.time.LocalDateTime
-import java.util.*
 
 data class ReservationWarning(
-    val id: Int,
+    val reservationId: Int,
     val key: String,
     val created: LocalDateTime,
-    val reservationId: Int,
-    val ackAt: LocalDateTime?,
-    val ackBy: UUID?,
-    val note: String,
 )
 
 fun Handle.addReservationWarnings(
@@ -43,7 +38,7 @@ fun Handle.getUnAcknowledgedReservationWarnings(reservationId: Int): List<Reserv
         """
         SELECT *
         FROM reservation_warning
-        WHERE reservation_id = :reservationId AND ack_at IS NULL
+        WHERE reservation_id = :reservationId
         """
     ).bind("reservationId", reservationId)
         .mapTo<ReservationWarning>()
@@ -52,19 +47,13 @@ fun Handle.getUnAcknowledgedReservationWarnings(reservationId: Int): List<Reserv
 fun Handle.setReservationWarningAcknowledged(
     reservationId: Int,
     key: String,
-    ackBy: UUID,
-    note: String
-): ReservationWarning? =
-    createQuery(
+) {
+    createUpdate(
         """
-        UPDATE reservation_warning
-        SET ack_at = now(), ack_by = :ackBy, note = :note
+        DELETE from reservation_warning
         WHERE reservation_Id = :reservationId AND key = :key
-        RETURNING *
         """
     ).bind("reservationId", reservationId)
         .bind("key", key)
-        .bind("ackBy", ackBy)
-        .bind("note", note)
-        .mapTo<ReservationWarning>()
-        .one()
+        .execute()
+}
