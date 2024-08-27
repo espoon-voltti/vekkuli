@@ -2,13 +2,17 @@ package fi.espoo.vekkuli
 
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.pages.BoatSpaceForm
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.ActiveProfiles
+import java.util.*
 import kotlin.io.path.Path
 
+@ActiveProfiles("test")
 class E2eTest : PlaywrightTest() {
     fun handleError(e: AssertionError) {
         page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
@@ -258,5 +262,49 @@ class E2eTest : PlaywrightTest() {
         assertThat(formPage.otherIdentification).hasValue("ID12345")
         assertThat(formPage.emailInput).hasValue("test@example.com")
         assertThat(formPage.phoneInput).hasValue("123456789")
+    }
+
+    @Test
+    fun paymentSuccess() {
+        val citizen =
+            Citizen(
+                id = UUID.randomUUID(),
+                firstName = "Test",
+                lastName = "Citizen",
+                email = "test@email.com",
+                phone = "123456789",
+                address = "Test Street 1",
+                postalCode = "12345",
+                municipality = "Test City",
+                nationalId = "123456-789A"
+            )
+
+        // login and pick first free space
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceForm(page)
+        formPage.boatTypeSelect.selectOption("Sailboat")
+        formPage.widthInput.fill("3")
+        formPage.lengthInput.fill("6")
+        formPage.depthInput.fill("1.5")
+        formPage.weightInput.fill("2000")
+        formPage.boatNameInput.fill("My Boat")
+        formPage.otherIdentification.fill("ID12345")
+        formPage.noRegistrationCheckbox.check()
+        formPage.ownerRadioButton.check()
+        formPage.emailInput.fill("test@email.com")
+        formPage.phoneInput.fill("123456789")
+        formPage.certifyInfoCheckbox.check()
+        formPage.agreementCheckbox.check()
+        formPage.submitButton.click()
+        assertThat(reservationPage.paymentPageTitle).isVisible()
+        formPage.nordeaSuccessButton.click()
+        assertThat(formPage.confirmationPageContainer).isVisible()
     }
 }
