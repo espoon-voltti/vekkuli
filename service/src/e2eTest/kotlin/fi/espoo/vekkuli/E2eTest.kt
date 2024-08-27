@@ -113,8 +113,6 @@ class E2eTest : PlaywrightTest() {
             assertThat(formPage.depthError).isVisible()
             assertThat(formPage.weightError).isVisible()
             assertThat(formPage.boatRegistrationNumberError).isVisible()
-            assertThat(formPage.emailError).isVisible()
-            assertThat(formPage.phoneError).isVisible()
             assertThat(formPage.certifyInfoError).isVisible()
             assertThat(formPage.agreementError).isVisible()
 
@@ -230,19 +228,35 @@ class E2eTest : PlaywrightTest() {
         val formPage = BoatSpaceForm(page)
 
         assertThat(formPage.header).isVisible()
-        formPage.boatTypeSelect.selectOption("Sailboat")
-        formPage.widthInput.fill("3")
-        formPage.lengthInput.fill("6")
-        formPage.depthInput.fill("1.5")
-        formPage.weightInput.fill("2000")
-        formPage.boatNameInput.fill("My Boat")
-        formPage.otherIdentification.fill("ID12345")
-        formPage.noRegistrationCheckbox.check()
-        formPage.ownerRadioButton.check()
-        formPage.emailInput.fill("test@example.com")
-        formPage.phoneInput.fill("123456789")
-        formPage.certifyInfoCheckbox.check()
-        formPage.agreementCheckbox.check()
-        formPage.submitButton.click()
+        formPage.fillFormAndSubmit()
+        assertThat(reservationPage.paymentPageTitle).hasCount(1)
+    }
+
+    @Test
+    fun formValuesArePreservedAfterPaymentPageBackButton() {
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceForm(page)
+        assertThat(formPage.header).isVisible()
+        formPage.fillFormAndSubmit()
+        assertThat(reservationPage.paymentPageTitle).hasCount(1)
+        formPage.backButtonOnPaymentPage.click()
+
+        // assert that form is filled with the previous values
+        assertThat(formPage.header).isVisible()
+        assertThat(formPage.widthInput).hasValue("3.0")
+        assertThat(formPage.lengthInput).hasValue("6.0")
+        assertThat(formPage.depthInput).hasValue("1.5")
+        assertThat(formPage.weightInput).hasValue("2000")
+        assertThat(formPage.boatNameInput).hasValue("My Boat")
+        assertThat(formPage.otherIdentification).hasValue("ID12345")
+        assertThat(formPage.emailInput).hasValue("test@example.com")
+        assertThat(formPage.phoneInput).hasValue("123456789")
     }
 }

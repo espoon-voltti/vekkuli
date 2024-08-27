@@ -221,7 +221,7 @@
                         <h4 class="label required" th:text="#{boatApplication.boatIdentificationTitle}">Veneen
                             rekisteritunnus / tunnistenumero</h4>
                         <label class="checkbox">
-                            <input type="checkbox" th:field="*{noRegistrationNumber}" @click="noReg = ! noReg" />
+                            <input type="checkbox" th:field="*{noRegistrationNumber}" @click="noReg = ! noReg"/>
                             <span th:text="#{boatApplication.noRegistrationNumber}">Ei rekisteritunnusta</span>
                         </label>
                         <template x-if="!noReg">
@@ -261,7 +261,7 @@
                                     th:attr="hx-post=|/kuntalainen/venepaikka/varaus/${reservationId}/validate|"
                                     hx-swap="outerHTML"
                                     hx-target="#otherIdentification-error-container"
-                                    hx-select="#otherIdentification-error-container" />
+                                    hx-select="#otherIdentification-error-container"/>
                         </div>
                         <div id="otherIdentification-error-container">
                             <span id="otherIdentification-error" class="help is-danger"
