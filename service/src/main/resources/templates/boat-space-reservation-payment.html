@@ -24,7 +24,7 @@
         <div class="container">
             <h2 th:text="#{boatSpaceReservation.title.resourceReservation}">Espoon resurssivarausjärjestelmä</h2>
             <div class="error columns is-vcentered"
-                 id="boatSize-warning"
+                 id="payment-error-message"
                  th:if="${error}">
                  <span class="column is-vcentered is-narrow">
                     <div th:replace="~{fragments/icons :: warning-exclamation(isError=true)}"></div>
@@ -34,7 +34,7 @@
                         <span th:text="${error}"></span>
                         <a class="has-text-link"
                            tabindex="0"
-                           id="size-warning-back-button"
+                           id="payment-error-link"
                            x-on:click="modalOpen = true">
                             <span th:text="#{boatSpaceReservation.returnToFrontPage}">tai palaa takaisin etusivulle.</span>
                         </a>
