@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.utils.*
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
@@ -54,64 +55,38 @@ data class BoatSpaceFilter(
     val locationIds: List<Int>? = null
 )
 
-fun beamFilter(
+fun amenityFilter(
+    amenity: BoatSpaceAmenity,
     boatWidth: Int?,
     boatLength: Int?
-): SqlExpr =
-    AndExpr(
+): SqlExpr {
+    val placeDimensions = BoatSpaceConfig.getRequiredDimensions(amenity, Dimensions(boatWidth ?: 0, boatLength ?: 0))
+    return AndExpr(
         listOf(
-            OperatorExpr("amenity", "=", BoatSpaceAmenity.Beam),
-            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.BEAM_WIDTH_ADJUSTMENT_CM)),
-            OperatorExpr("length_cm", ">=", boatLength?.minus(BoatSpaceConfig.BEAM_LENGTH_ADJUSTMENT_CM))
+            OperatorExpr("amenity", "=", amenity),
+            OperatorExpr("width_cm", ">=", placeDimensions.width),
+            OperatorExpr("length_cm", ">=", placeDimensions.length)
         )
     )
-
-fun walkBeamFilter(
-    boatWidth: Int?,
-    boatLength: Int?
-): SqlExpr =
-    AndExpr(
-        listOf(
-            OperatorExpr("amenity", "=", BoatSpaceAmenity.WalkBeam),
-            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.WALK_BEAM_WIDTH_ADJUSTMENT_CM)),
-            OperatorExpr("length_cm", ">=", boatLength?.minus(BoatSpaceConfig.WALK_BEAM_LENGTH_ADJUSTMENT_CM))
-        )
-    )
-
-fun rearBuoyFilter(
-    boatWidth: Int?,
-    boatLength: Int?
-): SqlExpr =
-    AndExpr(
-        listOf(
-            OperatorExpr("amenity", "=", BoatSpaceAmenity.RearBuoy),
-            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.REAR_BUOY_WIDTH_ADJUSTMENT_CM)),
-            OperatorExpr("length_cm", ">=", boatLength?.plus(BoatSpaceConfig.REAR_BUOY_LENGTH_ADJUSTMENT_CM))
-        )
-    )
-
-fun buoyFilter(
-    boatWidth: Int?,
-    boatLength: Int?
-): SqlExpr =
-    AndExpr(
-        listOf(
-            OperatorExpr("amenity", "=", BoatSpaceAmenity.Buoy),
-            OperatorExpr("width_cm", ">=", boatWidth?.plus(BoatSpaceConfig.BUOY_WIDTH_ADJUSTMENT_CM)),
-            OperatorExpr("length_cm", ">=", boatLength?.plus(BoatSpaceConfig.BUOY_LENGTH_ADJUSTMENT_CM))
-        )
-    )
+}
 
 fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
+    if (filter.boatLength != null && filter.boatLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
+        // Boats over 15 meters will only fit in buoys
+        return OperatorExpr(
+            "amenity",
+            "=",
+            BoatSpaceAmenity.Buoy,
+        )
+    }
+
     val amenities = if (filter.amenities.isNullOrEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
     return OrExpr(
         amenities.map {
-            when (it) {
-                BoatSpaceAmenity.None -> OperatorExpr("amenity", "=", BoatSpaceAmenity.None)
-                BoatSpaceAmenity.Beam -> beamFilter(filter.boatWidth, filter.boatLength)
-                BoatSpaceAmenity.WalkBeam -> walkBeamFilter(filter.boatWidth, filter.boatLength)
-                BoatSpaceAmenity.RearBuoy -> rearBuoyFilter(filter.boatWidth, filter.boatLength)
-                BoatSpaceAmenity.Buoy -> buoyFilter(filter.boatWidth, filter.boatLength)
+            if (it == BoatSpaceAmenity.None) {
+                OperatorExpr("amenity", "=", BoatSpaceAmenity.None)
+            } else {
+                amenityFilter(it, filter.boatWidth, filter.boatLength)
             }
         }
     )
@@ -162,17 +137,7 @@ class LocationFilter(
 }
 
 fun Handle.getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
-    val amenityFilter =
-        if (params.boatLength != null && params.boatLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
-            // Boats over 15 meters will only fit in buoys
-            OperatorExpr(
-                "amenity",
-                "=",
-                BoatSpaceAmenity.Buoy,
-            )
-        } else {
-            createAmenityFilter(params)
-        }
+    val amenityFilter = createAmenityFilter(params)
     val locationIds =
         if (params.locationIds.isNullOrEmpty()) {
             createQuery(
