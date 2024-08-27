@@ -30,7 +30,7 @@ class PaymentController {
     lateinit var reservationService: BoatReservationService
 
     @Autowired
-    lateinit var paytrail: Paytrail
+    lateinit var paytrail: PaytrailInterface
 
     @Autowired
     lateinit var messageUtil: MessageUtil

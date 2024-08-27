@@ -24,7 +24,7 @@
         <div class="container">
             <h2 th:text="#{boatSpaceReservation.title.resourceReservation}">Espoon resurssivarausjärjestelmä</h2>
             <div class="error columns is-vcentered"
-                 id="boatSize-warning"
+                 id="payment-error-message"
                  th:if="${error}">
                  <span class="column is-vcentered is-narrow">
                     <div th:replace="~{fragments/icons :: warning-exclamation(isError=true)}"></div>
@@ -34,7 +34,7 @@
                         <span th:text="${error}"></span>
                         <a class="has-text-link"
                            tabindex="0"
-                           id="size-warning-back-button"
+                           id="payment-error-link"
                            x-on:click="modalOpen = true">
                             <span th:text="#{boatSpaceReservation.returnToFrontPage}">tai palaa takaisin etusivulle.</span>
                         </a>
@@ -44,13 +44,13 @@
             </div>
             <div class="columns is-multiline" id="payment-method-list">
                 <div class="column is-one-quarter" th:each="provider : ${providers}">
-                    <form method="POST" th:action="${provider.url}" class="payment-form">
+                    <form th:method="${provider.methodIsPost} ? 'POST' : 'GET'" th:action="${provider.url}" class="payment-form">
                         <!-- Render hidden inputs for each parameter -->
                         <div th:each="parameter : ${provider.parameters}">
                             <input type="hidden" th:name="${parameter.name}" th:value="${parameter.value}">
                         </div>
                         <!-- Render payment method button -->
-                        <button class="button is-flex-direction-column">
+                        <button class="button is-flex-direction-column" th:id="${provider.id}">
                             <img class="row" th:src="${provider.svg}" alt="Payment Icon"/>
                             <span class="row" th:text="${provider.name} ?: ''">Payment Method</span>
                         </button>

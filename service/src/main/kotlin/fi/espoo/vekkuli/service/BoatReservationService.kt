@@ -35,7 +35,7 @@ class BoatReservationService {
     lateinit var messageUtil: MessageUtil
 
     @Autowired
-    lateinit var paytrail: Paytrail
+    lateinit var paytrail: PaytrailInterface
 
     fun handlePaymentResult(
         params: Map<String, String>,

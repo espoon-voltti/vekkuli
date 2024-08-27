@@ -25,7 +25,6 @@ class ReserveBoatSpacePage(
     val kivenlahtiCheckbox = page.getByTestId("kivenlahti-checkbox")
     val harborHeaders = page.locator(".harbor-header")
     val firstReserveButton = page.locator(".reserve-button").first()
-    val paymentPageTitle = page.getByTestId("payment-method-list")
     val authModal = page.getByTestId("auth-modal")
     val authModalCancel = page.getByTestId("auth-modal-cancel")
     val authModalContinue = page.getByTestId("auth-modal-continue")

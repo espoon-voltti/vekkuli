@@ -33,7 +33,6 @@ class BoatSpaceForm(private val page: Page) {
     val ownerRadioButton = page.getByTestId("ownerShip1")
     val confirmCancelModalCancel = page.getByTestId("confirm-cancel-modal-cancel")
     val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
-    val backButtonOnPaymentPage = page.getByTestId("back-to-application")
 
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
