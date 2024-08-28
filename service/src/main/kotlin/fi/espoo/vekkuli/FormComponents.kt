@@ -17,11 +17,10 @@ class FormComponents {
         labelKey: String,
         id: String,
         value: String?,
-        errors: Map<String, String> = emptyMap(),
         required: Boolean? = false,
-        pattern: Pair<String, String>?,
+        pattern: Pair<String, String>? = null,
+        attributes: String = ""
     ): String {
-        val display = if (required == true && errors[id] != null) "visible" else "hidden"
         //language=HTML
         return """
             <div class="field">
@@ -34,16 +33,17 @@ class FormComponents {
                         type="text"
                         id="$id"
                         name="$id"
-                        value="${value ?: ""}"/>
+                        value="${value ?: ""}"
+                        $attributes />
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
-                            style="visibility: $display">
+                            style="visibility: hidden">
                             ${t("validation.required")} 
                         </span>
                     </div> 
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
-                            style="visibility: $display">
+                            style="visibility: hidden">
                             ${if (pattern != null) t(pattern.second) else ""} 
                         </span>
                     </div> 
@@ -57,9 +57,7 @@ class FormComponents {
         id: String,
         value: Int?,
         required: Boolean? = false,
-        errors: Map<String, String>
     ): String {
-        val display = if (required == true && errors[id] != null) "visible" else "hidden"
         //language=HTML
         return """
             <div class="field">
@@ -74,7 +72,7 @@ class FormComponents {
                         value="${value ?: ""}"/>
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
-                            style="visibility: $display">
+                            style="visibility: hidden>
                             ${t("validation.required")} 
                         </span>
                     </div> 
@@ -88,9 +86,7 @@ class FormComponents {
         id: String,
         value: Double?,
         required: Boolean? = false,
-        errors: Map<String, String>
     ): String {
-        val display = if (required == true && errors[id] != null) "visible" else "hidden"
         //language=HTML
         return """
             <div class="field">
@@ -106,7 +102,7 @@ class FormComponents {
                         value="${value ?: ""}"/>
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
-                            style="visibility: $display">
+                            style="visibility: hidden">
                             ${t("validation.required")} 
                         </span>
                     </div> 
@@ -121,10 +117,7 @@ class FormComponents {
         value: String?,
         options: List<Pair<String, String>>,
         required: Boolean? = false,
-        errors: Map<String, String>
     ): String {
-        val display = if (required == true && errors[id] != null) "visible" else "hidden"
-
         //language=HTML
         val opts =
             options.joinToString("\n") { (key, value) ->
@@ -143,7 +136,7 @@ class FormComponents {
                     </div>
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
-                            style="visibility: $display">
+                            style="visibility: hidden">
                             ${t("validation.required")} 
                         </span>
                     </div> 
@@ -158,10 +151,7 @@ class FormComponents {
         value: String?,
         options: List<Pair<String, String>>,
         required: Boolean? = false,
-        errors: Map<String, String>
     ): String {
-        val display = if (required == true && errors[id] != null) "visible" else "hidden"
-
         //language=HTML
         val opts =
             options.joinToString("\n") { (key, value) ->
@@ -179,7 +169,7 @@ class FormComponents {
                     </div>
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
-                            style="visibility: $display">
+                            style="visibility: hidden">
                             ${t("validation.required")} 
                         </span>
                     </div> 

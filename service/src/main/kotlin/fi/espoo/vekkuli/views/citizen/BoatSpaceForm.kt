@@ -23,10 +23,10 @@ class BoatSpaceForm {
     }
 
     fun boatSpaceForm(
-        reservation: ReservationWithDependencies, // Assuming BoatSpace is a data class with relevant fields
-        boats: List<Boat>, // Assuming Boat is a data class with relevant fields
-        user: Citizen, // Assuming User is a data class with relevant fields
-        input: ReservationInput, // Assuming this contains the form input data
+        reservation: ReservationWithDependencies,
+        boats: List<Boat>,
+        user: Citizen,
+        input: ReservationInput,
         errors: Map<String, String>,
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
@@ -93,7 +93,6 @@ class BoatSpaceForm {
                 "type",
                 boatTypes.first(),
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
-                errors = errors
             )
 
         val widthInput =
@@ -102,7 +101,6 @@ class BoatSpaceForm {
                 "width",
                 input.width,
                 required = true,
-                errors = errors
             )
 
         val lengthInput =
@@ -111,7 +109,6 @@ class BoatSpaceForm {
                 "length",
                 input.length,
                 required = true,
-                errors = errors
             )
 
         val depthInput =
@@ -120,7 +117,6 @@ class BoatSpaceForm {
                 "depth",
                 input.depth,
                 required = true,
-                errors = errors
             )
 
         val weightInput =
@@ -129,16 +125,12 @@ class BoatSpaceForm {
                 "weight",
                 input.weight,
                 required = true,
-                errors = errors
             )
         val boatNameInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.boatName",
                 "boatName",
                 input.boatName,
-                errors,
-                false,
-                null,
             )
 
         val registrationNumberInput =
@@ -146,9 +138,6 @@ class BoatSpaceForm {
                 "boatSpaceReservation.title.registrationNumber",
                 "registrationNumber",
                 input.boatRegistrationNumber,
-                required = false,
-                pattern = null,
-                errors = errors
             )
 
         val otherIdentifierInput =
@@ -156,9 +145,6 @@ class BoatSpaceForm {
                 "boatSpaceReservation.title.otherIdentifier",
                 "otherIndentification",
                 input.otherIdentification,
-                required = false,
-                pattern = null,
-                errors = errors
             )
 
         val extraInformationInput =
@@ -166,9 +152,6 @@ class BoatSpaceForm {
                 "boatSpaceReservation.title.additionalInfo",
                 "extraInformation",
                 input.extraInformation,
-                required = false,
-                pattern = null,
-                errors = errors
             )
         val ownershipOptions = listOf("Owner", "User", "CoOwner", "FutureOwner")
         // language=HTML
@@ -189,7 +172,7 @@ class BoatSpaceForm {
                                 id="ownership-$opt"
                                 selected="${input.ownerShip.toString() == opt}"
                         />
-                        <label for="ownership-$opt">${t("boatApplication.ownershipOption." + opt)}</label>
+                        <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
                     </div>
                     """.trimIndent()
                 }
@@ -203,9 +186,6 @@ class BoatSpaceForm {
                 "boatApplication.email",
                 "name",
                 null,
-                errors,
-                false,
-                null,
             )
 
         val phone =
@@ -213,16 +193,12 @@ class BoatSpaceForm {
                 "boatApplication.phone",
                 "name",
                 null,
-                errors,
-                false,
-                null,
             )
 
         // language=HTML
         return """
             <section class="section">
                 <div class="container" id="container" x-data="{ modalOpen: false }"> 
-               
                     <form
                         id="form"
                         class="column is-half"
@@ -290,7 +266,7 @@ class BoatSpaceForm {
                                     <span >${t("boatApplication.certifyInfoCheckbox")}</span>
                                 </label>
                                 <div id="certify-error-container">
-                                    <span id="certify-error" class="help is-danger">Certification required</span>
+                                    <span id="certify-error" class="help is-danger">${t("validation.certifyInformation")}</span>
                                 </div>
                             </div>
                             <div id="agree-control">
@@ -304,7 +280,7 @@ class BoatSpaceForm {
                                     <span> ${t("boatApplication.agreementCheckbox")} </span>
                                 </label>
                                 <div id="agree-error-container">
-                                    <span id="agree-error" class="help is-danger">Agreement required</span>
+                                    <span id="agree-error" class="help is-danger">${t("validation.agreeToRules")}</span>
                                 </div>
                             </div>
                         </div>

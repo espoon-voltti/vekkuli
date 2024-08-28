@@ -23,9 +23,6 @@ class EditBoat {
                 "boatSpaceReservation.title.boatName",
                 "name",
                 boat.name,
-                errors,
-                false,
-                null,
             )
 
         val weightInput =
@@ -34,7 +31,6 @@ class EditBoat {
                 "weight",
                 boat.weight,
                 required = true,
-                errors = errors
             )
 
         val boatTypeSelect =
@@ -43,7 +39,6 @@ class EditBoat {
                 "type",
                 boat.type.toString(),
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
-                errors = errors
             )
 
         val boatDepthInput =
@@ -52,7 +47,6 @@ class EditBoat {
                 "depth",
                 boat.depth,
                 required = true,
-                errors = errors
             )
 
         val widthInput =
@@ -61,7 +55,6 @@ class EditBoat {
                 "width",
                 boat.width,
                 required = true,
-                errors = errors
             )
 
         val registrationNumberInput =
@@ -69,9 +62,6 @@ class EditBoat {
                 "boatSpaceReservation.title.registrationNumber",
                 "registrationNumber",
                 boat.registrationNumber,
-                required = false,
-                pattern = null,
-                errors = errors
             )
 
         val lengthInput =
@@ -80,7 +70,6 @@ class EditBoat {
                 "length",
                 boat.length,
                 required = true,
-                errors = errors
             )
 
         val ownershipSelect =
@@ -90,7 +79,6 @@ class EditBoat {
                 boat.ownership.toString(),
                 ownershipOptions.map { it to formComponents.t("boatApplication.ownershipOption.$it") },
                 required = true,
-                errors = errors
             )
 
         val otherIdentifierInput =
@@ -98,9 +86,6 @@ class EditBoat {
                 "boatSpaceReservation.title.otherIdentifier",
                 "otherIdentifier",
                 boat.otherIdentifier,
-                required = false,
-                pattern = null,
-                errors = errors
             )
 
         val extraInformationInput =
@@ -108,9 +93,6 @@ class EditBoat {
                 "boatSpaceReservation.title.additionalInfo",
                 "extraInformation",
                 boat.extraInformation,
-                required = false,
-                pattern = null,
-                errors = errors
             )
 
         //language=HTML
