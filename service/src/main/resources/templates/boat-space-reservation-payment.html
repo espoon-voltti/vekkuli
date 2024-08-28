@@ -7,47 +7,58 @@
 <body layout:fragment="body">
 <section class="section" x-data="{ modalOpen: false }">
     <div class="container">
-    <div th:replace="~{fragments/confirm-cancellation-modal :: backButton}"></div>
-    <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=3)}"></div>
+        <div class="container" >
+            <button
+                    id="back-to-application"
+                    class="icon-text">
+                <span class="icon">
+                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+            </span>
+                <a th:href="|/kuntalainen/venepaikka/varaus/${reservationId}|">
+                    <span th:text="#{boatSpaceReservation.button.backToApplication}">Takaisin</span>
+                </a>
+            </button>
+        </div>
+        <div th:replace="~{fragments/step-indicator :: stepIndicator(currentStep=3)}"></div>
 
-    <div class="container">
-        <h2 th:text="#{boatSpaceReservation.title.resourceReservation}">Espoon resurssivarausjärjestelmä</h2>
-        <div class="error columns is-vcentered"
-             id="boatSize-warning"
-             th:if="${error}">
+        <div class="container">
+            <h2 th:text="#{boatSpaceReservation.title.resourceReservation}">Espoon resurssivarausjärjestelmä</h2>
+            <div class="error columns is-vcentered"
+                 id="payment-error-message"
+                 th:if="${error}">
                  <span class="column is-vcentered is-narrow">
                     <div th:replace="~{fragments/icons :: warning-exclamation(isError=true)}"></div>
                 </span>
-            <div class="column">
-                <p>
-                    <span th:text="${error}"></span>
-                    <a class="has-text-link"
-                       tabindex="0"
-                       id="size-warning-back-button"
-                       x-on:click="modalOpen = true">
-                        <span th:text="#{boatSpaceReservation.returnToFrontPage}">tai palaa takaisin etusivulle.</span>
-                    </a>
-                </p>
-            </div>
+                <div class="column">
+                    <p>
+                        <span th:text="${error}"></span>
+                        <a class="has-text-link"
+                           tabindex="0"
+                           id="payment-error-link"
+                           x-on:click="modalOpen = true">
+                            <span th:text="#{boatSpaceReservation.returnToFrontPage}">tai palaa takaisin etusivulle.</span>
+                        </a>
+                    </p>
+                </div>
 
-        </div>
-        <div class="columns is-multiline" id="payment-method-list">
-            <div class="column is-one-quarter" th:each="provider : ${providers}">
-                <form method="POST" th:action="${provider.url}" class="payment-form">
-                    <!-- Render hidden inputs for each parameter -->
-                    <div th:each="parameter : ${provider.parameters}">
-                        <input type="hidden" th:name="${parameter.name}" th:value="${parameter.value}">
-                    </div>
-                    <!-- Render payment method button -->
-                    <button class="button is-flex-direction-column">
-                        <img class="row" th:src="${provider.svg}" alt="Payment Icon"/>
-                        <span class="row" th:text="${provider.name} ?: ''">Payment Method</span>
-                    </button>
-                </form>
+            </div>
+            <div class="columns is-multiline" id="payment-method-list">
+                <div class="column is-one-quarter" th:each="provider : ${providers}">
+                    <form th:method="${provider.methodIsPost} ? 'POST' : 'GET'" th:action="${provider.url}" class="payment-form">
+                        <!-- Render hidden inputs for each parameter -->
+                        <div th:each="parameter : ${provider.parameters}">
+                            <input type="hidden" th:name="${parameter.name}" th:value="${parameter.value}">
+                        </div>
+                        <!-- Render payment method button -->
+                        <button class="button is-flex-direction-column" th:id="${provider.id}">
+                            <img class="row" th:src="${provider.svg}" alt="Payment Icon"/>
+                            <span class="row" th:text="${provider.name} ?: ''">Payment Method</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-    <div th:replace="~{fragments/confirm-cancellation-modal :: confirmCancellationModal}"></div>
+        <div th:replace="~{fragments/confirm-cancellation-modal :: confirmCancellationModal}"></div>
     </div>
 </section>
 </body>

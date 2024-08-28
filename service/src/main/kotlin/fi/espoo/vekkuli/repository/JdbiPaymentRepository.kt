@@ -51,14 +51,14 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    override fun getPayment(id: UUID): Payment? =
+    override fun getPayment(stamp: UUID): Payment? =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
                     SELECT * FROM payment WHERE id = :id
                     """.trimIndent()
-                ).bind("id", id)
+                ).bind("id", stamp)
                 .mapTo<Payment>()
                 .firstOrNull()
         }

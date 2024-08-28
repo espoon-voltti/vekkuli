@@ -31,7 +31,7 @@ class PaymentController {
     lateinit var reservationService: BoatReservationService
 
     @Autowired
-    lateinit var paytrail: Paytrail
+    lateinit var paytrail: PaytrailInterface
 
     @Autowired
     lateinit var messageUtil: MessageUtil
@@ -91,6 +91,8 @@ class PaymentController {
         model.addAttribute("providers", response.providers)
         model.addAttribute("error", errorMessage)
         model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created))
+        model.addAttribute("reservationId", reservation.id)
+
         return "boat-space-reservation-payment"
     }
 

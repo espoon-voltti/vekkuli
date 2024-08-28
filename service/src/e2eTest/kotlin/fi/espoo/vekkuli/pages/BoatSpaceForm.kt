@@ -33,4 +33,21 @@ class BoatSpaceForm(private val page: Page) {
     val ownerRadioButton = page.getByTestId("ownerShip1")
     val confirmCancelModalCancel = page.getByTestId("confirm-cancel-modal-cancel")
     val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
+
+    fun fillFormAndSubmit() {
+        boatTypeSelect.selectOption("Sailboat")
+        widthInput.fill("3")
+        lengthInput.fill("6")
+        depthInput.fill("1.5")
+        weightInput.fill("2000")
+        boatNameInput.fill("My Boat")
+        otherIdentification.fill("ID12345")
+        noRegistrationCheckbox.check()
+        ownerRadioButton.check()
+        emailInput.fill("test@example.com")
+        phoneInput.fill("123456789")
+        certifyInfoCheckbox.check()
+        agreementCheckbox.check()
+        submitButton.click()
+    }
 }
