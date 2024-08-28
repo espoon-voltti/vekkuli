@@ -277,14 +277,18 @@ class BoatSpaceForm {
                         <div class="block">
                             
                            $boatNameInput
-                           <div x-data="{ noReg:false }">
+                           <div class="columns" x-data="{ noReg:false }">
                                <template x-if="!noReg">
-                                    $registrationNumberInput
+                                    <div class="column">
+                                        $registrationNumberInput
+                                    </div>
                                </template>
-                               <label class="checkbox">
-                                    <input type="checkbox" name="noRegistrationNumber" id="noRegistrationNumber" @click="noReg = ! noReg"/>
-                                    <span>${t("boatApplication.noRegistrationNumber")}</span>
-                               </label> 
+                               <div class="column">
+                                   <label class="checkbox">
+                                        <input type="checkbox" name="noRegistrationNumber" id="noRegistrationNumber" @click="noReg = ! noReg"/>
+                                        <span>${t("boatApplication.noRegistrationNumber")}</span>
+                                   </label> 
+                               </div>
                            </div>
                            $otherIdentifierInput
                            $extraInformationInput
