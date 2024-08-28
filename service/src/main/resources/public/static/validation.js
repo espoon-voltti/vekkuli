@@ -19,16 +19,19 @@ const validation = (function () {
       if (errorMessageElement) {
         if (field.hasAttribute('data-required') && !field.hasAttribute('disabled')) {
           if (field.type === 'checkbox') {
+            console.log("validating checkbox")
             if (!field.checked) {
-              isValid = false;
+              console.log("invalid")
               errorMessageElement.style.visibility = 'visible';
+              return false
             } else {
+              console.log("valid")
               errorMessageElement.style.visibility = 'hidden';
             }
           }
           if (field.tagName === 'SELECT' && field.value === "" || field.value.trim() === "") {
-            isValid = false;
             errorMessageElement.style.visibility = 'visible';
+            return false
           } else {
             errorMessageElement.style.visibility = 'hidden';
           }
@@ -36,8 +39,8 @@ const validation = (function () {
         if (isValid && field.hasAttribute('data-pattern')) {
           const pattern = new RegExp(field.getAttribute('data-pattern'));
           if (!pattern.test(field.value)) {
-            isValid = false;
             errorMessageElement.style.visibility = 'visible';
+            return false
           } else {
             errorMessageElement.style.visibility = 'hidden';
           }

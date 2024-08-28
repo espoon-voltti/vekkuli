@@ -215,23 +215,25 @@ class BoatSpaceForm {
                        
                         $boatTypeSelect
                         <div class="block">
-                            <div class='columns'>
-                                <div class='column'>
+                            <div class="columns">
+                                <div class="column">
                                     $widthInput
                                 </div>
-                                <div class='column'>
+                                <div class="column">
                                     $lengthInput
                                 </div>
                             </div>
                             
-                            <div class='columns'>
-                                <div class='column'>
+                            <div class="columns">
+                                <div class="column">
                                     $depthInput
                                 </div>
-                                <div class='column'>
+                                <div class="column">
                                     $weightInput
                                 </div>
                             </div>
+                        </div>
+                        <div class="block">
                             
                             $boatNameInput
                             $registrationNumberInput
@@ -266,7 +268,8 @@ class BoatSpaceForm {
                                     <span >${t("boatApplication.certifyInfoCheckbox")}</span>
                                 </label>
                                 <div id="certify-error-container">
-                                    <span id="certify-error" class="help is-danger">${t("validation.certifyInformation")}</span>
+                                    <span id="certifyInformation-error" class="help is-danger" style="visibility: hidden">
+                                    ${t("validation.certifyInformation")}</span>
                                 </div>
                             </div>
                             <div id="agree-control">
@@ -280,7 +283,8 @@ class BoatSpaceForm {
                                     <span> ${t("boatApplication.agreementCheckbox")} </span>
                                 </label>
                                 <div id="agree-error-container">
-                                    <span id="agree-error" class="help is-danger">${t("validation.agreeToRules")}</span>
+                                    <span id="agreeToRules-error" class="help is-danger" style="visibility: hidden">
+                                    ${t("validation.agreeToRules")}</span>
                                 </div>
                             </div>
                         </div>

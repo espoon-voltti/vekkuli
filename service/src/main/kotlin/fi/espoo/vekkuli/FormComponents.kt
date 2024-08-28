@@ -72,7 +72,7 @@ class FormComponents {
                         value="${value ?: ""}"/>
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
-                            style="visibility: hidden>
+                            style="visibility: hidden">
                             ${t("validation.required")} 
                         </span>
                     </div> 
