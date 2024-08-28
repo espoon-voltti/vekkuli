@@ -2,13 +2,12 @@ package fi.espoo.vekkuli
 
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.pages.BoatSpaceForm
-import fi.espoo.vekkuli.pages.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.ReservationListPage
-import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
+import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.ActiveProfiles
 import kotlin.io.path.Path
 
+@ActiveProfiles("test")
 class E2eTest : PlaywrightTest() {
     fun handleError(e: AssertionError) {
         page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
@@ -113,8 +112,6 @@ class E2eTest : PlaywrightTest() {
             assertThat(formPage.depthError).isVisible()
             assertThat(formPage.weightError).isVisible()
             assertThat(formPage.boatRegistrationNumberError).isVisible()
-            assertThat(formPage.emailError).isVisible()
-            assertThat(formPage.phoneError).isVisible()
             assertThat(formPage.certifyInfoError).isVisible()
             assertThat(formPage.agreementError).isVisible()
 
@@ -180,7 +177,8 @@ class E2eTest : PlaywrightTest() {
             formPage.submitButton.click()
 
             // assert that payment title is shown
-            assertThat(reservationPage.paymentPageTitle).hasCount(1)
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentPageTitle).hasCount(1)
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -223,26 +221,84 @@ class E2eTest : PlaywrightTest() {
 
         reservationPage.authModalCancel.click()
         assertThat(reservationPage.authModal).isHidden()
-
         reservationPage.firstReserveButton.click()
         reservationPage.authModalContinue.click()
         page.getByText("Kirjaudu").click()
         val formPage = BoatSpaceForm(page)
-
         assertThat(formPage.header).isVisible()
-        formPage.boatTypeSelect.selectOption("Sailboat")
-        formPage.widthInput.fill("3")
-        formPage.lengthInput.fill("6")
-        formPage.depthInput.fill("1.5")
-        formPage.weightInput.fill("2000")
-        formPage.boatNameInput.fill("My Boat")
-        formPage.otherIdentification.fill("ID12345")
-        formPage.noRegistrationCheckbox.check()
-        formPage.ownerRadioButton.check()
-        formPage.emailInput.fill("test@example.com")
-        formPage.phoneInput.fill("123456789")
-        formPage.certifyInfoCheckbox.check()
-        formPage.agreementCheckbox.check()
-        formPage.submitButton.click()
+        formPage.fillFormAndSubmit()
+    }
+
+    @Test
+    fun formValuesArePreservedAfterPaymentPageBackButton() {
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceForm(page)
+        assertThat(formPage.header).isVisible()
+        formPage.fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.paymentPageTitle).hasCount(1)
+        paymentPage.backButtonOnPaymentPage.click()
+
+        // assert that form is filled with the previous values
+        assertThat(formPage.header).isVisible()
+        assertThat(formPage.widthInput).hasValue("3.0")
+        assertThat(formPage.lengthInput).hasValue("6.0")
+        assertThat(formPage.depthInput).hasValue("1.5")
+        assertThat(formPage.weightInput).hasValue("2000")
+        assertThat(formPage.boatNameInput).hasValue("My Boat")
+        assertThat(formPage.otherIdentification).hasValue("ID12345")
+        assertThat(formPage.emailInput).hasValue("test@example.com")
+        assertThat(formPage.phoneInput).hasValue("123456789")
+    }
+
+    @Test
+    fun paymentSuccess() {
+        // login and pick first free space
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceForm(page)
+        formPage.fillFormAndSubmit()
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.paymentPageTitle).isVisible()
+        paymentPage.nordeaSuccessButton.click()
+        assertThat(paymentPage.confirmationPageContainer).isVisible()
+    }
+
+    @Test
+    fun paymentFailed() {
+        // login and pick first free space
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateTo()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceForm(page)
+        formPage.fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.paymentPageTitle).isVisible()
+        paymentPage.nordeaFailedButton.click()
+        assertThat(paymentPage.paymentErrorMessage).isVisible()
+        paymentPage.paymentErrorLink.click()
+        assertThat(formPage.confirmCancelModal).isVisible()
+        formPage.confirmCancelModalConfirm.click()
+        assertThat(reservationPage.header).isVisible()
     }
 }

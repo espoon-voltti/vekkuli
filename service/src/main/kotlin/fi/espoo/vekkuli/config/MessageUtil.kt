@@ -15,4 +15,8 @@ class MessageUtil(private val messageSource: MessageSource) {
     fun getMessage(code: String): String {
         return messageSource.getMessage(code, null, LocaleContextHolder.getLocale())
     }
+
+    fun getLocale(): String {
+        return LocaleContextHolder.getLocale().toString()
+    }
 }

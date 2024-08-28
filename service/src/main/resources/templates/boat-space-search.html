@@ -8,7 +8,7 @@
     <div class="container">
         <div>
             <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
-            <div class="reservation-info">
+            <div class="reservation-info column is-two-thirds">
                 <div class="info-icon" th:replace="~{fragments/icons :: info}"></div>
                 <div class="info-content" th:utext="#{boatSpaces.infoText}">
                     <p>Venepaikkoja voivat varata vain espoolaiset 01.02.2024-31.3.2024.</p>
@@ -37,12 +37,12 @@
                             <div class="control">
                                 <label class="radio">
                                     <input type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"
-                                           th:text="#{boatSpaces.typeSlipOption}" />
+                                           th:text="#{boatSpaces.typeSlipOption}"/>
 
                                 </label>
                                 <label class="radio">
                                     <input type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"
-                                           th:text="#{boatSpaces.typeTrailerOption}" />
+                                           th:text="#{boatSpaces.typeTrailerOption}"/>
 
                                 </label>
                             </div>
@@ -87,29 +87,28 @@
 
                     <div class="block">
                         <label class="label" th:text="#{boatSpaces.amenityHeader}"></label>
-                        <div class="field is-grouped is-grouped-multiline is-grouped-no-spacing-v">
-                            <div class="column is-half p-none" th:each="option : ${amenities}">
-                                <label class="checkbox">
-                                    <input name="amenities"
-                                           th:id="${option[0].toLowerCase() + option.substring(1) + '-checkbox'}"
-                                           th:value="${option}"
-                                           type="checkbox" />
-                                    <span th:text="#{${'boatSpaces.amenityOption.' + option}}">
-                        </span>
-                                </label>
-                            </div>
+                            <div class="field columns is-multiline is-mobile">
+                                <div class="column is-half pb-none" th:each="option : ${amenities}">
+                                    <label class="checkbox">
+                                        <input name="amenities"
+                                               th:id="${option[0].toLowerCase() + option.substring(1) + '-checkbox'}"
+                                               th:value="${option}"
+                                               type="checkbox"/>
+                                        <span th:text="#{${'boatSpaces.amenityOption.' + option}}"></span>
+                                    </label>
+                                </div>
                         </div>
                     </div>
 
                     <div class="block">
                         <label class="label" th:text="#{boatSpaces.harborHeader}"></label>
-                        <div class="field is-grouped is-grouped-multiline is-grouped-no-spacing-v">
-                            <div class="column is-half p-none" th:each="option : ${locations}">
+                        <div class="field columns is-multiline is-mobile">
+                            <div class="column is-half pb-none" th:each="option : ${locations}">
                                 <label class="checkbox">
                                     <input name="harbor"
                                            th:id="${option.name[0].toLowerCase() + option.name.substring(1) + '-checkbox'}"
                                            th:value="${option.id}"
-                                           type="checkbox" />
+                                           type="checkbox"/>
                                     <span th:text="${option.name}">>
                         </span>
                                 </label>

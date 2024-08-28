@@ -11,6 +11,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.commons.codec.digest.HmacAlgorithms
 import org.apache.commons.codec.digest.HmacUtils
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -28,7 +29,7 @@ data class PaytrailCustomer(
 @Serializable
 data class PaytrailCallbackUrl(
     val success: String,
-    val cancel: String
+    val cancel: String,
 )
 
 @Serializable
@@ -76,11 +77,12 @@ data class NameValuePair(
 data class PaytrailProvider(
     val name: String,
     val url: String,
+    val methodIsPost: Boolean = true,
     val icon: String,
     val svg: String,
     val id: String,
     val group: String,
-    val parameters: List<NameValuePair>
+    val parameters: List<NameValuePair>,
 )
 
 @Serializable
@@ -88,7 +90,7 @@ data class PaytrailPaymentResponse(
     val transactionId: String,
     val reference: String,
     val terms: String,
-    val providers: List<PaytrailProvider>
+    val providers: List<PaytrailProvider>,
 )
 
 const val MERCHANT_SECRET = "SAIPPUAKAUPPIAS"
@@ -118,9 +120,64 @@ const val CURRENCY = "EUR"
 const val HASH_ALGORITHM_NAME = "sha512"
 val HASH_ALGORITHM = HmacAlgorithms.HMAC_SHA_512
 
+public interface PaytrailInterface {
+    fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse
+
+    fun checkSignature(params: Map<String, String>): Boolean
+}
+
 @Service
-class Paytrail {
-    fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
+@Profile("test")
+class PaytrailMock : PaytrailInterface {
+    override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
+        println("Creating mocked payment with params: $params")
+        return PaytrailPaymentResponse(
+            transactionId = "123",
+            reference = params.reference,
+            terms = "https://www.paytrail.com",
+            providers =
+                listOf(
+                    PaytrailProvider(
+                        name = "Nordea success",
+                        methodIsPost = false,
+                        url =
+                            "/kuntalainen/maksut/onnistunut",
+                        icon = "https://www.nordea.fi/icon.png",
+                        svg = "https://www.nordea.fi/icon.svg",
+                        id = "nordea-success",
+                        group = "bank",
+                        parameters =
+                            listOf(
+                                NameValuePair("checkout-stamp", params.stamp),
+                            )
+                    ),
+                    PaytrailProvider(
+                        name = "Nordea failed",
+                        methodIsPost = false,
+                        url = "/kuntalainen/maksut/peruuntunut",
+                        icon = "https://www.nordea.fi/icon.png",
+                        svg = "https://www.nordea.fi/icon.svg",
+                        id = "nordea-fail",
+                        group = "bank",
+                        parameters =
+                            listOf(
+                                NameValuePair("checkout-stamp", params.stamp),
+                            )
+                    )
+                )
+        )
+    }
+
+    override fun checkSignature(params: Map<String, String>): Boolean {
+        return true
+    }
+}
+
+@Service
+@Profile("!test")
+class Paytrail : PaytrailInterface {
+    override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
+        println("Creating actual payment with params: $params")
         val nonce = UUID.randomUUID().toString()
         val timestamp = LocalDateTime.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
 
@@ -166,14 +223,14 @@ class Paytrail {
         }
     }
 
-    fun checkSignature(params: Map<String, String>): Boolean {
+    override fun checkSignature(params: Map<String, String>): Boolean {
         val signature = calculateHmac(params, "")
         return signature == params["signature"]
     }
 
     private fun calculateHmac(
         params: Map<String, String>,
-        body: String
+        body: String,
     ): String {
         var items =
             params.entries

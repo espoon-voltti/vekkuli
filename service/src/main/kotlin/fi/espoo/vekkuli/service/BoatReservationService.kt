@@ -1,6 +1,9 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
+import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.ReservationWarning
 import fi.espoo.vekkuli.domain.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -32,7 +35,7 @@ class BoatReservationService {
     lateinit var messageUtil: MessageUtil
 
     @Autowired
-    lateinit var paytrail: Paytrail
+    lateinit var paytrail: PaytrailInterface
 
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -59,6 +62,8 @@ class BoatReservationService {
             return PaymentProcessResult.Success(reservation)
         }
 
+        addReservationWarnings(reservation)
+
         emailService.sendEmail(
             "reservationSuccess",
             reservation.email,
@@ -73,5 +78,32 @@ class BoatReservationService {
         )
 
         return PaymentProcessResult.Success(reservation)
+    }
+
+    fun addReservationWarnings(reservation: BoatSpaceReservationDetails) {
+        val warnings = mutableListOf<String>()
+
+        if (!doesBoatFit(
+                Dimensions(reservation.boatSpaceWidthCm, reservation.boatSpaceLengthCm),
+                reservation.amenity,
+                Dimensions(reservation.boatWidthCm, reservation.boatLengthCm)
+            )
+        ) {
+            warnings.add(ReservationWarning.BoatDimensions.name)
+        }
+
+        if (reservation.boatOwnership == OwnershipStatus.FutureOwner) {
+            warnings.add(ReservationWarning.BoatFutureOwner.name)
+        }
+
+        if (reservation.boatOwnership == OwnershipStatus.CoOwner) {
+            warnings.add(ReservationWarning.BoatCoOwner.name)
+        }
+
+        if (warnings.isNotEmpty()) {
+            jdbi.inTransactionUnchecked {
+                it.addReservationWarnings(reservation.id, warnings)
+            }
+        }
     }
 }

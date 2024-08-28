@@ -80,7 +80,7 @@ fun Handle.updateBoatInBoatSpaceReservation(
             UPDATE boat_space_reservation
             SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
             WHERE id = :id
-                AND status = 'Info' 
+                AND (status = 'Info' OR status = 'Payment')
                 AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
             RETURNING *
             """.trimIndent()
@@ -121,6 +121,7 @@ fun Handle.updateReservationWithPayment(
 
 data class ReservationWithDependencies(
     val id: Int,
+    val boatId: Int?,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -237,7 +238,7 @@ fun Handle.getReservationWithCitizen(id: Int): ReservationWithDependencies? {
             JOIN location ON location_id = location.id
             JOIN price ON price_id = price.id
             WHERE bsr.id = :id
-                AND bsr.status = 'Info' 
+                AND (bsr.status = 'Info' OR bsr.status = 'Payment')
                 AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
             """.trimIndent()
         )
@@ -319,20 +320,44 @@ data class BoatSpaceReservationItem(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
+    val warnings: List<String> = emptyList()
 ) {
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
 }
 
+data class BoatSpaceReservationItemWithWarning(
+    val id: Int,
+    val boatSpaceId: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val status: ReservationStatus,
+    val citizenId: UUID,
+    val firstName: String,
+    val lastName: String,
+    val homeTown: String,
+    val email: String,
+    val phone: String,
+    val type: BoatSpaceType,
+    val place: String,
+    val locationName: String,
+    val boatRegistrationCode: String?,
+    val boatOwnership: OwnershipStatus?,
+    val warning: String?
+)
+
 enum class BoatSpaceFilterColumn {
     START_DATE,
     END_DATE,
     PLACE,
+    PLACE_TYPE,
+    HOME_TOWN,
     CUSTOMER,
+    BOAT,
 }
 
 data class BoatSpaceReservationFilter(
-    val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.START_DATE,
+    val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
     val ascending: Boolean = false,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
@@ -390,13 +415,18 @@ data class BoatSpaceReservationFilter(
     }
 }
 
-fun getSortingSql(sort: BoatSpaceReservationFilter): String =
-    when (sort.sortBy) {
-        BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date"
-        BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date"
-        BoatSpaceFilterColumn.PLACE -> "ORDER BY place"
-        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name"
-    } + if (!sort.ascending) " DESC" else ""
+fun getSortingSql(sort: BoatSpaceReservationFilter): String {
+    val sortDir = if (!sort.ascending) " DESC" else ""
+    return when (sort.sortBy) {
+        BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date$sortDir"
+        BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date$sortDir"
+        BoatSpaceFilterColumn.PLACE -> "ORDER BY location_name$sortDir, place$sortDir"
+        BoatSpaceFilterColumn.PLACE_TYPE -> "ORDER BY type$sortDir"
+        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name$sortDir"
+        BoatSpaceFilterColumn.HOME_TOWN -> "ORDER BY home_town$sortDir"
+        BoatSpaceFilterColumn.BOAT -> "ORDER BY boat_registration_code$sortDir"
+    }
+}
 
 fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> {
     val filter =
@@ -414,12 +444,14 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
                 b.registration_code as boat_registration_code,
                 b.ownership as boat_ownership,
                 location.name as location_name, 
-                bs.type, CONCAT(bs.section, bs.place_number) as place
+                bs.type, CONCAT(bs.section, bs.place_number) as place,
+                rw.key as warning
             FROM boat_space_reservation bsr
             JOIN boat b on b.id = bsr.boat_id
             JOIN citizen c ON bsr.citizen_id = c.id 
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location_id = location.id
+            LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
             WHERE
               bsr.status = 'Confirmed'
             AND ${filter.toSql().ifBlank { "true" }}
@@ -428,7 +460,32 @@ fun Handle.getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<Bo
         )
 
     filter.bind(query)
-    return query.mapTo<BoatSpaceReservationItem>().list()
+    return query
+        .mapTo<BoatSpaceReservationItemWithWarning>()
+        .list()
+        .groupBy { it.id }
+        .map { (id, warnings) ->
+            val row = warnings.first()
+            BoatSpaceReservationItem(
+                id = id,
+                boatSpaceId = row.boatSpaceId,
+                startDate = row.startDate,
+                endDate = row.endDate,
+                status = row.status,
+                citizenId = row.citizenId,
+                firstName = row.firstName,
+                lastName = row.lastName,
+                homeTown = row.homeTown,
+                email = row.email,
+                phone = row.phone,
+                type = row.type,
+                place = row.place,
+                locationName = row.locationName,
+                boatRegistrationCode = row.boatRegistrationCode,
+                boatOwnership = row.boatOwnership,
+                warnings = warnings.mapNotNull { it.warning }
+            )
+        }
 }
 
 fun Handle.getBoatSpaceReservation(

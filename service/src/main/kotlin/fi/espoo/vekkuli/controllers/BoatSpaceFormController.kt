@@ -67,10 +67,10 @@ class BoatSpaceFormController {
             throw UnauthorizedException()
         }
 
-        var input = ReservationInput.initializeInput(boatType, width, length)
-
-        if (boatId != null && boatId != 0) {
-            val boat = jdbi.inTransactionUnchecked { it.getBoat(boatId) }
+        var input = ReservationInput.initializeInput(boatType, width, length, user)
+        val usedBoatId = boatId ?: reservation.boatId // use boat id from reservation if it exists
+        if (usedBoatId != null && usedBoatId != 0) {
+            val boat = jdbi.inTransactionUnchecked { it.getBoat(usedBoatId) }
             if (boat != null) {
                 input =
                     input.copy(
@@ -372,6 +372,7 @@ data class ReservationInput(
             boatType: BoatType?,
             width: Double?,
             length: Double?,
+            user: Citizen
         ): ReservationInput =
             ReservationInput(
                 reservationId = null,
@@ -387,8 +388,8 @@ data class ReservationInput(
                 otherIdentification = null,
                 extraInformation = null,
                 ownerShip = OwnershipStatus.Owner,
-                email = null,
-                phone = null,
+                email = user.email,
+                phone = user.phone,
                 agreeToRules = false,
                 certifyInformation = false,
             )

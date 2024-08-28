@@ -45,9 +45,9 @@ fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen {
         // language=SQL
         """
  INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality)
- VALUES (:nationalId, :firstName, :lastName, COALESCE(:phone, ''), COALESCE(:email, ''), COALESCE(:address.fi, ''), COALESCE(:postalCode, ''), COALESCE(:town.fi, ''))
+ VALUES (:nationalId, :firstName, :lastName, '', '', COALESCE(:address.fi, ''), COALESCE(:postalCode, ''), COALESCE(:town.fi, ''))
  ON CONFLICT (national_id) DO UPDATE
- SET updated = now(), first_name = :firstName, last_name = :lastName, email = COALESCE(:email, ''), phone = COALESCE(:phone, '')
+ SET updated = now(), first_name = :firstName, last_name = :lastName
  RETURNING *
     """
             .trimIndent()

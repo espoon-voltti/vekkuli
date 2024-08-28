@@ -190,9 +190,7 @@ input[type="radio"]:checked {
   margin-left: $spacing-extrasmall;
 }
 
-#step-indicator {
-  gap: $spacing-extralarge;
-}
+
 #step-indicator .step {
   border-radius: 5px;
   height: $spacing-small;
@@ -278,7 +276,6 @@ form .subtitle:not(:last-child) {
 
 
 .reservation-info {
-  width: 830px;
   padding: $spacing-medium;
   border: 1px solid $bulma-primary;
   border-radius: 4px;
