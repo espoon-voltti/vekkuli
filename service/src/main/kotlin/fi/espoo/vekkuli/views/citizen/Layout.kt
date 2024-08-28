@@ -1,5 +1,8 @@
 package fi.espoo.vekkuli.views.citizen
 
+import org.springframework.stereotype.Service
+
+@Service
 class Layout {
     fun generateLayout(
         isAuthenticated: Boolean,

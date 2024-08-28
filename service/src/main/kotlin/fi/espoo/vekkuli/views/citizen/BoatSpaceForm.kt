@@ -1,33 +1,35 @@
 package fi.espoo.vekkuli.views.citizen
 
+import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.domain.Boat
+import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.cmToM
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.security.SecurityProperties
+import org.springframework.stereotype.Service
 
+@Service
 class BoatSpaceForm {
     @Autowired
     lateinit var messageUtil: MessageUtil
+
+    @Autowired
+    lateinit var formComponents: FormComponents
 
     fun t(key: String): String {
         return messageUtil.getMessage(key)
     }
 
     fun boatSpaceForm(
-        reservationId: String,
         reservation: ReservationWithDependencies, // Assuming BoatSpace is a data class with relevant fields
         boats: List<Boat>, // Assuming Boat is a data class with relevant fields
-        boatTypes: List<String>,
-        ownershipOptions: List<String>,
-        user: SecurityProperties.User, // Assuming User is a data class with relevant fields
+        user: Citizen, // Assuming User is a data class with relevant fields
         input: ReservationInput, // Assuming this contains the form input data
         errors: Map<String, String>,
-        isAuthenticated: Boolean,
-        userName: String?
     ): String {
+        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         // language=HTML
         val boatSpaceInformation =
             """
@@ -48,220 +50,286 @@ class BoatSpaceForm {
             """.trimIndent()
 
         // language=HTML
-        return """
-                        $boatSpaceInformation
-                                                                                                                                                                                                                                                                                                                                                                        ${if (boats.isNotEmpty()) {
+        fun boatRadioButton(boat: Boat) =
             """
-                            <div class="field">
-                                <div class="radio">
-                                    <input type="radio" name="boatId" value="0"
-                                           hx-trigger="change"
-                                           hx-get="/kuntalainen/venepaikka/varaus/$reservationId?boatId=0"
-                                           hx-target="body"
-                                           hx-swap="outerHTML" />
-                                    <label for="boatId">${translate("boatApplication.newBoat")}</label>
-                                </div>
-                                ${boats.joinToString("\n") { boat ->
-                """
-                <div class="radio">
-                    <input type="radio" name="boatId" value="${boat.id}"
-                           hx-trigger="change"
-                           hx-get="/kuntalainen/venepaikka/varaus/$reservationId?boatId=${boat.id}"
-                           hx-target="body"
-                           hx-swap="outerHTML" />
-                    <label for="boatId">${boat.displayName}</label>
-                </div>
-                """.trimIndent()
-            }}
-                            </div>
+            <div class="radio">
+                <input type="radio" id="boat-${boat.id}-radio" value="${boat.id}"
+                       hx-trigger="change"
+                       hx-get="/kuntalainen/venepaikka/varaus/${reservation.id}?boatId=${boat.id}"
+                       hx-target="body"
+                       hx-swap="outerHTML"
+                       name="boatId"
+                       ${if (input.boatId == boat.id) "checked" else ""}
+                />
+                <label for="${boat.id}"
+                       th:text="${boat.displayName}">Mun vene</label>
+            </div>
             """.trimIndent()
-        } else {
-            ""
-        }}
-                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                        ${generateSelectField(
-            "boatType",
-            "boatApplication.boatType",
-            boatTypes,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                        <div class="field is-grouped">
-                                                                                                                                                                                                                                                                                                                                                                            ${generateNumberInputField(
-            "width",
-            "boatApplication.boatWidthInMeters",
-            input.width,
-            reservationId,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                            ${generateNumberInputField(
-            "length",
-            "boatApplication.boatLengthInMeters",
-            input.length,
-            reservationId,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                        <div id="warning" hx-swap-oob="true">
-                                                                                                                                                                                                                                                                                                                                                                            <!-- Warning Section -->
-                                                                                                                                                                                                                                                                                                                                                                        </div>
 
-                                                                                                                                                                                                                                                                                                                                                                        <div class="field is-grouped">
-                                                                                                                                                                                                                                                                                                                                                                            ${generateNumberInputField(
-            "depth",
-            "boatApplication.boatDepthInMeters",
-            input.depth,
-            reservationId,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                            ${generateNumberInputField(
-            "weight",
-            "boatApplication.boatWeightInKg",
-            input.weight,
-            reservationId,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                        </div>
+        // language=HTML
+        val boatRadioButtons =
+            """
+            <div class="field" ">
+                <div class="radio">
+                    <input type="radio" 
+                        id="newBoat" 
+                        name="boatId"
+                        value="0"
+                        hx-trigger="change"
+                        hx-get="/kuntalainen/venepaikka/varaus/${reservation.id}"
+                        hx-target="body"
+                        hx-swap="outerHTML"
+                       ${if (input.boatId == 0) "checked" else ""}
+                    />
+                    <label for="newBoat" >${t("boatApplication.newBoat")}</label>
+                </div>
+                ${boats.joinToString("\n") { boatRadioButton(it) }}
+            </div>
+            """.trimIndent()
 
-                                                                                                                                                                                                                                                                                                                                                                        ${generateTextInputField(
-            "boatName",
-            "boatApplication.boatName",
-            input.boatName,
-            reservationId,
-            errors
-        )}
-
-                                                                                                                                                                                                                                                                                                                                                                        <div class="field" x-data="{ noReg: ${input.noRegistrationNumber} }">
-                                                                                                                                                                                                                                                                                                                                                                            <h4 class="label required">${translate(
-            "boatApplication.boatIdentificationTitle"
-        )}</h4>
-                                                                                                                                                                                                                                                                                                                                                                            <label class="checkbox">
-                                                                                                                                                                                                                                                                                                                                                                                <input type="checkbox" name="noRegistrationNumber" @click="noReg = !noReg" />
-                                                                                                                                                                                                                                                                                                                                                                                <span>${translate(
-            "boatApplication.noRegistrationNumber"
-        )}</span>
-                                                                                                                                                                                                                                                                                                                                                                            </label>
-                                                                                                                                                                                                                                                                                                                                                                            <template x-if="!noReg">
-                                                                                                                                                                                                                                                                                                                                                                                ${generateTextInputField(
-            "boatRegistrationNumber",
-            "boatApplication.registrationNumberPlaceHolder",
-            input.boatRegistrationNumber,
-            reservationId,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                            </template>
-
-                                                                                                                                                                                                                                                                                                                                                                            ${generateTextInputField(
-            "otherIdentification",
-            "boatApplication.otherIdentification",
-            input.otherIdentification,
-            reservationId,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                                                                                                                                        ${generateTextAreaField(
-            "extraInformation",
-            "boatApplication.extraInformation",
-            input.extraInformation
-        )}
-
-                                                                                                                                                                                                                                                                                                                                                                        ${generateRadioField(
-            "ownerShip",
-            "boatApplication.ownerShipTitle",
-            ownershipOptions,
-            errors
-        )}
-
-                                                                                                                                                                                                                                                                                                                                                                        <h3 class="header">${translate(
-            "boatApplication.personalInformation"
-        )}</h3>
-                                                                                                                                                                                                                                                                                                                                                                        <div class="field">
-                                                                                                                                                                                                                                                                                                                                                                            <p>${user.firstName} ${user.lastName}</p>
-                                                                                                                                                                                                                                                                                                                                                                            <p>${user.nationalId}</p>
-                                                                                                                                                                                                                                                                                                                                                                            <p>${user.address}</p>
-                                                                                                                                                                                                                                                                                                                                                                            <p>${user.postalCode} ${user.municipality}</p>
-                                                                                                                                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                                                                                                                                        ${generateTextInputField(
-            "email",
-            "boatApplication.email",
-            input.email,
-            reservationId,
-            errors
-        )}
-                                                                                                                                                                                                                                                                                                                                                                        ${generateTextInputField(
-            "phone",
-            "boatApplication.phone",
-            input.phone,
-            reservationId,
-            errors
-        )}
-
-                                                                                                                                                                                                                                                                                                                                                                        <div class="block">
-                                                                                                                                                                                                                                                                                                                                                                            <div id="certify-control">
-                                                                                                                                                                                                                                                                                                                                                                                <label class="checkbox">
-                                                                                                                                                                                                                                                                                                                                                                                    <input type="checkbox" name="certifyInformation" data-required />
-                                                                                                                                                                                                                                                                                                                                                                                    <span>${translate(
-            "boatApplication.certifyInfoCheckbox"
-        )}</span>
-                                                                                                                                                                                                                                                                                                                                                                                </label>
-                                                                                                                                                                                                                                                                                                                                                                                <div id="certify-error-container">
-                                                                                                                                                                                                                                                                                                                                                                                    <span class="help is-danger">${if (errors.containsKey(
-                "certifyInformation"
+        val boatTypeSelect =
+            formComponents.select(
+                "boatApplication.boatType",
+                "type",
+                boatTypes.first(),
+                boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
+                errors = errors
             )
-        ) {
-            errors["certifyInformation"]
-        } else {
-            ""
-        }}</span>
-                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                            </div>
 
-                                                                                                                                                                                                                                                                                                                                                                            <div id="agree-control">
-                                                                                                                                                                                                                                                                                                                                                                                <label class="checkbox">
-                                                                                                                                                                                                                                                                                                                                                                                    <input type="checkbox" name="agreeToRules" data-required />
-                                                                                                                                                                                                                                                                                                                                                                                    <span>${translate(
-            "boatApplication.agreementCheckbox"
-        )}</span>
-                                                                                                                                                                                                                                                                                                                                                                                </label>
-                                                                                                                                                                                                                                                                                                                                                                                <div id="agree-error-container">
-                                                                                                                                                                                                                                                                                                                                                                                    <span class="help is-danger">${if (errors.containsKey(
-                "agreeToRules"
+        val widthInput =
+            formComponents.decimalInput(
+                "boatApplication.boatWidthInMeters",
+                "width",
+                input.width,
+                required = true,
+                errors = errors
             )
-        ) {
-            errors["agreeToRules"]
-        } else {
-            ""
-        }}</span>
-                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                        </div>
 
-                                                                                                                                                                                                                                                                                                                                                                        <div class="field block">
-                                                                                                                                                                                                                                                                                                                                                                            <div class="control">
-                                                                                                                                                                                                                                                                                                                                                                                <button id="cancel" class="button is-secondary" type="button" x-on:click="modalOpen = true">
-                                                                                                                                                                                                                                                                                                                                                                                    ${translate(
-            "boatApplication.cancelReservation"
-        )}
-                                                                                                                                                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                                                                                                                                                <button id="submit" class="button is-primary" type="submit">
-                                                                                                                                                                                                                                                                                                                                                                                    ${translate(
-            "boatApplication.continueToPaymentButton"
-        )}
-                                                                                                                                                                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                </form>
-                                                                                                                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                                <!-- Comment: fragments/confirm-cancellation-modal :: confirmCancellationModal -->
+        val lengthInput =
+            formComponents.decimalInput(
+                "boatApplication.boatLengthInMeters",
+                "length",
+                input.length,
+                required = true,
+                errors = errors
+            )
 
-                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                        </section>
-                                                                                                                                                                                                                                                                                                                                                        </body>
-                                                                                                                                                                                                                                                                                                                                                        </html>
+        val depthInput =
+            formComponents.decimalInput(
+                "boatApplication.boatDepthInMeters",
+                "depth",
+                input.depth,
+                required = true,
+                errors = errors
+            )
+
+        val weightInput =
+            formComponents.numberInput(
+                "boatApplication.boatWeightInKg",
+                "weight",
+                input.weight,
+                required = true,
+                errors = errors
+            )
+        val boatNameInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.boatName",
+                "boatName",
+                input.boatName,
+                errors,
+                false,
+                null,
+            )
+
+        val registrationNumberInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.registrationNumber",
+                "registrationNumber",
+                input.boatRegistrationNumber,
+                required = false,
+                pattern = null,
+                errors = errors
+            )
+
+        val otherIdentifierInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.otherIdentifier",
+                "otherIndentification",
+                input.otherIdentification,
+                required = false,
+                pattern = null,
+                errors = errors
+            )
+
+        val extraInformationInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.additionalInfo",
+                "extraInformation",
+                input.extraInformation,
+                required = false,
+                pattern = null,
+                errors = errors
+            )
+        val ownershipOptions = listOf("Owner", "User", "CoOwner", "FutureOwner")
+        // language=HTML
+        val ownership =
+            """
+            <div class="field">
+                     <h4 class="label required" >${t("boatApplication.ownerShipTitle")}</h4>
+                     <div class="control is-flex-direction-row">
+                     
+                ${
+                ownershipOptions.joinToString("\n") { opt ->
+                    """
+                    <div class="radio">
+                        <input
+                                type="radio"
+                                name="ownership"
+                                value="$opt"
+                                id="ownership-$opt"
+                                selected="${input.ownerShip.toString() == opt}"
+                        />
+                        <label for="ownership-$opt">${t("boatApplication.ownershipOption." + opt)}</label>
+                    </div>
+                    """.trimIndent()
+                }
+            }
+                     </div>
+                 </div> 
+            """.trimIndent()
+
+        val email =
+            formComponents.textInput(
+                "boatApplication.email",
+                "name",
+                null,
+                errors,
+                false,
+                null,
+            )
+
+        val phone =
+            formComponents.textInput(
+                "boatApplication.phone",
+                "name",
+                null,
+                errors,
+                false,
+                null,
+            )
+
+        // language=HTML
+        return """
+            <section class="section">
+                <div class="container" id="container" x-data="{ modalOpen: false }"> 
+               
+                    <form
+                        id="form"
+                        class="column is-half"
+                        action="/kuntalainen/venepaikka/varaus/${reservation.id}"
+                        method="post"
+                        novalidate>
+                        
+                        $boatSpaceInformation
+                        
+                        <div class="block">
+                            <h3 class="header">${t("boatApplication.boatInformation")}</h3>
+                            $boatRadioButtons
+                        </div>
+                       
+                        $boatTypeSelect
+                        <div class="block">
+                            <div class='columns'>
+                                <div class='column'>
+                                    $widthInput
+                                </div>
+                                <div class='column'>
+                                    $lengthInput
+                                </div>
+                            </div>
+                            
+                            <div class='columns'>
+                                <div class='column'>
+                                    $depthInput
+                                </div>
+                                <div class='column'>
+                                    $weightInput
+                                </div>
+                            </div>
+                            
+                            $boatNameInput
+                            $registrationNumberInput
+                            $otherIdentifierInput
+                            $extraInformationInput
+                            $ownership
+                        </div>
+                        <div class='block'
+                            <h3 class="header">
+                                ${t("boatApplication.personalInformation")}
+                            </h3> 
+                            <div class="field">
+                                <p>${user.firstName} ${user.lastName}</p>
+                                <p>${user.nationalId}</p>
+                                <p>${user.address}</p>
+                                <p>${user.postalCode} ${user.municipality}</p>
+                            </div>
+                        </div>
+                        <div class="block">
+                            $email
+                            $phone 
+                        </div>
+                        <div class="block">
+                            <div id="certify-control">
+                                <label class="checkbox">
+                                    <input
+                                            type="checkbox"
+                                            data-required
+                                            id="certifyInformation"
+                                            name="certifyInformation"
+                                    >
+                                    <span >${t("boatApplication.certifyInfoCheckbox")}</span>
+                                </label>
+                                <div id="certify-error-container">
+                                    <span id="certify-error" class="help is-danger">Certification required</span>
+                                </div>
+                            </div>
+                            <div id="agree-control">
+                                <label class="checkbox">
+                                    <input
+                                            type="checkbox"
+                                            data-required
+                                            id="agreeToRules"
+                                            name="agreeToRules"
+                                    />
+                                    <span> ${t("boatApplication.agreementCheckbox")} </span>
+                                </label>
+                                <div id="agree-error-container">
+                                    <span id="agree-error" class="help is-danger">Agreement required</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="field block">
+                            <div class="control">
+                                <button id="cancel"
+                                    class="button is-secondary"
+                                    type="button"
+                                    x-on:click="modalOpen = true">
+                                    ${t("boatApplication.cancelReservation")}
+                                </button>
+                                <button id="submit"
+                                    class="button is-primary"
+                                    type="submit">
+                                    ${t("boatApplication.continueToPaymentButton")}
+                                </button>
+                            </div>
+                        </div> 
+                    </form>
+                    <script>
+                        validation.init({forms: ['form']})
+                    </script>
+                </div>
+            </section>
             """.trimIndent()
     }
 }

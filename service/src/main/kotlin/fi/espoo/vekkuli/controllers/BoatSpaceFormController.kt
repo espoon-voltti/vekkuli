@@ -9,6 +9,8 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
+import fi.espoo.vekkuli.views.citizen.Layout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.*
 import jakarta.validation.constraints.*
@@ -31,12 +33,19 @@ import kotlin.reflect.KClass
 @RequestMapping("/kuntalainen")
 class BoatSpaceFormController {
     @Autowired
+    private lateinit var boatSpaceForm: BoatSpaceForm
+
+    @Autowired
+    lateinit var layout: Layout
+
+    @Autowired
     lateinit var jdbi: Jdbi
 
     @Autowired
     lateinit var messageUtil: MessageUtil
 
     @RequestMapping("/venepaikka/varaus/{reservationId}")
+    @ResponseBody
     fun boatSpaceFormPage(
         @PathVariable reservationId: Int,
         @RequestParam boatType: BoatType?,
@@ -248,32 +257,6 @@ class BoatSpaceFormController {
                     boat.updateBoatDisplayName(messageUtil)
                 }
 
-        val boatSpaceFront =
-            object {
-                val type = reservation.type
-                val section = reservation.section
-                val placeNumber = reservation.placeNumber
-                val amenity = reservation.amenity
-                val widthInMeters = reservation.widthCm.cmToM()
-                val lengthInMeters = reservation.lengthCm.cmToM()
-                val description: String = reservation.description
-                val harbor = reservation.locationName
-                val priceTotal = reservation.priceInEuro
-                val priceAlv = reservation.alvPriceInEuro
-                val priceWithoutAlv = reservation.priceWithoutAlvInEuro
-            }
-
-        model.addAttribute(
-            "reservationTimeInSeconds",
-            getReservationTimeInSeconds(reservation.created)
-        )
-        model.addAttribute("boatTypes", listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki"))
-        model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
-        model.addAttribute("input", input)
-        model.addAttribute("boatSpace", boatSpaceFront)
-        model.addAttribute("boats", boats)
-        model.addAttribute("user", user)
-
         model.addAttribute(
             "showSizeWarning",
             showBoatSizeWarning(
@@ -285,7 +268,7 @@ class BoatSpaceFormController {
             )
         )
 
-        return "boat-space-form"
+        return layout.generateLayout(true, "", (boatSpaceForm.boatSpaceForm(reservation, boats, user, input, mapOf<String, String>())))
     }
 
     private fun showBoatSizeWarning(

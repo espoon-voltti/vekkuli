@@ -33,7 +33,7 @@ class EditBoat {
                 "boatApplication.boatWeightInKg",
                 "weight",
                 boat.weight,
-                required = false,
+                required = true,
                 errors = errors
             )
 
