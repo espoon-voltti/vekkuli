@@ -33,7 +33,7 @@ class E2eTest : PlaywrightTest() {
         }
     }
 
-//    @Test
+    @Test
     fun editBoat() {
         try {
             page.navigate(baseUrl + "/virkailija")
