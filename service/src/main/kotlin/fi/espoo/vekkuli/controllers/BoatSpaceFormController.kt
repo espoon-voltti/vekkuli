@@ -82,7 +82,7 @@ class BoatSpaceFormController {
                         length = boat.lengthCm.cmToM(),
                         otherIdentification = boat.otherIdentification,
                         extraInformation = boat.extraInformation,
-                        ownerShip = boat.ownership,
+                        ownership = boat.ownership,
                         boatType = boat.type,
                         boatRegistrationNumber = boat.registrationCode,
                     )
@@ -105,6 +105,7 @@ class BoatSpaceFormController {
     }
 
     @PostMapping("/venepaikka/varaus/{reservationId}/validate")
+    @ResponseBody
     fun validateForm(
         @PathVariable reservationId: Int,
         @Valid @ModelAttribute("input") input: ReservationInput,
@@ -151,10 +152,7 @@ class BoatSpaceFormController {
                 jdbi.inTransactionUnchecked {
                     it.getReservationWithCitizen(reservationId)
                 }
-
-            if (reservation == null) return redirectUrl("/")
-
-            return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+            return redirectUrl("/")
         }
 
         val boat =
@@ -171,7 +169,7 @@ class BoatSpaceFormController {
                         input.boatType!!,
                         input.otherIdentification ?: "",
                         input.extraInformation ?: "",
-                        input.ownerShip!!
+                        input.ownership!!
                     )
                 }
             } else {
@@ -189,7 +187,7 @@ class BoatSpaceFormController {
                             type = input.boatType!!,
                             otherIdentification = input.otherIdentification ?: "",
                             extraInformation = input.extraInformation ?: "",
-                            ownership = input.ownerShip!!
+                            ownership = input.ownership!!
                         )
                     )
                 }
@@ -257,8 +255,7 @@ class BoatSpaceFormController {
                     boat.updateBoatDisplayName(messageUtil)
                 }
 
-        model.addAttribute(
-            "showSizeWarning",
+        val showBoatSizeWarning =
             showBoatSizeWarning(
                 input.width?.mToCm(),
                 input.length?.mToCm(),
@@ -266,9 +263,24 @@ class BoatSpaceFormController {
                 reservation.widthCm,
                 reservation.lengthCm
             )
+        model.addAttribute(
+            "showSizeWarning",
+            showBoatSizeWarning
         )
 
-        return layout.generateLayout(true, "", (boatSpaceForm.boatSpaceForm(reservation, boats, user, input, mapOf<String, String>())))
+        return layout.generateLayout(
+            true,
+            "",
+            (
+                boatSpaceForm.boatSpaceForm(
+                    reservation,
+                    boats,
+                    user,
+                    input,
+                    showBoatSizeWarning
+                )
+            )
+        )
     }
 
     private fun showBoatSizeWarning(
@@ -356,7 +368,7 @@ data class ReservationInput(
     val otherIdentification: String?,
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
-    val ownerShip: OwnershipStatus?,
+    val ownership: OwnershipStatus?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
     val email: String?,
@@ -387,7 +399,7 @@ data class ReservationInput(
                 boatName = null,
                 otherIdentification = null,
                 extraInformation = null,
-                ownerShip = OwnershipStatus.Owner,
+                ownership = OwnershipStatus.Owner,
                 email = user.email,
                 phone = user.phone,
                 agreeToRules = false,

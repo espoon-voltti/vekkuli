@@ -42,7 +42,7 @@ class FormComponents {
                         </span>
                     </div> 
                     <div id="$id-error-container">
-                        <span id="$id-error" class="help is-danger" 
+                        <span id="$id-pattern-error" class="help is-danger" 
                             style="visibility: hidden">
                             ${if (pattern != null) t(pattern.second) else ""} 
                         </span>
@@ -86,6 +86,7 @@ class FormComponents {
         id: String,
         value: Double?,
         required: Boolean? = false,
+        attributes: String = ""
     ): String {
         //language=HTML
         return """
@@ -99,7 +100,9 @@ class FormComponents {
                         step="0.01"
                         id="$id"
                         name="$id"
-                        value="${value ?: ""}"/>
+                        value="${value ?: ""}"
+                        $attributes
+                        />
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
                             style="visibility: hidden">

@@ -27,7 +27,7 @@ class BoatSpaceForm {
         boats: List<Boat>,
         user: Citizen,
         input: ReservationInput,
-        errors: Map<String, String>,
+        showBoatSizeWarning: Boolean
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         // language=HTML
@@ -90,7 +90,7 @@ class BoatSpaceForm {
         val boatTypeSelect =
             formComponents.select(
                 "boatApplication.boatType",
-                "type",
+                "boatType",
                 boatTypes.first(),
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
             )
@@ -101,6 +101,13 @@ class BoatSpaceForm {
                 "width",
                 input.width,
                 required = true,
+                """
+                hx-trigger="blur delay:100ms"
+                hx-post="/kuntalainen/venepaikka/varaus/${reservation.id}/validate"
+                hx-swap="outerHTML"
+                hx-select="#warning"
+                hx-target="#warning"
+                """.trimIndent()
             )
 
         val lengthInput =
@@ -109,7 +116,32 @@ class BoatSpaceForm {
                 "length",
                 input.length,
                 required = true,
+                """
+                hx-trigger="blur delay:100ms"
+                hx-post="/kuntalainen/venepaikka/varaus/${reservation.id}/validate"
+                hx-swap="outerHTML"
+                hx-select="#warning"
+                hx-target="#warning"
+                """.trimIndent()
             )
+
+        // language=HTML
+        val warning =
+            """
+            <div class="warning" id="boatSize-warning">
+                <p class="block">${t("boatSpaceApplication.boatSizeWarning")}</p>
+                <p class="block">${t("boatSpaceApplication.boatSizeWarningExplanation")}</p>
+                <button class="icon-text"
+                        type="button"
+                        id="size-warning-back-button"
+                        x-on:click="modalOpen = true">
+                    <span class="icon">
+                        <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
+                    </span>
+                    <span>${t("boatSpaces.goBack")}</span>
+                </button>
+            </div>
+            """.trimIndent()
 
         val depthInput =
             formComponents.decimalInput(
@@ -126,6 +158,7 @@ class BoatSpaceForm {
                 input.weight,
                 required = true,
             )
+
         val boatNameInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.boatName",
@@ -138,12 +171,13 @@ class BoatSpaceForm {
                 "boatSpaceReservation.title.registrationNumber",
                 "registrationNumber",
                 input.boatRegistrationNumber,
+                required = true
             )
 
         val otherIdentifierInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.otherIdentifier",
-                "otherIndentification",
+                "otherIdentification",
                 input.otherIdentification,
             )
 
@@ -170,7 +204,7 @@ class BoatSpaceForm {
                                 name="ownership"
                                 value="$opt"
                                 id="ownership-$opt"
-                                selected="${input.ownerShip.toString() == opt}"
+                                selected="${input.ownership.toString() == opt}"
                         />
                         <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
                     </div>
@@ -184,15 +218,15 @@ class BoatSpaceForm {
         val email =
             formComponents.textInput(
                 "boatApplication.email",
-                "name",
-                null,
+                "email",
+                input.email,
             )
 
         val phone =
             formComponents.textInput(
                 "boatApplication.phone",
-                "name",
-                null,
+                "phone",
+                input.phone,
             )
 
         // language=HTML
@@ -224,6 +258,10 @@ class BoatSpaceForm {
                                 </div>
                             </div>
                             
+                            <div id="warning" >
+                                ${if (showBoatSizeWarning) warning else ""} 
+                            </div>
+                        
                             <div class="columns">
                                 <div class="column">
                                     $depthInput
@@ -233,13 +271,24 @@ class BoatSpaceForm {
                                 </div>
                             </div>
                         </div>
+                        
+                        
+                        
                         <div class="block">
                             
-                            $boatNameInput
-                            $registrationNumberInput
-                            $otherIdentifierInput
-                            $extraInformationInput
-                            $ownership
+                           $boatNameInput
+                           <div x-data="{ noReg:false }">
+                               <template x-if="!noReg">
+                                    $registrationNumberInput
+                               </template>
+                               <label class="checkbox">
+                                    <input type="checkbox" name="noRegistrationNumber" id="noRegistrationNumber" @click="noReg = ! noReg"/>
+                                    <span>${t("boatApplication.noRegistrationNumber")}</span>
+                               </label> 
+                           </div>
+                           $otherIdentifierInput
+                           $extraInformationInput
+                           $ownership
                         </div>
                         <div class='block'
                             <h3 class="header">
@@ -305,9 +354,40 @@ class BoatSpaceForm {
                             </div>
                         </div> 
                     </form>
+                    
                     <script>
                         validation.init({forms: ['form']})
                     </script>
+                    
+                    <div id="confirm-cancel-modal" class="modal" x-show="modalOpen" style="display:none;" >
+                        <div class="modal-underlay" @click="modalOpen = false"></div>
+                        <div class="modal-content">
+                            <p class="block has-text-left">${t("boatSpaceApplication.cancelConfirmation")}</p>
+                            <p class="block has-text-left" ${t("boatSpaceApplication.cancelConfirmation2")}</p>
+                            <button id="confirm-cancel-modal-cancel"
+                                class="button"
+                                x-on:click="modalOpen = false"
+                                type="button">
+                                ${t("cancel")}
+                            </button>
+                            <button id="confirm-cancel-modal-confirm"
+                                class="button is-primary"
+                                type="button"
+                                hx-delete="/kuntalainen/venepaikka/varaus/${reservation.id}"
+                                hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
+                                ${t("confirm")}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="container" th:fragment="backButton">
+                        <button x-on:click="modalOpen = true" class="icon-text">
+                            <span class="icon">
+                                <div th:replace="~{fragments/icons :: chevron-left}"></div>
+                            </span>
+                            <span th:text="#{boatSpaces.goBack}">Takaisin</span>
+                        </button>
+                    </div> 
                 </div>
             </section>
             """.trimIndent()
