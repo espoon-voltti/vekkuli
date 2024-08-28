@@ -1,14 +1,15 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
-import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.service.*
 import jakarta.servlet.http.HttpServletRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -35,6 +36,9 @@ class PaymentController {
     @Autowired
     lateinit var messageUtil: MessageUtil
 
+    @Autowired
+    lateinit var citizenService: CitizenService
+
     @GetMapping("/maksa")
     suspend fun payment(
         @RequestParam id: Int,
@@ -43,7 +47,7 @@ class PaymentController {
         model: Model,
         request: HttpServletRequest,
     ): String {
-        val citizen = getCitizen(request, jdbi) ?: return redirectUrl("/")
+        val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
         // TODO get correct reference
         val reference = Math.random().toString()
         // TODO get correct amount
@@ -52,19 +56,18 @@ class PaymentController {
         val productCode = "Venepaikka A 100"
 
         val (payment, reservation) =
-            jdbi.inTransactionUnchecked {
-                val payment =
-                    it.insertPayment(
-                        CreatePaymentParams(
-                            citizenId = citizen.id,
-                            reference = reference,
-                            totalCents = amount,
-                            vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                            productCode = productCode
-                        )
+            withContext(Dispatchers.IO) {
+                reservationService.addPaymentToReservation(
+                    citizen,
+                    id,
+                    CreatePaymentParams(
+                        citizenId = citizen.id,
+                        reference = reference,
+                        totalCents = amount,
+                        vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
+                        productCode = productCode
                     )
-                val reservation = it.updateReservationWithPayment(id, payment.id, citizen.id)
-                return@inTransactionUnchecked payment to reservation
+                )
             }
 
         val response =

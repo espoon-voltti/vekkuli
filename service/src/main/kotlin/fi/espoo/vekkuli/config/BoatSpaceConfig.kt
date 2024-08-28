@@ -7,7 +7,7 @@ data class Dimensions(
     val length: Int
 )
 
-enum class ReservationWarning {
+enum class ReservationWarningType {
     BoatDimensions,
     BoatFutureOwner,
     BoatCoOwner
