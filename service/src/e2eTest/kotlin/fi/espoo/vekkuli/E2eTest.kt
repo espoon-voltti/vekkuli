@@ -135,9 +135,9 @@ class E2eTest : PlaywrightTest() {
             formPage.widthInput.blur()
             assertThat(formPage.boatSizeWarning).isHidden()
 
-//            formPage.lengthInput.fill("200")
-//            formPage.lengthInput.blur()
-//            assertThat(formPage.boatSizeWarning).isVisible()
+            formPage.lengthInput.fill("20")
+            formPage.lengthInput.blur()
+            assertThat(formPage.boatSizeWarning).isVisible()
 
             formPage.lengthInput.fill("5")
             formPage.lengthInput.blur()
@@ -145,9 +145,9 @@ class E2eTest : PlaywrightTest() {
 
             formPage.lengthInput.fill("25")
             formPage.lengthInput.blur()
-//            assertThat(formPage.boatSizeWarning).isVisible()
-//            formPage.lengthInput.fill("60")
-//            formPage.lengthInput.blur()
+            assertThat(formPage.boatSizeWarning).isVisible()
+            formPage.lengthInput.fill("60")
+            formPage.lengthInput.blur()
 
             formPage.depthInput.fill("1.5")
             formPage.depthInput.blur()
