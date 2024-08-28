@@ -119,7 +119,7 @@ class BoatReservationService(
     private val boatRepository: BoatRepository,
     private val emailService: TemplateEmailService,
     private val messageUtil: MessageUtil,
-    private val paytrail: Paytrail
+    private val paytrail: PaytrailInterface
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,

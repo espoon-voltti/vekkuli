@@ -144,7 +144,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
                     WHERE bsr.id = :id
-                        AND bsr.status = 'Info' 
+                        AND (bsr.status = 'Info' OR bsr.status = 'Payment')
                         AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
@@ -378,7 +378,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
                     WHERE id = :id
-                        AND status = 'Info' 
+                        AND (status = 'Info' OR status = 'Payment')
                         AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
                     RETURNING *
                     """.trimIndent()
