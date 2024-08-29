@@ -102,7 +102,7 @@ class BoatSpaceFormController {
             input = input.copy(boatId = 0)
         }
 
-        return renderBoatSpaceReservationApplication(reservation, user, model, input)
+        return renderBoatSpaceReservationApplication(reservation, user, input)
     }
 
     @DeleteMapping("/venepaikka/varaus/{reservationId}")
@@ -128,7 +128,7 @@ class BoatSpaceFormController {
         val reservation = reservationService.getReservationWithCitizen(reservationId)
         if (reservation == null) return redirectUrl("/")
 
-        return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+        return renderBoatSpaceReservationApplication(reservation, citizen, input)
     }
 
     @GetMapping("/venepaikka/varaus/{reservationId}/vahvistus")
@@ -150,14 +150,13 @@ class BoatSpaceFormController {
         @Valid @ModelAttribute("input") input: ReservationInput,
         bindingResult: BindingResult,
         request: HttpServletRequest,
-        model: Model,
     ): String {
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
 
         if (bindingResult.hasErrors()) {
             val reservation = reservationService.getReservationWithCitizen(reservationId)
             if (reservation == null) return redirectUrl("/")
-            return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+            return renderBoatSpaceReservationApplication(reservation, citizen, input)
         }
 
         reservationService.reserveBoatSpace(
@@ -226,7 +225,6 @@ class BoatSpaceFormController {
     fun renderBoatSpaceReservationApplication(
         reservation: ReservationWithDependencies,
         user: Citizen,
-        model: Model,
         input: ReservationInput,
     ): String {
         val boats =
@@ -244,10 +242,6 @@ class BoatSpaceFormController {
                 reservation.widthCm,
                 reservation.lengthCm
             )
-        model.addAttribute(
-            "showSizeWarning",
-            showBoatSizeWarning
-        )
 
         return layout.generateLayout(
             true,
