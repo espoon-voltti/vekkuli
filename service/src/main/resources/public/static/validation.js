@@ -19,13 +19,10 @@ const validation = (function () {
       if (errorMessageElement) {
         if (field.hasAttribute('data-required') && !field.hasAttribute('disabled')) {
           if (field.type === 'checkbox') {
-            console.log("validating checkbox")
             if (!field.checked) {
-              console.log("invalid")
               errorMessageElement.style.visibility = 'visible';
               return false
             } else {
-              console.log("valid")
               errorMessageElement.style.visibility = 'hidden';
             }
           }
