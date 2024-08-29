@@ -126,29 +126,29 @@ class E2eTest : PlaywrightTest() {
             formPage.lengthInput.blur()
             assertThat(formPage.lengthError).isVisible()
 
-            // TODO: these assertions are flaky
             // warning for boat size
-//            formPage.widthInput.fill("10")
-//            formPage.widthInput.blur()
-//            assertThat(formPage.boatSizeWarning).isVisible()
-//
+            formPage.widthInput.fill("10")
+            formPage.widthInput.blur()
+            assertThat(formPage.boatSizeWarning).isVisible()
+
             formPage.widthInput.fill("3")
-//            formPage.widthInput.blur()
-//            assertThat(formPage.boatSizeWarning).isHidden()
-//
-//            formPage.lengthInput.fill("20")
-//            formPage.lengthInput.blur()
-//            assertThat(formPage.boatSizeWarning).isVisible()
-//
+            formPage.widthInput.blur()
+            page.pause()
+            assertThat(formPage.boatSizeWarning).isHidden()
+
+            formPage.lengthInput.fill("20")
+            formPage.lengthInput.blur()
+            assertThat(formPage.boatSizeWarning).isVisible()
+
             formPage.lengthInput.fill("5")
-//            formPage.lengthInput.blur()
-//            assertThat(formPage.boatSizeWarning).isHidden()
-//
-//            formPage.lengthInput.fill("25")
-//            formPage.lengthInput.blur()
-//            assertThat(formPage.boatSizeWarning).isVisible()
-//            formPage.lengthInput.fill("60")
-//            formPage.lengthInput.blur()
+            formPage.lengthInput.blur()
+            assertThat(formPage.boatSizeWarning).isHidden()
+
+            formPage.lengthInput.fill("25")
+            formPage.lengthInput.blur()
+            assertThat(formPage.boatSizeWarning).isVisible()
+            formPage.lengthInput.fill("60")
+            formPage.lengthInput.blur()
 
             formPage.depthInput.fill("1.5")
             formPage.depthInput.blur()

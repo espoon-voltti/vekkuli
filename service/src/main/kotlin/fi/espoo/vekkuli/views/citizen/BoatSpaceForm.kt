@@ -102,11 +102,12 @@ class BoatSpaceForm {
                 input.width,
                 required = true,
                 """
-                hx-trigger="blur delay:100ms"
+                hx-trigger="change"
                 hx-post="/kuntalainen/venepaikka/varaus/${reservation.id}/validate"
                 hx-swap="outerHTML"
                 hx-select="#warning"
                 hx-target="#warning"
+                hx-sync="closest #form:replace"
                 """.trimIndent()
             )
 
@@ -117,11 +118,12 @@ class BoatSpaceForm {
                 input.length,
                 required = true,
                 """
-                hx-trigger="blur delay:100ms"
+                hx-trigger="change"
                 hx-post="/kuntalainen/venepaikka/varaus/${reservation.id}/validate"
                 hx-swap="outerHTML"
                 hx-select="#warning"
                 hx-target="#warning"
+                hx-sync="closest #form:replace"
                 """.trimIndent()
             )
 
