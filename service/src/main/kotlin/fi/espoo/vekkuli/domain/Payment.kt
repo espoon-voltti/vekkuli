@@ -1,8 +1,5 @@
 package fi.espoo.vekkuli.domain
 
-import org.jdbi.v3.core.Handle
-import org.jdbi.v3.core.kotlin.bindKotlin
-import org.jdbi.v3.core.kotlin.mapTo
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -31,61 +28,3 @@ data class CreatePaymentParams(
     val vatPercentage: Double,
     val productCode: String,
 )
-
-fun Handle.insertPayment(params: CreatePaymentParams): Payment {
-    val id = UUID.randomUUID()
-    val result =
-        createQuery(
-            """
-        INSERT INTO payment (id, citizen_id, reference, total_cents, vat_percentage, product_code)
-        VALUES (:id, :citizenId,  :reference, :totalCents, :vatPercentage, :productCode)
-        RETURNING *
-        """
-        ).bindKotlin(params)
-            .bind("id", id)
-            .mapTo<Payment>()
-            .one()
-    return result
-}
-
-// Update payment only if it is 'Created' state
-fun Handle.updatePayment(
-    id: UUID,
-    success: Boolean
-): Payment? =
-    createQuery(
-        """
-        UPDATE payment
-        SET status = :status, updated = now()
-        WHERE id = :id AND status = 'Created'
-        RETURNING *
-        """
-    ).bind("id", id)
-        .bind("status", if (success) PaymentStatus.Success else PaymentStatus.Failed)
-        .mapTo<Payment>()
-        .firstOrNull()
-
-fun Handle.getPayment(id: UUID): Payment? =
-    createQuery(
-        """
-        SELECT * FROM payment WHERE id = :id
-        """.trimIndent()
-    ).bind("id", id)
-        .mapTo<Payment>()
-        .firstOrNull()
-
-fun Handle.handleReservationPaymentResult(
-    id: UUID,
-    success: Boolean,
-): Int? {
-    updatePayment(id, success)
-
-    if (!success) return getBoatSpaceReservationIdForPayment(id)
-
-    val reservationId =
-        updateBoatSpaceReservationOnPaymentSuccess(
-            id
-        )
-
-    return reservationId
-}

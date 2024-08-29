@@ -2,10 +2,8 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.Citizen
-import fi.espoo.vekkuli.domain.getCitizen
+import fi.espoo.vekkuli.service.CitizenService
 import jakarta.servlet.http.HttpServletRequest
-import org.jdbi.v3.core.Jdbi
-import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 
 enum class EnvType {
     Production,
@@ -54,10 +52,10 @@ class Utils {
 
         fun getCitizen(
             request: HttpServletRequest,
-            jdbi: Jdbi
+            service: CitizenService,
         ): Citizen? {
             val authenticatedUser = request.getAuthenticatedUser()
-            val citizen = authenticatedUser?.let { jdbi.inTransactionUnchecked { tx -> tx.getCitizen(it.id) } }
+            val citizen = authenticatedUser?.let { service.getCitizen(it.id) }
             return citizen
         }
     }

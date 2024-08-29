@@ -1,0 +1,418 @@
+package fi.espoo.vekkuli.repository
+
+import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.BoatSpaceReservationRepository
+import fi.espoo.vekkuli.utils.AndExpr
+import fi.espoo.vekkuli.utils.InExpr
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.mapTo
+import org.jdbi.v3.core.kotlin.withHandleUnchecked
+import org.springframework.stereotype.Repository
+import java.time.LocalDate
+import java.util.*
+
+@Repository
+class JdbiBoatSpaceReservationRepository(
+    private val jdbi: Jdbi
+) : BoatSpaceReservationRepository {
+    override fun getBoatSpaceReservationIdForPayment(id: UUID): Int =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT id
+                    FROM boat_space_reservation
+                    WHERE payment_id = :paymentId
+                        AND status = 'Payment' 
+                        AND created > NOW() - make_interval(secs => :paymentTimeout)
+                    """.trimIndent()
+                )
+            query.bind("paymentId", id)
+            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.mapTo<Int>().findOne().orElse(null)
+        }
+
+    override fun getBoatSpaceReservationWithPaymentId(id: UUID): BoatSpaceReservationDetails? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.id,
+                           bsr.start_date,
+                           bsr.end_date,
+                           bsr.created,
+                           bsr.updated,
+                           bsr.status,
+                           bsr.boat_space_id,
+                           CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                           c.first_name, 
+                           c.last_name, 
+                           c.email, 
+                           c.phone,
+                           c.national_id,
+                           c.address,
+                           c.postal_code,
+                           c.municipality,
+                           '' as home_town,
+                           b.registration_code as boat_registration_code,
+                           b.ownership as boat_ownership,
+                           b.id as boat_id,
+                           b.name as boat_name,
+                           b.width_cm as boat_width_cm,
+                           b.length_cm as boat_length_cm,
+                           b.weight_kg as boat_weight_kg,
+                           b.depth_cm as boat_depth_cm,
+                           b.type as boat_type,
+                           b.other_identification as boat_other_identification,
+                           b.extra_information as boat_extra_information,
+                           location.name as location_name, 
+                           bs.type,
+                            bs.length_cm as boat_space_length_cm,
+                            bs.width_cm as boat_space_width_cm,
+                            bs.amenity,
+                           price.price_cents,
+                           CONCAT(bs.section, bs.place_number) as place
+                    FROM boat_space_reservation bsr
+                    JOIN boat b ON b.id = bsr.boat_id
+                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location.id = bs.location_id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.payment_id = :paymentId
+                    """.trimIndent()
+                )
+            query.bind("paymentId", id)
+            query.mapTo<BoatSpaceReservationDetails>().one()
+        }
+
+    override fun updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET status = 'Confirmed', updated = :updatedTime
+                    WHERE payment_id = :paymentId
+                        AND status = 'Payment' 
+                        AND created > NOW() - make_interval(secs => :paymentTimeout)
+                    RETURNING id
+                    """.trimIndent()
+                )
+            query.bind("paymentId", paymentId)
+            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.bind("updatedTime", LocalDate.now())
+            query.mapTo<Int>().findOne().orElse(null)
+        }
+
+    override fun getReservationForCitizen(id: UUID): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                        location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                          bs.description
+                    FROM boat_space_reservation bsr
+                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.citizen_id = :id
+                        AND bsr.status = 'Info' 
+                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
+    override fun getReservationWithCitizen(id: Int): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                        location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                          bs.description
+                    FROM boat_space_reservation bsr
+                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.id = :id
+                        AND (bsr.status = 'Info' OR bsr.status = 'Payment')
+                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
+    override fun removeBoatSpaceReservation(
+        id: Int,
+        citizenId: UUID
+    ): Unit =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createUpdate(
+                    """
+                    DELETE FROM boat_space_reservation
+                    WHERE id = :id AND citizen_id = :citizenId
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("citizenId", citizenId)
+            query.execute()
+        }
+
+    override fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.id,
+                           bsr.start_date,
+                           bsr.end_date,
+                           bsr.created,
+                           bsr.updated,
+                           bsr.status,
+                           bsr.boat_space_id,
+                           CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                           c.first_name, 
+                           c.last_name, 
+                           c.email, 
+                           c.phone,
+                           c.national_id,
+                           c.address,
+                           c.postal_code,
+                           c.municipality,
+                           '' as home_town,
+                           b.registration_code as boat_registration_code,
+                           b.ownership as boat_ownership,
+                           b.id as boat_id,
+                           b.name as boat_name,
+                           b.width_cm as boat_width_cm,
+                           b.length_cm as boat_length_cm,
+                           b.weight_kg as boat_weight_kg,
+                           b.depth_cm as boat_depth_cm,
+                           b.type as boat_type,
+                           b.other_identification as boat_other_identification,
+                           b.extra_information as boat_extra_information,
+                           location.name as location_name, 
+                           bs.type,
+                            bs.length_cm as boat_space_length_cm,
+                            bs.width_cm as boat_space_width_cm,
+                            bs.amenity,
+                           price.price_cents,
+                           CONCAT(bs.section, bs.place_number) as place
+                    FROM boat_space_reservation bsr
+                    JOIN boat b ON b.id = bsr.boat_id
+                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location.id = bs.location_id
+                    JOIN price ON price_id = price.id
+                    WHERE c.id = :citizenId AND bsr.status = 'Confirmed'
+                    """.trimIndent()
+                )
+            query.bind("citizenId", citizenId)
+            query.mapTo<BoatSpaceReservationDetails>().list()
+        }
+
+    override fun getBoatSpaceReservation(
+        reservationId: Int,
+        citizenId: UUID
+    ): BoatSpaceReservationDetails? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.id,
+                           bsr.start_date,
+                           bsr.end_date,
+                           bsr.created,
+                           bsr.updated,
+                           bsr.status,
+                           bsr.boat_space_id,
+                           CONCAT(c.last_name, ' ', c.first_name) as full_name, 
+                           c.first_name, 
+                           c.last_name, 
+                           c.email, 
+                           c.phone,
+                           c.national_id,
+                           c.address,
+                           c.postal_code,
+                           c.municipality,
+                           '' as home_town,
+                           b.registration_code as boat_registration_code,
+                           b.ownership as boat_ownership,
+                           b.id as boat_id,
+                           b.name as boat_name,
+                           b.width_cm as boat_width_cm,
+                           b.length_cm as boat_length_cm,
+                           b.weight_kg as boat_weight_kg,
+                           b.depth_cm as boat_depth_cm,
+                           b.type as boat_type,
+                           b.other_identification as boat_other_identification,
+                           b.extra_information as boat_extra_information,
+                           location.name as location_name, 
+                           bs.type,
+                            bs.length_cm as boat_space_length_cm,
+                            bs.width_cm as boat_space_width_cm,
+                            bs.amenity,
+                           price.price_cents,
+                           CONCAT(bs.section, bs.place_number) as place
+                    FROM boat_space_reservation bsr
+                    JOIN boat b ON b.id = bsr.boat_id
+                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location.id = bs.location_id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.id = :reservationId
+                    AND bsr.status = 'Confirmed' 
+                    AND c.id = :citizenId
+                    """.trimIndent()
+                )
+            query.bind("reservationId", reservationId)
+            query.bind("citizenId", citizenId)
+            query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
+        }
+
+    override fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> =
+        jdbi.withHandleUnchecked { handle ->
+            val filter =
+                AndExpr(
+                    listOf(
+                        InExpr("bs.location_id", params.harbor),
+                        InExpr("bs.amenity", params.amenity) { "'$it'" },
+                    )
+                )
+
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as full_name, c.first_name, c.last_name, c.email, c.phone, '' as home_town,
+                        b.registration_code as boat_registration_code,
+                        b.ownership as boat_ownership,
+                        location.name as location_name, 
+                        bs.type, CONCAT(bs.section, bs.place_number) as place,
+                        rw.key as warning
+                    FROM boat_space_reservation bsr
+                    JOIN boat b on b.id = bsr.boat_id
+                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
+                    WHERE
+                      bsr.status = 'Confirmed'
+                    AND ${filter.toSql().ifBlank { "true" }}
+                    ${getSortingSql(params)}
+                    """.trimIndent()
+                )
+
+            filter.bind(query)
+            query
+                .mapTo<BoatSpaceReservationItemWithWarning>()
+                .list()
+                .groupBy { it.id }
+                .map { (id, warnings) ->
+                    val row = warnings.first()
+                    BoatSpaceReservationItem(
+                        id = id,
+                        boatSpaceId = row.boatSpaceId,
+                        startDate = row.startDate,
+                        endDate = row.endDate,
+                        status = row.status,
+                        citizenId = row.citizenId,
+                        firstName = row.firstName,
+                        lastName = row.lastName,
+                        homeTown = row.homeTown,
+                        email = row.email,
+                        phone = row.phone,
+                        type = row.type,
+                        place = row.place,
+                        locationName = row.locationName,
+                        boatRegistrationCode = row.boatRegistrationCode,
+                        boatOwnership = row.boatOwnership,
+                        warnings = warnings.mapNotNull { it.warning }
+                    )
+                }
+        }
+
+    override fun insertBoatSpaceReservation(
+        citizenId: UUID,
+        boatSpaceId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        status: ReservationStatus
+    ): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    INSERT INTO boat_space_reservation (citizen_id, boat_space_id, start_date, end_date, status)
+                    VALUES (:citizenId, :boatSpaceId, :startDate, :endDate, :status)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("citizenId", citizenId)
+            query.bind("boatSpaceId", boatSpaceId)
+            query.bind("startDate", startDate)
+            query.bind("endDate", endDate)
+            query.bind("status", status)
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+
+    override fun updateBoatInBoatSpaceReservation(
+        reservationId: Int,
+        boatId: Int
+    ): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
+                    WHERE id = :id
+                        AND (status = 'Info' OR status = 'Payment')
+                        AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("updatedTime", LocalDate.now())
+            query.bind("id", reservationId)
+            query.bind("boatId", boatId)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+
+    override fun updateReservationWithPayment(
+        reservationId: Int,
+        paymentId: UUID,
+        citizenId: UUID
+    ): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET status = 'Payment', updated = :updatedTime, payment_id = :paymentId
+                    WHERE id = :id
+                        AND status = 'Payment'
+                        AND created > NOW() - make_interval(secs => :paymentTimeout)
+                        AND citizen_id = :citizenId
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("updatedTime", LocalDate.now())
+            query.bind("id", reservationId)
+            query.bind("paymentId", paymentId)
+            query.bind("citizenId", citizenId)
+            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+}
