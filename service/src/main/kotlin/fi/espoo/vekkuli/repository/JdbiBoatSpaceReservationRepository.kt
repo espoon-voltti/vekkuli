@@ -338,7 +338,7 @@ class JdbiBoatSpaceReservationRepository(
                         locationName = row.locationName,
                         boatRegistrationCode = row.boatRegistrationCode,
                         boatOwnership = row.boatOwnership,
-                        warnings = warnings.mapNotNull { it.warning }
+                        warnings = (warnings.mapNotNull { it.warning }).toSet()
                     )
                 }
         }

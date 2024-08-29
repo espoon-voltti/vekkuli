@@ -79,10 +79,12 @@ data class BoatSpaceReservationItem(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
-    val warnings: List<String> = emptyList()
+    val warnings: Set<String> = emptySet()
 ) {
     val showOwnershipWarning: Boolean
         get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
+
+    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 }
 
 data class BoatSpaceReservationItemWithWarning(
