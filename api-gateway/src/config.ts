@@ -170,7 +170,7 @@ export function configFromEnv(): Config {
             privateCert: required(process.env.SFI_SAML_PRIVATE_CERT),
             validateInResponseTo: ValidateInResponseTo.always,
             decryptAssertions:
-              env('AD_DECRYPT_ASSERTIONS', parseBoolean) ?? false
+              env('SFI_DECRYPT_ASSERTIONS', parseBoolean) ?? false
           }
         })
   }
