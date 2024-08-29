@@ -2,8 +2,8 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
-import fi.espoo.vekkuli.domain.getBoatSpaceReservations
 import fi.espoo.vekkuli.domain.getLocations
+import fi.espoo.vekkuli.service.BoatReservationService
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -20,6 +20,9 @@ class BoatSpaceReservationController {
     @Autowired
     lateinit var jdbi: Jdbi
 
+    @Autowired
+    lateinit var reservationService: BoatReservationService
+
     @GetMapping("/varaukset")
     fun reservationSearchPage(
         request: HttpServletRequest,
@@ -27,9 +30,8 @@ class BoatSpaceReservationController {
         model: Model
     ): String {
         val reservations =
-            jdbi.inTransactionUnchecked {
-                it.getBoatSpaceReservations(params)
-            }
+            reservationService.getBoatSpaceReservations(params)
+
         val harbors =
             jdbi.inTransactionUnchecked {
                 it.getLocations()
