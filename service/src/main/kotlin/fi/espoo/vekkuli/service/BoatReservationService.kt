@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
 import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
 import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.config.MessageUtil
@@ -200,12 +201,12 @@ class BoatReservationService(
             warnings.add(ReservationWarningType.BoatDimensions.name)
         }
 
-        if (reservation.boatOwnership == OwnershipStatus.FutureOwner) {
-            warnings.add(ReservationWarningType.BoatFutureOwner.name)
+        if (reservation.boatOwnership == OwnershipStatus.FutureOwner || reservation.boatOwnership == OwnershipStatus.CoOwner) {
+            warnings.add(ReservationWarningType.BoatOwnership.name)
         }
 
-        if (reservation.boatOwnership == OwnershipStatus.CoOwner) {
-            warnings.add(ReservationWarningType.BoatCoOwner.name)
+        if (reservation.boatWeightKg > BOAT_WEIGHT_THRESHOLD_KG) {
+            warnings.add(ReservationWarningType.BoatWeight.name)
         }
 
         if (warnings.isNotEmpty()) {

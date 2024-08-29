@@ -35,6 +35,8 @@ object BoatSpaceConfig {
     // Boat length after which a buoy is always needed
     const val BOAT_LENGTH_THRESHOLD_CM = 1500
 
+    const val BOAT_WEIGHT_THRESHOLD_KG = 10000
+
     const val EMAIL_SENDER = "venepaikat@espoo.fi"
 
     fun getRequiredDimensions(
