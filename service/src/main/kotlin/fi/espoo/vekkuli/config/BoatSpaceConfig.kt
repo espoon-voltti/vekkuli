@@ -9,8 +9,8 @@ data class Dimensions(
 
 enum class ReservationWarningType {
     BoatDimensions,
-    BoatFutureOwner,
-    BoatCoOwner
+    BoatOwnership,
+    BoatWeight,
 }
 
 object BoatSpaceConfig {
