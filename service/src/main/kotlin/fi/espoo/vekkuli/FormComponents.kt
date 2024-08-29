@@ -86,7 +86,8 @@ class FormComponents {
         id: String,
         value: Double?,
         required: Boolean? = false,
-        attributes: String = ""
+        attributes: String = "",
+        step: Double? = 0.01
     ): String {
         //language=HTML
         return """
@@ -97,7 +98,7 @@ class FormComponents {
                         class="input"
                         ${if (required == true) "data-required" else ""}
                         type="number"
-                        step="0.01"
+                        step="$step"
                         id="$id"
                         name="$id"
                         value="${value ?: ""}"

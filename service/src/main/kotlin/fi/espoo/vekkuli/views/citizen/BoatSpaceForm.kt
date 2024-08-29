@@ -151,6 +151,7 @@ class BoatSpaceForm {
                 "depth",
                 input.depth,
                 required = true,
+                step = 0.1
             )
 
         val weightInput =
