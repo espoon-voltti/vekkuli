@@ -25,7 +25,7 @@ class FormComponents {
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label" for="$id">${t(labelKey)}</label>
+                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <input
                         class="input"
                         ${if (required == true) "data-required" else ""}
@@ -62,7 +62,7 @@ class FormComponents {
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label" for="$id">${t(labelKey)}</label>
+                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <input
                         class="input"
                         ${if (required == true) "data-required" else ""}
@@ -92,7 +92,7 @@ class FormComponents {
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label" for="$id">${t(labelKey)}</label>
+                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <input
                         class="input"
                         ${if (required == true) "data-required" else ""}
@@ -131,7 +131,7 @@ class FormComponents {
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label" for="$id">${t(labelKey)}</label>
+                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <div class="select">
                         <select id="$id" name="$id">
                             $opts
@@ -166,7 +166,7 @@ class FormComponents {
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label" for="$id">${t(labelKey)}</label>
+                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <div class="select">
                         $opts
                     </div>
