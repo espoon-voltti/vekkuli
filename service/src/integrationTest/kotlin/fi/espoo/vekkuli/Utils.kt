@@ -1,61 +1,10 @@
 package fi.espoo.vekkuli
 
-import com.microsoft.playwright.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
-import org.junit.jupiter.api.*
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import java.io.File
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
-)
-abstract class PlaywrightTest {
-    @Autowired
-    protected lateinit var jdbi: Jdbi
-
-    protected lateinit var playwright: Playwright
-    protected lateinit var browser: Browser
-
-    // New instance for each test method.
-    protected lateinit var context: BrowserContext
-    protected lateinit var page: Page
-
-    @BeforeAll
-    fun beforeAllSuper() {
-        createAndSeedDatabase(jdbi)
-
-        playwright = Playwright.create()
-        playwright.selectors().setTestIdAttribute("id")
-        browser =
-            playwright.chromium().launch(
-                BrowserType
-                    .LaunchOptions()
-                    .setHeadless(runningInDocker)
-                    .setTimeout(10_000.0)
-            )
-    }
-
-    @AfterAll
-    fun afterAllSuper() {
-        playwright.close()
-    }
-
-    @BeforeEach
-    fun createContextAndPage() {
-        context = browser.newContext()
-        page = context.newPage()
-    }
-
-    @AfterEach
-    fun closeContext() {
-        context.close()
-    }
-}
-
-public fun createAndSeedDatabase(jdbi: Jdbi) {
+fun createAndSeedDatabase(jdbi: Jdbi) {
     jdbi.withHandleUnchecked { tx ->
         tx.execute(
             """

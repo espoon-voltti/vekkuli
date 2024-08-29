@@ -35,9 +35,16 @@ sourceSets {
         compileClasspath += main.get().output + test.get().output
         runtimeClasspath += main.get().output + test.get().output
     }
+    register("integrationTest") {
+        compileClasspath += main.get().output + test.get().output
+        runtimeClasspath += main.get().output + test.get().output
+    }
 }
 
 val e2eTestImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.testImplementation.get())
+}
+val integrationTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.testImplementation.get())
 }
 
@@ -46,6 +53,7 @@ configurations["e2eTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.
 idea {
     module {
         testSources = testSources + sourceSets["e2eTest"].kotlin.sourceDirectories
+        testSources = testSources + sourceSets["integrationTest"].kotlin.sourceDirectories
     }
 }
 
@@ -167,6 +175,18 @@ tasks {
         group = "verification"
         testClassesDirs = sourceSets["e2eTest"].output.classesDirs
         classpath = sourceSets["e2eTest"].runtimeClasspath
+        shouldRunAfter("test")
+        outputs.upToDateWhen { false }
+        testLogging {
+            showStandardStreams = true
+            events("passed", "skipped", "failed")
+        }
+    }
+    register("integrationTest", Test::class) {
+        useJUnitPlatform()
+        group = "verification"
+        testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+        classpath = sourceSets["integrationTest"].runtimeClasspath
         shouldRunAfter("test")
         outputs.upToDateWhen { false }
         testLogging {
