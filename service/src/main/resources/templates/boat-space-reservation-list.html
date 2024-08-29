@@ -58,22 +58,41 @@
             <table class="table is-hoverable">
                 <thead>
                 <tr>
-                    <th><span th:text="#{boatSpaceReservation.title.harbor}">Satama</span></th>
+                    <th>
+                        <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('PLACE')}}">
+                            <span th:text="#{boatSpaceReservation.title.harbor}">Satama</span>
+                            <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('PLACE')})}"></div>
+                        </a></th>
                     <th>
                         <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('PLACE')}}">
                             <span th:text="#{boatSpaceReservation.title.place}">Paikka</span>
                             <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('PLACE')})}"></div>
                         </a>
                     </th>
-                    <th><span th:text="#{boatSpaceReservation.title.type}">Paikan tyyppi</span></th>
+                    <th>
+                        <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('PLACE_TYPE')}}">
+                            <span th:text="#{boatSpaceReservation.title.type}">Paikan tyyppi</span>
+                            <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('PLACE_TYPE')})}"></div>
+                        </a>
+                    </th>
                     <th>
                         <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('CUSTOMER')}}">
                             <span th:text="#{boatSpaceReservation.title.subject}">Varaaja</span>
                             <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('CUSTOMER')})}"></div>
                         </a>
                     </th>
-                    <th><span th:text="#{boatSpaceReservation.title.homeTown}">Kotikunta</span></th>
-                    <th><span th:text="#{boatSpaceReservation.title.boat}">Vene</span></th>
+                    <th>
+                        <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('HOME_TOWN')}}">
+                            <span th:text="#{boatSpaceReservation.title.homeTown}">Kotikunta</span>
+                            <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('HOME_TOWN')})}"></div>
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('BOAT')}}">
+                            <span th:text="#{boatSpaceReservation.title.boat}">Bene</span>
+                            <div th:replace="~{fragments/icons :: sort(dir=${params.getSortForColumn('BOAT')})}"></div>
+                        </a>
+                    </th>
                     <th><span th:text="#{boatSpaceReservation.title.payment}">Maksu</span></th>
                     <th>
                         <a th:href="@{'/virkailija/venepaikat/varaukset' + ${params.toggleSort('START_DATE')}}">

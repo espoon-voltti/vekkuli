@@ -110,9 +110,9 @@ fun Handle.insertBoatSpaceApplication(app: AddBoatSpaceApplication): BoatSpaceAp
             )
             RETURNING *, '[]'::jsonb as location_wishes
             """.trimIndent()
-        )
-            .bindKotlin(app)
-            .mapTo(BoatSpaceApplicationWithId::class.java).one()
+        ).bindKotlin(app)
+            .mapTo(BoatSpaceApplicationWithId::class.java)
+            .one()
 
     prepareBatch(
         """
