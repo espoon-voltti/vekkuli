@@ -133,7 +133,6 @@ class E2eTest : PlaywrightTest() {
 
             formPage.widthInput.fill("3")
             formPage.widthInput.blur()
-            page.pause()
             assertThat(formPage.boatSizeWarning).isHidden()
 
             formPage.lengthInput.fill("20")
