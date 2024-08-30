@@ -15,12 +15,21 @@
             <div class="menu-container">
                 <p class="menu-label" th:text="#{menu.marineOutdoor}">Merellinen ulkoilu</p>
                 <ul class="menu-list">
-                    <li><a
-                            th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
-                            href="/virkailija/venepaikat/varaukset"
-                            th:text="#{menu.boatSpaceReservations}">
-                        Venepaikkavaraukset
-                    </a>
+                    <li>
+                        <a
+                                th:if="${isAuthenticated}"
+                                th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
+                                href="/virkailija/venepaikat/varaukset"
+                                th:text="#{menu.boatSpaceReservations}">
+                            Venepaikkavaraukset
+                        </a>
+                        <a
+                                th:if="${!isAuthenticated}"
+                                th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
+                                href="/auth/saml/login"
+                                th:text="#{menu.boatSpaceReservations}">
+                            Venepaikkavaraukset
+                        </a>
 
                     </li>
                 </ul>
