@@ -252,7 +252,8 @@ class BoatSpaceFormController {
                     boats,
                     user,
                     input,
-                    showBoatSizeWarning
+                    showBoatSizeWarning,
+                    getReservationTimeInSeconds(reservation.created)
                 )
             )
         )
