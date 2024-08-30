@@ -18,6 +18,12 @@ class BoatSpaceForm {
     @Autowired
     lateinit var formComponents: FormComponents
 
+    @Autowired
+    lateinit var sessionTimer: SessionTimer
+
+    @Autowired
+    lateinit var stepIndicator: StepIndicator
+
     fun t(key: String): String {
         return messageUtil.getMessage(key)
     }
@@ -27,7 +33,8 @@ class BoatSpaceForm {
         boats: List<Boat>,
         user: Citizen,
         input: ReservationInput,
-        showBoatSizeWarning: Boolean
+        showBoatSizeWarning: Boolean,
+        reservationTimeInSeconds: Long
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         // language=HTML
@@ -238,6 +245,8 @@ class BoatSpaceForm {
         return """
             <section class="section">
                 <div class="container" id="container" x-data="{ modalOpen: false }"> 
+                    ${stepIndicator.render(2)}
+                    ${sessionTimer.render(reservationTimeInSeconds)}
                     <form
                         id="form"
                         class="column is-half"
