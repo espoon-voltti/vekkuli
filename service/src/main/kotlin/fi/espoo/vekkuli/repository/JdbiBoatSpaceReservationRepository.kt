@@ -220,7 +220,25 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("citizenId", citizenId)
-            query.mapTo<BoatSpaceReservationDetails>().list()
+
+            // read warnings that are associated with the reservation
+            val reservations = query.mapTo<BoatSpaceReservationDetails>().list()
+            reservations.map {
+                val warningQuery =
+                    handle.createQuery(
+                        """
+                        SELECT key
+                        FROM reservation_warning
+                        WHERE reservation_id = :reservationId
+                        """.trimIndent()
+                    )
+                warningQuery.bind("reservationId", it.id)
+                val warnings = warningQuery.mapTo<String>().list()
+
+                it.copy(
+                    warnings = warnings.toSet()
+                )
+            }
         }
 
     override fun getBoatSpaceReservation(

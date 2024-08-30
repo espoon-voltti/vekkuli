@@ -121,10 +121,8 @@
                     <td th:text="${result.locationName}">Kivenlahti</td>
                     <td>
                         <span th:text="${result.place}">A135</span>
-                        <span class="icon ml-s" th:if="${result.hasWarning('BoatDimensions')}">
-                            <div th:if="${result.showOwnershipWarning}">
-                                <div th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
-                            </div>
+                        <span class="icon ml-s" th:if="${result.hasWarning('BoatWidth') || result.hasWarning('BoatLength')}">
+                            <div th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
                         </span>
                     </td>
                     <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}">Laituripaikka</td>
@@ -140,9 +138,7 @@
                         <div class="is-flex is-align-items-center is-justify-content-center">
                             <p th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</p>
                             <span class="icon ml-s" th:if="${result.hasWarning('BoatOwnership')}">
-                                <div th:if="${result.showOwnershipWarning}">
                                 <div th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
-                                    </div>
                             </span>
                         </div>
                     </td>

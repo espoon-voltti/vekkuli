@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 data class ReservationWarning(
     val reservationId: Int,
+    val boatId: Int,
     val key: String,
     val created: LocalDateTime,
 )

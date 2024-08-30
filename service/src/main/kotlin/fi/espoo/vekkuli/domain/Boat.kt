@@ -17,7 +17,8 @@ data class Boat(
     val otherIdentification: String?,
     val extraInformation: String?,
     val ownership: OwnershipStatus,
-    val displayName: String? = null
+    val displayName: String? = null,
+    val warnings: Set<String> = emptySet()
 ) {
     fun updateBoatDisplayName(messageUtil: MessageUtil): Boat =
         this.copy(
@@ -32,4 +33,8 @@ data class Boat(
                     }
                 }
         )
+
+    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+
+    fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }

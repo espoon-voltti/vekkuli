@@ -1,7 +1,8 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
-import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
+import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
+import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
@@ -73,13 +74,17 @@ interface BoatSpaceReservationRepository {
 interface ReservationWarningRepository {
     fun addReservationWarnings(
         reservationId: Int,
+        boatId: Int,
         keys: List<String>,
     ): Unit
 
-    fun getUnAcknowledgedReservationWarnings(reservationId: Int): List<ReservationWarning>
+    fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
+
+    fun getWarningsForBoat(boatId: Int): List<ReservationWarning>
 
     fun setReservationWarningAcknowledged(
         reservationId: Int,
+        boatId: Int,
         key: String,
     ): Unit
 }
@@ -192,13 +197,22 @@ class BoatReservationService(
     fun addReservationWarnings(reservation: BoatSpaceReservationDetails) {
         val warnings = mutableListOf<String>()
 
-        if (!doesBoatFit(
+        if (!isWidthOk(
                 Dimensions(reservation.boatSpaceWidthCm, reservation.boatSpaceLengthCm),
                 reservation.amenity,
                 Dimensions(reservation.boatWidthCm, reservation.boatLengthCm)
             )
         ) {
-            warnings.add(ReservationWarningType.BoatDimensions.name)
+            warnings.add(ReservationWarningType.BoatWidth.name)
+        }
+
+        if (!isLengthOk(
+                Dimensions(reservation.boatSpaceWidthCm, reservation.boatSpaceLengthCm),
+                reservation.amenity,
+                Dimensions(reservation.boatWidthCm, reservation.boatLengthCm)
+            )
+        ) {
+            warnings.add(ReservationWarningType.BoatLength.name)
         }
 
         if (reservation.boatOwnership == OwnershipStatus.FutureOwner || reservation.boatOwnership == OwnershipStatus.CoOwner) {
@@ -210,7 +224,7 @@ class BoatReservationService(
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(reservation.id, warnings)
+            reservationWarningRepo.addReservationWarnings(reservation.id, reservation.boatId, warnings)
         }
     }
 

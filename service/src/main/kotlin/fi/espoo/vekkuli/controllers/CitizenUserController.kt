@@ -86,7 +86,8 @@ class CitizenUserController {
             registrationNumber = boat.registrationCode ?: "",
             otherIdentifier = boat.otherIdentification ?: "",
             extraInformation = boat.extraInformation ?: "",
-            ownership = boat.ownership
+            ownership = boat.ownership,
+            warnings = boat.warnings
         )
 
     data class BoatUpdateForm(
@@ -101,7 +102,12 @@ class CitizenUserController {
         val otherIdentifier: String,
         val extraInformation: String,
         val ownership: OwnershipStatus,
-    )
+        val warnings: Set<String>,
+    ) {
+        fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+
+        fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
+    }
 
     fun validateBoatUpdateInput(input: BoatUpdateForm): MutableMap<String, String> {
         val errors = mutableMapOf<String, String>()

@@ -25,7 +25,22 @@ class JdbiBoatRepository(
                     """.trimIndent()
                 )
             query.bind("citizenId", citizenId)
-            query.mapTo<Boat>().list()
+            val boats = query.mapTo<Boat>().list()
+            boats.map {
+                val warningQuery =
+                    handle.createQuery(
+                        """
+                        SELECT key
+                        FROM reservation_warning
+                        WHERE boat_id = :boatId
+                        """.trimIndent()
+                    )
+                warningQuery.bind("boatId", it.id)
+                val warnings = warningQuery.mapTo<String>().list()
+                it.copy(
+                    warnings = warnings.toSet()
+                )
+            }
         }
 
     override fun getBoat(boatId: Int): Boat? =

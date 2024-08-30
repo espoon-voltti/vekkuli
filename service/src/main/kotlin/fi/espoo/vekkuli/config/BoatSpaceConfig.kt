@@ -8,7 +8,8 @@ data class Dimensions(
 )
 
 enum class ReservationWarningType {
-    BoatDimensions,
+    BoatWidth,
+    BoatLength,
     BoatOwnership,
     BoatWeight,
 }
@@ -20,14 +21,14 @@ object BoatSpaceConfig {
 
     const val MIN_WIDTH_ADJUSTMENT_CM = 40
 
-    const val BUOY_WIDTH_ADJUSTMENT_CM = 40
-    const val BUOY_LENGTH_ADJUSTMENT_CM = 100
+    const val BUOY_WIDTH_ADJUSTMENT_CM = 0
+    const val BUOY_LENGTH_ADJUSTMENT_CM = 0
 
     const val BEAM_WIDTH_ADJUSTMENT_CM = 40
-    const val BEAM_LENGTH_ADJUSTMENT_CM = 100
+    const val BEAM_LENGTH_ADJUSTMENT_CM = -100
 
     const val WALK_BEAM_WIDTH_ADJUSTMENT_CM = 75
-    const val WALK_BEAM_LENGTH_ADJUSTMENT_CM = 100
+    const val WALK_BEAM_LENGTH_ADJUSTMENT_CM = -100
 
     const val REAR_BUOY_WIDTH_ADJUSTMENT_CM = 50
     const val REAR_BUOY_LENGTH_ADJUSTMENT_CM = 300
@@ -70,5 +71,29 @@ object BoatSpaceConfig {
         }
         val requiredDimensions = getRequiredDimensions(amenity, boat)
         return requiredDimensions.width <= space.width && requiredDimensions.length <= space.length
+    }
+
+    fun isWidthOk(
+        space: Dimensions,
+        amenity: BoatSpaceAmenity,
+        boat: Dimensions
+    ): Boolean {
+        if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+            return false
+        }
+        val requiredDimensions = getRequiredDimensions(amenity, boat)
+        return requiredDimensions.width <= space.width
+    }
+
+    fun isLengthOk(
+        space: Dimensions,
+        amenity: BoatSpaceAmenity,
+        boat: Dimensions
+    ): Boolean {
+        if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+            return false
+        }
+        val requiredDimensions = getRequiredDimensions(amenity, boat)
+        return requiredDimensions.length <= space.length
     }
 }
