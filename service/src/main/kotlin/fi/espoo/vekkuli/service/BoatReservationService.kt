@@ -9,6 +9,8 @@ import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.mToCm
 import jakarta.validation.constraints.*
+import org.jetbrains.annotations.TestOnly
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -26,7 +28,11 @@ sealed class PaymentProcessResult {
     ) : PaymentProcessResult()
 }
 
+@Transactional
 interface BoatSpaceReservationRepository {
+    @Profile("test")
+    fun deleteAllReservations()
+
     fun getBoatSpaceReservationIdForPayment(id: UUID): Int
 
     fun getBoatSpaceReservationWithPaymentId(id: UUID): BoatSpaceReservationDetails?
@@ -150,7 +156,17 @@ class BoatReservationService(
             return PaymentProcessResult.Success(reservation)
         }
 
-        addReservationWarnings(reservation)
+        addReservationWarnings(
+            reservation.id,
+            reservation.boatId,
+            reservation.boatSpaceWidthCm,
+            reservation.boatSpaceLengthCm,
+            reservation.amenity,
+            reservation.boatWidthCm,
+            reservation.boatLengthCm,
+            reservation.boatOwnership,
+            reservation.boatWeightKg,
+        )
 
         emailService.sendEmail(
             "reservationSuccess",
@@ -166,6 +182,18 @@ class BoatReservationService(
         )
 
         return PaymentProcessResult.Success(reservation)
+    }
+
+    /**
+     * **WARNING:** This function is for test purposes only.
+     *
+     * It clears all reservations from the database. Use only in test environments.
+     * The function is restricted to the 'test' profile and should not be used in production code.
+     */
+    @TestOnly
+    @Profile("test")
+    fun deleteAllReservations() {
+        boatSpaceReservationRepo.deleteAllReservations()
     }
 
     fun handleReservationPaymentResult(
@@ -185,46 +213,55 @@ class BoatReservationService(
 
     @Transactional
     fun addPaymentToReservation(
-        citizen: Citizen,
         reservationId: Int,
         params: CreatePaymentParams
     ): Pair<Payment, BoatSpaceReservation> {
         val payment = paymentService.insertPayment(params)
-        val reservation = boatSpaceReservationRepo.updateReservationWithPayment(reservationId, payment.id, citizen.id)
+        val reservation = boatSpaceReservationRepo.updateReservationWithPayment(reservationId, payment.id, params.citizenId)
         return Pair(payment, reservation)
     }
 
-    fun addReservationWarnings(reservation: BoatSpaceReservationDetails) {
+    fun addReservationWarnings(
+        reservationId: Int,
+        boatId: Int,
+        boatSpaceWidthCm: Int,
+        boatSpaceLengthCm: Int,
+        amenity: BoatSpaceAmenity,
+        boatWidthCm: Int,
+        boatLengthCm: Int,
+        boatOwnership: OwnershipStatus?,
+        boatWeightKg: Int,
+    ) {
         val warnings = mutableListOf<String>()
 
         if (!isWidthOk(
-                Dimensions(reservation.boatSpaceWidthCm, reservation.boatSpaceLengthCm),
-                reservation.amenity,
-                Dimensions(reservation.boatWidthCm, reservation.boatLengthCm)
+                Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
+                amenity,
+                Dimensions(boatWidthCm, boatLengthCm)
             )
         ) {
             warnings.add(ReservationWarningType.BoatWidth.name)
         }
 
         if (!isLengthOk(
-                Dimensions(reservation.boatSpaceWidthCm, reservation.boatSpaceLengthCm),
-                reservation.amenity,
-                Dimensions(reservation.boatWidthCm, reservation.boatLengthCm)
+                Dimensions(boatSpaceWidthCm, boatSpaceLengthCm),
+                amenity,
+                Dimensions(boatWidthCm, boatLengthCm)
             )
         ) {
             warnings.add(ReservationWarningType.BoatLength.name)
         }
 
-        if (reservation.boatOwnership == OwnershipStatus.FutureOwner || reservation.boatOwnership == OwnershipStatus.CoOwner) {
+        if (boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner) {
             warnings.add(ReservationWarningType.BoatOwnership.name)
         }
 
-        if (reservation.boatWeightKg > BOAT_WEIGHT_THRESHOLD_KG) {
+        if (boatWeightKg > BOAT_WEIGHT_THRESHOLD_KG) {
             warnings.add(ReservationWarningType.BoatWeight.name)
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(reservation.id, reservation.boatId, warnings)
+            reservationWarningRepo.addReservationWarnings(reservationId, boatId, warnings)
         }
     }
 

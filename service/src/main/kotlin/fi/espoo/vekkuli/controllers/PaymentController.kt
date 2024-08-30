@@ -58,7 +58,6 @@ class PaymentController {
         val (payment, reservation) =
             withContext(Dispatchers.IO) {
                 reservationService.addPaymentToReservation(
-                    citizen,
                     id,
                     CreatePaymentParams(
                         citizenId = citizen.id,
