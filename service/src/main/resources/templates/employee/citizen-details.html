@@ -226,8 +226,8 @@
                         </div>
                         <div class="field">
                             <label class="label" th:text="#{boatSpaceReservation.title.weight}">Paino (kg)</label>
-                            <p th:id="|boat-weight-text-${iter.index}|" >
-                                <span th:text="${boat.weight}">4500</span>
+                            <p>
+                                <span th:id="|boat-weight-text-${iter.index}|" th:text="${boat.weight}">4500</span>
                                 <span class="icon ml-s" th:if="${boat.hasWarning('BoatWeight')}">
                                     <span th:replace="~{fragments/icons :: warning-exclamation(false)}"></span>
                                 </span>
@@ -252,8 +252,8 @@
                         <div class="field">
                             <label class="label" th:text="#{boatSpaceReservation.title.boatWidth}">Leveys
                                 (m)</label>
-                            <p th:id="|boat-width-text-${iter.index}|">
-                                <span th:text="${boat.width}">2,91</span>
+                            <p>
+                                <span th:id="|boat-width-text-${iter.index}|" th:text="${boat.width}">2,91</span>
                                 <span class="icon ml-s" th:if="${boat.hasWarning('BoatWidth')}">
                                     <span th:replace="~{fragments/icons :: warning-exclamation(false)}"></span>
                                 </span>
@@ -271,8 +271,8 @@
                         <div class="field">
                             <label class="label" th:text="#{boatSpaceReservation.title.boatLength}">Pituus
                                 (m)</label>
-                            <p th:id="|boat-length-text-${iter.index}|">
-                                <span th:text="${boat.length}">8,45</span>
+                            <p>
+                                <span th:id="|boat-length-text-${iter.index}|" th:text="${boat.length}">8,45</span>
                                 <span class="icon ml-s" th:if="${boat.hasWarning('BoatLength')}">
                                     <span th:replace="~{fragments/icons :: warning-exclamation(false)}"></span>
                                 </span>
@@ -281,9 +281,9 @@
                         <div class="field">
                             <label class="label"
                                    th:text="#{boatSpaceReservation.title.ownershipStatus}">Omistussuhde</label>
-                            <p th:id="|boat-ownership-text-${iter.index}|">
+                            <p>
                                 <h1 th:text="${hasWarning}"></h1>
-                               <span th:text="#{${'boatApplication.ownershipOption.' + boat.ownership}}">
+                               <span th:id="|boat-ownership-text-${iter.index}|" th:text="#{${'boatApplication.ownershipOption.' + boat.ownership}}">
                                    Olen ostamassa veneen </span>
                                 <span class="icon ml-s" th:if="${boat.hasWarning('BoatOwnership')}">
                                     <span th:replace="~{fragments/icons :: warning-exclamation(false)}"></span>
