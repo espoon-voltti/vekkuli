@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2023-2024 City of Espoo
-//
-// SPDX-License-Identifier: LGPL-2.1-or-later
-
 package fi.espoo.vekkuli.domain
 
 import java.util.*
@@ -16,4 +12,5 @@ data class Citizen(
     val address: String?,
     val postalCode: String?,
     val municipality: String?,
+    val fullName: String = "$firstName $lastName"
 )

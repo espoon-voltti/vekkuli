@@ -245,7 +245,7 @@ class BoatSpaceFormController {
 
         return layout.generateLayout(
             true,
-            "",
+            user.fullName,
             (
                 boatSpaceForm.boatSpaceForm(
                     reservation,
