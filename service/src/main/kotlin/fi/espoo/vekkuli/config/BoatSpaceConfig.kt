@@ -21,8 +21,10 @@ object BoatSpaceConfig {
 
     const val MIN_WIDTH_ADJUSTMENT_CM = 40
 
-    const val BUOY_WIDTH_ADJUSTMENT_CM = 0
-    const val BUOY_LENGTH_ADJUSTMENT_CM = 0
+    // No restrictions for buoys. We use large negative values to
+    // make sure the boat always fits
+    const val BUOY_WIDTH_ADJUSTMENT_CM = -100000
+    const val BUOY_LENGTH_ADJUSTMENT_CM = -100000
 
     const val BEAM_WIDTH_ADJUSTMENT_CM = 40
     const val BEAM_LENGTH_ADJUSTMENT_CM = -100
