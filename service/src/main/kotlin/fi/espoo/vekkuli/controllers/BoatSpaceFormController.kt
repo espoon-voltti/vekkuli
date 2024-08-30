@@ -7,13 +7,14 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.service.ReserveBoatSpaceInput
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
+import fi.espoo.vekkuli.views.citizen.Layout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.*
 import jakarta.validation.constraints.*
@@ -35,6 +36,12 @@ import kotlin.reflect.KClass
 @RequestMapping("/kuntalainen")
 class BoatSpaceFormController {
     @Autowired
+    private lateinit var boatSpaceForm: BoatSpaceForm
+
+    @Autowired
+    lateinit var layout: Layout
+
+    @Autowired
     lateinit var jdbi: Jdbi
 
     @Autowired
@@ -50,6 +57,7 @@ class BoatSpaceFormController {
     lateinit var citizenService: CitizenService
 
     @RequestMapping("/venepaikka/varaus/{reservationId}")
+    @ResponseBody
     fun boatSpaceFormPage(
         @PathVariable reservationId: Int,
         @RequestParam boatType: BoatType?,
@@ -85,7 +93,7 @@ class BoatSpaceFormController {
                         length = boat.lengthCm.cmToM(),
                         otherIdentification = boat.otherIdentification,
                         extraInformation = boat.extraInformation,
-                        ownerShip = boat.ownership,
+                        ownership = boat.ownership,
                         boatType = boat.type,
                         boatRegistrationNumber = boat.registrationCode,
                     )
@@ -94,7 +102,7 @@ class BoatSpaceFormController {
             input = input.copy(boatId = 0)
         }
 
-        return renderBoatSpaceReservationApplication(reservation, user, model, input)
+        return renderBoatSpaceReservationApplication(reservation, user, input)
     }
 
     @DeleteMapping("/venepaikka/varaus/{reservationId}")
@@ -108,6 +116,7 @@ class BoatSpaceFormController {
     }
 
     @PostMapping("/venepaikka/varaus/{reservationId}/validate")
+    @ResponseBody
     fun validateForm(
         @PathVariable reservationId: Int,
         @Valid @ModelAttribute("input") input: ReservationInput,
@@ -119,7 +128,7 @@ class BoatSpaceFormController {
         val reservation = reservationService.getReservationWithCitizen(reservationId)
         if (reservation == null) return redirectUrl("/")
 
-        return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+        return renderBoatSpaceReservationApplication(reservation, citizen, input)
     }
 
     @GetMapping("/venepaikka/varaus/{reservationId}/vahvistus")
@@ -141,14 +150,13 @@ class BoatSpaceFormController {
         @Valid @ModelAttribute("input") input: ReservationInput,
         bindingResult: BindingResult,
         request: HttpServletRequest,
-        model: Model,
     ): String {
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
 
         if (bindingResult.hasErrors()) {
             val reservation = reservationService.getReservationWithCitizen(reservationId)
             if (reservation == null) return redirectUrl("/")
-            return renderBoatSpaceReservationApplication(reservation, citizen, model, input)
+            return renderBoatSpaceReservationApplication(reservation, citizen, input)
         }
 
         reservationService.reserveBoatSpace(
@@ -165,7 +173,7 @@ class BoatSpaceFormController {
                 boatName = input.boatName ?: "",
                 otherIdentification = input.otherIdentification ?: "",
                 extraInformation = input.extraInformation ?: "",
-                ownerShip = input.ownerShip!!,
+                ownerShip = input.ownership!!,
                 email = input.email!!,
                 phone = input.phone!!,
             )
@@ -217,7 +225,6 @@ class BoatSpaceFormController {
     fun renderBoatSpaceReservationApplication(
         reservation: ReservationWithDependencies,
         user: Citizen,
-        model: Model,
         input: ReservationInput,
     ): String {
         val boats =
@@ -227,34 +234,7 @@ class BoatSpaceFormController {
                     boat.updateBoatDisplayName(messageUtil)
                 }
 
-        val boatSpaceFront =
-            object {
-                val type = reservation.type
-                val section = reservation.section
-                val placeNumber = reservation.placeNumber
-                val amenity = reservation.amenity
-                val widthInMeters = reservation.widthCm.cmToM()
-                val lengthInMeters = reservation.lengthCm.cmToM()
-                val description: String = reservation.description
-                val harbor = reservation.locationName
-                val priceTotal = reservation.priceInEuro
-                val priceAlv = reservation.alvPriceInEuro
-                val priceWithoutAlv = reservation.priceWithoutAlvInEuro
-            }
-
-        model.addAttribute(
-            "reservationTimeInSeconds",
-            getReservationTimeInSeconds(reservation.created)
-        )
-        model.addAttribute("boatTypes", listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki"))
-        model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
-        model.addAttribute("input", input)
-        model.addAttribute("boatSpace", boatSpaceFront)
-        model.addAttribute("boats", boats)
-        model.addAttribute("user", user)
-
-        model.addAttribute(
-            "showSizeWarning",
+        val showBoatSizeWarning =
             showBoatSizeWarning(
                 input.width?.mToCm(),
                 input.length?.mToCm(),
@@ -262,9 +242,20 @@ class BoatSpaceFormController {
                 reservation.widthCm,
                 reservation.lengthCm
             )
-        )
 
-        return "boat-space-form"
+        return layout.generateLayout(
+            true,
+            "",
+            (
+                boatSpaceForm.boatSpaceForm(
+                    reservation,
+                    boats,
+                    user,
+                    input,
+                    showBoatSizeWarning
+                )
+            )
+        )
     }
 
     private fun showBoatSizeWarning(
@@ -352,7 +343,7 @@ data class ReservationInput(
     val otherIdentification: String?,
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
-    val ownerShip: OwnershipStatus?,
+    val ownership: OwnershipStatus?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
     val email: String?,
@@ -383,7 +374,7 @@ data class ReservationInput(
                 boatName = null,
                 otherIdentification = null,
                 extraInformation = null,
-                ownerShip = OwnershipStatus.Owner,
+                ownership = OwnershipStatus.Owner,
                 email = user.email,
                 phone = user.phone,
                 agreeToRules = false,

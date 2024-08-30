@@ -7,21 +7,22 @@ import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.views.EditBoat
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @Controller
 @RequestMapping("/virkailija")
 class CitizenUserController {
+    @Autowired
+    private lateinit var editBoat: EditBoat
+
     @Autowired
     lateinit var jdbi: Jdbi
 
@@ -54,6 +55,7 @@ class CitizenUserController {
     }
 
     @GetMapping("/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
+    @ResponseBody
     fun boatEditPage(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
@@ -71,7 +73,15 @@ class CitizenUserController {
         model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
 
         model.addAttribute("errors", mutableMapOf<String, String>())
-        return "employee/edit-boat"
+        return editBoat.editBoatForm(
+            toUpdateForm(boat),
+            mutableMapOf(),
+            citizenId,
+            BoatType.entries.map {
+                it.toString()
+            },
+            listOf("Owner", "User", "CoOwner", "FutureOwner")
+        )
     }
 
     fun toUpdateForm(boat: Boat): BoatUpdateForm =
@@ -146,7 +156,15 @@ class CitizenUserController {
             model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
             model.addAttribute("boat", input)
 
-            return "employee/edit-boat"
+            return editBoat.editBoatForm(
+                input,
+                errors,
+                citizenId,
+                BoatType.entries.map {
+                    it.toString()
+                },
+                listOf("Owner", "User", "CoOwner", "FutureOwner")
+            )
         }
 
         val updatedBoat =
