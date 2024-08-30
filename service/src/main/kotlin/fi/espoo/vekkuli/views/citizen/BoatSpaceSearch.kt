@@ -54,7 +54,7 @@ class BoatSpaceSearch {
                 <div class="column is-half pb-none">
                     <label class="checkbox">
                         <input name="amenities" id="${option.toString().lowercase()}-checkbox" value="$option" type="checkbox"/>
-                        ${t("boatSpaces.amenityOption.$option")}
+                        <span>${t("boatSpaces.amenityOption.$option")}</span>
                     </label>
                 </div>
                 """.trimIndent()
@@ -72,7 +72,7 @@ class BoatSpaceSearch {
                 <div class="column is-half pb-none">
                     <label class="checkbox">
                         <input name="harbor" id="${location.name.lowercase()}-checkbox" value="${location.id}" type="checkbox"/>
-                        ${location.name}
+                        <span>${location.name}</span>
                     </label>
                 </div>
                 """.trimIndent()

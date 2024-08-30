@@ -3,14 +3,17 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
-import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.getLocations
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.views.citizen.BoatSpaceSearch
+import fi.espoo.vekkuli.views.citizen.Layout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 
 data class BoatFilter(
     val width: Double?,
@@ -42,7 +46,14 @@ class BoatSpaceSearchController {
     @Autowired
     lateinit var citizenService: CitizenService
 
+    @Autowired
+    lateinit var boatSpaceSearch: BoatSpaceSearch
+
+    @Autowired
+    lateinit var layout: Layout
+
     @RequestMapping("/venepaikat")
+    @ResponseBody
     fun boatSpaceSearchPage(
         request: HttpServletRequest,
         model: Model
@@ -70,7 +81,11 @@ class BoatSpaceSearchController {
         )
         model.addAttribute("locations", locations)
 
-        return "boat-space-search"
+        return layout.generateLayout(
+            request.getAuthenticatedUser() != null,
+            citizen?.fullName,
+            boatSpaceSearch.render(locations)
+        )
     }
 
     @RequestMapping("/partial/vapaat-paikat")
