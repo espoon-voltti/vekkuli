@@ -223,6 +223,8 @@ class BoatSpaceForm {
                 "boatApplication.email",
                 "email",
                 input.email,
+                true,
+                pattern = Pair(".+@.+\\..+", "validation.email")
             )
 
         val phone =

@@ -33,13 +33,17 @@ const validation = (function () {
             errorMessageElement.style.visibility = 'hidden';
           }
         }
+      }
+
+      const patternErrorMessageElement = document.getElementById(`${field.id}-pattern-error`);
+      if(patternErrorMessageElement) {
         if (isValid && field.hasAttribute('data-pattern')) {
           const pattern = new RegExp(field.getAttribute('data-pattern'));
           if (!pattern.test(field.value)) {
-            errorMessageElement.style.visibility = 'visible';
+            patternErrorMessageElement.style.visibility = 'visible';
             return false
           } else {
-            errorMessageElement.style.visibility = 'hidden';
+            patternErrorMessageElement.style.visibility = 'hidden';
           }
         }
       }
