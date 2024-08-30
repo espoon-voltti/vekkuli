@@ -101,6 +101,9 @@ class EditBoat {
                   method="post" 
                   hx-patch="/virkailija/kayttaja/$citizenId/vene/${boat.id}"
                   novalidate
+                  hx-target="#citizen-details"
+                  hx-select="#citizen-details"
+                  hx-swap="outerHTML"
             >
                 <input type="hidden" name="id" value="${boat.id}" />
                 <div class="columns is-vcentered">
@@ -147,13 +150,12 @@ class EditBoat {
                             hx-get="/virkailija/kayttaja/$citizenId"
                             hx-target="#citizen-details"
                             hx-select="#citizen-details"
+                            hx-swap="outerHTML"
                     >${formComponents.t("cancel")}</button>
                     <button
                             id="submit"
                             class="button is-primary"
                             type="submit"
-                            hx-target="#citizen-details"
-                            hx-select="#citizen-details"
                     >${formComponents.t("citizenDetails.saveChanges")}</button>
                 </div>
             </form>
