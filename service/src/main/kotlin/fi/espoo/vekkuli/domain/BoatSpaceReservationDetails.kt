@@ -27,6 +27,7 @@ data class BoatSpaceReservationDetails(
     val registrationCode: String?,
     val boatOwnership: OwnershipStatus?,
     val boatRegistrationCode: String?,
+    val boatId: Int,
     val boatName: String?,
     val boatWidthCm: Int,
     val boatLengthCm: Int,
@@ -39,6 +40,7 @@ data class BoatSpaceReservationDetails(
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
     val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice,
+    val warnings: Set<String> = emptySet()
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
@@ -56,6 +58,8 @@ data class BoatSpaceReservationDetails(
         get() = getAlvPriceInCents(priceCents).centsToEuro()
     val priceWithoutAlvInEuro: Double
         get() = (priceCents - getAlvPriceInCents(priceCents)).centsToEuro()
-    val showOwnershipWarning: Boolean
-        get() = boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner
+
+    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+
+    fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }

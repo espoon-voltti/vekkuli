@@ -9,9 +9,7 @@ class FormComponents {
     @Autowired
     lateinit var messageUtil: MessageUtil
 
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun textInput(
         labelKey: String,
@@ -118,14 +116,14 @@ class FormComponents {
     fun select(
         labelKey: String,
         id: String,
-        value: String?,
+        selectedValue: String?,
         options: List<Pair<String, String>>,
         required: Boolean? = false,
     ): String {
         //language=HTML
         val opts =
-            options.joinToString("\n") { (key, value) ->
-                """<option value="$key" ${if (key == value) "selected" else ""}>$value</option>"""
+            options.joinToString("\n") { (value, text) ->
+                """<option value="$value" ${if (value == selectedValue) "selected" else ""}>$text</option>"""
             }
 
         //language=HTML

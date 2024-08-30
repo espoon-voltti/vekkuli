@@ -119,7 +119,12 @@
                     hx-select=".section"
                 >
                     <td th:text="${result.locationName}">Kivenlahti</td>
-                    <td th:text="${result.place}">A135</td>
+                    <td>
+                        <span th:text="${result.place}">A135</span>
+                        <span class="icon ml-s" th:if="${result.hasWarning('BoatWidth') || result.hasWarning('BoatLength')}">
+                            <div th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
+                        </span>
+                    </td>
                     <td th:text="#{${'boatSpaces.type' + result.type + 'Option'}}">Laituripaikka</td>
                     <td><a th:href="|/virkailija/kayttaja/${result.citizenId}|"><span
                             th:text="${result.firstName}">Veikko</span><br /><span
@@ -132,10 +137,8 @@
                     <td class="has-text-centered">
                         <div class="is-flex is-align-items-center is-justify-content-center">
                             <p th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</p>
-                            <span class="icon ml-s">
-                                <div th:if="${result.showOwnershipWarning}">
+                            <span class="icon ml-s" th:if="${result.hasWarning('BoatOwnership')}">
                                 <div th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
-                                    </div>
                             </span>
                         </div>
                     </td>

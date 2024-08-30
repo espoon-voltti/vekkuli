@@ -8,9 +8,10 @@ data class Dimensions(
 )
 
 enum class ReservationWarningType {
-    BoatDimensions,
-    BoatFutureOwner,
-    BoatCoOwner
+    BoatWidth,
+    BoatLength,
+    BoatOwnership,
+    BoatWeight,
 }
 
 object BoatSpaceConfig {
@@ -20,20 +21,24 @@ object BoatSpaceConfig {
 
     const val MIN_WIDTH_ADJUSTMENT_CM = 40
 
-    const val BUOY_WIDTH_ADJUSTMENT_CM = 40
-    const val BUOY_LENGTH_ADJUSTMENT_CM = 100
+    // No restrictions for buoys. We use large negative values to
+    // make sure the boat always fits
+    const val BUOY_WIDTH_ADJUSTMENT_CM = -100000
+    const val BUOY_LENGTH_ADJUSTMENT_CM = -100000
 
     const val BEAM_WIDTH_ADJUSTMENT_CM = 40
-    const val BEAM_LENGTH_ADJUSTMENT_CM = 100
+    const val BEAM_LENGTH_ADJUSTMENT_CM = -100
 
     const val WALK_BEAM_WIDTH_ADJUSTMENT_CM = 75
-    const val WALK_BEAM_LENGTH_ADJUSTMENT_CM = 100
+    const val WALK_BEAM_LENGTH_ADJUSTMENT_CM = -100
 
     const val REAR_BUOY_WIDTH_ADJUSTMENT_CM = 50
     const val REAR_BUOY_LENGTH_ADJUSTMENT_CM = 300
 
     // Boat length after which a buoy is always needed
     const val BOAT_LENGTH_THRESHOLD_CM = 1500
+
+    const val BOAT_WEIGHT_THRESHOLD_KG = 10000
 
     const val EMAIL_SENDER = "venepaikat@espoo.fi"
 
@@ -68,5 +73,29 @@ object BoatSpaceConfig {
         }
         val requiredDimensions = getRequiredDimensions(amenity, boat)
         return requiredDimensions.width <= space.width && requiredDimensions.length <= space.length
+    }
+
+    fun isWidthOk(
+        space: Dimensions,
+        amenity: BoatSpaceAmenity,
+        boat: Dimensions
+    ): Boolean {
+        if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+            return false
+        }
+        val requiredDimensions = getRequiredDimensions(amenity, boat)
+        return requiredDimensions.width <= space.width
+    }
+
+    fun isLengthOk(
+        space: Dimensions,
+        amenity: BoatSpaceAmenity,
+        boat: Dimensions
+    ): Boolean {
+        if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+            return false
+        }
+        val requiredDimensions = getRequiredDimensions(amenity, boat)
+        return requiredDimensions.length <= space.length
     }
 }
