@@ -16,6 +16,12 @@ import java.util.*
 class JdbiBoatSpaceReservationRepository(
     private val jdbi: Jdbi
 ) : BoatSpaceReservationRepository {
+    override fun deleteAllReservations() {
+        jdbi.withHandleUnchecked { handle ->
+            handle.execute("DELETE FROM boat_space_reservation")
+        }
+    }
+
     override fun getBoatSpaceReservationIdForPayment(id: UUID): Int =
         jdbi.withHandleUnchecked { handle ->
             val query =
