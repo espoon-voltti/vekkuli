@@ -112,7 +112,7 @@ class CitizenUserController {
         val otherIdentifier: String,
         val extraInformation: String,
         val ownership: OwnershipStatus,
-        val warnings: Set<String>,
+        val warnings: Set<String> = emptySet(),
     ) {
         fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 
