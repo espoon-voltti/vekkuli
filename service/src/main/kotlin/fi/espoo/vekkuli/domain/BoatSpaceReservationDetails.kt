@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.utils.centsToEuro
 import fi.espoo.vekkuli.utils.cmToM
 import java.time.LocalDate
 
@@ -52,12 +51,6 @@ data class BoatSpaceReservationDetails(
         get() = boatSpaceLengthCm.cmToM()
     val boatSpaceWidthInM: Double
         get() = boatSpaceWidthCm.cmToM()
-    val priceInEuro: Double
-        get() = priceCents.centsToEuro()
-    val alvPriceInEuro: Double
-        get() = getAlvPriceInCents(priceCents).centsToEuro()
-    val priceWithoutAlvInEuro: Double
-        get() = (priceCents - getAlvPriceInCents(priceCents)).centsToEuro()
 
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 

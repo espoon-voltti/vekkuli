@@ -28,7 +28,7 @@ data class BoatSpaceReservation(
     val citizenId: UUID,
 )
 
-fun getAlvPriceInCents(priceCents: Int) = (priceCents / (1.0 + (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100.0))).roundToInt()
+fun getPriceWithoutAlv(priceCents: Int) = (priceCents / (1.0 + (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100.0))).roundToInt()
 
 data class ReservationWithDependencies(
     val id: Int,
@@ -57,9 +57,9 @@ data class ReservationWithDependencies(
     val priceInEuro: Double
         get() = priceCents.centsToEuro()
     val alvPriceInEuro: Double
-        get() = getAlvPriceInCents(priceCents).centsToEuro()
+        get() = (priceCents - getPriceWithoutAlv(priceCents)).centsToEuro()
     val priceWithoutAlvInEuro: Double
-        get() = (priceCents - getAlvPriceInCents(priceCents)).centsToEuro()
+        get() = getPriceWithoutAlv(priceCents).centsToEuro()
 }
 
 data class BoatSpaceReservationItem(
