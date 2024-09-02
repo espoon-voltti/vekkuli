@@ -53,7 +53,7 @@ class BoatSpaceSearchController {
 
     @RequestMapping("/venepaikat")
     @ResponseBody
-    fun boatSpaceSearchPage(request: HttpServletRequest,): String {
+    fun boatSpaceSearchPage(request: HttpServletRequest): String {
         val citizen = getCitizen(request, citizenService)
         if (citizen != null) {
             val reservation =
