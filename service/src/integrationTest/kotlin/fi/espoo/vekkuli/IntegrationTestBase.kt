@@ -5,11 +5,13 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
+@ActiveProfiles("test")
 abstract class IntegrationTestBase {
     @Autowired
     protected lateinit var jdbi: Jdbi
@@ -17,5 +19,10 @@ abstract class IntegrationTestBase {
     @BeforeAll
     fun beforeAllSuper() {
         createAndSeedDatabase(jdbi)
+    }
+
+    @BeforeEach
+    fun resetDatabase() {
+        deleteAllReservations(jdbi)
     }
 }
