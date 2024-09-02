@@ -115,7 +115,7 @@ class BoatSpaceSearch {
                                         <label class="label">Haettava paikka</label>
                                         <div class="control">
                                             <label class="radio">
-                                                <input type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"/>
+                                                <input type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip" checked/>
                                                 ${t("boatSpaces.typeSlipOption")}
                                             </label>
                                             <label class="radio">
