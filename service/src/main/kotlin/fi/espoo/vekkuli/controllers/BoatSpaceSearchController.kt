@@ -20,7 +20,6 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
@@ -54,10 +53,7 @@ class BoatSpaceSearchController {
 
     @RequestMapping("/venepaikat")
     @ResponseBody
-    fun boatSpaceSearchPage(
-        request: HttpServletRequest,
-        model: Model
-    ): String {
+    fun boatSpaceSearchPage(request: HttpServletRequest,): String {
         val citizen = getCitizen(request, citizenService)
         if (citizen != null) {
             val reservation =
@@ -71,16 +67,6 @@ class BoatSpaceSearchController {
             jdbi.inTransactionUnchecked { tx ->
                 tx.getLocations()
             }
-        model.addAttribute(
-            "amenities",
-            BoatSpaceAmenity.entries.map { it.toString() }
-        )
-        model.addAttribute(
-            "boatTypes",
-            BoatType.entries.map { it.toString() }
-        )
-        model.addAttribute("locations", locations)
-
         return layout.generateLayout(
             request.getAuthenticatedUser() != null,
             citizen?.fullName,
@@ -89,6 +75,7 @@ class BoatSpaceSearchController {
     }
 
     @RequestMapping("/partial/vapaat-paikat")
+    @ResponseBody
     fun searchResultPartial(
         @RequestParam(required = false) boatType: BoatType?,
         @RequestParam @Min(0) width: Double?,
@@ -96,25 +83,27 @@ class BoatSpaceSearchController {
         @RequestParam amenities: List<BoatSpaceAmenity>?,
         @RequestParam boatSpaceType: BoatSpaceType?,
         @RequestParam harbor: List<String>?,
-        model: Model,
         request: HttpServletRequest
     ): String {
+        val params =
+            BoatSpaceFilter(
+                boatType,
+                width?.mToCm(),
+                length?.mToCm(),
+                amenities,
+                boatSpaceType,
+                harbor?.map { s -> s.toInt() }
+            )
         val harbors =
             boatSpaceService.getUnreservedBoatSpaceOptions(
-                BoatSpaceFilter(
-                    boatType,
-                    width?.mToCm(),
-                    length?.mToCm(),
-                    amenities,
-                    boatSpaceType,
-                    harbor?.map { s -> s.toInt() }
-                )
+                params
             )
 
-        model.addAttribute("harbors", harbors.first)
-        model.addAttribute("spaceCount", harbors.second)
-        model.addAttribute("boat", BoatFilter(width, length, boatType))
-        model.addAttribute("isAuthenticated", request.getAuthenticatedUser() != null)
-        return "boat-space-search-results"
+        return boatSpaceSearch.renderResults(
+            harbors.first,
+            BoatFilter(width, length, boatType),
+            harbors.second,
+            request.getAuthenticatedUser() != null
+        )
     }
 }

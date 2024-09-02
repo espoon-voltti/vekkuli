@@ -16,6 +16,7 @@ import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
 import jakarta.validation.constraints.*
 import org.jdbi.v3.core.Jdbi
@@ -65,15 +66,18 @@ class BoatSpaceFormController {
         @RequestParam width: Double?,
         @RequestParam length: Double?,
         request: HttpServletRequest,
+        response: HttpServletResponse,
         model: Model,
     ): String {
         val user = getCitizen(request, citizenService)
         val reservation =
             reservationService.getReservationWithCitizen(reservationId)
 
-        if (reservation == null) return redirectUrl("/")
+        if (reservation == null) {
+            response.sendRedirect("/kuntalainen/venepaikat")
+        }
 
-        if (user == null || reservation.citizenId != user.id) {
+        if (user == null || reservation?.citizenId != user.id) {
             throw UnauthorizedException()
         }
 

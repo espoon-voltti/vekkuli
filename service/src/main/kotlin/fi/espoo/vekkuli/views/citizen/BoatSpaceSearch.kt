@@ -2,7 +2,9 @@ package fi.espoo.vekkuli.views.citizen
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.controllers.BoatFilter
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.Harbor
 import fi.espoo.vekkuli.domain.Location
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -53,7 +55,7 @@ class BoatSpaceSearch {
                 """
                 <div class="column is-half pb-none">
                     <label class="checkbox">
-                        <input name="amenities" id="${option.toString().lowercase()}-checkbox" value="$option" type="checkbox"/>
+                        <input name="amenities" id="${option.toString().decapitalize()}-checkbox" value="$option" type="checkbox"/>
                         <span>${t("boatSpaces.amenityOption.$option")}</span>
                     </label>
                 </div>
@@ -71,7 +73,7 @@ class BoatSpaceSearch {
                 """
                 <div class="column is-half pb-none">
                     <label class="checkbox">
-                        <input name="harbor" id="${location.name.lowercase()}-checkbox" value="${location.id}" type="checkbox"/>
+                        <input name="harbor" id="${location.name.decapitalize()}-checkbox" value="${location.id}" type="checkbox"/>
                         <span>${location.name}</span>
                     </label>
                 </div>
@@ -156,4 +158,140 @@ class BoatSpaceSearch {
             </section>
             """.trimIndent()
     }
+
+    fun renderResults(
+        harbors: List<Harbor>,
+        boat: BoatFilter,
+        spaceCount: Int,
+        isAuthenticated: Boolean
+    ): String {
+        val rowsBuilder = StringBuilder()
+
+        harbors.forEach { harbor ->
+            rowsBuilder.append(
+                """
+                <div class="block" x-data="{ showAll: false }">
+                    <h2 class="label harbor-header">${harbor.location.name}</h2>
+                    <table class="table is-striped is-hoverable is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>${t("boatSpaces.size")}</th>
+                                <th>${t("boatSpaces.amenityLabel")}</th>
+                                <th>${t("boatSpaces.price")}</th>
+                                <th>${t("boatSpaces.place")}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                """.trimIndent()
+            )
+
+            harbor.boatSpaces.forEachIndexed { index, result ->
+                rowsBuilder.append(
+                    """
+                    <tr ${if (index > 3) "class=\"is-hidden\"" else ""}>
+                        <td>${result.formattedSizes}</td>
+                        <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
+                        <td>${result.priceInEuro} &euro;</td>
+                        <td>${result.section}${result.placeNumber}</td>
+                        <td>
+                    """.trimIndent()
+                )
+
+                if (isAuthenticated) {
+                    rowsBuilder.append(
+                        """
+                        <form action="/kuntalainen/venepaikka/varaa/${result.id}" method="get">
+                            <input type="hidden" name="boatType" value="${boat.type ?: ""}" />
+                            <input type="hidden" name="width" value="${boat.width ?: ""}" />
+                            <input type="hidden" name="length" value="${boat.length ?: ""}" />
+                            <button type="submit" class="button is-primary reserve-button">
+                                ${t("boatSpaces.reserve")}
+                            </button>
+                        </form>
+                        """.trimIndent()
+                    )
+                } else {
+                    rowsBuilder.append(
+                        """
+                        <a class="button is-secondary reserve-button" @click="
+                            openModal = true; 
+                            boatSpace = {
+                                id: ${result.id},
+                                place: '${harbor.location.name} ${result.section}${result.placeNumber}',
+                                size: '${result.formattedSizes}',
+                                amenity: '${t("boatSpaces.amenityOption.${result.amenity}")}',
+                                price: '${result.priceInEuro}'
+                            };">
+                            ${t("boatSpaces.reserve")}
+                        </a>
+                        """.trimIndent()
+                    )
+                }
+
+                rowsBuilder.append("</td></tr>")
+            }
+
+            rowsBuilder.append("</tbody></table>")
+
+            if (harbor.boatSpaces.size > 3) {
+                rowsBuilder.append(
+                    """
+                    <div>
+                        <a @click="showAll = !showAll" 
+                           x-text="showAll ? '${t("showLess")}' : '${t("showMore")}'"></a>
+                    </div>
+                    """.trimIndent()
+                )
+            }
+
+            rowsBuilder.append("</div>")
+        }
+
+        // Main HTML template with placeholders
+        val template =
+            """
+            <div x-data="{
+                openModal: false,
+                boatSpace: {
+                    id: 0
+                } }">
+                <h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>$spaceCount</span></h3>
+                <!-- Insert dynamically generated rows here -->
+                $rowsBuilder
+                ${if (!isAuthenticated) {
+                """
+                <div id="auth-modal" class="modal" x-show="openModal" style="display:none;">
+                    <div class="modal-underlay" @click="openModal = false"></div>
+                    <div class="modal-content">
+                        <p class="block has-text-left">${t("auth.reservingBoatSpace")}</p>
+                        <p class="has-text-left" x-text="boatSpace.place"></p>
+                        <p class="has-text-left" x-text="boatSpace.size"></p>
+                        <p class="has-text-left" x-text="boatSpace.amenity"></p>
+                        <p class="has-text-left block" x-text="boatSpace.price + ' &euro;'"></p>
+                        <p class="has-text-left block">${t("auth.reservingRequiresAuth")}</p>
+                        <button id="auth-modal-cancel" class="button" @click="openModal = false" type="button">
+                            ${t("cancel")}
+                        </button>
+                        <a id="auth-modal-continue" class="button is-primary" 
+                           x-bind:href="'/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikka/varaa/' + boatSpace.id">
+                            ${t("auth.continue")}
+                        </a>
+                    </div>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }}
+            </div>
+            """.trimIndent()
+
+        return template
+    }
+}
+
+fun String.decapitalize(): String {
+    if (isEmpty()) {
+        return this
+    }
+    return this.substring(0, 1).lowercase() + this.substring(1)
 }
