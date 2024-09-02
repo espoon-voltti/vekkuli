@@ -26,6 +26,6 @@ abstract class IntegrationTestBase {
 
     @BeforeEach
     fun resetDatabase() {
-        deleteAllReservations(jdbi)
+        // Override this method in subclasses to reset the database before each test
     }
 }
