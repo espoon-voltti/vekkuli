@@ -188,11 +188,7 @@ class BoatSpaceForm {
                 "boatSpaceReservation.title.otherIdentifier",
                 "otherIdentification",
                 input.otherIdentification,
-                attributes =
-                    """
-                    :data-required="noReg ? true : null"
-                    """.trimIndent(),
-                labelAttributes = """:class="noReg ? 'required' : '' """"
+                required = true
             )
 
         val extraInformationInput =
@@ -316,8 +312,8 @@ class BoatSpaceForm {
                                         <input type="checkbox" 
                                                 name="noRegistrationNumber" 
                                                 id="noRegistrationNumber" 
-                                                @click="noReg = ! noReg"
-                                                ${if (input.noRegistrationNumber == null) "checked" else ""}
+                                                @click="noReg = !noReg"
+                                                ${if (input.noRegistrationNumber == true) "checked" else ""}
                                                 />
                                         <span>${t("boatApplication.noRegistrationNumber")}</span>
                                    </label> 
