@@ -68,8 +68,7 @@ class BoatSpaceForm {
                        name="boatId"
                        ${if (input.boatId == boat.id) "checked" else ""}
                 />
-                <label for="${boat.id}"
-                       th:text="${boat.displayName}">Mun vene</label>
+                <label for="${boat.id}">${boat.displayName}</label>
             </div>
             """.trimIndent()
 
