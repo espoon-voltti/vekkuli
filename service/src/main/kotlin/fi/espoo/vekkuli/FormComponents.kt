@@ -17,13 +17,14 @@ class FormComponents {
         value: String?,
         required: Boolean? = false,
         pattern: Pair<String, String>? = null,
-        attributes: String = ""
+        attributes: String = "",
+        labelAttributes: String = ""
     ): String {
         //language=HTML
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
+                    <label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes >${t(labelKey)}</label>
                     <input
                         class="input"
                         ${if (required == true) "data-required" else ""}

@@ -14,7 +14,7 @@ import java.util.*
 
 @Repository
 class JdbiBoatSpaceReservationRepository(
-    private val jdbi: Jdbi
+    private val jdbi: Jdbi,
 ) : BoatSpaceReservationRepository {
     override fun getBoatSpaceReservationIdForPayment(id: UUID): Int =
         jdbi.withHandleUnchecked { handle ->
@@ -45,6 +45,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -83,7 +84,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
-            query.mapTo<BoatSpaceReservationDetails>().one()
+            query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
         }
 
     override fun updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int? =
@@ -155,7 +156,7 @@ class JdbiBoatSpaceReservationRepository(
 
     override fun removeBoatSpaceReservation(
         id: Int,
-        citizenId: UUID
+        citizenId: UUID,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -243,7 +244,7 @@ class JdbiBoatSpaceReservationRepository(
 
     override fun getBoatSpaceReservation(
         reservationId: Int,
-        citizenId: UUID
+        citizenId: UUID,
     ): BoatSpaceReservationDetails? =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -326,8 +327,8 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location_id = location.id
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     WHERE
-                      bsr.status = 'Confirmed'
-                    AND ${filter.toSql().ifBlank { "true" }}
+                        (bsr.status = 'Confirmed' OR bsr.status = 'Payment')
+                        AND ${filter.toSql().ifBlank { "true" }}
                     ${getSortingSql(params)}
                     """.trimIndent()
                 )
@@ -366,14 +367,13 @@ class JdbiBoatSpaceReservationRepository(
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
-        status: ReservationStatus
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (citizen_id, boat_space_id, start_date, end_date, status)
-                    VALUES (:citizenId, :boatSpaceId, :startDate, :endDate, :status)
+                    INSERT INTO boat_space_reservation (citizen_id, boat_space_id, start_date, end_date)
+                    VALUES (:citizenId, :boatSpaceId, :startDate, :endDate)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -381,13 +381,12 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
-            query.bind("status", status)
             query.mapTo<BoatSpaceReservation>().one()
         }
 
     override fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
-        boatId: Int
+        boatId: Int,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -411,7 +410,7 @@ class JdbiBoatSpaceReservationRepository(
     override fun updateReservationWithPayment(
         reservationId: Int,
         paymentId: UUID,
-        citizenId: UUID
+        citizenId: UUID,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
