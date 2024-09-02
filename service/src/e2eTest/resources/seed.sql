@@ -36,7 +36,9 @@ ON CONFLICT (national_id) DO NOTHING;
 INSERT INTO boat (registration_code, citizen_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
 VALUES
     ('A1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon vene', 120, 400, 20, 180, 'OutboardMotor', 'Terhi 400', '', 'Owner'),
-    ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner');
+    ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner'),
+    ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner');
+
 
 INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) VALUES
     ('1', 'Slip', '1', '2', 'B', '1', 'Beam', '250', '450', 'none'),

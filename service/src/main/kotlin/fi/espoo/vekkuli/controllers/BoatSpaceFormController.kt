@@ -208,7 +208,6 @@ class BoatSpaceFormController {
                         spaceId,
                         today,
                         endOfYear,
-                        ReservationStatus.Info
                     ).id
             }
 

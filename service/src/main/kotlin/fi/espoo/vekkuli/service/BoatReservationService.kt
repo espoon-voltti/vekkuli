@@ -8,9 +8,6 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.mToCm
-import jakarta.validation.constraints.*
-import org.jetbrains.annotations.TestOnly
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -28,11 +25,7 @@ sealed class PaymentProcessResult {
     ) : PaymentProcessResult()
 }
 
-@Transactional
 interface BoatSpaceReservationRepository {
-    @Profile("test")
-    fun deleteAllReservations()
-
     fun getBoatSpaceReservationIdForPayment(id: UUID): Int
 
     fun getBoatSpaceReservationWithPaymentId(id: UUID): BoatSpaceReservationDetails?
@@ -62,7 +55,6 @@ interface BoatSpaceReservationRepository {
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
-        status: ReservationStatus,
     ): BoatSpaceReservation
 
     fun updateBoatInBoatSpaceReservation(
@@ -182,18 +174,6 @@ class BoatReservationService(
         )
 
         return PaymentProcessResult.Success(reservation)
-    }
-
-    /**
-     * **WARNING:** This function is for test purposes only.
-     *
-     * It clears all reservations from the database. Use only in test environments.
-     * The function is restricted to the 'test' profile and should not be used in production code.
-     */
-    @TestOnly
-    @Profile("test")
-    fun deleteAllReservations() {
-        boatSpaceReservationRepo.deleteAllReservations()
     }
 
     fun handleReservationPaymentResult(
@@ -332,14 +312,12 @@ class BoatReservationService(
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
-        status: ReservationStatus,
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservation(
             citizenId,
             boatSpaceId,
             startDate,
             endDate,
-            status
         )
 
     fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> =
