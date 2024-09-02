@@ -55,9 +55,9 @@ data class BoatSpaceReservationDetails(
     val priceInEuro: Double
         get() = priceCents.centsToEuro()
     val alvPriceInEuro: Double
-        get() = getPriceWithoutAlv(priceCents).centsToEuro()
-    val priceWithoutAlvInEuro: Double
         get() = (priceCents - getPriceWithoutAlv(priceCents)).centsToEuro()
+    val priceWithoutAlvInEuro: Double
+        get() = getPriceWithoutAlv(priceCents).centsToEuro()
 
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 
