@@ -189,6 +189,11 @@ class BoatSpaceForm {
                 "boatSpaceReservation.title.otherIdentifier",
                 "otherIdentification",
                 input.otherIdentification,
+                attributes =
+                    """
+                    :data-required="noReg ? true : null"
+                    """.trimIndent(),
+                labelAttributes = """:class="noReg ? 'required' : '' """"
             )
 
         val extraInformationInput =
@@ -239,12 +244,22 @@ class BoatSpaceForm {
                 "boatApplication.phone",
                 "phone",
                 input.phone,
+                required = true
             )
 
         // language=HTML
         return """
             <section class="section">
                 <div class="container" id="container" x-data="{ modalOpen: false }"> 
+                
+                    <div class="container">
+                        <button x-on:click="modalOpen = true" class="icon-text">
+                            <span class="icon">
+                                <div></div>
+                            </span>
+                            <span >${t("boatSpaces.goBack")}</span>
+                        </button>
+                    </div> 
                     ${stepIndicator.render(2)}
                     ${sessionTimer.render(reservationTimeInSeconds)}
                     <form
@@ -288,10 +303,10 @@ class BoatSpaceForm {
                         
                         
                         
-                        <div class="block">
+                        <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
                             
                            $boatNameInput
-                           <div class="columns" x-data="{ noReg:false }">
+                           <div class="columns" >
                                <template x-if="!noReg">
                                     <div class="column">
                                         $registrationNumberInput
@@ -299,7 +314,12 @@ class BoatSpaceForm {
                                </template>
                                <div class="column">
                                    <label class="checkbox">
-                                        <input type="checkbox" name="noRegistrationNumber" id="noRegistrationNumber" @click="noReg = ! noReg"/>
+                                        <input type="checkbox" 
+                                                name="noRegistrationNumber" 
+                                                id="noRegistrationNumber" 
+                                                @click="noReg = ! noReg"
+                                                ${if (input.noRegistrationNumber == null) "checked" else ""}
+                                                />
                                         <span>${t("boatApplication.noRegistrationNumber")}</span>
                                    </label> 
                                </div>
@@ -398,14 +418,6 @@ class BoatSpaceForm {
                         </div>
                     </div>
                     
-                    <div class="container" th:fragment="backButton">
-                        <button x-on:click="modalOpen = true" class="icon-text">
-                            <span class="icon">
-                                <div th:replace="~{fragments/icons :: chevron-left}"></div>
-                            </span>
-                            <span th:text="#{boatSpaces.goBack}">Takaisin</span>
-                        </button>
-                    </div> 
                 </div>
             </section>
             """.trimIndent()
