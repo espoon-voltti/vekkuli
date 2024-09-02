@@ -20,7 +20,6 @@ import kotlin.test.DefaultAsserter.assertEquals
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: BoatReservationService
-    val citizenId: UUID = UUID.fromString("f5d377ea-5547-11ef-a1c7-7f2b94cf9afd")
 
     @Test
     fun `should get correct reservation with citizen`() {
