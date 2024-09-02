@@ -106,7 +106,9 @@ class BoatSpaceSearch {
                                   hx-get="/kuntalainen/partial/vapaat-paikat"
                                   hx-target="#boatSpaces"
                                   hx-swap="innerHTML"
-                                  hx-trigger="input delay:1s, change">
+                                  hx-trigger="input delay:1s, change"
+                                  hx-sync="closest #form:replace"
+                                  >
 
                                 <h2 class="subtitle" id="search-page-header">${t("boatApplication.boatPlaceSearchTitle")}</h2>
 
