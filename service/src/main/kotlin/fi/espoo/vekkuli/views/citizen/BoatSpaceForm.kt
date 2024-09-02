@@ -178,7 +178,7 @@ class BoatSpaceForm {
         val registrationNumberInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.registrationNumber",
-                "registrationNumber",
+                "boatRegistrationNumber",
                 input.boatRegistrationNumber,
                 required = true
             )

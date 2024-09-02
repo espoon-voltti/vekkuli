@@ -154,6 +154,7 @@ class BoatSpaceFormController {
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
 
         if (bindingResult.hasErrors()) {
+            println(bindingResult.allErrors.toString())
             val reservation = reservationService.getReservationWithCitizen(reservationId)
             if (reservation == null) return redirectUrl("/")
             return redirectUrl("/")
