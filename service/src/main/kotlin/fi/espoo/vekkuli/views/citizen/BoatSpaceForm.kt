@@ -245,6 +245,15 @@ class BoatSpaceForm {
         return """
             <section class="section">
                 <div class="container" id="container" x-data="{ modalOpen: false }"> 
+                
+                    <div class="container">
+                        <button x-on:click="modalOpen = true" class="icon-text">
+                            <span class="icon">
+                                <div></div>
+                            </span>
+                            <span >${t("boatSpaces.goBack")}</span>
+                        </button>
+                    </div> 
                     ${stepIndicator.render(2)}
                     ${sessionTimer.render(reservationTimeInSeconds)}
                     <form
@@ -398,14 +407,6 @@ class BoatSpaceForm {
                         </div>
                     </div>
                     
-                    <div class="container" th:fragment="backButton">
-                        <button x-on:click="modalOpen = true" class="icon-text">
-                            <span class="icon">
-                                <div th:replace="~{fragments/icons :: chevron-left}"></div>
-                            </span>
-                            <span th:text="#{boatSpaces.goBack}">Takaisin</span>
-                        </button>
-                    </div> 
                 </div>
             </section>
             """.trimIndent()
