@@ -189,6 +189,11 @@ class BoatSpaceForm {
                 "boatSpaceReservation.title.otherIdentifier",
                 "otherIdentification",
                 input.otherIdentification,
+                attributes =
+                    """
+                    :data-required="noReg ? true : null"
+                    """.trimIndent(),
+                labelAttributes = """:class="noReg ? 'required' : '' """"
             )
 
         val extraInformationInput =
@@ -239,6 +244,7 @@ class BoatSpaceForm {
                 "boatApplication.phone",
                 "phone",
                 input.phone,
+                required = true
             )
 
         // language=HTML
@@ -297,10 +303,10 @@ class BoatSpaceForm {
                         
                         
                         
-                        <div class="block">
+                        <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
                             
                            $boatNameInput
-                           <div class="columns" x-data="{ noReg:false }">
+                           <div class="columns" >
                                <template x-if="!noReg">
                                     <div class="column">
                                         $registrationNumberInput
@@ -308,7 +314,12 @@ class BoatSpaceForm {
                                </template>
                                <div class="column">
                                    <label class="checkbox">
-                                        <input type="checkbox" name="noRegistrationNumber" id="noRegistrationNumber" @click="noReg = ! noReg"/>
+                                        <input type="checkbox" 
+                                                name="noRegistrationNumber" 
+                                                id="noRegistrationNumber" 
+                                                @click="noReg = ! noReg"
+                                                ${if (input.noRegistrationNumber == null) "checked" else ""}
+                                                />
                                         <span>${t("boatApplication.noRegistrationNumber")}</span>
                                    </label> 
                                </div>
