@@ -2,6 +2,8 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,16 +13,19 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
 import java.util.*
-import kotlin.test.DefaultAsserter.assertEquals
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
+    @BeforeEach
+    override fun resetDatabase() {
+        deleteAllReservations(jdbi)
+    }
+
     @Autowired
     lateinit var reservationService: BoatReservationService
-    val citizenId: UUID = UUID.fromString("f5d377ea-5547-11ef-a1c7-7f2b94cf9afd")
 
     @Test
     fun `should get correct reservation with citizen`() {
@@ -32,8 +37,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 endDate = LocalDate.now(),
             )
         val result = reservationService.getReservationWithCitizen(madeReservation.id)
-        assertEquals("reservation is the same", madeReservation.id, result?.id)
-        assertEquals("citizen is the same", madeReservation.citizenId, result?.citizenId)
+        assertEquals(madeReservation.id, result?.id, "reservation is the same")
+        assertEquals(madeReservation.citizenId, result?.citizenId, "citizen is the same")
     }
 
     @Test
@@ -52,9 +57,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 boatId,
             )
         val reservation = reservationService.getReservationWithCitizen(madeReservation.id)
-        assertEquals("reservation is the same", madeReservation.id, updatedReservation.id)
-        assertEquals("citizen is the same", madeReservation.citizenId, updatedReservation.citizenId)
-        assertEquals("boat is updated", boatId, reservation?.boatId)
+        assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
+        assertEquals(madeReservation.citizenId, updatedReservation.citizenId, "citizen is the same")
+        assertEquals(boatId, reservation?.boatId, "boat is updated")
     }
 
     @Test
@@ -67,7 +72,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 endDate = LocalDate.now(),
             )
         val reservation = reservationService.getReservationForCitizen(citizenId)
-        assertEquals("reservation is the same", madeReservation.id, reservation?.id)
+        assertEquals(madeReservation.id, reservation?.id, "reservation is the same")
     }
 
     @Test
@@ -85,9 +90,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                     productCode = "1"
                 )
             )
-        assertEquals("reservation is the same", madeReservation.id, reservation?.id)
-        assertEquals("payment is added for correct citizen", payment.citizenId, madeReservation?.citizenId)
-        assertEquals("payment is added to the reservation", reservation?.paymentId, payment.id)
+        assertEquals(madeReservation.id, reservation?.id, "reservation is the same")
+        assertEquals(payment.citizenId, madeReservation?.citizenId, "payment is added for correct citizen")
+        assertEquals(reservation?.paymentId, payment.id, "payment is added to the reservation")
     }
 
     @Test
@@ -113,11 +118,11 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 )
             ).first()
 
-        assertEquals("Warnings should be present", 3, reservation.warnings.size) // Assuming 2 specific warnings should be added
+        assertEquals(3, reservation.warnings.size, "Warnings should be present")
         assertEquals(
-            "Correct warnings should be present",
             listOf("BoatLength", "BoatOwnership", "BoatWidth"),
-            reservation.warnings.sorted()
+            reservation.warnings.sorted(),
+            "Correct warnings should be present"
         )
     }
 
@@ -142,8 +147,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        assertEquals("reservations are out filtered correctly", 4, reservations.size)
-        assertEquals("correct reservations are returned", listOf(177, 200, 2, 1), reservations.map { it.boatSpaceId })
+        assertEquals(4, reservations.size, "reservations are out filtered correctly")
+        assertEquals(listOf(177, 200, 2, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
     }
 
     @Test
@@ -160,7 +165,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        assertEquals("reservations are filtered correctly", 3, reservations.size)
-        assertEquals("reservations are sorted by place and amenity", listOf(1, 2, 177), reservations.map { it.boatSpaceId })
+        assertEquals(3, reservations.size, "reservations are filtered correctly")
+        assertEquals(listOf(1, 2, 177), reservations.map { it.boatSpaceId }, "reservations are sorted by place and amenity")
     }
 }

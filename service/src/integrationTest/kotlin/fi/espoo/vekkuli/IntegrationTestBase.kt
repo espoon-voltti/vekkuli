@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
@@ -16,6 +17,8 @@ abstract class IntegrationTestBase {
     @Autowired
     protected lateinit var jdbi: Jdbi
 
+    val citizenId: UUID = UUID.fromString("f5d377ea-5547-11ef-a1c7-7f2b94cf9afd")
+
     @BeforeAll
     fun beforeAllSuper() {
         createAndSeedDatabase(jdbi)
@@ -23,6 +26,6 @@ abstract class IntegrationTestBase {
 
     @BeforeEach
     fun resetDatabase() {
-        deleteAllReservations(jdbi)
+        // Override this method in subclasses to reset the database before each test
     }
 }

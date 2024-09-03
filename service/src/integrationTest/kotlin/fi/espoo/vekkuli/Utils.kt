@@ -15,6 +15,18 @@ fun deleteAllReservations(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllBoats(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM boat")
+    }
+}
+
+fun deleteAllPayments(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM payment")
+    }
+}
+
 fun createReservationInConfirmedState(
     reservationService: BoatReservationService,
     citizenId: UUID,
