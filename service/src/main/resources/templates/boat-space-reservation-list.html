@@ -137,7 +137,7 @@
                     <td class="has-text-centered">
                         <div class="is-flex is-align-items-center is-justify-content-center">
                             <p th:text="#{${'boatApplication.ownershipOption.' + result.boatOwnership}}">Omistaja</p>
-                            <span class="icon ml-s" th:if="${result.hasWarning('BoatOwnership')}">
+                            <span class="icon ml-s" th:if="${result.hasWarning('BoatFutureOwner') || result.hasWarning('BoatCoOwner')}">
                                 <div th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
                             </span>
                         </div>

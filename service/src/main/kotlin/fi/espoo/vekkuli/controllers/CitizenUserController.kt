@@ -50,7 +50,7 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         model.addAttribute("reservations", boatSpaceReservations)
         val boats = boatService.getBoatsForCitizen(citizenId)
-        model.addAttribute("boats", boats.map { toUpdateForm(it) })
+        model.addAttribute("boats", boats.map { toUpdateForm(it, boatSpaceReservations) })
         return "employee/citizen-details"
     }
 
@@ -84,7 +84,10 @@ class CitizenUserController {
         )
     }
 
-    fun toUpdateForm(boat: Boat): BoatUpdateForm =
+    fun toUpdateForm(
+        boat: Boat,
+        reservations: List<BoatSpaceReservationDetails> = emptyList()
+    ): BoatUpdateForm =
         BoatUpdateForm(
             id = boat.id,
             name = boat.name ?: "",
@@ -97,7 +100,8 @@ class CitizenUserController {
             otherIdentifier = boat.otherIdentification ?: "",
             extraInformation = boat.extraInformation ?: "",
             ownership = boat.ownership,
-            warnings = boat.warnings
+            warnings = boat.warnings,
+            reservationId = reservations.find { it.boatId == boat.id }?.id
         )
 
     data class BoatUpdateForm(
@@ -113,6 +117,7 @@ class CitizenUserController {
         val extraInformation: String,
         val ownership: OwnershipStatus,
         val warnings: Set<String> = emptySet(),
+        val reservationId: Int? = null,
     ) {
         fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 

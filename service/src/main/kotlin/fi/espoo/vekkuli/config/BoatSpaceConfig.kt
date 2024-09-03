@@ -10,7 +10,8 @@ data class Dimensions(
 enum class ReservationWarningType {
     BoatWidth,
     BoatLength,
-    BoatOwnership,
+    BoatFutureOwner,
+    BoatCoOwner,
     BoatWeight,
 }
 

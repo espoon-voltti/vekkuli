@@ -175,7 +175,7 @@
         </div>
         <!-- Boats-->
         <div th:each="boat, iter : ${boats}" class="block">
-            <div th:id="|boat-${iter.index}|">
+            <div th:id="|boat-${iter.index}|" x-data="{ modalOpen: false }">
                 <div class="columns is-vcentered">
                     <div class="column is-narrow ">
                         <h4 th:text="|#{citizenDetails.boat} ${iter.index + 1}: ${boat.name}|"></h4>
@@ -205,7 +205,7 @@
                             </a>
                         </div>
                         <div class="column">
-                            <a class="is-link" th:if="${boat.hasAnyWarnings()}">
+                            <a class="is-link" th:if="${boat.hasAnyWarnings()}" x-on:click="modalOpen = true">
                                 <span class="icon ml-s">
                                     <span th:replace="~{fragments/icons :: warning-exclamation(false)}"></span>
                                 </span>
@@ -285,7 +285,7 @@
                                 <h1 th:text="${hasWarning}"></h1>
                                <span th:id="|boat-ownership-text-${iter.index}|" th:text="#{${'boatApplication.ownershipOption.' + boat.ownership}}">
                                    Olen ostamassa veneen </span>
-                                <span class="icon ml-s" th:if="${boat.hasWarning('BoatOwnership')}">
+                                <span class="icon ml-s" th:if="${boat.hasWarning('BoatCoOwner') || boat.hasWarning('BoatFutureOwner')}">
                                     <span th:replace="~{fragments/icons :: warning-exclamation(false)}"></span>
                                 </span>
                             </p>
@@ -310,9 +310,74 @@
                         </p>
                     </div>
                 </div>
+
+
+                <div th:id="|ack-modal-${iter.index}|" class="modal" x-show="modalOpen" style="display:none;" th:if="${boat.hasAnyWarnings()}">
+                    <div class="modal-underlay" @click="modalOpen = false"></div>
+                    <div class="modal-content">
+                        <form hx-post="/virkailija/venepaikat/varaukset/kuittaa-varoitus"
+                              hx-swap="none"
+                              x-on:htmx:after-request="modalOpen = false">
+                            <input type="hidden" name="boatId" th:value="${boat.id}" />
+                            <input type="hidden" name="reservationId" th:value="${boat.reservationId}" />
+                            <div class="block">
+                                <div class="field">
+                                    <h1 class="label">Valitse kuitattava tieto</h1>
+                                    <div class="control">
+
+                                        <label class="radio" th:each="warning, iter : ${boat.warnings}">
+                                            <input type="radio" name="key" th:id="|ack-warning-${warning}|" th:value="${warning}" th:text="#{${'reservationWarning.' + warning }}">
+
+                                        </label>
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="block">
+                                <h1 class="label">Lisätietoa kuittauksesta</h1>
+                                <div class="control">
+                                <textarea class="textarea" rows="1"></textarea>
+                            </div>
+                            </div>
+
+                            <div class="ack-info">
+                                <div class="info-icon" th:replace="~{fragments/icons :: warning-exclamation(false)}"></div>
+                                <div class="info-content" th:utext="#{reservationWarning.ackInfo}">
+                                    <p>Huom! Tämä toiminto ainoastaan kuittaa tiedon tarkastetuksi. Tiedot on käytävä tarvittaessa muokkaamassa erikseen.</p>
+                                </div>
+                            </div>
+
+                            <div class="block">
+                                <button id="ack-modal-cancel"
+                                        class="button"
+                                        x-on:click="modalOpen = false"
+                                        type="button">
+                                    Peruuta
+                                </button>
+                                <button
+                                        id="ack-modal-confirm"
+                                        class="button is-primary"
+                                        type="submit"
+                                >
+                                    Tallenna muutokset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
             </div>
+
+
+
         </div>
     </div>
+
+
+
 </section>
 </body>
 </html>

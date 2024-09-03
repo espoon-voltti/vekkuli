@@ -111,16 +111,17 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         )
 
         val reservation =
-            reservationService.getBoatSpaceReservations(
-                BoatSpaceReservationFilter(
-                    sortBy = BoatSpaceFilterColumn.PLACE,
-                    ascending = true,
-                )
-            ).first()
+            reservationService
+                .getBoatSpaceReservations(
+                    BoatSpaceReservationFilter(
+                        sortBy = BoatSpaceFilterColumn.PLACE,
+                        ascending = true,
+                    )
+                ).first()
 
         assertEquals(3, reservation.warnings.size, "Warnings should be present")
         assertEquals(
-            listOf("BoatLength", "BoatOwnership", "BoatWidth"),
+            listOf("BoatFutureOwner", "BoatLength", "BoatWidth"),
             reservation.warnings.sorted(),
             "Correct warnings should be present"
         )

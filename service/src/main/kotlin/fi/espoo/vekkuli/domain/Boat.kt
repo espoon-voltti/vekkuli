@@ -18,7 +18,7 @@ data class Boat(
     val extraInformation: String?,
     val ownership: OwnershipStatus,
     val displayName: String? = null,
-    val warnings: Set<String> = emptySet()
+    val warnings: Set<String> = emptySet(),
 ) {
     fun updateBoatDisplayName(messageUtil: MessageUtil): Boat =
         this.copy(
