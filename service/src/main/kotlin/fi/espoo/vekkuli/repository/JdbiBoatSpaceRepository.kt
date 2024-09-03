@@ -6,7 +6,8 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.Harbor
 import fi.espoo.vekkuli.domain.Location
-import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.service.BoatSpaceFilter
+import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.utils.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -165,7 +166,7 @@ class JdbiBoatSpaceRepository(
                     boat_space_reservation.id IS NULL
                     AND ${combinedFilter.toSql()}
                     
-                ORDER BY price, length_cm, width_cm
+                ORDER BY width_cm, length_cm 
                 """.trimIndent()
 
             val query = handle.createQuery(sql)

@@ -18,7 +18,8 @@ class FormComponents {
         required: Boolean? = false,
         pattern: Pair<String, String>? = null,
         attributes: String = "",
-        labelAttributes: String = ""
+        labelAttributes: String = "",
+        compact: Boolean = false
     ): String {
         //language=HTML
         return """
@@ -26,13 +27,13 @@ class FormComponents {
                 <div class="control">
                     <label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes >${t(labelKey)}</label>
                     <input
-                        class="input"
+                        class="input ${if (compact) "compact" else ""}"
                         ${if (required == true) "data-required" else ""}
                         ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
                         type="text"
                         id="$id"
                         name="$id"
-                        value="${value ?: ""}"
+                        ${if (value != null) "value=\"$value\"" else ""}
                         $attributes />
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
@@ -56,6 +57,7 @@ class FormComponents {
         id: String,
         value: Int?,
         required: Boolean? = false,
+        compact: Boolean = false
     ): String {
         //language=HTML
         return """
@@ -63,12 +65,13 @@ class FormComponents {
                 <div class="control">
                     <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <input
-                        class="input"
-                        ${if (required == true) "data-required" else ""}
+                        class="input ${if (compact) "compact" else ""}"
+                        ${if (required == true) "data-required " else ""}
                         type="number"
                         id="$id"
                         name="$id"
-                        value="${value ?: ""}"/>
+                        ${if (value != null) "value=\"$value\"" else ""}
+                        />
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
                             style="visibility: hidden">
@@ -86,7 +89,8 @@ class FormComponents {
         value: Double?,
         required: Boolean? = false,
         attributes: String = "",
-        step: Double? = 0.01
+        step: Double? = 0.01,
+        compact: Boolean = false
     ): String {
         //language=HTML
         return """
@@ -94,13 +98,13 @@ class FormComponents {
                 <div class="control">
                     <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <input
-                        class="input"
-                        ${if (required == true) "data-required" else ""}
+                        class="input ${if (compact) "compact" else ""}"
+                        ${if (required == true) "data-required " else ""}
                         type="number"
                         step="$step"
                         id="$id"
                         name="$id"
-                        value="${value ?: ""}"
+                        ${if (value != null) "value=\"$value\"" else ""}
                         $attributes
                         />
                     <div id="$id-error-container">

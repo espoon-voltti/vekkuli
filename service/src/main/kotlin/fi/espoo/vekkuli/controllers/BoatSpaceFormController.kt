@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
 import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
+import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
@@ -16,6 +17,7 @@ import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
 import jakarta.validation.constraints.*
 import org.jdbi.v3.core.Jdbi
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -65,15 +68,20 @@ class BoatSpaceFormController {
         @RequestParam width: Double?,
         @RequestParam length: Double?,
         request: HttpServletRequest,
+        response: HttpServletResponse,
         model: Model,
-    ): String {
+    ): ResponseEntity<String> {
         val user = getCitizen(request, citizenService)
         val reservation =
             reservationService.getReservationWithCitizen(reservationId)
 
-        if (reservation == null) return redirectUrl("/")
+        if (reservation == null) {
+            val headers = org.springframework.http.HttpHeaders()
+            headers.location = URI(getServiceUrl("/kuntalainen/venepaikat"))
+            return ResponseEntity(headers, HttpStatus.FOUND)
+        }
 
-        if (user == null || reservation.citizenId != user.id) {
+        if (user == null || reservation?.citizenId != user.id) {
             throw UnauthorizedException()
         }
 
@@ -103,7 +111,7 @@ class BoatSpaceFormController {
             input = input.copy(boatId = 0)
         }
 
-        return renderBoatSpaceReservationApplication(reservation, user, input)
+        return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, user, input))
     }
 
     @DeleteMapping("/venepaikka/varaus/{reservationId}")
