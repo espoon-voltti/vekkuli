@@ -100,6 +100,7 @@ class BoatSpaceFormController {
                         ownership = boat.ownership,
                         boatType = boat.type,
                         boatRegistrationNumber = boat.registrationCode,
+                        noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
                     )
             }
         } else {
@@ -154,13 +155,29 @@ class BoatSpaceFormController {
         @Valid @ModelAttribute("input") input: ReservationInput,
         bindingResult: BindingResult,
         request: HttpServletRequest,
-    ): String {
-        val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
+    ): ResponseEntity<String> {
+        fun badRequest(body: String): ResponseEntity<String> {
+            return ResponseEntity.badRequest().body(body)
+        }
+
+        fun redirectUrl(url: String): ResponseEntity<String> {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", url)
+                .body("")
+        }
+
+        val citizen =
+            getCitizen(request, citizenService)
+                ?: return ResponseEntity.status(HttpStatus.FOUND)
+                    .header("Location", "/")
+                    .build()
 
         if (bindingResult.hasErrors()) {
             val reservation = reservationService.getReservationWithCitizen(reservationId)
-            if (reservation == null) return redirectUrl("/")
-            return redirectUrl("/")
+            if (reservation == null) {
+                return redirectUrl("/")
+            }
+            return badRequest("Invalid input")
         }
 
         reservationService.reserveBoatSpace(

@@ -104,7 +104,7 @@ class E2eTest : PlaywrightTest() {
             reservationPage.firstReserveButton.click()
 
             // click send to trigger validation
-            val formPage = BoatSpaceForm(page)
+            val formPage = BoatSpaceFormPage(page)
             formPage.submitButton.click()
 
             assertThat(formPage.widthError).isHidden()
@@ -195,7 +195,7 @@ class E2eTest : PlaywrightTest() {
         reservationPage.navigateTo()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceForm(page)
+        val formPage = BoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
         // Cancel, then cancel in modal
         formPage.cancelButton.click()
@@ -224,7 +224,7 @@ class E2eTest : PlaywrightTest() {
         reservationPage.firstReserveButton.click()
         reservationPage.authModalContinue.click()
         page.getByText("Kirjaudu").click()
-        val formPage = BoatSpaceForm(page)
+        val formPage = BoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
         formPage.fillFormAndSubmit()
     }
@@ -239,7 +239,7 @@ class E2eTest : PlaywrightTest() {
         reservationPage.navigateTo()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceForm(page)
+        val formPage = BoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
         formPage.fillFormAndSubmit()
 
@@ -270,7 +270,7 @@ class E2eTest : PlaywrightTest() {
         reservationPage.navigateTo()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceForm(page)
+        val formPage = BoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()
         val paymentPage = PaymentPage(page)
         assertThat(paymentPage.paymentPageTitle).isVisible()
@@ -289,7 +289,7 @@ class E2eTest : PlaywrightTest() {
         reservationPage.navigateTo()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceForm(page)
+        val formPage = BoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()
 
         val paymentPage = PaymentPage(page)
