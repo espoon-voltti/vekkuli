@@ -11,9 +11,9 @@ class ReserveBoatSpacePage(
     }
 
     val header = page.getByTestId("search-page-header")
-    val boatTypeSelectFilter = page.getByTestId("boatTypeFilter")
-    val widthFilterInput = page.getByTestId("widthFilter")
-    val lenghtFilterInput = page.getByTestId("lengthFilter")
+    val boatTypeSelectFilter = page.getByTestId("boatType")
+    val widthFilterInput = page.getByTestId("width")
+    val lenghtFilterInput = page.getByTestId("length")
 
     val boatSpaceTypeSlipRadio = page.getByTestId("boatSpaceType-slip")
     val boatSpaceTypeTrailerRadio = page.getByTestId("boatSpaceType-trailer")
