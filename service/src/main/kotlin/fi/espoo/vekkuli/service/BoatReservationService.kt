@@ -232,8 +232,12 @@ class BoatReservationService(
             warnings.add(ReservationWarningType.BoatLength.name)
         }
 
-        if (boatOwnership == OwnershipStatus.FutureOwner || boatOwnership == OwnershipStatus.CoOwner) {
-            warnings.add(ReservationWarningType.BoatOwnership.name)
+        if (boatOwnership == OwnershipStatus.FutureOwner) {
+            warnings.add(ReservationWarningType.BoatFutureOwner.name)
+        }
+
+        if (boatOwnership == OwnershipStatus.CoOwner) {
+            warnings.add(ReservationWarningType.BoatCoOwner.name)
         }
 
         if (boatWeightKg > BOAT_WEIGHT_THRESHOLD_KG) {
@@ -325,4 +329,10 @@ class BoatReservationService(
 
     fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId)
+
+    fun acknowledgeWarning(
+        reservationId: Int,
+        boatId: Int,
+        key: String,
+    ): Unit = reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatId, key)
 }

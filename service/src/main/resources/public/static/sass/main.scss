@@ -293,6 +293,23 @@ form .subtitle:not(:last-child) {
   }
 }
 
+.ack-info {
+  padding: $spacing-medium;
+  border: 1px solid $warning;
+  border-radius: 4px;
+  display: flex;
+  margin-bottom: $spacing-large;
+
+  .info-icon {
+    flex: 1;
+  }
+
+  .info-content {
+    flex: 1;
+    margin-left: $spacing-medium;
+  }
+}
+
 .reservation-list {
   table {
     width: 100%;

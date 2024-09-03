@@ -8,11 +8,10 @@ import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.*
 
 @Controller
 @RequestMapping("/virkailija/venepaikat")
@@ -42,6 +41,16 @@ class BoatSpaceReservationController {
         model.addAttribute("harbors", harbors)
         model.addAttribute("amenities", BoatSpaceAmenity.entries.toList())
         return "boat-space-reservation-list"
+    }
+
+    @PostMapping("/varaukset/kuittaa-varoitus")
+    fun ackWarning(
+        @RequestParam("reservationId") reservationId: Int,
+        @RequestParam("boatId") boatId: Int,
+        @RequestParam("key") key: String
+    ): ResponseEntity<Void> {
+        reservationService.acknowledgeWarning(reservationId, boatId, key)
+        return ResponseEntity.noContent().build()
     }
 
     @GetMapping("/varaukset/luo")
