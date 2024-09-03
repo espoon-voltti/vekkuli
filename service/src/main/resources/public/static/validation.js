@@ -26,7 +26,7 @@ const validation = (function () {
               errorMessageElement.style.visibility = 'hidden';
             }
           }
-          if (field.tagName === 'SELECT' && field.value === "" || field.value.trim() === "") {
+          if (field.tagName === 'SELECT' && field.value === "" || field.value.trim() === "" || field.value === null) {
             errorMessageElement.style.visibility = 'visible';
             return false
           } else {
