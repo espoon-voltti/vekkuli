@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
@@ -19,10 +18,13 @@ import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
+import java.net.URI
 
 data class BoatFilter(
     val width: Double?,
@@ -53,24 +55,28 @@ class BoatSpaceSearchController {
 
     @RequestMapping("/venepaikat")
     @ResponseBody
-    fun boatSpaceSearchPage(request: HttpServletRequest): String {
+    fun boatSpaceSearchPage(request: HttpServletRequest): ResponseEntity<String> {
         val citizen = getCitizen(request, citizenService)
         if (citizen != null) {
             val reservation =
                 reservationService.getReservationForCitizen(citizen.id)
 
             if (reservation != null) {
-                return redirectUrl("/kuntalainen/venepaikka/varaus/${reservation.id}")
+                val headers = org.springframework.http.HttpHeaders()
+                headers.location = URI("/kuntalainen/venepaikka/varaus/${reservation.id}")
+                return ResponseEntity(headers, HttpStatus.FOUND)
             }
         }
         val locations =
             jdbi.inTransactionUnchecked { tx ->
                 tx.getLocations()
             }
-        return layout.generateLayout(
-            request.getAuthenticatedUser() != null,
-            citizen?.fullName,
-            boatSpaceSearch.render(locations)
+        return ResponseEntity.ok(
+            layout.generateLayout(
+                request.getAuthenticatedUser() != null,
+                citizen?.fullName,
+                boatSpaceSearch.render(locations)
+            )
         )
     }
 
