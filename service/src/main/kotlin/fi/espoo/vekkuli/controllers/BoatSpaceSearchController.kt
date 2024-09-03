@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
+import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
@@ -63,7 +64,7 @@ class BoatSpaceSearchController {
 
             if (reservation != null) {
                 val headers = org.springframework.http.HttpHeaders()
-                headers.location = URI("/kuntalainen/venepaikka/varaus/${reservation.id}")
+                headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/varaus/${reservation.id}"))
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
         }
