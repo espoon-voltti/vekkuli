@@ -36,13 +36,15 @@ class BoatSpaceSearch {
                 "boatApplication.boatWidthInMeters",
                 "width",
                 null,
+                compact = true
             )
 
         val lengthInput =
             formComponents.decimalInput(
                 "boatApplication.boatLengthInMeters",
                 "length",
-                null
+                null,
+                compact = true
             )
 
         val amenities = BoatSpaceAmenity.entries.toList()
