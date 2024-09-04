@@ -1,11 +1,11 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.controllers.EnvType
-import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
+import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.*
+import java.util.UUID
 
 @Service
 class SendEmailService {
@@ -15,9 +15,9 @@ class SendEmailService {
         subject: String,
         body: String
     ): String? {
-        if (getEnv() != EnvType.Production) {
+        if (!isStagingOrProduction()) {
             println("Sending email to $recipient with subject $subject and content $body")
-            return null
+            return "Test-${UUID.randomUUID()}"
         }
 
         val sesClient =
