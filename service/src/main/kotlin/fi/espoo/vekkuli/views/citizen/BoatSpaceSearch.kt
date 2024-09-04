@@ -67,7 +67,7 @@ class BoatSpaceSearch {
             """.trimIndent()
 
         // language=HTML
-        val locations =
+        val locationsCheckboxes =
             """
             <label class="label">${t("boatSpaces.harborHeader")}</label>
             <div class="field columns is-multiline is-mobile">
@@ -108,7 +108,7 @@ class BoatSpaceSearch {
                                   hx-get="/kuntalainen/partial/vapaat-paikat"
                                   hx-target="#boatSpaces"
                                   hx-swap="innerHTML"
-                                  hx-trigger="change"
+                                  hx-trigger="change, load"
                                   hx-sync="closest #form:replace"
                                   >
 
@@ -145,16 +145,13 @@ class BoatSpaceSearch {
                                 </div>
 
                                 <div class="block">
-                                    $locations
+                                    $locationsCheckboxes
                                 </div>
 
                             </form>
                         </div>
                         <div class="column">
-                            <div id="boatSpaces" class="block"
-                                 hx-trigger="load"
-                                 hx-get="/kuntalainen/partial/vapaat-paikat"
-                                 hx-swap="innerHTML">
+                            <div id="boatSpaces" class="block">
                             </div>
                         </div>
                     </div>
@@ -251,7 +248,7 @@ class BoatSpaceSearch {
             rowsBuilder.append("</div>")
         }
 
-        // Main HTML template with placeholders
+        // language=HTML
         val template =
             """
             <div x-data="{
