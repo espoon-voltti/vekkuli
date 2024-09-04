@@ -43,16 +43,11 @@ class MessageService(
         // Email message body
         body: String,
     ): SentMessage {
-        println("Queue")
         val msg = messageRepository.addSentEmail(userId, recipientId, recipientEmail, subject, body)
-        println("Sending: $msg")
         val messageId = sendEmailService.sendEmail(senderAddress, recipientEmail, subject, body)
-        println("Sent: $messageId")
         if (messageId != null) {
-            println("Setting sent")
             return messageRepository.setMessageSent(msg.id, messageId)
         } else {
-            println("Setting failed")
             return messageRepository.setMessageFailed(msg.id, "Failed to send email")
         }
     }
