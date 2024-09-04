@@ -23,7 +23,7 @@ class SendEmailService {
         val sesClient =
             SesClient
                 .builder()
-                .region(Region.EU_WEST_1)
+                .region(Region.EU_NORTH_1)
                 .build()
 
         val emailRequest =
