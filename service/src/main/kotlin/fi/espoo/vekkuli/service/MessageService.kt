@@ -32,8 +32,6 @@ class MessageService(
     fun sendEmail(
         // Who initiated the sending of the email (null if automated)
         userId: UUID?,
-        // Sender address what the user sees
-        senderAddress: String,
         // Citizen who receives the email
         recipientId: UUID,
         // Citizen email address
@@ -44,7 +42,7 @@ class MessageService(
         body: String,
     ): SentMessage {
         val msg = messageRepository.addSentEmail(userId, recipientId, recipientEmail, subject, body)
-        val messageId = sendEmailService.sendEmail(senderAddress, recipientEmail, subject, body)
+        val messageId = sendEmailService.sendEmail(recipientEmail, subject, body)
         if (messageId != null) {
             return messageRepository.setMessageSent(msg.id, messageId)
         } else {

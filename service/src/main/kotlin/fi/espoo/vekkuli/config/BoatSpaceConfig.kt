@@ -1,7 +1,5 @@
 package fi.espoo.vekkuli.config
 
-import fi.espoo.vekkuli.controllers.EnvType
-import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 
 data class Dimensions(
@@ -42,8 +40,6 @@ object BoatSpaceConfig {
     const val BOAT_LENGTH_THRESHOLD_CM = 1500
 
     const val BOAT_WEIGHT_THRESHOLD_KG = 10000
-
-    val EMAIL_SENDER = if (getEnv() == EnvType.Staging) "jukka@aittokallio.com" else "venepaikat@espoo.fi"
 
     fun getRequiredDimensions(
         amenity: BoatSpaceAmenity,

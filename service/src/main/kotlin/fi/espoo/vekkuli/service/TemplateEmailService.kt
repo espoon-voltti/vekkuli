@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.config.BoatSpaceConfig.EMAIL_SENDER
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
@@ -37,7 +36,6 @@ class TemplateEmailService {
         val emailContent = generatePlainTextEmail("email/$template.txt", variables)
         messageService.sendEmail(
             userId = userId,
-            senderAddress = EMAIL_SENDER,
             recipientId = recipientId,
             recipientEmail = recipientEmail,
             subject = subject,

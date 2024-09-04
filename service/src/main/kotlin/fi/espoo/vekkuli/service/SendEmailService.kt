@@ -1,30 +1,25 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
+import fi.espoo.vekkuli.config.EmailEnv
 import org.springframework.stereotype.Service
-import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.*
-import java.util.UUID
+import java.util.*
 
 @Service
-class SendEmailService {
+class SendEmailService(
+    private val sesClient: SesClient,
+    private val emailEnv: EmailEnv
+) {
     fun sendEmail(
-        sender: String,
         recipient: String,
         subject: String,
         body: String
     ): String? {
-        if (!isStagingOrProduction()) {
+        if (!emailEnv.enabled) {
             println("Sending email to $recipient with subject $subject and content $body")
             return "Test-${UUID.randomUUID()}"
         }
-
-        val sesClient =
-            SesClient
-                .builder()
-                .region(Region.EU_NORTH_1)
-                .build()
 
         val emailRequest =
             SendEmailRequest
@@ -40,7 +35,7 @@ class SendEmailService {
                                 .text(Content.builder().data(body).build())
                                 .build()
                         ).build()
-                ).source(sender)
+                ).source(emailEnv.senderAddress)
                 .build()
         try {
             val response = sesClient.sendEmail(emailRequest)
