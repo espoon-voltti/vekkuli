@@ -25,6 +25,7 @@ class SendEmailService(
             SendEmailRequest
                 .builder()
                 .destination(Destination.builder().toAddresses(recipient).build())
+                .sourceArn(emailEnv.senderArn)
                 .message(
                     Message
                         .builder()
