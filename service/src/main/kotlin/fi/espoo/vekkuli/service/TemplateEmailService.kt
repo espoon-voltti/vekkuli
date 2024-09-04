@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.context.Context
+import java.util.*
 
 @Service
 class TemplateEmailService {
@@ -12,7 +13,7 @@ class TemplateEmailService {
     lateinit var templateEngine: TemplateEngine
 
     @Autowired
-    lateinit var emailService: SendEmailService
+    lateinit var messageService: MessageService
 
     fun generatePlainTextEmail(
         template: String,
@@ -27,11 +28,20 @@ class TemplateEmailService {
 
     fun sendEmail(
         template: String,
-        recipient: String,
+        userId: UUID?,
+        recipientId: UUID,
+        recipientEmail: String,
         subject: String,
         variables: Map<String, Any>
     ) {
         val emailContent = generatePlainTextEmail("email/$template.txt", variables)
-        emailService.sendEmail(recipient = recipient, subject = subject, body = emailContent, sender = EMAIL_SENDER)
+        messageService.sendEmail(
+            userId = userId,
+            senderAddress = EMAIL_SENDER,
+            recipientId = recipientId,
+            recipientEmail = recipientEmail,
+            subject = subject,
+            body = emailContent,
+        )
     }
 }

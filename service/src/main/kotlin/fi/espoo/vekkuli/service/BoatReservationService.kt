@@ -162,6 +162,8 @@ class BoatReservationService(
 
         emailService.sendEmail(
             "reservationSuccess",
+            null,
+            payment.citizenId,
             reservation.email,
             messageUtil.getMessage("boatSpaceReservation.title.confirmation"),
             mapOf(
