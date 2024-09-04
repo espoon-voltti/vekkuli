@@ -41,8 +41,6 @@ object BoatSpaceConfig {
 
     const val BOAT_WEIGHT_THRESHOLD_KG = 10000
 
-    const val EMAIL_SENDER = "venepaikat@espoo.fi"
-
     fun getRequiredDimensions(
         amenity: BoatSpaceAmenity,
         boat: Dimensions
