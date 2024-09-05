@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen
 
+import fi.espoo.vekkuli.views.head
 import org.springframework.stereotype.Service
 
 @Service
@@ -46,8 +47,8 @@ class Layout {
             <!DOCTYPE html>
             <html class="theme-light">
             <head>
-                <title>Vekkuli</title>
-                ${head()} <!-- Function to generate head resources -->
+                <title>Varaukset</title>
+                $head
             </head>
             <body>
 
@@ -67,26 +68,11 @@ class Layout {
             </nav>
             
             <div>
-                $bodyContent <!-- Insert the page-specific content here -->
+                $bodyContent 
             </div>
 
             </body>
             </html>
-            """.trimIndent()
-    }
-
-    fun head(): String {
-        // language=HTML
-        return """
-            <script src="https://unpkg.com/htmx.org@2.0.1"
-                    integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/"
-                    crossorigin="anonymous"></script>
-
-            <meta name="htmx-config" content='{"allowNestedOobSwaps":false}'>
-            <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-            <script src="/static/validation.js"></script>
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet" type="text/css" href="/static/css/main.css">
             """.trimIndent()
     }
 }

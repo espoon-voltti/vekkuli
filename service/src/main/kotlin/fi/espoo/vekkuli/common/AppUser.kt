@@ -8,7 +8,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.mapper.PropagateNull
-import java.util.UUID
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 data class AdUser(
@@ -23,7 +23,8 @@ data class AppUser(
     val externalId: String,
     val firstName: String,
     val lastName: String,
-    val email: String?
+    val email: String?,
+    val fullName: String = "$firstName $lastName"
 )
 
 data class UserBasics(
