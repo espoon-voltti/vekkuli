@@ -11,10 +11,11 @@ enum class MemoCategory {
 
 data class CitizenMemo(
     val id: Int,
-    val created: LocalDateTime,
-    val updated: LocalDateTime,
+    val createdAt: LocalDateTime,
+    val createdBy: UUID,
+    val updatedAt: LocalDateTime,
+    val updatedBy: UUID,
     val category: MemoCategory,
-    val userId: UUID,
     val citizenId: UUID,
     val content: String,
 )

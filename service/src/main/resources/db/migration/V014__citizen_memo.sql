@@ -5,16 +5,19 @@ CREATE TABLE citizen_memo (
     id Serial PRIMARY KEY,
 
     -- When was this memo added
-    created TIMESTAMP NOT NULL DEFAULT now(),
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+
+    -- The user that created the memo
+    created_by UUID DEFAULT NULL,
 
     -- When was this message updated
-    updated TIMESTAMP DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT NULL,
+
+    -- Last user that updated the memo
+    updated_by UUID DEFAULT NULL,
 
     -- Category of the memo entry
     category MemoCategory NOT NULL,
-
-    -- The user that created the memo
-    user_id UUID DEFAULT NULL,
 
     -- Citizen user that the memo is about
     citizen_id UUID NOT NULL,
@@ -22,6 +25,7 @@ CREATE TABLE citizen_memo (
     --Content of the message
     content TEXT NOT NULL,
 
-    FOREIGN KEY (user_id) REFERENCES app_user(id),
+    FOREIGN KEY (created_by) REFERENCES app_user(id),
+    FOREIGN KEY (updated_by) REFERENCES app_user(id),
     FOREIGN KEY (citizen_id) REFERENCES citizen(id)
 );
