@@ -97,7 +97,7 @@ interface CitizenRepository {
     ): Citizen
 
     fun getMemos(
-        id: UUID,
+        citizenId: UUID,
         category: MemoCategory
     ): List<CitizenMemo>
 

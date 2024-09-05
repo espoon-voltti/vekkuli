@@ -90,13 +90,13 @@ class JdbiCitizenRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO citizen_memo (citizen_id, user_id, category, content)
-                    VALUES (:citizenId, :userId, :category, :content)
+                    INSERT INTO citizen_memo (citizen_id, created_by, category, content)
+                    VALUES (:citizenId, :createdBy, :category, :content)
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("citizenId", citizenId)
-            query.bind("userId", userId)
+            query.bind("createdBy", userId)
             query.bind("category", category)
             query.bind("content", content)
             query.mapTo<CitizenMemo>().one()
