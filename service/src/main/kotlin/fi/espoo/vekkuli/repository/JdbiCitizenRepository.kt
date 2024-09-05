@@ -51,7 +51,7 @@ class JdbiCitizenRepository(
         }
 
     override fun getMemos(
-        id: UUID,
+        citizenId: UUID,
         category: MemoCategory
     ): List<CitizenMemo> =
         jdbi.withHandleUnchecked { handle ->
@@ -59,10 +59,10 @@ class JdbiCitizenRepository(
                 handle.createQuery(
                     """
                     SELECT * FROM citizen_memo
-                    WHERE citizen_id = :id AND category = :category
+                    WHERE citizen_id = :citizenId AND category = :category
                     """.trimIndent()
                 )
-            query.bind("id", id)
+            query.bind("citizenId", citizenId)
             query.bind("category", category)
             query.mapTo<CitizenMemo>().toList()
         }
