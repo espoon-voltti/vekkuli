@@ -47,8 +47,6 @@ class SendEmailService(
         } catch (ex: SesException) {
             println("Failed to send email: ${ex.awsErrorDetails().errorMessage()}")
             return null
-        } finally {
-            sesClient.close()
         }
     }
 }
