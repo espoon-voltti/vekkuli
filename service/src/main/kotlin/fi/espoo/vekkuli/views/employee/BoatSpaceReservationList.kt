@@ -83,7 +83,7 @@ class BoatSpaceReservationList {
                 """.trimIndent()
             }
 
-        // Reservation list rendering
+        // Reservation list
         val reservationRows =
             reservations.joinToString("\n") { result ->
                 val startDateFormatted = result.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
