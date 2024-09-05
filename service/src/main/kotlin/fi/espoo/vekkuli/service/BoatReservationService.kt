@@ -87,36 +87,6 @@ interface ReservationWarningRepository {
     ): Unit
 }
 
-interface CitizenRepository {
-    fun getCitizen(id: UUID): Citizen?
-
-    fun updateCitizen(
-        id: UUID,
-        phone: String,
-        email: String,
-    ): Citizen
-
-    fun getMemos(
-        citizenId: UUID,
-        category: MemoCategory
-    ): List<CitizenMemo>
-
-    fun removeMemo(id: UUID): Unit
-
-    fun insertMemo(
-        citizenId: UUID,
-        userId: UUID,
-        category: MemoCategory,
-        content: String
-    ): CitizenMemo
-
-    fun updateMemo(
-        id: Int,
-        updatedBy: UUID,
-        content: String
-    ): CitizenMemo
-}
-
 data class ReserveBoatSpaceInput(
     val reservationId: Int,
     val boatId: Int?,
