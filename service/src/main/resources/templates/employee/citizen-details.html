@@ -73,6 +73,13 @@
         </div>
     </div>
 
+    <div class="tabs is-boxed container-tabs">
+        <ul>
+            <li class="is-active"><a th:text="#{boatSpaceReservation.title.marineActivities}">Merellinen ulkoilu</a></li>
+            <li><a th:text="#{boatSpaceReservation.title.spaceReservations}">Tilavaraukset</a></li>
+            <li><a th:text="#{boatSpaceReservation.title.guidedExercise}">Ohjatun liikunnan ryhmät</a></li>
+        </ul>
+    </div>
     <!-- Reservations section -->
     <div class="container block">
         <div class="tabs is-boxed secondary-tabs">
@@ -85,9 +92,9 @@
             </ul>
         </div>
         <h3 th:text="#{boatSpaceReservation.title.splitReservations}">Paikkavaraukset</h3>
-        <div class="reservation-container">
+        <div class="reservation-list">
 
-            <div th:each="reservation, iter : ${reservations}" class="info-container">
+            <div th:each="reservation, iter : ${reservations}" class="reservation-card">
                 <div class="columns is-vcentered">
 
                     <div class="column is-narrow">
@@ -182,7 +189,7 @@
 
         <!-- Boats-->
         <div class="reservation-container">
-            <div th:each="boat, iter : ${boats}" class="info-container">
+            <div th:each="boat, iter : ${boats}" class="reservation-card">
                 <div th:id="|boat-${iter.index}|" x-data="{ modalOpen: false }">
                     <div class="columns is-vcentered">
                         <div class="column is-narrow ">

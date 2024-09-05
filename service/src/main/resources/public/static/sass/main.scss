@@ -443,7 +443,7 @@ a.active {
   width: 50%;
 }
 
-.reservation-container {
+.reservation-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-large;
@@ -452,17 +452,17 @@ a.active {
   border-bottom: solid 1px $grey;
 }
 
-.reservation-container:last-child {
+.reservation-list:last-child {
   border-bottom: none;
   margin-bottom: 0;
 }
 
-.info-container {
+.reservation-card {
   position: relative;
   padding-left: $spacing-large;
 }
 
-.info-container::before {
+.reservation-card::before {
   content: '';
   position: absolute;
   left: 0;
@@ -473,10 +473,16 @@ a.active {
   border-radius: $spacing-small;
 }
 
-.info-container:last-child::before {
+.reservation-card:last-child::before {
   bottom: 0;
 }
 
+.container-tabs {
+  @extend .container;
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 0 !important;
+}
 
 .secondary-tabs.tabs.is-boxed {
   width: fit-content;
@@ -484,15 +490,15 @@ a.active {
 
 .secondary-tabs.tabs.is-boxed ul {
   border-bottom: none;
-  background-color: $lightGray ;
+  background-color: $lightGray;
 }
 
-.secondary-tabs.tabs.is-boxed ul li a {
+.tabs.is-boxed ul li a {
   border-radius: 0;
   padding: $spacing-small $spacing-large;
 }
 
-.tabs.is-boxed ul li.is-active a {
+.secondary-tabs.tabs.is-boxed ul li.is-active a {
   margin: $spacing-extrasmall;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
 
