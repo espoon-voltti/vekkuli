@@ -18,7 +18,8 @@ class SendEmailService(
     ): String? {
         if (!emailEnv.enabled) {
             println(
-                "Email from ${emailEnv.senderAddress} (arn ${emailEnv.senderArn}, region ${emailEnv.region}) to $recipient with subject $subject and content $body"
+                "Email from ${emailEnv.senderAddress} (arn ${emailEnv.senderArn}, " +
+                    "region ${emailEnv.region}) to $recipient with subject $subject and content $body"
             )
             return "Test-${UUID.randomUUID()}"
         }
