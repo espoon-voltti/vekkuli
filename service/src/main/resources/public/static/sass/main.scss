@@ -446,4 +446,14 @@ label.filter-button {
 label.filter-button:has(input:checked) {
   color: $white;
   background: $bulma-primary;
+  outline: 0;
+}
+
+label.filter-button .icon {
+  display: none;
+  vertical-align: text-bottom;
+  padding-right: 8px;
+}
+label.filter-button:has(input:checked) .icon {
+  display: inline-block; /* Show the icon when checked */
 }

@@ -40,7 +40,7 @@ class BoatSpaceReservationList {
                 } else {
                     ""
                 }}>
-                    <span class="icon is-small" style="${if (params.hasHarbor(harbor.id)) "" else "display:none;"}">
+                    <span class="icon is-small">
                         ${icons.check}
                     </span>
                     <span>${harbor.name}</span>
@@ -60,7 +60,7 @@ class BoatSpaceReservationList {
                 } else {
                     ""
                 }}>
-                    <span class="icon is-small" style="${if (params.hasAmenity(amenity)) "" else "display:none;"}">
+                    <span class="icon is-small">
                         ${icons.check}
                     </span>
                     <span>${t("boatSpaces.amenityOption.$amenity")}</span>
