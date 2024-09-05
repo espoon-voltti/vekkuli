@@ -29,7 +29,7 @@ data class EmailEnv(
                 senderAddress =
                     env.getProperty(
                         "vekkuli.email.sender_address",
-                    ) ?: "varaukset@espoo.fi"
+                    ) ?: "no-reply@espoo.fi"
             )
     }
 }
