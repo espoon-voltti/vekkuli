@@ -112,7 +112,8 @@ interface CitizenRepository {
 
     fun updateMemo(
         id: Int,
-        content: String,
+        updatedBy: UUID,
+        content: String
     ): CitizenMemo
 }
 

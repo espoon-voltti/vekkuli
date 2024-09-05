@@ -104,6 +104,7 @@ class JdbiCitizenRepository(
 
     override fun updateMemo(
         id: Int,
+        updatedBy: UUID,
         content: String
     ): CitizenMemo =
         jdbi.withHandleUnchecked { handle ->
@@ -111,12 +112,13 @@ class JdbiCitizenRepository(
                 handle.createQuery(
                     """
                     UPDATE citizen_memo
-                    SET content = :content, updated = now()
+                    SET content = :content, updated_at = now(), updated_by = :updatedBy
                     WHERE id = :id
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("id", id)
+            query.bind("updatedBy", updatedBy)
             query.bind("content", content)
             query.mapTo<CitizenMemo>().one()
         }
