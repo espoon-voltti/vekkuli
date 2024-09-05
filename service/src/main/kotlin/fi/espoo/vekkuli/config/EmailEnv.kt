@@ -14,21 +14,21 @@ data class EmailEnv(
             EmailEnv(
                 enabled =
                     env.getProperty(
-                        "vekkuli.email.enabled",
+                        "EMAIL_ENABLED",
                         Boolean::class.java
                     ) ?: false,
                 region =
                     env.getProperty(
-                        "vekkuli.email.region",
+                        "EMAIL_AWS_REGION",
                         Region::class.java,
                     ) ?: Region.EU_WEST_1,
                 senderArn =
                     env.getProperty(
-                        "vekkuli.email.sender_arn",
+                        "EMAIL_SENDER_ARN",
                     ) ?: "",
                 senderAddress =
                     env.getProperty(
-                        "vekkuli.email.sender_address",
+                        "EMAIL_SENDER_ADDRESS",
                     ) ?: "no-reply@espoo.fi"
             )
     }
