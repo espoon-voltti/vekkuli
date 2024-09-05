@@ -95,6 +95,25 @@ interface CitizenRepository {
         phone: String,
         email: String,
     ): Citizen
+
+    fun getMemos(
+        id: UUID,
+        category: MemoCategory
+    ): List<CitizenMemo>
+
+    fun removeMemo(id: UUID): Unit
+
+    fun insertMemo(
+        citizenId: UUID,
+        userId: UUID,
+        category: MemoCategory,
+        content: String
+    ): CitizenMemo
+
+    fun updateMemo(
+        id: Int,
+        content: String,
+    ): CitizenMemo
 }
 
 data class ReserveBoatSpaceInput(

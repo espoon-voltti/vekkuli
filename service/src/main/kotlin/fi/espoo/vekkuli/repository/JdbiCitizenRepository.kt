@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.Citizen
+import fi.espoo.vekkuli.domain.CitizenMemo
+import fi.espoo.vekkuli.domain.MemoCategory
 import fi.espoo.vekkuli.service.CitizenRepository
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -46,5 +48,76 @@ class JdbiCitizenRepository(
             query.bind("email", email)
             query.bind("updated", LocalDate.now())
             query.mapTo<Citizen>().one()
+        }
+
+    override fun getMemos(
+        id: UUID,
+        category: MemoCategory
+    ): List<CitizenMemo> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT * FROM citizen_memo
+                    WHERE citizen_id = :id AND category = :category
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("category", category)
+            query.mapTo<CitizenMemo>().toList()
+        }
+
+    override fun removeMemo(id: UUID) {
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    DELETE FROM citizen_memo
+                    WHERE id = :id
+                    """.trimIndent()
+                ).bind("id", id)
+                .execute()
+        }
+    }
+
+    override fun insertMemo(
+        citizenId: UUID,
+        userId: UUID,
+        category: MemoCategory,
+        content: String
+    ): CitizenMemo =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    INSERT INTO citizen_memo (citizen_id, user_id, category, content)
+                    VALUES (:citizenId, :userId, :category, :content)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("citizenId", citizenId)
+            query.bind("userId", userId)
+            query.bind("category", category)
+            query.bind("content", content)
+            query.mapTo<CitizenMemo>().one()
+        }
+
+    override fun updateMemo(
+        id: Int,
+        content: String
+    ): CitizenMemo =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE citizen_memo
+                    SET content = :content, updated = now()
+                    WHERE id = :id
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("content", content)
+            query.mapTo<CitizenMemo>().one()
         }
 }
