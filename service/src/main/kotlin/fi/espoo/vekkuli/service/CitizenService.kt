@@ -20,7 +20,7 @@ interface CitizenRepository {
         category: MemoCategory
     ): List<CitizenMemo>
 
-    fun removeMemo(id: UUID): Unit
+    fun removeMemo(id: Int): Unit
 
     fun insertMemo(
         citizenId: UUID,

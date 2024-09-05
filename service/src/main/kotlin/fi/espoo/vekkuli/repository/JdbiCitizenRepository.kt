@@ -67,7 +67,7 @@ class JdbiCitizenRepository(
             query.mapTo<CitizenMemo>().toList()
         }
 
-    override fun removeMemo(id: UUID) {
+    override fun removeMemo(id: Int) {
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(
