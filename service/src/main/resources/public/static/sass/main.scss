@@ -431,3 +431,15 @@ a.active {
     min-width: 500px;
     width: 50%;
 }
+
+label:has(input:checked) {
+  background-color: #0047B6; /* For checked state */
+  border-color: #0047B6;
+  color: white;
+}
+
+label:not(:has(input:checked)) {
+  background-color: white; /* For unchecked state */
+  border-color: #0047B6;
+  color: #0047B6;
+}

@@ -117,11 +117,18 @@ enum class BoatSpaceFilterColumn {
     BOAT,
 }
 
+enum class PaymentFilter {
+    PAID,
+    UNPAID,
+    ALL
+}
+
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
     val ascending: Boolean = false,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
+    val payment: PaymentFilter = PaymentFilter.ALL
 ) {
     fun toggleSort(name: String): String {
         val value = BoatSpaceFilterColumn.valueOf(name)
@@ -147,6 +154,10 @@ data class BoatSpaceReservationFilter(
         } else {
             return this.copy(amenity = amenity + value).getQueryParams()
         }
+    }
+
+    fun setPaymentFilter(paymentFilter: PaymentFilter): String {
+        return this.copy(payment = paymentFilter).getQueryParams()
     }
 
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
