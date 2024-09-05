@@ -432,14 +432,18 @@ a.active {
     width: 50%;
 }
 
-label:has(input:checked) {
-  background-color: #0047B6; /* For checked state */
-  border-color: #0047B6;
-  color: white;
+label.filter-button {
+  color: $bulma-primary;
+  display: inline-block;
+  padding: 7px 12px 7px 12px;
+  outline: 1px solid $bulma-primary;
+  border-radius: 40px;
+  cursor: pointer;
+  gap: 10px;
+  font-size: 15px;
 }
 
-label:not(:has(input:checked)) {
-  background-color: white; /* For unchecked state */
-  border-color: #0047B6;
-  color: #0047B6;
+label.filter-button:has(input:checked) {
+  color: $white;
+  background: $bulma-primary;
 }
