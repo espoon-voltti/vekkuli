@@ -120,7 +120,6 @@ enum class BoatSpaceFilterColumn {
 enum class PaymentFilter {
     PAID,
     UNPAID,
-    ALL
 }
 
 data class BoatSpaceReservationFilter(
@@ -128,11 +127,13 @@ data class BoatSpaceReservationFilter(
     val ascending: Boolean = false,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
-    val payment: PaymentFilter = PaymentFilter.ALL
+    val payment: List<PaymentFilter> = emptyList()
 ) {
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
 
     fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
+
+    fun hasPayment(paymentFilter: PaymentFilter): Boolean = payment.contains(paymentFilter)
 
     fun getSortForColumn(name: String): String {
         val value = BoatSpaceFilterColumn.valueOf(name)

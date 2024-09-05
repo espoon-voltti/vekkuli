@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
-import fi.espoo.vekkuli.domain.BoatSpaceReservationItem
-import fi.espoo.vekkuli.domain.Location
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -64,6 +61,24 @@ class BoatSpaceReservationList {
                         ${icons.check}
                     </span>
                     <span>${t("boatSpaces.amenityOption.$amenity")}</span>
+                </label>
+                """.trimIndent()
+            }
+
+        val paymentOptions = listOf(PaymentFilter.PAID, PaymentFilter.UNPAID)
+        val paymentFilters =
+            paymentOptions.joinToString("\n") { paymentOption ->
+                """
+                <label class="filter-button">
+                    <input type="checkbox" name="payment" value="$paymentOption" class="is-hidden" ${if (params.hasPayment(paymentOption)) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("boatSpaceReservation.paymentOption.${paymentOption.toString().lowercase()}")}</span>
                 </label>
                 """.trimIndent()
             }
@@ -132,9 +147,10 @@ class BoatSpaceReservationList {
                           hx-target=".reservation-list"
                           hx-select=".reservation-list"
                           hx-trigger="change"
+                          hx-push-url="true"
                     >
-                        <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}">
-                        <input type="text" name="ascending" id="sortDirection" value="${params.ascending}">
+                        <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
+                        <input type="text" name="ascending" id="sortDirection" value="${params.ascending}" style="visibility: hidden">
 
                         <div class="block reservation-list-header">
                             <div class="field">
@@ -162,6 +178,12 @@ class BoatSpaceReservationList {
                             <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
                             <div class="tag-container">
                                 $amenityFilters
+                            </div>
+                        </div>
+                        <div class="block">
+                            <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                            <div class="tag-container">
+                                $paymentFilters
                             </div>
                         </div>
 

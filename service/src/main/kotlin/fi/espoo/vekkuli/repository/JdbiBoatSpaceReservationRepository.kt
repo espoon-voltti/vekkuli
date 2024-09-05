@@ -303,11 +303,23 @@ class JdbiBoatSpaceReservationRepository(
 
     override fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> =
         jdbi.withHandleUnchecked { handle ->
+
+            var statusFilter =
+                params.payment.map {
+                    when (it) {
+                        PaymentFilter.PAID -> "Confirmed"
+                        PaymentFilter.UNPAID -> "Payment"
+                    }
+                }
+            if (statusFilter.isEmpty()) {
+                statusFilter = listOf("Confirmed", "Payment")
+            }
             val filter =
                 AndExpr(
                     listOf(
                         InExpr("bs.location_id", params.harbor),
                         InExpr("bs.amenity", params.amenity) { "'$it'" },
+                        InExpr("bsr.status", statusFilter) { "'$it'" }
                     )
                 )
 
