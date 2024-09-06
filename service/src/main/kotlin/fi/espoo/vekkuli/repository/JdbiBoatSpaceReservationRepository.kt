@@ -314,6 +314,12 @@ class JdbiBoatSpaceReservationRepository(
             if (statusFilter.isEmpty()) {
                 statusFilter = listOf("Confirmed", "Payment")
             }
+
+            val nameSearch =
+                params.nameSearch?.let {
+                    "c.full_name_tsvector @@ to_tsquery('simple', :nameSearch)"
+                } ?: "true" // If no search term, this will default to true
+
             val filter =
                 AndExpr(
                     listOf(
@@ -340,10 +346,17 @@ class JdbiBoatSpaceReservationRepository(
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     WHERE
                         (bsr.status = 'Confirmed' OR bsr.status = 'Payment')
+                        AND $nameSearch
                         AND ${filter.toSql().ifBlank { "true" }}
                     ${getSortingSql(params)}
                     """.trimIndent()
                 )
+
+            params.nameSearch?.let {
+                // Replace spaces with '&' and append ':*' for prefix matching
+                val formattedNameSearch = it.trim().replace(" ", " & ") + ":*"
+                query.bind("nameSearch", formattedNameSearch)
+            }
 
             filter.bind(query)
             query
