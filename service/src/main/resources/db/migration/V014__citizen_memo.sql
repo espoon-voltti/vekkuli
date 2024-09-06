@@ -1,4 +1,4 @@
-CREATE TYPE MemoCategory AS ENUM ('Marine', 'Room', 'Groups');
+CREATE TYPE MemoCategory AS ENUM ('Marine', 'Spaces', 'GroupExercise');
 
 CREATE TABLE citizen_memo (
     -- Unique identifier for the memo

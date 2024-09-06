@@ -5,8 +5,8 @@ import java.util.*
 
 enum class MemoCategory {
     Marine,
-    Room,
-    Groups,
+    Spaces,
+    GroupExercise,
 }
 
 data class CitizenMemo(
