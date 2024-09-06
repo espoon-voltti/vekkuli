@@ -7,7 +7,6 @@ import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.web.util.HtmlUtils.htmlEscape
 
 @Service
 class CitizenDetails {
@@ -22,10 +21,10 @@ class CitizenDetails {
     }
 
     fun citizenPage(
-        citizen: Citizen,
-        boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        boats: List<CitizenUserController.BoatUpdateForm>,
-        errors: MutableMap<String, String>? = mutableMapOf(),
+        @SanitizeInput citizen: Citizen,
+        @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
+        @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
     ): String {
         val customerInfo =
             """
@@ -42,29 +41,29 @@ class CitizenDetails {
                     <div class="column is-one-quarter">
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.name")}</label>
-                            <p>${htmlEscape(citizen.firstName)} ${htmlEscape(citizen.lastName)}</p>
+                            <p>${citizen.firstName} ${citizen.lastName}</p>
                         </div>
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.address")}</label>
-                            <p>${htmlEscape(citizen.address ?: "-")} ${htmlEscape(citizen.postalCode ?: "")}</p>
+                            <p>${citizen.address ?: "-"} ${citizen.postalCode}</p>
                         </div>
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.email")}</label>
-                            <p>${htmlEscape(citizen.email)}</p>
+                            <p>${citizen.email}</p>
                         </div>
                     </div>
                     <div class="column is-one-quarter">
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.ssn")}</label>
-                            <p>${htmlEscape(citizen.nationalId)}</p>
+                            <p>${citizen.nationalId}</p>
                         </div>
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.municipality")}</label>
-                            <p>${htmlEscape(citizen.municipality ?: "-")}</p>
+                            <p>${citizen.municipality ?: "-"}</p>
                         </div>
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.phoneNumber")}</label>
-                            <p>${htmlEscape(citizen.phone)}</p>
+                            <p>${citizen.phone}</p>
                         </div>
                     </div>
                 </div>
@@ -91,7 +90,7 @@ class CitizenDetails {
                         <div class="column is-narrow">
                             <h4>${t(
                     "citizenDetails.boatSpace"
-                )} ${htmlEscape(reservation.locationName)} ${htmlEscape(reservation.place)}</h4>
+                )} ${reservation.locationName} ${reservation.place}</h4>
                         </div>
                         <div class="column is-narrow">
                             <a class="is-link">
@@ -114,7 +113,7 @@ class CitizenDetails {
                         <div class="column">
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.harbor")}</label>
-                                <p>${htmlEscape(reservation.locationName)}</p>
+                                <p>${reservation.locationName}</p>
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.width")}</label>
@@ -128,7 +127,7 @@ class CitizenDetails {
                         <div class="column">
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.place")}</label>
-                                <p>${htmlEscape(reservation.place)}</p>
+                                <p>${reservation.place}</p>
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.length")}</label>
@@ -150,7 +149,7 @@ class CitizenDetails {
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.boatPresent")}</label>
-                                <p>${htmlEscape(reservation.boatName ?: "")}</p>
+                                <p>${reservation.boatName ?: ""}</p>
                             </div>
                         </div>
                         <div class="column">
@@ -219,7 +218,7 @@ class CitizenDetails {
                         <div class="column">
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.boatName")}</label>
-                                <p id="boat-name-text-$index">${htmlEscape(boat.name)}</p>
+                                <p id="boat-name-text-$index">${boat.name}</p>
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.weight")}</label>
@@ -243,7 +242,7 @@ class CitizenDetails {
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.registrationNumber")}</label>
-                                <p  id="boat-registrationNumber-text-$index">${htmlEscape(boat.registrationNumber)}</p>
+                                <p  id="boat-registrationNumber-text-$index">${boat.registrationNumber}</p>
                             </div>
                         </div>
                         <div class="column">
@@ -261,12 +260,12 @@ class CitizenDetails {
                         <div class="column is-one-quarter">
                             <label class="label" th:text="#{boatSpaceReservation.title.otherIdentifier}">Muu
                                 tunniste</label>
-                            <p id="boat-otherIdentifier-text-$index">${htmlEscape(boat.otherIdentifier)}</p>
+                            <p id="boat-otherIdentifier-text-$index">${boat.otherIdentifier}</p>
                         </div>
                         <div class="column">
                             <label class="label">${t("boatSpaceReservation.title.additionalInfo")}</label>
                             <p id="boat-extraInformation-text-$index">
-                               ${if (!boat.extraInformation.isNullOrEmpty()) htmlEscape(boat.extraInformation) else "-"}
+                               ${if (!boat.extraInformation.isNullOrEmpty()) boat.extraInformation else "-"}
                             </p>
                         </div>
                     </div>
@@ -347,7 +346,7 @@ class CitizenDetails {
                             <span>${t("boatSpaces.goBack")}</span>
                         </a>
                     </button>
-                    <h2>${htmlEscape(citizen.firstName + " " + citizen.lastName)}</h2>
+                    <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
                 
                 $customerInfo
