@@ -14,3 +14,12 @@ spring:
   web:
     resources:
       static-locations: classpath:/public/
+
+
+vekkuli:
+  email:
+    enabled: false
+    region: "eu-west-1"
+    sender_address: "varaukset@espoo.fi"
+    sender_arn: "n/a"
+
