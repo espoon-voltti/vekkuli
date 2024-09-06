@@ -181,7 +181,7 @@ class BoatSpaceReservationList {
                             </div>
                         </div>
                         <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                            <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
                             <div class="tag-container">
                                 $paymentFilters
                             </div>
