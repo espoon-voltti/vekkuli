@@ -9,4 +9,6 @@ import org.springframework.core.env.Environment
 @Lazy
 class EnvConfig {
     @Bean fun emailEnv(env: Environment): EmailEnv = EmailEnv.fromEnvironment(env)
+
+    @Bean fun paytrailEnv(env: Environment): PaytrailEnv = PaytrailEnv.fromEnvironment(env)
 }
