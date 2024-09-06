@@ -117,54 +117,23 @@ enum class BoatSpaceFilterColumn {
     BOAT,
 }
 
+enum class PaymentFilter {
+    PAID,
+    UNPAID,
+}
+
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
     val ascending: Boolean = false,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
+    val payment: List<PaymentFilter> = emptyList()
 ) {
-    fun toggleSort(name: String): String {
-        val value = BoatSpaceFilterColumn.valueOf(name)
-        if (sortBy == value) {
-            return this.copy(ascending = !ascending).getQueryParams()
-        } else {
-            return this.copy(sortBy = value).getQueryParams()
-        }
-    }
-
-    fun toggleHarbor(id: Int): String {
-        if (harbor.contains(id)) {
-            return this.copy(harbor = harbor - id).getQueryParams()
-        } else {
-            return this.copy(harbor = harbor + id).getQueryParams()
-        }
-    }
-
-    fun toggleAmenity(name: String): String {
-        val value = BoatSpaceAmenity.valueOf(name)
-        if (amenity.contains(value)) {
-            return this.copy(amenity = amenity - value).getQueryParams()
-        } else {
-            return this.copy(amenity = amenity + value).getQueryParams()
-        }
-    }
-
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
 
     fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
 
-    fun getQueryParams(): String {
-        val params = mutableListOf<String>()
-        params.add("sortBy=$sortBy")
-        params.add("ascending=$ascending")
-        amenity.forEach {
-            params.add("amenity=$it")
-        }
-        harbor.forEach {
-            params.add("harbor=$it")
-        }
-        return "?${params.joinToString("&")}"
-    }
+    fun hasPayment(paymentFilter: PaymentFilter): Boolean = payment.contains(paymentFilter)
 
     fun getSortForColumn(name: String): String {
         val value = BoatSpaceFilterColumn.valueOf(name)

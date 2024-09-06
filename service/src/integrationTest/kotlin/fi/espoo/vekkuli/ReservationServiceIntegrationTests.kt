@@ -153,6 +153,38 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should filter by payment status`() {
+        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
+        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+
+        val unfilteredReservations =
+            reservationService.getBoatSpaceReservations(
+                BoatSpaceReservationFilter()
+            )
+
+        val unpaidReservations =
+            reservationService.getBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    payment = listOf(PaymentFilter.UNPAID)
+                )
+            )
+
+        val paidReservations =
+            reservationService.getBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    payment = listOf(PaymentFilter.PAID)
+                )
+            )
+        assertEquals(2, unfilteredReservations.size, "reservations are filtered correctly")
+
+        assertEquals(1, unpaidReservations.size, "reservations are filtered correctly")
+        assertEquals(2, unpaidReservations.first().boatSpaceId, "correct reservation is returned")
+
+        assertEquals(1, paidReservations.size, "reservations are filtered correctly")
+        assertEquals(1, paidReservations.first().boatSpaceId, "correct reservation is returned")
+    }
+
+    @Test
     fun `should sort reservations correctly`() {
         createReservationInConfirmedState(reservationService, citizenId, 1, 1)
         createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)
