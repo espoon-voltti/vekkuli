@@ -151,6 +151,9 @@ class BoatSpaceReservationList {
         // language=HTML
         return """
             <section class="section">
+                <div class="container block">
+                    <h2>${t("boatSpaceReservation.title")}</h2>
+                </div>
                 <div class="container" x-data="{
                     sortColumn: '${params.sortBy}',
                     sortDirection: '${params.ascending}',
@@ -176,21 +179,6 @@ class BoatSpaceReservationList {
                     >
                         <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
                         <input type="text" name="ascending" id="sortDirection" value="${params.ascending}" style="visibility: hidden">
-
-                        <div class="block reservation-list-header">
-                            <div class="field">
-                                <p class="control has-icons-left has-icons-right">
-                                    <input class="input search-input" type="text" name="search" 
-                                        aria-label="${t("boatSpaces.searchButton")}"/>
-                                    <span class="icon is-small is-left">${icons.search}</span>
-                                    <span class="icon is-small is-right">${icons.cross}</span>
-                                </p>
-                            </div>
-                            <a class="add-reservation" href="/virkailija/venepaikat/varaukset/luo">
-                                <span class="icon is-large">${icons.plusRound}</span>
-                                <span class="label">Luo varaus</span>
-                            </a>
-                        </div>
 
                         <div class="block">
                             <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
