@@ -1,10 +1,19 @@
 package fi.espoo.vekkuli.views.citizen
 
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.head
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class Layout {
+    @Autowired
+    lateinit var messageUtil: MessageUtil
+
+    fun t(key: String): String {
+        return messageUtil.getMessage(key)
+    }
+
     fun generateLayout(
         isAuthenticated: Boolean,
         userName: String?,
@@ -16,7 +25,7 @@ class Layout {
                 """
                 <a id="loginButton"
                    class="link"
-                   href="/auth/saml-suomifi/login">Login</a>
+                   href="/auth/saml-suomifi/login">${t("auth.login")}</a>
                 """.trimIndent()
             } else {
                 """
@@ -33,7 +42,7 @@ class Layout {
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                             <div class="dropdown-content">
                                 <a href="/auth/saml-suomifi/logout" class="dropdown-item">
-                                    Logout
+                                    ${t("auth.logout")}
                                 </a>
                             </div>
                         </div>
