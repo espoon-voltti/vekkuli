@@ -87,16 +87,6 @@ interface ReservationWarningRepository {
     ): Unit
 }
 
-interface CitizenRepository {
-    fun getCitizen(id: UUID): Citizen?
-
-    fun updateCitizen(
-        id: UUID,
-        phone: String,
-        email: String,
-    ): Citizen
-}
-
 data class ReserveBoatSpaceInput(
     val reservationId: Int,
     val boatId: Int?,

@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
+import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
 import io.ktor.client.call.*
@@ -93,9 +94,6 @@ data class PaytrailPaymentResponse(
     val providers: List<PaytrailProvider>,
 )
 
-const val MERCHANT_SECRET = "SAIPPUAKAUPPIAS"
-const val MERCHANT_ID = "375917"
-
 const val BASE_URL = "https://services.paytrail.com"
 
 val redirectUrls =
@@ -168,22 +166,21 @@ class PaytrailMock : PaytrailInterface {
         )
     }
 
-    override fun checkSignature(params: Map<String, String>): Boolean {
-        return true
-    }
+    override fun checkSignature(params: Map<String, String>): Boolean = true
 }
 
 @Service
 @Profile("!test")
-class Paytrail : PaytrailInterface {
+class Paytrail(
+    private val paytrailEnv: PaytrailEnv
+) : PaytrailInterface {
     override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
-        println("Creating actual payment with params: $params")
         val nonce = UUID.randomUUID().toString()
         val timestamp = LocalDateTime.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
 
         var headers =
             mapOf(
-                "checkout-account" to MERCHANT_ID,
+                "checkout-account" to paytrailEnv.merchantId,
                 "checkout-algorithm" to HASH_ALGORITHM_NAME,
                 "checkout-method" to "POST",
                 "checkout-nonce" to nonce,
@@ -258,7 +255,7 @@ class Paytrail : PaytrailInterface {
     }
 
     private fun computeHash(message: String): String {
-        val hmac = HmacUtils(HASH_ALGORITHM, MERCHANT_SECRET)
+        val hmac = HmacUtils(HASH_ALGORITHM, paytrailEnv.merchantSecret)
         val outMsg = hmac.hmacHex(message)
         return outMsg.replace("-", "").lowercase(Locale.getDefault())
     }
