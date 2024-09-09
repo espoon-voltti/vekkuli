@@ -110,6 +110,7 @@ dependencies {
     implementation("software.amazon.awssdk:ses:2.20.0")
     implementation("software.amazon.awssdk:core:2.20.0")
     implementation("software.amazon.awssdk:regions:2.20.0")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 }
 
 tasks.withType<KotlinCompile> {

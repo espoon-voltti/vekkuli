@@ -2,9 +2,9 @@ package fi.espoo.vekkuli.views
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.controllers.CitizenUserController
+import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.web.util.HtmlUtils.htmlEscape
 import java.util.*
 
 @Service
@@ -13,7 +13,7 @@ class EditBoat {
     lateinit var formComponents: FormComponents
 
     fun editBoatForm(
-        boat: CitizenUserController.BoatUpdateForm,
+        @SanitizeInput boat: CitizenUserController.BoatUpdateForm,
         errors: Map<String, String>,
         citizenId: UUID,
         boatTypes: List<String>,
@@ -23,7 +23,7 @@ class EditBoat {
             formComponents.textInput(
                 "boatSpaceReservation.title.boatName",
                 "name",
-                htmlEscape(boat.name),
+                boat.name,
             )
 
         val weightInput =
@@ -62,7 +62,7 @@ class EditBoat {
             formComponents.textInput(
                 "boatSpaceReservation.title.registrationNumber",
                 "registrationNumber",
-                htmlEscape(boat.registrationNumber),
+                boat.registrationNumber,
             )
 
         val lengthInput =
@@ -86,14 +86,14 @@ class EditBoat {
             formComponents.textInput(
                 "boatSpaceReservation.title.otherIdentifier",
                 "otherIdentifier",
-                htmlEscape(boat.otherIdentifier),
+                boat.otherIdentifier,
             )
 
         val extraInformationInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.additionalInfo",
                 "extraInformation",
-                htmlEscape(boat.extraInformation),
+                boat.extraInformation,
             )
 
         //language=HTML
@@ -109,7 +109,7 @@ class EditBoat {
                 <input type="hidden" name="id" value="${boat.id}" />
                 <div class="columns is-vcentered">
                     <div class="column is-narrow ">
-                        <h4>${formComponents.t("citizenDetails.boat")} : ${htmlEscape(boat.name)}</h4>
+                        <h4>${formComponents.t("citizenDetails.boat")} : ${boat.name}</h4>
                     </div>
                 </div>
                 
