@@ -83,6 +83,15 @@ class BoatSpaceReservationList {
                 """.trimIndent()
             }
 
+        val nameSearchInput =
+            """
+            <p class="control has-icons-left has-icons-right">
+                <input class="input search-input" type="text" name="nameSearch" 
+                    aria-label="${t("boatSpaces.searchButton")}"/>
+                <span class="icon is-small is-left">${icons.search}</span>
+            </p>
+            """.trimIndent()
+
         // Reservation list
         val reservationRows =
             reservations.joinToString("\n") { result ->
@@ -124,9 +133,27 @@ class BoatSpaceReservationList {
                 """.trimIndent()
             }
 
+        fun sortButton(
+            column: String,
+            text: String
+        ) = """
+            <a href="#" @click.prevent="updateSort('$column')">
+                <span class="reservation-table-header">
+                    $text
+                </span>
+                <span class="reservation-table-icon">
+                    <span x-show="sortColumn != '$column'">${icons.sort("")}</span>
+                    <span x-show="sortColumn == '$column' && sortDirection=='true'">${icons.sort("asc")}</span>
+                    <span x-show="sortColumn == '$column' && sortDirection=='false'">${icons.sort("desc")}</span>
+                </span>
+            """.trimIndent()
+
         // language=HTML
         return """
             <section class="section">
+                <div class="container block">
+                    <h2>${t("boatSpaceReservation.title")}</h2>
+                </div>
                 <div class="container" x-data="{
                     sortColumn: '${params.sortBy}',
                     sortDirection: '${params.ascending}',
@@ -144,28 +171,14 @@ class BoatSpaceReservationList {
                 }">
                     <form id="reservation-filter-form"
                           hx-get="/virkailija/venepaikat/varaukset"
-                          hx-target=".reservation-list"
-                          hx-select=".reservation-list"
-                          hx-trigger="change"
+                          hx-target="#table-body"
+                          hx-select="#table-body"
+                          hx-trigger="change, keyup delay:500ms"
+                          hx-swap="outerHTML"
                           hx-push-url="true"
                     >
                         <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
                         <input type="text" name="ascending" id="sortDirection" value="${params.ascending}" style="visibility: hidden">
-
-                        <div class="block reservation-list-header">
-                            <div class="field">
-                                <p class="control has-icons-left has-icons-right">
-                                    <input class="input search-input" type="text" name="search" 
-                                        aria-label="${t("boatSpaces.searchButton")}"/>
-                                    <span class="icon is-small is-left">${icons.search}</span>
-                                    <span class="icon is-small is-right">${icons.cross}</span>
-                                </p>
-                            </div>
-                            <a class="add-reservation" href="/virkailija/venepaikat/varaukset/luo">
-                                <span class="icon is-large">${icons.plusRound}</span>
-                                <span class="label">Luo varaus</span>
-                            </a>
-                        </div>
 
                         <div class="block">
                             <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
@@ -186,58 +199,55 @@ class BoatSpaceReservationList {
                                 $paymentFilters
                             </div>
                         </div>
+                        <div class="block">
+                        </div>
 
                         <div class="reservation-list block">
                             <table class="table is-hoverable">
                                 <thead>
+                                <tr class="table-borderless">
+                                    <th class="nowrap">
+                                        ${sortButton("PLACE", t("boatSpaceReservation.title.harbor"))}
+                                    </th>
+                                    <th class="nowrap">
+                                        ${sortButton("PLACE", t("boatSpaceReservation.title.place"))}
+                                    </th>
+                                    <th class="nowrap">
+                                        ${sortButton("PLACE_TYPE", t("boatSpaceReservation.title.type"))}
+                                    </th>
+                                    <th class="nowrap">
+                                        ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}
+                                    </th>
+                                    <th class="nowrap">
+                                        ${sortButton("HOME_TOWN", t("boatSpaceReservation.title.homeTown"))}
+                                    </th>
+                                    <th><span class="reservation-table-header">
+                                        ${t("boatSpaceReservation.title.payment")}
+                                    </span></th>
+                                    <th class="nowrap">
+                                        ${sortButton("START_DATE", t("boatSpaceReservation.title.startDate"))}
+                                    </th>
+                                    <th class="nowrap">
+                                        ${sortButton("END_DATE", t("boatSpaceReservation.title.endDate"))}
+                                    </th>
+                                    <th class="nowrap"><span class="reservation-table-header">
+                                        ${t("boatSpaceReservation.title.ownership")}
+                                    </span></th>
+                                </tr>
+                                
                                 <tr>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('PLACE')">
-                                            <span>${t("boatSpaceReservation.title.harbor")}</span>
-                                            ${icons.sort(params.getSortForColumn("PLACE"))}
-                                        </a>
-                                    </th>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('PLACE')">
-                                            <span>${t("boatSpaceReservation.title.place")}</span>
-                                            ${icons.sort(params.getSortForColumn("PLACE"))}
-                                        </a>
-                                    </th>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('PLACE_TYPE')">
-                                            <span>${t("boatSpaceReservation.title.type")}</span>
-                                            ${icons.sort(params.getSortForColumn("PLACE_TYPE"))}
-                                        </a>
-                                    </th>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('CUSTOMER')">
-                                            <span>${t("boatSpaceReservation.title.subject")}</span>
-                                            ${icons.sort(params.getSortForColumn("CUSTOMER"))}
-                                        </a>
-                                    </th>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('HOME_TOWN')">
-                                            <span>${t("boatSpaceReservation.title.homeTown")}</span>
-                                            ${icons.sort(params.getSortForColumn("HOME_TOWN"))}
-                                        </a>
-                                    </th>
-                                    <th><span>${t("boatSpaceReservation.title.payment")}</span></th>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('START_DATE')">
-                                            <span>${t("boatSpaceReservation.title.startDate")}</span>
-                                            ${icons.sort(params.getSortForColumn("START_DATE"))}
-                                        </a>
-                                    </th>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('END_DATE')">
-                                            <span>${t("boatSpaceReservation.title.endDate")}</span>
-                                            ${icons.sort(params.getSortForColumn("END_DATE"))}
-                                        </a>
-                                    </th>
-                                    <th><span>${t("boatSpaceReservation.title.ownership")}</span></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>$nameSearchInput</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="table-body">
                                 $reservationRows
                                 </tbody>
                             </table>

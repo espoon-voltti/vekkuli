@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
 import java.util.*
+import kotlin.test.assertContains
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -182,6 +183,35 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
         assertEquals(1, paidReservations.size, "reservations are filtered correctly")
         assertEquals(1, paidReservations.first().boatSpaceId, "correct reservation is returned")
+    }
+
+    @Test
+    fun `should filter by name search`() {
+        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
+        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 3, 2)
+
+        val reservationsByFirstName =
+            reservationService.getBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    nameSearch = "leo"
+                )
+            )
+
+        assertEquals(1, reservationsByFirstName.size, "reservations are filtered correctly")
+        assertEquals("Leo", reservationsByFirstName.first().firstName, "correct reservation is returned")
+
+        val reservationsByLastName =
+            reservationService.getBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    nameSearch = "VIRTA"
+                )
+            )
+
+        assertEquals(2, reservationsByLastName.size, "reservations are filtered correctly")
+        val reservationsNames = reservationsByLastName.map { "${it.firstName} ${it.lastName}" }
+        assertContains(reservationsNames, "Mikko Virtanen")
+        assertContains(reservationsNames, "Olivia Virtanen")
     }
 
     @Test

@@ -127,7 +127,8 @@ data class BoatSpaceReservationFilter(
     val ascending: Boolean = false,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
-    val payment: List<PaymentFilter> = emptyList()
+    val payment: List<PaymentFilter> = emptyList(),
+    val nameSearch: String? = null,
 ) {
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
 
