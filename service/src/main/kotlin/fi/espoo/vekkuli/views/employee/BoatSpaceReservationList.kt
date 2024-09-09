@@ -202,7 +202,7 @@ class BoatSpaceReservationList {
                         <div class="reservation-list block">
                             <table class="table is-hoverable">
                                 <thead>
-                                <tr>
+                                <tr class="table-borderless">
                                     <th class="nowrap">
                                         <a href="#" @click.prevent="updateSort('PLACE')">
                                             <span class="reservation-table-header" >

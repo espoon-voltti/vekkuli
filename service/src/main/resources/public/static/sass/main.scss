@@ -467,6 +467,11 @@ a.active {
   margin-bottom: 0;
 }
 
+tr.table-borderless th {
+  border: 0;
+  padding-bottom: 0;
+}
+
 .reservation-card {
   position: relative;
   padding-left: $spacing-large;
