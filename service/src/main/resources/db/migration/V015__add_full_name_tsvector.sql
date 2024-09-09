@@ -12,3 +12,5 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
     ON citizen FOR EACH ROW EXECUTE FUNCTION update_full_name_tsvector();
+
+CREATE INDEX idx_citizen_full_name_tsvector ON citizen USING GIN(full_name_tsvector);
