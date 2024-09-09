@@ -314,6 +314,7 @@ form .subtitle:not(:last-child) {
   border: 1px solid $warning;
   border-radius: 4px;
   display: flex;
+  align-items: center;
   margin-bottom: $spacing-large;
 
   .info-icon {
@@ -321,7 +322,7 @@ form .subtitle:not(:last-child) {
   }
 
   .info-content {
-    flex: 1;
+    flex: 20;
     margin-left: $spacing-medium;
   }
 }

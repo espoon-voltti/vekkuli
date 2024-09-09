@@ -210,35 +210,37 @@ class CitizenDetails {
 
         // language=HTML
         val boatsList =
-            boats.mapIndexed { index, boat ->
-                """
-                <div class="reservation-card" id="boat-$index" x-data="{ modalOpen: false }">
-                    <div class="columns is-vcentered">
-                        <div class="column is-narrow">
-                            <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
-                        </div>
-                        <span class="edit-buttons column columns">
-                            <div class="column is-narrow">
-                                <a class="edit-link s-link"
-                                   hx-get="/virkailija/kayttaja/${citizen.id}/vene/${boat.id}/muokkaa"
-                                   hx-target="#boat-$index"
-                                   hx-swap="innerHTML">
-                                    <span class="icon ml-s">
-                                        ${icons.edit}
-                                    </span>
-                                    <span id="edit-boat-$index"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
-                                </a>
-                            </div>
-                            <div class="column">
-                                <a class="is-link has-text-danger">
-                                    <span class="icon ml-s">
-                                        ${icons.remove}
-                                    </span>
-                                    <span>${t("boatSpaceReservation.button.deleteBoat")}</span>
-                                </a>
-                            </div>
-                            ${if (boat.hasAnyWarnings()) {
+            boats
+                .mapIndexed { index, boat ->
                     """
+                            <div class="reservation-card" id="boat-$index" x-data="{ modalOpen: false }">
+                                <div class="columns is-vcentered">
+                                    <div class="column is-narrow">
+                                        <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
+                                    </div>
+                                    <span class="edit-buttons column columns">
+                                        <div class="column is-narrow">
+                                            <a class="edit-link s-link"
+                                               hx-get="/virkailija/kayttaja/${citizen.id}/vene/${boat.id}/muokkaa"
+                                               hx-target="#boat-$index"
+                                               hx-swap="innerHTML">
+                                                <span class="icon ml-s">
+                                                    ${icons.edit}
+                                                </span>
+                                                <span id="edit-boat-$index"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
+                                            </a>
+                                        </div>
+                                        <div class="column">
+                                            <a class="is-link has-text-danger">
+                                                <span class="icon ml-s">
+                                                    ${icons.remove}
+                                                </span>
+                                                <span>${t("boatSpaceReservation.button.deleteBoat")}</span>
+                                            </a>
+                                        </div>
+                                        ${
+                        if (boat.hasAnyWarnings()) {
+                            """
                         <div class="column">
                             <a class="is-link" x-on:click="modalOpen = true">
                                 <span class="icon ml-s">
@@ -248,70 +250,70 @@ class CitizenDetails {
                             </a>
                         </div>
                         """
-                } else {
-                    ""
-                }
-                }
-                        </span>
-                    </div>
-                    <div class="columns">
-                        <div class="column">
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.boatName")}</label>
-                                <p id="boat-name-text-$index">${boat.name}</p>
-                            </div>
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.weight")}</label>
-                                <p  id="boat-weight-text-$index">${boat.weight}</p>
-                            </div>
-                        </div>
-                        <div class="column">
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.boatType")}</label>
-                                <p  id="boat-type-text-$index">${t("boatApplication.boatTypeOption.${boat.type}")}</p>
-                            </div>
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.draft")}</label>
-                                <p id="boat-depth-text-$index">${boat.depth}</p>
-                            </div>
-                        </div>
-                        <div class="column">
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.boatWidth")}</label>
-                                <p  id="boat-width-text-$index">${boat.width}</p>
-                            </div>
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.registrationNumber")}</label>
-                                <p  id="boat-registrationNumber-text-$index">${boat.registrationNumber}</p>
-                            </div>
-                        </div>
-                        <div class="column">
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.boatLength")}</label>
-                                <p  id="boat-length-text-$index">${boat.length}</p>
-                            </div>
-                            <div class="field">
-                                <label class="label">${t("boatSpaceReservation.title.ownershipStatus")}</label>
-                                <p id="boat-ownership-text-$index">${t("boatApplication.ownershipOption.${boat.ownership}")}</p>
-                            </div>
-                        </div>
-                    </div>
-                     <div class="columns">
-                        <div class="column is-one-quarter">
-                            <label class="label" th:text="#{boatSpaceReservation.title.otherIdentifier}">Muu
-                                tunniste</label>
-                            <p id="boat-otherIdentifier-text-$index">${boat.otherIdentifier}</p>
-                        </div>
-                        <div class="column">
-                            <label class="label">${t("boatSpaceReservation.title.additionalInfo")}</label>
-                            <p id="boat-extraInformation-text-$index">
-                               ${if (!boat.extraInformation.isNullOrEmpty()) boat.extraInformation else "-"}
-                            </p>
-                        </div>
-                    </div>
-                    ${
-                    if (boat.hasAnyWarnings()) {
-                        """
+                        } else {
+                            ""
+                        }
+                    }
+                                    </span>
+                                </div>
+                                <div class="columns">
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.boatName")}</label>
+                                            <p id="boat-name-text-$index">${boat.name}</p>
+                                        </div>
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.weight")}</label>
+                                            <p  id="boat-weight-text-$index">${boat.weight}</p>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.boatType")}</label>
+                                            <p  id="boat-type-text-$index">${t("boatApplication.boatTypeOption.${boat.type}")}</p>
+                                        </div>
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.draft")}</label>
+                                            <p id="boat-depth-text-$index">${boat.depth}</p>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.boatWidth")}</label>
+                                            <p  id="boat-width-text-$index">${boat.width}</p>
+                                        </div>
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.registrationNumber")}</label>
+                                            <p  id="boat-registrationNumber-text-$index">${boat.registrationNumber}</p>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.boatLength")}</label>
+                                            <p  id="boat-length-text-$index">${boat.length}</p>
+                                        </div>
+                                        <div class="field">
+                                            <label class="label">${t("boatSpaceReservation.title.ownershipStatus")}</label>
+                                            <p id="boat-ownership-text-$index">${t("boatApplication.ownershipOption.${boat.ownership}")}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="columns">
+                                    <div class="column is-one-quarter">
+                                        <label class="label" th:text="#{boatSpaceReservation.title.otherIdentifier}">Muu
+                                            tunniste</label>
+                                        <p id="boat-otherIdentifier-text-$index">${boat.otherIdentifier}</p>
+                                    </div>
+                                    <div class="column">
+                                        <label class="label">${t("boatSpaceReservation.title.additionalInfo")}</label>
+                                        <p id="boat-extraInformation-text-$index">
+                                           ${if (!boat.extraInformation.isNullOrEmpty()) boat.extraInformation else "-"}
+                                        </p>
+                                    </div>
+                                </div>
+                                ${
+                        if (boat.hasAnyWarnings()) {
+                            """
                 <div class="modal" x-show="modalOpen" style="display:none;">
                     <div class="modal-underlay" @click="modalOpen = false"></div>
                     <div class="modal-content">
@@ -325,15 +327,15 @@ class CitizenDetails {
                                     <h1 class="label">Valitse kuitattava tieto</h1>
                                     <div class="control">
                                         ${
-                            boat.warnings.joinToString("\n") { warning ->
-                                """
-                                <label class="radio">
-                                    <input type="radio" name="key" value="$warning">
-                                    ${t("reservationWarning.$warning")}
-                                </label>
-                                """.trimIndent()
+                                boat.warnings.joinToString("\n") { warning ->
+                                    """
+                                    <label class="radio">
+                                        <input type="radio" name="key" value="$warning">
+                                        ${t("reservationWarning.$warning")}
+                                    </label>
+                                    """.trimIndent()
+                                }
                             }
-                        }
                                     </div>
                                 </div>
                             </div>
@@ -344,7 +346,7 @@ class CitizenDetails {
                                 </div>
                             </div>
                             <div class="ack-info">
-                                <div class="info-icon"><!-- Icon for warning --></div>
+                                <div class="info-icon">${icons.warningExclamation(false)}</div>
                                 <div class="info-content">
                                     ${t("reservationWarning.ackInfo")}
                                 </div>
@@ -366,13 +368,13 @@ class CitizenDetails {
                         </form>
                     </div>
                 """
-                    } else {
-                        ""
+                        } else {
+                            ""
+                        }
                     }
-                }
-                </div>
-                """.trimIndent()
-            }.joinToString("\n")
+                            </div>
+                    """.trimIndent()
+                }.joinToString("\n")
 
         // language=HTML
         return """
