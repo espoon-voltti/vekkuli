@@ -203,74 +203,94 @@ class BoatSpaceReservationList {
                             <table class="table is-hoverable">
                                 <thead>
                                 <tr>
-                                    <td>
+                                    <th class="nowrap">
                                         <a href="#" @click.prevent="updateSort('PLACE')">
-                                            <span>${t("boatSpaceReservation.title.harbor")}</span>
-                                            ${icons.sort(params.getSortForColumn("PLACE"))}
-                                        </a>
-                                    </td>
-                                    <th>
-                                        <a href="#" @click.prevent="updateSort('PLACE')">
-                                            <span>${t("boatSpaceReservation.title.place")}</span>
-                                            ${icons.sort(params.getSortForColumn("PLACE"))}
+                                            <span class="reservation-table-header" >
+                                                ${t("boatSpaceReservation.title.harbor")}
+                                            </span>
+                                            
+                                            <span class="reservation-table-icon">
+                                                ${icons.sort(params.getSortForColumn("PLACE"))}
+                                            </span>
                                         </a>
                                     </th>
-                                    <th>
+                                    <th class="nowrap">
+                                        <a href="#" @click.prevent="updateSort('PLACE')">
+                                            <span class="reservation-table-header">
+                                                ${t("boatSpaceReservation.title.place")}
+                                            </span>
+                                            <span class="reservation-table-icon">
+                                                ${icons.sort(params.getSortForColumn("PLACE"))}
+                                            </span>
+                                        </a>
+                                    </th>
+                                    <th class="nowrap">
                                         <a href="#" @click.prevent="updateSort('PLACE_TYPE')">
-                                            <span>${t("boatSpaceReservation.title.type")}</span>
-                                            ${icons.sort(params.getSortForColumn("PLACE_TYPE"))}
+                                            <span class="reservation-table-header">
+                                                ${t("boatSpaceReservation.title.type")}
+                                            </span>
+                                            <span class="reservation-table-icon">
+                                                ${icons.sort(params.getSortForColumn("PLACE_TYPE"))}
+                                            </span>
                                         </a>
                                     </th>
-                                    <th>
+                                    <th class="nowrap">
                                         <a href="#" @click.prevent="updateSort('CUSTOMER')">
-                                            <span>${t("boatSpaceReservation.title.subject")}</span>
-                                            ${icons.sort(params.getSortForColumn("CUSTOMER"))}
+                                            <span class="reservation-table-header">
+                                                ${t("boatSpaceReservation.title.subject")}</span>
+                                            <span class="reservation-table-icon">
+                                                ${icons.sort(params.getSortForColumn("CUSTOMER"))}
+                                            </span>
                                         </a>
                                     </th>
-                                    <th>
+                                    <th class="nowrap">
                                         <a href="#" @click.prevent="updateSort('HOME_TOWN')">
-                                            <span>${t("boatSpaceReservation.title.homeTown")}</span>
-                                            ${icons.sort(params.getSortForColumn("HOME_TOWN"))}
+                                            <span class="reservation-table-header">
+                                                ${t("boatSpaceReservation.title.homeTown")}
+                                            </span>
+                                            <span class="reservation-table-icon">
+                                                ${icons.sort(params.getSortForColumn("HOME_TOWN"))}
+                                            </span>
                                         </a>
                                     </th>
-                                    <th><span>${t("boatSpaceReservation.title.payment")}</span></th>
-                                    <th>
+                                    <th><span class="reservation-table-header">
+                                        ${t("boatSpaceReservation.title.payment")}
+                                    </span></th>
+                                    <th class="nowrap">
                                         <a href="#" @click.prevent="updateSort('START_DATE')">
-                                            <span>${t("boatSpaceReservation.title.startDate")}</span>
-                                            ${icons.sort(params.getSortForColumn("START_DATE"))}
+                                            <span class="reservation-table-header">
+                                                ${t("boatSpaceReservation.title.startDate")}
+                                            </span>
+                                            <span class="reservation-table-icon">
+                                                ${icons.sort(params.getSortForColumn("START_DATE"))}
+                                            </span>
                                         </a>
                                     </th>
-                                    <th>
+                                    <th class="nowrap">
                                         <a href="#" @click.prevent="updateSort('END_DATE')">
-                                            <span>${t("boatSpaceReservation.title.endDate")}</span>
-                                            ${icons.sort(params.getSortForColumn("END_DATE"))}
+                                            <span class="reservation-table-header">
+                                                ${t("boatSpaceReservation.title.endDate")}
+                                            </span>
+                                            <span class="reservation-table-icon">
+                                                ${icons.sort(params.getSortForColumn("END_DATE"))}
+                                            </span> 
                                         </a>
                                     </th>
-                                    <th><span>${t("boatSpaceReservation.title.ownership")}</span></th>
+                                    <th class="nowrap"><span class="reservation-table-header">
+                                        ${t("boatSpaceReservation.title.ownership")}
+                                    </span></th>
                                 </tr>
                                 
                                 <tr>
-                                    <th>
-                                    </th>
-                                    <th>
-                                    </th>
-                                    <th>
-                                    </th>
-                                    <th>
-                                        $nameSearchInput
-                                    </th>
-                                    <th>
-                                    </th>
-                                    <th>
-                                    </th>
-                                    <th>
-                                    </th>
-                                    <th>
-                                    </th>
-                                    <th>
-                                    
-                                    
-                                    </th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>$nameSearchInput</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody id="table-body">

@@ -450,6 +450,18 @@ a.active {
   border-bottom: solid 1px $grey;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
+.reservation-table-header{
+  display:inline-block;
+  vertical-align: middle;
+}
+.reservation-table-icon{
+  vertical-align: middle;
+}
+
 .reservation-list:last-child {
   border-bottom: none;
   margin-bottom: 0;
@@ -527,3 +539,4 @@ label.filter-button .icon {
 label.filter-button:has(input:checked) .icon {
   display: inline-block; /* Show the icon when checked */
 }
+
