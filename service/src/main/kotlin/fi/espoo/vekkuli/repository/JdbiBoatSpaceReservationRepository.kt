@@ -319,7 +319,7 @@ class JdbiBoatSpaceReservationRepository(
                 if (!params.nameSearch.isNullOrEmpty()) {
                     "c.full_name_tsvector @@ to_tsquery('simple', :nameSearch)"
                 } else {
-                    "true" // If no search term, this will default to true
+                    "true"
                 }
 
             val filter =
@@ -358,8 +358,8 @@ class JdbiBoatSpaceReservationRepository(
                 // Replace spaces with '&' and append ':*' to each term for prefix matching
                 val formattedNameSearch =
                     params.nameSearch.trim()
-                        .split("\\s+".toRegex()) // Split by any whitespace
-                        .joinToString(" & ") { "$it:*" } // Append ':*' for each term and join with '&'
+                        .split("\\s+".toRegex())
+                        .joinToString(" & ") { "$it:*" }
                 query.bind("nameSearch", formattedNameSearch)
             }
 
