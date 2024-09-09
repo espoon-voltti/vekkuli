@@ -316,9 +316,11 @@ class JdbiBoatSpaceReservationRepository(
             }
 
             val nameSearch =
-                params.nameSearch?.let {
+                if (!params.nameSearch.isNullOrEmpty()) {
                     "c.full_name_tsvector @@ to_tsquery('simple', :nameSearch)"
-                } ?: "true" // If no search term, this will default to true
+                } else {
+                    "true" // If no search term, this will default to true
+                }
 
             val filter =
                 AndExpr(
@@ -352,9 +354,12 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
 
-            params.nameSearch?.let {
-                // Replace spaces with '&' and append ':*' for prefix matching
-                val formattedNameSearch = it.trim().replace(" ", " & ") + ":*"
+            if (!params.nameSearch.isNullOrEmpty()) {
+                // Replace spaces with '&' and append ':*' to each term for prefix matching
+                val formattedNameSearch =
+                    params.nameSearch.trim()
+                        .split("\\s+".toRegex()) // Split by any whitespace
+                        .joinToString(" & ") { "$it:*" } // Append ':*' for each term and join with '&'
                 query.bind("nameSearch", formattedNameSearch)
             }
 

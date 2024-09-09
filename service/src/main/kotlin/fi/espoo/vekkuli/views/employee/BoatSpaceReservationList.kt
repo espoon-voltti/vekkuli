@@ -83,6 +83,15 @@ class BoatSpaceReservationList {
                 """.trimIndent()
             }
 
+        val nameSearchInput =
+            """
+            <p class="control has-icons-left has-icons-right">
+                <input class="input search-input" type="text" name="nameSearch" 
+                    aria-label="${t("boatSpaces.searchButton")}"/>
+                <span class="icon is-small is-left">${icons.search}</span>
+            </p>
+            """.trimIndent()
+
         // Reservation list
         val reservationRows =
             reservations.joinToString("\n") { result ->
@@ -144,9 +153,10 @@ class BoatSpaceReservationList {
                 }">
                     <form id="reservation-filter-form"
                           hx-get="/virkailija/venepaikat/varaukset"
-                          hx-target=".reservation-list"
-                          hx-select=".reservation-list"
-                          hx-trigger="change"
+                          hx-target="#table-body"
+                          hx-select="#table-body"
+                          hx-trigger="change, keyup delay:500ms"
+                          hx-swap="outerHTML"
                           hx-push-url="true"
                     >
                         <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
@@ -186,17 +196,19 @@ class BoatSpaceReservationList {
                                 $paymentFilters
                             </div>
                         </div>
+                        <div class="block">
+                        </div>
 
                         <div class="reservation-list block">
                             <table class="table is-hoverable">
                                 <thead>
                                 <tr>
-                                    <th>
+                                    <td>
                                         <a href="#" @click.prevent="updateSort('PLACE')">
                                             <span>${t("boatSpaceReservation.title.harbor")}</span>
                                             ${icons.sort(params.getSortForColumn("PLACE"))}
                                         </a>
-                                    </th>
+                                    </td>
                                     <th>
                                         <a href="#" @click.prevent="updateSort('PLACE')">
                                             <span>${t("boatSpaceReservation.title.place")}</span>
@@ -236,8 +248,32 @@ class BoatSpaceReservationList {
                                     </th>
                                     <th><span>${t("boatSpaceReservation.title.ownership")}</span></th>
                                 </tr>
+                                
+                                <tr>
+                                    <th>
+                                    </th>
+                                    <th>
+                                    </th>
+                                    <th>
+                                    </th>
+                                    <th>
+                                        $nameSearchInput
+                                    </th>
+                                    <th>
+                                    </th>
+                                    <th>
+                                    </th>
+                                    <th>
+                                    </th>
+                                    <th>
+                                    </th>
+                                    <th>
+                                    
+                                    
+                                    </th>
+                                </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="table-body">
                                 $reservationRows
                                 </tbody>
                             </table>

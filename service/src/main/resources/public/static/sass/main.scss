@@ -359,12 +359,10 @@ form .subtitle:not(:last-child) {
   .label {
     color: $bulma-primary;
   }
+}
 
-  .search-input {
-    background-color: $lightGray;
-    border: none;
-    width: 564px;
-  }
+.search-input {
+  border: 1px solid #DADDE2;
 }
 
 .reservation-item {
