@@ -241,6 +241,27 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should filter by section`() {
+        val spaceInSectionB = 1
+        val spaceInSectionD = 64
+        val spaceInSectionE = 85
+        createReservationInConfirmedState(reservationService, citizenId, spaceInSectionB, 1)
+        createReservationInConfirmedState(reservationService, citizenId, spaceInSectionD, 2)
+        createReservationInConfirmedState(reservationService, citizenId, spaceInSectionE, 3)
+
+        val reservationsBySection =
+            reservationService.getBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    sectionFilter = listOf("B", "D")
+                )
+            )
+        val sections = reservationsBySection.map { it.section }
+        assertEquals(2, reservationsBySection.size, "reservations are filtered correctly")
+        assertContains(sections, "B")
+        assertContains(sections, "D")
+    }
+
+    @Test
     fun `should sort reservations correctly`() {
         createReservationInConfirmedState(reservationService, citizenId, 1, 1)
         createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)

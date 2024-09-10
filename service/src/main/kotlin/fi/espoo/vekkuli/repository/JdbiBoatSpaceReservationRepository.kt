@@ -334,7 +334,8 @@ class JdbiBoatSpaceReservationRepository(
                     listOf(
                         InExpr("bs.location_id", params.harbor),
                         InExpr("bs.amenity", params.amenity) { "'$it'" },
-                        InExpr("bsr.status", statusFilter) { "'$it'" }
+                        InExpr("bsr.status", statusFilter) { "'$it'" },
+                        InExpr("bs.section", params.sectionFilter) { "'$it'" }
                     )
                 )
 
@@ -346,7 +347,8 @@ class JdbiBoatSpaceReservationRepository(
                         b.ownership as boat_ownership,
                         location.name as location_name, 
                         bs.type, CONCAT(bs.section, bs.place_number) as place,
-                        rw.key as warning
+                        rw.key as warning,
+                        bs.section
                     FROM boat_space_reservation bsr
                     JOIN boat b on b.id = bsr.boat_id
                     JOIN citizen c ON bsr.citizen_id = c.id 
@@ -392,6 +394,7 @@ class JdbiBoatSpaceReservationRepository(
                         phone = row.phone,
                         type = row.type,
                         place = row.place,
+                        section = row.section,
                         locationName = row.locationName,
                         boatRegistrationCode = row.boatRegistrationCode,
                         boatOwnership = row.boatOwnership,
