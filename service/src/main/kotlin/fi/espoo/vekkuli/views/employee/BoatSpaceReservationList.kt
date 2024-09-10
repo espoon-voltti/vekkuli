@@ -104,6 +104,37 @@ class BoatSpaceReservationList {
             </p>
             """.trimIndent()
 
+        val sections = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "O")
+
+        fun sectionCheckbox(section: String) =
+            """
+            <label class="checkbox" style="margin-bottom:4px;">
+                <input type="checkbox" name="sectionFilter" value="$section" x-model="selectedSections">
+                <span>$section</span>
+            </label>
+            """.trimIndent()
+
+        val sectionFilter =
+            """
+            <div x-data="{ open: false, selectedSections: [] }" @click.outside="open = false">
+                <div class="dropdown" :class="{ 'is-active': open }">
+                    <div class="dropdown-trigger">
+                            <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
+                                <div class="input search-input has-icons-left has-icons-right" style="width:120px">
+                                    <span class="icon is-small is-left">${icons.filter}</span>
+                                    <span class="tag" x-show="selectedSections.length > 0" x-text="selectedSections.length" style="margin-left:auto"></span>
+                                </div>
+                            </a>
+                    </div>
+                    <div class="dropdown-menu filter-dropdown-menu" id="dropdown-menu" role="menu">
+                        <div >
+                            ${sections.joinToString("\n") { sectionCheckbox(it) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
+
         // Reservation list
         val reservationRows =
             reservations.joinToString("\n") { result ->
@@ -122,6 +153,7 @@ class BoatSpaceReservationList {
                         <span>${result.place}</span>
                         ${if (result.hasWarning("BoatWidth") || result.hasWarning("BoatLength")) icons.warningExclamation(false) else ""}
                     </td>
+                    <td>${result.section}</td>
                     <td>${t("boatSpaces.type${result.type}Option")}</td>
                     <td><a href="/virkailija/kayttaja/${result.citizenId}">${result.firstName} ${result.lastName}</a></td>
                     <td>${result.homeTown}</td>
@@ -225,6 +257,7 @@ class BoatSpaceReservationList {
                                     <th class="nowrap">
                                         ${sortButton("PLACE", t("boatSpaceReservation.title.place"))}
                                     </th>
+                                    <th>Laituri</th>
                                     <th class="nowrap">
                                         ${sortButton("PLACE_TYPE", t("boatSpaceReservation.title.type"))}
                                     </th>
@@ -251,6 +284,7 @@ class BoatSpaceReservationList {
                                 <tr>
                                     <th></th>
                                     <th></th>
+                                    <th>$sectionFilter</th>
                                     <th></th>
                                     <th>$nameSearchInput</th>
                                     <th></th>

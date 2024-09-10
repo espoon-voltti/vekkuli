@@ -545,3 +545,11 @@ label.filter-button:has(input:checked) .icon {
   display: inline-block; /* Show the icon when checked */
 }
 
+.filter-dropdown-menu {
+  min-width:unset;
+  width: 120px;
+  background:white;
+  padding:4px;
+  border: 1px solid #DADDE2;
+  border-top:0;
+}

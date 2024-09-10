@@ -77,6 +77,7 @@ data class BoatSpaceReservationItem(
     val phone: String,
     val type: BoatSpaceType,
     val place: String,
+    val section: String,
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
@@ -104,7 +105,8 @@ data class BoatSpaceReservationItemWithWarning(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
-    val warning: String?
+    val warning: String?,
+    val section: String
 )
 
 enum class BoatSpaceFilterColumn {
@@ -130,6 +132,7 @@ data class BoatSpaceReservationFilter(
     val payment: List<PaymentFilter> = emptyList(),
     val nameSearch: String? = null,
     val warningFilter: Boolean? = null,
+    val sectionFilter: List<String> = emptyList(),
 ) {
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
 
