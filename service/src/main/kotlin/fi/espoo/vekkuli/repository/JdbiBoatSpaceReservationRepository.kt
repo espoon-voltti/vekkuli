@@ -322,6 +322,13 @@ class JdbiBoatSpaceReservationRepository(
                     "true"
                 }
 
+            val warningFilter =
+                if (params.warningFilter == true) {
+                    "rw.key IS NOT NULL"
+                } else {
+                    "true"
+                }
+
             val filter =
                 AndExpr(
                     listOf(
@@ -349,6 +356,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE
                         (bsr.status = 'Confirmed' OR bsr.status = 'Payment')
                         AND $nameSearch
+                        AND $warningFilter
                         AND ${filter.toSql().ifBlank { "true" }}
                     ${getSortingSql(params)}
                     """.trimIndent()
