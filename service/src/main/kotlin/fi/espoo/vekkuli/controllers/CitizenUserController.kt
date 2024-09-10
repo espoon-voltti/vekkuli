@@ -67,6 +67,48 @@ class CitizenUserController {
         )
     }
 
+    @GetMapping("/kayttaja/{citizenId}/varaukset")
+    @ResponseBody
+    fun boatSpaceReservationContent(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats)
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/viestit")
+    @ResponseBody
+    fun boatSpaceMessageContent(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        return citizenDetails.messageTabContent(citizen)
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/muistiinpanot")
+    @ResponseBody
+    fun boatSpaceMemoContent(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        return citizenDetails.memoTabContent(citizen)
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/maksut")
+    @ResponseBody
+    fun boatSpacePaymentContent(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        return citizenDetails.paymentTabContent(citizen)
+    }
+
     @GetMapping("/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
     @ResponseBody
     fun boatEditPage(
