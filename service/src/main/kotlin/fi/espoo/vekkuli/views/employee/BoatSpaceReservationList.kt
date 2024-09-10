@@ -122,7 +122,7 @@ class BoatSpaceReservationList {
                             <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
                                 <div class="input search-input has-icons-left has-icons-right" style="width:120px">
                                     <span class="icon is-small is-left">${icons.filter}</span>
-                                    <span class="tag" x-show="selectedSections.length > 0" x-text="selectedSections.length" style="margin-left:auto"></span>
+                                    <span class="filter-tag" x-show="selectedSections.length > 0" x-text="selectedSections.length" style="margin-left:auto"></span>
                                 </div>
                             </a>
                     </div>

@@ -553,3 +553,13 @@ label.filter-button:has(input:checked) .icon {
   border: 1px solid #DADDE2;
   border-top:0;
 }
+
+.filter-tag{
+  background-color: $bulma-primary;
+  color: $white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-right: 8px;
+  font-size:10px;
+}
