@@ -97,7 +97,7 @@ class BoatSpaceReservationList {
 
         val nameSearchInput =
             """
-            <p class="control has-icons-left has-icons-right">
+            <p class="control has-icons-left">
                 <input class="input search-input" type="text" name="nameSearch" 
                     aria-label="${t("boatSpaces.searchButton")}"/>
                 <span class="icon is-small is-left">${icons.search}</span>
@@ -257,7 +257,7 @@ class BoatSpaceReservationList {
                                     <th class="nowrap">
                                         ${sortButton("PLACE", t("boatSpaceReservation.title.place"))}
                                     </th>
-                                    <th>Laituri</th>
+                                    <th>${t("boatSpaceReservation.title.pier")}</th>
                                     <th class="nowrap">
                                         ${sortButton("PLACE_TYPE", t("boatSpaceReservation.title.type"))}
                                     </th>
