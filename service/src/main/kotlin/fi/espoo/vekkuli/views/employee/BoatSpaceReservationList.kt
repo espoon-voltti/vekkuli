@@ -83,6 +83,18 @@ class BoatSpaceReservationList {
                 """.trimIndent()
             }
 
+        val warningFilterCheckbox =
+            """
+            <label class="checkbox">
+                <input type="checkbox" name="warningFilter" ${if (params.warningFilter == true) {
+                "checked"
+            } else {
+                ""
+            }}>
+                <span>${t("boatSpaceReservation.showReservationsWithWarnings")}</span>
+            </label>
+            """.trimIndent()
+
         val nameSearchInput =
             """
             <p class="control has-icons-left has-icons-right">
@@ -200,6 +212,7 @@ class BoatSpaceReservationList {
                             </div>
                         </div>
                         <div class="block">
+                            $warningFilterCheckbox
                         </div>
 
                         <div class="reservation-list block">
