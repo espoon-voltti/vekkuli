@@ -129,21 +129,13 @@ data class BoatSpaceReservationFilter(
     val harbor: List<Int> = emptyList(),
     val payment: List<PaymentFilter> = emptyList(),
     val nameSearch: String? = null,
+    val warningFilter: Boolean? = null,
 ) {
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
 
     fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
 
     fun hasPayment(paymentFilter: PaymentFilter): Boolean = payment.contains(paymentFilter)
-
-    fun getSortForColumn(name: String): String {
-        val value = BoatSpaceFilterColumn.valueOf(name)
-        return if (sortBy == value) {
-            if (ascending) "asc" else "desc"
-        } else {
-            ""
-        }
-    }
 }
 
 fun getSortingSql(sort: BoatSpaceReservationFilter): String {

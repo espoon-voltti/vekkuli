@@ -91,9 +91,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                     productCode = "1"
                 )
             )
-        assertEquals(madeReservation.id, reservation?.id, "reservation is the same")
-        assertEquals(payment.citizenId, madeReservation?.citizenId, "payment is added for correct citizen")
-        assertEquals(reservation?.paymentId, payment.id, "payment is added to the reservation")
+        assertEquals(madeReservation.id, reservation.id, "reservation is the same")
+        assertEquals(payment.citizenId, madeReservation.citizenId, "payment is added for correct citizen")
+        assertEquals(reservation.paymentId, payment.id, "payment is added to the reservation")
     }
 
     @Test
@@ -212,6 +212,32 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val reservationsNames = reservationsByLastName.map { "${it.firstName} ${it.lastName}" }
         assertContains(reservationsNames, "Mikko Virtanen")
         assertContains(reservationsNames, "Olivia Virtanen")
+    }
+
+    @Test
+    fun `should filter reservations that have warnings`() {
+        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
+        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+
+        val expectedBoatSpaceWithWarnings = 3
+        val madeReservation = createReservationInPaymentState(reservationService, citizenId, expectedBoatSpaceWithWarnings)
+        val paymentParams = CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
+        val (payment, _) = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
+        reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3)
+
+        reservationService.handlePaymentResult(
+            mapOf("checkout-stamp" to payment.id.toString()),
+            success = true
+        )
+        val reservationsWithWarnings =
+            reservationService.getBoatSpaceReservations(
+                BoatSpaceReservationFilter(
+                    warningFilter = true
+                )
+            )
+
+        assertEquals(1, reservationsWithWarnings.size, "reservations are filtered correctly")
+        assertEquals(3, reservationsWithWarnings.first().boatSpaceId, "correct reservation is returned")
     }
 
     @Test
