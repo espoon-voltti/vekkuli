@@ -484,7 +484,7 @@ class CitizenDetails {
                       hx-target="#memo-${memo.id}"
                       hx-swap="outerHTML">
                     <div class="control memo-edit-area">
-                        <textarea rows="1" class="memo-content-input" name="content">${memo.content}</textarea>
+                        <textarea class="textarea" rows="1" class="memo-content-input" name="content">${memo.content}</textarea>
                         <div class="memo-edit-buttons">
                             <button type="submit">
                                 <span class="icon ml-s" 
@@ -535,7 +535,7 @@ class CitizenDetails {
                         hx-swap="outerHTML">
                         <div class="memo-edit-area">
                             <div class="control">
-                                <textarea rows="1" class="memo-content-input" name="content"></textarea>
+                                <textarea class="textarea" rows="1" class="memo-content-input" name="content"></textarea>
                             </div>
                             <div class="memo-edit-buttons">
                                 <button type="submit">
