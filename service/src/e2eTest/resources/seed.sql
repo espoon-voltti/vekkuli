@@ -26,6 +26,9 @@ INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sai
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
+INSERT INTO app_user (id, external_id, first_name, last_name, email)
+VALUES ('94833b54-132b-4ab8-b841-60df45809b3e', 'ad:001', 'Ville', 'Virkailija', 'ville@noreplytest.fi');
+
 INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, email, address, postal_code, municipality)
 VALUES
     ('62d90eed-4ea3-4446-8023-8dad9c01dd34', now(), '010106A957V', 'Mikko', 'Virtanen', '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 'Helsinki'),
