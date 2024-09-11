@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.domain.CitizenMemo
+import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
 import fi.espoo.vekkuli.domain.MemoCategory
 import fi.espoo.vekkuli.service.CitizenRepository
 import org.jdbi.v3.core.Jdbi
@@ -53,18 +54,58 @@ class JdbiCitizenRepository(
     override fun getMemos(
         citizenId: UUID,
         category: MemoCategory
-    ): List<CitizenMemo> =
+    ): List<CitizenMemoWithDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT * FROM citizen_memo
+                    SELECT
+                        cm.id,
+                        cm.created_at,
+                        cm.created_by as created_by_id,
+                        CONCAT(auc.first_name, ' ', auc.last_name) as created_by,
+                        cm.updated_at,
+                        cm.updated_by as updated_by_id,
+                        CONCAT(auu.first_name, ' ', auu.last_name) as updated_by,
+                        cm.category,
+                        cm.citizen_id,
+                        cm.content
+                    FROM citizen_memo cm
+                    LEFT JOIN app_user auc ON created_by = auc.id
+                    LEFT JOIN app_user auu ON updated_by = auu.id
                     WHERE citizen_id = :citizenId AND category = :category
+                    ORDER BY cm.created_at DESC
                     """.trimIndent()
                 )
             query.bind("citizenId", citizenId)
             query.bind("category", category)
-            query.mapTo<CitizenMemo>().toList()
+            query.mapTo<CitizenMemoWithDetails>().toList()
+        }
+
+    override fun getMemo(id: Int): CitizenMemoWithDetails? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT
+                        cm.id,
+                        cm.created_at,
+                        cm.created_by as created_by_id,
+                        CONCAT(auc.first_name, ' ', auc.last_name) as created_by,
+                        cm.updated_at,
+                        cm.updated_by as updated_by_id,
+                        CONCAT(auu.first_name, ' ', auu.last_name) as updated_by,
+                        cm.category,
+                        cm.citizen_id,
+                        cm.content
+                    FROM citizen_memo cm
+                    LEFT JOIN app_user auc ON created_by = auc.id
+                    LEFT JOIN app_user auu ON updated_by = auu.id
+                    WHERE cm.id = :id
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.mapTo<CitizenMemoWithDetails>().findFirst().orElse(null)
         }
 
     override fun removeMemo(id: Int) {

@@ -5,9 +5,13 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.Citizen
+import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
+import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 enum class SubTab {
@@ -19,6 +23,9 @@ enum class SubTab {
 
 @Service
 class CitizenDetails {
+    @Autowired
+    private lateinit var citizenService: CitizenService
+
     @Autowired
     lateinit var messageUtil: MessageUtil
 
@@ -297,7 +304,7 @@ class CitizenDetails {
                             <div class="column is-narrow">
                                 <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
                             </div>
-                            <span class="edit-buttons column columns">
+                            <span class="memo-edit-buttons column columns">
                                 <div class="column is-narrow">
                                     <a class="edit-link s-link"
                                        hx-get="/virkailija/kayttaja/${citizen.id}/vene/${boat.id}/muokkaa"
@@ -416,14 +423,171 @@ class CitizenDetails {
             """.trimIndent()
     }
 
-    fun memoTabContent(citizen: Citizen): String {
+    fun formatDate(d: LocalDateTime): String = d.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+
+    fun memoContent(
+        memo: CitizenMemoWithDetails,
+        edit: Boolean
+    ): String {
+        val createdBy =
+            if (memo.createdBy !== null) {
+                """
+                <span class="memo-label">${memo.createdBy}</span>
+                """
+            } else {
+                ""
+            }
+
+        val header =
+            """
+            <div>
+                <span class="memo-label">${formatDate(memo.createdAt)}</span>
+                $createdBy
+                <a hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/muokkaa/${memo.id}")}"
+                   hx-trigger="click"
+                   hx-target="#memo-${memo.id}"
+                   hx-swap="outerHTML">
+                    <span class="icon ml-s">
+                        ${icons.edit}
+                    </span>
+                </a>
+                <a hx-delete="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                   hx-trigger="click"
+                   hx-target="#tab-content"
+                   hx-swap="outerHTML"
+                   hx-confirm="Haluatko varmasti poistaa muistion?">
+                    <span class="icon ml-s">
+                        ${icons.remove}
+                    </span>
+                </a>
+            </div>
+            """.trimIndent()
+
+        val updated =
+            if (memo.updatedBy !== null && memo.updatedAt !== null) {
+                """
+                <div class="memo-updated-by">
+                    Muokattu
+                    <span>${formatDate(memo.updatedAt)}</span>
+                    <span>${memo.updatedBy}</span>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
+        val content =
+            if (edit) {
+                // language=HTML
+                """
+                <form hx-patch="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                      hx-target="#memo-${memo.id}"
+                      hx-swap="outerHTML">
+                    <div class="control memo-edit-area">
+                        <textarea rows="1" class="memo-content-input" name="content">${memo.content}</textarea>
+                        <div class="memo-edit-buttons">
+                            <button type="submit">
+                                <span class="icon ml-s" 
+                                      style='stroke: green;'>
+                                    ${icons.check}
+                                </span>
+                            </button>
+                            <span class="icon ml-s"
+                                  hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                                  hx-trigger="click"
+                                  hx-target="#memo-${memo.id}"
+                                  hx-swap="outerHTML">
+                                ${icons.remove}
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                """.trimIndent()
+            } else {
+                // language=HTML
+                """
+                <div class="memo-content">
+                    ${memo.content}
+                </div>
+                """
+            }
+
         // language=HTML
         return """
-            <div id="tab-content" class="container block">
-              ${renderTabNavi(citizen.id, SubTab.Memos)}
-              <h3>MEMOS</h3>
-            </div> 
+            <div class="block memo" id="memo-${memo.id}">
+               $header
+               $updated
+               $content
+            </div>
             """.trimIndent()
+    }
+
+    fun newMemoContent(
+        citizenId: UUID,
+        edit: Boolean
+    ): String {
+        if (edit) {
+            // language=HTML
+            return """
+                <div id="new-memo" class="block">
+                    <form hx-post="${getTabUrl("$citizenId/muistiinpanot")}"
+                        hx-target="#tab-content"
+                        hx-swap="outerHTML">
+                        <div class="memo-edit-area">
+                            <div class="control">
+                                <textarea rows="1" class="memo-content-input" name="content"></textarea>
+                            </div>
+                            <div class="memo-edit-buttons">
+                                <button type="submit">
+                                    <span class="icon ml-s" style='stroke: green;'>${icons.check}</span>
+                                </button>
+                                <a hx-get="${getTabUrl("$citizenId/muistiinpanot/lisaa_peruuta")}" 
+                                    hx-trigger="click" 
+                                    hx-target="#new-memo" 
+                                    hx-swap="outerHTML" >
+                                    <span class="icon ml-s">${icons.remove}</span>
+                                </a>
+                            </div> 
+                        </div>
+                    </form>
+                </div>
+                """.trimIndent()
+        }
+        // language=HTML
+        return """
+            <div id="new-memo" class="block">
+                <a 
+                    hx-get="${getTabUrl("$citizenId/muistiinpanot/lisaa")}"
+                    hx-trigger="click"
+                    hx-target="#new-memo"
+                    hx-swap="outerHTML">
+                    <span class="icon mr-s">${icons.plus}</span>
+                    <span>Uusi muistiinpano</span>   
+                </a>
+            </div>
+            """.trimIndent()
+    }
+
+    fun memoTabContent(
+        citizenId: UUID,
+        memos: List<CitizenMemoWithDetails>
+    ): String {
+        val memoHtml =
+            memos.joinToString("\n") {
+                memoContent(it, false)
+            }
+
+        val result =
+            // language=HTML
+            """
+            <div id="tab-content" class="container block">
+                ${renderTabNavi(citizenId, SubTab.Memos)}
+                ${newMemoContent(citizenId, false)}
+                $memoHtml
+            <div>
+            """.trimIndent()
+
+        return result
     }
 
     fun tabCls(
@@ -446,25 +610,25 @@ class CitizenDetails {
                     <a hx-get="${getTabUrl("$citizenId/varaukset")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
-                       hx-swap='outerHTML'>${t("boatSpaceReservation.title.reservations")}</a>
+                       hx-swap="outerHTML">${t("boatSpaceReservation.title.reservations")}</a>
                 </li>
                 <li class="${tabCls(activeTab, SubTab.Messages)}">
                     <a hx-get="${getTabUrl("$citizenId/viestit")}"
                        hx-target="#tab-content" 
                        hx-trigger="click" 
-                       hx-swap='outerHTML'> ${t("boatSpaceReservation.title.messages")}</a>
+                       hx-swap="outerHTML"> ${t("boatSpaceReservation.title.messages")}</a>
                 </li>
                 <li class="${tabCls(activeTab, SubTab.Payments)}">
                     <a hx-get="${getTabUrl("$citizenId/maksut")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
-                       hx-swap='outerHTML'>${t("boatSpaceReservation.title.paymentHistory")}</a>
+                       hx-swap="outerHTML">${t("boatSpaceReservation.title.paymentHistory")}</a>
                 </li>
                <li class="${tabCls(activeTab, SubTab.Memos)}">
                     <a hx-get="${getTabUrl("$citizenId/muistiinpanot")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
-                       hx-swap='outerHTML'>${t("boatSpaceReservation.title.notes")}</a>
+                       hx-swap="outerHTML">${t("boatSpaceReservation.title.notes")}</a>
                </li>
             </ul>
         </div>
