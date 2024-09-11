@@ -293,9 +293,29 @@ class CitizenDetails {
         }
 
         // language=HTML
+        fun deleteButton(noLinkedReservation: Boolean): String {
+            if (noLinkedReservation) {
+                return (
+                    """
+                    <div class="column">
+                        <a class="is-link has-text-danger">
+                            <span class="icon ml-s">
+                                ${icons.remove}
+                            </span>
+                            <span > ${t("boatSpaceReservation.button.deleteBoat")} </span>
+                        </a>
+                    </div>
+                    """
+                )
+            }
+            return ""
+        }
+
+        // language=HTML
         fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String {
             return boats
                 .mapIndexed { _, boat ->
+
                     """
                     <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
                         <div class="columns is-vcentered">
@@ -314,14 +334,8 @@ class CitizenDetails {
                                         <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
                                     </a>
                                 </div>
-                                <div class="column">
-                                    <a class="is-link has-text-danger">
-                                        <span class="icon ml-s">
-                                            ${icons.xMark}
-                                        </span>
-                                        <span>${t("boatSpaceReservation.button.deleteBoat")}</span>
-                                    </a>
-                                </div>
+                                ${deleteButton(boat.reservationId == null)}
+                                
                                 ${showBoatWarnings(boat.hasAnyWarnings())}
                                 </span>
                         </div>
