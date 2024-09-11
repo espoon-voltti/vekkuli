@@ -129,6 +129,7 @@ class E2eTest : PlaywrightTest() {
             citizenDetails.showAllBoatsButton.click()
             assertThat(page.getByTestId("boat-3")).isVisible()
             page.getByTestId("delete-boat-3").click()
+            page.getByTestId("delete-modal-confirm-3").click()
             assertThat(page.getByTestId("boat-3")).isHidden()
         } catch (e: AssertionError) {
             handleError(e)

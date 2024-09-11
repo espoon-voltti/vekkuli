@@ -300,15 +300,32 @@ class CitizenDetails {
             if (noLinkedReservation) {
                 return (
                     """
-                    <div class="column">
+                    <div class="column" x-data="{deleteModal: false}">
                         <a class="is-link has-text-danger"
                             id='delete-boat-$boatId'
-                           hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
+                           x-on:click="deleteModal = true">
                             <span class="icon ml-s">
                                 ${icons.remove}
                             </span>
                             <span > ${t("boatSpaceReservation.button.deleteBoat")} </span>
                         </a>
+                        <div class="modal" x-show="deleteModal" style="display:none;">
+                            <div class="modal-underlay" @click="deleteModal = false"></div>
+                            <div class="modal-content">
+                                <div class="container">
+                                    <div class="has-text-centered is-1">
+                                        <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
+                                        <div class="buttons is-centered">
+                                            <a class="button is-light" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
+                        "cancel"
+                    )}</button>
+                                            <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
+                                                ${t("boatSpaceReservation.button.confirmDeletion")}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     """
                 )
