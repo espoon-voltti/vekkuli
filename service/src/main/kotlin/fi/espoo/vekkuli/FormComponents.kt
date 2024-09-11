@@ -152,6 +152,18 @@ class FormComponents {
             """.trimIndent()
     }
 
+    fun field(
+        labelKey: String,
+        id: String,
+        value: String?,
+    ): String {
+        //language=HTML
+        return """
+            <label class="label" for="$id">${t(labelKey)}</label>
+             <p id="$id">$value</p>
+            """.trimIndent()
+    }
+
     fun radioButtons(
         labelKey: String,
         id: String,
@@ -182,6 +194,41 @@ class FormComponents {
                     </div> 
                 </div>
             </div>
+            """.trimIndent()
+    }
+
+    fun formHeader(titleKey: String): String {
+        //language=HTML
+        return """
+            <h3 class="header">${t(titleKey)}</h3>
+            """.trimIndent()
+    }
+
+    fun buttons(
+        goBackUrl: String,
+        target: String,
+        select: String,
+        cancelId: String,
+        submitId: String
+    ): String {
+        //language=HTML
+        return """
+            <div class="buttons">
+                    <button
+                            id=$cancelId
+                            class="button"
+                            type="button"
+                            hx-get=$goBackUrl
+                            hx-target=$target
+                            hx-select=$select
+                            hx-swap="outerHTML"
+                    >${t("cancel")}</button>
+                    <button
+                            id=$submitId
+                            class="button is-primary"
+                            type="submit"
+                    >${t("citizenDetails.saveChanges")}</button>
+                </div>
             """.trimIndent()
     }
 }

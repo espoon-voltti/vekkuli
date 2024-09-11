@@ -1,10 +1,14 @@
 package fi.espoo.vekkuli.views.employee
 
+import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
+import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
+import fi.espoo.vekkuli.domain.SentMessage
+import fi.espoo.vekkuli.views.CommonComponents
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -22,13 +26,16 @@ enum class SubTab {
 @Service
 class CitizenDetails {
     @Autowired
-    private lateinit var citizenService: CitizenService
+    private lateinit var formComponents: FormComponents
 
     @Autowired
     lateinit var messageUtil: MessageUtil
 
     @Autowired
     lateinit var icons: Icons
+
+    @Autowired
+    lateinit var commonComponents: CommonComponents
 
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -38,49 +45,74 @@ class CitizenDetails {
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
     ): String {
-        val customerInfo =
+        // language=HTML
+        fun customerInfo(): String {
+            val firstNameValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.firstName",
+                    "firstName",
+                    citizen.firstName,
+                )
+            val lastNameValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.lastName",
+                    "lastName",
+                    citizen.lastName,
+                )
+            val ssnValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.nationalId",
+                    "nationalId",
+                    citizen.nationalId,
+                )
+            val addressValue = formComponents.field("boatSpaceReservation.title.address", "address", citizen.address)
+            val postalCodeValue = formComponents.field("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
+            val cityValue = formComponents.field("boatSpaceReservation.title.city", "city", citizen.municipalityName)
+            val municipalityValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.municipality",
+                    "municipality",
+                    citizen.municipalityName
+                )
+            val phoneNumberValue = formComponents.field("boatSpaceReservation.title.phoneNumber", "phoneNumber", citizen.phone)
+            val emailValue = formComponents.field("boatSpaceReservation.title.email", "email", citizen.email)
+            return (
+                """
+                <div class="container block" id="citizen-${citizen.id}">
+                    <div class="columns">
+                        <div class="column is-narrow">
+                            <h3 class="header">${t("boatSpaceReservation.title.customerInformation")}</h3>
+                        </div>
+                        <div class="column">
+                            <div>
+                                <a class="is-link" 
+                                    hx-get="/virkailija/kayttaja/${citizen.id}/muokkaa"
+                                    hx-target="#citizen-${citizen.id}"
+                                    hx-swap="innerHTML">
+                                    <span class="icon ml-s">
+                                        ${icons.edit}
+                                    </span>
+                                    <span>${t("boatSpaceReservation.button.editCustomerDetails")}</span>
+                                </a>
+                            </div>
+                            <!-- Placeholder for additional actions, if needed -->
+                        </div>
+                    </div>
+                    ${commonComponents.getCitizenFields(
+                    firstNameValue,
+                    lastNameValue,
+                    ssnValue,
+                    addressValue,
+                    postalCodeValue,
+                    cityValue,
+                    municipalityValue,
+                    phoneNumberValue,
+                    emailValue
+                )}
+            </div> 
             """
-            <div class="container block">
-                <div class="columns">
-                    <div class="column is-narrow">
-                        <h3 class="header">${t("boatSpaceReservation.title.customerInformation")}</h3>
-                    </div>
-                    <div class="column">
-                        <!-- Placeholder for additional actions, if needed -->
-                    </div>
-                </div>
-                <div class="columns">
-                    <div class="column is-one-quarter">
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.name")}</label>
-                            <p>${citizen.firstName} ${citizen.lastName}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.address")}</label>
-                            <p>${citizen.address ?: "-"} ${citizen.postalCode}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.email")}</label>
-                            <p>${citizen.email}</p>
-                        </div>
-                    </div>
-                    <div class="column is-one-quarter">
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.ssn")}</label>
-                            <p>${citizen.nationalId}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.municipality")}</label>
-                            <p>${citizen.municipalityName}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.phoneNumber")}</label>
-                            <p>${citizen.phone}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            """.trimIndent()
+            )
+        }
 
         val tabs =
             // language=HTML
@@ -109,7 +141,7 @@ class CitizenDetails {
                     </button>
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
-                $customerInfo
+                ${customerInfo()}
                 $tabs
                 ${reservationTabContent(citizen, boatSpaceReservations, boats)}
             </section>

@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.CitizenDetails
+import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -46,6 +47,9 @@ class CitizenUserController {
 
     @Autowired
     lateinit var layout: EmployeeLayout
+
+    @Autowired
+    lateinit var editCitizen: EditCitizen
 
     @GetMapping("/kayttaja/{citizenId}")
     @ResponseBody
@@ -366,6 +370,35 @@ class CitizenUserController {
                 boatSpaceReservations,
                 updatedBoats,
             )
+        )
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/muokkaa")
+    @ResponseBody
+    fun citizenEditPage(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        model: Model
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        return editCitizen.editCitizenForm(citizen, mutableMapOf())
+    }
+
+    @PatchMapping("/kayttaja/{citizenId}")
+    @ResponseBody
+    fun citizenEdit(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        model: Model
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it) }
+        return layout.render(
+            true,
+            request.requestURI,
+            citizenDetails.citizenPage(citizen, boatSpaceReservations, boats)
         )
     }
 }
