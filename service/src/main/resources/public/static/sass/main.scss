@@ -459,6 +459,13 @@ a.active {
   border-bottom: solid 1px $grey;
 }
 
+.reservation-list.no-bottom-border,
+.reservation-list:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: $spacing-large;
+}
+
 .nowrap {
   white-space: nowrap;
 }
@@ -469,11 +476,6 @@ a.active {
 }
 .reservation-table-icon{
   vertical-align: middle;
-}
-
-.reservation-list:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
 }
 
 tr.table-borderless th {

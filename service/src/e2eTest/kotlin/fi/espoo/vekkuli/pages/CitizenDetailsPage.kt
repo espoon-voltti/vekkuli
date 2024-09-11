@@ -53,4 +53,6 @@ class CitizenDetailsPage(
     val addNewMemoBtn: Locator = page.getByTestId("add-new-memo")
     val newMemoContent: Locator = page.getByTestId("new-memo-content")
     val newMemoSaveBtn: Locator = page.getByTestId("new-memo-save-button")
+
+    val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
 }

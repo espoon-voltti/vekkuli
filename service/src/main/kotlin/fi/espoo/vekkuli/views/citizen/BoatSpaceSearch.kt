@@ -189,7 +189,7 @@ class BoatSpaceSearch {
             harbor.boatSpaces.forEachIndexed { index, result ->
                 rowsBuilder.append(
                     """
-                    <tr ${if (index > 3) "class=\"is-hidden\"" else ""}>
+                    <tr ${if (index > 3) ":class=\"showAll ? '' : 'is-hidden'\"" else ""}>
                         <td>${result.formattedSizes}</td>
                         <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                         <td>${result.priceInEuro} &euro;</td>
