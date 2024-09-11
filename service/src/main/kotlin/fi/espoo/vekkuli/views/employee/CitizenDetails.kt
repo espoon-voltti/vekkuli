@@ -293,12 +293,17 @@ class CitizenDetails {
         }
 
         // language=HTML
-        fun deleteButton(noLinkedReservation: Boolean): String {
+        fun deleteButton(
+            noLinkedReservation: Boolean,
+            boatId: Int
+        ): String {
             if (noLinkedReservation) {
                 return (
                     """
                     <div class="column">
-                        <a class="is-link has-text-danger">
+                        <a class="is-link has-text-danger"
+                            id='delete-boat-$boatId'
+                           hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
                             <span class="icon ml-s">
                                 ${icons.remove}
                             </span>
@@ -334,7 +339,7 @@ class CitizenDetails {
                                         <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
                                     </a>
                                 </div>
-                                ${deleteButton(boat.reservationId == null)}
+                                ${deleteButton(boat.reservationId == null, boat.id)}
                                 
                                 ${showBoatWarnings(boat.hasAnyWarnings())}
                                 </span>
