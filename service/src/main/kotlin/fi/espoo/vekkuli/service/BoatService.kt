@@ -26,6 +26,8 @@ interface BoatRepository {
         extraInformation: String,
         ownership: OwnershipStatus,
     ): Boat
+
+    fun deleteBoat(boatId: Int): Boolean
 }
 
 @Service
@@ -64,4 +66,6 @@ class BoatService(
             extraInformation,
             ownership
         )
+
+    fun deleteBoat(boatId: Int): Boolean = boatRepository.deleteBoat(boatId)
 }
