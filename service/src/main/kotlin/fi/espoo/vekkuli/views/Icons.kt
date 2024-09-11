@@ -19,8 +19,8 @@ class Icons {
         </svg>
         """.trimIndent()
 
-    fun sort(dir: String): String {
-        return """
+    fun sort(dir: String): String =
+        """
         <svg width="12" height="22" viewBox="0 0 12 22" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0.976562 7.60156L5.45312 3.3125C5.59375 3.19531 5.73438 3.125 5.875 3.125C6.01562 3.125 6.13281 3.17188 6.25 3.26562L10.7266 7.55469C10.9609 7.78906 10.9609 8.14062 10.75 8.35156C10.5391 8.58594 10.1875 8.58594 9.95312 8.375L5.875 4.48438L1.75 8.42188C1.53906 8.63281 1.16406 8.63281 0.953125 8.39844C0.742188 8.16406 0.742188 7.8125 0.976562 7.60156Z"
                 fill="${if (dir == "desc") "#536076" else "#A9B0BB"}" />
@@ -28,15 +28,13 @@ class Icons {
                 fill="${if (dir == "asc") "#536076" else "#A9B0BB"}" />
         </svg>
         """
-    }
 
-    fun warningExclamation(isError: Boolean): String {
-        return """
-            <svg height="16px" fill="${if (isError) "#FF3D3D" else "#FF8E31"}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
-            </svg>
-            """.trimIndent()
-    }
+    fun warningExclamation(isError: Boolean): String =
+        """
+        <svg height="16px" fill="${if (isError) "#FF3D3D" else "#FF8E31"}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
+        </svg>
+        """.trimIndent()
 
     val check =
         """
@@ -51,6 +49,14 @@ class Icons {
             <path d="M13.6464 15.6465C13.8417 15.8418 14.1583 15.8418 14.3536 15.6465C14.5488 15.4513 14.5488 15.1347 14.3536 14.9394L13.6464 15.6465ZM7.99996 10L13.6464 15.6465L14.3536 14.9394L8.70707 9.29293L7.99996 10Z"
                   fill="#536076" />
             <circle cx="5.5" cy="5.5" r="5" stroke="#536076" />
+        </svg>
+        """.trimIndent()
+
+    val plus =
+        """
+        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.3311 8L1.33105 8" stroke="#0047B6" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8.33105 1L8.33105 15" stroke="#0047B6" stroke-width="2" stroke-linecap="round"/>
         </svg>
         """.trimIndent()
 

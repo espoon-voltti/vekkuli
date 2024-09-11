@@ -556,6 +556,7 @@ label.filter-button:has(input:checked) .icon {
   display: inline-block; /* Show the icon when checked */
 }
 
+
 .filter-dropdown-menu {
   min-width:unset;
   width: 120px;
@@ -565,12 +566,46 @@ label.filter-button:has(input:checked) .icon {
   border-top:0;
 }
 
-.filter-tag{
+.filter-tag {
   background-color: $bulma-primary;
   color: $white;
   padding: 4px 8px;
   border-radius: 20px;
   display: inline-block;
   margin-right: 8px;
-  font-size:10px;
+  font-size: 10px;
 }
+
+.memo {
+
+  .memo-label {
+    background-color: $light-blue;
+    padding: 0 4px 0 4px;
+    border-radius: 3px;
+  }
+
+  .memo-updated-by {
+    color: $black;
+  }
+
+  .memo-content {
+    padding: $spacing-small 0;
+  }
+
+}
+
+.memo-edit-area {
+  max-width: 400px;
+  display: flex;
+}
+
+.memo-content-input {
+  flex: 10;
+}
+
+.memo-edit-buttons {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+

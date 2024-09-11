@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
@@ -95,8 +96,82 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        return citizenDetails.memoTabContent(citizen)
+        val memos = citizenService.getMemos(citizenId, MemoCategory.Marine)
+        return citizenDetails.memoTabContent(citizenId, memos)
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/muokkaa/{memoId}")
+    @ResponseBody
+    fun boatSpaceMemoEditForm(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable memoId: Int,
+    ): String {
+        val memo = citizenService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
+        return citizenDetails.memoContent(memo, true)
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/lisaa")
+    @ResponseBody
+    fun boatSpaceMemoNewForm(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+    ): String = citizenDetails.newMemoContent(citizenId, true)
+
+    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/lisaa_peruuta")
+    @ResponseBody
+    fun boatSpaceMemoNewCancel(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+    ): String = citizenDetails.newMemoContent(citizenId, false)
+
+    @PostMapping("/kayttaja/{citizenId}/muistiinpanot")
+    @ResponseBody
+    fun boatSpaceNewMemo(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @RequestParam content: String,
+    ): String {
+        val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
+        citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, content)
+        val memos = citizenService.getMemos(citizenId, MemoCategory.Marine)
+        return citizenDetails.memoTabContent(citizenId, memos)
+    }
+
+    @DeleteMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @ResponseBody
+    fun boatSpaceDeleteMemo(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable memoId: Int,
+    ): String {
+        citizenService.removeMemo(memoId)
+        val memos = citizenService.getMemos(citizenId, MemoCategory.Marine)
+        return citizenDetails.memoTabContent(citizenId, memos)
+    }
+
+    @PatchMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @ResponseBody
+    fun boatSpaceMemoPatch(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable memoId: Int,
+        @RequestParam content: String,
+    ): String {
+        val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
+        val memo = citizenService.updateMemo(memoId, userId, content) ?: throw IllegalArgumentException("Memo not found")
+        return citizenDetails.memoContent(memo, false)
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @ResponseBody
+    fun boatSpaceMemoItem(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable memoId: Int,
+    ): String {
+        val memo = citizenService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
+        return citizenDetails.memoContent(memo, false)
     }
 
     @GetMapping("/kayttaja/{citizenId}/maksut")
