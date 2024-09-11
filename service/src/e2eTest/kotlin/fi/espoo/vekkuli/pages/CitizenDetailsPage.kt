@@ -46,4 +46,5 @@ class CitizenDetailsPage(
 
     val submitButton: Locator = page.getByTestId("submit")
     val cancelButton: Locator = page.getByTestId("cancel")
+    val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
 }
