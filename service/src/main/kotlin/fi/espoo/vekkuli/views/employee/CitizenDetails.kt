@@ -294,10 +294,10 @@ class CitizenDetails {
 
         // language=HTML
         fun deleteButton(
-            noLinkedReservation: Boolean,
+            hasLinkedReservation: Boolean,
             boatId: Int
         ): String {
-            if (noLinkedReservation) {
+            if (!hasLinkedReservation) {
                 return (
                     """
                     <div class="column" x-data="{deleteModal: false}">
@@ -316,7 +316,7 @@ class CitizenDetails {
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-light" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
                         "cancel"
                     )}</button>
                                             <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
@@ -356,7 +356,7 @@ class CitizenDetails {
                                         <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
                                     </a>
                                 </div>
-                                ${deleteButton(boat.reservationId == null, boat.id)}
+                                ${deleteButton(boat.reservationId != null, boat.id)}
                                 
                                 ${showBoatWarnings(boat.hasAnyWarnings())}
                                 </span>
@@ -420,6 +420,26 @@ class CitizenDetails {
                     """.trimIndent()
                 }.joinToString("\n")
         }
+        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
+
+        // language=HTML
+        val showAllBoatsCheckbox =
+            if (boatsWithNoReservation.isNotEmpty()) {
+                """
+                            <label class="checkbox pb-l">
+                                <input type="checkbox"
+                                name="showAllBoats"
+                                id="showAllBoats"
+                                x-model="showAllBoats"
+                                hx-preserve="true"
+                                x-ref="showAllBoats"
+                                />
+                                <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
+                            </label>
+                """
+            } else {
+                ""
+            }
 
         // language=HTML
         return """
@@ -437,16 +457,7 @@ class CitizenDetails {
                        </div>
                      
                       <div>
-                          <label class="checkbox pb-l">
-                               <input type="checkbox" 
-                                       name="showAllBoats" 
-                                       id="showAllBoats" 
-                                       x-model="showAllBoats"
-                                       hx-preserve="true"
-                                       x-ref="showAllBoats"
-                                       />
-                               <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
-                          </label> 
+                         $showAllBoatsCheckbox
                           <div class="reservation-list" x-show="showAllBoats">    
                             ${getBoatsList(boats.filter { it.reservationId == null })} 
                            </div>

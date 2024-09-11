@@ -347,8 +347,13 @@ class CitizenUserController {
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
-        boatService.deleteBoat(boatId)
-        val updatedBoats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val boatDeletionSuccessful = boatService.deleteBoat(boatId)
+        // Update the boat list to remove the deleted boat
+        val updatedBoats =
+            boats
+                .map { toUpdateForm(it, boatSpaceReservations) }
+                .filter { !boatDeletionSuccessful || it.id != boatId }
+
         response.addHeader("HX-Retarget", "#citizen-details")
         response.addHeader("HX-Reselect", "#citizen-details")
 
