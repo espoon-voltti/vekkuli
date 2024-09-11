@@ -319,7 +319,7 @@ class CitizenDetails {
                                 <div class="column">
                                     <a class="is-link has-text-danger">
                                         <span class="icon ml-s">
-                                            ${icons.remove}
+                                            ${icons.xMark}
                                         </span>
                                         <span>${t("boatSpaceReservation.button.deleteBoat")}</span>
                                     </a>
@@ -438,28 +438,37 @@ class CitizenDetails {
                 ""
             }
 
+        val buttons =
+            if (edit) {
+                ""
+            } else {
+                """
+                <a hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/muokkaa/${memo.id}")}"
+                       hx-trigger="click"
+                       hx-target="#memo-${memo.id}"
+                       hx-swap="outerHTML">
+                        <span class="icon ml-s">
+                            ${icons.edit}
+                        </span>
+                    </a>
+                    <a hx-delete="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                       hx-trigger="click"
+                       hx-target="#tab-content"
+                       hx-swap="outerHTML"
+                       hx-confirm="Haluatko varmasti poistaa muistion?">
+                        <span class="icon ml-s">
+                            ${icons.remove}
+                        </span>
+                    </a>
+                """.trimIndent()
+            }
+
         val header =
             """
             <div>
                 <span class="memo-label">${formatDate(memo.createdAt)}</span>
                 $createdBy
-                <a hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/muokkaa/${memo.id}")}"
-                   hx-trigger="click"
-                   hx-target="#memo-${memo.id}"
-                   hx-swap="outerHTML">
-                    <span class="icon ml-s">
-                        ${icons.edit}
-                    </span>
-                </a>
-                <a hx-delete="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
-                   hx-trigger="click"
-                   hx-target="#tab-content"
-                   hx-swap="outerHTML"
-                   hx-confirm="Haluatko varmasti poistaa muistion?">
-                    <span class="icon ml-s">
-                        ${icons.remove}
-                    </span>
-                </a>
+                $buttons
             </div>
             """.trimIndent()
 
@@ -497,7 +506,7 @@ class CitizenDetails {
                                   hx-trigger="click"
                                   hx-target="#memo-${memo.id}"
                                   hx-swap="outerHTML">
-                                ${icons.remove}
+                                ${icons.xMark}
                             </span>
                         </div>
                     </div>
@@ -545,7 +554,7 @@ class CitizenDetails {
                                     hx-trigger="click" 
                                     hx-target="#new-memo" 
                                     hx-swap="outerHTML" >
-                                    <span class="icon ml-s">${icons.remove}</span>
+                                    <span class="icon ml-s">${icons.xMark}</span>
                                 </a>
                             </div> 
                         </div>
