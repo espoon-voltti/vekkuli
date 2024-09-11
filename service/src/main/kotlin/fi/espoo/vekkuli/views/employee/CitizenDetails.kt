@@ -382,7 +382,7 @@ class CitizenDetails {
         return """
                    <div id="tab-content" class="container block" x-data="{ 
                 showAllBoats: document.getElementById('showAllBoats').checked 
-            }">>
+            }">
                        ${renderTabNavi(citizen.id, SubTab.Reservations)}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
                        <div class="reservation-list">
