@@ -99,9 +99,7 @@ class CitizenDetails {
                             <div>${icons.chevronLeft}</div>
                         </span>
                         <a href="/virkailija/venepaikat/varaukset">
-                            <span>${t(
-                "boatSpaces.goBack"
-            )}</span>
+                            <span>${t("boatSpaces.goBack")}</span>
                         </a>
                     </button>
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
@@ -288,11 +286,11 @@ class CitizenDetails {
         }
 
         // language=HTML
-        val boatsList =
-            boats
-                .mapIndexed { index, boat ->
+        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String {
+            return boats
+                .mapIndexed { _, boat ->
                     """
-                    <div class="reservation-card" id="boat-$index" x-data="{ modalOpen: false }">
+                    <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
                         <div class="columns is-vcentered">
                             <div class="column is-narrow">
                                 <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
@@ -301,12 +299,12 @@ class CitizenDetails {
                                 <div class="column is-narrow">
                                     <a class="edit-link s-link"
                                        hx-get="/virkailija/kayttaja/${citizen.id}/vene/${boat.id}/muokkaa"
-                                       hx-target="#boat-$index"
+                                       hx-target="#boat-${boat.id}"
                                        hx-swap="innerHTML">
                                         <span class="icon ml-s">
                                             ${icons.edit}
                                         </span>
-                                        <span id="edit-boat-$index"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
+                                        <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
                                     </a>
                                 </div>
                                 <div class="column">
@@ -324,53 +322,52 @@ class CitizenDetails {
                             <div class="column">
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.boatName")}</label>
-                                    <p id="boat-name-text-$index">${boat.name}</p>
+                                    <p id="boat-name-text-${boat.id}">${boat.name}</p>
                                 </div>
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.weight")}</label>
-                                    <p  id="boat-weight-text-$index">${boat.weight}</p>
+                                    <p  id="boat-weight-text-${boat.id}">${boat.weight}</p>
                                 </div>
                             </div>
                             <div class="column">
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.boatType")}</label>
-                                    <p  id="boat-type-text-$index">${t("boatApplication.boatTypeOption.${boat.type}")}</p>
+                                    <p  id="boat-type-text-${boat.id}">${t("boatApplication.boatTypeOption.${boat.type}")}</p>
                                 </div>
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.draft")}</label>
-                                    <p id="boat-depth-text-$index">${boat.depth}</p>
+                                    <p id="boat-depth-text-${boat.id}">${boat.depth}</p>
                                 </div>
                             </div>
                             <div class="column">
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.boatWidth")}</label>
-                                    <p  id="boat-width-text-$index">${boat.width}</p>
+                                    <p  id="boat-width-text-${boat.id}">${boat.width}</p>
                                 </div>
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.registrationNumber")}</label>
-                                    <p  id="boat-registrationNumber-text-$index">${boat.registrationNumber}</p>
+                                    <p  id="boat-registrationNumber-text-${boat.id}">${boat.registrationNumber}</p>
                                 </div>
                             </div>
                             <div class="column">
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.boatLength")}</label>
-                                    <p  id="boat-length-text-$index">${boat.length}</p>
+                                    <p  id="boat-length-text-${boat.id}">${boat.length}</p>
                                 </div>
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.ownershipStatus")}</label>
-                                    <p id="boat-ownership-text-$index">${t("boatApplication.ownershipOption.${boat.ownership}")}</p>
+                                    <p id="boat-ownership-text-${boat.id}">${t("boatApplication.ownershipOption.${boat.ownership}")}</p>
                                 </div>
                             </div>
                         </div>
                          <div class="columns">
                             <div class="column is-one-quarter">
-                                <label class="label" th:text="#{boatSpaceReservation.title.otherIdentifier}">Muu
-                                    tunniste</label>
-                                <p id="boat-otherIdentifier-text-$index">${boat.otherIdentifier}</p>
+                                <label class="label">${t("boatSpaceReservation.title.otherIdentifier")}</label>
+                                <p id="boat-otherIdentifier-text-${boat.id}">${boat.otherIdentifier}</p>
                             </div>
                             <div class="column">
                                 <label class="label">${t("boatSpaceReservation.title.additionalInfo")}</label>
-                                <p id="boat-extraInformation-text-$index">
+                                <p id="boat-extraInformation-text-${boat.id}">
                                    ${if (!boat.extraInformation.isNullOrEmpty()) boat.extraInformation else "-"}
                                 </p>
                             </div>
@@ -379,19 +376,36 @@ class CitizenDetails {
                     </div>
                     """.trimIndent()
                 }.joinToString("\n")
+        }
 
         // language=HTML
         return """
-            <div id="tab-content" class="container block">
+            <div id="tab-content" class="container block" x-data="{ showAllBoats: false }">
                 ${renderTabNavi(citizen.id, SubTab.Reservations)}
                 <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
                 <div class="reservation-list">
                     $reservationList
                 </div>
                 <h3>${t("boatSpaceReservation.title.boats")}</h3>
-                <div class="reservation-container">
-                    $boatsList
+                <div class="reservation-list no-bottom-border">
+                    ${getBoatsList(boats.filter { it.reservationId != null })} 
                 </div>
+              
+               <div  >
+                   <div >
+                       <label class="checkbox">
+                            <input type="checkbox" 
+                                    name="showAllBoats" 
+                                    id="showAllBoats" 
+                                    @click="showAllBoats = !showAllBoats"
+                                    />
+                            <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
+                       </label> 
+                   </div>
+                   <div class="reservation-list" x-show="showAllBoats">    
+                     ${getBoatsList(boats.filter { it.reservationId == null })} 
+                    </div>
+               </div>
             </div>
             """.trimIndent()
     }

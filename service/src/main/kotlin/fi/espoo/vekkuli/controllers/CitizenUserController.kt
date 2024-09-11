@@ -235,13 +235,13 @@ class CitizenUserController {
                 registrationCode = input.registrationNumber,
                 otherIdentification = input.otherIdentifier,
                 extraInformation = input.extraInformation,
-                ownership = input.ownership
+                ownership = input.ownership,
             )
         boatService.updateBoat(updatedBoat)
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
-        val updatedBoats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it) }
+        val updatedBoats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
         response.addHeader("HX-Retarget", "#citizen-details")
         response.addHeader("HX-Reselect", "#citizen-details")
 
