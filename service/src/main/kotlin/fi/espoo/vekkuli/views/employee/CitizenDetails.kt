@@ -455,7 +455,7 @@ class CitizenDetails {
                        hx-trigger="click"
                        hx-target="#tab-content"
                        hx-swap="outerHTML"
-                       hx-confirm="Haluatko varmasti poistaa muistion?">
+                       hx-confirm="${t("citizenDetails.removeMemoConfirm")}">
                         <span class="icon ml-s">
                             ${icons.remove}
                         </span>
@@ -571,7 +571,7 @@ class CitizenDetails {
                     hx-target="#new-memo"
                     hx-swap="outerHTML">
                     <span class="icon mr-s">${icons.plus}</span>
-                    <span>Uusi muistiinpano</span>   
+                    <span>${t("citizenDetails.newMemo")}</span>   
                 </a>
             </div>
             """.trimIndent()
