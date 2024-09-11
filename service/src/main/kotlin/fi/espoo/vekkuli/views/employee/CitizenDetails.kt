@@ -380,33 +380,35 @@ class CitizenDetails {
 
         // language=HTML
         return """
-            <div id="tab-content" class="container block" x-data="{ showAllBoats: false }">
-                ${renderTabNavi(citizen.id, SubTab.Reservations)}
-                <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
-                <div class="reservation-list">
-                    $reservationList
-                </div>
-                <h3>${t("boatSpaceReservation.title.boats")}</h3>
-                <div class="reservation-list no-bottom-border">
-                    ${getBoatsList(boats.filter { it.reservationId != null })} 
-                </div>
-              
-               <div  >
-                   <div >
-                       <label class="checkbox">
-                            <input type="checkbox" 
-                                    name="showAllBoats" 
-                                    id="showAllBoats" 
-                                    @click="showAllBoats = !showAllBoats"
-                                    />
-                            <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
-                       </label> 
+                   <div id="tab-content" class="container block" x-data="{ 
+                showAllBoats: document.getElementById('showAllBoats').checked 
+            }">>
+                       ${renderTabNavi(citizen.id, SubTab.Reservations)}
+                       <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
+                       <div class="reservation-list">
+                           $reservationList
+                       </div>
+                       <h3>${t("boatSpaceReservation.title.boats")}</h3>
+                       <div class="reservation-list no-bottom-border">
+                           ${getBoatsList(boats.filter { it.reservationId != null })} 
+                       </div>
+                     
+                      <div>
+                          <label class="checkbox pb-l">
+                               <input type="checkbox" 
+                                       name="showAllBoats" 
+                                       id="showAllBoats" 
+                                       x-model="showAllBoats"
+                                       hx-preserve="true"
+                                       x-ref="showAllBoats"
+                                       />
+                               <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
+                          </label> 
+                          <div class="reservation-list" x-show="showAllBoats">    
+                            ${getBoatsList(boats.filter { it.reservationId == null })} 
+                           </div>
+                      </div>
                    </div>
-                   <div class="reservation-list" x-show="showAllBoats">    
-                     ${getBoatsList(boats.filter { it.reservationId == null })} 
-                    </div>
-               </div>
-            </div>
             """.trimIndent()
     }
 
