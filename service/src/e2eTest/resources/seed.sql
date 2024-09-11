@@ -27,7 +27,8 @@ INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Jet
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
 INSERT INTO app_user (id, external_id, first_name, last_name, email)
-VALUES ('94833b54-132b-4ab8-b841-60df45809b3e', 'ad:001', 'Ville', 'Virkailija', 'ville@noreplytest.fi');
+VALUES
+    ('94833b54-132b-4ab8-b841-60df45809b3e', 'ad:001', 'Ville', 'Virkailija', 'ville@noreplytest.fi');
 
 INSERT INTO citizen (id, updated, national_id, first_name, last_name, phone, email, address, postal_code, municipality)
 VALUES
@@ -35,6 +36,10 @@ VALUES
     ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', now(), '150499-911U', 'Leo', 'Korhonen', '0405623462', 'leo@noreplytest.fi', '', '' , ''),
     ('509edb00-5549-11ef-a1c7-776e76028a49', now(), '031298-988S', 'Olivia', 'Virtanen', '04083677348', 'olivia@noreplytest.fi', '', '' , '')
 ON CONFLICT (national_id) DO NOTHING;
+
+INSERT INTO citizen_memo (created_by, category, citizen_id, content)
+VALUES
+  ('94833b54-132b-4ab8-b841-60df45809b3e', 'Marine', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Kiva viesti');
 
 INSERT INTO boat (registration_code, citizen_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
 VALUES

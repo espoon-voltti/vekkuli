@@ -443,23 +443,25 @@ class CitizenDetails {
                 ""
             } else {
                 """
-                <a hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/muokkaa/${memo.id}")}"
-                       hx-trigger="click"
-                       hx-target="#memo-${memo.id}"
-                       hx-swap="outerHTML">
-                        <span class="icon ml-s">
-                            ${icons.edit}
-                        </span>
-                    </a>
-                    <a hx-delete="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
-                       hx-trigger="click"
-                       hx-target="#tab-content"
-                       hx-swap="outerHTML"
-                       hx-confirm="${t("citizenDetails.removeMemoConfirm")}">
-                        <span class="icon ml-s">
-                            ${icons.remove}
-                        </span>
-                    </a>
+                <a id="edit-memo-button"
+                   hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/muokkaa/${memo.id}")}"
+                   hx-trigger="click"
+                   hx-target="#memo-${memo.id}"
+                   hx-swap="outerHTML">
+                    <span class="icon ml-s">
+                        ${icons.edit}
+                    </span>
+                </a>
+                <a id="delete-memo-button"
+                   hx-delete="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                   hx-trigger="click"
+                   hx-target="#tab-content"
+                   hx-swap="outerHTML"
+                   hx-confirm="${t("citizenDetails.removeMemoConfirm")}">
+                    <span class="icon ml-s">
+                        ${icons.remove}
+                    </span>
+                </a>
                 """.trimIndent()
             }
 
@@ -493,15 +495,19 @@ class CitizenDetails {
                       hx-target="#memo-${memo.id}"
                       hx-swap="outerHTML">
                     <div class="control memo-edit-area">
-                        <textarea class="textarea" rows="1" class="memo-content-input" name="content">${memo.content}</textarea>
+                        <textarea id="edit-memo-content" 
+                                  class="textarea" 
+                                  rows="1" 
+                                  class="memo-content-input" 
+                                  name="content">${memo.content}</textarea>
                         <div class="memo-edit-buttons">
-                            <button type="submit">
+                            <button id="save-edit-button" type="submit">
                                 <span class="icon ml-s" 
                                       style='stroke: green;'>
                                     ${icons.check}
                                 </span>
                             </button>
-                            <span class="icon ml-s"
+                            <span id="cancel-edit-button" class="icon ml-s"
                                   hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
                                   hx-trigger="click"
                                   hx-target="#memo-${memo.id}"
@@ -544,13 +550,18 @@ class CitizenDetails {
                         hx-swap="outerHTML">
                         <div class="memo-edit-area">
                             <div class="control">
-                                <textarea class="textarea" rows="1" class="memo-content-input" name="content"></textarea>
+                                <textarea id="new-memo-content" 
+                                          class="textarea" 
+                                          rows="1" 
+                                          class="memo-content-input" 
+                                          name="content"></textarea>
                             </div>
                             <div class="memo-edit-buttons">
-                                <button type="submit">
+                                <button id="new-memo-save-button" type="submit">
                                     <span class="icon ml-s" style='stroke: green;'>${icons.check}</span>
                                 </button>
-                                <a hx-get="${getTabUrl("$citizenId/muistiinpanot/lisaa_peruuta")}" 
+                                <a id="new-memo-cancel-button" 
+                                   hx-get="${getTabUrl("$citizenId/muistiinpanot/lisaa_peruuta")}" 
                                     hx-trigger="click" 
                                     hx-target="#new-memo" 
                                     hx-swap="outerHTML" >
@@ -566,6 +577,7 @@ class CitizenDetails {
         return """
             <div id="new-memo" class="block">
                 <a 
+                    id="add-new-memo"
                     hx-get="${getTabUrl("$citizenId/muistiinpanot/lisaa")}"
                     hx-trigger="click"
                     hx-target="#new-memo"
@@ -616,25 +628,29 @@ class CitizenDetails {
         <div class="tabs is-boxed secondary-tabs">
             <ul>
                 <li class="${tabCls(activeTab, SubTab.Reservations)}">
-                    <a hx-get="${getTabUrl("$citizenId/varaukset")}" 
+                    <a id="reservations-tab-navi"
+                       hx-get="${getTabUrl("$citizenId/varaukset")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
                        hx-swap="outerHTML">${t("boatSpaceReservation.title.reservations")}</a>
                 </li>
                 <li class="${tabCls(activeTab, SubTab.Messages)}">
-                    <a hx-get="${getTabUrl("$citizenId/viestit")}"
+                    <a id="messages-tab-navi"
+                       hx-get="${getTabUrl("$citizenId/viestit")}"
                        hx-target="#tab-content" 
                        hx-trigger="click" 
                        hx-swap="outerHTML"> ${t("boatSpaceReservation.title.messages")}</a>
                 </li>
                 <li class="${tabCls(activeTab, SubTab.Payments)}">
-                    <a hx-get="${getTabUrl("$citizenId/maksut")}" 
+                    <a id="payments-tab-navi"
+                       hx-get="${getTabUrl("$citizenId/maksut")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
                        hx-swap="outerHTML">${t("boatSpaceReservation.title.paymentHistory")}</a>
                 </li>
                <li class="${tabCls(activeTab, SubTab.Memos)}">
-                    <a hx-get="${getTabUrl("$citizenId/muistiinpanot")}" 
+                    <a id="memos-tab-navi"
+                       hx-get="${getTabUrl("$citizenId/muistiinpanot")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
                        hx-swap="outerHTML">${t("boatSpaceReservation.title.notes")}</a>
