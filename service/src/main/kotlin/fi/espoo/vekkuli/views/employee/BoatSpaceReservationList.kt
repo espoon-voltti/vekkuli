@@ -197,6 +197,7 @@ class BoatSpaceReservationList {
             <section class="section">
                 <div class="container block">
                     <h2>${t("boatSpaceReservation.title")}</h2>
+                    <a href="/virkailija/venepaikat">Luo varaus</a>
                 </div>
                 <div class="container" x-data="{
                     sortColumn: '${params.sortBy}',
