@@ -45,7 +45,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
-                           bsr.payment_id,
+                           bsr.payment_id as payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -183,6 +183,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.payment_id as payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -210,7 +211,7 @@ class JdbiBoatSpaceReservationRepository(
                             bs.width_cm as boat_space_width_cm,
                             bs.amenity,
                            price.price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
+                           CONCAT(bs.section, bs.place_number) as place,
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
                     JOIN citizen c ON bsr.citizen_id = c.id 
@@ -257,6 +258,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.payment_id as payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
