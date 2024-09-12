@@ -1,5 +1,4 @@
 package fi.espoo.vekkuli.views.employee
-
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.head
@@ -24,7 +23,6 @@ class EmployeeLayout {
         bodyContent: String,
     ): String {
         val lang = messageUtil.getLocale().split("_")[0]
-
         val authMenu =
             if (isAuthenticated) {
                 """
@@ -40,7 +38,6 @@ class EmployeeLayout {
                 </a>
                 """.trimIndent()
             }
-
         val boatSpaceReservationsLink =
             if (isAuthenticated) {
                 """
@@ -57,7 +54,6 @@ class EmployeeLayout {
                 </a>
                 """.trimIndent()
             }
-
         // language=HTML
         return """
             <!DOCTYPE html>
@@ -67,32 +63,29 @@ class EmployeeLayout {
                 $head
             </head>
             <body>
-            <section class="section">
-                <div class="columns">
-                    <div class="menu">
-                        <aside class="container">
-                            <p class="menu-label">
-                                <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                            </p>
-                            <div class="menu-container">
-                                <p class="menu-label">${t("menu.marineOutdoor")}</p>
-                                <ul class="menu-list">
-                                    <li>
-                                        $boatSpaceReservationsLink
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="block">
-                                $authMenu
-                            </div>
-                        </aside>
-                    </div>
-
-                    <div class="column">
-                        $bodyContent 
-                    </div>
+            <div class="columns">
+                <div class="menu">
+                    <aside class="container">
+                        <p class="menu-label">
+                            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                        </p>
+                        <div class="menu-container">
+                            <p class="menu-label">${t("menu.marineOutdoor")}</p>
+                            <ul class="menu-list">
+                                <li>
+                                    $boatSpaceReservationsLink
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="block">
+                            $authMenu
+                        </div>
+                    </aside>
                 </div>
-            </section>
+                <div class="column">
+                    $bodyContent 
+                </div>
+            </div>
             </body>
             </html>
             """.trimIndent()
