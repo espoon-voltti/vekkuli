@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.config.EmailEnv
+import fi.espoo.vekkuli.controllers.CitizenUserController
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.*
@@ -11,6 +13,8 @@ class SendEmailService(
     private val sesClient: SesClient,
     private val emailEnv: EmailEnv
 ) {
+    private val logger = LoggerFactory.getLogger(CitizenUserController::class.java)
+
     fun sendEmail(
         recipient: String,
         subject: String,
@@ -45,7 +49,7 @@ class SendEmailService(
             val response = sesClient.sendEmail(emailRequest)
             return response.messageId()
         } catch (ex: SesException) {
-            println("Failed to send email: ${ex.awsErrorDetails().errorMessage()}")
+            logger.warn("Failed to send email to $recipient: ${ex.awsErrorDetails().errorMessage()}")
             return null
         }
     }

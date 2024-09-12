@@ -1,45 +1,56 @@
 package fi.espoo.vekkuli.service
 
-import org.springframework.beans.factory.annotation.Autowired
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.thymeleaf.TemplateEngine
-import org.thymeleaf.context.Context
 import java.util.*
 
+data class EmailTemplate(
+    val id: String,
+    val subject: String,
+    val body: String,
+)
+
+interface EmailTemplateRepository {
+    fun getTemplate(templateId: String): EmailTemplate?
+}
+
 @Service
-class TemplateEmailService {
-    @Autowired
-    lateinit var templateEngine: TemplateEngine
-
-    @Autowired
-    lateinit var messageService: MessageService
-
-    fun generatePlainTextEmail(
-        template: String,
-        variables: Map<String, Any>
-    ): String {
-        val context =
-            Context().apply {
-                setVariables(variables)
-            }
-        return templateEngine.process(template, context)
-    }
+class TemplateEmailService(
+    private val messageService: MessageService,
+    private val templateRepo: EmailTemplateRepository
+) {
+    private val logger = LoggerFactory.getLogger(TemplateEmailService::class.java)
 
     fun sendEmail(
         template: String,
         userId: UUID?,
         recipientId: UUID,
         recipientEmail: String,
-        subject: String,
         variables: Map<String, Any>
     ) {
-        val emailContent = generatePlainTextEmail("email/$template.txt", variables)
+        val tpl = templateRepo.getTemplate(template)
+        if (tpl == null) {
+            logger.warn("Email template not found: $template")
+            return
+        }
+
         messageService.sendEmail(
             userId = userId,
             recipientId = recipientId,
             recipientEmail = recipientEmail,
-            subject = subject,
-            body = emailContent,
+            subject = tpl.subject,
+            body = replaceTags(tpl.body, variables),
         )
+    }
+
+    private fun replaceTags(
+        body: String,
+        variables: Map<String, Any>
+    ): String {
+        println(body)
+        val regex = Regex("""\{\{(\s*\w+\s*)}}""")
+        return regex.replace(body) {
+            variables[it.groupValues[1].trim()]?.toString() ?: it.value
+        }
     }
 }

@@ -151,11 +151,10 @@ class BoatReservationService(
         )
 
         emailService.sendEmail(
-            "reservationSuccess",
+            "varausvahvistus",
             null,
             payment.citizenId,
             reservation.email,
-            messageUtil.getMessage("boatSpaceReservation.title.confirmation"),
             mapOf(
                 "name" to " ${reservation.locationName} ${reservation.place}",
                 "width" to reservation.boatSpaceWidthInM,
