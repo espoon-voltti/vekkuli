@@ -334,8 +334,8 @@ class CitizenDetails {
         }
 
         // language=HTML
-        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String {
-            return boats
+        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
+            boats
                 .mapIndexed { _, boat ->
 
                     """
@@ -419,7 +419,6 @@ class CitizenDetails {
                     </div>
                     """.trimIndent()
                 }.joinToString("\n")
-        }
         val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
 
         // language=HTML
@@ -511,7 +510,7 @@ class CitizenDetails {
                    hx-trigger="click"
                    hx-target="#memo-${memo.id}"
                    hx-swap="outerHTML">
-                    <span class="icon ml-s">
+                    <span class="icon ml-m">
                         ${icons.edit}
                     </span>
                 </a>
@@ -521,7 +520,7 @@ class CitizenDetails {
                    hx-target="#tab-content"
                    hx-swap="outerHTML"
                    hx-confirm="${t("citizenDetails.removeMemoConfirm")}">
-                    <span class="icon ml-s">
+                    <span class="icon ml-m">
                         ${icons.remove}
                     </span>
                 </a>
@@ -565,12 +564,12 @@ class CitizenDetails {
                                   name="content">${memo.content}</textarea>
                         <div class="memo-edit-buttons">
                             <button id="save-edit-button" type="submit">
-                                <span class="icon ml-s" 
+                                <span class="icon ml-m" 
                                       style='stroke: green;'>
                                     ${icons.check}
                                 </span>
                             </button>
-                            <span id="cancel-edit-button" class="icon ml-s"
+                            <span id="cancel-edit-button" class="icon ml-m"
                                   hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
                                   hx-trigger="click"
                                   hx-target="#memo-${memo.id}"
@@ -621,14 +620,14 @@ class CitizenDetails {
                             </div>
                             <div class="memo-edit-buttons">
                                 <button id="new-memo-save-button" type="submit">
-                                    <span class="icon ml-s" style='stroke: green;'>${icons.check}</span>
+                                    <span class="icon ml-m" style='stroke: green;'>${icons.check}</span>
                                 </button>
                                 <a id="new-memo-cancel-button" 
                                    hx-get="${getTabUrl("$citizenId/muistiinpanot/lisaa_peruuta")}" 
                                     hx-trigger="click" 
                                     hx-target="#new-memo" 
                                     hx-swap="outerHTML" >
-                                    <span class="icon ml-s">${icons.xMark}</span>
+                                    <span class="icon ml-m">${icons.xMark}</span>
                                 </a>
                             </div> 
                         </div>
