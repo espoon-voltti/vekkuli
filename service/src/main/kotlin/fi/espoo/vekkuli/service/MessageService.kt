@@ -7,6 +7,7 @@ import java.util.UUID
 interface SentMessageRepository {
     fun addSentEmail(
         senderId: UUID?,
+        senderAddress: String,
         recipientId: UUID,
         recipientEmail: String,
         subject: String,
@@ -22,6 +23,8 @@ interface SentMessageRepository {
         messageId: UUID,
         providerId: String
     ): SentMessage
+
+    fun getMessagesSentToUser(citizenId: UUID): List<SentMessage>
 }
 
 @Service
@@ -32,6 +35,8 @@ class MessageService(
     fun sendEmail(
         // Who initiated the sending of the email (null if automated)
         userId: UUID?,
+        // From which email address was message sent
+        senderAddress: String,
         // Citizen who receives the email
         recipientId: UUID,
         // Citizen email address
@@ -41,8 +46,8 @@ class MessageService(
         // Email message body
         body: String,
     ): SentMessage {
-        val msg = messageRepository.addSentEmail(userId, recipientId, recipientEmail, subject, body)
-        val messageId = sendEmailService.sendEmail(recipientEmail, subject, body)
+        val msg = messageRepository.addSentEmail(userId, senderAddress, recipientId, recipientEmail, subject, body)
+        val messageId = sendEmailService.sendEmail(senderAddress, recipientEmail, subject, body)
         if (messageId != null) {
             return messageRepository.setMessageSent(msg.id, messageId)
         } else {

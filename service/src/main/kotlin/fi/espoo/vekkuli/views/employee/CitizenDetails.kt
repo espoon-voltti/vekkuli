@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
+import fi.espoo.vekkuli.domain.SentMessage
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -293,8 +294,8 @@ class CitizenDetails {
         }
 
         // language=HTML
-        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String {
-            return boats
+        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
+            boats
                 .mapIndexed { _, boat ->
                     """
                     <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
@@ -383,7 +384,6 @@ class CitizenDetails {
                     </div>
                     """.trimIndent()
                 }.joinToString("\n")
-        }
 
         // language=HTML
         return """
@@ -429,12 +429,52 @@ class CitizenDetails {
             """.trimIndent()
     }
 
-    fun messageTabContent(citizen: Citizen): String {
+    fun messageTabContent(
+        citizen: Citizen,
+        messages: List<SentMessage>
+    ): String {
+        val messageHtml =
+            messages.joinToString("\n") { message ->
+                // language=HTML
+                """
+                <tr>
+                    <td>${message.subject}</td>
+                    <td>${message.recipientAddress}</td>
+                    <td>${message.sentAt?.let { formatDate(it)} ?: "Ei lähetetty"}</td>
+                    <td>${message.senderAddress ?: ""}</td>
+                </tr>
+                """.trimIndent()
+            }
+
+        val messagesHtml =
+            if (messages.isNotEmpty()) {
+                // language=HTML
+                """
+                <div class="message-list">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>${t("citizenDetails.messages.subject")}</th>
+                          <th>${t("citizenDetails.messages.recipient")}</th>
+                          <th>${t("citizenDetails.messages.sentAt")}</th>
+                          <th>${t("citizenDetails.messages.sender")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          $messageHtml
+                      </tbody>
+                    </table>
+                </div>
+                """.trimIndent()
+            } else {
+                "<h2>${t("citizenDetails.messages.noMessages")}</h2>"
+            }
+
         // language=HTML
         return """
             <div id="tab-content" class="container block">
               ${renderTabNavi(citizen.id, SubTab.Messages)}
-              <h3>MESSAGES</h3>
+              $messagesHtml
             </div>
             """.trimIndent()
     }

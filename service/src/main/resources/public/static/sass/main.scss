@@ -609,3 +609,32 @@ label.filter-button:has(input:checked) .icon {
   align-items: center;
 }
 
+.message-list {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  thead th {
+    color: $darkGray;
+  }
+
+  th, td {
+    border-bottom: 1px solid #dddddd;
+    text-align: left;
+    padding: $spacing-small;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    font-weight: normal;
+  }
+
+  th a {
+    text-decoration: none;
+    color: $darkGray;
+  }
+}
+

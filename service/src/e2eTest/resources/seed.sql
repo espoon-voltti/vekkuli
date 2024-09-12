@@ -41,6 +41,10 @@ INSERT INTO citizen_memo (created_by, category, citizen_id, content)
 VALUES
   ('94833b54-132b-4ab8-b841-60df45809b3e', 'Marine', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Kiva viesti');
 
+INSERT INTO sent_message (provider_id, created, sent_at, type, status, sender_id, sender_address, recipient_id, recipient_address, subject, body)
+VALUES
+    ('1000', '2024-09-01 13:01:20', '2024-09-01 13:01:21', 'Email', 'Sent', '94833b54-132b-4ab8-b841-60df45809b3e', 'ville@noreplytest.fi', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'leo@gmail.com', 'Käyttöveden katko', 'Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.');
+
 INSERT INTO boat (registration_code, citizen_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
 VALUES
     ('A1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon vene', 120, 400, 20, 180, 'OutboardMotor', 'Terhi 400', '', 'Owner'),
