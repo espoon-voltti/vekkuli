@@ -67,30 +67,32 @@ class EmployeeLayout {
                 $head
             </head>
             <body>
-            <div class="columns">
-                <div class="menu">
-                    <aside class="container">
-                        <p class="menu-label">
-                            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                        </p>
-                        <div class="menu-container">
-                            <p class="menu-label">${t("menu.marineOutdoor")}</p>
-                            <ul class="menu-list">
-                                <li>
-                                    $boatSpaceReservationsLink
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="block">
-                            $authMenu
-                        </div>
-                    </aside>
-                </div>
+            <section class="section">
+                <div class="columns">
+                    <div class="menu">
+                        <aside class="container">
+                            <p class="menu-label">
+                                <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                            </p>
+                            <div class="menu-container">
+                                <p class="menu-label">${t("menu.marineOutdoor")}</p>
+                                <ul class="menu-list">
+                                    <li>
+                                        $boatSpaceReservationsLink
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="block">
+                                $authMenu
+                            </div>
+                        </aside>
+                    </div>
 
-                <div class="column">
-                    $bodyContent 
+                    <div class="column">
+                        $bodyContent 
+                    </div>
                 </div>
-            </div>
+            </section>
             </body>
             </html>
             """.trimIndent()

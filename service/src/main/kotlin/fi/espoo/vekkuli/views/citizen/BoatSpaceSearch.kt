@@ -21,7 +21,10 @@ class BoatSpaceSearch {
         return messageUtil.getMessage(key)
     }
 
-    fun render(locations: List<Location>): String {
+    fun render(
+        locations: List<Location>,
+        isEmployee: Boolean = false
+    ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         val boatTypeSelect =
             formComponents.select(
@@ -84,28 +87,34 @@ class BoatSpaceSearch {
             </div>
             """.trimIndent()
 
+        val infoBox =
+            """
+            <div class="reservation-info column is-two-thirds">
+                <!-- Comment: fragments/icons :: info -->
+                <div class="info-content">
+                    <p>Venepaikkoja voivat varata vain espoolaiset 01.02.2024-31.3.2024.</p>
+                    <p>Muut kuin espoolaiset voivat varata venepaikkoja 01.04.2024 klo 12:00 alkaen.</p>
+                    <p>Venepaikan varaaminen vaatii vahvan tunnistautumisen</p>
+                </div>
+            </div>
+            """.trimIndent()
+
+        val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/partial/vapaat-paikat"
         // language=HTML
         return """
             <section class="section">
                 <div class="container">
                     <div>
                         <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
-                        <div class="reservation-info column is-two-thirds">
-                            <!-- Comment: fragments/icons :: info -->
-                            <div class="info-content">
-                                <p>Venepaikkoja voivat varata vain espoolaiset 01.02.2024-31.3.2024.</p>
-                                <p>Muut kuin espoolaiset voivat varata venepaikkoja 01.04.2024 klo 12:00 alkaen.</p>
-                                <p>Venepaikan varaaminen vaatii vahvan tunnistautumisen</p>
-                            </div>
-                        </div>
                     </div>
+                    ${if (!isEmployee) infoBox else ""}
                     <div class="columns">
                         <div class="column is-two-fifths">
                             <form id="form"
                                   method="get"
-                                  action="/kuntalainen/venepaikat"
+                                  action="$url"
                                   class="block"
-                                  hx-get="/kuntalainen/partial/vapaat-paikat"
+                                  hx-get="$url"
                                   hx-target="#boatSpaces"
                                   hx-swap="innerHTML"
                                   hx-trigger="change, load"
@@ -164,7 +173,8 @@ class BoatSpaceSearch {
         harbors: List<Harbor>,
         boat: BoatFilter,
         spaceCount: Int,
-        isAuthenticated: Boolean
+        isAuthenticated: Boolean,
+        isEmployee: Boolean = false
     ): String {
         val rowsBuilder = StringBuilder()
 
@@ -199,9 +209,10 @@ class BoatSpaceSearch {
                 )
 
                 if (isAuthenticated) {
+                    val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/venepaikka/varaa/${result.id}"
                     rowsBuilder.append(
                         """
-                        <form action="/kuntalainen/venepaikka/varaa/${result.id}" method="get">
+                        <form action="$url" method="get">
                             <input type="hidden" name="boatType" value="${boat.type ?: ""}" />
                             <input type="hidden" name="width" value="${boat.width ?: ""}" />
                             <input type="hidden" name="length" value="${boat.length ?: ""}" />
