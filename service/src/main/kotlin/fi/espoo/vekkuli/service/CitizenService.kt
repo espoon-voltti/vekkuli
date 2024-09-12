@@ -1,9 +1,6 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.domain.Citizen
-import fi.espoo.vekkuli.domain.CitizenMemo
-import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
-import fi.espoo.vekkuli.domain.MemoCategory
+import fi.espoo.vekkuli.domain.*
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -41,9 +38,12 @@ interface CitizenRepository {
 
 @Service
 class CitizenService(
-    private val citizenRepository: CitizenRepository
+    private val citizenRepository: CitizenRepository,
+    private val sentMessagesRepository: SentMessageRepository,
 ) {
     fun getCitizen(id: UUID): Citizen? = citizenRepository.getCitizen(id)
+
+    fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
     fun getMemos(
         citizenId: UUID,

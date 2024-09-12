@@ -11,6 +11,7 @@ data class SentMessage(
     val type: MessageType,
     val status: MessageStatus,
     val senderId: UUID?,
+    val senderAddress: String?,
     val recipientId: UUID,
     val recipientAddress: String,
     val subject: String,

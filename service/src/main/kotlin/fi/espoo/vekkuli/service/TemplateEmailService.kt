@@ -28,6 +28,7 @@ class TemplateEmailService {
     fun sendEmail(
         template: String,
         userId: UUID?,
+        senderAddress: String,
         recipientId: UUID,
         recipientEmail: String,
         subject: String,
@@ -36,6 +37,7 @@ class TemplateEmailService {
         val emailContent = generatePlainTextEmail("email/$template.txt", variables)
         messageService.sendEmail(
             userId = userId,
+            senderAddress = senderAddress,
             recipientId = recipientId,
             recipientEmail = recipientEmail,
             subject = subject,

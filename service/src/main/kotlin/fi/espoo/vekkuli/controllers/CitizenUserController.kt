@@ -87,7 +87,8 @@ class CitizenUserController {
         @PathVariable citizenId: UUID
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        return citizenDetails.messageTabContent(citizen)
+        val messages = citizenService.getMessages(citizenId)
+        return citizenDetails.messageTabContent(citizen, messages)
     }
 
     @GetMapping("/kayttaja/{citizenId}/muistiinpanot")
