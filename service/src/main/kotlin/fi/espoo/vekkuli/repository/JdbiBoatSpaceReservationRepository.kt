@@ -178,6 +178,27 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
+    override fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
+                    FROM boat_space_reservation bsr
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.id = :id
+                        AND (bsr.status = 'Info' OR bsr.status = 'Payment')
+                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
     override fun removeBoatSpaceReservation(
         id: Int,
         citizenId: UUID,

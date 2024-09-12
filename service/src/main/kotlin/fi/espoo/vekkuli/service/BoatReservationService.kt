@@ -38,6 +38,8 @@ interface BoatSpaceReservationRepository {
 
     fun getReservationWithCitizen(id: Int): ReservationWithDependencies?
 
+    fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies?
+
     fun removeBoatSpaceReservation(
         id: Int,
         citizenId: UUID,
@@ -251,6 +253,8 @@ class BoatReservationService(
     }
 
     fun getReservationWithCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithCitizen(id)
+
+    fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithoutCitizen(id)
 
     fun removeBoatSpaceReservation(
         id: Int,

@@ -15,6 +15,7 @@ import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatSpaceSearch
 import fi.espoo.vekkuli.views.citizen.Layout
+import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
@@ -37,6 +38,9 @@ data class BoatFilter(
 
 @Controller
 class BoatSpaceSearchController {
+    @Autowired
+    private lateinit var employeeLayout: EmployeeLayout
+
     @Autowired
     lateinit var jdbi: Jdbi
 
@@ -74,9 +78,9 @@ class BoatSpaceSearchController {
                     tx.getLocations()
                 }
             return ResponseEntity.ok(
-                layout.generateLayout(
+                employeeLayout.render(
                     true,
-                    userName = "${user?.firstName} ${user?.lastName}",
+                    request.requestURI,
                     boatSpaceSearch.render(locations, true)
                 )
             )

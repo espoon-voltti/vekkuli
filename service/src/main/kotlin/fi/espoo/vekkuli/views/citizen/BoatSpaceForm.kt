@@ -31,7 +31,7 @@ class BoatSpaceForm {
     fun boatSpaceForm(
         reservation: ReservationWithDependencies,
         boats: List<Boat>,
-        user: Citizen,
+        citizen: Citizen?,
         input: ReservationInput,
         showBoatSizeWarning: Boolean,
         reservationTimeInSeconds: Long
@@ -328,10 +328,10 @@ class BoatSpaceForm {
                                 ${t("boatApplication.personalInformation")}
                             </h3> 
                             <div class="field">
-                                <p>${user.firstName} ${user.lastName}</p>
-                                <p>${user.nationalId}</p>
-                                <p>${user.address}</p>
-                                <p>${user.postalCode} ${user.municipality}</p>
+                                <p>${citizen?.firstName} ${citizen?.lastName}</p>
+                                <p>${citizen?.nationalId}</p>
+                                <p>${citizen?.address}</p>
+                                <p>${citizen?.postalCode} ${citizen?.municipality}</p>
                             </div>
                         </div>
                         <div class="block">

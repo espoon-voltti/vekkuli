@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.common.AppUser
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
@@ -18,6 +19,7 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
+import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
@@ -40,6 +42,9 @@ import kotlin.reflect.KClass
 
 @Controller
 class BoatSpaceFormController {
+    @Autowired
+    private lateinit var employeeLayout: EmployeeLayout
+
     @Autowired
     private lateinit var boatSpaceForm: BoatSpaceForm
 
@@ -74,6 +79,55 @@ class BoatSpaceFormController {
         response: HttpServletResponse,
         model: Model,
     ): ResponseEntity<String> {
+        val isEmployee = userType == "virkailija"
+        if (isEmployee) {
+            val employee = getEmployee(request)
+            if (employee == null) {
+                return ResponseEntity(HttpStatus.FORBIDDEN)
+            }
+
+            val reservation = reservationService.getReservationWithoutCitizen(reservationId)
+
+            if (reservation == null) {
+                val headers = org.springframework.http.HttpHeaders()
+                headers.location = URI(getServiceUrl("/virkailija/venepaikat"))
+                return ResponseEntity(headers, HttpStatus.FOUND)
+            }
+
+            if (reservation.employeeId != employee.id) {
+                throw UnauthorizedException()
+            }
+
+            var input = ReservationInput.initializeInput(boatType, width, length, null)
+
+            val usedBoatId = boatId ?: reservation.boatId // use boat id from reservation if it exists
+            if (usedBoatId != null && usedBoatId != 0) {
+                val boat = boatService.getBoat(usedBoatId)
+
+                if (boat != null) {
+                    input =
+                        input.copy(
+                            boatId = boat.id,
+                            depth = boat.depthCm.cmToM(),
+                            boatName = boat.name,
+                            weight = boat.weightKg,
+                            width = boat.widthCm.cmToM(),
+                            length = boat.lengthCm.cmToM(),
+                            otherIdentification = boat.otherIdentification,
+                            extraInformation = boat.extraInformation,
+                            ownership = boat.ownership,
+                            boatType = boat.type,
+                            boatRegistrationNumber = boat.registrationCode,
+                            noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
+                        )
+                }
+            } else {
+                input = input.copy(boatId = 0)
+            }
+
+            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, input, request))
+        }
+
         val user = getCitizen(request, citizenService)
         val reservation =
             reservationService.getReservationWithCitizen(reservationId)
@@ -114,7 +168,7 @@ class BoatSpaceFormController {
             input = input.copy(boatId = 0)
         }
 
-        return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, user, input))
+        return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, user, input, request))
     }
 
     @DeleteMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaus/{reservationId}")
@@ -142,7 +196,7 @@ class BoatSpaceFormController {
         val reservation = reservationService.getReservationWithCitizen(reservationId)
         if (reservation == null) return redirectUrl("/")
 
-        return renderBoatSpaceReservationApplication(reservation, citizen, input)
+        return renderBoatSpaceReservationApplication(reservation, citizen, input, request)
     }
 
     @GetMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaus/{reservationId}/vahvistus")
@@ -228,12 +282,7 @@ class BoatSpaceFormController {
         val isEmployee = userType == "virkailija"
         val userId =
             if (isEmployee) {
-                val authenticatedUser = request.getAuthenticatedUser() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
-                authenticatedUser.let {
-                    jdbi.inTransactionUnchecked { tx ->
-                        tx.getAppUser(authenticatedUser.id)
-                    }
-                }?.id
+                getEmployee(request)?.id
             } else {
                 getCitizen(request, citizenService)?.id
             }
@@ -282,15 +331,20 @@ class BoatSpaceFormController {
 
     fun renderBoatSpaceReservationApplication(
         reservation: ReservationWithDependencies,
-        user: Citizen,
+        citizen: Citizen?,
         input: ReservationInput,
+        request: HttpServletRequest
     ): String {
         val boats =
-            boatService
-                .getBoatsForCitizen(user.id)
-                .map { boat ->
-                    boat.updateBoatDisplayName(messageUtil)
-                }
+            if (citizen == null) {
+                emptyList()
+            } else {
+                boatService
+                    .getBoatsForCitizen(citizen.id)
+                    .map { boat ->
+                        boat.updateBoatDisplayName(messageUtil)
+                    }
+            }
 
         val showBoatSizeWarning =
             showBoatSizeWarning(
@@ -301,14 +355,14 @@ class BoatSpaceFormController {
                 reservation.lengthCm
             )
 
-        return layout.generateLayout(
+        return employeeLayout.render(
             true,
-            user.fullName,
+            request.requestURI,
             (
                 boatSpaceForm.boatSpaceForm(
                     reservation,
                     boats,
-                    user,
+                    citizen,
                     input,
                     showBoatSizeWarning,
                     getReservationTimeInSeconds(reservation.created)
@@ -327,6 +381,16 @@ class BoatSpaceFormController {
         val boatDimensions = Dimensions(widthInCm ?: 0, lengthInCm ?: 0)
         val spaceDimensions = Dimensions(spaceWidthInCm, spaceLengthInCm)
         return !doesBoatFit(spaceDimensions, boatSpaceAmenity, boatDimensions)
+    }
+
+    fun getEmployee(request: HttpServletRequest): AppUser? {
+        val authenticatedUser = request.getAuthenticatedUser() ?: return null
+
+        return authenticatedUser.let {
+            jdbi.inTransactionUnchecked { tx ->
+                tx.getAppUser(authenticatedUser.id)
+            }
+        }
     }
 }
 
@@ -418,7 +482,7 @@ data class ReservationInput(
             boatType: BoatType?,
             width: Double?,
             length: Double?,
-            user: Citizen
+            citizen: Citizen?
         ): ReservationInput =
             ReservationInput(
                 reservationId = null,
@@ -434,8 +498,8 @@ data class ReservationInput(
                 otherIdentification = null,
                 extraInformation = null,
                 ownership = OwnershipStatus.Owner,
-                email = user.email,
-                phone = user.phone,
+                email = citizen?.email,
+                phone = citizen?.phone,
                 agreeToRules = false,
                 certifyInformation = false,
             )
