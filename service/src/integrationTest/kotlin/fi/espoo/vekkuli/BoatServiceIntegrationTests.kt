@@ -3,6 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -26,6 +27,9 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var boatService: BoatService
+
+    @Autowired
+    lateinit var reservationService: BoatReservationService
 
     private fun insertNewBoat(
         citizenId: UUID = this.citizenId,
@@ -62,5 +66,24 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         insertNewBoat(citizenId, "TestBoat2",)
         boatService.getBoatsForCitizen(citizenId)
         assertEquals(2, boatService.getBoatsForCitizen(citizenId).size, "Correct number of boats are fetched")
+    }
+
+    @Test
+    fun `should delete boat`() {
+        val addedBoat = insertNewBoat()
+        val boatDeleted = boatService.deleteBoat(addedBoat.id)
+        val boat = boatService.getBoat(addedBoat.id)
+        assertEquals(true, boatDeleted, "Boat is deleted according to return value")
+        assertEquals(null, boat, "Boat is deleted")
+    }
+
+    @Test
+    fun `should not delete a boat that is linked to a reservation`() {
+        val newBoat = insertNewBoat()
+        createReservationInConfirmedState(reservationService, citizenId, 1, newBoat.id)
+        val boatDeleted = boatService.deleteBoat(newBoat.id)
+        val boat = boatService.getBoat(newBoat.id)
+        assertEquals(false, boatDeleted, "Boat is not deleted according to return value")
+        assertEquals(newBoat, boat, "Boat is not deleted")
     }
 }
