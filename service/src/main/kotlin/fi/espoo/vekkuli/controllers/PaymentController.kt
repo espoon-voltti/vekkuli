@@ -16,6 +16,7 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import java.util.*
 
 enum class PaymentType {
     BoatSpaceReservation
@@ -48,14 +49,17 @@ class PaymentController {
         request: HttpServletRequest,
     ): String {
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
-        // TODO get correct reference
-        val reference = Math.random().toString()
-        // TODO get correct amount
-        val amount = 14000
-        // TODO get correct product code
-        val productCode = "Venepaikka A 100"
+        val reservation = reservationService.getBoatSpaceReservation(id, citizen.id) ?: return redirectUrl("/")
 
-        val (payment, reservation) =
+        val reference = UUID.randomUUID().toString()
+        val amount = reservation.priceCents
+        val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
+        // TODO must this be configurable?
+        val productCode = "329700_1230329_T1270_0_0_0_0_0_0_0_0_0_100"
+
+        val category = "MYY255"
+
+        val payment =
             withContext(Dispatchers.IO) {
                 reservationService.addPaymentToReservation(
                     id,
@@ -83,7 +87,7 @@ class PaymentController {
                             lastName = citizen.lastName,
                             phone = citizen.phone
                         ),
-                    items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode))
+                    items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode, description, category))
                 )
             )
         val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled") else null

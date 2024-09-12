@@ -3,9 +3,11 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.utils.centsToEuro
 import fi.espoo.vekkuli.utils.cmToM
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class BoatSpaceReservationDetails(
     val id: Int,
+    val created: LocalDateTime,
     val priceCents: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
