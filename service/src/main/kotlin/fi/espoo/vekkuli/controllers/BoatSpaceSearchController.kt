@@ -73,6 +73,15 @@ class BoatSpaceSearchController {
                         tx.getAppUser(authenticatedUser.id)
                     }
                 }
+            if (user == null) {
+                return ResponseEntity(HttpStatus.FORBIDDEN)
+            }
+            val reservation = reservationService.getReservationForEmployee(user.id)
+            if (reservation != null) {
+                val headers = org.springframework.http.HttpHeaders()
+                headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/varaus/${reservation.id}"))
+                return ResponseEntity(headers, HttpStatus.FOUND)
+            }
             val locations =
                 jdbi.inTransactionUnchecked { tx ->
                     tx.getLocations()
