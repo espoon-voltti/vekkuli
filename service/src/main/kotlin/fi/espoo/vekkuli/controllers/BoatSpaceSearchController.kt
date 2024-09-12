@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
@@ -34,7 +36,6 @@ data class BoatFilter(
 )
 
 @Controller
-@RequestMapping("/kuntalainen")
 class BoatSpaceSearchController {
     @Autowired
     lateinit var jdbi: Jdbi
@@ -54,9 +55,32 @@ class BoatSpaceSearchController {
     @Autowired
     lateinit var layout: Layout
 
-    @RequestMapping("/venepaikat")
+    @RequestMapping("/{userType:kuntalainen|virkailija}/venepaikat")
     @ResponseBody
-    fun boatSpaceSearchPage(request: HttpServletRequest): ResponseEntity<String> {
+    fun boatSpaceSearchPage(
+        request: HttpServletRequest,
+        @PathVariable userType: String
+    ): ResponseEntity<String> {
+        if (userType == "virkailija") {
+            val authenticatedUser = request.getAuthenticatedUser() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
+            val user =
+                authenticatedUser.let {
+                    jdbi.inTransactionUnchecked { tx ->
+                        tx.getAppUser(authenticatedUser.id)
+                    }
+                }
+            val locations =
+                jdbi.inTransactionUnchecked { tx ->
+                    tx.getLocations()
+                }
+            return ResponseEntity.ok(
+                layout.generateLayout(
+                    true,
+                    userName = "${user?.firstName} ${user?.lastName}",
+                    boatSpaceSearch.render(locations, true)
+                )
+            )
+        }
         val citizen = getCitizen(request, citizenService)
         if (citizen != null) {
             val reservation =
@@ -81,9 +105,10 @@ class BoatSpaceSearchController {
         )
     }
 
-    @RequestMapping("/partial/vapaat-paikat")
+    @RequestMapping("/{userType:kuntalainen|virkailija}/partial/vapaat-paikat")
     @ResponseBody
     fun searchResultPartial(
+        @PathVariable userType: String,
         @RequestParam(required = false) boatType: BoatType?,
         @RequestParam @Min(0) width: Double?,
         @RequestParam @Min(0) length: Double?,
@@ -110,7 +135,8 @@ class BoatSpaceSearchController {
             harbors.first,
             BoatFilter(width, length, boatType),
             harbors.second,
-            request.getAuthenticatedUser() != null
+            request.getAuthenticatedUser() != null,
+            userType == "virkailija"
         )
     }
 }
