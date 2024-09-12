@@ -239,6 +239,17 @@ class CitizenUserController {
             reservationId = reservations.find { it.boatId == boat.id }?.id
         )
 
+    data class CitizenUpdate(
+        val phoneNumber: String,
+        val email: String,
+        val address: String?,
+        val postalCode: String?,
+        val municipality: String?,
+        val nationalId: String?,
+        val firstName: String,
+        val lastName: String,
+    )
+
     data class BoatUpdateForm(
         val id: Int,
         val name: String,
@@ -389,16 +400,29 @@ class CitizenUserController {
     fun citizenEdit(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
+        input: CitizenUpdate,
         model: Model
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it) }
+        val updatedCitizen =
+            citizenService.updateCitizen(
+                citizenId,
+                input.firstName,
+                input.lastName,
+                input.phoneNumber,
+                input.email,
+                input.address,
+                input.postalCode,
+                input.municipality,
+                input.nationalId,
+            )
         return layout.render(
             true,
             request.requestURI,
-            citizenDetails.citizenPage(citizen, boatSpaceReservations, boats)
+            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats)
         )
     }
 }

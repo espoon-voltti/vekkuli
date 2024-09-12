@@ -59,7 +59,7 @@ class CitizenDetails {
                     "lastName",
                     citizen.lastName,
                 )
-            val ssnValue =
+            val nationalIdValue =
                 formComponents.field(
                     "boatSpaceReservation.title.nationalId",
                     "nationalId",
@@ -101,7 +101,7 @@ class CitizenDetails {
                     ${commonComponents.getCitizenFields(
                     firstNameValue,
                     lastNameValue,
-                    ssnValue,
+                    nationalIdValue,
                     addressValue,
                     postalCodeValue,
                     cityValue,

@@ -36,7 +36,7 @@ class EditCitizen {
         val nationalIdInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.nationalId",
-                "ssn",
+                "nationalId",
                 citizen.nationalId,
                 required = true,
             )
