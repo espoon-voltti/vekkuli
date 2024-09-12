@@ -33,6 +33,8 @@ class CitizenDetailsPage(
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
 
+    fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
+
     val nameInput: Locator = page.getByTestId("name")
     val weightInput: Locator = page.getByTestId("weight")
     val typeSelect: Locator = page.getByTestId("type")
@@ -46,4 +48,11 @@ class CitizenDetailsPage(
 
     val submitButton: Locator = page.getByTestId("submit")
     val cancelButton: Locator = page.getByTestId("cancel")
+
+    val memoNavi: Locator = page.getByTestId("memos-tab-navi")
+    val addNewMemoBtn: Locator = page.getByTestId("add-new-memo")
+    val newMemoContent: Locator = page.getByTestId("new-memo-content")
+    val newMemoSaveBtn: Locator = page.getByTestId("new-memo-save-button")
+
+    val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
 }

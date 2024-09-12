@@ -34,6 +34,43 @@ class E2eTest : PlaywrightTest() {
     }
 
     @Test
+    fun userMemos() {
+        try {
+            page.navigate(baseUrl + "/virkailija")
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.memoNavi.click()
+
+            // Add memo
+            citizenDetails.addNewMemoBtn.click()
+            val text = "This is a new memo"
+            val memoId = 2
+            citizenDetails.newMemoContent.fill(text)
+            citizenDetails.newMemoSaveBtn.click()
+            assertThat(citizenDetails.userMemo(memoId)).containsText(text)
+
+            // Edit memo
+            val newText = "Edited memo"
+            citizenDetails.userMemo(memoId).getByTestId("edit-memo-button").click()
+            citizenDetails.userMemo(memoId).getByTestId("edit-memo-content").fill(newText)
+            citizenDetails.userMemo(memoId).getByTestId("save-edit-button").click()
+            assertThat(citizenDetails.userMemo(memoId)).containsText(newText)
+
+            // Delete memo
+            page.onDialog { it.accept() }
+            citizenDetails.userMemo(memoId).getByTestId("delete-memo-button").click()
+            assertThat(citizenDetails.userMemo(memoId)).hasCount(0)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun editBoat() {
         try {
             page.navigate(baseUrl + "/virkailija")
@@ -45,8 +82,8 @@ class E2eTest : PlaywrightTest() {
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
-
-            page.getByTestId("edit-boat-0").click()
+            citizenDetails.showAllBoatsButton.click()
+            page.getByTestId("edit-boat-3").click()
             assertThat(page.getByTestId("form")).isVisible()
 
             citizenDetails.nameInput.fill("New Boat Name")
@@ -61,18 +98,17 @@ class E2eTest : PlaywrightTest() {
             citizenDetails.extraInformation.fill("Extra info")
 
             citizenDetails.submitButton.click()
+            assertThat(citizenDetails.nameText(3)).hasText("New Boat Name")
+            assertThat(citizenDetails.weightText(3)).hasText("2000")
+            assertThat(citizenDetails.typeText(3)).hasText("Sailboat")
+            assertThat(citizenDetails.depthText(3)).hasText("1.5")
+            assertThat(citizenDetails.widthText(3)).hasText("3.0")
+            assertThat(citizenDetails.registrationNumberText(3)).hasText("ABC123")
 
-            assertThat(citizenDetails.nameText(0)).hasText("New Boat Name")
-            assertThat(citizenDetails.weightText(0)).hasText("2000")
-            assertThat(citizenDetails.typeText(0)).hasText("Sailboat")
-            assertThat(citizenDetails.depthText(0)).hasText("1.5")
-            assertThat(citizenDetails.widthText(0)).hasText("3.0")
-            assertThat(citizenDetails.registrationNumberText(0)).hasText("ABC123")
-
-            assertThat(citizenDetails.lengthText(0)).hasText("6.0")
-            assertThat(citizenDetails.ownershipText(0)).hasText("Owner")
-            assertThat(citizenDetails.otherIdentifierText(0)).hasText("ID12345")
-            assertThat(citizenDetails.extraInformationText(0)).hasText("Extra info")
+            assertThat(citizenDetails.lengthText(3)).hasText("6.0")
+            assertThat(citizenDetails.ownershipText(3)).hasText("Owner")
+            assertThat(citizenDetails.otherIdentifierText(3)).hasText("ID12345")
+            assertThat(citizenDetails.extraInformationText(3)).hasText("Extra info")
         } catch (e: AssertionError) {
             handleError(e)
         }

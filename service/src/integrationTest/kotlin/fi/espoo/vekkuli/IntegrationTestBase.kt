@@ -19,6 +19,8 @@ abstract class IntegrationTestBase {
 
     val citizenId: UUID = UUID.fromString("f5d377ea-5547-11ef-a1c7-7f2b94cf9afd")
 
+    val userId: UUID = UUID.fromString("94833b54-132b-4ab8-b841-60df45809b3e")
+
     @BeforeAll
     fun beforeAllSuper() {
         createAndSeedDatabase(jdbi)
