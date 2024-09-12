@@ -38,7 +38,7 @@ $activeColor: #D9E4F4;
   $tabs-boxed-link-active-background-color: $white,
   $tabs-boxed-link-active-border-color: transparent,
   $tabs-link-color: $black,
-  $tabs-link-active-color: $black
+  $tabs-link-active-color: $black,
 );
 
 // Custom styles
@@ -52,6 +52,10 @@ $activeColor: #D9E4F4;
   background-color: $white;
   border-color: $bulma-primary;
   color: $bulma-primary;
+}
+
+.button.is-danger{
+  color: $white
 }
 
 html, body {

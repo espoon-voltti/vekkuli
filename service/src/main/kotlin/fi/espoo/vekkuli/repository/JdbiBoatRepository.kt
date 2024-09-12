@@ -125,4 +125,22 @@ class JdbiBoatRepository(
             query.bind("ownership", ownership)
             query.mapTo<Boat>().one()
         }
+
+    override fun deleteBoat(boatId: Int): Boolean =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createUpdate(
+                    """
+                    DELETE FROM boat
+                    WHERE boat.id = :id
+                      AND NOT EXISTS (
+                          SELECT boat_id
+                          FROM boat_space_reservation
+                          WHERE boat_space_reservation.boat_id = boat.id
+                      );
+                    """.trimIndent()
+                )
+            query.bind("id", boatId)
+            query.execute() == 1
+        }
 }

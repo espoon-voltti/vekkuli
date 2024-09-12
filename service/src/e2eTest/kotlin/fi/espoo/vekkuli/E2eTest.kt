@@ -115,6 +115,28 @@ class E2eTest : PlaywrightTest() {
     }
 
     @Test
+    fun deleteBoat() {
+        try {
+            page.navigate(baseUrl + "/virkailija")
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            citizenDetails.showAllBoatsButton.click()
+            assertThat(page.getByTestId("boat-3")).isVisible()
+            page.getByTestId("delete-boat-3").click()
+            page.getByTestId("delete-modal-confirm-3").click()
+            assertThat(page.getByTestId("boat-3")).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun reservingABoatSpace() {
         try {
             page.navigate(baseUrl)

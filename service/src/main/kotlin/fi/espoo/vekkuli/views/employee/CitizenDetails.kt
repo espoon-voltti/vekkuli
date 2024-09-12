@@ -293,9 +293,51 @@ class CitizenDetails {
         }
 
         // language=HTML
+        fun deleteButton(
+            hasLinkedReservation: Boolean,
+            boatId: Int
+        ): String {
+            if (!hasLinkedReservation) {
+                return (
+                    """
+                    <div class="column" x-data="{deleteModal: false}">
+                        <a class="is-link has-text-danger"
+                            id='delete-boat-$boatId'
+                           x-on:click="deleteModal = true">
+                            <span class="icon ml-s">
+                                ${icons.remove}
+                            </span>
+                            <span > ${t("boatSpaceReservation.button.deleteBoat")} </span>
+                        </a>
+                        <div class="modal" x-show="deleteModal" style="display:none;">
+                            <div class="modal-underlay" @click="deleteModal = false"></div>
+                            <div class="modal-content">
+                                <div class="container">
+                                    <div class="has-text-centered is-1">
+                                        <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
+                                        <div class="buttons is-centered">
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
+                        "cancel"
+                    )}</button>
+                                            <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
+                                                ${t("boatSpaceReservation.button.confirmDeletion")}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    """
+                )
+            }
+            return ""
+        }
+
+        // language=HTML
         fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String {
             return boats
                 .mapIndexed { _, boat ->
+
                     """
                     <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
                         <div class="columns is-vcentered">
@@ -314,14 +356,8 @@ class CitizenDetails {
                                         <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
                                     </a>
                                 </div>
-                                <div class="column">
-                                    <a class="is-link has-text-danger">
-                                        <span class="icon ml-s">
-                                            ${icons.xMark}
-                                        </span>
-                                        <span>${t("boatSpaceReservation.button.deleteBoat")}</span>
-                                    </a>
-                                </div>
+                                ${deleteButton(boat.reservationId != null, boat.id)}
+                                
                                 ${showBoatWarnings(boat.hasAnyWarnings())}
                                 </span>
                         </div>
@@ -384,6 +420,26 @@ class CitizenDetails {
                     """.trimIndent()
                 }.joinToString("\n")
         }
+        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
+
+        // language=HTML
+        val showAllBoatsCheckbox =
+            if (boatsWithNoReservation.isNotEmpty()) {
+                """
+                            <label class="checkbox pb-l">
+                                <input type="checkbox"
+                                name="showAllBoats"
+                                id="showAllBoats"
+                                x-model="showAllBoats"
+                                hx-preserve="true"
+                                x-ref="showAllBoats"
+                                />
+                                <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
+                            </label>
+                """
+            } else {
+                ""
+            }
 
         // language=HTML
         return """
@@ -401,16 +457,7 @@ class CitizenDetails {
                        </div>
                      
                       <div>
-                          <label class="checkbox pb-l">
-                               <input type="checkbox" 
-                                       name="showAllBoats" 
-                                       id="showAllBoats" 
-                                       x-model="showAllBoats"
-                                       hx-preserve="true"
-                                       x-ref="showAllBoats"
-                                       />
-                               <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
-                          </label> 
+                         $showAllBoatsCheckbox
                           <div class="reservation-list" x-show="showAllBoats">    
                             ${getBoatsList(boats.filter { it.reservationId == null })} 
                            </div>
