@@ -34,6 +34,54 @@ class E2eTest : PlaywrightTest() {
     }
 
     @Test
+    fun editCitizen() {
+        try {
+            page.navigate(baseUrl + "/virkailija")
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            citizenDetails.editButton.click()
+
+            assertThat(page.getByTestId("edit-citizen-form")).isVisible()
+            val citizenFirstName = "New First Name"
+            val citizenLastName = "New Last Name"
+            val citizenPhone = "123456789"
+            val citizenEmail = "test2@email.com"
+            val citizenAddress = "New Address"
+            val citizenNationalId = "123456-789A"
+            val citizenPostalCode = "12345"
+            val citizenMunicipality = "New Municipality"
+
+            citizenDetails.citizenFirstName.fill(citizenFirstName)
+            citizenDetails.citizenLastName.fill(citizenLastName)
+            citizenDetails.citizenPhone.fill(citizenPhone)
+            citizenDetails.citizenEmail.fill(citizenEmail)
+            citizenDetails.citizenAddress.fill(citizenAddress)
+            citizenDetails.citizenNationalId.fill(citizenNationalId)
+            citizenDetails.citizenPostalCode.fill(citizenPostalCode)
+            citizenDetails.citizenMunicipality.fill(citizenMunicipality)
+            citizenDetails.citizenEditSubmitButton.click()
+
+            page.pause()
+            assertThat(citizenDetails.citizenFirstName).hasText(citizenFirstName)
+            assertThat(citizenDetails.citizenLastName).hasText(citizenLastName)
+            assertThat(citizenDetails.citizenPhone).hasText(citizenPhone)
+            assertThat(citizenDetails.citizenEmail).hasText(citizenEmail)
+            assertThat(citizenDetails.citizenAddress).hasText(citizenAddress)
+            assertThat(citizenDetails.citizenNationalId).hasText(citizenNationalId)
+            assertThat(citizenDetails.citizenPostalCode).hasText(citizenPostalCode)
+            assertThat(citizenDetails.citizenMunicipality).hasText(citizenMunicipality)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun userMemos() {
         try {
             page.navigate(baseUrl + "/virkailija")

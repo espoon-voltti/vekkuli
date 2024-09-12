@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.MemoCategory
+import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -23,6 +24,51 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
         val citizen = citizenService.getCitizen(citizenId)
         assertEquals(citizenId, citizen?.id, "Citizen is correctly fetched")
         assertEquals("Leo Korhonen", citizen?.fullName, "Citizen's first name is correctly fetched")
+    }
+
+    @Test
+    fun `should update citizen email and phone number`() {
+        val updatedPhoneNumber = "123456789"
+        val updatedEmail = "new@email.com"
+        val updatedCitizen =
+            citizenService.updateCitizen(id = citizenId, phone = updatedPhoneNumber, email = updatedEmail)
+        val citizen = citizenService.getCitizen(citizenId)
+        assertNotNull(updatedCitizen)
+        assertEquals(updatedPhoneNumber, citizen?.phone, "Citizen's phone is correctly updated")
+        assertEquals(updatedEmail, citizen?.email, "Citizen's email is correctly updated")
+        assertEquals(updatedCitizen, citizen, "Updated citizen is correctly returned")
+    }
+
+    @Test
+    fun `should update all citizen fields`() {
+        val newCitizen =
+            Citizen(
+                id = citizenId,
+                firstName = "Testi",
+                lastName = "Testeri",
+                phone = "123456789",
+                email = "new@email.com",
+                address = "New address",
+                postalCode = "12345",
+                municipality = "Espoo",
+                nationalId = "123456-789A"
+            )
+        val updatedCitizen =
+            citizenService.updateCitizen(
+                id = citizenId,
+                phone = newCitizen.phone,
+                email = newCitizen.email,
+                firstName = newCitizen.firstName,
+                lastName = newCitizen.lastName,
+                address = newCitizen.address,
+                postalCode = newCitizen.postalCode,
+                municipality = newCitizen.municipality,
+                nationalId = newCitizen.nationalId
+            )
+        val citizen = citizenService.getCitizen(citizenId)
+        assertNotNull(updatedCitizen)
+        assertEquals(newCitizen, citizen, "Citizen is correctly updated")
+        assertEquals(updatedCitizen, citizen, "Updated citizen is correctly returned")
     }
 
     @Test

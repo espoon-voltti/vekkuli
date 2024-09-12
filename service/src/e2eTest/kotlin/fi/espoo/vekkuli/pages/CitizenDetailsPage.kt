@@ -33,6 +33,19 @@ class CitizenDetailsPage(
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
 
+    // Citizen information
+    val editButton = page.getByTestId("edit-customer")
+    val citizenFirstName = page.getByTestId("firstName")
+    val citizenLastName = page.getByTestId("lastName")
+    val citizenNationalId = page.getByTestId("nationalId")
+    val citizenCity = page.getByTestId("city")
+    val citizenMunicipality = page.getByTestId("municipality")
+    val citizenEmail = page.getByTestId("email")
+    val citizenPhone = page.getByTestId("phoneNumber")
+    val citizenAddress = page.getByTestId("address")
+    val citizenPostalCode = page.getByTestId("postalCode")
+    val citizenEditSubmitButton = page.getByTestId("submit-boat-edit-form")
+
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 
     val nameInput: Locator = page.getByTestId("name")

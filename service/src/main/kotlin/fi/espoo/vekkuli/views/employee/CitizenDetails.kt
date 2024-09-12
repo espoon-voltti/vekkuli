@@ -78,7 +78,7 @@ class CitizenDetails {
             val emailValue = formComponents.field("boatSpaceReservation.title.email", "email", citizen.email)
             return (
                 """
-                <div class="container block" id="citizen-${citizen.id}">
+                <div class="container block" id="citizen-information">
                     <div class="columns">
                         <div class="column is-narrow">
                             <h3 class="header">${t("boatSpaceReservation.title.customerInformation")}</h3>
@@ -86,8 +86,9 @@ class CitizenDetails {
                         <div class="column">
                             <div>
                                 <a class="is-link" 
+                                    id="edit-customer"
                                     hx-get="/virkailija/kayttaja/${citizen.id}/muokkaa"
-                                    hx-target="#citizen-${citizen.id}"
+                                    hx-target="#citizen-information"
                                     hx-swap="innerHTML">
                                     <span class="icon ml-s">
                                         ${icons.edit}
