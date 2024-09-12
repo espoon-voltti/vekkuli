@@ -47,7 +47,6 @@ class TemplateEmailService(
         body: String,
         variables: Map<String, Any>
     ): String {
-        println(body)
         val regex = Regex("""\{\{(\s*\w+\s*)}}""")
         return regex.replace(body) {
             variables[it.groupValues[1].trim()]?.toString() ?: it.value
