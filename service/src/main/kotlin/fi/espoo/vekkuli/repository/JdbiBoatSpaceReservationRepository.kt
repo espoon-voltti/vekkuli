@@ -130,6 +130,30 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
+    override fun getReservationForEmployee(id: UUID): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                        location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                          bs.description
+                    FROM boat_space_reservation bsr
+                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.employee_id = :id
+                        AND bsr.status = 'Info' 
+                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
     override fun getReservationWithCitizen(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -419,6 +443,28 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("citizenId", citizenId)
+            query.bind("boatSpaceId", boatSpaceId)
+            query.bind("startDate", startDate)
+            query.bind("endDate", endDate)
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+
+    override fun insertBoatSpaceReservationAsEmployee(
+        employeeId: UUID,
+        boatSpaceId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date)
+                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("employeeId", employeeId)
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)

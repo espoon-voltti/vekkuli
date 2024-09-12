@@ -34,6 +34,8 @@ interface BoatSpaceReservationRepository {
 
     fun getReservationForCitizen(id: UUID): ReservationWithDependencies?
 
+    fun getReservationForEmployee(id: UUID): ReservationWithDependencies?
+
     fun getReservationWithCitizen(id: Int): ReservationWithDependencies?
 
     fun removeBoatSpaceReservation(
@@ -52,6 +54,13 @@ interface BoatSpaceReservationRepository {
 
     fun insertBoatSpaceReservation(
         citizenId: UUID,
+        boatSpaceId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): BoatSpaceReservation
+
+    fun insertBoatSpaceReservationAsEmployee(
+        employeeId: UUID,
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
@@ -303,6 +312,8 @@ class BoatReservationService(
 
     fun getReservationForCitizen(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForCitizen(id)
 
+    fun getReservationForEmployee(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForEmployee(id)
+
     fun insertBoatSpaceReservation(
         citizenId: UUID,
         boatSpaceId: Int,
@@ -311,6 +322,19 @@ class BoatReservationService(
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservation(
             citizenId,
+            boatSpaceId,
+            startDate,
+            endDate,
+        )
+
+    fun insertBoatSpaceReservationAsEmployee(
+        employeeId: UUID,
+        boatSpaceId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): BoatSpaceReservation =
+        boatSpaceReservationRepo.insertBoatSpaceReservationAsEmployee(
+            employeeId,
             boatSpaceId,
             startDate,
             endDate,
