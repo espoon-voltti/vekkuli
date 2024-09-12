@@ -451,7 +451,7 @@ class CitizenDetails {
                 // language=HTML
                 """
                 <div class="message-list">
-                    <table>
+                    <table id="messages-table">
                       <thead>
                         <tr>
                           <th>${t("citizenDetails.messages.subject")}</th>
