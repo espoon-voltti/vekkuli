@@ -71,6 +71,24 @@ class E2eTest : PlaywrightTest() {
     }
 
     @Test
+    fun userMessages() {
+        try {
+            page.navigate(baseUrl + "/virkailija")
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.messagesNavi.click()
+            assertThat(citizenDetails.messages).containsText("Käyttöveden katko")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun editBoat() {
         try {
             page.navigate(baseUrl + "/virkailija")
@@ -109,6 +127,28 @@ class E2eTest : PlaywrightTest() {
             assertThat(citizenDetails.ownershipText(3)).hasText("Owner")
             assertThat(citizenDetails.otherIdentifierText(3)).hasText("ID12345")
             assertThat(citizenDetails.extraInformationText(3)).hasText("Extra info")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun deleteBoat() {
+        try {
+            page.navigate(baseUrl + "/virkailija")
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            citizenDetails.showAllBoatsButton.click()
+            assertThat(page.getByTestId("boat-3")).isVisible()
+            page.getByTestId("delete-boat-3").click()
+            page.getByTestId("delete-modal-confirm-3").click()
+            assertThat(page.getByTestId("boat-3")).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }

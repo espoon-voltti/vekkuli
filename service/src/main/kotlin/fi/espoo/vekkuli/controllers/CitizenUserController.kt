@@ -87,7 +87,8 @@ class CitizenUserController {
         @PathVariable citizenId: UUID
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        return citizenDetails.messageTabContent(citizen)
+        val messages = citizenService.getMessages(citizenId)
+        return citizenDetails.messageTabContent(citizen, messages)
     }
 
     @GetMapping("/kayttaja/{citizenId}/muistiinpanot")
@@ -328,6 +329,42 @@ class CitizenUserController {
                 boatSpaceReservations,
                 updatedBoats,
                 errors
+            )
+        )
+    }
+
+    @DeleteMapping("/kayttaja/{citizenId}/vene/{boatId}/poista")
+    @ResponseBody
+    fun deleteBoat(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable boatId: Int,
+        response: HttpServletResponse
+    ): String {
+        val boats = boatService.getBoatsForCitizen(citizenId)
+        boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val boatDeletionSuccessful = boatService.deleteBoat(boatId)
+        // Update the boat list to remove the deleted boat
+        val updatedBoats =
+            boats
+                .map { toUpdateForm(it, boatSpaceReservations) }
+                .filter { !boatDeletionSuccessful || it.id != boatId }
+
+        response.addHeader("HX-Retarget", "#citizen-details")
+        response.addHeader("HX-Reselect", "#citizen-details")
+
+        return layout.render(
+            true,
+            request.requestURI,
+            citizenDetails.citizenPage(
+                citizen,
+                boatSpaceReservations,
+                updatedBoats,
             )
         )
     }

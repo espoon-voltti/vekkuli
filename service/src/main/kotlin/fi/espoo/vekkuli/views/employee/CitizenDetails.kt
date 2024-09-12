@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
+import fi.espoo.vekkuli.domain.SentMessage
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -292,10 +293,51 @@ class CitizenDetails {
             return ""
         }
 
+        fun deleteButton(
+            hasLinkedReservation: Boolean,
+            boatId: Int
+        ): String {
+            if (!hasLinkedReservation) {
+                return (
+                    """
+                    <div class="column" x-data="{deleteModal: false}">
+                        <a class="is-link has-text-danger"
+                            id='delete-boat-$boatId'
+                           x-on:click="deleteModal = true">
+                            <span class="icon ml-s">
+                                ${icons.remove}
+                            </span>
+                            <span > ${t("boatSpaceReservation.button.deleteBoat")} </span>
+                        </a>
+                        <div class="modal" x-show="deleteModal" style="display:none;">
+                            <div class="modal-underlay" @click="deleteModal = false"></div>
+                            <div class="modal-content">
+                                <div class="container">
+                                    <div class="has-text-centered is-1">
+                                        <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
+                                        <div class="buttons is-centered">
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
+                        "cancel"
+                    )}</button>
+                                            <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
+                                                ${t("boatSpaceReservation.button.confirmDeletion")}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    """
+                )
+            }
+            return ""
+        }
+
         // language=HTML
-        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String {
-            return boats
+        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
+            boats
                 .mapIndexed { _, boat ->
+
                     """
                     <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
                         <div class="columns is-vcentered">
@@ -314,14 +356,8 @@ class CitizenDetails {
                                         <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
                                     </a>
                                 </div>
-                                <div class="column">
-                                    <a class="is-link has-text-danger">
-                                        <span class="icon ml-s">
-                                            ${icons.xMark}
-                                        </span>
-                                        <span>${t("boatSpaceReservation.button.deleteBoat")}</span>
-                                    </a>
-                                </div>
+                                ${deleteButton(boat.reservationId != null, boat.id)}
+                                
                                 ${showBoatWarnings(boat.hasAnyWarnings())}
                                 </span>
                         </div>
@@ -383,7 +419,26 @@ class CitizenDetails {
                     </div>
                     """.trimIndent()
                 }.joinToString("\n")
-        }
+        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
+
+        // language=HTML
+        val showAllBoatsCheckbox =
+            if (boatsWithNoReservation.isNotEmpty()) {
+                """
+                            <label class="checkbox pb-l">
+                                <input type="checkbox"
+                                name="showAllBoats"
+                                id="showAllBoats"
+                                x-model="showAllBoats"
+                                hx-preserve="true"
+                                x-ref="showAllBoats"
+                                />
+                                <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
+                            </label>
+                """
+            } else {
+                ""
+            }
 
         // language=HTML
         return """
@@ -401,16 +456,7 @@ class CitizenDetails {
                        </div>
                      
                       <div>
-                          <label class="checkbox pb-l">
-                               <input type="checkbox" 
-                                       name="showAllBoats" 
-                                       id="showAllBoats" 
-                                       x-model="showAllBoats"
-                                       hx-preserve="true"
-                                       x-ref="showAllBoats"
-                                       />
-                               <span>${t("boatSpaceReservation.checkbox.showAllBoats")}</span>
-                          </label> 
+                         $showAllBoatsCheckbox
                           <div class="reservation-list" x-show="showAllBoats">    
                             ${getBoatsList(boats.filter { it.reservationId == null })} 
                            </div>
@@ -429,12 +475,52 @@ class CitizenDetails {
             """.trimIndent()
     }
 
-    fun messageTabContent(citizen: Citizen): String {
+    fun messageTabContent(
+        citizen: Citizen,
+        messages: List<SentMessage>
+    ): String {
+        val messageHtml =
+            messages.joinToString("\n") { message ->
+                // language=HTML
+                """
+                <tr>
+                    <td>${message.subject}</td>
+                    <td>${message.recipientAddress}</td>
+                    <td>${message.sentAt?.let { formatDate(it)} ?: "Ei lähetetty"}</td>
+                    <td>${message.senderAddress ?: ""}</td>
+                </tr>
+                """.trimIndent()
+            }
+
+        val messagesHtml =
+            if (messages.isNotEmpty()) {
+                // language=HTML
+                """
+                <div class="message-list">
+                    <table id="messages-table">
+                      <thead>
+                        <tr>
+                          <th>${t("citizenDetails.messages.subject")}</th>
+                          <th>${t("citizenDetails.messages.recipient")}</th>
+                          <th>${t("citizenDetails.messages.sentAt")}</th>
+                          <th>${t("citizenDetails.messages.sender")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          $messageHtml
+                      </tbody>
+                    </table>
+                </div>
+                """.trimIndent()
+            } else {
+                "<h2>${t("citizenDetails.messages.noMessages")}</h2>"
+            }
+
         // language=HTML
         return """
             <div id="tab-content" class="container block">
               ${renderTabNavi(citizen.id, SubTab.Messages)}
-              <h3>MESSAGES</h3>
+              $messagesHtml
             </div>
             """.trimIndent()
     }
@@ -464,7 +550,7 @@ class CitizenDetails {
                    hx-trigger="click"
                    hx-target="#memo-${memo.id}"
                    hx-swap="outerHTML">
-                    <span class="icon ml-s">
+                    <span class="icon ml-m">
                         ${icons.edit}
                     </span>
                 </a>
@@ -474,7 +560,7 @@ class CitizenDetails {
                    hx-target="#tab-content"
                    hx-swap="outerHTML"
                    hx-confirm="${t("citizenDetails.removeMemoConfirm")}">
-                    <span class="icon ml-s">
+                    <span class="icon ml-m">
                         ${icons.remove}
                     </span>
                 </a>
@@ -518,12 +604,12 @@ class CitizenDetails {
                                   name="content">${memo.content}</textarea>
                         <div class="memo-edit-buttons">
                             <button id="save-edit-button" type="submit">
-                                <span class="icon ml-s" 
+                                <span class="icon ml-m" 
                                       style='stroke: green;'>
                                     ${icons.check}
                                 </span>
                             </button>
-                            <span id="cancel-edit-button" class="icon ml-s"
+                            <span id="cancel-edit-button" class="icon ml-m"
                                   hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
                                   hx-trigger="click"
                                   hx-target="#memo-${memo.id}"
@@ -574,14 +660,14 @@ class CitizenDetails {
                             </div>
                             <div class="memo-edit-buttons">
                                 <button id="new-memo-save-button" type="submit">
-                                    <span class="icon ml-s" style='stroke: green;'>${icons.check}</span>
+                                    <span class="icon ml-m" style='stroke: green;'>${icons.check}</span>
                                 </button>
                                 <a id="new-memo-cancel-button" 
                                    hx-get="${getTabUrl("$citizenId/muistiinpanot/lisaa_peruuta")}" 
                                     hx-trigger="click" 
                                     hx-target="#new-memo" 
                                     hx-swap="outerHTML" >
-                                    <span class="icon ml-s">${icons.xMark}</span>
+                                    <span class="icon ml-m">${icons.xMark}</span>
                                 </a>
                             </div> 
                         </div>

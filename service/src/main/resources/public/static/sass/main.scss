@@ -38,7 +38,7 @@ $activeColor: #D9E4F4;
   $tabs-boxed-link-active-background-color: $white,
   $tabs-boxed-link-active-border-color: transparent,
   $tabs-link-color: $black,
-  $tabs-link-active-color: $black
+  $tabs-link-active-color: $black,
 );
 
 // Custom styles
@@ -52,6 +52,10 @@ $activeColor: #D9E4F4;
   background-color: $white;
   border-color: $bulma-primary;
   color: $bulma-primary;
+}
+
+.button.is-danger{
+  color: $white
 }
 
 html, body {
@@ -607,5 +611,34 @@ label.filter-button:has(input:checked) .icon {
   flex: 1;
   display: flex;
   align-items: center;
+}
+
+.message-list {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  thead th {
+    color: $darkGray;
+  }
+
+  th, td {
+    border-bottom: 1px solid #dddddd;
+    text-align: left;
+    padding: $spacing-small;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    font-weight: normal;
+  }
+
+  th a {
+    text-decoration: none;
+    color: $darkGray;
+  }
 }
 

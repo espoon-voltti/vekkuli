@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.config.Dimensions
+import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.*
@@ -124,7 +125,8 @@ class BoatReservationService(
     private val boatRepository: BoatRepository,
     private val emailService: TemplateEmailService,
     private val messageUtil: MessageUtil,
-    private val paytrail: PaytrailInterface
+    private val paytrail: PaytrailInterface,
+    private val emailEnv: EmailEnv,
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -164,6 +166,7 @@ class BoatReservationService(
         emailService.sendEmail(
             "reservationSuccess",
             null,
+            emailEnv.senderAddress,
             payment.citizenId,
             reservation.email,
             messageUtil.getMessage("boatSpaceReservation.title.confirmation"),

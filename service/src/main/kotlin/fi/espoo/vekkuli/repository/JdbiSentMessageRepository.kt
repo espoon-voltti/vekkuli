@@ -14,6 +14,7 @@ class JdbiSentMessageRepository(
 ) : SentMessageRepository {
     override fun addSentEmail(
         senderId: UUID?,
+        senderAddress: String,
         recipientId: UUID,
         recipientEmail: String,
         subject: String,
@@ -23,11 +24,12 @@ class JdbiSentMessageRepository(
             handle
                 .createQuery(
                     """
-                    INSERT INTO sent_message (status, sender_id, recipient_id, recipient_address, type, subject, body)
-                    VALUES ('Queued', :senderId, :recipientId, :recipientEmail, 'Email', :subject, :body)
+                    INSERT INTO sent_message (status, sender_id, sender_address, recipient_id, recipient_address, type, subject, body)
+                    VALUES ('Queued', :senderId, :senderAddress, :recipientId, :recipientEmail, 'Email', :subject, :body)
                     RETURNING *
                     """
                 ).bind("senderId", senderId)
+                .bind("senderAddress", senderAddress)
                 .bind("recipientId", recipientId)
                 .bind("recipientEmail", recipientEmail)
                 .bind("subject", subject)
@@ -72,5 +74,20 @@ class JdbiSentMessageRepository(
                 .bind("providerId", providerId)
                 .mapTo<SentMessage>()
                 .one()
+        }
+
+    override fun getMessagesSentToUser(citizenId: UUID): List<SentMessage> =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT *
+                    FROM sent_message
+                    WHERE recipient_id = :citizenId
+                    ORDER BY created DESC
+                    """
+                ).bind("citizenId", citizenId)
+                .mapTo<SentMessage>()
+                .list()
         }
 }

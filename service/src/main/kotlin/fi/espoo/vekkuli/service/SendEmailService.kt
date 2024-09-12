@@ -12,13 +12,14 @@ class SendEmailService(
     private val emailEnv: EmailEnv
 ) {
     fun sendEmail(
+        senderAddress: String?,
         recipient: String,
         subject: String,
         body: String
     ): String? {
         if (!emailEnv.enabled) {
             println(
-                "Email from ${emailEnv.senderAddress} (arn ${emailEnv.senderArn}, " +
+                "Email from $senderAddress (arn ${emailEnv.senderArn}, " +
                     "region ${emailEnv.region}) to $recipient with subject $subject and content $body"
             )
             return "Test-${UUID.randomUUID()}"
@@ -39,7 +40,7 @@ class SendEmailService(
                                 .text(Content.builder().data(body).build())
                                 .build()
                         ).build()
-                ).source(emailEnv.senderAddress)
+                ).source(senderAddress)
                 .build()
         try {
             val response = sesClient.sendEmail(emailRequest)
