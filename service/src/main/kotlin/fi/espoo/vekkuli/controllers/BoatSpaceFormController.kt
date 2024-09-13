@@ -81,58 +81,19 @@ class BoatSpaceFormController {
         model: Model,
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
-        val isEmployee = userType == UserType.EMPLOYEE
-        if (isEmployee) {
-            val employee = getEmployee(request)
-            if (employee == null) {
-                return ResponseEntity(HttpStatus.FORBIDDEN)
-            }
-
-            val reservation = reservationService.getReservationWithoutCitizen(reservationId)
-
-            if (reservation == null) {
-                val headers = org.springframework.http.HttpHeaders()
-                headers.location = URI(getServiceUrl("/${userType.path}/venepaikat"))
-                return ResponseEntity(headers, HttpStatus.FOUND)
-            }
-
-            if (reservation.employeeId != employee.id) {
-                throw UnauthorizedException()
-            }
-
-            var input = ReservationInput.initializeInput(boatType, width, length, null)
-
-            val usedBoatId = boatId ?: reservation.boatId // use boat id from reservation if it exists
-            if (usedBoatId != null && usedBoatId != 0) {
-                val boat = boatService.getBoat(usedBoatId)
-
-                if (boat != null) {
-                    input =
-                        input.copy(
-                            boatId = boat.id,
-                            depth = boat.depthCm.cmToM(),
-                            boatName = boat.name,
-                            weight = boat.weightKg,
-                            width = boat.widthCm.cmToM(),
-                            length = boat.lengthCm.cmToM(),
-                            otherIdentification = boat.otherIdentification,
-                            extraInformation = boat.extraInformation,
-                            ownership = boat.ownership,
-                            boatType = boat.type,
-                            boatRegistrationNumber = boat.registrationCode,
-                            noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
-                        )
-                }
+        val citizen =
+            if (userType == UserType.EMPLOYEE) {
+                null
             } else {
-                input = input.copy(boatId = 0)
+                getCitizen(request, citizenService)
             }
 
-            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, input, request, userType))
-        }
-
-        val user = getCitizen(request, citizenService)
         val reservation =
-            reservationService.getReservationWithCitizen(reservationId)
+            if (userType == UserType.EMPLOYEE) {
+                reservationService.getReservationWithoutCitizen(reservationId)
+            } else {
+                reservationService.getReservationWithCitizen(reservationId)
+            }
 
         if (reservation == null) {
             val headers = org.springframework.http.HttpHeaders()
@@ -140,11 +101,11 @@ class BoatSpaceFormController {
             return ResponseEntity(headers, HttpStatus.FOUND)
         }
 
-        if (user == null || reservation.citizenId != user.id) {
+        if (userType == UserType.CITIZEN && (citizen == null || reservation.citizenId != citizen.id)) {
             throw UnauthorizedException()
         }
 
-        var input = ReservationInput.initializeInput(boatType, width, length, user)
+        var input = ReservationInput.initializeInput(boatType, width, length, citizen)
         val usedBoatId = boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)
@@ -170,7 +131,11 @@ class BoatSpaceFormController {
             input = input.copy(boatId = 0)
         }
 
-        return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, user, input, request, userType))
+        return if (userType == UserType.EMPLOYEE) {
+            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, input, request, userType))
+        } else {
+            ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, citizen, input, request, userType))
+        }
     }
 
     @DeleteMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
