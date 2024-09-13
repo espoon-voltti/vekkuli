@@ -183,6 +183,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -257,6 +258,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -292,7 +294,6 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
                     WHERE bsr.id = :reservationId
-                    AND bsr.status = 'Confirmed' 
                     AND c.id = :citizenId
                     """.trimIndent()
                 )
@@ -367,7 +368,8 @@ class JdbiBoatSpaceReservationRepository(
             if (!params.nameSearch.isNullOrEmpty()) {
                 // Replace spaces with '&' and append ':*' to each term for prefix matching
                 val formattedNameSearch =
-                    params.nameSearch.trim()
+                    params.nameSearch
+                        .trim()
                         .split("\\s+".toRegex())
                         .joinToString(" & ") { "$it:*" }
                 query.bind("nameSearch", formattedNameSearch)

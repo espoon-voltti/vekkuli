@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
 import java.util.*
 import kotlin.test.assertContains
+import kotlin.test.assertNotNull
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -80,7 +81,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     fun `should handle payment result`() {
         val madeReservation = createReservationInPaymentState(reservationService, citizenId)
 
-        val (payment, reservation) =
+        val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
@@ -91,6 +92,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                     productCode = "1"
                 )
             )
+        val reservation = reservationService.getBoatSpaceReservation(madeReservation.id, citizenId)
+        assertNotNull(reservation, "reservation is found")
         assertEquals(madeReservation.id, reservation.id, "reservation is the same")
         assertEquals(payment.citizenId, madeReservation.citizenId, "payment is added for correct citizen")
         assertEquals(reservation.paymentId, payment.id, "payment is added to the reservation")
@@ -102,7 +105,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
         val paymentParams = CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
 
-        val (payment, _) = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
+        val payment = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
 
         reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3)
 
@@ -222,7 +225,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val expectedBoatSpaceWithWarnings = 3
         val madeReservation = createReservationInPaymentState(reservationService, citizenId, expectedBoatSpaceWithWarnings)
         val paymentParams = CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
-        val (payment, _) = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
+        val payment = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
         reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3)
 
         reservationService.handlePaymentResult(

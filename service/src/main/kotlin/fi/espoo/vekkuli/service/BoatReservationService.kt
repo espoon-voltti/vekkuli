@@ -189,10 +189,10 @@ class BoatReservationService(
     fun addPaymentToReservation(
         reservationId: Int,
         params: CreatePaymentParams
-    ): Pair<Payment, BoatSpaceReservation> {
+    ): Payment {
         val payment = paymentService.insertPayment(params)
-        val reservation = boatSpaceReservationRepo.updateReservationWithPayment(reservationId, payment.id, params.citizenId)
-        return Pair(payment, reservation)
+        boatSpaceReservationRepo.updateReservationWithPayment(reservationId, payment.id, params.citizenId)
+        return payment
     }
 
     fun addReservationWarnings(

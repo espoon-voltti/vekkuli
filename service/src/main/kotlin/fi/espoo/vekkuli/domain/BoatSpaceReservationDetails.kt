@@ -3,9 +3,12 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.utils.centsToEuro
 import fi.espoo.vekkuli.utils.cmToM
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 
 data class BoatSpaceReservationDetails(
     val id: Int,
+    val created: LocalDateTime,
     val priceCents: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
@@ -40,7 +43,8 @@ data class BoatSpaceReservationDetails(
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
     val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice,
-    val warnings: Set<String> = emptySet()
+    val warnings: Set<String> = emptySet(),
+    val paymentId: UUID?
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
