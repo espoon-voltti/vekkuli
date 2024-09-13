@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
@@ -59,13 +60,14 @@ class BoatSpaceSearchController {
     @Autowired
     lateinit var layout: Layout
 
-    @RequestMapping("/{userType:kuntalainen|virkailija}/venepaikat")
+    @RequestMapping("/$USERTYPE/venepaikat")
     @ResponseBody
     fun boatSpaceSearchPage(
         request: HttpServletRequest,
-        @PathVariable userType: String
+        @PathVariable usertype: String
     ): ResponseEntity<String> {
-        if (userType == "virkailija") {
+        val userType = UserTypes.fromPath(usertype)
+        if (userType == UserTypes.EMPLOYEE) {
             val authenticatedUser = request.getAuthenticatedUser() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
             val user =
                 authenticatedUser.let {
@@ -79,7 +81,7 @@ class BoatSpaceSearchController {
             val reservation = reservationService.getReservationForEmployee(user.id)
             if (reservation != null) {
                 val headers = org.springframework.http.HttpHeaders()
-                headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/varaus/${reservation.id}"))
+                headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/${reservation.id}"))
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
             val locations =
@@ -101,7 +103,7 @@ class BoatSpaceSearchController {
 
             if (reservation != null) {
                 val headers = org.springframework.http.HttpHeaders()
-                headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/varaus/${reservation.id}"))
+                headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/${reservation.id}"))
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
         }
@@ -118,10 +120,10 @@ class BoatSpaceSearchController {
         )
     }
 
-    @RequestMapping("/{userType:kuntalainen|virkailija}/partial/vapaat-paikat")
+    @RequestMapping("/$USERTYPE/partial/vapaat-paikat")
     @ResponseBody
     fun searchResultPartial(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @RequestParam(required = false) boatType: BoatType?,
         @RequestParam @Min(0) width: Double?,
         @RequestParam @Min(0) length: Double?,
@@ -130,6 +132,7 @@ class BoatSpaceSearchController {
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest
     ): String {
+        val userType = UserTypes.fromPath(usertype)
         val params =
             BoatSpaceFilter(
                 boatType,
@@ -149,7 +152,7 @@ class BoatSpaceSearchController {
             BoatFilter(width, length, boatType),
             harbors.second,
             request.getAuthenticatedUser() != null,
-            userType == "virkailija"
+            userType == UserTypes.EMPLOYEE
         )
     }
 }

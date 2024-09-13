@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
 import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
@@ -66,10 +67,10 @@ class BoatSpaceFormController {
     @Autowired
     lateinit var citizenService: CitizenService
 
-    @RequestMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaus/{reservationId}")
+    @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     @ResponseBody
     fun boatSpaceFormPage(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         @RequestParam boatType: BoatType?,
         @RequestParam boatId: Int?,
@@ -79,7 +80,8 @@ class BoatSpaceFormController {
         response: HttpServletResponse,
         model: Model,
     ): ResponseEntity<String> {
-        val isEmployee = userType == "virkailija"
+        val userType = UserTypes.fromPath(usertype)
+        val isEmployee = userType == UserTypes.EMPLOYEE
         if (isEmployee) {
             val employee = getEmployee(request)
             if (employee == null) {
@@ -90,7 +92,7 @@ class BoatSpaceFormController {
 
             if (reservation == null) {
                 val headers = org.springframework.http.HttpHeaders()
-                headers.location = URI(getServiceUrl("/virkailija/venepaikat"))
+                headers.location = URI(getServiceUrl("/${userType.path}/venepaikat"))
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
 
@@ -134,7 +136,7 @@ class BoatSpaceFormController {
 
         if (reservation == null) {
             val headers = org.springframework.http.HttpHeaders()
-            headers.location = URI(getServiceUrl("/kuntalainen/venepaikat"))
+            headers.location = URI(getServiceUrl("/${userType.path}/venepaikat"))
             return ResponseEntity(headers, HttpStatus.FOUND)
         }
 
@@ -171,9 +173,9 @@ class BoatSpaceFormController {
         return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, user, input, request))
     }
 
-    @DeleteMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaus/{reservationId}")
+    @DeleteMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     fun removeBoatSpaceReservation(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<Void> {
@@ -182,10 +184,10 @@ class BoatSpaceFormController {
         return ResponseEntity.noContent().build()
     }
 
-    @PostMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaus/{reservationId}/validate")
+    @PostMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/validate")
     @ResponseBody
     fun validateForm(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         @Valid @ModelAttribute("input") input: ReservationInput,
         bindingResult: BindingResult,
@@ -199,9 +201,9 @@ class BoatSpaceFormController {
         return renderBoatSpaceReservationApplication(reservation, citizen, input, request)
     }
 
-    @GetMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaus/{reservationId}/vahvistus")
+    @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")
     fun confirmBoatSpaceReservation(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         model: Model,
         request: HttpServletRequest,
@@ -213,9 +215,9 @@ class BoatSpaceFormController {
         return "boat-space-reservation-confirmation"
     }
 
-    @PostMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaus/{reservationId}")
+    @PostMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     fun reserveBoatSpace(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         @Valid @ModelAttribute("input") input: ReservationInput,
         bindingResult: BindingResult,
@@ -269,9 +271,10 @@ class BoatSpaceFormController {
         return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
 
-    @GetMapping("/{userType:kuntalainen|virkailija}/venepaikka/varaa/{spaceId}")
+    // initial reservation in info state
+    @GetMapping("/$USERTYPE/venepaikka/varaa/{spaceId}")
     fun reserveBoatSpace(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @PathVariable spaceId: Int,
         @RequestParam boatType: BoatType?,
         @RequestParam width: Double?,
@@ -279,7 +282,8 @@ class BoatSpaceFormController {
         request: HttpServletRequest,
         model: Model,
     ): ResponseEntity<String> {
-        val isEmployee = userType == "virkailija"
+        val userType = UserTypes.fromPath(usertype)
+        val isEmployee = userType == UserTypes.EMPLOYEE
         val userId =
             if (isEmployee) {
                 getEmployee(request)?.id
@@ -325,7 +329,7 @@ class BoatSpaceFormController {
         val queryString = queryParams.joinToString("&")
 
         val headers = org.springframework.http.HttpHeaders()
-        headers.location = URI(getServiceUrl("/$userType/venepaikka/varaus/$reservationId?$queryString"))
+        headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/$reservationId?$queryString"))
         return ResponseEntity(headers, HttpStatus.FOUND)
     }
 
