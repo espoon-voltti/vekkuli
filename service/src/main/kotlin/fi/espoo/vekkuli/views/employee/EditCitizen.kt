@@ -75,6 +75,7 @@ class EditCitizen {
                 "email",
                 citizen.email,
                 required = true,
+                pattern = Pair(".+@.+\\..+", "validation.email")
             )
 
         val phoneNumberInput =
@@ -83,6 +84,11 @@ class EditCitizen {
                 "phoneNumber",
                 citizen.phone,
                 required = true,
+                pattern =
+                    Pair(
+                        "^[(]?[0-9]{3}[)]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}\$",
+                        "validation.phoneNumber"
+                    )
             )
 
         val buttons =
@@ -122,6 +128,9 @@ class EditCitizen {
                 </div>
                 $buttons
             </form>
+             <script>
+                validation.init({forms: ['edit-citizen-form']})
+            </script>
             """.trimIndent()
         )
     }

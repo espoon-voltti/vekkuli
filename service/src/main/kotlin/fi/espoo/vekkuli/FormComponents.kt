@@ -22,6 +22,23 @@ class FormComponents {
         compact: Boolean = false
     ): String {
         //language=HTML
+        val errorContainer =
+            """
+            <div id="$id-error-container">
+                <span id="$id-error" class="help is-danger"
+                style="visibility: hidden">
+                ${t("validation.required")}
+                </span>
+            </div>
+            <div id="$id-error-container">
+                <span id="$id-pattern-error" class="help is-danger"
+                style="visibility: hidden">
+                ${if (pattern != null) t(pattern.second) else ""}
+                </span>
+            </div>
+            """
+
+        //language=HTML
         return """
             <div class="field">
                 <div class="control">
@@ -35,18 +52,7 @@ class FormComponents {
                         name="$id"
                         ${if (value != null) "value=\"$value\"" else ""}
                         $attributes />
-                    <div id="$id-error-container">
-                        <span id="$id-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${t("validation.required")} 
-                        </span>
-                    </div> 
-                    <div id="$id-error-container">
-                        <span id="$id-pattern-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${if (pattern != null) t(pattern.second) else ""} 
-                        </span>
-                    </div> 
+                   $errorContainer
                 </div>
             </div>
             """.trimIndent()

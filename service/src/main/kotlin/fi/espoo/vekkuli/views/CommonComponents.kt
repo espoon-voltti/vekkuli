@@ -35,20 +35,19 @@ class CommonComponents {
                 <div class="field column is-one-quarter">
                     $lastNameField
                 </div>
-                <div class="field column is-one-quarter">
-                    $ssnField
-                </div>
+            
                 <div class="field column is-one-quarter">
                     $addressField
                 </div>
-            </div>
-            <div class="columns">
-                <div class="field column is-one-eight">
+                 <div class="field column is-one-eight">
                     $postalCodeField
                 </div>
                 <div class="field column is-one-eight">
                     $cityField
                 </div>
+            </div>
+            <div class="columns">
+             
                 <div class="field column is-one-quarter">
                     $municipalityField
                 </div>
@@ -57,6 +56,9 @@ class CommonComponents {
                 </div>
                  <div class="field column is-one-quarter">
                    $emailField
+                </div>
+                  <div class="field column is-one-quarter">
+                    $ssnField
                 </div>
             </div>
             """.trimIndent()

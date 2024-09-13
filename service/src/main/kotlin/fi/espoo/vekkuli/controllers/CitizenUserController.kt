@@ -406,7 +406,7 @@ class CitizenUserController {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
-        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it) }
+        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
         val updatedCitizen =
             citizenService.updateCitizen(
                 citizenId,

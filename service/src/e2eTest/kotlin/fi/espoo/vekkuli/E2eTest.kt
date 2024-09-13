@@ -50,7 +50,7 @@ class E2eTest : PlaywrightTest() {
             assertThat(page.getByTestId("edit-citizen-form")).isVisible()
             val citizenFirstName = "New First Name"
             val citizenLastName = "New Last Name"
-            val citizenPhone = "123456789"
+            val citizenPhone = "0405839281"
             val citizenEmail = "test2@email.com"
             val citizenAddress = "New Address"
             val citizenNationalId = "123456-789A"
@@ -59,15 +59,29 @@ class E2eTest : PlaywrightTest() {
 
             citizenDetails.citizenFirstName.fill(citizenFirstName)
             citizenDetails.citizenLastName.fill(citizenLastName)
-            citizenDetails.citizenPhone.fill(citizenPhone)
-            citizenDetails.citizenEmail.fill(citizenEmail)
             citizenDetails.citizenAddress.fill(citizenAddress)
+            citizenDetails.citizenEmail.fill("")
+            citizenDetails.citizenPhone.fill("")
             citizenDetails.citizenNationalId.fill(citizenNationalId)
             citizenDetails.citizenPostalCode.fill(citizenPostalCode)
             citizenDetails.citizenMunicipality.fill(citizenMunicipality)
             citizenDetails.citizenEditSubmitButton.click()
 
-            page.pause()
+            // assert that email and phone can not be empty
+            assertThat(citizenDetails.citizenEmailError).isVisible()
+            assertThat(citizenDetails.citizenPhoneError).isVisible()
+            citizenDetails.citizenEmail.fill("asd")
+            citizenDetails.citizenPhone.fill("asd")
+            citizenDetails.citizenEditSubmitButton.click()
+
+            // assert that email and phone have to be valid
+            assertThat(citizenDetails.citizenEmailPatternError).isVisible()
+            assertThat(citizenDetails.citizenPhonePatternError).isVisible()
+            citizenDetails.citizenEmail.fill(citizenEmail)
+            citizenDetails.citizenPhone.fill(citizenPhone)
+            citizenDetails.citizenEditSubmitButton.click()
+
+            // assert that the values are updated
             assertThat(citizenDetails.citizenFirstName).hasText(citizenFirstName)
             assertThat(citizenDetails.citizenLastName).hasText(citizenLastName)
             assertThat(citizenDetails.citizenPhone).hasText(citizenPhone)

@@ -45,6 +45,10 @@ class CitizenDetailsPage(
     val citizenAddress = page.getByTestId("address")
     val citizenPostalCode = page.getByTestId("postalCode")
     val citizenEditSubmitButton = page.getByTestId("submit-boat-edit-form")
+    val citizenEmailPatternError = page.getByTestId("email-pattern-error")
+    val citizenEmailError = page.getByTestId("email-error")
+    val citizenPhonePatternError = page.getByTestId("phoneNumber-pattern-error")
+    val citizenPhoneError = page.getByTestId("phoneNumber-error")
 
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 
