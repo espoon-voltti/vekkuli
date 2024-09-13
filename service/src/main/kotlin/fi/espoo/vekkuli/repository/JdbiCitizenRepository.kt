@@ -1,9 +1,6 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.domain.Citizen
-import fi.espoo.vekkuli.domain.CitizenMemo
-import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
-import fi.espoo.vekkuli.domain.MemoCategory
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.CitizenRepository
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -16,16 +13,19 @@ import java.util.*
 class JdbiCitizenRepository(
     private val jdbi: Jdbi
 ) : CitizenRepository {
-    override fun getCitizen(id: UUID): Citizen? =
+    override fun getCitizen(id: UUID): CitizenWithDetails? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT * FROM citizen WHERE id = :id
+                    SELECT *, m.name as municipality_name FROM citizen 
+                    JOIN municipality m ON citizen.municipality_code = m.code
+                    WHERE id = :id
+                    
                     """.trimIndent()
                 )
             query.bind("id", id)
-            val citizens = query.mapTo<Citizen>().toList()
+            val citizens = query.mapTo<CitizenWithDetails>().toList()
             if (citizens.isEmpty()) null else citizens[0]
         }
 

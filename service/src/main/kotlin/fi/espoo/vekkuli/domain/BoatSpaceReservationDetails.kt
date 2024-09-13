@@ -23,7 +23,7 @@ data class BoatSpaceReservationDetails(
     val phone: String,
     val address: String?,
     val postalCode: String?,
-    val municipality: String?,
+    val municipalityCode: Int,
     val type: BoatSpaceType,
     val place: String,
     val locationName: String,

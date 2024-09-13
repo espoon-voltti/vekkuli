@@ -160,19 +160,18 @@ class BoatSpaceFormController {
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        fun badRequest(body: String): ResponseEntity<String> {
-            return ResponseEntity.badRequest().body(body)
-        }
+        fun badRequest(body: String): ResponseEntity<String> = ResponseEntity.badRequest().body(body)
 
-        fun redirectUrl(url: String): ResponseEntity<String> {
-            return ResponseEntity.status(HttpStatus.FOUND)
+        fun redirectUrl(url: String): ResponseEntity<String> =
+            ResponseEntity
+                .status(HttpStatus.FOUND)
                 .header("Location", url)
                 .body("")
-        }
 
         val citizen =
             getCitizen(request, citizenService)
-                ?: return ResponseEntity.status(HttpStatus.FOUND)
+                ?: return ResponseEntity
+                    .status(HttpStatus.FOUND)
                     .header("Location", "/")
                     .build()
 
@@ -248,7 +247,7 @@ class BoatSpaceFormController {
 
     fun renderBoatSpaceReservationApplication(
         reservation: ReservationWithDependencies,
-        user: Citizen,
+        user: CitizenWithDetails,
         input: ReservationInput,
     ): String {
         val boats =
@@ -384,7 +383,7 @@ data class ReservationInput(
             boatType: BoatType?,
             width: Double?,
             length: Double?,
-            user: Citizen
+            user: CitizenWithDetails
         ): ReservationInput =
             ReservationInput(
                 reservationId = null,

@@ -36,8 +36,7 @@ const devUsers: CitizenUser[] = [
     lastName: 'Korhonen',
     postalCode: '00370',
     address: { fi: 'Ahertajankuja 1', sv: 'Flitargränden 1' },
-    town: { fi: 'Espoo', sv: 'Esbo' }
-    // homeTown: 49,
+    municipalityCode: 49
   },
   {
     nationalId: '031298-988S',
@@ -48,8 +47,7 @@ const devUsers: CitizenUser[] = [
       fi: 'Hämeenkyläntie 2B 56',
       sv: 'Tavastbyvägen 2B 56'
     },
-    town: { fi: 'Espoo', sv: 'Esbo' }
-    // homeTown: 49,
+    municipalityCode: 49
   }
 ]
 

@@ -3,10 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.Citizen
-import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
-import fi.espoo.vekkuli.domain.SentMessage
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,7 +33,7 @@ class CitizenDetails {
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun citizenPage(
-        @SanitizeInput citizen: Citizen,
+        @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
@@ -74,7 +71,7 @@ class CitizenDetails {
                         </div>
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.municipality")}</label>
-                            <p>${citizen.municipality ?: "-"}</p>
+                            <p>${citizen.municipalityName}</p>
                         </div>
                         <div class="field">
                             <label class="label">${t("boatSpaceReservation.title.phoneNumber")}</label>
@@ -124,7 +121,7 @@ class CitizenDetails {
     private fun getTabUrl(last: String): String = getServiceUrl("/virkailija/kayttaja/$last")
 
     fun reservationTabContent(
-        @SanitizeInput citizen: Citizen,
+        @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
     ): String {
@@ -465,7 +462,7 @@ class CitizenDetails {
             """.trimIndent()
     }
 
-    fun paymentTabContent(citizen: Citizen): String {
+    fun paymentTabContent(citizen: CitizenWithDetails): String {
         // language=HTML
         return """
             <div id="tab-content" class="container block">
@@ -476,7 +473,7 @@ class CitizenDetails {
     }
 
     fun messageTabContent(
-        citizen: Citizen,
+        citizen: CitizenWithDetails,
         messages: List<SentMessage>
     ): String {
         val messageHtml =

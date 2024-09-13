@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 interface CitizenRepository {
-    fun getCitizen(id: UUID): Citizen?
+    fun getCitizen(id: UUID): CitizenWithDetails?
 
     fun updateCitizen(
         id: UUID,
@@ -41,7 +41,7 @@ class CitizenService(
     private val citizenRepository: CitizenRepository,
     private val sentMessagesRepository: SentMessageRepository,
 ) {
-    fun getCitizen(id: UUID): Citizen? = citizenRepository.getCitizen(id)
+    fun getCitizen(id: UUID): CitizenWithDetails? = citizenRepository.getCitizen(id)
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 

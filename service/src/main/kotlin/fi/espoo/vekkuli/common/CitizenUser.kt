@@ -22,7 +22,7 @@ data class CitizenAdUser(
     val phone: String?,
     val address: LocalizedName?,
     val postalCode: String?,
-    val town: LocalizedName?,
+    val municipalityCode: Int,
 )
 
 fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen {
@@ -34,25 +34,18 @@ fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen {
                     null,
                     null
                 ),
-            town =
-                adUser.town?.let { LocalizedName(it.fi.orEmpty(), it.sv.orEmpty()) } ?: LocalizedName(
-                    null,
-                    null
-                ),
         )
 
     return createQuery(
         // language=SQL
         """
- INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality)
- VALUES (:nationalId, :firstName, :lastName, '', '', COALESCE(:address.fi, ''), COALESCE(:postalCode, ''), COALESCE(:town.fi, ''))
- ON CONFLICT (national_id) DO UPDATE
- SET updated = now(), first_name = :firstName, last_name = :lastName
- RETURNING *
-    """
-            .trimIndent()
-    )
-        .bindKotlin(params)
+        INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality_code)
+        VALUES (:nationalId, :firstName, :lastName, '', '', COALESCE(:address.fi, ''), COALESCE(:postalCode, ''), :municipalityCode)
+        ON CONFLICT (national_id) DO UPDATE
+        SET updated = now(), first_name = :firstName, last_name = :lastName, municipality_code = :municipalityCode
+        RETURNING *
+        """.trimIndent()
+    ).bindKotlin(params)
         .mapTo<Citizen>()
         .one()
 }

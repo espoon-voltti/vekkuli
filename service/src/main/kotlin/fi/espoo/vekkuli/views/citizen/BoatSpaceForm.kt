@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.domain.Boat
-import fi.espoo.vekkuli.domain.Citizen
+import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.cmToM
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,14 +24,12 @@ class BoatSpaceForm {
     @Autowired
     lateinit var stepIndicator: StepIndicator
 
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun boatSpaceForm(
         reservation: ReservationWithDependencies,
         boats: List<Boat>,
-        user: Citizen,
+        user: CitizenWithDetails,
         input: ReservationInput,
         showBoatSizeWarning: Boolean,
         reservationTimeInSeconds: Long
@@ -331,7 +329,7 @@ class BoatSpaceForm {
                                 <p>${user.firstName} ${user.lastName}</p>
                                 <p>${user.nationalId}</p>
                                 <p>${user.address}</p>
-                                <p>${user.postalCode} ${user.municipality}</p>
+                                <p>${user.postalCode} ${user.municipalityCode}</p>
                             </div>
                         </div>
                         <div class="block">
