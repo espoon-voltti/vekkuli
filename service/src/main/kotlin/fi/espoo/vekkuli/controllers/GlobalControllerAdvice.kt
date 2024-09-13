@@ -27,6 +27,7 @@ class GlobalControllerAdvice
         ) {
             val authenticatedUser = request.getAuthenticatedUser()
             model.addAttribute("isAuthenticated", authenticatedUser != null)
+            model.addAttribute("isAuthenticatedEmployee", false)
 
             if (authenticatedUser?.type == "citizen") {
                 val user =
@@ -37,13 +38,14 @@ class GlobalControllerAdvice
                 if (user != null) {
                     model.addAttribute("userName", "${user.firstName} ${user.lastName}")
                 }
-            } else if (authenticatedUser?.type == "employee") {
+            } else if (authenticatedUser?.type == "user") {
                 val user =
                     authenticatedUser.let {
                         jdbi.inTransactionUnchecked { tx ->
                             tx.getAppUser(authenticatedUser.id)
                         }
                     }
+                model.addAttribute("isAuthenticatedEmployee", true)
 
                 if (user != null) {
                     model.addAttribute("userName", "${user.firstName} ${user.lastName}")
