@@ -66,8 +66,8 @@ class BoatSpaceSearchController {
         request: HttpServletRequest,
         @PathVariable usertype: String
     ): ResponseEntity<String> {
-        val userType = UserTypes.fromPath(usertype)
-        if (userType == UserTypes.EMPLOYEE) {
+        val userType = UserType.fromPath(usertype)
+        if (userType == UserType.EMPLOYEE) {
             val authenticatedUser = request.getAuthenticatedUser() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
             val user =
                 authenticatedUser.let {
@@ -132,7 +132,7 @@ class BoatSpaceSearchController {
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest
     ): String {
-        val userType = UserTypes.fromPath(usertype)
+        val userType = UserType.fromPath(usertype)
         val params =
             BoatSpaceFilter(
                 boatType,
@@ -152,7 +152,7 @@ class BoatSpaceSearchController {
             BoatFilter(width, length, boatType),
             harbors.second,
             request.getAuthenticatedUser() != null,
-            userType == UserTypes.EMPLOYEE
+            userType == UserType.EMPLOYEE
         )
     }
 }

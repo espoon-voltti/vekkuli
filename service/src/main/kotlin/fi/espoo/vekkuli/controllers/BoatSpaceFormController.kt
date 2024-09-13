@@ -80,8 +80,8 @@ class BoatSpaceFormController {
         response: HttpServletResponse,
         model: Model,
     ): ResponseEntity<String> {
-        val userType = UserTypes.fromPath(usertype)
-        val isEmployee = userType == UserTypes.EMPLOYEE
+        val userType = UserType.fromPath(usertype)
+        val isEmployee = userType == UserType.EMPLOYEE
         if (isEmployee) {
             val employee = getEmployee(request)
             if (employee == null) {
@@ -127,7 +127,7 @@ class BoatSpaceFormController {
                 input = input.copy(boatId = 0)
             }
 
-            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, input, request))
+            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, input, request, userType))
         }
 
         val user = getCitizen(request, citizenService)
@@ -170,7 +170,7 @@ class BoatSpaceFormController {
             input = input.copy(boatId = 0)
         }
 
-        return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, user, input, request))
+        return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, user, input, request, userType))
     }
 
     @DeleteMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
@@ -194,11 +194,12 @@ class BoatSpaceFormController {
         request: HttpServletRequest,
         model: Model,
     ): String {
+        val userType = UserType.fromPath(usertype)
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
         val reservation = reservationService.getReservationWithCitizen(reservationId)
         if (reservation == null) return redirectUrl("/")
 
-        return renderBoatSpaceReservationApplication(reservation, citizen, input, request)
+        return renderBoatSpaceReservationApplication(reservation, citizen, input, request, userType)
     }
 
     @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")
@@ -282,8 +283,8 @@ class BoatSpaceFormController {
         request: HttpServletRequest,
         model: Model,
     ): ResponseEntity<String> {
-        val userType = UserTypes.fromPath(usertype)
-        val isEmployee = userType == UserTypes.EMPLOYEE
+        val userType = UserType.fromPath(usertype)
+        val isEmployee = userType == UserType.EMPLOYEE
         val userId =
             if (isEmployee) {
                 getEmployee(request)?.id
@@ -337,7 +338,8 @@ class BoatSpaceFormController {
         reservation: ReservationWithDependencies,
         citizen: Citizen?,
         input: ReservationInput,
-        request: HttpServletRequest
+        request: HttpServletRequest,
+        userType: UserType
     ): String {
         val boats =
             if (citizen == null) {
@@ -359,20 +361,37 @@ class BoatSpaceFormController {
                 reservation.lengthCm
             )
 
-        return employeeLayout.render(
-            true,
-            request.requestURI,
-            (
+        return if (userType == UserType.EMPLOYEE) {
+            employeeLayout.render(
+                true,
+                request.requestURI,
+                (
+                    boatSpaceForm.boatSpaceForm(
+                        reservation,
+                        boats,
+                        citizen,
+                        input,
+                        showBoatSizeWarning,
+                        getReservationTimeInSeconds(reservation.created),
+                        userType
+                    )
+                )
+            )
+        } else {
+            layout.generateLayout(
+                true,
+                citizen?.fullName,
                 boatSpaceForm.boatSpaceForm(
                     reservation,
                     boats,
                     citizen,
                     input,
                     showBoatSizeWarning,
-                    getReservationTimeInSeconds(reservation.created)
+                    getReservationTimeInSeconds(reservation.created),
+                    userType
                 )
             )
-        )
+        }
     }
 
     private fun showBoatSizeWarning(
