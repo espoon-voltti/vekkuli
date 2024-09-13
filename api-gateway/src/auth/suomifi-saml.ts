@@ -18,12 +18,14 @@ const SUOMI_FI_GIVEN_NAME_KEY = 'urn:oid:2.5.4.42'
 const SUOMI_FI_SURNAME_KEY = 'urn:oid:2.5.4.4'
 const SUOMI_HOME_TOWN_KEY = 'urn:oid:1.2.246.517.2002.2.18'
 
-const Profile = z.object({
-  [SUOMI_FI_SSN_KEY]: z.string(),
-  [SUOMI_FI_GIVEN_NAME_KEY]: z.string(),
-  [SUOMI_FI_SURNAME_KEY]: z.string(),
-  [SUOMI_HOME_TOWN_KEY]: z.string()
-})
+const Profile = z
+  .object({
+    [SUOMI_FI_SSN_KEY]: z.string(),
+    [SUOMI_FI_GIVEN_NAME_KEY]: z.string(),
+    [SUOMI_FI_SURNAME_KEY]: z.string(),
+    [SUOMI_HOME_TOWN_KEY]: z.string()
+  })
+  .partial({ [SUOMI_HOME_TOWN_KEY]: true })
 
 const ssnRegex = /^[0-9]{6}[-+ABCDEFUVWXY][0-9]{3}[0-9ABCDEFHJKLMNPRSTUVWXY]$/
 
