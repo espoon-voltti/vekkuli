@@ -6,7 +6,6 @@ package fi.espoo.vekkuli.common
 
 import fi.espoo.vekkuli.domain.Citizen
 import org.jdbi.v3.core.Handle
-import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.core.kotlin.mapTo
 
 data class LocalizedName(
@@ -23,6 +22,7 @@ data class CitizenAdUser(
     val address: LocalizedName?,
     val postalCode: String?,
     val town: LocalizedName?,
+    val homeTownId: String?,
 )
 
 fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen {
@@ -44,15 +44,20 @@ fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen {
     return createQuery(
         // language=SQL
         """
- INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality)
- VALUES (:nationalId, :firstName, :lastName, '', '', COALESCE(:address.fi, ''), COALESCE(:postalCode, ''), COALESCE(:town.fi, ''))
- ON CONFLICT (national_id) DO UPDATE
- SET updated = now(), first_name = :firstName, last_name = :lastName
- RETURNING *
-    """
-            .trimIndent()
-    )
-        .bindKotlin(params)
+        INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality)
+        VALUES (:nationalId, :firstName, :lastName, :phone, :email, :address, :postalCode, :homeTownId)
+        ON CONFLICT (national_id) DO UPDATE
+        SET updated = now(), first_name = :firstName, last_name = :lastName, municipality = :homeTownId
+        RETURNING *
+        """.trimIndent()
+    ).bind("nationalId", params.nationalId)
+        .bind("firstName", params.firstName)
+        .bind("lastName", params.lastName)
+        .bind("email", params.email ?: "")
+        .bind("phone", params.phone ?: "")
+        .bind("address", params.address?.fi ?: "")
+        .bind("postalCode", params.postalCode ?: "")
+        .bind("homeTownId", params.homeTownId ?: "")
         .mapTo<Citizen>()
         .one()
 }
