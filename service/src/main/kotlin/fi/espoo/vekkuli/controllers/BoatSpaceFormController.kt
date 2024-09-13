@@ -195,7 +195,20 @@ class BoatSpaceFormController {
         model: Model,
     ): String {
         val userType = UserType.fromPath(usertype)
-        val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
+        if (userType == UserType.EMPLOYEE) {
+            val employee = getEmployee(request)
+            if (employee == null) {
+                return redirectUrl("/")
+            }
+
+            val reservation = reservationService.getReservationWithoutCitizen(reservationId)
+            if (reservation == null) {
+                return redirectUrl("/")
+            }
+
+            return renderBoatSpaceReservationApplication(reservation, null, input, request, userType)
+        }
+        val citizen = getCitizen(request, citizenService)
         val reservation = reservationService.getReservationWithCitizen(reservationId)
         if (reservation == null) return redirectUrl("/")
 
