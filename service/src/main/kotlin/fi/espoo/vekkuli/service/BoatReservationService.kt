@@ -164,12 +164,11 @@ class BoatReservationService(
         )
 
         emailService.sendEmail(
-            "reservationSuccess",
+            "varausvahvistus",
             null,
             emailEnv.senderAddress,
             payment.citizenId,
             reservation.email,
-            messageUtil.getMessage("boatSpaceReservation.title.confirmation"),
             mapOf(
                 "name" to " ${reservation.locationName} ${reservation.place}",
                 "width" to reservation.boatSpaceWidthInM,
@@ -201,10 +200,10 @@ class BoatReservationService(
     fun addPaymentToReservation(
         reservationId: Int,
         params: CreatePaymentParams
-    ): Pair<Payment, BoatSpaceReservation> {
+    ): Payment {
         val payment = paymentService.insertPayment(params)
-        val reservation = boatSpaceReservationRepo.updateReservationWithPayment(reservationId, payment.id, params.citizenId)
-        return Pair(payment, reservation)
+        boatSpaceReservationRepo.updateReservationWithPayment(reservationId, payment.id, params.citizenId)
+        return payment
     }
 
     fun addReservationWarnings(

@@ -41,7 +41,7 @@ fun createReservationInConfirmedState(
             endDate = LocalDate.now().plusDays(365),
         )
     reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId)
-    val (payment, reservation) =
+    val payment =
         reservationService.addPaymentToReservation(
             madeReservation.id,
             CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
