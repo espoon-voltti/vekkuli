@@ -49,6 +49,8 @@ class CitizenDetailsPage(
     val citizenEmailError = page.getByTestId("email-error")
     val citizenPhonePatternError = page.getByTestId("phoneNumber-pattern-error")
     val citizenPhoneError = page.getByTestId("phoneNumber-error")
+    val citizenNationalIdError = page.getByTestId("nationalId-error")
+    val citizenNationalIdPatternError = page.getByTestId("nationalId-pattern-error")
 
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 

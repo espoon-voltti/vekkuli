@@ -53,7 +53,7 @@ class E2eTest : PlaywrightTest() {
             val citizenPhone = "0405839281"
             val citizenEmail = "test2@email.com"
             val citizenAddress = "New Address"
-            val citizenNationalId = "123456-789A"
+            val citizenNationalId = "031195-950Y"
             val citizenPostalCode = "12345"
             val citizenMunicipality = "New Municipality"
 
