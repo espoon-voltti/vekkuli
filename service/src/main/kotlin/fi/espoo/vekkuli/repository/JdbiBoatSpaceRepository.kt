@@ -115,8 +115,9 @@ class LocationFilter(
 class JdbiBoatSpaceRepository(
     private val jdbi: Jdbi
 ) : BoatSpaceRepository {
-    override fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> =
-        jdbi.withHandleUnchecked { handle ->
+    override fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
+        return jdbi.withHandleUnchecked { handle ->
+            if (params.boatWidth == null || params.boatLength == null) return@withHandleUnchecked Pair(emptyList<Harbor>(), 0)
             val amenityFilter = createAmenityFilter(params)
             val locationIds =
                 if (params.locationIds.isNullOrEmpty()) {
@@ -191,6 +192,7 @@ class JdbiBoatSpaceRepository(
                         )
                     }
 
-            Pair(harbors, count)
+            return@withHandleUnchecked Pair(harbors, count)
         }
+    }
 }

@@ -35,6 +35,7 @@ class BoatSpaceSearch(
                 "boatApplication.boatWidthInMeters",
                 "width",
                 null,
+                required = true,
                 compact = true
             )
 
@@ -43,6 +44,7 @@ class BoatSpaceSearch(
                 "boatApplication.boatLengthInMeters",
                 "length",
                 null,
+                required = true,
                 compact = true
             )
 
@@ -262,6 +264,12 @@ class BoatSpaceSearch(
             rowsBuilder.append("</div>")
         }
 
+        println("boat $boat")
+
+        // language=HTML
+        val searchResultHeader =
+            """<h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>$spaceCount</span></h3> """
+
         // language=HTML
         val template =
             """
@@ -270,9 +278,15 @@ class BoatSpaceSearch(
                 boatSpace: {
                     id: 0
                 } }">
-                <h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>$spaceCount</span></h3>
+                $searchResultHeader
+                 ${if (boat.length == null || boat.width == null) {
+                """<p>${t("boatApplication.noFreeSpaces")}</p> """
+            } else {
+                ""
+            }}
                 <!-- Insert dynamically generated rows here -->
                 $rowsBuilder
+                
                 ${if (!isAuthenticated) {
                 """
                 <div id="auth-modal" class="modal" x-show="openModal" style="display:none;">

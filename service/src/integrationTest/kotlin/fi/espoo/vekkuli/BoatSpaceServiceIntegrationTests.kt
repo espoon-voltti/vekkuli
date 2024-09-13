@@ -69,4 +69,19 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             "Only boat spaces that are big enough are fetched"
         )
     }
+
+    @Test
+    fun `should return empty list if boat width and length is not given`() {
+        val boatSpaces =
+            boatSpaceService.getUnreservedBoatSpaceOptions(
+                BoatSpaceFilter(
+                    BoatType.Sailboat,
+                    null,
+                    null,
+                    listOf(BoatSpaceAmenity.Beam),
+                    BoatSpaceType.Slip
+                )
+            )
+        assertEquals(boatSpaces.second, 0, "No boat spaces are fetched")
+    }
 }
