@@ -1,18 +1,18 @@
 <html layout:decorate="~{employee-layout}">
-<head>
+  <head>
     <title>Vekkuli - Virkailijan kirjautuminen</title>
-</head>
-<body layout:fragment="body">
-<section class="section">
-    <div class="container">
+  </head>
+  <body layout:fragment="body">
+    <section class="section">
+      <div class="container">
         <h1 class="title">Vekkuli</h1>
         <h2 class="subtitle">Virkailijan kirjautuminen</h2>
-        <div class="block" th:if="${isAuthenticated}">
-            <p>Käyttäjä: <strong th:text="${userName}"></strong></p>
-            <div><a href="/virkailija/venepaikat/varaukset">Venepaikat</a></div>
-            <br />
+        <div class="block" th:if="${isAuthenticatedEmployee}">
+          <p>Käyttäjä: <strong th:text="${userName}"></strong></p>
+          <div><a href="/virkailija/venepaikat/varaukset">Venepaikat</a></div>
+          <br />
         </div>
-    </div>
-</section>
-</body>
+      </div>
+    </section>
+  </body>
 </html>
