@@ -1,58 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html class="theme-light" th:lang="${lang}">
-<head>
+  <head>
     <title>Vekkuli</title>
     <th:block th:insert="~{fragments/head :: headResources}"></th:block>
-</head>
-<body>
-<div class="columns">
-    <div class="menu">
+  </head>
+  <body>
+    <div class="columns">
+      <div class="menu">
         <aside class="container">
-
-            <p class="menu-label">
-                <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+          <p class="menu-label">
+            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+          </p>
+          <div class="menu-container">
+            <p class="menu-label" th:text="#{menu.marineOutdoor}">
+              Merellinen ulkoilu
             </p>
-            <div class="menu-container">
-                <p class="menu-label" th:text="#{menu.marineOutdoor}">Merellinen ulkoilu</p>
-                <ul class="menu-list">
-                    <li>
-                        <a
-                                th:if="${isAuthenticated}"
-                                th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
-                                href="/virkailija/venepaikat/varaukset"
-                                th:text="#{menu.boatSpaceReservations}">
-                            Venepaikkavaraukset
-                        </a>
-                        <a
-                                th:if="${!isAuthenticated}"
-                                th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
-                                href="/auth/saml/login"
-                                th:text="#{menu.boatSpaceReservations}">
-                            Venepaikkavaraukset
-                        </a>
-
-                    </li>
-                </ul>
-            </div>
-            <div class="block" th:if="${!isAuthenticated}">
-                <a id="employeeLoginButton"
-                   href="/auth/saml/login">
-                    <span class="login-link" th:text="#{auth.login}"></span>
+            <ul class="menu-list">
+              <li>
+                <a
+                  th:if="${isAuthenticatedEmployee}"
+                  th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
+                  href="/virkailija/venepaikat/varaukset"
+                  th:text="#{menu.boatSpaceReservations}"
+                >
+                  Venepaikkavaraukset
                 </a>
-            </div>
-            <div class="block" th:if="${isAuthenticated}">
-
-                <a href="/auth/saml/logout">
-                    <span class="login-link" th:text="#{auth.logout}"></span>
-                    <span th:replace="~{fragments/icons :: logout}"></span>
+                <a
+                  th:if="${!isAuthenticatedEmployee}"
+                  th:classappend="${currentUri == '/virkailija/venepaikat/varaukset'} ? 'active'"
+                  href="/auth/saml/login"
+                  th:text="#{menu.boatSpaceReservations}"
+                >
+                  Venepaikkavaraukset
                 </a>
-            </div>
+              </li>
+            </ul>
+          </div>
+          <div class="block" th:if="${!isAuthenticatedEmployee}">
+            <a id="employeeLoginButton" href="/auth/saml/login">
+              <span class="login-link" th:text="#{auth.login}"></span>
+            </a>
+          </div>
+          <div class="block" th:if="${isAuthenticatedEmployee}">
+            <a href="/auth/saml/logout">
+              <span class="login-link" th:text="#{auth.logout}"></span>
+              <span th:replace="~{fragments/icons :: logout}"></span>
+            </a>
+          </div>
         </aside>
-    </div>
+      </div>
 
-    <div class="column">
+      <div class="column">
         <div layout:fragment="body"></div>
+      </div>
     </div>
-</div>
-</body>
+  </body>
 </html>
