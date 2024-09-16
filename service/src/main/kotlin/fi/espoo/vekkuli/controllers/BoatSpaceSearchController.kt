@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
@@ -15,6 +16,7 @@ import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatSpaceSearch
 import fi.espoo.vekkuli.views.citizen.Layout
+import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.Min
 import org.jdbi.v3.core.Jdbi
@@ -38,6 +40,9 @@ data class BoatFilter(
 @Controller
 class BoatSpaceSearchController {
     @Autowired
+    private lateinit var employeeLayout: EmployeeLayout
+
+    @Autowired
     lateinit var jdbi: Jdbi
 
     @Autowired
@@ -55,13 +60,14 @@ class BoatSpaceSearchController {
     @Autowired
     lateinit var layout: Layout
 
-    @RequestMapping("/{userType:kuntalainen|virkailija}/venepaikat")
+    @RequestMapping("/$USERTYPE/venepaikat")
     @ResponseBody
     fun boatSpaceSearchPage(
         request: HttpServletRequest,
-        @PathVariable userType: String
+        @PathVariable usertype: String
     ): ResponseEntity<String> {
-        if (userType == "virkailija") {
+        val userType = UserType.fromPath(usertype)
+        if (userType == UserType.EMPLOYEE) {
             val authenticatedUser = request.getAuthenticatedUser() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
             val user =
                 authenticatedUser.let {
@@ -69,14 +75,23 @@ class BoatSpaceSearchController {
                         tx.getAppUser(authenticatedUser.id)
                     }
                 }
+            if (user == null) {
+                return ResponseEntity(HttpStatus.FORBIDDEN)
+            }
+            val reservation = reservationService.getReservationForEmployee(user.id)
+            if (reservation != null) {
+                val headers = org.springframework.http.HttpHeaders()
+                headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/${reservation.id}"))
+                return ResponseEntity(headers, HttpStatus.FOUND)
+            }
             val locations =
                 jdbi.inTransactionUnchecked { tx ->
                     tx.getLocations()
                 }
             return ResponseEntity.ok(
-                layout.generateLayout(
+                employeeLayout.render(
                     true,
-                    userName = "${user?.firstName} ${user?.lastName}",
+                    request.requestURI,
                     boatSpaceSearch.render(locations, true)
                 )
             )
@@ -88,7 +103,7 @@ class BoatSpaceSearchController {
 
             if (reservation != null) {
                 val headers = org.springframework.http.HttpHeaders()
-                headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/varaus/${reservation.id}"))
+                headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/${reservation.id}"))
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
         }
@@ -105,10 +120,10 @@ class BoatSpaceSearchController {
         )
     }
 
-    @RequestMapping("/{userType:kuntalainen|virkailija}/partial/vapaat-paikat")
+    @RequestMapping("/$USERTYPE/partial/vapaat-paikat")
     @ResponseBody
     fun searchResultPartial(
-        @PathVariable userType: String,
+        @PathVariable usertype: String,
         @RequestParam(required = false) boatType: BoatType?,
         @RequestParam @Min(0) width: Double?,
         @RequestParam @Min(0) length: Double?,
@@ -117,6 +132,7 @@ class BoatSpaceSearchController {
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest
     ): String {
+        val userType = UserType.fromPath(usertype)
         val params =
             BoatSpaceFilter(
                 boatType,
@@ -136,7 +152,7 @@ class BoatSpaceSearchController {
             BoatFilter(width, length, boatType),
             harbors.second,
             request.getAuthenticatedUser() != null,
-            userType == "virkailija"
+            userType == UserType.EMPLOYEE
         )
     }
 }

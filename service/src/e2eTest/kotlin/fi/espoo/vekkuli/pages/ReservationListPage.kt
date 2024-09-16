@@ -12,4 +12,5 @@ class ReservationListPage(
 
     val boatSpace1 = page.locator("#boat-space-1")
     val boatSpace2 = page.locator("#boat-space-2")
+    val createReservation = page.locator("#create-reservation")
 }
