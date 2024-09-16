@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.domain.Citizen
+import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.service.CitizenService
 import jakarta.servlet.http.HttpServletRequest
 
@@ -53,7 +53,7 @@ class Utils {
         fun getCitizen(
             request: HttpServletRequest,
             service: CitizenService,
-        ): Citizen? {
+        ): CitizenWithDetails? {
             val authenticatedUser = request.getAuthenticatedUser()
             val citizen = authenticatedUser?.let { service.getCitizen(it.id) }
             return citizen

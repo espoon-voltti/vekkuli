@@ -5,7 +5,7 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Boat
-import fi.espoo.vekkuli.domain.Citizen
+import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.cmToM
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,14 +25,12 @@ class BoatSpaceForm {
     @Autowired
     lateinit var stepIndicator: StepIndicator
 
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun boatSpaceForm(
         reservation: ReservationWithDependencies,
         boats: List<Boat>,
-        citizen: Citizen?,
+        citizen: CitizenWithDetails?,
         input: ReservationInput,
         showBoatSizeWarning: Boolean,
         reservationTimeInSeconds: Long,
@@ -237,7 +235,7 @@ class BoatSpaceForm {
                     <p>${citizen?.firstName} ${citizen?.lastName}</p>
                     <p>${citizen?.nationalId}</p>
                     <p>${citizen?.address}</p>
-                    <p>${citizen?.postalCode} ${citizen?.municipality}</p>
+                    <p>${citizen?.postalCode} ${citizen?.municipalityName}</p>
                 </div>
             </div>
             """.trimIndent()
@@ -340,7 +338,9 @@ class BoatSpaceForm {
                            $extraInformationInput
                            $ownership
                         </div>
+
                         ${if (userType == UserType.CITIZEN) citizenInformation else ""}
+
                         <div class="block">
                             $email
                             $phone 
