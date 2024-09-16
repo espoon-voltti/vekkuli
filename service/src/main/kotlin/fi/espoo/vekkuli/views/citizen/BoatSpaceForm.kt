@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.citizen
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.ReservationInput
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
@@ -29,10 +30,11 @@ class BoatSpaceForm {
     fun boatSpaceForm(
         reservation: ReservationWithDependencies,
         boats: List<Boat>,
-        user: CitizenWithDetails,
+        citizen: CitizenWithDetails?,
         input: ReservationInput,
         showBoatSizeWarning: Boolean,
-        reservationTimeInSeconds: Long
+        reservationTimeInSeconds: Long,
+        userType: UserType
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         // language=HTML
@@ -60,7 +62,7 @@ class BoatSpaceForm {
             <div class="radio">
                 <input type="radio" id="boat-${boat.id}-radio" value="${boat.id}"
                        hx-trigger="change"
-                       hx-get="/kuntalainen/venepaikka/varaus/${reservation.id}?boatId=${boat.id}"
+                       hx-get="/${userType.path}/venepaikka/varaus/${reservation.id}?boatId=${boat.id}"
                        hx-target="body"
                        hx-swap="outerHTML"
                        name="boatId"
@@ -80,7 +82,7 @@ class BoatSpaceForm {
                         name="boatId"
                         value="0"
                         hx-trigger="change"
-                        hx-get="/kuntalainen/venepaikka/varaus/${reservation.id}"
+                        hx-get="/${userType.path}/venepaikka/varaus/${reservation.id}"
                         hx-target="body"
                         hx-swap="outerHTML"
                        ${if (input.boatId == 0) "checked" else ""}
@@ -107,7 +109,7 @@ class BoatSpaceForm {
                 required = true,
                 """
                 hx-trigger="change"
-                hx-post="/kuntalainen/venepaikka/varaus/${reservation.id}/validate"
+                hx-post="/${userType.path}/venepaikka/varaus/${reservation.id}/validate"
                 hx-swap="outerHTML"
                 hx-select="#warning"
                 hx-target="#warning"
@@ -123,7 +125,7 @@ class BoatSpaceForm {
                 required = true,
                 """
                 hx-trigger="change"
-                hx-post="/kuntalainen/venepaikka/varaus/${reservation.id}/validate"
+                hx-post="/${userType.path}/venepaikka/varaus/${reservation.id}/validate"
                 hx-swap="outerHTML"
                 hx-select="#warning"
                 hx-target="#warning"
@@ -208,11 +210,11 @@ class BoatSpaceForm {
                     """
                     <div class="radio">
                         <input
-                                type="radio"
-                                name="ownership"
-                                value="$opt"
-                                id="ownership-$opt"
-                                selected="${input.ownership.toString() == opt}"
+                            type="radio"
+                            name="ownership"
+                            value="$opt"
+                            id="ownership-$opt"
+                            selected="${input.ownership.toString() == opt}"
                         />
                         <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
                     </div>
@@ -221,6 +223,21 @@ class BoatSpaceForm {
             }
                      </div>
                  </div> 
+            """.trimIndent()
+
+        val citizenInformation =
+            """
+            <div class='block'
+                <h3 class="header">
+                    ${t("boatApplication.personalInformation")}
+                </h3> 
+                <div class="field">
+                    <p>${citizen?.firstName} ${citizen?.lastName}</p>
+                    <p>${citizen?.nationalId}</p>
+                    <p>${citizen?.address}</p>
+                    <p>${citizen?.postalCode} ${citizen?.municipalityName}</p>
+                </div>
+            </div>
             """.trimIndent()
 
         val email =
@@ -258,7 +275,7 @@ class BoatSpaceForm {
                     <form
                         id="form"
                         class="column is-half"
-                        action="/kuntalainen/venepaikka/varaus/${reservation.id}"
+                        action="/${userType.path}/venepaikka/varaus/${reservation.id}"
                         method="post"
                         novalidate>
                         
@@ -321,17 +338,9 @@ class BoatSpaceForm {
                            $extraInformationInput
                            $ownership
                         </div>
-                        <div class='block'
-                            <h3 class="header">
-                                ${t("boatApplication.personalInformation")}
-                            </h3> 
-                            <div class="field">
-                                <p>${user.firstName} ${user.lastName}</p>
-                                <p>${user.nationalId}</p>
-                                <p>${user.address}</p>
-                                <p>${user.postalCode} ${user.municipalityCode}</p>
-                            </div>
-                        </div>
+
+                        ${if (userType == UserType.CITIZEN) citizenInformation else ""}
+
                         <div class="block">
                             $email
                             $phone 
@@ -404,7 +413,7 @@ class BoatSpaceForm {
                             <button id="confirm-cancel-modal-confirm"
                                 class="button is-primary"
                                 type="button"
-                                hx-delete="/kuntalainen/venepaikka/varaus/${reservation.id}"
+                                hx-delete="/${userType.path}/venepaikka/varaus/${reservation.id}"
                                 hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
                                 ${t("confirm")}
                             </button>
