@@ -27,3 +27,8 @@ data class CitizenWithDetails(
     val municipalityName: String,
     val fullName: String = "$firstName $lastName"
 )
+
+data class Municipality(
+    val code: Int,
+    val name: String
+)

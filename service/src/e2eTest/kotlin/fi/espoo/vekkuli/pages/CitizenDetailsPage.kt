@@ -33,6 +33,36 @@ class CitizenDetailsPage(
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
 
+    // Citizen information
+    val editButton = page.getByTestId("edit-customer")
+    val citizenFirstNameInput = page.getByTestId("firstName")
+    val citizenLastNameInput = page.getByTestId("lastName")
+    val citizenNationalIdInput = page.getByTestId("nationalId")
+    val citizenCityInput = page.getByTestId("city")
+    val citizenMunicipalityInput = page.getByTestId("municipalityCode")
+    val citizenEmailInput = page.getByTestId("email")
+    val citizenPhoneInput = page.getByTestId("phoneNumber")
+    val citizenAddressInput = page.getByTestId("address")
+    val citizenPostalCodeInput = page.getByTestId("postalCode")
+
+    val citizenFirstNameField = page.getByTestId("firstNameField")
+    val citizenLastNameField = page.getByTestId("lastNameField")
+    val citizenNationalIdField = page.getByTestId("nationalIdField")
+    val citizenCityField = page.getByTestId("cityField")
+    val citizenMunicipalityField = page.getByTestId("municipalityCodeField")
+    val citizenEmailField = page.getByTestId("emailField")
+    val citizenPhoneField = page.getByTestId("phoneNumberField")
+    val citizenAddressField = page.getByTestId("addressField")
+    val citizenPostalCodeField = page.getByTestId("postalCodeField")
+
+    val citizenEditSubmitButton = page.getByTestId("submit-boat-edit-form")
+    val citizenEmailPatternError = page.getByTestId("email-pattern-error")
+    val citizenEmailError = page.getByTestId("email-error")
+    val citizenPhonePatternError = page.getByTestId("phoneNumber-pattern-error")
+    val citizenPhoneError = page.getByTestId("phoneNumber-error")
+    val citizenNationalIdError = page.getByTestId("nationalId-error")
+    val citizenNationalIdPatternError = page.getByTestId("nationalId-pattern-error")
+
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 
     val nameInput: Locator = page.getByTestId("name")

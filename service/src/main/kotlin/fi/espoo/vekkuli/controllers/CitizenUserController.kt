@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.CitizenDetails
+import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -46,6 +47,9 @@ class CitizenUserController {
 
     @Autowired
     lateinit var layout: EmployeeLayout
+
+    @Autowired
+    lateinit var editCitizen: EditCitizen
 
     @GetMapping("/kayttaja/{citizenId}")
     @ResponseBody
@@ -235,6 +239,17 @@ class CitizenUserController {
             reservationId = reservations.find { it.boatId == boat.id }?.id
         )
 
+    data class CitizenUpdate(
+        val phoneNumber: String,
+        val email: String,
+        val address: String?,
+        val postalCode: String?,
+        val municipalityCode: Int?,
+        val nationalId: String?,
+        val firstName: String,
+        val lastName: String,
+    )
+
     data class BoatUpdateForm(
         val id: Int,
         val name: String,
@@ -366,6 +381,49 @@ class CitizenUserController {
                 boatSpaceReservations,
                 updatedBoats,
             )
+        )
+    }
+
+    @GetMapping("/kayttaja/{citizenId}/muokkaa")
+    @ResponseBody
+    fun citizenEditPage(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        model: Model
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val municipalities = citizenService.getMunicipalities()
+        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap())
+    }
+
+    @PatchMapping("/kayttaja/{citizenId}")
+    @ResponseBody
+    fun citizenEdit(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        input: CitizenUpdate,
+        model: Model
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val updatedCitizen =
+            citizenService.updateCitizen(
+                citizenId,
+                input.firstName,
+                input.lastName,
+                input.phoneNumber,
+                input.email,
+                input.address,
+                input.postalCode,
+                input.municipalityCode,
+                input.nationalId,
+            )
+        return layout.render(
+            true,
+            request.requestURI,
+            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats)
         )
     }
 }
