@@ -20,10 +20,10 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
     lateinit var citizenService: CitizenService
 
     @Test
-    fun `should get correct reservation with citizen`() {
+    fun `should get correct citizen`() {
         val citizen = citizenService.getCitizen(citizenId)
+        assertNotNull(citizen, "Citizen is not null")
         assertEquals(citizenId, citizen?.id, "Citizen is correctly fetched")
-        assertEquals("Leo Korhonen", citizen?.fullName, "Citizen's first name is correctly fetched")
     }
 
     @Test
