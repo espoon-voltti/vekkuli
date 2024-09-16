@@ -11,8 +11,9 @@ interface CitizenRepository {
         id: UUID,
         phone: String,
         email: String,
-    ): Citizen
+    ): CitizenWithDetails
 
+    // TODO: Validate email and nationalId
     fun updateCitizen(
         id: UUID,
         firstName: String,
@@ -21,9 +22,9 @@ interface CitizenRepository {
         email: String,
         address: String?,
         postalCode: String?,
-        municipality: String?,
+        municipalityCode: Int?,
         nationalId: String?,
-    ): Citizen
+    ): CitizenWithDetails
 
     fun getMemo(id: Int): CitizenMemoWithDetails?
 
@@ -46,6 +47,8 @@ interface CitizenRepository {
         updatedBy: UUID,
         content: String
     ): CitizenMemo
+
+    fun getMunicipalities(): List<Municipality>
 }
 
 @Service
@@ -59,7 +62,7 @@ class CitizenService(
         id: UUID,
         phone: String,
         email: String,
-    ): Citizen = citizenRepository.updateCitizen(id, phone, email)
+    ): CitizenWithDetails = citizenRepository.updateCitizen(id, phone, email)
 
     fun updateCitizen(
         id: UUID,
@@ -69,9 +72,10 @@ class CitizenService(
         email: String,
         address: String?,
         postalCode: String?,
-        municipality: String?,
+        municipalityCode: Int?,
         nationalId: String?
-    ): Citizen = citizenRepository.updateCitizen(id, firstName, lastName, phone, email, address, postalCode, municipality, nationalId)
+    ): CitizenWithDetails =
+        citizenRepository.updateCitizen(id, firstName, lastName, phone, email, address, postalCode, municipalityCode, nationalId)
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
@@ -102,4 +106,6 @@ class CitizenService(
     }
 
     fun removeMemo(id: Int): Unit = citizenRepository.removeMemo(id)
+
+    fun getMunicipalities(): List<Municipality> = citizenRepository.getMunicipalities()
 }

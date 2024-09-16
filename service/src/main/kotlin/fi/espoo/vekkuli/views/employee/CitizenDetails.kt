@@ -50,32 +50,34 @@ class CitizenDetails {
             val firstNameValue =
                 formComponents.field(
                     "boatSpaceReservation.title.firstName",
-                    "firstName",
+                    "firstNameField",
                     citizen.firstName,
                 )
             val lastNameValue =
                 formComponents.field(
                     "boatSpaceReservation.title.lastName",
-                    "lastName",
+                    "lastNameField",
                     citizen.lastName,
                 )
             val nationalIdValue =
                 formComponents.field(
                     "boatSpaceReservation.title.nationalId",
-                    "nationalId",
+                    "nationalIdField",
                     citizen.nationalId,
                 )
-            val addressValue = formComponents.field("boatSpaceReservation.title.address", "address", citizen.address)
-            val postalCodeValue = formComponents.field("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
-            val cityValue = formComponents.field("boatSpaceReservation.title.city", "city", citizen.municipalityName)
+            val addressValue = formComponents.field("boatSpaceReservation.title.address", "addressField", citizen.address)
+            val postalCodeValue =
+                formComponents.field("boatSpaceReservation.title.postalCode", "postalCodeField", citizen.postalCode)
+            val cityValue = formComponents.field("boatSpaceReservation.title.city", "cityField", citizen.municipalityName)
             val municipalityValue =
                 formComponents.field(
                     "boatSpaceReservation.title.municipality",
-                    "municipality",
+                    "municipalityCodeField",
                     citizen.municipalityName
                 )
-            val phoneNumberValue = formComponents.field("boatSpaceReservation.title.phoneNumber", "phoneNumber", citizen.phone)
-            val emailValue = formComponents.field("boatSpaceReservation.title.email", "email", citizen.email)
+            val phoneNumberValue =
+                formComponents.field("boatSpaceReservation.title.phoneNumber", "phoneNumberField", citizen.phone)
+            val emailValue = formComponents.field("boatSpaceReservation.title.email", "emailField", citizen.email)
             return (
                 """
                 <div class="container block" id="citizen-information">
@@ -99,17 +101,19 @@ class CitizenDetails {
                             <!-- Placeholder for additional actions, if needed -->
                         </div>
                     </div>
-                    ${commonComponents.getCitizenFields(
-                    firstNameValue,
-                    lastNameValue,
-                    nationalIdValue,
-                    addressValue,
-                    postalCodeValue,
-                    cityValue,
-                    municipalityValue,
-                    phoneNumberValue,
-                    emailValue
-                )}
+                    ${
+                    commonComponents.getCitizenFields(
+                        firstNameValue,
+                        lastNameValue,
+                        nationalIdValue,
+                        addressValue,
+                        postalCodeValue,
+                        cityValue,
+                        municipalityValue,
+                        phoneNumberValue,
+                        emailValue
+                    )
+                }
             </div> 
             """
             )
@@ -325,7 +329,7 @@ class CitizenDetails {
 
         fun deleteButton(
             hasLinkedReservation: Boolean,
-            boatId: Int
+            boatId: Int,
         ): String {
             if (!hasLinkedReservation) {
                 return (
@@ -346,9 +350,11 @@ class CitizenDetails {
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
-                        "cancel"
-                    )}</button>
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${
+                        t(
+                            "cancel"
+                        )
+                    }</button>
                                             <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
                                                 ${t("boatSpaceReservation.button.confirmDeletion")}</a>
                                         </div>
@@ -449,6 +455,7 @@ class CitizenDetails {
                     </div>
                     """.trimIndent()
                 }.joinToString("\n")
+
         val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
 
         // language=HTML
@@ -507,7 +514,7 @@ class CitizenDetails {
 
     fun messageTabContent(
         citizen: CitizenWithDetails,
-        messages: List<SentMessage>
+        messages: List<SentMessage>,
     ): String {
         val messageHtml =
             messages.joinToString("\n") { message ->
@@ -516,7 +523,7 @@ class CitizenDetails {
                 <tr>
                     <td>${message.subject}</td>
                     <td>${message.recipientAddress}</td>
-                    <td>${message.sentAt?.let { formatDate(it)} ?: "Ei lähetetty"}</td>
+                    <td>${message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
                     <td>${message.senderAddress ?: ""}</td>
                 </tr>
                 """.trimIndent()
@@ -559,7 +566,7 @@ class CitizenDetails {
 
     fun memoContent(
         memo: CitizenMemoWithDetails,
-        edit: Boolean
+        edit: Boolean,
     ): String {
         val createdBy =
             if (memo.createdBy !== null) {
@@ -671,7 +678,7 @@ class CitizenDetails {
 
     fun newMemoContent(
         citizenId: UUID,
-        edit: Boolean
+        edit: Boolean,
     ): String {
         if (edit) {
             // language=HTML
@@ -723,7 +730,7 @@ class CitizenDetails {
 
     fun memoTabContent(
         citizenId: UUID,
-        memos: List<CitizenMemoWithDetails>
+        memos: List<CitizenMemoWithDetails>,
     ): String {
         val memoHtml =
             memos.joinToString("\n") {
@@ -745,7 +752,7 @@ class CitizenDetails {
 
     fun tabCls(
         activeTab: SubTab,
-        tab: SubTab
+        tab: SubTab,
     ): String {
         if (activeTab == tab) return "is-active"
         return ""
@@ -753,7 +760,7 @@ class CitizenDetails {
 
     fun renderTabNavi(
         citizenId: UUID,
-        activeTab: SubTab
+        activeTab: SubTab,
     ): String =
         // language=HTML
         """

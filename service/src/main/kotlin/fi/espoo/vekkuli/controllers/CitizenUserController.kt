@@ -244,7 +244,7 @@ class CitizenUserController {
         val email: String,
         val address: String?,
         val postalCode: String?,
-        val municipality: String?,
+        val municipalityCode: Int?,
         val nationalId: String?,
         val firstName: String,
         val lastName: String,
@@ -392,7 +392,8 @@ class CitizenUserController {
         model: Model
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        return editCitizen.editCitizenForm(citizen, mutableMapOf())
+        val municipalities = citizenService.getMunicipalities()
+        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap())
     }
 
     @PatchMapping("/kayttaja/{citizenId}")
@@ -416,7 +417,7 @@ class CitizenUserController {
                 input.email,
                 input.address,
                 input.postalCode,
-                input.municipality,
+                input.municipalityCode,
                 input.nationalId,
             )
         return layout.render(

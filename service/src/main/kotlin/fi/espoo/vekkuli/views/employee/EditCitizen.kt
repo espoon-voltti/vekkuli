@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.CitizenWithDetails
+import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.views.CommonComponents
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -16,6 +17,7 @@ class EditCitizen {
 
     fun editCitizenForm(
         citizen: CitizenWithDetails,
+        municipalities: List<Municipality>,
         errors: Map<String, String>,
     ): String {
         val firstNameInput =
@@ -33,6 +35,7 @@ class EditCitizen {
                 required = true,
             )
 
+        // TODO: validate nationalId properly
         val nationalIdInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.nationalId",
@@ -61,10 +64,12 @@ class EditCitizen {
             )
 
         val municipalityInput =
-            formComponents.textInput(
+            formComponents.select(
                 "boatSpaceReservation.title.municipality",
-                "municipality",
-                citizen.municipalityName
+                "municipalityCode",
+                citizen.municipalityCode.toString(),
+                municipalities.map { Pair(it.code.toString(), it.name) },
+                required = true
             )
 
         val addressInput =
