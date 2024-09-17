@@ -9,7 +9,7 @@ class Home(
     private val messageUtil: MessageUtil,
     private val markDownService: MarkDownService
 ) {
-    fun t(key: String,): String = messageUtil.getMessage(key)
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(): String {
         // language=HTML
