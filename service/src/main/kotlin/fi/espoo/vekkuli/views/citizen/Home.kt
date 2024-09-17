@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.views.citizen
 
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.service.MarkDownService
-import org.commonmark.node.*
 import org.springframework.stereotype.Service
 
 @Service
