@@ -14,7 +14,8 @@ enum class ReservationStatus {
     Info,
     Payment,
     Confirmed,
-    Cancelled
+    Cancelled,
+    Invoiced
 }
 
 data class BoatSpaceReservation(

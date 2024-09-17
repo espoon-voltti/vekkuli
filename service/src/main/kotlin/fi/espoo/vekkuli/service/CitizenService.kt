@@ -13,6 +13,17 @@ interface CitizenRepository {
         email: String,
     ): Citizen
 
+    fun insertCitizen(
+        phone: String,
+        email: String,
+        nationalId: String,
+        firstName: String,
+        lastName: String,
+        address: String,
+        postalCode: String,
+        municipality: String,
+    ): Citizen
+
     fun getMemo(id: Int): CitizenMemoWithDetails?
 
     fun getMemos(
@@ -42,6 +53,17 @@ class CitizenService(
     private val sentMessagesRepository: SentMessageRepository,
 ) {
     fun getCitizen(id: UUID): Citizen? = citizenRepository.getCitizen(id)
+
+    fun insertCitizen(
+        phone: String,
+        email: String,
+        nationalId: String,
+        firstName: String,
+        lastName: String,
+        address: String,
+        postalCode: String,
+        municipality: String,
+    ): Citizen = citizenRepository.insertCitizen(phone, email, nationalId, firstName, lastName, address, postalCode, municipality)
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 

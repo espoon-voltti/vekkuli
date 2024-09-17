@@ -202,6 +202,8 @@ class BoatSpaceFormController {
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        val userType = UserType.fromPath(usertype)
+
         fun badRequest(body: String): ResponseEntity<String> {
             return ResponseEntity.badRequest().body(body)
         }
@@ -212,11 +214,34 @@ class BoatSpaceFormController {
                 .body("")
         }
 
+        if (userType == UserType.EMPLOYEE) {
+            val employee = getEmployee(request)
+            if (employee == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
+            }
+        }
+
         val citizen =
-            getCitizen(request, citizenService)
-                ?: return ResponseEntity.status(HttpStatus.FOUND)
-                    .header("Location", "/")
-                    .build()
+            if (userType == UserType.EMPLOYEE) {
+                citizenService.insertCitizen(
+                    phone = input.phone!!,
+                    email = input.email!!,
+                    nationalId = input.ssn!!,
+                    firstName = input.firstName!!,
+                    lastName = input.lastName!!,
+                    address = input.address!!,
+                    postalCode = input.postalCode!!,
+                    municipality = input.municipality!!
+                )
+            } else {
+                getCitizen(request, citizenService)
+            }
+
+        if (citizen == null) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "/")
+                .build()
+        }
 
         if (bindingResult.hasErrors()) {
             val reservation = reservationService.getReservationWithCitizen(reservationId)
@@ -225,6 +250,8 @@ class BoatSpaceFormController {
             }
             return badRequest("Invalid input")
         }
+
+        val reservationStatus = if (userType == UserType.EMPLOYEE) ReservationStatus.Invoiced else ReservationStatus.Payment
 
         reservationService.reserveBoatSpace(
             citizen,
@@ -243,11 +270,16 @@ class BoatSpaceFormController {
                 ownerShip = input.ownership!!,
                 email = input.email!!,
                 phone = input.phone!!,
-            )
+            ),
+            reservationStatus
         )
 
+        if (userType == UserType.EMPLOYEE) {
+            return redirectUrl("/virkailija/venepaikat/varaukset")
+        }
+
         // redirect to payments page with reservation id and slip type
-        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
+        return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
 
     // initial reservation in info state
@@ -438,6 +470,7 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Res
                 .addConstraintViolation()
             isValid = false
         }
+
         return isValid
     }
 }
@@ -468,6 +501,12 @@ data class ReservationInput(
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
     val ownership: OwnershipStatus?,
+    val firstName: String?,
+    val lastName: String?,
+    val ssn: String?,
+    val address: String?,
+    val postalCode: String?,
+    val municipality: String?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
     val email: String?,
@@ -503,6 +542,12 @@ data class ReservationInput(
                 phone = citizen?.phone,
                 agreeToRules = false,
                 certifyInformation = false,
+                firstName = citizen?.firstName,
+                lastName = citizen?.lastName,
+                ssn = citizen?.nationalId,
+                address = citizen?.address,
+                postalCode = citizen?.postalCode,
+                municipality = citizen?.municipality,
             )
     }
 }

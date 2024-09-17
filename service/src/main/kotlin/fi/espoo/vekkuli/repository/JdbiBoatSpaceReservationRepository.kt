@@ -497,22 +497,26 @@ class JdbiBoatSpaceReservationRepository(
     override fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
+        citizenId: UUID,
+        reservationStatus: ReservationStatus
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
+                    SET status = :status, updated = :updatedTime, boat_id = :boatId, citizen_id = :citizenId
                     WHERE id = :id
                         AND (status = 'Info' OR status = 'Payment')
                         AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
                     RETURNING *
                     """.trimIndent()
                 )
+            query.bind("status", reservationStatus)
             query.bind("updatedTime", LocalDate.now())
             query.bind("id", reservationId)
             query.bind("boatId", boatId)
+            query.bind("citizenId", citizenId)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.mapTo<BoatSpaceReservation>().one()
         }

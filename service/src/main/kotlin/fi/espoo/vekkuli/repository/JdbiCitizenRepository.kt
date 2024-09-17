@@ -51,6 +51,37 @@ class JdbiCitizenRepository(
             query.mapTo<Citizen>().one()
         }
 
+    override fun insertCitizen(
+        phone: String,
+        email: String,
+        nationalId: String,
+        firstName: String,
+        lastName: String,
+        address: String,
+        postalCode: String,
+        municipality: String
+    ): Citizen =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    INSERT INTO citizen (phone, email, national_id, first_name, last_name, address, postal_code, municipality)
+                    VALUES (:phone, :email, :nationalId, :firstName, :lastName, :address, :postalCode, :municipality)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("nationalId", nationalId)
+            query.bind("firstName", firstName)
+            query.bind("lastName", lastName)
+            query.bind("address", address)
+            query.bind("postalCode", postalCode)
+            query.bind("municipality", municipality)
+            query.bind("phone", phone)
+            query.bind("email", email)
+            query.bind("updated", LocalDate.now())
+            query.mapTo<Citizen>().one()
+        }
+
     override fun getMemos(
         citizenId: UUID,
         category: MemoCategory

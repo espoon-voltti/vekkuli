@@ -72,6 +72,8 @@ interface BoatSpaceReservationRepository {
     fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
+        citizenId: UUID,
+        reservationStatus: ReservationStatus
     ): BoatSpaceReservation
 
     fun updateReservationWithPayment(
@@ -271,12 +273,15 @@ class BoatReservationService(
     fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
-    ): BoatSpaceReservation = boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(reservationId, boatId)
+        citizenId: UUID,
+        status: ReservationStatus
+    ): BoatSpaceReservation = boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(reservationId, boatId, citizenId, status)
 
     @Transactional
     fun reserveBoatSpace(
         citizen: Citizen,
-        input: ReserveBoatSpaceInput
+        input: ReserveBoatSpaceInput,
+        reservationStatus: ReservationStatus
     ) {
         val boat =
             if (input.boatId == 0 || input.boatId == null) {
@@ -313,7 +318,7 @@ class BoatReservationService(
             }
 
         citizenRepo.updateCitizen(citizen.id, input.phone ?: "", input.email ?: "")
-        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(input.reservationId, boat.id)
+        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(input.reservationId, boat.id, citizen.id, reservationStatus)
     }
 
     fun getReservationForCitizen(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForCitizen(id)

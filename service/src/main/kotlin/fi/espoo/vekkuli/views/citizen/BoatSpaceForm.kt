@@ -242,6 +242,81 @@ class BoatSpaceForm {
             </div>
             """.trimIndent()
 
+        val citizenFirstName =
+            formComponents.textInput(
+                "boatApplication.firstName",
+                "firstName",
+                citizen?.firstName ?: "",
+                required = true
+            )
+
+        val citizenLastName =
+            formComponents.textInput(
+                "boatApplication.lastName",
+                "lastName",
+                citizen?.lastName ?: "",
+                required = true
+            )
+
+        val citizenSsn =
+            formComponents.textInput(
+                "boatApplication.ssn",
+                "ssn",
+                citizen?.nationalId ?: "",
+                required = true
+            )
+
+        val address =
+            formComponents.textInput(
+                "boatApplication.address",
+                "address",
+                citizen?.address ?: "",
+                required = true
+            )
+
+        val postalCode =
+            formComponents.textInput(
+                "boatApplication.postalCode",
+                "postalCode",
+                citizen?.postalCode ?: "",
+                required = true
+            )
+
+        val municipality =
+            formComponents.textInput(
+                "boatApplication.municipality",
+                "municipality",
+                citizen?.municipality ?: "",
+                required = true
+            )
+
+        val citizenInputFields =
+            """
+                
+                <h3 class="header">
+                    ${t("boatApplication.personalInformation")}
+                </h3> 
+            <div class="block">
+                $citizenFirstName
+            </div>
+            <div class="block">
+                $citizenLastName
+            </div>
+            <div class="block">
+                $citizenSsn
+            </div>
+            <div class="block">
+                $address
+            </div>
+            <div class="block">
+                $postalCode
+            </div>
+            <div class="block">
+                $municipality
+            </div>
+            
+            """.trimIndent()
+
         val email =
             formComponents.textInput(
                 "boatApplication.email",
@@ -340,7 +415,7 @@ class BoatSpaceForm {
                            $extraInformationInput
                            $ownership
                         </div>
-                        ${if (userType == UserType.CITIZEN) citizenInformation else ""}
+                        ${if (userType == UserType.CITIZEN) citizenInformation else citizenInputFields}
                         <div class="block">
                             $email
                             $phone 
