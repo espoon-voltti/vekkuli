@@ -97,7 +97,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.microsoft.playwright:playwright:1.42.0")
+    testImplementation("com.microsoft.playwright:playwright:1.47.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:2.3.12") // Core Ktor client
     implementation("io.ktor:ktor-client-cio:2.3.12") // CIO engine
