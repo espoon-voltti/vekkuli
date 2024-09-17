@@ -30,7 +30,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             boatSpaceService.getUnreservedBoatSpaceOptions(
                 BoatSpaceFilter()
             )
-        kotlin.test.assertTrue(boatSpaces.second > 0, "At least some boat spaces are fetched")
+        assertEquals(0, boatSpaces.second, "No boat spaces are fetched")
     }
 
     @Test
@@ -68,5 +68,20 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             },
             "Only boat spaces that are big enough are fetched"
         )
+    }
+
+    @Test
+    fun `should return empty list if boat width and length is not given`() {
+        val boatSpaces =
+            boatSpaceService.getUnreservedBoatSpaceOptions(
+                BoatSpaceFilter(
+                    BoatType.Sailboat,
+                    null,
+                    null,
+                    listOf(BoatSpaceAmenity.Beam),
+                    BoatSpaceType.Slip
+                )
+            )
+        assertEquals(boatSpaces.second, 0, "No boat spaces are fetched")
     }
 }

@@ -7,13 +7,15 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.Harbor
 import fi.espoo.vekkuli.domain.Location
 import fi.espoo.vekkuli.service.MarkDownService
+import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
 
 @Service
 class BoatSpaceSearch(
     private val messageUtil: MessageUtil,
     private val formComponents: FormComponents,
-    private val markDownService: MarkDownService
+    private val markDownService: MarkDownService,
+    private val icons: Icons
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -35,6 +37,7 @@ class BoatSpaceSearch(
                 "boatApplication.boatWidthInMeters",
                 "width",
                 null,
+                required = true,
                 compact = true
             )
 
@@ -43,10 +46,11 @@ class BoatSpaceSearch(
                 "boatApplication.boatLengthInMeters",
                 "length",
                 null,
+                required = true,
                 compact = true
             )
 
-        val amenities = BoatSpaceAmenity.entries.toList()
+        val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
         // language=HTML
         val amenitiesCheckboxes =
             """
@@ -105,7 +109,7 @@ class BoatSpaceSearch(
                     </div>
                     ${if (!isEmployee) infoBox else ""}
                     <div class="columns">
-                        <div class="column is-two-fifths">
+                        <div class="column is-two-fifths" x-data="{boatSpaceType: 'Slip'}">
                             <form id="form"
                                   method="get"
                                   action="$url"
@@ -124,12 +128,16 @@ class BoatSpaceSearch(
                                         <label class="label">Haettava paikka</label>
                                         <div class="control">
                                             <label class="radio">
-                                                <input type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip" checked/>
+                                                <input checked x-model="boatSpaceType" type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"/>
                                                 ${t("boatSpaces.typeSlipOption")}
                                             </label>
                                             <label class="radio">
-                                                <input type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"/>
+                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"/>
                                                 ${t("boatSpaces.typeTrailerOption")}
+                                            </label>
+                                             <label class="radio">
+                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Storage"/>
+                                                ${t("boatSpaces.typeStorageOption")}
                                             </label>
                                         </div>
                                     </div>
@@ -145,7 +153,7 @@ class BoatSpaceSearch(
 
                                 </div>
 
-                                <div class="block">
+                                <div class="block" x-show="boatSpaceType !== 'Trailer'">
                                     $amenitiesCheckboxes
                                 </div>
 
@@ -263,6 +271,10 @@ class BoatSpaceSearch(
         }
 
         // language=HTML
+        val searchResultHeader =
+            """<h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>$spaceCount</span></h3> """
+
+        // language=HTML
         val template =
             """
             <div x-data="{
@@ -270,9 +282,22 @@ class BoatSpaceSearch(
                 boatSpace: {
                     id: 0
                 } }">
-                <h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>$spaceCount</span></h3>
+                $searchResultHeader
+                 ${if (boat.length == null || boat.width == null) {
+                """<div id="empty-dimensions-warning" class="reservation-info column is-four-fifths">
+                <div class="column is-narrow">
+                <span class="icon">
+                    ${icons.info}
+                </span>
+                </div>
+                
+                <p class="column">${t("boatApplication.noFreeSpaces")}</p></div> """
+            } else {
+                ""
+            }}
                 <!-- Insert dynamically generated rows here -->
                 $rowsBuilder
+                
                 ${if (!isAuthenticated) {
                 """
                 <div id="auth-modal" class="modal" x-show="openModal" style="display:none;">
