@@ -11,12 +11,13 @@ import org.springframework.stereotype.Component
 
 @Component
 @Scope("request")
-class MessageUtil(private val messageSource: MessageSource) {
-    fun getMessage(code: String): String {
-        return messageSource.getMessage(code, null, LocaleContextHolder.getLocale())
-    }
+class MessageUtil(
+    private val messageSource: MessageSource
+) {
+    fun getMessage(
+        code: String,
+        args: List<Any> = emptyList()
+    ): String = messageSource.getMessage(code, args.toTypedArray(), LocaleContextHolder.getLocale())
 
-    fun getLocale(): String {
-        return LocaleContextHolder.getLocale().toString()
-    }
+    fun getLocale(): String = LocaleContextHolder.getLocale().toString()
 }

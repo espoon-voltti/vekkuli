@@ -85,14 +85,14 @@ class BoatSpaceSearch {
             </div>
             """.trimIndent()
 
+        val infoText = t("boatSpaces.infoText").split("\n").joinToString("\n") { "<p>$it</p>" }
+
         val infoBox =
             """
             <div class="reservation-info column is-two-thirds">
                 <!-- Comment: fragments/icons :: info -->
                 <div class="info-content">
-                    <p>Venepaikkoja voivat varata vain espoolaiset 01.02.2024-31.3.2024.</p>
-                    <p>Muut kuin espoolaiset voivat varata venepaikkoja 01.04.2024 klo 12:00 alkaen.</p>
-                    <p>Venepaikan varaaminen vaatii vahvan tunnistautumisen</p>
+                    $infoText
                 </div>
             </div>
             """.trimIndent()
