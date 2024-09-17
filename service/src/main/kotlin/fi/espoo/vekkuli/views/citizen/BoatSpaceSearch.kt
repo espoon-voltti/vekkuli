@@ -17,9 +17,7 @@ class BoatSpaceSearch {
     @Autowired
     lateinit var formComponents: FormComponents
 
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(
         locations: List<Location>,
@@ -158,6 +156,13 @@ class BoatSpaceSearch {
                                 </div>
 
                             </form>
+                            <script>
+                                document.getElementById('form').addEventListener('change', function(event) {
+                                    localStorage.setItem('type', document.getElementById("boatType").value);
+                                    localStorage.setItem('width', document.getElementById('width').value);
+                                    localStorage.setItem('length', document.getElementById('length').value);
+                                });
+                            </script>
                         </div>
                         <div class="column">
                             <div id="boatSpaces" class="block">

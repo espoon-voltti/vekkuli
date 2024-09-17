@@ -397,6 +397,24 @@ class BoatSpaceForm {
                     
                     <script>
                         validation.init({forms: ['form']})
+                        window.addEventListener('load', function() {
+                            const type = localStorage.getItem('type');
+                            if (type) {
+                              document.getElementById("boatType").value = type;
+                              localStorage.removeItem('type');
+                            }
+                            const width = localStorage.getItem('width');
+                            if (width) {
+                              document.getElementById('width').value = width;
+                              localStorage.removeItem('width');
+                            }
+                            const length = localStorage.getItem('length');
+                            if (length) {
+                              document.getElementById('length').value = length;
+                              localStorage.removeItem('length');
+                            }
+                        });
+                            
                     </script>
                     
                     <div id="confirm-cancel-modal" class="modal" x-show="modalOpen" style="display:none;" >
