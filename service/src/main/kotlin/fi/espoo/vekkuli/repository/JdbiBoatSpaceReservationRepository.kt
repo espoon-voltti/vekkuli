@@ -353,12 +353,13 @@ class JdbiBoatSpaceReservationRepository(
             var statusFilter =
                 params.payment.map {
                     when (it) {
-                        PaymentFilter.PAID -> "Confirmed"
-                        PaymentFilter.UNPAID -> "Payment"
+                        PaymentFilter.PAID -> listOf("Confirmed")
+                        PaymentFilter.UNPAID -> listOf("Payment", "Invoiced")
                     }
-                }
+                }.flatten()
+
             if (statusFilter.isEmpty()) {
-                statusFilter = listOf("Confirmed", "Payment")
+                statusFilter = listOf("Confirmed", "Payment", "Invoiced")
             }
 
             val nameSearch =
@@ -385,6 +386,8 @@ class JdbiBoatSpaceReservationRepository(
                     )
                 )
 
+            println(filter.toSql())
+
             val query =
                 handle.createQuery(
                     """
@@ -402,7 +405,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location_id = location.id
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     WHERE
-                        (bsr.status = 'Confirmed' OR bsr.status = 'Payment')
+                        (bsr.status = 'Confirmed' OR bsr.status = 'Payment' OR bsr.status = 'Invoiced')
                         AND $nameSearch
                         AND $warningFilter
                         AND ${filter.toSql().ifBlank { "true" }}
