@@ -419,6 +419,11 @@ class CitizenUserController {
                 input.postalCode,
                 input.municipalityCode,
                 input.nationalId,
+                // TODO when sending these from the form
+                // TODO use `input` instead of `citizen`
+                citizen.addressSv,
+                citizen.postOffice,
+                citizen.postOfficeSv,
             )
         return layout.render(
             true,
