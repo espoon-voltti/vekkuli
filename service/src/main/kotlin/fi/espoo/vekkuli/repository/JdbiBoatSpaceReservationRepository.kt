@@ -263,7 +263,8 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
-                    WHERE c.id = :citizenId AND bsr.status = 'Confirmed'
+                    WHERE c.id = :citizenId AND 
+                        (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
                     """.trimIndent()
                 )
             query.bind("citizenId", citizenId)
