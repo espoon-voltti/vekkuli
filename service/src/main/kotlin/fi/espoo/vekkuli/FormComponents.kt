@@ -23,6 +23,29 @@ class FormComponents {
         serverValidate: Pair<String, String>? = null
     ): String {
         //language=HTML
+        val errorContainer =
+            """
+            <div id="$id-error-container">
+                <span id="$id-error" class="help is-danger"
+                style="visibility: hidden">
+                ${t("validation.required")}
+                </span>
+            </div>
+            <div id="$id-error-container">
+                <span id="$id-pattern-error" class="help is-danger"
+                style="visibility: hidden">
+                ${if (pattern != null) t(pattern.second) else ""}
+                </span>
+            </div>
+            <div id="$id-server-error-container">
+                <span id="$id-server-error" class="help is-danger" 
+                    style="visibility: hidden">
+                    ${if (serverValidate != null) t(serverValidate.second) else ""} 
+                </span>
+            </div> 
+            """
+
+        //language=HTML
         return """
             <div class="field">
                 <div class="control">
@@ -31,30 +54,12 @@ class FormComponents {
                         class="input ${if (compact) "compact" else ""}"
                         ${if (required == true) "data-required" else ""}
                         ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
-                        ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
                         type="text"
                         id="$id"
                         name="$id"
                         ${if (value != null) "value=\"$value\"" else ""}
                         $attributes />
-                    <div id="$id-error-container">
-                        <span id="$id-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${t("validation.required")} 
-                        </span>
-                    </div> 
-                    <div id="$id-error-container">
-                        <span id="$id-pattern-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${if (pattern != null) t(pattern.second) else ""} 
-                        </span>
-                    </div> 
-                    <div id="$id-server-error-container">
-                        <span id="$id-server-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${if (serverValidate != null) t(serverValidate.second) else ""} 
-                        </span>
-                    </div> 
+                   $errorContainer
                 </div>
             </div>
             """.trimIndent()
@@ -160,6 +165,18 @@ class FormComponents {
             """.trimIndent()
     }
 
+    fun field(
+        labelKey: String,
+        id: String,
+        value: String?,
+    ): String {
+        //language=HTML
+        return """
+            <label class="label" for="$id">${t(labelKey)}</label>
+             <p id="$id">$value</p>
+            """.trimIndent()
+    }
+
     fun radioButtons(
         labelKey: String,
         id: String,
@@ -190,6 +207,41 @@ class FormComponents {
                     </div> 
                 </div>
             </div>
+            """.trimIndent()
+    }
+
+    fun formHeader(titleKey: String): String {
+        //language=HTML
+        return """
+            <h3 class="header">${t(titleKey)}</h3>
+            """.trimIndent()
+    }
+
+    fun buttons(
+        goBackUrl: String,
+        target: String,
+        select: String,
+        cancelId: String,
+        submitId: String
+    ): String {
+        //language=HTML
+        return """
+            <div class="buttons">
+                    <button
+                            id=$cancelId
+                            class="button"
+                            type="button"
+                            hx-get=$goBackUrl
+                            hx-target=$target
+                            hx-select=$select
+                            hx-swap="outerHTML"
+                    >${t("cancel")}</button>
+                    <button
+                            id=$submitId
+                            class="button is-primary"
+                            type="submit"
+                    >${t("citizenDetails.saveChanges")}</button>
+                </div>
             """.trimIndent()
     }
 }

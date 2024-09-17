@@ -279,7 +279,7 @@ class BoatReservationService(
 
     @Transactional
     fun reserveBoatSpace(
-        citizen: Citizen,
+        citizen: CitizenWithDetails,
         input: ReserveBoatSpaceInput,
         reservationStatus: ReservationStatus
     ) {

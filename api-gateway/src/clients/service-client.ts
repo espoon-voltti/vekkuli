@@ -41,8 +41,7 @@ export interface CitizenUser {
   lastName: string
   nationalId: string
   postalCode?: string
-  town?: { sv: string; fi: string }
-  homeTown?: string
+  municipalityCode: number
 }
 
 export async function userLogin(

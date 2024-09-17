@@ -1,13 +1,14 @@
 package fi.espoo.vekkuli.views.employee
 
+import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.Citizen
 import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
 import fi.espoo.vekkuli.domain.SentMessage
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.views.CommonComponents
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -25,7 +26,7 @@ enum class SubTab {
 @Service
 class CitizenDetails {
     @Autowired
-    private lateinit var citizenService: CitizenService
+    private lateinit var formComponents: FormComponents
 
     @Autowired
     lateinit var messageUtil: MessageUtil
@@ -33,57 +34,90 @@ class CitizenDetails {
     @Autowired
     lateinit var icons: Icons
 
+    @Autowired
+    lateinit var commonComponents: CommonComponents
+
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun citizenPage(
-        @SanitizeInput citizen: Citizen,
+        @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
     ): String {
-        val customerInfo =
+        // language=HTML
+        fun customerInfo(): String {
+            val firstNameValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.firstName",
+                    "firstNameField",
+                    citizen.firstName,
+                )
+            val lastNameValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.lastName",
+                    "lastNameField",
+                    citizen.lastName,
+                )
+            val nationalIdValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.nationalId",
+                    "nationalIdField",
+                    citizen.nationalId,
+                )
+            val addressValue = formComponents.field("boatSpaceReservation.title.address", "addressField", citizen.address)
+            val postalCodeValue =
+                formComponents.field("boatSpaceReservation.title.postalCode", "postalCodeField", citizen.postalCode)
+            val cityValue = formComponents.field("boatSpaceReservation.title.city", "cityField", citizen.municipalityName)
+            val municipalityValue =
+                formComponents.field(
+                    "boatSpaceReservation.title.municipality",
+                    "municipalityCodeField",
+                    citizen.municipalityName
+                )
+            val phoneNumberValue =
+                formComponents.field("boatSpaceReservation.title.phoneNumber", "phoneNumberField", citizen.phone)
+            val emailValue = formComponents.field("boatSpaceReservation.title.email", "emailField", citizen.email)
+            return (
+                """
+                <div class="container block" id="citizen-information">
+                    <div class="columns">
+                        <div class="column is-narrow">
+                            <h3 class="header">${t("boatSpaceReservation.title.customerInformation")}</h3>
+                        </div>
+                        <div class="column">
+                            <div>
+                                <a class="is-link" 
+                                    id="edit-customer"
+                                    hx-get="/virkailija/kayttaja/${citizen.id}/muokkaa"
+                                    hx-target="#citizen-information"
+                                    hx-swap="innerHTML">
+                                    <span class="icon ml-s">
+                                        ${icons.edit}
+                                    </span>
+                                    <span>${t("boatSpaceReservation.button.editCustomerDetails")}</span>
+                                </a>
+                            </div>
+                            <!-- Placeholder for additional actions, if needed -->
+                        </div>
+                    </div>
+                    ${
+                    commonComponents.getCitizenFields(
+                        firstNameValue,
+                        lastNameValue,
+                        nationalIdValue,
+                        addressValue,
+                        postalCodeValue,
+                        cityValue,
+                        municipalityValue,
+                        phoneNumberValue,
+                        emailValue
+                    )
+                }
+            </div> 
             """
-            <div class="container block">
-                <div class="columns">
-                    <div class="column is-narrow">
-                        <h3 class="header">${t("boatSpaceReservation.title.customerInformation")}</h3>
-                    </div>
-                    <div class="column">
-                        <!-- Placeholder for additional actions, if needed -->
-                    </div>
-                </div>
-                <div class="columns">
-                    <div class="column is-one-quarter">
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.name")}</label>
-                            <p>${citizen.firstName} ${citizen.lastName}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.address")}</label>
-                            <p>${citizen.address ?: "-"} ${citizen.postalCode}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.email")}</label>
-                            <p>${citizen.email}</p>
-                        </div>
-                    </div>
-                    <div class="column is-one-quarter">
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.ssn")}</label>
-                            <p>${citizen.nationalId}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.municipality")}</label>
-                            <p>${citizen.municipality ?: "-"}</p>
-                        </div>
-                        <div class="field">
-                            <label class="label">${t("boatSpaceReservation.title.phoneNumber")}</label>
-                            <p>${citizen.phone}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            """.trimIndent()
+            )
+        }
 
         val tabs =
             // language=HTML
@@ -112,7 +146,7 @@ class CitizenDetails {
                     </button>
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
-                $customerInfo
+                ${customerInfo()}
                 $tabs
                 ${reservationTabContent(citizen, boatSpaceReservations, boats)}
             </section>
@@ -124,7 +158,7 @@ class CitizenDetails {
     private fun getTabUrl(last: String): String = getServiceUrl("/virkailija/kayttaja/$last")
 
     fun reservationTabContent(
-        @SanitizeInput citizen: Citizen,
+        @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
     ): String {
@@ -295,7 +329,7 @@ class CitizenDetails {
 
         fun deleteButton(
             hasLinkedReservation: Boolean,
-            boatId: Int
+            boatId: Int,
         ): String {
             if (!hasLinkedReservation) {
                 return (
@@ -316,9 +350,11 @@ class CitizenDetails {
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
-                        "cancel"
-                    )}</button>
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${
+                        t(
+                            "cancel"
+                        )
+                    }</button>
                                             <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
                                                 ${t("boatSpaceReservation.button.confirmDeletion")}</a>
                                         </div>
@@ -419,6 +455,7 @@ class CitizenDetails {
                     </div>
                     """.trimIndent()
                 }.joinToString("\n")
+
         val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
 
         // language=HTML
@@ -465,7 +502,7 @@ class CitizenDetails {
             """.trimIndent()
     }
 
-    fun paymentTabContent(citizen: Citizen): String {
+    fun paymentTabContent(citizen: CitizenWithDetails): String {
         // language=HTML
         return """
             <div id="tab-content" class="container block">
@@ -476,8 +513,8 @@ class CitizenDetails {
     }
 
     fun messageTabContent(
-        citizen: Citizen,
-        messages: List<SentMessage>
+        citizen: CitizenWithDetails,
+        messages: List<SentMessage>,
     ): String {
         val messageHtml =
             messages.joinToString("\n") { message ->
@@ -486,7 +523,7 @@ class CitizenDetails {
                 <tr>
                     <td>${message.subject}</td>
                     <td>${message.recipientAddress}</td>
-                    <td>${message.sentAt?.let { formatDate(it)} ?: "Ei lähetetty"}</td>
+                    <td>${message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
                     <td>${message.senderAddress ?: ""}</td>
                 </tr>
                 """.trimIndent()
@@ -529,7 +566,7 @@ class CitizenDetails {
 
     fun memoContent(
         memo: CitizenMemoWithDetails,
-        edit: Boolean
+        edit: Boolean,
     ): String {
         val createdBy =
             if (memo.createdBy !== null) {
@@ -641,7 +678,7 @@ class CitizenDetails {
 
     fun newMemoContent(
         citizenId: UUID,
-        edit: Boolean
+        edit: Boolean,
     ): String {
         if (edit) {
             // language=HTML
@@ -693,7 +730,7 @@ class CitizenDetails {
 
     fun memoTabContent(
         citizenId: UUID,
-        memos: List<CitizenMemoWithDetails>
+        memos: List<CitizenMemoWithDetails>,
     ): String {
         val memoHtml =
             memos.joinToString("\n") {
@@ -715,7 +752,7 @@ class CitizenDetails {
 
     fun tabCls(
         activeTab: SubTab,
-        tab: SubTab
+        tab: SubTab,
     ): String {
         if (activeTab == tab) return "is-active"
         return ""
@@ -723,7 +760,7 @@ class CitizenDetails {
 
     fun renderTabNavi(
         citizenId: UUID,
-        activeTab: SubTab
+        activeTab: SubTab,
     ): String =
         // language=HTML
         """

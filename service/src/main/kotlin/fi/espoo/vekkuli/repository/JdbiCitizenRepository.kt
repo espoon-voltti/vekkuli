@@ -1,9 +1,6 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.domain.Citizen
-import fi.espoo.vekkuli.domain.CitizenMemo
-import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
-import fi.espoo.vekkuli.domain.MemoCategory
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.CitizenRepository
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -16,16 +13,19 @@ import java.util.*
 class JdbiCitizenRepository(
     private val jdbi: Jdbi
 ) : CitizenRepository {
-    override fun getCitizen(id: UUID): Citizen? =
+    override fun getCitizen(id: UUID): CitizenWithDetails? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT * FROM citizen WHERE id = :id
+                    SELECT *, m.name as municipality_name FROM citizen 
+                    JOIN municipality m ON citizen.municipality_code = m.code
+                    WHERE id = :id
+                    
                     """.trimIndent()
                 )
             query.bind("id", id)
-            val citizens = query.mapTo<Citizen>().toList()
+            val citizens = query.mapTo<CitizenWithDetails>().toList()
             if (citizens.isEmpty()) null else citizens[0]
         }
 
@@ -46,22 +46,59 @@ class JdbiCitizenRepository(
         id: UUID,
         phone: String,
         email: String,
-    ): Citizen =
+    ): CitizenWithDetails =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE citizen
                     SET phone = :phone, email = :email, updated = :updated
-                    WHERE id = :id
-                    RETURNING *
+                    FROM municipality m
+                    WHERE citizen.id = :id AND citizen.municipality_code = m.code
+                    RETURNING citizen.*, m.name as municipality_name
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("phone", phone)
             query.bind("email", email)
             query.bind("updated", LocalDate.now())
-            query.mapTo<Citizen>().one()
+            query.mapTo<CitizenWithDetails>().one()
+        }
+
+    override fun updateCitizen(
+        id: UUID,
+        firstName: String,
+        lastName: String,
+        phone: String,
+        email: String,
+        address: String?,
+        postalCode: String?,
+        municipalityCode: Int?,
+        nationalId: String?
+    ): CitizenWithDetails =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE citizen 
+                    SET first_name = :firstName, last_name = :lastName, phone = :phone, email = :email, address = :address, postal_code = :postalCode,
+                    municipality_code = :municipalityCode, updated = :updated, national_id = :nationalId
+                    FROM municipality m
+                    WHERE citizen.id = :id AND :municipalityCode = m.code
+                    RETURNING citizen.*, m.name as municipality_name
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("firstName", firstName)
+            query.bind("lastName", lastName)
+            query.bind("phone", phone)
+            query.bind("email", email)
+            query.bind("address", address ?: "")
+            query.bind("postalCode", postalCode ?: "")
+            query.bind("municipalityCode", municipalityCode ?: "")
+            query.bind("nationalId", nationalId ?: "")
+            query.bind("updated", LocalDate.now())
+            query.mapTo<CitizenWithDetails>().one()
         }
 
     override fun insertCitizen(
@@ -207,4 +244,14 @@ class JdbiCitizenRepository(
             query.bind("content", content)
             query.mapTo<CitizenMemo>().one()
         }
+
+    override fun getMunicipalities(): List<Municipality> {
+        return jdbi.withHandleUnchecked { handle ->
+            handle.createQuery(
+                """
+                SELECT * FROM municipality
+                """.trimIndent()
+            ).mapTo<Municipality>().toList()
+        }
+    }
 }

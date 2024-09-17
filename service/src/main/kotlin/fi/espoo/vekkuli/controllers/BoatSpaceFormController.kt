@@ -204,15 +204,13 @@ class BoatSpaceFormController {
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
 
-        fun badRequest(body: String): ResponseEntity<String> {
-            return ResponseEntity.badRequest().body(body)
-        }
+        fun badRequest(body: String): ResponseEntity<String> = ResponseEntity.badRequest().body(body)
 
-        fun redirectUrl(url: String): ResponseEntity<String> {
-            return ResponseEntity.status(HttpStatus.FOUND)
+        fun redirectUrl(url: String): ResponseEntity<String> =
+            ResponseEntity
+                .status(HttpStatus.FOUND)
                 .header("Location", url)
                 .body("")
-        }
 
         if (userType == UserType.EMPLOYEE) {
             val employee = getEmployee(request)
@@ -221,21 +219,20 @@ class BoatSpaceFormController {
             }
         }
 
-        val citizen =
-            if (userType == UserType.EMPLOYEE) {
-                citizenService.insertCitizen(
-                    phone = input.phone!!,
-                    email = input.email!!,
-                    nationalId = input.ssn!!,
-                    firstName = input.firstName!!,
-                    lastName = input.lastName!!,
-                    address = input.address!!,
-                    postalCode = input.postalCode!!,
-                    municipality = input.municipality!!
-                )
-            } else {
-                getCitizen(request, citizenService)
-            }
+        if (userType == UserType.EMPLOYEE) {
+            citizenService.insertCitizen(
+                phone = input.phone!!,
+                email = input.email!!,
+                nationalId = input.ssn!!,
+                firstName = input.firstName!!,
+                lastName = input.lastName!!,
+                address = input.address!!,
+                postalCode = input.postalCode!!,
+                municipality = input.municipality!!
+            )
+        }
+
+        val citizen = getCitizen(request, citizenService)
 
         if (citizen == null) {
             return ResponseEntity.status(HttpStatus.FOUND)
@@ -360,7 +357,7 @@ class BoatSpaceFormController {
 
     fun renderBoatSpaceReservationApplication(
         reservation: ReservationWithDependencies,
-        citizen: Citizen?,
+        citizen: CitizenWithDetails?,
         input: ReservationInput,
         request: HttpServletRequest,
         userType: UserType
@@ -484,7 +481,6 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Res
                 .addConstraintViolation()
             isValid = false
         }
-
         return isValid
     }
 }
@@ -536,7 +532,7 @@ data class ReservationInput(
             boatType: BoatType?,
             width: Double?,
             length: Double?,
-            citizen: Citizen?
+            citizen: CitizenWithDetails?
         ): ReservationInput =
             ReservationInput(
                 reservationId = null,
@@ -561,7 +557,7 @@ data class ReservationInput(
                 ssn = citizen?.nationalId,
                 address = citizen?.address,
                 postalCode = citizen?.postalCode,
-                municipality = citizen?.municipality,
+                municipality = citizen?.municipalityName,
             )
     }
 }

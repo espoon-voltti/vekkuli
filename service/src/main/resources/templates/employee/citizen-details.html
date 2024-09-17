@@ -56,13 +56,13 @@
             <div class="column is-one-quarter">
                 <div class="field">
                     <label class="label" th:for="boatType"
-                           th:text="#{boatSpaceReservation.title.ssn}">Henkilötunnus</label>
+                           th:text="#{boatSpaceReservation.title.nationalId}">Henkilötunnus</label>
                     <p th:text="${citizen.nationalId}">090990-123Y</p>
                 </div>
                 <div class="field">
                     <label class="label" th:for="boatType"
                            th:text="#{boatSpaceReservation.title.municipality}">Kotikunta</label>
-                    <p th:text="${citizen.municipality ?: '-'}">Espoo</p>
+                    <p th:text="${citizen.municipalityName ?: '-'}">Espoo</p>
                 </div>
                 <div class="field">
                     <label class="label" th:for="boatType"
