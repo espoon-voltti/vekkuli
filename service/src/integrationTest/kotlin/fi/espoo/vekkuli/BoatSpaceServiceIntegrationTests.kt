@@ -30,7 +30,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             boatSpaceService.getUnreservedBoatSpaceOptions(
                 BoatSpaceFilter()
             )
-        kotlin.test.assertTrue(boatSpaces.second > 0, "At least some boat spaces are fetched")
+        assertEquals(0, boatSpaces.second, "No boat spaces are fetched")
     }
 
     @Test

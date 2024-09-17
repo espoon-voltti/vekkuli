@@ -11,6 +11,7 @@ class ReserveBoatSpacePage(
     }
 
     val header = page.getByTestId("search-page-header")
+    val emptyDimensionsWarning = page.getByTestId("empty-dimensions-warning")
     val boatTypeSelectFilter = page.getByTestId("boatType")
     val widthFilterInput = page.getByTestId("width")
     val lenghtFilterInput = page.getByTestId("length")

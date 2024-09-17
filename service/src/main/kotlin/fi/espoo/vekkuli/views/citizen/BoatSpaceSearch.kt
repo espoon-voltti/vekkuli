@@ -284,7 +284,7 @@ class BoatSpaceSearch(
                 } }">
                 $searchResultHeader
                  ${if (boat.length == null || boat.width == null) {
-                """<div class="reservation-info column is-four-fifths">
+                """<div id="empty-dimensions-warning" class="reservation-info column is-four-fifths">
                 <div class="column is-narrow">
                 <span class="icon">
                     ${icons.info}
