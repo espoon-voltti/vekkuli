@@ -6,17 +6,15 @@ import fi.espoo.vekkuli.controllers.BoatFilter
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.Harbor
 import fi.espoo.vekkuli.domain.Location
-import org.springframework.beans.factory.annotation.Autowired
+import fi.espoo.vekkuli.service.MarkDownService
 import org.springframework.stereotype.Service
 
 @Service
-class BoatSpaceSearch {
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    @Autowired
-    lateinit var formComponents: FormComponents
-
+class BoatSpaceSearch(
+    private val messageUtil: MessageUtil,
+    private val formComponents: FormComponents,
+    private val markDownService: MarkDownService
+) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(
@@ -85,14 +83,14 @@ class BoatSpaceSearch {
             </div>
             """.trimIndent()
 
+        val infoText = markDownService.render(t("boatSpaces.infoText"))
+
         val infoBox =
             """
             <div class="reservation-info column is-two-thirds">
                 <!-- Comment: fragments/icons :: info -->
                 <div class="info-content">
-                    <p>Venepaikkoja voivat varata vain espoolaiset 01.02.2024-31.3.2024.</p>
-                    <p>Muut kuin espoolaiset voivat varata venepaikkoja 01.04.2024 klo 12:00 alkaen.</p>
-                    <p>Venepaikan varaaminen vaatii vahvan tunnistautumisen</p>
+                    $infoText
                 </div>
             </div>
             """.trimIndent()
