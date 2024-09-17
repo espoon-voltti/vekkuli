@@ -29,6 +29,19 @@ class JdbiCitizenRepository(
             if (citizens.isEmpty()) null else citizens[0]
         }
 
+    override fun getCitizenBySsn(ssn: String): Citizen? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT * FROM citizen WHERE national_id = :ssn
+                    """.trimIndent()
+                )
+            query.bind("ssn", ssn)
+            val citizens = query.mapTo<Citizen>().toList()
+            if (citizens.isEmpty()) null else citizens[0]
+        }
+
     override fun updateCitizen(
         id: UUID,
         phone: String,

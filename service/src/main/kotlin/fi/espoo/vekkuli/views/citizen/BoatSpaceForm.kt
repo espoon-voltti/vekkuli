@@ -263,7 +263,8 @@ class BoatSpaceForm {
                 "boatApplication.ssn",
                 "ssn",
                 citizen?.nationalId ?: "",
-                required = true
+                required = true,
+                serverValidate = Pair("/validate/ssn", "validation.uniqueSsn")
             )
 
         val address =
@@ -388,8 +389,6 @@ class BoatSpaceForm {
                             </div>
                         </div>
                         
-                        
-                        
                         <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
                             
                            $boatNameInput
@@ -424,10 +423,10 @@ class BoatSpaceForm {
                             <div id="certify-control">
                                 <label class="checkbox">
                                     <input
-                                            type="checkbox"
-                                            data-required
-                                            id="certifyInformation"
-                                            name="certifyInformation"
+                                        type="checkbox"
+                                        data-required
+                                        id="certifyInformation"
+                                        name="certifyInformation"
                                     >
                                     <span >${t("boatApplication.certifyInfoCheckbox")}</span>
                                 </label>
@@ -439,10 +438,10 @@ class BoatSpaceForm {
                             <div id="agree-control">
                                 <label class="checkbox">
                                     <input
-                                            type="checkbox"
-                                            data-required
-                                            id="agreeToRules"
-                                            name="agreeToRules"
+                                        type="checkbox"
+                                        data-required
+                                        id="agreeToRules"
+                                        name="agreeToRules"
                                     />
                                     <span> ${t("boatApplication.agreementCheckbox")} </span>
                                 </label>

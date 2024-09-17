@@ -282,6 +282,20 @@ class BoatSpaceFormController {
         return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
 
+    @PostMapping("/validate/ssn")
+    fun validateSSN(
+        @RequestBody request: Map<String, String>
+    ): ResponseEntity<Map<String, Any>> {
+        val ssn = request["value"]
+        val isValid = ssn?.let { citizenService.getCitizenBySsn(ssn) == null } ?: false
+
+        return if (isValid) {
+            ResponseEntity.ok(mapOf("isValid" to true))
+        } else {
+            ResponseEntity.ok(mapOf("isValid" to false, "message" to messageUtil.getMessage("validation.uniqueSsn")))
+        }
+    }
+
     // initial reservation in info state
     @GetMapping("/$USERTYPE/venepaikka/varaa/{spaceId}")
     fun reserveBoatSpace(

@@ -7,6 +7,8 @@ import java.util.*
 interface CitizenRepository {
     fun getCitizen(id: UUID): Citizen?
 
+    fun getCitizenBySsn(ssn: String): Citizen?
+
     fun updateCitizen(
         id: UUID,
         phone: String,
@@ -53,6 +55,8 @@ class CitizenService(
     private val sentMessagesRepository: SentMessageRepository,
 ) {
     fun getCitizen(id: UUID): Citizen? = citizenRepository.getCitizen(id)
+
+    fun getCitizenBySsn(ssn: String): Citizen? = citizenRepository.getCitizenBySsn(ssn)
 
     fun insertCitizen(
         phone: String,
