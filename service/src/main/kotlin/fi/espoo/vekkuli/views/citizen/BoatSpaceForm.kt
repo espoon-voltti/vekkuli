@@ -397,6 +397,15 @@ class BoatSpaceForm {
                     
                     <script>
                         validation.init({forms: ['form']})
+                        window.addEventListener('load', function() {
+                            document.getElementById("boatType").value = localStorage.getItem('type');
+                            document.getElementById('width').value = localStorage.getItem('width');
+                            document.getElementById('length').value =localStorage.getItem('length');
+                            localStorage.removeItem('type');
+                            localStorage.removeItem('width');
+                            localStorage.removeItem('length');
+                        });
+                            
                     </script>
                     
                     <div id="confirm-cancel-modal" class="modal" x-show="modalOpen" style="display:none;" >
