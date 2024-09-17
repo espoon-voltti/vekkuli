@@ -36,7 +36,7 @@ interface CitizenRepository {
         lastName: String,
         address: String,
         postalCode: String,
-        municipality: String,
+        municipalityCode: Int,
     ): Citizen
 
     fun getMemo(id: Int): CitizenMemoWithDetails?
@@ -100,8 +100,8 @@ class CitizenService(
         lastName: String,
         address: String,
         postalCode: String,
-        municipality: String,
-    ): Citizen = citizenRepository.insertCitizen(phone, email, nationalId, firstName, lastName, address, postalCode, municipality)
+        municipalityCode: Int,
+    ): Citizen = citizenRepository.insertCitizen(phone, email, nationalId, firstName, lastName, address, postalCode, municipalityCode)
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 

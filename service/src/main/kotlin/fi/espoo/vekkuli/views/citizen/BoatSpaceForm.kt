@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.CitizenWithDetails
+import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.cmToM
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +35,8 @@ class BoatSpaceForm {
         input: ReservationInput,
         showBoatSizeWarning: Boolean,
         reservationTimeInSeconds: Long,
-        userType: UserType
+        userType: UserType,
+        municipalities: List<Municipality>,
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         // language=HTML
@@ -281,20 +283,20 @@ class BoatSpaceForm {
                 required = true
             )
 
-        val municipality =
-            formComponents.textInput(
-                "boatApplication.municipality",
-                "municipality",
-                citizen?.municipalityName ?: "",
+        val municipalityInput =
+            formComponents.select(
+                "boatSpaceReservation.title.municipality",
+                "municipalityCode",
+                citizen?.municipalityCode.toString(),
+                municipalities.map { Pair(it.code.toString(), it.name) },
                 required = true
             )
 
         val citizenInputFields =
             """
-                
-                <h3 class="header">
-                    ${t("boatApplication.personalInformation")}
-                </h3> 
+            <h3 class="header">
+                ${t("boatApplication.personalInformation")}
+            </h3> 
             <div class="block">
                 $citizenFirstName
             </div>
@@ -311,9 +313,8 @@ class BoatSpaceForm {
                 $postalCode
             </div>
             <div class="block">
-                $municipality
+                $municipalityInput
             </div>
-            
             """.trimIndent()
 
         val email =

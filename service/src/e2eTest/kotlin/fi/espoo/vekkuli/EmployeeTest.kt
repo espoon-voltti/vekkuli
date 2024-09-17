@@ -99,6 +99,12 @@ class EmployeeTest : PlaywrightTest() {
 
         formPage.ownerRadioButton.check()
 
+        formPage.firstNameInput.fill("John")
+        formPage.lastNameInput.fill("Doe")
+        formPage.ssnInput.fill("123456-789A")
+        formPage.addressInput.fill("Test street 1")
+        formPage.postalCodeInput.fill("12345")
+
         formPage.emailInput.fill("test@example.com")
         formPage.emailInput.blur()
         assertThat(formPage.emailError).isHidden()
@@ -109,5 +115,7 @@ class EmployeeTest : PlaywrightTest() {
 
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
+        formPage.submitButton.click()
+        page.pause()
     }
 }

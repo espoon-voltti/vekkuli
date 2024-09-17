@@ -109,14 +109,14 @@ class JdbiCitizenRepository(
         lastName: String,
         address: String,
         postalCode: String,
-        municipality: String
+        municipalityCode: Int,
     ): Citizen =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO citizen (phone, email, national_id, first_name, last_name, address, postal_code, municipality)
-                    VALUES (:phone, :email, :nationalId, :firstName, :lastName, :address, :postalCode, :municipality)
+                    INSERT INTO citizen (phone, email, national_id, first_name, last_name, address, postal_code, municipalityCode)
+                    VALUES (:phone, :email, :nationalId, :firstName, :lastName, :address, :postalCode, :municipalityCode)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -125,7 +125,7 @@ class JdbiCitizenRepository(
             query.bind("lastName", lastName)
             query.bind("address", address)
             query.bind("postalCode", postalCode)
-            query.bind("municipality", municipality)
+            query.bind("municipalityCode", municipalityCode)
             query.bind("phone", phone)
             query.bind("email", email)
             query.bind("updated", LocalDate.now())

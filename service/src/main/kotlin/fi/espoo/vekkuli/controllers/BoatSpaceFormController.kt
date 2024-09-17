@@ -228,7 +228,7 @@ class BoatSpaceFormController {
                 lastName = input.lastName!!,
                 address = input.address!!,
                 postalCode = input.postalCode!!,
-                municipality = input.municipality!!
+                municipalityCode = input.municipalityCode!!
             )
         }
 
@@ -382,6 +382,8 @@ class BoatSpaceFormController {
                 reservation.lengthCm
             )
 
+        val municipalities = citizenService.getMunicipalities()
+
         return if (userType == UserType.EMPLOYEE) {
             employeeLayout.render(
                 true,
@@ -394,7 +396,8 @@ class BoatSpaceFormController {
                         input,
                         showBoatSizeWarning,
                         getReservationTimeInSeconds(reservation.created),
-                        userType
+                        userType,
+                        municipalities
                     )
                 )
             )
@@ -409,7 +412,8 @@ class BoatSpaceFormController {
                     input,
                     showBoatSizeWarning,
                     getReservationTimeInSeconds(reservation.created),
-                    userType
+                    userType,
+                    municipalities
                 )
             )
         }
@@ -516,7 +520,7 @@ data class ReservationInput(
     val ssn: String?,
     val address: String?,
     val postalCode: String?,
-    val municipality: String?,
+    val municipalityCode: Int?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
     val email: String?,
@@ -557,7 +561,7 @@ data class ReservationInput(
                 ssn = citizen?.nationalId,
                 address = citizen?.address,
                 postalCode = citizen?.postalCode,
-                municipality = citizen?.municipalityName,
+                municipalityCode = citizen?.municipalityCode,
             )
     }
 }
