@@ -214,12 +214,11 @@ class BoatSpaceFormController {
 
         if (userType == UserType.EMPLOYEE) {
             val employee = getEmployee(request)
+
             if (employee == null) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
             }
-        }
 
-        if (userType == UserType.EMPLOYEE) {
             citizenService.insertCitizen(
                 phone = input.phone!!,
                 email = input.email!!,
