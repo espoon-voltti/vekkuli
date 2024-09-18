@@ -387,8 +387,6 @@ class JdbiBoatSpaceReservationRepository(
                     )
                 )
 
-            println(filter.toSql())
-
             val query =
                 handle.createQuery(
                     """
