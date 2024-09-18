@@ -225,10 +225,11 @@ class E2eTest : PlaywrightTest() {
 
             val reservationPage = ReserveBoatSpacePage(page)
             reservationPage.navigateTo()
-            assertThat(reservationPage.harborHeaders).hasCount(7)
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
             reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
             reservationPage.widthFilterInput.fill("3")
             reservationPage.lenghtFilterInput.fill("6")
+            reservationPage.lenghtFilterInput.blur()
             reservationPage.boatSpaceTypeSlipRadio.click()
             reservationPage.amenityBuoyCheckbox.check()
             reservationPage.amenityRearBuoyCheckbox.check()
@@ -332,6 +333,9 @@ class E2eTest : PlaywrightTest() {
 
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateTo()
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lenghtFilterInput.fill("6")
+        reservationPage.lenghtFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
@@ -355,6 +359,9 @@ class E2eTest : PlaywrightTest() {
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateTo()
 
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lenghtFilterInput.fill("6")
+        reservationPage.lenghtFilterInput.blur()
         reservationPage.firstReserveButton.click()
         assertThat(reservationPage.authModal).isVisible()
 
@@ -376,6 +383,9 @@ class E2eTest : PlaywrightTest() {
 
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateTo()
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lenghtFilterInput.fill("6")
+        reservationPage.lenghtFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
@@ -407,6 +417,9 @@ class E2eTest : PlaywrightTest() {
 
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateTo()
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lenghtFilterInput.fill("6")
+        reservationPage.lenghtFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
@@ -426,6 +439,9 @@ class E2eTest : PlaywrightTest() {
 
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateTo()
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lenghtFilterInput.fill("6")
+        reservationPage.lenghtFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)

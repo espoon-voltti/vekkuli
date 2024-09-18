@@ -99,8 +99,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.microsoft.playwright:playwright:1.42.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("io.ktor:ktor-client-core:2.3.1") // Core Ktor client
-    implementation("io.ktor:ktor-client-cio:2.3.1") // CIO engine
+    implementation("io.ktor:ktor-client-core:2.3.12") // Core Ktor client
+    implementation("io.ktor:ktor-client-cio:2.3.12") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:2.3.1") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
@@ -111,6 +111,7 @@ dependencies {
     implementation("software.amazon.awssdk:core:2.20.0")
     implementation("software.amazon.awssdk:regions:2.20.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.commonmark:commonmark:0.22.0")
 }
 
 tasks.withType<KotlinCompile> {

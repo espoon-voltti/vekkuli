@@ -22,7 +22,7 @@ class EmployeeTest : PlaywrightTest() {
 
         val reservationPage = ReserveBoatSpacePage(page)
 
-        assertThat(reservationPage.harborHeaders).hasCount(7)
+        assertThat(reservationPage.emptyDimensionsWarning).isVisible()
         reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lenghtFilterInput.fill("6")
