@@ -10,7 +10,10 @@ data class Citizen(
     val email: String,
     val phone: String,
     val address: String?,
+    val addressSv: String?,
     val postalCode: String?,
+    val postOffice: String?,
+    val postOfficeSv: String?,
     val municipalityCode: Int,
 )
 
@@ -22,7 +25,10 @@ data class CitizenWithDetails(
     val email: String,
     val phone: String,
     val address: String?,
+    val addressSv: String?,
     val postalCode: String?,
+    val postOffice: String?,
+    val postOfficeSv: String?,
     val municipalityCode: Int,
     val municipalityName: String,
     val fullName: String = "$firstName $lastName"

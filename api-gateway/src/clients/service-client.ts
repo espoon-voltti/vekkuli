@@ -35,7 +35,8 @@ export interface AdUser {
 }
 
 export interface CitizenUser {
-  address?: { sv: string; fi: string }
+  address: { sv?: string; fi?: string }
+  postOffice: { sv?: string; fi?: string }
   email?: string
   firstName: string
   lastName: string

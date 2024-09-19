@@ -35,25 +35,21 @@ class SystemController {
     @PostMapping("/user-login")
     fun userLogin(
         @RequestBody adUser: AdUser
-    ): AppUser {
-        return jdbi.inTransactionUnchecked { it.upsertAppUserFromAd(adUser) }.also {
+    ): AppUser =
+        jdbi.inTransactionUnchecked { it.upsertAppUserFromAd(adUser) }.also {
             logger.audit(AuthenticatedUser(it.id, "user"), "USER_LOGIN")
         }
-    }
 
     @PostMapping("/citizen-login")
     fun citizenLogin(
         @RequestBody adUser: CitizenAdUser
-    ): Citizen {
-        return jdbi.inTransactionUnchecked { it.upsertCitizenUserFromAd(adUser) }.also {
+    ): Citizen =
+        jdbi.inTransactionUnchecked { it.upsertCitizenUserFromAd(adUser) }.also {
             logger.audit(AuthenticatedUser(it.id, "citizen"), "CITIZEN_LOGIN")
         }
-    }
 
     @GetMapping("/users/{id}")
     fun getUser(
         @PathVariable id: UUID
-    ): AppUser? {
-        return jdbi.inTransactionUnchecked { it.getAppUser(id) }
-    }
+    ): AppUser? = jdbi.inTransactionUnchecked { it.getAppUser(id) }
 }

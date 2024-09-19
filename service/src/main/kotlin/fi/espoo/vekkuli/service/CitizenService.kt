@@ -26,6 +26,9 @@ interface CitizenRepository {
         postalCode: String?,
         municipalityCode: Int?,
         nationalId: String?,
+        addressSv: String?,
+        postOffice: String?,
+        postOfficeSv: String?,
     ): CitizenWithDetails
 
     fun insertCitizen(
@@ -86,9 +89,25 @@ class CitizenService(
         address: String?,
         postalCode: String?,
         municipalityCode: Int?,
-        nationalId: String?
+        nationalId: String?,
+        addressSv: String?,
+        postOffice: String?,
+        postOfficeSv: String?,
     ): CitizenWithDetails =
-        citizenRepository.updateCitizen(id, firstName, lastName, phone, email, address, postalCode, municipalityCode, nationalId)
+        citizenRepository.updateCitizen(
+            id,
+            firstName,
+            lastName,
+            phone,
+            email,
+            address,
+            postalCode,
+            municipalityCode,
+            nationalId,
+            addressSv,
+            postOffice,
+            postOfficeSv
+        )
 
     fun getCitizenBySsn(ssn: String): Citizen? = citizenRepository.getCitizenBySsn(ssn)
 
