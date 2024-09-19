@@ -163,6 +163,18 @@ class BoatSpaceFormController {
         return ResponseEntity.ok("")
     }
 
+    @GetMapping("/venepaikka/varaus/{reservationId}/boat-weight-warning")
+    fun boatWeight(
+        @PathVariable reservationId: Int,
+        @RequestParam weight: Int,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        if (weight > BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG) {
+            return ResponseEntity.ok(boatSpaceForm.boatWeightWarning())
+        }
+        return ResponseEntity.ok("")
+    }
+
     @PostMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/validate")
     @ResponseBody
     fun validateForm(

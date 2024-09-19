@@ -71,7 +71,8 @@ class FormComponents {
         id: String,
         value: Int?,
         required: Boolean? = false,
-        compact: Boolean = false
+        compact: Boolean = false,
+        attributes: String = ""
     ): String {
         //language=HTML
         return """
@@ -85,6 +86,7 @@ class FormComponents {
                         id="$id"
                         name="$id"
                         ${if (value != null) "value=\"$value\"" else ""}
+                        $attributes
                         />
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 

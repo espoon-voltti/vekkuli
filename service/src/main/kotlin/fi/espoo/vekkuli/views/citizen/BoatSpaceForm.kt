@@ -175,6 +175,13 @@ class BoatSpaceForm {
                 "weight",
                 input.weight,
                 required = true,
+                attributes =
+                    """
+                    hx-trigger='change' 
+                    hx-get='/venepaikka/varaus/${reservation.id}/boat-weight-warning' 
+                    hx-target='#boat-weight-warning'
+                    hx-sync='closest #form:replace'
+                    """.trimIndent()
             )
 
         val boatNameInput =
@@ -394,6 +401,9 @@ class BoatSpaceForm {
                                     $weightInput
                                 </div>
                             </div>
+                            
+                            <div id="boat-weight-warning" >
+                            </div>
                         </div>
                         
                         <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
@@ -528,6 +538,22 @@ class BoatSpaceForm {
         """
         <div class="warning" id="boatSize-warning">
             <p class="block">${t("boatSpaceApplication.boatTypeWarning")}</p>
+            <button class="icon-text"
+                    type="button"
+                    id="size-warning-back-button"
+                    x-on:click="modalOpen = true">
+                <span class="icon">
+                    <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
+                </span>
+                <span>${t("boatSpaces.goBack")}</span>
+            </button>
+        </div>
+        """.trimIndent()
+
+    fun boatWeightWarning() =
+        """
+        <div class="warning" id="boatSize-warning">
+            <p class="block">${t("boatSpaceApplication.boatWeightWarning")}</p>
             <button class="icon-text"
                     type="button"
                     id="size-warning-back-button"
