@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.CitizenWithDetails
+import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.cmToM
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +35,8 @@ class BoatSpaceForm {
         input: ReservationInput,
         showBoatSizeWarning: Boolean,
         reservationTimeInSeconds: Long,
-        userType: UserType
+        userType: UserType,
+        municipalities: List<Municipality>,
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         // language=HTML
@@ -240,6 +242,81 @@ class BoatSpaceForm {
             </div>
             """.trimIndent()
 
+        val citizenFirstName =
+            formComponents.textInput(
+                "boatApplication.firstName",
+                "firstName",
+                citizen?.firstName ?: "",
+                required = true
+            )
+
+        val citizenLastName =
+            formComponents.textInput(
+                "boatApplication.lastName",
+                "lastName",
+                citizen?.lastName ?: "",
+                required = true
+            )
+
+        val citizenSsn =
+            formComponents.textInput(
+                "boatApplication.ssn",
+                "ssn",
+                citizen?.nationalId ?: "",
+                required = true,
+                serverValidate = Pair("/validate/ssn", "validation.uniqueSsn")
+            )
+
+        val address =
+            formComponents.textInput(
+                "boatApplication.address",
+                "address",
+                citizen?.address ?: "",
+                required = true
+            )
+
+        val postalCode =
+            formComponents.textInput(
+                "boatApplication.postalCode",
+                "postalCode",
+                citizen?.postalCode ?: "",
+                required = true
+            )
+
+        val municipalityInput =
+            formComponents.select(
+                "boatSpaceReservation.title.municipality",
+                "municipalityCode",
+                citizen?.municipalityCode.toString(),
+                municipalities.map { Pair(it.code.toString(), it.name) },
+                required = true
+            )
+
+        val citizenInputFields =
+            """
+            <h3 class="header">
+                ${t("boatApplication.personalInformation")}
+            </h3> 
+            <div class="block">
+                $citizenFirstName
+            </div>
+            <div class="block">
+                $citizenLastName
+            </div>
+            <div class="block">
+                $citizenSsn
+            </div>
+            <div class="block">
+                $address
+            </div>
+            <div class="block">
+                $postalCode
+            </div>
+            <div class="block">
+                $municipalityInput
+            </div>
+            """.trimIndent()
+
         val email =
             formComponents.textInput(
                 "boatApplication.email",
@@ -311,8 +388,6 @@ class BoatSpaceForm {
                             </div>
                         </div>
                         
-                        
-                        
                         <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
                             
                            $boatNameInput
@@ -338,9 +413,7 @@ class BoatSpaceForm {
                            $extraInformationInput
                            $ownership
                         </div>
-
-                        ${if (userType == UserType.CITIZEN) citizenInformation else ""}
-
+                        ${if (userType == UserType.CITIZEN) citizenInformation else citizenInputFields}
                         <div class="block">
                             $email
                             $phone 
@@ -349,10 +422,10 @@ class BoatSpaceForm {
                             <div id="certify-control">
                                 <label class="checkbox">
                                     <input
-                                            type="checkbox"
-                                            data-required
-                                            id="certifyInformation"
-                                            name="certifyInformation"
+                                        type="checkbox"
+                                        data-required
+                                        id="certifyInformation"
+                                        name="certifyInformation"
                                     >
                                     <span >${t("boatApplication.certifyInfoCheckbox")}</span>
                                 </label>
@@ -364,10 +437,10 @@ class BoatSpaceForm {
                             <div id="agree-control">
                                 <label class="checkbox">
                                     <input
-                                            type="checkbox"
-                                            data-required
-                                            id="agreeToRules"
-                                            name="agreeToRules"
+                                        type="checkbox"
+                                        data-required
+                                        id="agreeToRules"
+                                        name="agreeToRules"
                                     />
                                     <span> ${t("boatApplication.agreementCheckbox")} </span>
                                 </label>

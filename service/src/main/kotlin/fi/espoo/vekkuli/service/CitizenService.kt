@@ -7,6 +7,8 @@ import java.util.*
 interface CitizenRepository {
     fun getCitizen(id: UUID): CitizenWithDetails?
 
+    fun getCitizenBySsn(ssn: String): Citizen?
+
     fun updateCitizen(
         id: UUID,
         phone: String,
@@ -25,6 +27,17 @@ interface CitizenRepository {
         municipalityCode: Int?,
         nationalId: String?,
     ): CitizenWithDetails
+
+    fun insertCitizen(
+        phone: String,
+        email: String,
+        nationalId: String,
+        firstName: String,
+        lastName: String,
+        address: String,
+        postalCode: String,
+        municipalityCode: Int,
+    ): Citizen
 
     fun getMemo(id: Int): CitizenMemoWithDetails?
 
@@ -76,6 +89,19 @@ class CitizenService(
         nationalId: String?
     ): CitizenWithDetails =
         citizenRepository.updateCitizen(id, firstName, lastName, phone, email, address, postalCode, municipalityCode, nationalId)
+
+    fun getCitizenBySsn(ssn: String): Citizen? = citizenRepository.getCitizenBySsn(ssn)
+
+    fun insertCitizen(
+        phone: String,
+        email: String,
+        nationalId: String,
+        firstName: String,
+        lastName: String,
+        address: String,
+        postalCode: String,
+        municipalityCode: Int,
+    ): Citizen = citizenRepository.insertCitizen(phone, email, nationalId, firstName, lastName, address, postalCode, municipalityCode)
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 

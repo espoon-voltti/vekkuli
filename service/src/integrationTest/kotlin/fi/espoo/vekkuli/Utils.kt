@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.BoatSpaceReservation
 import fi.espoo.vekkuli.domain.CreatePaymentParams
+import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.service.BoatReservationService
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -40,7 +41,7 @@ fun createReservationInConfirmedState(
             startDate = LocalDate.now(),
             endDate = LocalDate.now().plusDays(365),
         )
-    reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId)
+    reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId, citizenId, ReservationStatus.Payment)
     val payment =
         reservationService.addPaymentToReservation(
             madeReservation.id,
@@ -63,7 +64,7 @@ fun createReservationInPaymentState(
             startDate = LocalDate.now(),
             endDate = LocalDate.now().plusDays(365),
         )
-    reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId)
+    reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId, citizenId, ReservationStatus.Payment)
     return madeReservation
 }
 

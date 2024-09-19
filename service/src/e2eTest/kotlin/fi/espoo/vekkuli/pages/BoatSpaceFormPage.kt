@@ -34,6 +34,12 @@ class BoatSpaceFormPage(private val page: Page) {
     val confirmCancelModalCancel = page.getByTestId("confirm-cancel-modal-cancel")
     val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
 
+    val firstNameInput = page.getByTestId("firstName")
+    val lastNameInput = page.getByTestId("lastName")
+    val ssnInput = page.getByTestId("ssn")
+    val addressInput = page.getByTestId("address")
+    val postalCodeInput = page.getByTestId("postalCode")
+
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
         widthInput.fill("3")

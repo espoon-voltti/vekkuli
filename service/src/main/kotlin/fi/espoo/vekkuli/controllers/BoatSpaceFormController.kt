@@ -202,6 +202,8 @@ class BoatSpaceFormController {
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        val userType = UserType.fromPath(usertype)
+
         fun badRequest(body: String): ResponseEntity<String> = ResponseEntity.badRequest().body(body)
 
         fun redirectUrl(url: String): ResponseEntity<String> =
@@ -210,12 +212,33 @@ class BoatSpaceFormController {
                 .header("Location", url)
                 .body("")
 
-        val citizen =
-            getCitizen(request, citizenService)
-                ?: return ResponseEntity
-                    .status(HttpStatus.FOUND)
-                    .header("Location", "/")
-                    .build()
+        val citizenId =
+            if (userType == UserType.EMPLOYEE) {
+                val employee = getEmployee(request)
+
+                if (employee == null) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
+                }
+
+                citizenService.insertCitizen(
+                    phone = input.phone!!,
+                    email = input.email!!,
+                    nationalId = input.ssn!!,
+                    firstName = input.firstName!!,
+                    lastName = input.lastName!!,
+                    address = input.address!!,
+                    postalCode = input.postalCode!!,
+                    municipalityCode = input.municipalityCode!!
+                ).id
+            } else {
+                getCitizen(request, citizenService)?.id
+            }
+
+        if (citizenId == null) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "/")
+                .build()
+        }
 
         if (bindingResult.hasErrors()) {
             val reservation = reservationService.getReservationWithCitizen(reservationId)
@@ -225,8 +248,10 @@ class BoatSpaceFormController {
             return badRequest("Invalid input")
         }
 
+        val reservationStatus = if (userType == UserType.EMPLOYEE) ReservationStatus.Invoiced else ReservationStatus.Payment
+
         reservationService.reserveBoatSpace(
-            citizen,
+            citizenId,
             ReserveBoatSpaceInput(
                 reservationId = reservationId,
                 boatId = input.boatId,
@@ -242,11 +267,30 @@ class BoatSpaceFormController {
                 ownerShip = input.ownership!!,
                 email = input.email!!,
                 phone = input.phone!!,
-            )
+            ),
+            reservationStatus
         )
 
+        if (userType == UserType.EMPLOYEE) {
+            return redirectUrl("/virkailija/venepaikat/varaukset")
+        }
+
         // redirect to payments page with reservation id and slip type
-        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
+        return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
+    }
+
+    @PostMapping("/validate/ssn")
+    fun validateSSN(
+        @RequestBody request: Map<String, String>
+    ): ResponseEntity<Map<String, Any>> {
+        val ssn = request["value"]
+        val isValid = ssn?.let { citizenService.getCitizenBySsn(ssn) == null } ?: false
+
+        return if (isValid) {
+            ResponseEntity.ok(mapOf("isValid" to true))
+        } else {
+            ResponseEntity.ok(mapOf("isValid" to false, "message" to messageUtil.getMessage("validation.uniqueSsn")))
+        }
     }
 
     // initial reservation in info state
@@ -338,6 +382,8 @@ class BoatSpaceFormController {
                 reservation.lengthCm
             )
 
+        val municipalities = citizenService.getMunicipalities()
+
         return if (userType == UserType.EMPLOYEE) {
             employeeLayout.render(
                 true,
@@ -350,7 +396,8 @@ class BoatSpaceFormController {
                         input,
                         showBoatSizeWarning,
                         getReservationTimeInSeconds(reservation.created),
-                        userType
+                        userType,
+                        municipalities
                     )
                 )
             )
@@ -365,7 +412,8 @@ class BoatSpaceFormController {
                     input,
                     showBoatSizeWarning,
                     getReservationTimeInSeconds(reservation.created),
-                    userType
+                    userType,
+                    municipalities
                 )
             )
         }
@@ -467,6 +515,12 @@ data class ReservationInput(
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
     val ownership: OwnershipStatus?,
+    val firstName: String?,
+    val lastName: String?,
+    val ssn: String?,
+    val address: String?,
+    val postalCode: String?,
+    val municipalityCode: Int?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
     val email: String?,
@@ -502,6 +556,12 @@ data class ReservationInput(
                 phone = citizen?.phone,
                 agreeToRules = false,
                 certifyInformation = false,
+                firstName = citizen?.firstName,
+                lastName = citizen?.lastName,
+                ssn = citizen?.nationalId,
+                address = citizen?.address,
+                postalCode = citizen?.postalCode,
+                municipalityCode = citizen?.municipalityCode,
             )
     }
 }

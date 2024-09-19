@@ -29,6 +29,19 @@ class JdbiCitizenRepository(
             if (citizens.isEmpty()) null else citizens[0]
         }
 
+    override fun getCitizenBySsn(ssn: String): Citizen? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT * FROM citizen WHERE national_id = :ssn
+                    """.trimIndent()
+                )
+            query.bind("ssn", ssn)
+            val citizens = query.mapTo<Citizen>().toList()
+            if (citizens.isEmpty()) null else citizens[0]
+        }
+
     override fun updateCitizen(
         id: UUID,
         phone: String,
@@ -86,6 +99,37 @@ class JdbiCitizenRepository(
             query.bind("nationalId", nationalId ?: "")
             query.bind("updated", LocalDate.now())
             query.mapTo<CitizenWithDetails>().one()
+        }
+
+    override fun insertCitizen(
+        phone: String,
+        email: String,
+        nationalId: String,
+        firstName: String,
+        lastName: String,
+        address: String,
+        postalCode: String,
+        municipalityCode: Int,
+    ): Citizen =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    INSERT INTO citizen (phone, email, national_id, first_name, last_name, address, postal_code, municipality_code)
+                    VALUES (:phone, :email, :nationalId, :firstName, :lastName, :address, :postalCode, :municipalityCode)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("nationalId", nationalId)
+            query.bind("firstName", firstName)
+            query.bind("lastName", lastName)
+            query.bind("address", address)
+            query.bind("postalCode", postalCode)
+            query.bind("municipalityCode", municipalityCode)
+            query.bind("phone", phone)
+            query.bind("email", email)
+            query.bind("updated", LocalDate.now())
+            query.mapTo<Citizen>().one()
         }
 
     override fun getMemos(

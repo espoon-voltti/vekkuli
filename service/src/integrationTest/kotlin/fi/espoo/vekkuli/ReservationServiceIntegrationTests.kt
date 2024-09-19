@@ -57,6 +57,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             reservationService.updateBoatInBoatSpaceReservation(
                 madeReservation.id,
                 boatId,
+                citizenId,
+                ReservationStatus.Payment,
             )
         val reservation = reservationService.getReservationWithCitizen(madeReservation.id)
         assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
@@ -107,7 +109,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
         val payment = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
 
-        reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3)
+        reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3, citizenId, ReservationStatus.Payment)
 
         reservationService.handlePaymentResult(
             mapOf("checkout-stamp" to payment.id.toString()),
@@ -226,7 +228,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation = createReservationInPaymentState(reservationService, citizenId, expectedBoatSpaceWithWarnings)
         val paymentParams = CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
         val payment = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
-        reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3)
+        reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3, citizenId, ReservationStatus.Payment)
 
         reservationService.handlePaymentResult(
             mapOf("checkout-stamp" to payment.id.toString()),

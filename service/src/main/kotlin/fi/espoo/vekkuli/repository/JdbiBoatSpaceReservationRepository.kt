@@ -263,7 +263,8 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
-                    WHERE c.id = :citizenId AND bsr.status = 'Confirmed'
+                    WHERE c.id = :citizenId AND 
+                        (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
                     """.trimIndent()
                 )
             query.bind("citizenId", citizenId)
@@ -353,12 +354,13 @@ class JdbiBoatSpaceReservationRepository(
             var statusFilter =
                 params.payment.map {
                     when (it) {
-                        PaymentFilter.PAID -> "Confirmed"
-                        PaymentFilter.UNPAID -> "Payment"
+                        PaymentFilter.PAID -> listOf("Confirmed")
+                        PaymentFilter.UNPAID -> listOf("Payment", "Invoiced")
                     }
-                }
+                }.flatten()
+
             if (statusFilter.isEmpty()) {
-                statusFilter = listOf("Confirmed", "Payment")
+                statusFilter = listOf("Confirmed", "Payment", "Invoiced")
             }
 
             val nameSearch =
@@ -402,7 +404,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location_id = location.id
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     WHERE
-                        (bsr.status = 'Confirmed' OR bsr.status = 'Payment')
+                        (bsr.status = 'Confirmed' OR bsr.status = 'Payment' OR bsr.status = 'Invoiced')
                         AND $nameSearch
                         AND $warningFilter
                         AND ${filter.toSql().ifBlank { "true" }}
@@ -497,22 +499,26 @@ class JdbiBoatSpaceReservationRepository(
     override fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
+        citizenId: UUID,
+        reservationStatus: ReservationStatus
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = 'Payment', updated = :updatedTime, boat_id = :boatId
+                    SET status = :status, updated = :updatedTime, boat_id = :boatId, citizen_id = :citizenId
                     WHERE id = :id
                         AND (status = 'Info' OR status = 'Payment')
                         AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
                     RETURNING *
                     """.trimIndent()
                 )
+            query.bind("status", reservationStatus)
             query.bind("updatedTime", LocalDate.now())
             query.bind("id", reservationId)
             query.bind("boatId", boatId)
+            query.bind("citizenId", citizenId)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.mapTo<BoatSpaceReservation>().one()
         }

@@ -19,7 +19,8 @@ class FormComponents {
         pattern: Pair<String, String>? = null,
         attributes: String = "",
         labelAttributes: String = "",
-        compact: Boolean = false
+        compact: Boolean = false,
+        serverValidate: Pair<String, String>? = null
     ): String {
         //language=HTML
         val errorContainer =
@@ -36,6 +37,12 @@ class FormComponents {
                 ${if (pattern != null) t(pattern.second) else ""}
                 </span>
             </div>
+            <div id="$id-server-error-container">
+                <span id="$id-server-error" class="help is-danger" 
+                    style="visibility: hidden">
+                    ${if (serverValidate != null) t(serverValidate.second) else ""} 
+                </span>
+            </div> 
             """
 
         //language=HTML
@@ -47,6 +54,7 @@ class FormComponents {
                         class="input ${if (compact) "compact" else ""}"
                         ${if (required == true) "data-required" else ""}
                         ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
+                        ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
                         type="text"
                         id="$id"
                         name="$id"
