@@ -149,6 +149,20 @@ class BoatSpaceFormController {
         return ResponseEntity.noContent().build()
     }
 
+    @GetMapping("/venepaikka/varaus/{reservationId}/boat-type-warning")
+    fun boatTypeWarning(
+        @PathVariable reservationId: Int,
+        @RequestParam boatType: BoatType,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        val reservation = reservationService.getReservationWithoutCitizen(reservationId)
+        val excludedBoatTypes = reservation?.excludedBoatTypes
+        if (excludedBoatTypes != null && excludedBoatTypes.contains(boatType)) {
+            return ResponseEntity.ok(boatSpaceForm.boatTypeWarning())
+        }
+        return ResponseEntity.ok("")
+    }
+
     @PostMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/validate")
     @ResponseBody
     fun validateForm(

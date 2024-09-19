@@ -101,6 +101,13 @@ class BoatSpaceForm {
                 "boatType",
                 boatTypes.first(),
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
+                attributes =
+                    """
+                    hx-trigger='change' 
+                    hx-get='/venepaikka/varaus/${reservation.id}/boat-type-warning' 
+                    hx-target='#boat-type-warning'
+                    hx-sync='closest #form:replace'
+                    """.trimIndent()
             )
 
         val widthInput =
@@ -364,6 +371,7 @@ class BoatSpaceForm {
                         </div>
                        
                         $boatTypeSelect
+                        <div id="boat-type-warning"></div>
                         <div class="block">
                             <div class="columns">
                                 <div class="column">
@@ -515,4 +523,20 @@ class BoatSpaceForm {
             </section>
             """.trimIndent()
     }
+
+    fun boatTypeWarning() =
+        """
+        <div class="warning" id="boatSize-warning">
+            <p class="block">${t("boatSpaceApplication.boatTypeWarning")}</p>
+            <button class="icon-text"
+                    type="button"
+                    id="size-warning-back-button"
+                    x-on:click="modalOpen = true">
+                <span class="icon">
+                    <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
+                </span>
+                <span>${t("boatSpaces.goBack")}</span>
+            </button>
+        </div>
+        """.trimIndent()
 }
