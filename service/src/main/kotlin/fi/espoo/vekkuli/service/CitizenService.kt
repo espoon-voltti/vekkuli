@@ -9,6 +9,8 @@ interface CitizenRepository {
 
     fun getCitizenBySsn(ssn: String): Citizen?
 
+    fun getCitizens(nameSearch: String?): List<CitizenWithDetails>
+
     fun updateCitizen(
         id: UUID,
         phone: String,
@@ -73,6 +75,8 @@ class CitizenService(
     private val sentMessagesRepository: SentMessageRepository,
 ) {
     fun getCitizen(id: UUID): CitizenWithDetails? = citizenRepository.getCitizen(id)
+
+    fun getCitizens(nameSearch: String?): List<CitizenWithDetails> = citizenRepository.getCitizens(nameSearch)
 
     fun updateCitizen(
         id: UUID,

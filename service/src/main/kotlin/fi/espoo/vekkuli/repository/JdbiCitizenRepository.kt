@@ -2,6 +2,8 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.CitizenRepository
+import fi.espoo.vekkuli.utils.buildNameSearchClause
+import fi.espoo.vekkuli.utils.formatNameSearchParam
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -41,6 +43,27 @@ class JdbiCitizenRepository(
             val citizens = query.mapTo<Citizen>().toList()
             if (citizens.isEmpty()) null else citizens[0]
         }
+
+    override fun getCitizens(nameSearch: String?): List<CitizenWithDetails> {
+        return jdbi.withHandleUnchecked { handle ->
+            val nameSearchClause =
+                buildNameSearchClause(nameSearch)
+            var query =
+                handle.createQuery(
+                    """
+                    SELECT c.*, m.name as municipality_name FROM citizen c
+                    JOIN municipality m ON c.municipality_code = m.code
+                    WHERE $nameSearchClause
+                    """.trimIndent()
+                )
+            if (!nameSearch.isNullOrEmpty()) {
+                val formattedNameSearch = formatNameSearchParam(nameSearch)
+
+                query.bind("nameSearch", formattedNameSearch)
+            }
+            query.mapTo<CitizenWithDetails>().toList()
+        }
+    }
 
     override fun updateCitizen(
         id: UUID,
