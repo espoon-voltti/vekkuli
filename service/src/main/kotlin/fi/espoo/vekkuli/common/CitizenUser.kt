@@ -20,32 +20,55 @@ data class CitizenAdUser(
     val lastName: String,
     val email: String?,
     val phone: String?,
-    val address: LocalizedName?,
+    val address: LocalizedName,
+    val postOffice: LocalizedName,
     val postalCode: String?,
     val municipalityCode: Int,
 )
 
-fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen {
-    var params =
-        adUser.copy(
-            // ensures that fields are set to null if the object is null
-            address =
-                adUser.address?.let { LocalizedName(it.fi.orEmpty(), it.sv.orEmpty()) } ?: LocalizedName(
-                    null,
-                    null
-                ),
-        )
-
-    return createQuery(
+fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen =
+    createQuery(
         // language=SQL
         """
-        INSERT INTO citizen (national_id, first_name, last_name, phone, email, address, postal_code, municipality_code)
-        VALUES (:nationalId, :firstName, :lastName, '', '', COALESCE(:address.fi, ''), COALESCE(:postalCode, ''), :municipalityCode)
+        INSERT INTO citizen (
+          national_id, 
+          first_name, 
+          last_name, 
+          phone, 
+          email, 
+          address, 
+          address_sv,
+          postal_code, 
+          municipality_code,
+          post_office,
+          post_office_sv
+          )
+        VALUES (
+          :nationalId, 
+          :firstName, 
+          :lastName, 
+          '', 
+          '', 
+          COALESCE(:address.fi, ''), 
+          :address.sv, 
+          COALESCE(:postalCode, ''), 
+          :municipalityCode,
+          :postOffice.fi,
+          :postOffice.sv
+        )
         ON CONFLICT (national_id) DO UPDATE
-        SET updated = now(), first_name = :firstName, last_name = :lastName, municipality_code = :municipalityCode
+        SET 
+          updated = now(), 
+          first_name = :firstName, 
+          last_name = :lastName, 
+          municipality_code = :municipalityCode,
+          address=COALESCE(:address.fi, ''), 
+          address_sv=:address.sv,
+          postal_code=:postalCode, 
+          post_office=:postOffice.fi,
+          post_office_sv=:postOffice.sv
         RETURNING *
         """.trimIndent()
-    ).bindKotlin(params)
+    ).bindKotlin(adUser)
         .mapTo<Citizen>()
         .one()
-}

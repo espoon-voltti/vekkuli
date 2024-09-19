@@ -74,15 +74,29 @@ class JdbiCitizenRepository(
         address: String?,
         postalCode: String?,
         municipalityCode: Int?,
-        nationalId: String?
+        nationalId: String?,
+        addressSv: String?,
+        postOffice: String?,
+        postOfficeSv: String?,
     ): CitizenWithDetails =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE citizen 
-                    SET first_name = :firstName, last_name = :lastName, phone = :phone, email = :email, address = :address, postal_code = :postalCode,
-                    municipality_code = :municipalityCode, updated = :updated, national_id = :nationalId
+                    SET 
+                      first_name = :firstName, 
+                      last_name = :lastName, 
+                      phone = :phone, 
+                      email = :email, 
+                      address = :address, 
+                      postal_code = :postalCode,
+                      municipality_code = :municipalityCode, 
+                      updated = :updated, 
+                      national_id = :nationalId,
+                      address_sv = :addressSv,
+                      post_office = :postOffice,
+                      post_office_sv = :postOfficeSv
                     FROM municipality m
                     WHERE citizen.id = :id AND :municipalityCode = m.code
                     RETURNING citizen.*, m.name as municipality_name
@@ -98,6 +112,9 @@ class JdbiCitizenRepository(
             query.bind("municipalityCode", municipalityCode ?: "")
             query.bind("nationalId", nationalId ?: "")
             query.bind("updated", LocalDate.now())
+            query.bind("addressSv", addressSv ?: "")
+            query.bind("postOffice", postOffice ?: "")
+            query.bind("postOfficeSv", postOfficeSv ?: "")
             query.mapTo<CitizenWithDetails>().one()
         }
 
@@ -245,13 +262,14 @@ class JdbiCitizenRepository(
             query.mapTo<CitizenMemo>().one()
         }
 
-    override fun getMunicipalities(): List<Municipality> {
-        return jdbi.withHandleUnchecked { handle ->
-            handle.createQuery(
-                """
-                SELECT * FROM municipality
-                """.trimIndent()
-            ).mapTo<Municipality>().toList()
+    override fun getMunicipalities(): List<Municipality> =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT * FROM municipality
+                    """.trimIndent()
+                ).mapTo<Municipality>()
+                .toList()
         }
-    }
 }

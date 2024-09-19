@@ -52,7 +52,10 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 postalCode = "12345",
                 municipalityCode = 49,
                 nationalId = "123456-789A",
-                municipalityName = "Espoo"
+                municipalityName = "Espoo",
+                postOffice = "Espoo",
+                postOfficeSv = "Esbo",
+                addressSv = "",
             )
         val updatedCitizen =
             citizenService.updateCitizen(
@@ -64,7 +67,10 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 address = newCitizen.address,
                 postalCode = newCitizen.postalCode,
                 municipalityCode = newCitizen.municipalityCode,
-                nationalId = newCitizen.nationalId
+                nationalId = newCitizen.nationalId,
+                addressSv = newCitizen.addressSv,
+                postOffice = newCitizen.postOffice,
+                postOfficeSv = newCitizen.postOfficeSv
             )
         val citizen = citizenService.getCitizen(citizenId)
         assertNotNull(updatedCitizen)
@@ -86,7 +92,10 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 postalCode = "12345",
                 municipalityCode = 49,
                 nationalId = "123456-789A",
-                municipalityName = "Espoo"
+                municipalityName = "Espoo",
+                postOffice = "Espoo",
+                postOfficeSv = "Esbo",
+                addressSv = "",
             )
         citizenService.updateCitizen(
             id = citizenId,
@@ -97,7 +106,10 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
             address = newCitizen1.address,
             postalCode = newCitizen1.postalCode,
             municipalityCode = newCitizen1.municipalityCode,
-            nationalId = newCitizen1.nationalId
+            nationalId = newCitizen1.nationalId,
+            addressSv = newCitizen1.addressSv,
+            postOffice = newCitizen1.postOffice,
+            postOfficeSv = newCitizen1.postOfficeSv
         )
 
         val newCitizen2 =
@@ -115,7 +127,10 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 address = newCitizen2.address,
                 postalCode = newCitizen2.postalCode,
                 municipalityCode = newCitizen2.municipalityCode,
-                nationalId = newCitizen2.nationalId
+                nationalId = newCitizen2.nationalId,
+                addressSv = newCitizen2.addressSv,
+                postOffice = newCitizen2.postOffice,
+                postOfficeSv = newCitizen2.postOfficeSv
             )
         val citizen = citizenService.getCitizen(citizenId)
         assertNotNull(updatedCitizen2)
