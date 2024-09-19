@@ -212,28 +212,29 @@ class BoatSpaceFormController {
                 .header("Location", url)
                 .body("")
 
-        if (userType == UserType.EMPLOYEE) {
-            val employee = getEmployee(request)
+        val citizenId =
+            if (userType == UserType.EMPLOYEE) {
+                val employee = getEmployee(request)
 
-            if (employee == null) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
+                if (employee == null) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
+                }
+
+                citizenService.insertCitizen(
+                    phone = input.phone!!,
+                    email = input.email!!,
+                    nationalId = input.ssn!!,
+                    firstName = input.firstName!!,
+                    lastName = input.lastName!!,
+                    address = input.address!!,
+                    postalCode = input.postalCode!!,
+                    municipalityCode = input.municipalityCode!!
+                ).id
+            } else {
+                getCitizen(request, citizenService)?.id
             }
 
-            citizenService.insertCitizen(
-                phone = input.phone!!,
-                email = input.email!!,
-                nationalId = input.ssn!!,
-                firstName = input.firstName!!,
-                lastName = input.lastName!!,
-                address = input.address!!,
-                postalCode = input.postalCode!!,
-                municipalityCode = input.municipalityCode!!
-            )
-        }
-
-        val citizen = getCitizen(request, citizenService)
-
-        if (citizen == null) {
+        if (citizenId == null) {
             return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", "/")
                 .build()
@@ -250,7 +251,7 @@ class BoatSpaceFormController {
         val reservationStatus = if (userType == UserType.EMPLOYEE) ReservationStatus.Invoiced else ReservationStatus.Payment
 
         reservationService.reserveBoatSpace(
-            citizen,
+            citizenId,
             ReserveBoatSpaceInput(
                 reservationId = reservationId,
                 boatId = input.boatId,

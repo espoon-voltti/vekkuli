@@ -54,6 +54,7 @@ class FormComponents {
                         class="input ${if (compact) "compact" else ""}"
                         ${if (required == true) "data-required" else ""}
                         ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
+                        ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
                         type="text"
                         id="$id"
                         name="$id"

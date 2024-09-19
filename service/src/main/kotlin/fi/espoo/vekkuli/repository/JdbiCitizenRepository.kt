@@ -115,7 +115,7 @@ class JdbiCitizenRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO citizen (phone, email, national_id, first_name, last_name, address, postal_code, municipalityCode)
+                    INSERT INTO citizen (phone, email, national_id, first_name, last_name, address, postal_code, municipality_code)
                     VALUES (:phone, :email, :nationalId, :firstName, :lastName, :address, :postalCode, :municipalityCode)
                     RETURNING *
                     """.trimIndent()

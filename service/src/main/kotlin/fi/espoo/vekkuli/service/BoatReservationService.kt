@@ -279,14 +279,14 @@ class BoatReservationService(
 
     @Transactional
     fun reserveBoatSpace(
-        citizen: CitizenWithDetails,
+        citizenId: UUID,
         input: ReserveBoatSpaceInput,
         reservationStatus: ReservationStatus
     ) {
         val boat =
             if (input.boatId == 0 || input.boatId == null) {
                 boatRepository.insertBoat(
-                    citizen.id,
+                    citizenId,
                     input.boatRegistrationNumber ?: "",
                     input.boatName!!,
                     input.width.mToCm(),
@@ -302,7 +302,7 @@ class BoatReservationService(
                 boatRepository.updateBoat(
                     Boat(
                         id = input.boatId,
-                        citizenId = citizen.id,
+                        citizenId = citizenId,
                         registrationCode = input.boatRegistrationNumber ?: "",
                         name = input.boatName!!,
                         widthCm = input.width.mToCm(),
@@ -317,8 +317,8 @@ class BoatReservationService(
                 )
             }
 
-        citizenRepo.updateCitizen(citizen.id, input.phone ?: "", input.email ?: "")
-        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(input.reservationId, boat.id, citizen.id, reservationStatus)
+        citizenRepo.updateCitizen(citizenId, input.phone ?: "", input.email ?: "")
+        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(input.reservationId, boat.id, citizenId, reservationStatus)
     }
 
     fun getReservationForCitizen(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForCitizen(id)
