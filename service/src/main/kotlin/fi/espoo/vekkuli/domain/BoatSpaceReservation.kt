@@ -56,6 +56,7 @@ data class ReservationWithDependencies(
     val description: String,
     val locationName: String,
     val priceCents: Int,
+    val excludedBoatTypes: List<BoatType>?
 ) {
     val priceInEuro: Double
         get() = priceCents.centsToEuro()

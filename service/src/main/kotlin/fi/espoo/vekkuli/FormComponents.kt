@@ -71,7 +71,8 @@ class FormComponents {
         id: String,
         value: Int?,
         required: Boolean? = false,
-        compact: Boolean = false
+        compact: Boolean = false,
+        attributes: String = ""
     ): String {
         //language=HTML
         return """
@@ -85,6 +86,7 @@ class FormComponents {
                         id="$id"
                         name="$id"
                         ${if (value != null) "value=\"$value\"" else ""}
+                        $attributes
                         />
                     <div id="$id-error-container">
                         <span id="$id-error" class="help is-danger" 
@@ -138,6 +140,7 @@ class FormComponents {
         selectedValue: String?,
         options: List<Pair<String, String>>,
         required: Boolean? = false,
+        attributes: String = ""
     ): String {
         //language=HTML
         val opts =
@@ -151,7 +154,7 @@ class FormComponents {
                 <div class="control">
                     <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <div class="select">
-                        <select id="$id" name="$id">
+                        <select id="$id" name="$id" $attributes >
                             $opts
                         </select>
                     </div>

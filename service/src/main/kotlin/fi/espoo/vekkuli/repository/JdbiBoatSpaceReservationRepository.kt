@@ -184,14 +184,17 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, location.name as location_name, price.price_cents, 
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description,
+                        ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM boat_space_reservation bsr
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
+                    LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment')
                         AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                    GROUP BY bsr.id, location.name, price.price_cents, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
                     """.trimIndent()
                 )
             query.bind("id", id)

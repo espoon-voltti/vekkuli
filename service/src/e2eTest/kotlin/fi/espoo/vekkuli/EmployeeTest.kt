@@ -116,6 +116,5 @@ class EmployeeTest : PlaywrightTest() {
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
         formPage.submitButton.click()
-        page.pause()
     }
 }
