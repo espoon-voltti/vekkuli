@@ -18,6 +18,8 @@ $activeColor: #D9E4F4;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
+  $family-primary: "Lato, sans-serif",
+  $family-secondary: "Lato, sans-serif",
   $spacing-shortcuts: ("margin": "m", "padding": "p"),
   $spacing-horizontal: "h",
   $spacing-vertical: "v",
@@ -40,6 +42,8 @@ $activeColor: #D9E4F4;
   $tabs-link-color: $black,
   $tabs-link-active-color: $black,
 );
+
+@import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
 
 // Custom styles
 .input,

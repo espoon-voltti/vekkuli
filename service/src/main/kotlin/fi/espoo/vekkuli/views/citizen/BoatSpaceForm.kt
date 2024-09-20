@@ -79,7 +79,8 @@ class BoatSpaceForm {
 
         // language=HTML
         val boatRadioButtons =
-            """
+            if (citizen !== null) {
+                """
             <div class="field" ">
                 <div class="radio">
                     <input type="radio" 
@@ -96,7 +97,12 @@ class BoatSpaceForm {
                 </div>
                 ${boats.joinToString("\n") { boatRadioButton(it) }}
             </div>
-            """.trimIndent()
+            """
+            } else {
+                """
+            <input type='hidden' name='boatId' value='0'>
+        """
+            }
 
         val boatTypeSelect =
             formComponents.select(
@@ -210,7 +216,7 @@ class BoatSpaceForm {
                         name="ownership"
                         value="$opt"
                         id="ownership-$opt"
-                        selected="${input.ownership.toString() == opt}"
+                        ${if (input.ownership.toString() == opt) "checked" else ""}
                     />
                     <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
                 </div>
