@@ -24,9 +24,9 @@ private fun periodForNewSlip(
     return Pair(getFirstWeekdayOfMonth(year, 4), LocalDate.of(year, 9, 30))
 }
 
-private fun periodForSlipRenewal(year: Int,): Pair<LocalDate, LocalDate> = Pair(getFirstWeekdayOfMonth(year, 1), LocalDate.of(year, 1, 31))
+private fun periodForSlipRenewal(year: Int): Pair<LocalDate, LocalDate> = Pair(getFirstWeekdayOfMonth(year, 1), LocalDate.of(year, 1, 31))
 
-private fun periodForSlipChange(year: Int,): Pair<LocalDate, LocalDate> = Pair(getFirstWeekdayOfMonth(year, 2), LocalDate.of(year, 9, 30))
+private fun periodForSlipChange(year: Int): Pair<LocalDate, LocalDate> = Pair(getFirstWeekdayOfMonth(year, 2), LocalDate.of(year, 9, 30))
 
 private fun periodForSecondSlip(year: Int): Pair<LocalDate, LocalDate> = Pair(getFirstWeekdayOfMonth(year, 4), LocalDate.of(year, 9, 30))
 
