@@ -3,7 +3,7 @@ $light-blue: #D9E4F4;
 $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
-$lightGray: #F7F7F7;
+$light-gray: #F7F7F7;
 $darkGray: #536076;
 $warning: #FF8E31;
 $error: #FF3D3D;
@@ -64,7 +64,7 @@ $activeColor: #D9E4F4;
 
 html, body {
   min-height: 100%;
-  background: $lightGray;
+  background: $light-gray;
 }
 
 .container {
@@ -525,7 +525,7 @@ tr.table-borderless th {
 
 .secondary-tabs.tabs.is-boxed ul {
   border-bottom: none;
-  background-color: $lightGray;
+  background-color: $light-gray;
 }
 
 .tabs.is-boxed ul li a {
@@ -673,7 +673,6 @@ label.filter-button:has(input:checked) .icon {
   position: absolute;
   z-index: 100;
   width: 100%;
-  display: none;
 }
 
 .select select option:hover,
@@ -681,8 +680,12 @@ label.filter-button:has(input:checked) .icon {
   background-color: $light-blue;
 }
 
-.control:focus-within>#citizen-results {
-  display: block;
+.width-is-half {
+  width: 50%;
+}
+.input .search-input {
+  border: 1px solid $light-gray;
+  max-width: 100%;
 }
 
 

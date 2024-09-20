@@ -39,7 +39,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.KClass
 
 @Controller
@@ -261,10 +261,10 @@ class BoatSpaceFormController {
     @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen")
     @ResponseBody
     fun searchCitizen(
-        @PathVariable citizenId: UUID,
+        @RequestParam citizenId: String,
         @PathVariable usertype: String,
     ): String {
-        val citizen = citizenService.getCitizen(citizenId)
+        val citizen = citizenService.getCitizen(UUID.fromString(citizenId))
         return if (citizen != null) {
             boatSpaceForm.citizenDetails(citizen)
         } else {
