@@ -9,11 +9,15 @@ import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class BoatSpaceForm {
+    @Autowired
+    private lateinit var icons: Icons
+
     @Autowired
     lateinit var messageUtil: MessageUtil
 
@@ -198,21 +202,20 @@ class BoatSpaceForm {
                      <h4 class="label required" >${t("boatApplication.ownerShipTitle")}</h4>
                      <div class="control is-flex-direction-row">
                      
-                ${
-                ownershipOptions.joinToString("\n") { opt ->
-                    """
-                    <div class="radio">
-                        <input
-                            type="radio"
-                            name="ownership"
-                            value="$opt"
-                            id="ownership-$opt"
-                            selected="${input.ownership.toString() == opt}"
-                        />
-                        <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
-                    </div>
-                    """.trimIndent()
-                }
+                ${ownershipOptions.joinToString("\n") { opt ->
+                """
+                <div class="radio">
+                    <input
+                        type="radio"
+                        name="ownership"
+                        value="$opt"
+                        id="ownership-$opt"
+                        selected="${input.ownership.toString() == opt}"
+                    />
+                    <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
+                </div>
+                """.trimIndent()
+            }
             }
                      </div>
                  </div> 
@@ -355,7 +358,7 @@ class BoatSpaceForm {
                         </div>
                        
                         $boatTypeSelect
-                        <div id="boat-type-warning"></div>
+                        <div id="boat-type-warning" class="block"></div>
                         <div class="block">
                             <div class="columns">
                                 <div class="column">
@@ -366,7 +369,7 @@ class BoatSpaceForm {
                                 </div>
                             </div>
                             
-                            <div id="boat-size-warning">
+                            <div id="boat-size-warning" class="block">
                             </div>
                         
                             <div class="columns">
@@ -378,7 +381,7 @@ class BoatSpaceForm {
                                 </div>
                             </div>
                             
-                            <div id="boat-weight-warning" >
+                            <div id="boat-weight-warning" class="block" >
                             </div>
                         </div>
                         
@@ -519,7 +522,7 @@ class BoatSpaceForm {
                     id="size-warning-back-button"
                     x-on:click="modalOpen = true">
                 <span class="icon">
-                    <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
+                    ${icons.chevronLeft}
                 </span>
                 <span>${t("boatSpaces.goBack")}</span>
             </button>
@@ -535,7 +538,7 @@ class BoatSpaceForm {
                     id="size-warning-back-button"
                     x-on:click="modalOpen = true">
                 <span class="icon">
-                    <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
+                    ${icons.chevronLeft}
                 </span>
                 <span>${t("boatSpaces.goBack")}</span>
             </button>
@@ -552,7 +555,7 @@ class BoatSpaceForm {
                     id="size-warning-back-button"
                     x-on:click="modalOpen = true">
                 <span class="icon">
-                    <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
+                    ${icons.chevronLeft}
                 </span>
                 <span>${t("boatSpaces.goBack")}</span>
             </button>
