@@ -166,8 +166,8 @@ class BoatSpaceFormController {
     @GetMapping("/venepaikka/varaus/{reservationId}/boat-size-warning")
     fun boatSizeWarning(
         @PathVariable reservationId: Int,
-        @RequestParam width: Double,
-        @RequestParam length: Double,
+        @RequestParam width: Double?,
+        @RequestParam length: Double?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val reservation = reservationService.getReservationWithoutCitizen(reservationId)
@@ -178,8 +178,8 @@ class BoatSpaceFormController {
 
         val showBoatSizeWarning =
             showBoatSizeWarning(
-                width.mToCm(),
-                length.mToCm(),
+                width?.mToCm(),
+                length?.mToCm(),
                 reservation.amenity,
                 reservation.widthCm,
                 reservation.lengthCm
