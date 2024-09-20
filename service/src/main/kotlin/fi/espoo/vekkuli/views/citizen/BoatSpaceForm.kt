@@ -222,7 +222,7 @@ class BoatSpaceForm {
                             name="ownership"
                             value="$opt"
                             id="ownership-$opt"
-                            selected="${input.ownership.toString() == opt}"
+                            ${if (input.ownership.toString() == opt) "checked" else ""}
                         />
                         <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
                     </div>
