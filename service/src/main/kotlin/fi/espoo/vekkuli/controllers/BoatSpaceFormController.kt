@@ -163,6 +163,45 @@ class BoatSpaceFormController {
         return ResponseEntity.ok("")
     }
 
+    @GetMapping("/venepaikka/varaus/{reservationId}/boat-size-warning")
+    fun boatSizeWarning(
+        @PathVariable reservationId: Int,
+        @RequestParam width: Double,
+        @RequestParam length: Double,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        val reservation = reservationService.getReservationWithoutCitizen(reservationId)
+
+        if (reservation == null) {
+            return ResponseEntity.badRequest().build()
+        }
+
+        val showBoatSizeWarning =
+            showBoatSizeWarning(
+                width.mToCm(),
+                length.mToCm(),
+                reservation.amenity,
+                reservation.widthCm,
+                reservation.lengthCm
+            )
+        if (showBoatSizeWarning) {
+            return ResponseEntity.ok(boatSpaceForm.boatSizeWarning())
+        }
+        return ResponseEntity.ok("")
+    }
+
+    private fun showBoatSizeWarning(
+        widthInCm: Int?,
+        lengthInCm: Int?,
+        boatSpaceAmenity: BoatSpaceAmenity,
+        spaceWidthInCm: Int,
+        spaceLengthInCm: Int,
+    ): Boolean {
+        val boatDimensions = Dimensions(widthInCm ?: 0, lengthInCm ?: 0)
+        val spaceDimensions = Dimensions(spaceWidthInCm, spaceLengthInCm)
+        return !doesBoatFit(spaceDimensions, boatSpaceAmenity, boatDimensions)
+    }
+
     @GetMapping("/venepaikka/varaus/{reservationId}/boat-weight-warning")
     fun boatWeight(
         @PathVariable reservationId: Int,
@@ -399,15 +438,6 @@ class BoatSpaceFormController {
                     }
             }
 
-        val showBoatSizeWarning =
-            showBoatSizeWarning(
-                input.width?.mToCm(),
-                input.length?.mToCm(),
-                reservation.amenity,
-                reservation.widthCm,
-                reservation.lengthCm
-            )
-
         val municipalities = citizenService.getMunicipalities()
 
         return if (userType == UserType.EMPLOYEE) {
@@ -420,7 +450,6 @@ class BoatSpaceFormController {
                         boats,
                         citizen,
                         input,
-                        showBoatSizeWarning,
                         getReservationTimeInSeconds(reservation.created),
                         userType,
                         municipalities
@@ -436,25 +465,12 @@ class BoatSpaceFormController {
                     boats,
                     citizen,
                     input,
-                    showBoatSizeWarning,
                     getReservationTimeInSeconds(reservation.created),
                     userType,
                     municipalities
                 )
             )
         }
-    }
-
-    private fun showBoatSizeWarning(
-        widthInCm: Int?,
-        lengthInCm: Int?,
-        boatSpaceAmenity: BoatSpaceAmenity,
-        spaceWidthInCm: Int,
-        spaceLengthInCm: Int,
-    ): Boolean {
-        val boatDimensions = Dimensions(widthInCm ?: 0, lengthInCm ?: 0)
-        val spaceDimensions = Dimensions(spaceWidthInCm, spaceLengthInCm)
-        return !doesBoatFit(spaceDimensions, boatSpaceAmenity, boatDimensions)
     }
 
     fun getEmployee(request: HttpServletRequest): AppUser? {

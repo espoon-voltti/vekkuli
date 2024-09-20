@@ -33,7 +33,6 @@ class BoatSpaceForm {
         boats: List<Boat>,
         citizen: CitizenWithDetails?,
         input: ReservationInput,
-        showBoatSizeWarning: Boolean,
         reservationTimeInSeconds: Long,
         userType: UserType,
         municipalities: List<Municipality>,
@@ -117,12 +116,10 @@ class BoatSpaceForm {
                 input.width,
                 required = true,
                 """
-                hx-trigger="change"
-                hx-post="/${userType.path}/venepaikka/varaus/${reservation.id}/validate"
-                hx-swap="outerHTML"
-                hx-select="#warning"
-                hx-target="#warning"
-                hx-sync="closest #form:replace"
+                hx-trigger='change' 
+                hx-get='/venepaikka/varaus/${reservation.id}/boat-size-warning' 
+                hx-include="#length"
+                hx-target='#boat-size-warning'
                 """.trimIndent()
             )
 
@@ -133,32 +130,12 @@ class BoatSpaceForm {
                 input.length,
                 required = true,
                 """
-                hx-trigger="change"
-                hx-post="/${userType.path}/venepaikka/varaus/${reservation.id}/validate"
-                hx-swap="outerHTML"
-                hx-select="#warning"
-                hx-target="#warning"
-                hx-sync="closest #form:replace"
+                hx-trigger='change' 
+                hx-get='/venepaikka/varaus/${reservation.id}/boat-size-warning' 
+                hx-include="#width"
+                hx-target='#boat-size-warning'
                 """.trimIndent()
             )
-
-        // language=HTML
-        val warning =
-            """
-            <div class="warning" id="boatSize-warning">
-                <p class="block">${t("boatSpaceApplication.boatSizeWarning")}</p>
-                <p class="block">${t("boatSpaceApplication.boatSizeWarningExplanation")}</p>
-                <button class="icon-text"
-                        type="button"
-                        id="size-warning-back-button"
-                        x-on:click="modalOpen = true">
-                    <span class="icon">
-                        <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
-                    </span>
-                    <span>${t("boatSpaces.goBack")}</span>
-                </button>
-            </div>
-            """.trimIndent()
 
         val depthInput =
             formComponents.decimalInput(
@@ -389,8 +366,7 @@ class BoatSpaceForm {
                                 </div>
                             </div>
                             
-                            <div id="warning" >
-                                ${if (showBoatSizeWarning) warning else ""} 
+                            <div id="boat-size-warning">
                             </div>
                         
                             <div class="columns">
@@ -554,6 +530,23 @@ class BoatSpaceForm {
         """
         <div class="warning" id="boatSize-warning">
             <p class="block">${t("boatSpaceApplication.boatWeightWarning")}</p>
+            <button class="icon-text"
+                    type="button"
+                    id="size-warning-back-button"
+                    x-on:click="modalOpen = true">
+                <span class="icon">
+                    <!--<div th:replace="~{fragments/icons :: chevron-left}"></div>-->
+                </span>
+                <span>${t("boatSpaces.goBack")}</span>
+            </button>
+        </div>
+        """.trimIndent()
+
+    fun boatSizeWarning() =
+        """
+        <div class="warning" id="boatSize-warning">
+            <p class="block">${t("boatSpaceApplication.boatSizeWarning")}</p>
+            <p class="block">${t("boatSpaceApplication.boatSizeWarningExplanation")}</p>
             <button class="icon-text"
                     type="button"
                     id="size-warning-back-button"
