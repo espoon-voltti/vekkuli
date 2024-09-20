@@ -335,6 +335,34 @@ class BoatSpaceForm {
             )
 
         // language=HTML
+        val citizenInput =
+            """
+            <div id="citizen-results-container" class="container" x-data="{citizenFullName: ''}">
+              <div class="field">
+                <label class="label">${t("boatApplication.select.citizen")}</label>
+                <div class="control">
+                <p class="control has-icons-left has-icons-right">
+                  <input x-model="citizenFullName" id="customer-search" 
+                                    name="nameParameter" class="input" type="text" placeholder="Type a customer name..." 
+                                    hx-get="/virkailija/venepaikka/varaus/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
+                                    hx-target="#citizen-results">
+                    <span class="icon is-small is-left">
+                      ${icons.search}
+                    </span>
+                  </p>
+                  
+                      <!-- Where the results will be displayed -->                    
+                    <div id="citizen-results" class="select is-multiple" ></div>                   
+                </div>
+              </div>
+              <div id='citizen-details' class="block">
+              
+                </div>
+            </div>
+
+            """.trimIndent()
+
+        // language=HTML
         return """
             <section class="section">
                 <div class="container" id="container" x-data="{ modalOpen: false }"> 
@@ -416,7 +444,9 @@ class BoatSpaceForm {
                            $extraInformationInput
                            $ownership
                         </div>
-                        ${if (userType == UserType.CITIZEN) citizenInformation else citizenInputFields}
+
+                        ${if (userType == UserType.CITIZEN) citizenInformation else citizenInput}
+
                         <div class="block">
                             $email
                             $phone 
@@ -567,4 +597,60 @@ class BoatSpaceForm {
             </button>
         </div>
         """.trimIndent()
+
+    // language=HTML
+    fun citizensSearchForm(citizens: List<CitizenWithDetails>): String {
+        val listSize = if (citizens.size > 5) 5 else citizens.size
+
+        return (
+            """
+            <select multiple size="$listSize" x-model='citizenFullName' >
+            ${
+                citizens.joinToString("\n") { citizen ->
+                    """
+                    <option role="option" value="${citizen.fullName}">
+                        <p>${citizen.fullName}
+                       <span class='is-small'>${citizen.birthday}</span></p>
+                    </option>
+                    """.trimIndent()
+                }
+            }
+            </select>
+
+            """.trimIndent()
+        )
+    }
+
+    // language=HTML
+    fun citizenDetails(citizen: CitizenWithDetails): String {
+        val firstNameField =
+            formComponents.field(
+                "boatSpaceReservation.title.firstName",
+                "firstName",
+                citizen.firstName,
+            )
+        val lastNameField = formComponents.field("boatSpaceReservation.title.lastName", "lastName", citizen.lastName)
+        val birthdayField = formComponents.field("boatSpaceReservation.title.birthday", "birthday", citizen.birthday)
+        val addressField = formComponents.field("boatSpaceReservation.title.address", "address", citizen.address)
+        val postalCodeField = formComponents.field("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
+        val cityField = formComponents.field("boatSpaceReservation.title.city", "city", citizen.municipalityName)
+        val emailInput = formComponents.textInput("boatApplication.email", "email", citizen.email, true)
+        val phoneInput = formComponents.textInput("boatApplication.phone", "phone", citizen.phone, true)
+
+        return(
+            """
+            <div class="field">
+                $firstNameField
+                $lastNameField
+                $birthdayField
+                $addressField
+                $postalCodeField
+                $cityField
+                $emailInput
+                $phoneInput
+                
+                
+            """.trimIndent()
+        )
+    }
 }

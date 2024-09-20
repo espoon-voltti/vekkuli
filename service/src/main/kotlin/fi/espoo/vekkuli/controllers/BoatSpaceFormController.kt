@@ -39,6 +39,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
+import java.util.UUID
 import kotlin.reflect.KClass
 
 @Controller
@@ -243,6 +244,32 @@ class BoatSpaceFormController {
         if (reservation == null) return redirectUrl("/")
 
         return renderBoatSpaceReservationApplication(reservation, citizen, input, request, userType)
+    }
+
+    @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen/hae")
+    @ResponseBody
+    fun searchCitizens(
+        request: HttpServletRequest,
+        @RequestParam nameParameter: String,
+        @PathVariable usertype: String
+    ): String {
+        citizenService.getCitizens(nameParameter).let {
+            return boatSpaceForm.citizensSearchForm(it)
+        }
+    }
+
+    @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen")
+    @ResponseBody
+    fun searchCitizen(
+        @PathVariable citizenId: UUID,
+        @PathVariable usertype: String,
+    ): String {
+        val citizen = citizenService.getCitizen(citizenId)
+        return if (citizen != null) {
+            boatSpaceForm.citizenDetails(citizen)
+        } else {
+            ""
+        }
     }
 
     @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")
