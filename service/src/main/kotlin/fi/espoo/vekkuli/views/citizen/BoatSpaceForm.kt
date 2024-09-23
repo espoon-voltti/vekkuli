@@ -368,10 +368,10 @@ class BoatSpaceForm {
                         <div class="block">
                             <div class="columns">
                                 <div class="column">
-                                    $widthInput
+                                    $lengthInput
                                 </div>
                                 <div class="column">
-                                    $lengthInput
+                                    $widthInput
                                 </div>
                             </div>
                             
