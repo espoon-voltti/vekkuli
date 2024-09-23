@@ -673,6 +673,7 @@ label.filter-button:has(input:checked) .icon {
   position: absolute;
   z-index: 100;
   width: 100%;
+  display: none;
 }
 
 .select select option:hover,
@@ -687,6 +688,11 @@ label.filter-button:has(input:checked) .icon {
   border: 1px solid $light-gray;
   max-width: 100%;
 }
+
+.control:focus-within #citizen-results {
+  display: block;
+}
+
 
 
 

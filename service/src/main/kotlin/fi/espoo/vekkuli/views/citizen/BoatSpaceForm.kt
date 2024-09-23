@@ -345,14 +345,14 @@ class BoatSpaceForm {
         // language=HTML
         val citizenInput =
             """
-                    <div id="citizen-results-container" class="container" x-data='{isOpen: false, citizenFullName: "",  updateFullName(event) {
+                    <div id="citizen-results-container" class="container" x-data='{citizenFullName: "",  updateFullName(event) {
                 const selectElement = event.target;
                 if (selectElement.selectedOptions.length > 0) {
                     const selectedOption = selectElement.selectedOptions[0];
                     this.citizenFullName = selectedOption.dataset.fullname;
                 } else {
                     this.citizenFullName = "";
-                }
+                };
             } }'>
                       <div class="field" id="customer-search-container">
                         <label class="label">${t("boatApplication.select.citizen")}</label>
@@ -361,19 +361,18 @@ class BoatSpaceForm {
                               <input x-model="citizenFullName" id="customer-search" 
                                     placeholder="${t("boatApplication.placeholder.searchCitizens")}"
                                     name="nameParameter" class="input search-input" type="text" 
-                                    hx-get="/virkailija/venepaikka/varaus/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
-                                    hx-target="#citizen-results"
-                                    @focus="isOpen = true" >
+                                    hx-get="/virkailija/venepaikka/varaus/kuntalainen/hae" hx-trigger="keyup changed delay:200ms" 
+                                    hx-target="#citizen-results">
                                 <span class="icon is-small is-left">
                                   ${icons.search}
                                 </span>
-                                <span x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''">
+                                <span id="citizen-empty-input" x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''">
                                   ${icons.xMark}
                                 </span>
                               </p>
                           
                               <!-- Where the results will be displayed -->                    
-                            <div x-show="isOpen" id="citizen-results" class="select is-multiple" ></div>                   
+                            <div id="citizen-results" class="select is-multiple" ></div>                   
                         </div>
                       </div>
                       <template x-if="citizenFullName != ''">
@@ -628,7 +627,7 @@ class BoatSpaceForm {
 
         return (
             """
-            <select multiple size="$listSize" name='citizenId' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  hx-trigger="change"
+            <select x-show="citizenFullName != ''" multiple size="$listSize" name='citizenId' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  hx-trigger="change"
                                     hx-target="#citizen-details" @change="updateFullName">
             ${
                 citizens.joinToString("\n") { citizen ->
