@@ -117,8 +117,9 @@ class BoatSpaceSearch(
                                   hx-get="$url"
                                   hx-target="#boatSpaces"
                                   hx-swap="innerHTML"
-                                  hx-trigger="change, load"
+                                  hx-trigger="change, load, input changed delay:1000ms"
                                   hx-sync="closest #form:replace"
+                                  hx-indicator="#loader, .loaded-content"
                                   >
 
                                 <h2 class="subtitle" id="search-page-header">${t("boatApplication.boatPlaceSearchTitle")}</h2>
@@ -136,7 +137,7 @@ class BoatSpaceSearch(
                                                 ${t("boatSpaces.typeTrailerOption")}
                                             </label>
                                              <label class="radio">
-                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Storage"/>
+                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-storage" name="boatSpaceType" value="Storage"/>
                                                 ${t("boatSpaces.typeStorageOption")}
                                             </label>
                                         </div>
@@ -171,8 +172,9 @@ class BoatSpaceSearch(
                             </script>
                         </div>
                         <div class="column">
-                            <div id="boatSpaces" class="block">
+                            <div id="boatSpaces" class="block loaded-content">
                             </div>
+                            <div id="loader" class="htmx-indicator"> ${icons.spinner} <div>
                         </div>
                     </div>
                 </div>
