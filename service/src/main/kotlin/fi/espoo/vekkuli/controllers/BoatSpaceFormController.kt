@@ -303,6 +303,7 @@ class BoatSpaceFormController {
                 .status(HttpStatus.FOUND)
                 .header("Location", url)
                 .body("")
+        println("input: $input")
 
         val citizenId =
             if (userType == UserType.EMPLOYEE) {
@@ -311,23 +312,38 @@ class BoatSpaceFormController {
                 if (employee == null) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
                 }
-
-                citizenService.insertCitizen(
-                    phone = input.phone!!,
-                    email = input.email!!,
-                    nationalId = input.ssn!!,
-                    firstName = input.firstName!!,
-                    lastName = input.lastName!!,
-                    address = input.address!!,
-                    postalCode = input.postalCode!!,
-                    municipalityCode = input.municipalityCode!!
-                ).id
+                if (input.citizenId != null) {
+                    citizenService
+                        .updateCitizen(
+                            input.citizenId,
+                            input.email!!,
+                            input.phone!!,
+                            input.address,
+                            input.postalCode,
+                            input.address,
+                            input.postalOffice,
+                            input.postalOffice,
+                        )?.id
+                } else {
+                    citizenService
+                        .insertCitizen(
+                            phone = input.phone!!,
+                            email = input.email!!,
+                            nationalId = input.ssn!!,
+                            firstName = input.firstName!!,
+                            lastName = input.lastName!!,
+                            address = input.address!!,
+                            postalCode = input.postalCode!!,
+                            municipalityCode = input.municipalityCode!!
+                        ).id
+                }
             } else {
                 getCitizen(request, citizenService)?.id
             }
 
         if (citizenId == null) {
-            return ResponseEntity.status(HttpStatus.FOUND)
+            return ResponseEntity
+                .status(HttpStatus.FOUND)
                 .header("Location", "/")
                 .build()
         }
@@ -589,7 +605,10 @@ data class ReservationInput(
     val ssn: String?,
     val address: String?,
     val postalCode: String?,
+    val postalOffice: String?,
     val municipalityCode: Int?,
+    @field:NotNull(message = "{validation.required}")
+    val citizenId: UUID?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
     val email: String?,
@@ -631,6 +650,8 @@ data class ReservationInput(
                 address = citizen?.address,
                 postalCode = citizen?.postalCode,
                 municipalityCode = citizen?.municipalityCode,
+                citizenId = citizen?.id,
+                postalOffice = null
             )
     }
 }

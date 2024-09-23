@@ -113,6 +113,33 @@ class CitizenService(
             postOfficeSv
         )
 
+    fun updateCitizen(
+        id: UUID,
+        phone: String,
+        email: String,
+        address: String?,
+        postalCode: String?,
+        addressSv: String?,
+        postOffice: String?,
+        postOfficeSv: String?,
+    ): CitizenWithDetails? =
+        citizenRepository.getCitizen(id)?.let {
+            citizenRepository.updateCitizen(
+                id,
+                it.firstName,
+                it.lastName,
+                phone,
+                email,
+                address,
+                postalCode,
+                it.municipalityCode,
+                it.nationalId,
+                addressSv,
+                postOffice,
+                postOfficeSv
+            )
+        }
+
     fun getCitizenBySsn(ssn: String): Citizen? = citizenRepository.getCitizenBySsn(ssn)
 
     fun insertCitizen(
