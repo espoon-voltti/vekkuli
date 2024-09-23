@@ -337,7 +337,7 @@ class BoatSpaceForm {
                 <div class="block">
                     $municipalityInput
                 </div>
-                <div class="block"
+                <div class="block">
                  $email
                  </div
                  <div class="block">
@@ -378,14 +378,14 @@ class BoatSpaceForm {
                               <!-- Where the results will be displayed -->                    
                             <div id="citizen-results" class="select is-multiple" ></div>                   
                         </div>
-                        <div id="citizen-error-container">
+                        <div id="citizenId-error-container">
                                     <span id="citizenId-error" class="help is-danger" style="visibility: hidden">${t(
                 "validation.required"
             )}</span>
                                 </div>
                       </div>
                       <template x-if="citizenFullName != ''">
-                        <div  id='citizen-details' class="block"></div>
+                        <div id='citizen-details' class="block"></div>
                       </template>
                     </div>
             """.trimIndent()
@@ -406,6 +406,7 @@ class BoatSpaceForm {
                                  name="citizenSelection"
                                 value="newCitizen"
                                 id="new-citizen-selector"
+                                hx-preserve='true'
                             />
                             <label for="newCitizen">${t("boatApplication.citizenOptions.newCitizen")}</label>
                         </div>
@@ -414,10 +415,11 @@ class BoatSpaceForm {
                                 x-model="citizenSelection"
                                 type="radio"
                                 name="citizenSelection"
-                                value="oldCitizen"
-                                id="old-citizen-selector"
+                                value="existingCitizen"
+                                id="existing-citizen-selector"
+                                hx-preserve='true'
                             />
-                            <label for="oldCitizen">${t("boatApplication.citizenOptions.oldCitizen")}</label>
+                            <label for="existingCitizen">${t("boatApplication.citizenOptions.existingCitizen")}</label>
                         </div>
                         
                       
@@ -427,7 +429,7 @@ class BoatSpaceForm {
                          <template x-if="citizenSelection === 'newCitizen'">
                             $citizenInputFields
                             </template>
-                            <template x-if="citizenSelection === 'oldCitizen'">
+                            <template x-if="citizenSelection === 'existingCitizen'">
                              <div x-init="htmx.process(document.getElementById('citizen-results-container'))"  class="block"> $citizenSearch</div>
             </template>
                            
@@ -689,7 +691,7 @@ class BoatSpaceForm {
 
         return (
             """
-            <select x-show="citizenFullName != ''" multiple size="$listSize" name='citizenId' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  hx-trigger="change"
+            <select x-show="citizenFullName != ''" multiple size="$listSize" name='citizenIdOption' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  hx-trigger="change"
                                     hx-target="#citizen-details" @change="updateFullName">
             ${
                 citizens.joinToString("\n") { citizen ->

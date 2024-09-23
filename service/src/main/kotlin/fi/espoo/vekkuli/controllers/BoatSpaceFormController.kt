@@ -261,10 +261,10 @@ class BoatSpaceFormController {
     @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen")
     @ResponseBody
     fun searchCitizen(
-        @RequestParam citizenId: String,
+        @RequestParam citizenIdOption: UUID,
         @PathVariable usertype: String,
     ): String {
-        val citizen = citizenService.getCitizen(UUID.fromString(citizenId))
+        val citizen = citizenService.getCitizen(citizenIdOption)
         return if (citizen != null) {
             boatSpaceForm.citizenDetails(citizen)
         } else {
@@ -303,7 +303,6 @@ class BoatSpaceFormController {
                 .status(HttpStatus.FOUND)
                 .header("Location", url)
                 .body("")
-        println("input: $input")
 
         val citizenId =
             if (userType == UserType.EMPLOYEE) {
@@ -607,7 +606,6 @@ data class ReservationInput(
     val postalCode: String?,
     val postalOffice: String?,
     val municipalityCode: Int?,
-    @field:NotNull(message = "{validation.required}")
     val citizenId: UUID?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
@@ -651,7 +649,7 @@ data class ReservationInput(
                 postalCode = citizen?.postalCode,
                 municipalityCode = citizen?.municipalityCode,
                 citizenId = citizen?.id,
-                postalOffice = null
+                postalOffice = null,
             )
     }
 }

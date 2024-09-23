@@ -48,6 +48,8 @@ class BoatSpaceFormPage(
     val citizenSearchOption1 = page.locator("#option-62d90eed-4ea3-4446-8023-8dad9c01dd34")
     val citizenSearchOption2 = page.locator("#option-509edb00-5549-11ef-a1c7-776e76028a49")
     val citizenEmptyInput = page.locator("#citizen-empty-input")
+    val existingCitizenSelector = page.locator("#existing-citizen-selector")
+    val citizenIdError = page.getByTestId("citizenId-error")
 
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
