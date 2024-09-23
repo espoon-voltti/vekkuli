@@ -99,7 +99,7 @@ class BoatSpaceReservationList {
             """
             <p class="control has-icons-left">
                 <input class="input search-input" type="text" name="nameSearch" 
-                    aria-label="${t("boatSpaces.searchButton")}"/>
+                    aria-label="${t("boatSpaces.searchButton")}" value="${params.nameSearch ?: ""}"/>
                 <span class="icon is-small is-left">${icons.search}</span>
             </p>
             """.trimIndent()
@@ -109,14 +109,16 @@ class BoatSpaceReservationList {
         fun sectionCheckbox(section: String) =
             """
             <label class="checkbox" style="margin-bottom:4px;">
-                <input type="checkbox" name="sectionFilter" value="$section" x-model="selectedSections">
+                <input type="checkbox" name="sectionFilter" value="$section" x-model="selectedSections" >
                 <span>$section</span>
             </label>
             """.trimIndent()
 
         val sectionFilter =
             """
-            <div x-data="{ open: false, selectedSections: [] }" @click.outside="open = false">
+            <div x-data="{ open: false, selectedSections: [${params.sectionFilter.joinToString(
+                ","
+            ) { "'$it'" }}] }" @click.outside="open = false">
                 <div class="dropdown" :class="{ 'is-active': open }">
                     <div class="dropdown-trigger">
                             <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
@@ -221,6 +223,7 @@ class BoatSpaceReservationList {
                           hx-trigger="change, keyup delay:500ms"
                           hx-swap="outerHTML"
                           hx-push-url="true"
+                          hx-indicator="#loader, .loaded-content"
                     >
                         <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
                         <input type="text" name="ascending" id="sortDirection" value="${params.ascending}" style="visibility: hidden">
@@ -295,10 +298,11 @@ class BoatSpaceReservationList {
                                     <th></th>
                                 </tr>
                                 </thead>
-                                <tbody id="table-body">
+                                <tbody id="table-body" class="loaded-content">
                                 $reservationRows
                                 </tbody>
                             </table>
+                            <div id="loader" class="htmx-indicator"> ${icons.spinner} <div>
                         </div>
                     </form>
                 </div>

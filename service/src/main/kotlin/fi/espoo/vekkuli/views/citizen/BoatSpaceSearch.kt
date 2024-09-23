@@ -117,7 +117,7 @@ class BoatSpaceSearch(
                                   hx-get="$url"
                                   hx-target="#boatSpaces"
                                   hx-swap="innerHTML"
-                                  hx-trigger="change changed, load, input changed delay:1000ms"
+                                  hx-trigger="change, load, input changed delay:1000ms"
                                   hx-sync="closest #form:replace"
                                   hx-indicator="#loader, .loaded-content"
                                   >
