@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.utils.dateToShortString
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -46,6 +47,7 @@ class PaymentController(
         model: Model,
         request: HttpServletRequest,
     ): String {
+        val locale = LocaleContextHolder.getLocale()
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
         val reservation = reservationService.getBoatSpaceReservation(id, citizen.id) ?: return redirectUrl("/")
 
@@ -88,7 +90,7 @@ class PaymentController(
                     items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode, description, category))
                 )
             )
-        val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled") else null
+        val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled", locale = locale) else null
         model.addAttribute("providers", response.providers)
         model.addAttribute("error", errorMessage)
         model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created))

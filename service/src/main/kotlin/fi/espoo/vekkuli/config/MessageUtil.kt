@@ -5,19 +5,19 @@
 package fi.espoo.vekkuli.config
 
 import org.springframework.context.MessageSource
-import org.springframework.context.annotation.Scope
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
-@Scope("request")
 class MessageUtil(
     private val messageSource: MessageSource
 ) {
     fun getMessage(
         code: String,
-        args: List<Any> = emptyList()
-    ): String = messageSource.getMessage(code, args.toTypedArray(), LocaleContextHolder.getLocale())
+        args: List<Any> = emptyList(),
+        locale: Locale = LocaleContextHolder.getLocale()
+    ): String = messageSource.getMessage(code, args.toTypedArray(), locale)
 
     fun getLocale(): String = LocaleContextHolder.getLocale().toString()
 }
