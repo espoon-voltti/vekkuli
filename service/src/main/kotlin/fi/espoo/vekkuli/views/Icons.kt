@@ -135,4 +135,9 @@ class Icons {
         <path d="M14.9924 0C15.8372 0 16.3065 1.14286 15.7746 1.89286L10.018 9.82143V15.1429C10.018 15.6786 9.64252 16 9.2358 16C9.11066 16 8.95423 15.9643 8.82908 15.8571L6.32619 13.8571C6.10719 13.7143 6.01333 13.4286 6.01333 13.1429V9.82143L0.225404 1.89286C-0.30646 1.14286 0.162832 0 1.00756 0H14.9924ZM9.2358 9.10714L14.9924 1.14286H1.00756L7.01449 9.42857V13L9.0168 14.6071V9.42857L9.2358 9.10714Z" fill="#536076"/>
         </svg>
         """.trimIndent()
+
+    val spinner =
+        """
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_Wezc{transform-origin:center;animation:spinner_Oiah .75s step-end infinite}@keyframes spinner_Oiah{8.3%{transform:rotate(30deg)}16.6%{transform:rotate(60deg)}25%{transform:rotate(90deg)}33.3%{transform:rotate(120deg)}41.6%{transform:rotate(150deg)}50%{transform:rotate(180deg)}58.3%{transform:rotate(210deg)}66.6%{transform:rotate(240deg)}75%{transform:rotate(270deg)}83.3%{transform:rotate(300deg)}91.6%{transform:rotate(330deg)}100%{transform:rotate(360deg)}}</style><g class="spinner_Wezc"><circle cx="12" cy="2.5" r="1.5" opacity=".14"/><circle cx="16.75" cy="3.77" r="1.5" opacity=".29"/><circle cx="20.23" cy="7.25" r="1.5" opacity=".43"/><circle cx="21.50" cy="12.00" r="1.5" opacity=".57"/><circle cx="20.23" cy="16.75" r="1.5" opacity=".71"/><circle cx="16.75" cy="20.23" r="1.5" opacity=".86"/><circle cx="12" cy="21.5" r="1.5"/></g></svg>
+        """.trimIndent()
 }

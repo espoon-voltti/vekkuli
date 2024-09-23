@@ -646,3 +646,17 @@ label.filter-button:has(input:checked) .icon {
   }
 }
 
+.htmx-indicator{
+  opacity:0;
+  transition: opacity 500ms ease-in;
+}
+.htmx-request .htmx-indicator{
+  opacity:1;
+}
+.htmx-request.htmx-indicator{
+  opacity:1;
+}
+
+.htmx-request.loaded-content{
+  display: none;
+}
