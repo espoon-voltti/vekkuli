@@ -2,44 +2,42 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.dateToShortString
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jdbi.v3.core.Jdbi
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import java.util.*
+import java.time.LocalDate
 
 enum class PaymentType {
     BoatSpaceReservation
 }
 
+fun createReference(
+    balanceAccount: String,
+    merchantId: String,
+    reservationId: Int,
+    now: LocalDate
+): String = "$balanceAccount$merchantId${dateToShortString(now)}$reservationId"
+
 @Controller
 @RequestMapping("/kuntalainen/maksut")
-class PaymentController {
-    @Autowired
-    lateinit var jdbi: Jdbi
-
-    @Autowired
-    lateinit var reservationService: BoatReservationService
-
-    @Autowired
-    lateinit var paytrail: PaytrailInterface
-
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    @Autowired
-    lateinit var citizenService: CitizenService
-
+class PaymentController(
+    private val reservationService: BoatReservationService,
+    private val paytrail: PaytrailInterface,
+    private val messageUtil: MessageUtil,
+    private val citizenService: CitizenService,
+    private val paytrailEnv: PaytrailEnv,
+) {
     @GetMapping("/maksa")
     suspend fun payment(
         @RequestParam id: Int,
@@ -51,7 +49,7 @@ class PaymentController {
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
         val reservation = reservationService.getBoatSpaceReservation(id, citizen.id) ?: return redirectUrl("/")
 
-        val reference = UUID.randomUUID().toString()
+        val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
         val amount = reservation.priceCents
         val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         // TODO must this be configurable?

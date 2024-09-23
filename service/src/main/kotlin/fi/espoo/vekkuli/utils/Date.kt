@@ -4,6 +4,11 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
+val shortFormat = DateTimeFormatter.ofPattern("ddMMyy")
+
+fun dateToShortString(date: LocalDate): String = date.format(shortFormat)
 
 fun getFirstWeekdayOfMonth(
     year: Int,
