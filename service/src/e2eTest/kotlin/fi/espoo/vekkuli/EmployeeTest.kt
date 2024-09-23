@@ -117,4 +117,30 @@ class EmployeeTest : PlaywrightTest() {
         formPage.agreementCheckbox.check()
         formPage.submitButton.click()
     }
+
+    @Test
+    fun citizenSearch() {
+        page.navigate(baseUrl + "/virkailija")
+        page.getByTestId("employeeLoginButton").click()
+        page.getByText("Kirjaudu").click()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lenghtFilterInput.fill("6")
+        reservationPage.lenghtFilterInput.blur()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        assertThat(formPage.citizenSearchContainer).isVisible()
+
+        formPage.citizenSearchInput.pressSequentially("virtane")
+        assertThat(formPage.citizenSearchOption1).isVisible()
+        assertThat(formPage.citizenSearchOption2).isVisible()
+        formPage.citizenSearchOption1.click()
+        assertThat(formPage.citizenSearchInput).hasValue("Mikko Virtanen")
+        assertThat(formPage.citizenInformationContainer).isVisible()
+    }
 }

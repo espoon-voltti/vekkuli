@@ -354,7 +354,7 @@ class BoatSpaceForm {
                     this.citizenFullName = "";
                 }
             } }'>
-                      <div class="field">
+                      <div class="field" id="customer-search-container">
                         <label class="label">${t("boatApplication.select.citizen")}</label>
                         <div class="control width-is-half">
                             <p class="control has-icons-left has-icons-right">
@@ -373,7 +373,7 @@ class BoatSpaceForm {
                               </p>
                           
                               <!-- Where the results will be displayed -->                    
-                            <div x-show="isOpen" id="citizen-results" class="select is-multiple" @mousedown.away="isOpen = false" ></div>                   
+                            <div x-show="isOpen" id="citizen-results" class="select is-multiple" ></div>                   
                         </div>
                       </div>
                       <template x-if="citizenFullName != ''">
@@ -633,7 +633,7 @@ class BoatSpaceForm {
             ${
                 citizens.joinToString("\n") { citizen ->
                     """
-                    <option role="option" value="${citizen.id}" 
+                    <option id="option-${citizen.id}" role="option" value="${citizen.id}" 
                         data-fullname="${citizen.fullName}">
                         <p>${citizen.fullName}
                        <span class='is-small'>${citizen.birthday}</span></p>
