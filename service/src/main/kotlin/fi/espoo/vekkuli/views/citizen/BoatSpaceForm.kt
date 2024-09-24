@@ -227,12 +227,29 @@ class BoatSpaceForm {
                  </div> 
             """.trimIndent()
 
+        val email =
+            formComponents.textInput(
+                "boatApplication.email",
+                "email",
+                input.email,
+                true,
+                pattern = Pair(".+@.+\\..+", "validation.email")
+            )
+
+        val phone =
+            formComponents.textInput(
+                "boatApplication.phone",
+                "phone",
+                input.phone,
+                required = true
+            )
+
         val citizenInformation =
             """
             <div class='block'
-                <h3 class="header">
+                <h4 class="label">
                     ${t("boatApplication.personalInformation")}
-                </h3> 
+                </h4> 
                 <div class="field">
                     <p>${citizen?.firstName} ${citizen?.lastName}</p>
                     <p>${citizen?.nationalId}</p>
@@ -240,6 +257,10 @@ class BoatSpaceForm {
                     <p>${citizen?.postalCode} ${citizen?.municipalityName}</p>
                 </div>
             </div>
+            <div class="block">
+                    $email
+                    $phone
+                </div> 
             """.trimIndent()
 
         val citizenFirstName =
@@ -294,45 +315,143 @@ class BoatSpaceForm {
 
         val citizenInputFields =
             """
-            <h3 class="header">
-                ${t("boatApplication.personalInformation")}
-            </h3> 
-            <div class="block">
-                $citizenFirstName
-            </div>
-            <div class="block">
-                $citizenLastName
-            </div>
-            <div class="block">
-                $citizenSsn
-            </div>
-            <div class="block">
-                $address
-            </div>
-            <div class="block">
-                $postalCode
-            </div>
-            <div class="block">
-                $municipalityInput
+            <div>
+                <h3 class="header">
+                    ${t("boatApplication.personalInformation")}
+                </h3> 
+                <div class="block">
+                    $citizenFirstName
+                </div>
+                <div class="block">
+                    $citizenLastName
+                </div>
+                <div class="block">
+                    $citizenSsn
+                </div>
+                <div class="block">
+                    $address
+                </div>
+                <div class="block">
+                    $postalCode
+                </div>
+                <div class="block">
+                    $municipalityInput
+                </div>
+                <div class="block">
+                 $email
+                 </div
+                 <div class="block">
+                $phone
+                </div>
             </div>
             """.trimIndent()
 
-        val email =
-            formComponents.textInput(
-                "boatApplication.email",
-                "email",
-                input.email,
-                true,
-                pattern = Pair(".+@.+\\..+", "validation.email")
-            )
+        // language=HTML
+        val citizenSearch =
+            """
+                    <div id="citizen-results-container" class="container" x-data='{citizenFullName: "",  updateFullName(event) {
+                const selectElement = event.target;
+                if (selectElement.selectedOptions.length > 0) {
+                    const selectedOption = selectElement.selectedOptions[0];
+                    this.citizenFullName = selectedOption.dataset.fullname;
+                } else {
+                    this.citizenFullName = "";
+                };
+            } }'>
+                      <div class="field" id="customer-search-container">
+                        <label class="label">${t("boatApplication.select.citizen")}</label>
+                        <div class="control width-is-half">
+                            <p class="control has-icons-left has-icons-right">
+                              <input x-model="citizenFullName" id="customer-search" 
+                                    placeholder="${t("boatApplication.placeholder.searchCitizens")}"
+                                    name="nameParameter" class="input search-input" type="text" 
+                                    hx-get="/virkailija/venepaikka/varaus/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
+                                    hx-target="#citizen-results">
+                                <span class="icon is-small is-left">
+                                  ${icons.search}
+                                </span>
+                                <span id="citizen-empty-input" x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''">
+                                  ${icons.xMark}
+                                </span>
+                              </p>
+                               
+                              <!-- Where the results will be displayed -->                    
+                            <div id="citizen-results" class="select is-multiple" ></div>                   
+                        </div>
+                        <div id="citizenId-error-container">
+                                    <span id="citizenId-error" class="help is-danger" style="visibility: hidden">${t(
+                "validation.required"
+            )}</span>
+                                </div>
+                      </div>
+                      <template x-if="citizenFullName != ''">
+                        <div id='citizen-details' class="block"></div>
+                      </template>
+                    </div>
+            """.trimIndent()
 
-        val phone =
-            formComponents.textInput(
-                "boatApplication.phone",
-                "phone",
-                input.phone,
-                required = true
-            )
+        // language=HTML
+        val customerTypeRadioButtons =
+            """
+                        <div x-data='{citizenSelection: "newCitizen"}'>
+                    <div class="field">
+                             <h4 class="label required" >${t("boatApplication.title.citizenType")}</h4>
+                             <div class="control is-flex-direction-row">
+                             
+                        
+                        <div class="radio">
+                            <input
+                                x-model="citizenSelection"
+                                type="radio"
+                                 name="citizenSelection"
+                                value="newCitizen"
+                                id="new-citizen-selector"
+                                hx-preserve='true'
+                            />
+                            <label for="newCitizen">${t("boatApplication.citizenOptions.newCitizen")}</label>
+                        </div>
+                        <div class="radio">
+                            <input
+                                x-model="citizenSelection"
+                                type="radio"
+                                name="citizenSelection"
+                                value="existingCitizen"
+                                id="existing-citizen-selector"
+                                hx-preserve='true'
+                            />
+                            <label for="existingCitizen">${t("boatApplication.citizenOptions.existingCitizen")}</label>
+                        </div>
+                        
+                      
+                    
+                             </div>
+                         </div> 
+                         <template x-if="citizenSelection === 'newCitizen'">
+                            $citizenInputFields
+                            </template>
+                            <template x-if="citizenSelection === 'existingCitizen'">
+                             <div x-init="htmx.process(document.getElementById('citizen-results-container'))"  class="block"> $citizenSearch</div>
+            </template>
+                           
+                            </template>
+                         </div>
+            """.trimIndent()
+
+        // language=HTML
+        val addCitizen =
+            """
+            <div >
+                $customerTypeRadioButtons
+            </div>
+            """.trimIndent()
+
+        // language=HTML
+        val citizenContainer =
+            if (userType == UserType.CITIZEN) {
+                citizenInformation
+            } else {
+                addCitizen
+            }
 
         // language=HTML
         return """
@@ -351,12 +470,14 @@ class BoatSpaceForm {
                     ${sessionTimer.render(reservationTimeInSeconds)}
                     <form
                         id="form"
-                        class="column is-half"
+                        class="column"
                         action="/${userType.path}/venepaikka/varaus/${reservation.id}"
                         method="post"
                         novalidate>
                         
+                        
                         $boatSpaceInformation
+                        $citizenContainer  
                         
                         <div class="block">
                             <h3 class="header">${t("boatApplication.boatInformation")}</h3>
@@ -416,11 +537,7 @@ class BoatSpaceForm {
                            $extraInformationInput
                            $ownership
                         </div>
-                        ${if (userType == UserType.CITIZEN) citizenInformation else citizenInputFields}
-                        <div class="block">
-                            $email
-                            $phone 
-                        </div>
+
                         <div class="block">
                             <div id="certify-control">
                                 <label class="checkbox">
@@ -567,4 +684,81 @@ class BoatSpaceForm {
             </button>
         </div>
         """.trimIndent()
+
+    // language=HTML
+    fun citizensSearchForm(citizens: List<CitizenWithDetails>): String {
+        val listSize = if (citizens.size > 5) 5 else citizens.size
+
+        return (
+            """
+            <select x-show="citizenFullName != ''" multiple size="$listSize" name='citizenIdOption' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  hx-trigger="change"
+                                    hx-target="#citizen-details" @change="updateFullName">
+            ${
+                citizens.joinToString("\n") { citizen ->
+                    """
+                    <option id="option-${citizen.id}" role="option" value="${citizen.id}" 
+                        data-fullname="${citizen.fullName}">
+                        <p>${citizen.fullName}
+                       <span class='is-small'>${citizen.birthday}</span></p>
+                    </option>
+                    """.trimIndent()
+                }
+            }
+            </select>
+
+            """.trimIndent()
+        )
+    }
+
+    // language=HTML
+    fun citizenDetails(citizen: CitizenWithDetails): String {
+        val firstNameField =
+            formComponents.field(
+                "boatSpaceReservation.title.firstName",
+                "firstName",
+                citizen.firstName,
+            )
+        val lastNameField = formComponents.field("boatSpaceReservation.title.lastName", "lastName", citizen.lastName)
+        val birthdayField = formComponents.field("boatSpaceReservation.title.birthday", "birthday", citizen.birthday)
+        val addressInput = formComponents.textInput("boatSpaceReservation.title.address", "address", citizen.address)
+        val postalCodeField =
+            formComponents.textInput("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
+        val cityField = formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.municipalityName)
+        val emailInput = formComponents.textInput("boatApplication.email", "email", citizen.email, true)
+        val phoneInput = formComponents.textInput("boatApplication.phone", "phone", citizen.phone, true)
+
+        return (
+            """
+             <div class='columns'>
+                <div class='column'>
+                    $firstNameField
+                  </div>
+                  <div class='column'>
+                    $lastNameField
+                  </div>
+                  <div class='column'>
+                    $birthdayField
+                  </div>
+                  <div class='column'>
+                    $addressInput
+                  </div>
+             </div>
+             <div class='columns'>
+                <div class='column'>
+                    $postalCodeField
+                </div>
+                <div class='column'>
+                    $cityField
+                </div>
+                <div class='column'>
+                    $emailInput
+                </div>
+                <div class='column'>
+                    $phoneInput
+                </div>
+            </div>
+             <input hidden name='citizenId' value="${citizen.id}">
+            """.trimIndent()
+        )
+    }
 }

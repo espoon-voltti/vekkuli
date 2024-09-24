@@ -5,6 +5,8 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.InExpr
+import fi.espoo.vekkuli.utils.buildNameSearchClause
+import fi.espoo.vekkuli.utils.formatNameSearchParam
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -366,12 +368,7 @@ class JdbiBoatSpaceReservationRepository(
                 statusFilter = listOf("Confirmed", "Payment", "Invoiced")
             }
 
-            val nameSearch =
-                if (!params.nameSearch.isNullOrEmpty()) {
-                    "c.full_name_tsvector @@ to_tsquery('simple', :nameSearch)"
-                } else {
-                    "true"
-                }
+            val nameSearch = buildNameSearchClause(params.nameSearch)
 
             val warningFilter =
                 if (params.warningFilter == true) {
@@ -417,11 +414,7 @@ class JdbiBoatSpaceReservationRepository(
 
             if (!params.nameSearch.isNullOrEmpty()) {
                 // Replace spaces with '&' and append ':*' to each term for prefix matching
-                val formattedNameSearch =
-                    params.nameSearch
-                        .trim()
-                        .split("\\s+".toRegex())
-                        .joinToString(" & ") { "$it:*" }
+                val formattedNameSearch = formatNameSearchParam(params.nameSearch)
                 query.bind("nameSearch", formattedNameSearch)
             }
 

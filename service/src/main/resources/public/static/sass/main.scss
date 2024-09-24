@@ -3,7 +3,7 @@ $light-blue: #D9E4F4;
 $white: #fff;
 $black: #536076;
 $grey: #A9B0BB;
-$lightGray: #F7F7F7;
+$light-gray: #F7F7F7;
 $darkGray: #536076;
 $warning: #FF8E31;
 $error: #FF3D3D;
@@ -58,13 +58,13 @@ $activeColor: #D9E4F4;
   color: $bulma-primary;
 }
 
-.button.is-danger{
+.button.is-danger {
   color: $white
 }
 
 html, body {
   min-height: 100%;
-  background: $lightGray;
+  background: $light-gray;
 }
 
 .container {
@@ -478,11 +478,12 @@ a.active {
   white-space: nowrap;
 }
 
-.reservation-table-header{
-  display:inline-block;
+.reservation-table-header {
+  display: inline-block;
   vertical-align: middle;
 }
-.reservation-table-icon{
+
+.reservation-table-icon {
   vertical-align: middle;
 }
 
@@ -524,7 +525,7 @@ tr.table-borderless th {
 
 .secondary-tabs.tabs.is-boxed ul {
   border-bottom: none;
-  background-color: $lightGray;
+  background-color: $light-gray;
 }
 
 .tabs.is-boxed ul li a {
@@ -560,18 +561,19 @@ label.filter-button .icon {
   vertical-align: text-bottom;
   padding-right: 8px;
 }
+
 label.filter-button:has(input:checked) .icon {
   display: inline-block; /* Show the icon when checked */
 }
 
 
 .filter-dropdown-menu {
-  min-width:unset;
+  min-width: unset;
   width: 120px;
-  background:white;
-  padding:4px;
+  background: white;
+  padding: 4px;
   border: 1px solid #DADDE2;
-  border-top:0;
+  border-top: 0;
 }
 
 .filter-tag {
@@ -660,3 +662,37 @@ label.filter-button:has(input:checked) .icon {
 .htmx-request.loaded-content{
   display: none;
 }
+#citizen-results-container {
+  margin-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+
+}
+
+#citizen-results {
+  position: absolute;
+  z-index: 100;
+  width: 100%;
+  display: none;
+}
+
+.select select option:hover,
+.select select option:checked{
+  background-color: $light-blue;
+}
+
+.width-is-half {
+  width: 50%;
+}
+.input .search-input {
+  border: 1px solid $light-gray;
+  max-width: 100%;
+}
+
+.control:focus-within #citizen-results {
+  display: block;
+}
+
+
+
+

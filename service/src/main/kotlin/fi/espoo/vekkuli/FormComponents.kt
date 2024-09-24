@@ -176,8 +176,10 @@ class FormComponents {
     ): String {
         //language=HTML
         return """
-            <label class="label" for="$id">${t(labelKey)}</label>
-             <p id="$id">$value</p>
+            <div class='field'>
+                <label class="label" for="$id">${t(labelKey)}</label>
+                 <p id="$id">${if (value.isNullOrEmpty()) '-' else value}</p>
+             </div>
             """.trimIndent()
     }
 

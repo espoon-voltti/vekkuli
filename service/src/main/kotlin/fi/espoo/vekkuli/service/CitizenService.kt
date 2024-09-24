@@ -9,6 +9,8 @@ interface CitizenRepository {
 
     fun getCitizenBySsn(ssn: String): Citizen?
 
+    fun getCitizens(nameSearch: String?): List<CitizenWithDetails>
+
     fun updateCitizen(
         id: UUID,
         phone: String,
@@ -74,6 +76,8 @@ class CitizenService(
 ) {
     fun getCitizen(id: UUID): CitizenWithDetails? = citizenRepository.getCitizen(id)
 
+    fun getCitizens(nameSearch: String?): List<CitizenWithDetails> = citizenRepository.getCitizens(nameSearch)
+
     fun updateCitizen(
         id: UUID,
         phone: String,
@@ -108,6 +112,33 @@ class CitizenService(
             postOffice,
             postOfficeSv
         )
+
+    fun updateCitizen(
+        id: UUID,
+        phone: String,
+        email: String,
+        address: String?,
+        postalCode: String?,
+        addressSv: String?,
+        postOffice: String?,
+        postOfficeSv: String?,
+    ): CitizenWithDetails? =
+        citizenRepository.getCitizen(id)?.let {
+            citizenRepository.updateCitizen(
+                id,
+                it.firstName,
+                it.lastName,
+                phone,
+                email,
+                address,
+                postalCode,
+                it.municipalityCode,
+                it.nationalId,
+                addressSv,
+                postOffice,
+                postOfficeSv
+            )
+        }
 
     fun getCitizenBySsn(ssn: String): Citizen? = citizenRepository.getCitizenBySsn(ssn)
 

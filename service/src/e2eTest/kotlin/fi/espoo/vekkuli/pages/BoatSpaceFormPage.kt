@@ -2,7 +2,9 @@ package fi.espoo.vekkuli.pages
 
 import com.microsoft.playwright.Page
 
-class BoatSpaceFormPage(private val page: Page) {
+class BoatSpaceFormPage(
+    private val page: Page
+) {
     val header = page.getByTestId("boat-space-form-header")
     val boatTypeSelect = page.getByTestId("boatType")
     val widthInput = page.getByTestId("width")
@@ -39,6 +41,15 @@ class BoatSpaceFormPage(private val page: Page) {
     val ssnInput = page.getByTestId("ssn")
     val addressInput = page.getByTestId("address")
     val postalCodeInput = page.getByTestId("postalCode")
+
+    val citizenSearchContainer = page.locator("#customer-search-container")
+    val citizenInformationContainer = page.locator("#citizen-details")
+    val citizenSearchInput = page.locator("#customer-search")
+    val citizenSearchOption1 = page.locator("#option-62d90eed-4ea3-4446-8023-8dad9c01dd34")
+    val citizenSearchOption2 = page.locator("#option-509edb00-5549-11ef-a1c7-776e76028a49")
+    val citizenEmptyInput = page.locator("#citizen-empty-input")
+    val existingCitizenSelector = page.locator("#existing-citizen-selector")
+    val citizenIdError = page.getByTestId("citizenId-error")
 
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")

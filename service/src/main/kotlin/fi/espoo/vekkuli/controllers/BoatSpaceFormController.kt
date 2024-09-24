@@ -39,6 +39,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
+import java.util.*
 import kotlin.reflect.KClass
 
 @Controller
@@ -245,6 +246,32 @@ class BoatSpaceFormController {
         return renderBoatSpaceReservationApplication(reservation, citizen, input, request, userType)
     }
 
+    @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen/hae")
+    @ResponseBody
+    fun searchCitizens(
+        request: HttpServletRequest,
+        @RequestParam nameParameter: String,
+        @PathVariable usertype: String
+    ): String {
+        citizenService.getCitizens(nameParameter).let {
+            return boatSpaceForm.citizensSearchForm(it)
+        }
+    }
+
+    @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen")
+    @ResponseBody
+    fun searchCitizen(
+        @RequestParam citizenIdOption: UUID,
+        @PathVariable usertype: String,
+    ): String {
+        val citizen = citizenService.getCitizen(citizenIdOption)
+        return if (citizen != null) {
+            boatSpaceForm.citizenDetails(citizen)
+        } else {
+            ""
+        }
+    }
+
     @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")
     fun confirmBoatSpaceReservation(
         @PathVariable usertype: String,
@@ -284,23 +311,38 @@ class BoatSpaceFormController {
                 if (employee == null) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("")
                 }
-
-                citizenService.insertCitizen(
-                    phone = input.phone!!,
-                    email = input.email!!,
-                    nationalId = input.ssn!!,
-                    firstName = input.firstName!!,
-                    lastName = input.lastName!!,
-                    address = input.address!!,
-                    postalCode = input.postalCode!!,
-                    municipalityCode = input.municipalityCode!!
-                ).id
+                if (input.citizenId != null) {
+                    citizenService
+                        .updateCitizen(
+                            input.citizenId,
+                            input.email!!,
+                            input.phone!!,
+                            input.address,
+                            input.postalCode,
+                            input.address,
+                            input.postalOffice,
+                            input.postalOffice,
+                        )?.id
+                } else {
+                    citizenService
+                        .insertCitizen(
+                            phone = input.phone!!,
+                            email = input.email!!,
+                            nationalId = input.ssn!!,
+                            firstName = input.firstName!!,
+                            lastName = input.lastName!!,
+                            address = input.address!!,
+                            postalCode = input.postalCode!!,
+                            municipalityCode = input.municipalityCode!!
+                        ).id
+                }
             } else {
                 getCitizen(request, citizenService)?.id
             }
 
         if (citizenId == null) {
-            return ResponseEntity.status(HttpStatus.FOUND)
+            return ResponseEntity
+                .status(HttpStatus.FOUND)
                 .header("Location", "/")
                 .build()
         }
@@ -562,7 +604,9 @@ data class ReservationInput(
     val ssn: String?,
     val address: String?,
     val postalCode: String?,
+    val postalOffice: String?,
     val municipalityCode: Int?,
+    val citizenId: UUID?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
     val email: String?,
@@ -604,6 +648,8 @@ data class ReservationInput(
                 address = citizen?.address,
                 postalCode = citizen?.postalCode,
                 municipalityCode = citizen?.municipalityCode,
+                citizenId = citizen?.id,
+                postalOffice = null,
             )
     }
 }
