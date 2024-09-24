@@ -42,6 +42,7 @@ const Profile = z
   .partial({
     [SUOMI_FI_STREET_ADDRESS_FI]: true,
     [SUOMI_FI_STREET_ADDRESS_SV]: true,
+    [SUOMI_FI_POSTAL_CODE]: true,
     [SUOMI_FI_POST_OFFICE_FI]: true,
     [SUOMI_FI_POST_OFFICE_SV]: true,
     [SUOMI_FI_EMAIL]: true,
@@ -70,6 +71,7 @@ export function createSuomiFiStrategy(
         fi: profile[SUOMI_FI_STREET_ADDRESS_FI],
         sv: profile[SUOMI_FI_STREET_ADDRESS_SV]
       },
+      postalCode: profile[SUOMI_FI_POSTAL_CODE],
       postOffice: {
         fi: profile[SUOMI_FI_POST_OFFICE_FI],
         sv: profile[SUOMI_FI_POST_OFFICE_SV]
