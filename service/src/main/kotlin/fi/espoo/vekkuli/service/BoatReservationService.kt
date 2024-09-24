@@ -163,6 +163,8 @@ class BoatReservationService(
             reservation.boatLengthCm,
             reservation.boatOwnership,
             reservation.boatWeightKg,
+            reservation.boatType,
+            reservation.excludedBoatTypes ?: listOf()
         )
 
         emailService.sendEmail(
@@ -218,6 +220,8 @@ class BoatReservationService(
         boatLengthCm: Int,
         boatOwnership: OwnershipStatus?,
         boatWeightKg: Int,
+        boatType: BoatType,
+        excludedBoatTypes: List<BoatType>
     ) {
         val warnings = mutableListOf<String>()
 
@@ -249,6 +253,10 @@ class BoatReservationService(
 
         if (boatWeightKg > BOAT_WEIGHT_THRESHOLD_KG) {
             warnings.add(ReservationWarningType.BoatWeight.name)
+        }
+
+        if (excludedBoatTypes.contains(boatType)) {
+            warnings.add(ReservationWarningType.BoatType.name)
         }
 
         if (warnings.isNotEmpty()) {
