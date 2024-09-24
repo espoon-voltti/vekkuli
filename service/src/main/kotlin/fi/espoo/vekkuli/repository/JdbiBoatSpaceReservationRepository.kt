@@ -75,14 +75,17 @@ class JdbiBoatSpaceReservationRepository(
                             bs.width_cm as boat_space_width_cm,
                             bs.amenity,
                            price.price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
+                           CONCAT(bs.section, bs.place_number) as place,
+                           ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
                     JOIN citizen c ON bsr.citizen_id = c.id 
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
+                    LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.payment_id = :paymentId
+                    GROUP BY bsr.id, c.id, b.id, location.id, bs.id, price.id                    
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
