@@ -64,7 +64,7 @@ fun Handle.upsertCitizenUserFromAd(adUser: CitizenAdUser): Citizen =
           municipality_code = :municipalityCode,
           address=COALESCE(:address.fi, ''), 
           address_sv=:address.sv,
-          postal_code=:postalCode, 
+          postal_code=COALESCE(:postalCode, ''), 
           post_office=:postOffice.fi,
           post_office_sv=:postOffice.sv
         RETURNING *
