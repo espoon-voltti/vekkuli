@@ -8,28 +8,20 @@ import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
+import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.Icons
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class BoatSpaceForm {
-    @Autowired
-    private lateinit var icons: Icons
-
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    @Autowired
-    lateinit var formComponents: FormComponents
-
-    @Autowired
-    lateinit var sessionTimer: SessionTimer
-
-    @Autowired
-    lateinit var stepIndicator: StepIndicator
-
+class BoatSpaceForm(
+    private val markDownService: MarkDownService,
+    private val icons: Icons,
+    private val messageUtil: MessageUtil,
+    private val formComponents: FormComponents,
+    private val sessionTimer: SessionTimer,
+    private val stepIndicator: StepIndicator
+) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun boatSpaceForm(
@@ -562,7 +554,7 @@ class BoatSpaceForm {
                                         id="agreeToRules"
                                         name="agreeToRules"
                                     />
-                                    <span> ${t("boatApplication.agreementCheckbox")} </span>
+                                    <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
                                 </label>
                                 <div id="agree-error-container">
                                     <span id="agreeToRules-error" class="help is-danger" style="visibility: hidden">
