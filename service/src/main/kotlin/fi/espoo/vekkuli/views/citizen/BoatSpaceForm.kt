@@ -350,13 +350,15 @@ class BoatSpaceForm {
         val citizenSearch =
             """
             <div id="citizen-results-container" class="container" 
-                x-data='{citizenFullName: "",  updateFullName(event) {
+                x-data='{citizenFullName: "", citizenId:"", updateFullName(event) {
                     const selectElement = event.target;
                     if (selectElement.selectedOptions.length > 0) {
                         const selectedOption = selectElement.selectedOptions[0];
                         this.citizenFullName = selectedOption.dataset.fullname;
+                        this.citizenId = selectedOption.value;
                     } else {
                         this.citizenFullName = "";
+                        this.citizenId = "";
                     };
                 }}'>
                 <div class="field" id="customer-search-container">
@@ -371,20 +373,24 @@ class BoatSpaceForm {
                             <span class="icon is-small is-left">
                                 ${icons.search}
                             </span>
-                            <span id="citizen-empty-input" x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''">
+                            <span id="citizen-empty-input" x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''; citizenId = ''">
                                 ${icons.xMark}
                             </span>
                         </p>
                                
                         <!-- Where the results will be displayed -->                    
-                        <div id="citizen-results" class="select is-multiple"></div>                   
+                        <div id="citizen-results" class="select is-multiple" ></div>                   
                     </div>
+                    <input id="citizenId" name="citizenId" x-model.fill="citizenId" data-required hidden />
                     <div id="citizenId-error-container">
-                        <span id="citizenId-error" class="help is-danger" style="visibility: hidden">
+                        <span id="citizenId-error" class="help is-danger" style="visibility: hidden" x-show="citizenId == ''">
                             ${t("validation.required")}
                         </span>
                     </div>
                 </div>
+                
+                
+                
                 <template x-if="citizenFullName != ''">
                     <div id='citizen-details' class="block">
                     
@@ -741,7 +747,6 @@ class BoatSpaceForm {
                     $phoneInput
                 </div>
             </div>
-             <input hidden name="citizenId" value="${citizen.id}">
             """.trimIndent()
         )
     }
