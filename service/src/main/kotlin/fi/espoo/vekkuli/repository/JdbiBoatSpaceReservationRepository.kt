@@ -356,16 +356,36 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
         }
 
+    override fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bs.*, location.name as location_name, bsr,
+                        ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                    FROM boat_space_reservation bsr
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location.id = bs.location_id
+                    LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
+                    WHERE bsr.id = :reservationId
+                    GROUP BY bs.id, location.name, bsr 
+                    """.trimIndent()
+                )
+            query.bind("reservationId", reservationId)
+            query.mapTo<BoatSpace>().findOne().orElse(null)
+        }
+
     override fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> =
         jdbi.withHandleUnchecked { handle ->
 
             var statusFilter =
-                params.payment.map {
-                    when (it) {
-                        PaymentFilter.PAID -> listOf("Confirmed")
-                        PaymentFilter.UNPAID -> listOf("Payment", "Invoiced")
-                    }
-                }.flatten()
+                params.payment
+                    .map {
+                        when (it) {
+                            PaymentFilter.PAID -> listOf("Confirmed")
+                            PaymentFilter.UNPAID -> listOf("Payment", "Invoiced")
+                        }
+                    }.flatten()
 
             if (statusFilter.isEmpty()) {
                 statusFilter = listOf("Confirmed", "Payment", "Invoiced")
