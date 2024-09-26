@@ -253,7 +253,7 @@ class BoatSpaceForm {
                 <div class="field">
                     <p>${citizen?.firstName} ${citizen?.lastName}</p>
                     <p>${citizen?.nationalId}</p>
-                    <p>${citizen?.address}</p>
+                    <p>${citizen?.streetAddress}</p>
                     <p>${citizen?.postalCode} ${citizen?.municipalityName}</p>
                 </div>
             </div>
@@ -292,7 +292,7 @@ class BoatSpaceForm {
             formComponents.textInput(
                 "boatApplication.address",
                 "address",
-                citizen?.address ?: "",
+                citizen?.streetAddress ?: "",
                 required = true
             )
 
@@ -720,7 +720,7 @@ class BoatSpaceForm {
             )
         val lastNameField = formComponents.field("boatSpaceReservation.title.lastName", "lastName", citizen.lastName)
         val birthdayField = formComponents.field("boatSpaceReservation.title.birthday", "birthday", citizen.birthday)
-        val addressInput = formComponents.textInput("boatSpaceReservation.title.address", "address", citizen.address)
+        val addressInput = formComponents.textInput("boatSpaceReservation.title.address", "address", citizen.streetAddress)
         val postalCodeField =
             formComponents.textInput("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
         val cityField = formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.municipalityName)

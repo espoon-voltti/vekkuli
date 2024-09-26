@@ -38,7 +38,5 @@ class HomeController {
     fun employeeHome(
         request: HttpServletRequest,
         model: Model
-    ): String {
-        return "home"
-    }
+    ): String = "home"
 }

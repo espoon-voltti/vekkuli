@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.PaymentRepository
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.core.kotlin.mapTo

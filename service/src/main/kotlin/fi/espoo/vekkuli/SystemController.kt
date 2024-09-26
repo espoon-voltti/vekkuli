@@ -7,11 +7,12 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.common.*
 import fi.espoo.vekkuli.config.AuthenticatedUser
 import fi.espoo.vekkuli.config.audit
-import fi.espoo.vekkuli.domain.Citizen
+import fi.espoo.vekkuli.domain.CitizenAdUser
+import fi.espoo.vekkuli.domain.CitizenWithDetails
+import fi.espoo.vekkuli.service.CitizenService
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -26,10 +27,10 @@ import java.util.UUID
  */
 @RestController
 @RequestMapping("/system")
-class SystemController {
-    @Autowired
-    lateinit var jdbi: Jdbi
-
+class SystemController(
+    private val jdbi: Jdbi,
+    private val citizenService: CitizenService,
+) {
     private val logger = KotlinLogging.logger {}
 
     @PostMapping("/user-login")
@@ -43,10 +44,7 @@ class SystemController {
     @PostMapping("/citizen-login")
     fun citizenLogin(
         @RequestBody adUser: CitizenAdUser
-    ): Citizen =
-        jdbi.inTransactionUnchecked { it.upsertCitizenUserFromAd(adUser) }.also {
-            logger.audit(AuthenticatedUser(it.id, "citizen"), "CITIZEN_LOGIN")
-        }
+    ): CitizenWithDetails = citizenService.upsertCitizenUserFromAd(adUser)
 
     @GetMapping("/users/{id}")
     fun getUser(

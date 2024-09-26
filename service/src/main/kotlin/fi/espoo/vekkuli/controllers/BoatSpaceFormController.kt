@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.CitizenService
@@ -314,14 +315,14 @@ class BoatSpaceFormController {
                 if (input.citizenId != null) {
                     citizenService
                         .updateCitizen(
-                            input.citizenId,
-                            input.email!!,
-                            input.phone!!,
-                            input.address,
-                            input.postalCode,
-                            input.address,
-                            input.postalOffice,
-                            input.postalOffice,
+                            UpdateCitizenParams(
+                                id = input.citizenId,
+                                email = input.email,
+                                phone = input.phone,
+                                streetAddress = input.address,
+                                postalCode = input.postalCode,
+                                postOffice = input.postalOffice
+                            )
                         )?.id
                 } else {
                     citizenService
@@ -645,7 +646,7 @@ data class ReservationInput(
                 firstName = citizen?.firstName,
                 lastName = citizen?.lastName,
                 ssn = citizen?.nationalId,
-                address = citizen?.address,
+                address = citizen?.streetAddress,
                 postalCode = citizen?.postalCode,
                 municipalityCode = citizen?.municipalityCode,
                 citizenId = citizen?.id,

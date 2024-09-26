@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.MemoCategory
+import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -55,7 +56,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
         val updatedPhoneNumber = "123456789"
         val updatedEmail = "new@email.com"
         val updatedCitizen =
-            citizenService.updateCitizen(id = citizenId, phone = updatedPhoneNumber, email = updatedEmail)
+            citizenService.updateCitizen(UpdateCitizenParams(id = citizenId, phone = updatedPhoneNumber, email = updatedEmail))
         val citizen = citizenService.getCitizen(citizenId)
         assertNotNull(updatedCitizen)
         assertEquals(updatedPhoneNumber, citizen?.phone, "Citizen's phone is correctly updated")
@@ -72,29 +73,31 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 lastName = "Testeri",
                 phone = "123456789",
                 email = "new@email.com",
-                address = "New address",
+                streetAddress = "New address",
                 postalCode = "12345",
                 municipalityCode = 49,
                 nationalId = "123456-789A",
                 municipalityName = "Espoo",
                 postOffice = "Espoo",
                 postOfficeSv = "Esbo",
-                addressSv = "",
+                streetAddressSv = "",
             )
         val updatedCitizen =
             citizenService.updateCitizen(
-                id = citizenId,
-                phone = newCitizen.phone,
-                email = newCitizen.email,
-                firstName = newCitizen.firstName,
-                lastName = newCitizen.lastName,
-                address = newCitizen.address,
-                postalCode = newCitizen.postalCode,
-                municipalityCode = newCitizen.municipalityCode,
-                nationalId = newCitizen.nationalId,
-                addressSv = newCitizen.addressSv,
-                postOffice = newCitizen.postOffice,
-                postOfficeSv = newCitizen.postOfficeSv
+                UpdateCitizenParams(
+                    id = citizenId,
+                    phone = newCitizen.phone,
+                    email = newCitizen.email,
+                    firstName = newCitizen.firstName,
+                    lastName = newCitizen.lastName,
+                    streetAddress = newCitizen.streetAddress,
+                    postalCode = newCitizen.postalCode,
+                    municipalityCode = newCitizen.municipalityCode,
+                    nationalId = newCitizen.nationalId,
+                    streetAddressSv = newCitizen.streetAddressSv,
+                    postOffice = newCitizen.postOffice,
+                    postOfficeSv = newCitizen.postOfficeSv
+                )
             )
         val citizen = citizenService.getCitizen(citizenId)
         assertNotNull(updatedCitizen)
@@ -112,28 +115,30 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 lastName = "Testeri",
                 phone = "123456789",
                 email = "new@email.com",
-                address = "New address",
+                streetAddress = "New address",
                 postalCode = "12345",
                 municipalityCode = 49,
                 nationalId = "123456-789A",
                 municipalityName = "Espoo",
                 postOffice = "Espoo",
                 postOfficeSv = "Esbo",
-                addressSv = "",
+                streetAddressSv = "",
             )
         citizenService.updateCitizen(
-            id = citizenId,
-            phone = newCitizen1.phone,
-            email = newCitizen1.email,
-            firstName = newCitizen1.firstName,
-            lastName = newCitizen1.lastName,
-            address = newCitizen1.address,
-            postalCode = newCitizen1.postalCode,
-            municipalityCode = newCitizen1.municipalityCode,
-            nationalId = newCitizen1.nationalId,
-            addressSv = newCitizen1.addressSv,
-            postOffice = newCitizen1.postOffice,
-            postOfficeSv = newCitizen1.postOfficeSv
+            UpdateCitizenParams(
+                id = citizenId,
+                phone = newCitizen1.phone,
+                email = newCitizen1.email,
+                firstName = newCitizen1.firstName,
+                lastName = newCitizen1.lastName,
+                streetAddress = newCitizen1.streetAddress,
+                postalCode = newCitizen1.postalCode,
+                municipalityCode = newCitizen1.municipalityCode,
+                nationalId = newCitizen1.nationalId,
+                streetAddressSv = newCitizen1.streetAddressSv,
+                postOffice = newCitizen1.postOffice,
+                postOfficeSv = newCitizen1.postOfficeSv
+            )
         )
 
         val newCitizen2 =
@@ -143,19 +148,22 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
             )
         val updatedCitizen2 =
             citizenService.updateCitizen(
-                id = citizenId,
-                phone = newCitizen2.phone,
-                email = newCitizen2.email,
-                firstName = newCitizen2.firstName,
-                lastName = newCitizen2.lastName,
-                address = newCitizen2.address,
-                postalCode = newCitizen2.postalCode,
-                municipalityCode = newCitizen2.municipalityCode,
-                nationalId = newCitizen2.nationalId,
-                addressSv = newCitizen2.addressSv,
-                postOffice = newCitizen2.postOffice,
-                postOfficeSv = newCitizen2.postOfficeSv
+                UpdateCitizenParams(
+                    id = citizenId,
+                    phone = newCitizen2.phone,
+                    email = newCitizen2.email,
+                    firstName = newCitizen2.firstName,
+                    lastName = newCitizen2.lastName,
+                    streetAddress = newCitizen2.streetAddress,
+                    postalCode = newCitizen2.postalCode,
+                    municipalityCode = newCitizen2.municipalityCode,
+                    nationalId = newCitizen2.nationalId,
+                    streetAddressSv = newCitizen2.streetAddressSv,
+                    postOffice = newCitizen2.postOffice,
+                    postOfficeSv = newCitizen2.postOfficeSv
+                )
             )
+
         val citizen = citizenService.getCitizen(citizenId)
         assertNotNull(updatedCitizen2)
         assertEquals(newCitizen2.municipalityName, citizen?.municipalityName, "Citizen's municipality is correctly updated")

@@ -3,17 +3,64 @@ package fi.espoo.vekkuli.domain
 import java.util.*
 
 data class Citizen(
+    // Fields from Reserver
     val id: UUID,
+    val email: String,
+    val phone: String,
+    val municipalityCode: Int,
+    val municipalityName: String,
+    val streetAddress: String,
+    val streetAddressSv: String,
+    val postOffice: String,
+    val postOfficeSv: String,
+    val postalCode: String,
+    // Fields for Citizen
     val nationalId: String,
     val firstName: String,
     val lastName: String,
+) {
+    val birthday: String
+        get() = getBirthDateFromSSN(nationalId)
+}
+
+data class CitizenWithDetails(
+    // Fields from Reserver
+    val id: UUID,
     val email: String,
     val phone: String,
-    val address: String?,
-    val addressSv: String?,
+    val municipalityCode: Int,
+    val municipalityName: String,
+    val streetAddress: String,
+    val streetAddressSv: String,
+    val postOffice: String,
+    val postOfficeSv: String,
+    val postalCode: String,
+    // Fields for Citizen
+    val nationalId: String,
+    val firstName: String,
+    val lastName: String,
+) {
+    val birthday: String
+        get() = getBirthDateFromSSN(nationalId)
+
+    val fullName: String
+        get() = "$firstName $lastName"
+}
+
+data class LocalizedName(
+    val sv: String?,
+    val fi: String?
+)
+
+data class CitizenAdUser(
+    val nationalId: String,
+    val firstName: String,
+    val lastName: String,
+    val email: String?,
+    val phone: String?,
+    val address: LocalizedName,
+    val postOffice: LocalizedName,
     val postalCode: String?,
-    val postOffice: String?,
-    val postOfficeSv: String?,
     val municipalityCode: Int,
 )
 
@@ -35,26 +82,6 @@ fun getBirthDateFromSSN(ssn: String): String {
 
     // Return the formatted birthdate as dd.mm.yyyy
     return "$day.$month.$fullYear"
-}
-
-data class CitizenWithDetails(
-    val id: UUID,
-    val nationalId: String,
-    val firstName: String,
-    val lastName: String,
-    val email: String,
-    val phone: String,
-    val address: String?,
-    val addressSv: String?,
-    val postalCode: String?,
-    val postOffice: String?,
-    val postOfficeSv: String?,
-    val municipalityCode: Int,
-    val municipalityName: String,
-    val fullName: String = "$firstName $lastName"
-) {
-    val birthday: String
-        get() = getBirthDateFromSSN(nationalId)
 }
 
 data class Municipality(

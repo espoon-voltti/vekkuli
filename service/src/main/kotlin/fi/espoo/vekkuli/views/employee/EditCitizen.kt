@@ -76,7 +76,7 @@ class EditCitizen {
             formComponents.textInput(
                 "boatSpaceReservation.title.address",
                 "address",
-                citizen.address
+                citizen.streetAddress
             )
 
         val emailInput =

@@ -1,7 +1,7 @@
-CREATE TYPE reserver_type AS ENUM ('citizen', 'organization');
+CREATE TYPE reserver_type AS ENUM ('Citizen', 'Organization');
 
 CREATE TABLE reserver (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY NOT NULL,
     type reserver_type NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
@@ -38,7 +38,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trigger_check_citizen_type
     BEFORE INSERT OR UPDATE ON citizen
     FOR EACH ROW
-EXECUTE FUNCTION check_reserver_type('citizen', 'id');
+EXECUTE FUNCTION check_reserver_type('Citizen', 'id');
 
 -- copy data from old citizen table to a new reserver table
 INSERT INTO reserver (
@@ -56,7 +56,7 @@ INSERT INTO reserver (
     post_office,
     post_office_sv
 )
-SELECT id, 'citizen' AS type, CAST(created as TIMESTAMP) as created_at, CAST(updated as TIMESTAMP) as updated_at,
+SELECT id, 'Citizen' AS type, CAST(created as TIMESTAMP) as created_at, CAST(updated as TIMESTAMP) as updated_at,
        CONCAT(first_name, ' ', last_name) as name,
        email, phone,
        municipality_code,
@@ -93,7 +93,7 @@ CREATE TABLE organization (
 CREATE TRIGGER trigger_check_organization_type
     BEFORE INSERT OR UPDATE ON organization
     FOR EACH ROW
-EXECUTE FUNCTION check_reserver_type('organization', 'id');
+EXECUTE FUNCTION check_reserver_type('Organization', 'id');
 
 CREATE TABLE organization_member (
     organization_id UUID NOT NULL REFERENCES reserver(id),
@@ -116,12 +116,12 @@ CREATE TABLE organization_member (
 CREATE TRIGGER trigger_check_organization_member_citizen_type
     BEFORE INSERT OR UPDATE ON organization_member
     FOR EACH ROW
-EXECUTE FUNCTION check_reserver_type('citizen', 'member_id');
+EXECUTE FUNCTION check_reserver_type('Citizen', 'member_id');
 
 CREATE TRIGGER trigger_check_organization_member_organization_type
     BEFORE INSERT OR UPDATE ON organization_member
     FOR EACH ROW
-EXECUTE FUNCTION check_reserver_type('organization', 'organization_id');
+EXECUTE FUNCTION check_reserver_type('Organization', 'organization_id');
 
 CREATE OR REPLACE FUNCTION update_reserver_name()
     RETURNS TRIGGER AS $$

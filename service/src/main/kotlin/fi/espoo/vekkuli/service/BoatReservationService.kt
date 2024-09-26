@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.utils.mToCm
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,63 +25,6 @@ sealed class PaymentProcessResult {
     data class HandledAlready(
         val reservation: BoatSpaceReservationDetails
     ) : PaymentProcessResult()
-}
-
-interface BoatSpaceReservationRepository {
-    fun getBoatSpaceReservationIdForPayment(id: UUID): Int
-
-    fun getBoatSpaceReservationWithPaymentId(id: UUID): BoatSpaceReservationDetails?
-
-    fun updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int?
-
-    fun getReservationForCitizen(id: UUID): ReservationWithDependencies?
-
-    fun getReservationForEmployee(id: UUID): ReservationWithDependencies?
-
-    fun getReservationWithCitizen(id: Int): ReservationWithDependencies?
-
-    fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies?
-
-    fun removeBoatSpaceReservation(
-        id: Int,
-        citizenId: UUID,
-    ): Unit
-
-    fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails>
-
-    fun getBoatSpaceReservation(
-        reservationId: Int,
-        citizenId: UUID,
-    ): BoatSpaceReservationDetails?
-
-    fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem>
-
-    fun insertBoatSpaceReservation(
-        citizenId: UUID,
-        boatSpaceId: Int,
-        startDate: LocalDate,
-        endDate: LocalDate,
-    ): BoatSpaceReservation
-
-    fun insertBoatSpaceReservationAsEmployee(
-        employeeId: UUID,
-        boatSpaceId: Int,
-        startDate: LocalDate,
-        endDate: LocalDate,
-    ): BoatSpaceReservation
-
-    fun updateBoatInBoatSpaceReservation(
-        reservationId: Int,
-        boatId: Int,
-        citizenId: UUID,
-        reservationStatus: ReservationStatus
-    ): BoatSpaceReservation
-
-    fun updateReservationWithPayment(
-        reservationId: Int,
-        paymentId: UUID,
-        citizenId: UUID,
-    ): BoatSpaceReservation
 }
 
 interface ReservationWarningRepository {
@@ -123,7 +67,7 @@ class BoatReservationService(
     private val paymentService: PaymentService,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val reservationWarningRepo: ReservationWarningRepository,
-    private val citizenRepo: CitizenRepository,
+    private val reserverRepo: ReserverRepository,
     private val boatRepository: BoatRepository,
     private val emailService: TemplateEmailService,
     private val messageUtil: MessageUtil,
@@ -325,7 +269,9 @@ class BoatReservationService(
                 )
             }
 
-        citizenRepo.updateCitizen(citizenId, input.phone ?: "", input.email ?: "")
+        reserverRepo.updateCitizen(
+            UpdateCitizenParams(id = citizenId, phone = input.phone ?: "", email = input.email ?: "")
+        )
         boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(input.reservationId, boat.id, citizenId, reservationStatus)
     }
 
