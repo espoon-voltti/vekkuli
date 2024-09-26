@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import expressHttpProxy from 'express-http-proxy'
 
 import { errorHandler } from './middleware/errors.js'
@@ -47,7 +47,11 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   router.get('/ext/*', proxy)
   router.get('/', proxy)
 
-  router.all('/system/*', (_, res) => res.sendStatus(404))
+  router.all(
+    '/system/*',
+    // TODO fix the any. This was added to make the build pass
+    (_: Request, res: Response) => res.sendStatus(404) as any
+  )
 
   if (config.sfi.type === 'mock') {
     router.use('/auth/saml-suomifi', createDevSfiRouter(sessions))
