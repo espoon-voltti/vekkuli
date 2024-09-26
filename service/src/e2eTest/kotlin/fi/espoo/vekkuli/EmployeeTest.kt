@@ -159,6 +159,7 @@ class EmployeeTest : PlaywrightTest() {
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lenghtFilterInput.fill("6")
         reservationPage.lenghtFilterInput.blur()
+        page.pause()
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
