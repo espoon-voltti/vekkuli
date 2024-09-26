@@ -50,6 +50,7 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
   router.all(
     '/system/*',
     // TODO fix the any. This was added to make the build pass
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_: Request, res: Response) => res.sendStatus(404) as any
   )
 
