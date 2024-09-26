@@ -18,6 +18,18 @@ enum class ReservationStatus {
     Invoiced
 }
 
+data class BoatSpace(
+    val id: Int,
+    val type: BoatSpaceType,
+    val section: String,
+    val placeNumber: Int,
+    val amenity: BoatSpaceAmenity,
+    val widthCm: Int,
+    val lengthCm: Int,
+    val description: String,
+    val excludedBoatTypes: List<BoatType>? = null,
+)
+
 data class BoatSpaceReservation(
     val id: Int,
     val boatSpaceId: Int,

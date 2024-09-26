@@ -100,7 +100,7 @@ class BoatSpaceForm {
             """
             } else {
                 """
-            <input type='hidden' name='boatId' value='0'>
+            <input type="hidden" name="boatId" value="0">
         """
             }
 
@@ -258,9 +258,9 @@ class BoatSpaceForm {
                 </div>
             </div>
             <div class="block">
-                    $email
-                    $phone
-                </div> 
+                $email
+                $phone
+            </div> 
             """.trimIndent()
 
         val citizenFirstName =
@@ -349,64 +349,70 @@ class BoatSpaceForm {
         // language=HTML
         val citizenSearch =
             """
-                    <div id="citizen-results-container" class="container" x-data='{citizenFullName: "",  updateFullName(event) {
-                const selectElement = event.target;
-                if (selectElement.selectedOptions.length > 0) {
-                    const selectedOption = selectElement.selectedOptions[0];
-                    this.citizenFullName = selectedOption.dataset.fullname;
-                } else {
-                    this.citizenFullName = "";
-                };
-            } }'>
-                      <div class="field" id="customer-search-container">
-                        <label class="label">${t("boatApplication.select.citizen")}</label>
-                        <div class="control width-is-half">
-                            <p class="control has-icons-left has-icons-right">
-                              <input x-model="citizenFullName" id="customer-search" 
-                                    placeholder="${t("boatApplication.placeholder.searchCitizens")}"
-                                    name="nameParameter" class="input search-input" type="text" 
-                                    hx-get="/virkailija/venepaikka/varaus/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
-                                    hx-target="#citizen-results">
-                                <span class="icon is-small is-left">
-                                  ${icons.search}
-                                </span>
-                                <span id="citizen-empty-input" x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''">
-                                  ${icons.xMark}
-                                </span>
-                              </p>
+            <div id="citizen-results-container" class="container" 
+                x-data='{citizenFullName: "", citizenId:"", updateFullName(event) {
+                    const selectElement = event.target;
+                    if (selectElement.selectedOptions.length > 0) {
+                        const selectedOption = selectElement.selectedOptions[0];
+                        this.citizenFullName = selectedOption.dataset.fullname;
+                        this.citizenId = selectedOption.value;
+                    } else {
+                        this.citizenFullName = "";
+                        this.citizenId = "";
+                    };
+                }}'>
+                <div class="field" id="customer-search-container">
+                    <label class="label">${t("boatApplication.select.citizen")}</label>
+                    <div class="control width-is-half">
+                        <p class="control has-icons-left has-icons-right">
+                            <input x-model="citizenFullName" id="customer-search" 
+                                placeholder="${t("boatApplication.placeholder.searchCitizens")}"
+                                name="nameParameter" class="input search-input" type="text" 
+                                hx-get="/virkailija/venepaikka/varaus/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
+                                hx-target="#citizen-results">
+                            <span class="icon is-small is-left">
+                                ${icons.search}
+                            </span>
+                            <span id="citizen-empty-input" x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''; citizenId = ''">
+                                ${icons.xMark}
+                            </span>
+                        </p>
                                
-                              <!-- Where the results will be displayed -->                    
-                            <div id="citizen-results" class="select is-multiple" ></div>                   
-                        </div>
-                        <div id="citizenId-error-container">
-                                    <span id="citizenId-error" class="help is-danger" style="visibility: hidden">${t(
-                "validation.required"
-            )}</span>
-                                </div>
-                      </div>
-                      <template x-if="citizenFullName != ''">
-                        <div id='citizen-details' class="block"></div>
-                      </template>
+                        <!-- Where the results will be displayed -->                    
+                        <div id="citizen-results" class="select is-multiple" ></div>                   
                     </div>
+                    <input id="citizenId" name="citizenId" x-model.fill="citizenId" data-required hidden />
+                    <div id="citizenId-error-container">
+                        <span id="citizenId-error" class="help is-danger" style="visibility: hidden" x-show="citizenId == ''">
+                            ${t("validation.required")}
+                        </span>
+                    </div>
+                </div>
+                
+                
+                
+                <template x-if="citizenFullName != ''">
+                    <div id='citizen-details' class="block">
+                    
+                    </div>
+                </template>
+            </div>
             """.trimIndent()
 
         // language=HTML
         val customerTypeRadioButtons =
             """
-                        <div x-data='{citizenSelection: "newCitizen"}'>
-                    <div class="field">
-                             <h4 class="label required" >${t("boatApplication.title.citizenType")}</h4>
-                             <div class="control is-flex-direction-row">
-                             
-                        
+            <div x-data='{citizenSelection: "newCitizen"}'>
+                <div class="field">
+                    <h4 class="label required" >${t("boatApplication.title.citizenType")}</h4>
+                    <div class="control is-flex-direction-row">
                         <div class="radio">
                             <input
                                 x-model="citizenSelection"
                                 type="radio"
-                                 name="citizenSelection"
+                                name="citizenSelection"
                                 value="newCitizen"
                                 id="new-citizen-selector"
-                                hx-preserve='true'
                             />
                             <label for="newCitizen">${t("boatApplication.citizenOptions.newCitizen")}</label>
                         </div>
@@ -417,31 +423,17 @@ class BoatSpaceForm {
                                 name="citizenSelection"
                                 value="existingCitizen"
                                 id="existing-citizen-selector"
-                                hx-preserve='true'
                             />
                             <label for="existingCitizen">${t("boatApplication.citizenOptions.existingCitizen")}</label>
                         </div>
-                        
-                      
-                    
-                             </div>
-                         </div> 
-                         <template x-if="citizenSelection === 'newCitizen'">
-                            $citizenInputFields
-                            </template>
-                            <template x-if="citizenSelection === 'existingCitizen'">
-                             <div x-init="htmx.process(document.getElementById('citizen-results-container'))"  class="block"> $citizenSearch</div>
-            </template>
-                           
-                            </template>
-                         </div>
-            """.trimIndent()
-
-        // language=HTML
-        val addCitizen =
-            """
-            <div >
-                $customerTypeRadioButtons
+                    </div>
+                </div> 
+                <template x-if="citizenSelection === 'newCitizen'">
+                    $citizenInputFields
+                </template>
+                <template x-if="citizenSelection === 'existingCitizen'">
+                    <div x-init="htmx.process(document.getElementById('citizen-results-container'))" class="block"> $citizenSearch</div>
+                </template>
             </div>
             """.trimIndent()
 
@@ -450,14 +442,13 @@ class BoatSpaceForm {
             if (userType == UserType.CITIZEN) {
                 citizenInformation
             } else {
-                addCitizen
+                customerTypeRadioButtons
             }
 
         // language=HTML
         return """
             <section class="section">
                 <div class="container" id="container" x-data="{ modalOpen: false }"> 
-                
                     <div class="container">
                         <button x-on:click="modalOpen = true" class="icon-text">
                             <span class="icon">
@@ -474,7 +465,6 @@ class BoatSpaceForm {
                         action="/${userType.path}/venepaikka/varaus/${reservation.id}"
                         method="post"
                         novalidate>
-                        
                         
                         $boatSpaceInformation
                         $citizenContainer  
@@ -527,7 +517,7 @@ class BoatSpaceForm {
                                                 name="noRegistrationNumber" 
                                                 id="noRegistrationNumber" 
                                                 @click="noReg = !noReg"
-                                                ${if (input.noRegistrationNumber == true) "checked" else ""}
+                                                ${ if (input.noRegistrationNumber == true) "checked" else "" }
                                                 />
                                         <span>${t("boatApplication.noRegistrationNumber")}</span>
                                    </label> 
@@ -691,15 +681,15 @@ class BoatSpaceForm {
 
         return (
             """
-            <select x-show="citizenFullName != ''" multiple size="$listSize" name='citizenIdOption' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  hx-trigger="change"
-                                    hx-target="#citizen-details" @change="updateFullName">
+            <select x-show="citizenFullName != ''" multiple size="$listSize" name='citizenIdOption' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  
+                hx-trigger="change" hx-target="#citizen-details" @change="updateFullName">
             ${
                 citizens.joinToString("\n") { citizen ->
                     """
                     <option id="option-${citizen.id}" role="option" value="${citizen.id}" 
                         data-fullname="${citizen.fullName}">
                         <p>${citizen.fullName}
-                       <span class='is-small'>${citizen.birthday}</span></p>
+                        <span class='is-small'>${citizen.birthday}</span></p>
                     </option>
                     """.trimIndent()
                 }
@@ -729,35 +719,34 @@ class BoatSpaceForm {
 
         return (
             """
-             <div class='columns'>
-                <div class='column'>
+             <div class="columns">
+                <div class="column">
                     $firstNameField
-                  </div>
-                  <div class='column'>
+                </div>
+                <div class="column">
                     $lastNameField
-                  </div>
-                  <div class='column'>
+                </div>
+                <div class="column">
                     $birthdayField
-                  </div>
-                  <div class='column'>
+                </div>
+                <div class="column">
                     $addressInput
-                  </div>
+                </div>
              </div>
-             <div class='columns'>
-                <div class='column'>
+             <div class="columns">
+                <div class="column">
                     $postalCodeField
                 </div>
-                <div class='column'>
+                <div class="column">
                     $cityField
                 </div>
-                <div class='column'>
+                <div class="column">
                     $emailInput
                 </div>
-                <div class='column'>
+                <div class="column">
                     $phoneInput
                 </div>
             </div>
-             <input hidden name='citizenId' value="${citizen.id}">
             """.trimIndent()
         )
     }

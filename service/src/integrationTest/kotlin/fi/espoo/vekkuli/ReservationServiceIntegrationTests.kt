@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.ReserveBoatSpaceInput
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -102,20 +103,29 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should add reservation warnings on successful payment with issues`() {
-        val madeReservation = createReservationInPaymentState(reservationService, citizenId)
+    fun `should add reservation warnings on reservation with issues`() {
+        val madeReservation = createReservationInPaymentState(reservationService, citizenId, 1)
 
-        val paymentParams = CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
-
-        val payment = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
-
-        reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3, citizenId, ReservationStatus.Payment)
-
-        reservationService.handlePaymentResult(
-            mapOf("checkout-stamp" to payment.id.toString()),
-            success = true
+        reservationService.reserveBoatSpace(
+            citizenId,
+            ReserveBoatSpaceInput(
+                madeReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                email = "email@email.com",
+                phone = "0403849283"
+            ),
+            ReservationStatus.Payment,
         )
-
         val reservation =
             reservationService
                 .getBoatSpaceReservations(
@@ -224,16 +234,29 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         createReservationInConfirmedState(reservationService, citizenId, 1, 1)
         createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
 
-        val expectedBoatSpaceWithWarnings = 3
-        val madeReservation = createReservationInPaymentState(reservationService, citizenId, expectedBoatSpaceWithWarnings)
-        val paymentParams = CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
-        val payment = reservationService.addPaymentToReservation(madeReservation.id, paymentParams)
-        reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, 3, citizenId, ReservationStatus.Payment)
+        val madeReservation = createReservationInPaymentState(reservationService, citizenId, 3)
 
-        reservationService.handlePaymentResult(
-            mapOf("checkout-stamp" to payment.id.toString()),
-            success = true
+        reservationService.reserveBoatSpace(
+            citizenId,
+            ReserveBoatSpaceInput(
+                madeReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                email = "email@email.com",
+                phone = "0403849283"
+            ),
+            ReservationStatus.Payment,
         )
+
         val reservationsWithWarnings =
             reservationService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
@@ -282,5 +305,19 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
         assertEquals(3, reservations.size, "reservations are filtered correctly")
         assertEquals(listOf(1, 2, 177), reservations.map { it.boatSpaceId }, "reservations are sorted by place and amenity")
+    }
+
+    @Test
+    fun `should return boat space related to reservation`() {
+        val boatSpaceId = 1
+        val newReservation =
+            reservationService.insertBoatSpaceReservation(
+                citizenId,
+                boatSpaceId,
+                startDate = LocalDate.now(),
+                endDate = LocalDate.now(),
+            )
+        val boatSpace = reservationService.getBoatSpaceRelatedToReservation(newReservation.id)
+        assertEquals(boatSpaceId, boatSpace?.id, "Correct boat space is fetched")
     }
 }

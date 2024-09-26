@@ -97,20 +97,6 @@ class BoatReservationService(
             return PaymentProcessResult.Success(reservation)
         }
 
-        addReservationWarnings(
-            reservation.id,
-            reservation.boatId,
-            reservation.boatSpaceWidthCm,
-            reservation.boatSpaceLengthCm,
-            reservation.amenity,
-            reservation.boatWidthCm,
-            reservation.boatLengthCm,
-            reservation.boatOwnership,
-            reservation.boatWeightKg,
-            reservation.boatType,
-            reservation.excludedBoatTypes ?: listOf()
-        )
-
         emailService.sendEmail(
             "varausvahvistus",
             null,
@@ -222,6 +208,9 @@ class BoatReservationService(
         citizenId: UUID,
     ): BoatSpaceReservationDetails? = boatSpaceReservationRepo.getBoatSpaceReservation(reservationId, citizenId)
 
+    fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace? =
+        boatSpaceReservationRepo.getBoatSpaceRelatedToReservation(reservationId)
+
     fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
@@ -235,6 +224,9 @@ class BoatReservationService(
         input: ReserveBoatSpaceInput,
         reservationStatus: ReservationStatus
     ) {
+        val boatSpace =
+            getBoatSpaceRelatedToReservation(input.reservationId)
+                ?: throw IllegalArgumentException("Reservation not found")
         val boat =
             if (input.boatId == 0 || input.boatId == null) {
                 boatRepository.insertBoat(
@@ -268,6 +260,19 @@ class BoatReservationService(
                     )
                 )
             }
+        addReservationWarnings(
+            input.reservationId,
+            boat.id,
+            boatSpace.widthCm,
+            boatSpace.lengthCm,
+            boatSpace.amenity,
+            boat.widthCm,
+            boat.lengthCm,
+            boat.ownership,
+            boat.weightKg,
+            boat.type,
+            boatSpace.excludedBoatTypes ?: listOf()
+        )
 
         reserverRepo.updateCitizen(
             UpdateCitizenParams(id = citizenId, phone = input.phone ?: "", email = input.email ?: "")
