@@ -458,7 +458,7 @@ a.active {
   width: 50%;
 }
 
-.reservation-list {
+.form-section {
   display: flex;
   flex-direction: column;
   gap: $spacing-large;
@@ -467,8 +467,8 @@ a.active {
   border-bottom: solid 1px $grey;
 }
 
-.reservation-list.no-bottom-border,
-.reservation-list:last-child {
+.form-section.no-bottom-border,
+.form-section:last-child {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: $spacing-large;

@@ -15,9 +15,7 @@ class BoatSpaceReservationList {
     @Autowired
     lateinit var icons: Icons
 
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(
         harbors: List<Location>,
@@ -167,7 +165,8 @@ class BoatSpaceReservationList {
                             <p>${t("boatApplication.ownershipOption.${result.boatOwnership}")}</p>
                             ${if (result.hasWarning(
                         "BoatFutureOwner"
-                    ) || result.hasWarning("BoatCoOwner")
+                    ) ||
+                    result.hasWarning("BoatCoOwner")
                 ) {
                     icons.warningExclamation(false)
                 } else {
@@ -251,7 +250,7 @@ class BoatSpaceReservationList {
                             $warningFilterCheckbox
                         </div>
 
-                        <div class="reservation-list block">
+                        <div class="reservation-list form-section block">
                             <table class="table is-hoverable">
                                 <thead>
                                 <tr class="table-borderless">
