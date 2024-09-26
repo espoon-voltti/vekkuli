@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import org.commonmark.node.Link
 import org.commonmark.node.Node
 import org.commonmark.node.Paragraph
 import org.commonmark.parser.Parser
@@ -15,6 +16,9 @@ internal class ParagraphAttributeProvider : AttributeProvider {
     ) {
         if (node is Paragraph) {
             attributes["class"] = "block"
+        }
+        if (node is Link) {
+            attributes["target"] = "_blank"
         }
     }
 }
