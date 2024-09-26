@@ -320,8 +320,10 @@ class BoatSpaceFormController {
                                 email = input.email,
                                 phone = input.phone,
                                 streetAddress = input.address,
+                                streetAddressSv = input.address,
                                 postalCode = input.postalCode,
-                                postOffice = input.postalOffice
+                                postOffice = input.postalOffice,
+                                postOfficeSv = input.postalOffice
                             )
                         )?.id
                 } else {

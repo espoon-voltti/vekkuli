@@ -418,12 +418,12 @@ class CitizenUserController {
                     phone = input.phoneNumber,
                     email = input.email,
                     streetAddress = input.address,
+                    streetAddressSv = input.address,
                     postalCode = input.postalCode,
                     municipalityCode = input.municipalityCode,
                     nationalId = input.nationalId,
-                    streetAddressSv = citizen.streetAddressSv,
-                    postOffice = citizen.postOffice,
-                    postOfficeSv = citizen.postOfficeSv
+                    postOffice = "",
+                    postOfficeSv = ""
                 )
             )!!
         return layout.render(
