@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.CitizenService
@@ -410,21 +411,21 @@ class CitizenUserController {
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
         val updatedCitizen =
             citizenService.updateCitizen(
-                citizenId,
-                input.firstName,
-                input.lastName,
-                input.phoneNumber,
-                input.email,
-                input.address,
-                input.postalCode,
-                input.municipalityCode,
-                input.nationalId,
-                // TODO when sending these from the form
-                // TODO use `input` instead of `citizen`
-                citizen.addressSv,
-                citizen.postOffice,
-                citizen.postOfficeSv,
-            )
+                UpdateCitizenParams(
+                    id = citizenId,
+                    firstName = input.firstName,
+                    lastName = input.lastName,
+                    phone = input.phoneNumber,
+                    email = input.email,
+                    streetAddress = input.address,
+                    streetAddressSv = input.address,
+                    postalCode = input.postalCode,
+                    municipalityCode = input.municipalityCode,
+                    nationalId = input.nationalId,
+                    postOffice = "",
+                    postOfficeSv = ""
+                )
+            )!!
         return layout.render(
             true,
             request.requestURI,

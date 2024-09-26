@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.repository
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
-import fi.espoo.vekkuli.service.BoatRepository
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked

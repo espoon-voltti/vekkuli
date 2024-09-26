@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.InExpr
 import fi.espoo.vekkuli.utils.buildNameSearchClause
@@ -51,12 +50,12 @@ class JdbiBoatSpaceReservationRepository(
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
-                           c.email, 
-                           c.phone,
+                           r.email, 
+                           r.phone,
                            c.national_id,
-                           c.address,
-                           c.postal_code,
-                           c.municipality_code,
+                           r.street_address,
+                           r.postal_code,
+                           r.municipality_code,
                            '' as home_town,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
@@ -80,12 +79,13 @@ class JdbiBoatSpaceReservationRepository(
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
                     JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.payment_id = :paymentId
-                    GROUP BY bsr.id, c.id, b.id, location.id, bs.id, price.id                    
+                    GROUP BY bsr.id, c.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code                
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
@@ -116,12 +116,13 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
                         location.name as location_name, price.price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
                     JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
@@ -140,12 +141,13 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
                         location.name as location_name, price.price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
                     JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
@@ -164,12 +166,13 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, c.first_name, c.last_name, c.email, c.phone, 
+                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
                         location.name as location_name, price.price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
                     JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
@@ -240,12 +243,12 @@ class JdbiBoatSpaceReservationRepository(
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
-                           c.email, 
-                           c.phone,
+                           r.email, 
+                           r.phone,
                            c.national_id,
-                           c.address,
-                           c.postal_code,
-                           c.municipality_code,
+                           r.street_address,
+                           r.postal_code,
+                           r.municipality_code,
                            '' as home_town,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
@@ -268,6 +271,7 @@ class JdbiBoatSpaceReservationRepository(
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
                     JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
@@ -316,12 +320,12 @@ class JdbiBoatSpaceReservationRepository(
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
-                           c.email, 
-                           c.phone,
+                           r.email, 
+                           r.phone,
                            c.national_id,
-                           c.address,
-                           c.postal_code,
-                           c.municipality_code,
+                           r.street_address,
+                           r.postal_code,
+                           r.municipality_code,
                            '' as home_town,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
@@ -344,6 +348,7 @@ class JdbiBoatSpaceReservationRepository(
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
                     JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
@@ -413,7 +418,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as full_name, c.first_name, c.last_name, c.email, c.phone, '' as home_town,
+                    SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as full_name, c.first_name, c.last_name, r.email, r.phone, '' as home_town,
                         b.registration_code as boat_registration_code,
                         b.ownership as boat_ownership,
                         location.name as location_name, 
@@ -423,6 +428,7 @@ class JdbiBoatSpaceReservationRepository(
                     FROM boat_space_reservation bsr
                     JOIN boat b on b.id = bsr.boat_id
                     JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id

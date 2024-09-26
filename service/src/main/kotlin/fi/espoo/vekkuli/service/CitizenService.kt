@@ -1,37 +1,29 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.CitizenRepository
+import fi.espoo.vekkuli.repository.ReserverRepository
+import fi.espoo.vekkuli.repository.SentMessageRepository
+import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import org.springframework.stereotype.Service
 import java.util.*
 
-interface CitizenRepository {
-    fun getCitizen(id: UUID): CitizenWithDetails?
+@Service
+class CitizenService(
+    private val citizenRepository: CitizenRepository,
+    private val reserverRepository: ReserverRepository,
+    private val sentMessagesRepository: SentMessageRepository,
+) {
+    fun getCitizen(id: UUID): CitizenWithDetails? = reserverRepository.getCitizenById(id)
 
-    fun getCitizenBySsn(ssn: String): Citizen?
+    fun getCitizens(nameSearch: String?): List<CitizenWithDetails> = reserverRepository.searchCitizens(nameSearch)
 
-    fun getCitizens(nameSearch: String?): List<CitizenWithDetails>
+    fun updateCitizen(params: UpdateCitizenParams): CitizenWithDetails? {
+        reserverRepository.updateCitizen(params)
+        return reserverRepository.getCitizenById(params.id)
+    }
 
-    fun updateCitizen(
-        id: UUID,
-        phone: String,
-        email: String,
-    ): CitizenWithDetails
-
-    // TODO: Validate email and nationalId
-    fun updateCitizen(
-        id: UUID,
-        firstName: String,
-        lastName: String,
-        phone: String,
-        email: String,
-        address: String?,
-        postalCode: String?,
-        municipalityCode: Int?,
-        nationalId: String?,
-        addressSv: String?,
-        postOffice: String?,
-        postOfficeSv: String?,
-    ): CitizenWithDetails
+    fun getCitizenBySsn(ssn: String): CitizenWithDetails? = reserverRepository.getCitizenByNationalId(ssn)
 
     fun insertCitizen(
         phone: String,
@@ -42,116 +34,20 @@ interface CitizenRepository {
         address: String,
         postalCode: String,
         municipalityCode: Int,
-    ): Citizen
-
-    fun getMemo(id: Int): CitizenMemoWithDetails?
-
-    fun getMemos(
-        citizenId: UUID,
-        category: MemoCategory
-    ): List<CitizenMemoWithDetails>
-
-    fun removeMemo(id: Int): Unit
-
-    fun insertMemo(
-        citizenId: UUID,
-        userId: UUID,
-        category: MemoCategory,
-        content: String
-    ): CitizenMemo
-
-    fun updateMemo(
-        id: Int,
-        updatedBy: UUID,
-        content: String
-    ): CitizenMemo
-
-    fun getMunicipalities(): List<Municipality>
-}
-
-@Service
-class CitizenService(
-    private val citizenRepository: CitizenRepository,
-    private val sentMessagesRepository: SentMessageRepository,
-) {
-    fun getCitizen(id: UUID): CitizenWithDetails? = citizenRepository.getCitizen(id)
-
-    fun getCitizens(nameSearch: String?): List<CitizenWithDetails> = citizenRepository.getCitizens(nameSearch)
-
-    fun updateCitizen(
-        id: UUID,
-        phone: String,
-        email: String,
-    ): CitizenWithDetails = citizenRepository.updateCitizen(id, phone, email)
-
-    fun updateCitizen(
-        id: UUID,
-        firstName: String,
-        lastName: String,
-        phone: String,
-        email: String,
-        address: String?,
-        postalCode: String?,
-        municipalityCode: Int?,
-        nationalId: String?,
-        addressSv: String?,
-        postOffice: String?,
-        postOfficeSv: String?,
     ): CitizenWithDetails =
-        citizenRepository.updateCitizen(
-            id,
+        reserverRepository.insertCitizen(
+            nationalId,
             firstName,
             lastName,
             phone,
             email,
             address,
+            address,
             postalCode,
-            municipalityCode,
-            nationalId,
-            addressSv,
-            postOffice,
-            postOfficeSv
+            "",
+            "",
+            municipalityCode
         )
-
-    fun updateCitizen(
-        id: UUID,
-        phone: String,
-        email: String,
-        address: String?,
-        postalCode: String?,
-        addressSv: String?,
-        postOffice: String?,
-        postOfficeSv: String?,
-    ): CitizenWithDetails? =
-        citizenRepository.getCitizen(id)?.let {
-            citizenRepository.updateCitizen(
-                id,
-                it.firstName,
-                it.lastName,
-                phone,
-                email,
-                address,
-                postalCode,
-                it.municipalityCode,
-                it.nationalId,
-                addressSv,
-                postOffice,
-                postOfficeSv
-            )
-        }
-
-    fun getCitizenBySsn(ssn: String): Citizen? = citizenRepository.getCitizenBySsn(ssn)
-
-    fun insertCitizen(
-        phone: String,
-        email: String,
-        nationalId: String,
-        firstName: String,
-        lastName: String,
-        address: String,
-        postalCode: String,
-        municipalityCode: Int,
-    ): Citizen = citizenRepository.insertCitizen(phone, email, nationalId, firstName, lastName, address, postalCode, municipalityCode)
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
@@ -184,4 +80,6 @@ class CitizenService(
     fun removeMemo(id: Int): Unit = citizenRepository.removeMemo(id)
 
     fun getMunicipalities(): List<Municipality> = citizenRepository.getMunicipalities()
+
+    fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails = reserverRepository.upsertCitizenUserFromAd(adUser)
 }

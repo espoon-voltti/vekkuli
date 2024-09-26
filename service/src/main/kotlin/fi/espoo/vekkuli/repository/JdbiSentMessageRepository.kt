@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.SentMessage
-import fi.espoo.vekkuli.service.SentMessageRepository
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked

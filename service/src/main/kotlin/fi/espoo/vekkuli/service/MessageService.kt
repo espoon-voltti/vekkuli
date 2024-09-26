@@ -1,31 +1,9 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.domain.SentMessage
+import fi.espoo.vekkuli.repository.SentMessageRepository
 import org.springframework.stereotype.Service
 import java.util.UUID
-
-interface SentMessageRepository {
-    fun addSentEmail(
-        senderId: UUID?,
-        senderAddress: String,
-        recipientId: UUID,
-        recipientEmail: String,
-        subject: String,
-        body: String,
-    ): SentMessage
-
-    fun setMessageSent(
-        messageId: UUID,
-        providerId: String
-    ): SentMessage
-
-    fun setMessageFailed(
-        messageId: UUID,
-        providerId: String
-    ): SentMessage
-
-    fun getMessagesSentToUser(citizenId: UUID): List<SentMessage>
-}
 
 @Service
 class MessageService(
