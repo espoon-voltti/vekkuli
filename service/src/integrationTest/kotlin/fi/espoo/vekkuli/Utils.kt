@@ -28,6 +28,12 @@ fun deleteAllPayments(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllOrganizationMembers(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM organization_member")
+    }
+}
+
 fun createReservationInConfirmedState(
     reservationService: BoatReservationService,
     citizenId: UUID,

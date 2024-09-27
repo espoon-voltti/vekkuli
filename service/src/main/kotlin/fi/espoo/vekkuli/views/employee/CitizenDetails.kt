@@ -518,17 +518,17 @@ class CitizenDetails {
             }">
                        ${renderTabNavi(citizen.id, SubTab.Reservations)}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
-                       <div class="reservation-list">
+                       <div class="reservation-list form-section">
                            $reservationList
                        </div>
                        <h3>${t("boatSpaceReservation.title.boats")}</h3>
-                       <div class="reservation-list no-bottom-border">
+                       <div class="reservation-list form-section no-bottom-border">
                            ${getBoatsList(boats.filter { it.reservationId != null })} 
                        </div>
                      
                       <div>
                          $showAllBoatsCheckbox
-                          <div class="reservation-list" x-show="showAllBoats">    
+                          <div class="reservation-list form-section" x-show="showAllBoats">    
                             ${getBoatsList(boats.filter { it.reservationId == null })} 
                            </div>
                       </div>

@@ -1,14 +1,11 @@
 package fi.espoo.vekkuli.domain
 
-import java.time.LocalDateTime
 import java.util.*
 
 data class Organization(
     // Fields from Reserver
     val id: UUID,
-    val type: ReserverType,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
+    val name: String,
     val email: String,
     val phone: String,
     val municipalityCode: Int,

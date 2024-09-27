@@ -266,8 +266,9 @@ class BoatSpaceFormController {
         @PathVariable usertype: String,
     ): String {
         val citizen = citizenService.getCitizen(citizenIdOption)
+
         return if (citizen != null) {
-            boatSpaceForm.citizenDetails(citizen)
+            boatSpaceForm.citizenDetails(citizen, citizenService.getMunicipalities())
         } else {
             ""
         }
