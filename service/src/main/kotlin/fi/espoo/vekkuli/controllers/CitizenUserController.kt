@@ -443,11 +443,15 @@ class CitizenUserController {
         @RequestParam citizenId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<String> {
+        val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         reservationService.markInvoicePaid(reservationId, paymentDate, info)
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+
+        val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $info"
+        citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, memoContent)
 
         return ResponseEntity.ok(
             citizenDetails.citizenPage(
