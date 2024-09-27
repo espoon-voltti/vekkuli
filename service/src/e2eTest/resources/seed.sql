@@ -483,11 +483,12 @@ INSERT INTO app_user (id, external_id, first_name, last_name, email)
 VALUES
     ('94833b54-132b-4ab8-b841-60df45809b3e', 'ad:001', 'Ville', 'Virkailija', 'ville@noreplytest.fi');
 
-INSERT INTO reserver (id, type, updated_at, phone, email, street_address, postal_code, municipality_code)
+INSERT INTO reserver (id, type, name, updated_at, phone, email, street_address, postal_code, municipality_code)
 VALUES
-    ('62d90eed-4ea3-4446-8023-8dad9c01dd34', 'Citizen', now(), '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 49),
-    ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Citizen', now(), '0405623462', 'leo@noreplytest.fi', '', '' , 49),
-    ('509edb00-5549-11ef-a1c7-776e76028a49', 'Citizen', now(), '04083677348', 'olivia@noreplytest.fi', '', '' , 49)
+    ('62d90eed-4ea3-4446-8023-8dad9c01dd34', 'Citizen', 'Mikko virtanen', now(), '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 49),
+    ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Citizen', 'Leo Korhonen', now(), '0405623462', 'leo@noreplytest.fi', '', '' , 49),
+    ('509edb00-5549-11ef-a1c7-776e76028a49', 'Citizen', 'Olivia Virtanen', now(), '04083677348', 'olivia@noreplytest.fi', '', '' , 49),
+    ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Organization', 'Espoon Pursiseura', now(), '0448101969', 'eps@noreplytest.fi', 'Nuottatie 19', '02230', 49)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO citizen (id, national_id, first_name, last_name)
@@ -495,6 +496,11 @@ VALUES
   ('62d90eed-4ea3-4446-8023-8dad9c01dd34', '010106A957V', 'Mikko', 'Virtanen'),
   ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', '150499-911U', 'Leo', 'Korhonen'),
   ('509edb00-5549-11ef-a1c7-776e76028a49', '031298-988S', 'Olivia', 'Virtanen')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO organization (id, business_id)
+VALUES
+  ('8b220a43-86a0-4054-96f6-d29a5aba17e7', '1015253-4')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO citizen_memo (created_by, category, citizen_id, content)
