@@ -54,7 +54,7 @@ class BoatSpaceForm(
             )
         val spaceDimensionField =
             formComponents.field(
-                "boatApplication.boatSpaceDimension",
+                "boatApplication.boatSpaceDimensions",
                 "boatSpaceDimension",
                 "${reservation.widthCm.cmToM()} m x ${reservation.lengthCm.cmToM()} m",
             )
@@ -542,139 +542,143 @@ class BoatSpaceForm(
                   
             """.trimIndent()
 
+        val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
         // language=HTML
         return """
-            <section class="section">
-                <div class="container" id="container" x-data="{ modalOpen: false }"> 
-                    <div class="container">
-                        <button x-on:click="modalOpen = true" class="icon-text">
-                            <span class="icon">
-                                <div></div>
-                            </span>
-                            <span >${t("boatSpaces.goBack")}</span>
-                        </button>
-                    </div> 
-                    ${stepIndicator.render(2)}
-                    ${sessionTimer.render(reservationTimeInSeconds)}
-                    <form
-                        id="form"
-                        class="column"
-                        action="/${userType.path}/venepaikka/varaus/${reservation.id}"
-                        method="post"
-                        novalidate>
-                        
-                        <div class='form-section'>
-                        $citizenContainer  
-                        </div>
-                         <div class='form-section'>
-                        $boatContainer
-                        </div>
-                         <div class='form-section'>
-                        $boatSpaceInformation
-                        </div>
-                           
+                        <section class="section">
+                            <div class="container" id="container" x-data="{ modalOpen: false }"> 
+                                <div class="container">
+                                    <button x-on:click="modalOpen = true" class="icon-text">
+                                        <span class="icon">
+                                            <div></div>
+                                        </span>
+                                        <span >${t("boatSpaces.goBack")}</span>
+                                    </button>
+                                </div> 
+                                ${stepIndicator.render(2)}
+                                ${sessionTimer.render(reservationTimeInSeconds)}
+                                <form
+                                    id="form"
+                                    class="column"
+                                    action="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                                    method="post"
+                                    novalidate>
+                                     <h1 class="title pb-l" id='boat-space-form-header'>${t(
+            "boatApplication.title.reservation"
+        )} $wholeLocationName</h1>
+                                    
+                                    <div class='form-section'>
+                                    $citizenContainer  
+                                    </div>
+                                     <div class='form-section'>
+                                    $boatContainer
+                                    </div>
+                                     <div class='form-section'>
+                                    $boatSpaceInformation
+                                    </div>
+                                       
 
-                        <div class="block">
-                            <div id="certify-control">
-                                <label class="checkbox">
-                                    <input
-                                        type="checkbox"
-                                        data-required
-                                        id="certifyInformation"
-                                        name="certifyInformation"
-                                    >
-                                    <span >${t("boatApplication.certifyInfoCheckbox")}</span>
-                                </label>
-                                <div id="certify-error-container">
-                                    <span id="certifyInformation-error" class="help is-danger" style="visibility: hidden">
-                                    ${t("validation.certifyInformation")}</span>
+                                    <div class="block">
+                                        <div id="certify-control">
+                                            <label class="checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    data-required
+                                                    id="certifyInformation"
+                                                    name="certifyInformation"
+                                                >
+                                                <span >${t("boatApplication.certifyInfoCheckbox")}</span>
+                                            </label>
+                                            <div id="certify-error-container">
+                                                <span id="certifyInformation-error" class="help is-danger" style="visibility: hidden">
+                                                ${t("validation.certifyInformation")}</span>
+                                            </div>
+                                        </div>
+                                        <div id="agree-control">
+                                            <label class="checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    data-required
+                                                    id="agreeToRules"
+                                                    name="agreeToRules"
+                                                />
+                                                <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
+                                            </label>
+                                            <div id="agree-error-container">
+                                                <span id="agreeToRules-error" class="help is-danger" style="visibility: hidden">
+                                                ${t("validation.agreeToRules")}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="field block">
+                                        <div class="control">
+                                            <button id="cancel"
+                                                class="button is-secondary"
+                                                type="button"
+                                                x-on:click="modalOpen = true">
+                                                ${t("boatApplication.cancelReservation")}
+                                            </button>
+                                            <button id="submit"
+                                                class="button is-primary"
+                                                type="submit">
+                                                ${t("boatApplication.continueToPaymentButton")}
+                                            </button>
+                                        </div>
+                                    </div> 
+                                </form>
+                                
+                                <script>
+                                    validation.init({forms: ['form']})
+                                    window.addEventListener('load', function() {
+                                        const type = localStorage.getItem('type');
+                                        if (type) {
+                                          document.getElementById("boatType").value = type;
+                                          localStorage.removeItem('type');
+                                        }
+                                        const width = localStorage.getItem('width');
+                                        if (width) {
+                                          document.getElementById('width').value = width;
+                                          localStorage.removeItem('width');
+                                        }
+                                        const length = localStorage.getItem('length');
+                                        if (length) {
+                                          document.getElementById('length').value = length;
+                                          localStorage.removeItem('length');
+                                        }
+                                    });
+                                        
+                                </script>
+                                
+                                <div id="confirm-cancel-modal" class="modal" x-show="modalOpen" style="display:none;" >
+                                    <div class="modal-underlay" @click="modalOpen = false"></div>
+                                    <div class="modal-content">
+                                        <p class="block has-text-left">${t("boatSpaceApplication.cancelConfirmation")}</p>
+                                        <p class="block has-text-left" ${t("boatSpaceApplication.cancelConfirmation2")}</p>
+                                        <button id="confirm-cancel-modal-cancel"
+                                            class="button"
+                                            x-on:click="modalOpen = false"
+                                            type="button">
+                                            ${t("cancel")}
+                                        </button>
+                                        <button id="confirm-cancel-modal-confirm"
+                                            class="button is-primary"
+                                            type="button"
+                                            hx-delete="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                                            hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
+                                            ${t("confirm")}
+                                        </button>
+                                    </div>
                                 </div>
+                                
                             </div>
-                            <div id="agree-control">
-                                <label class="checkbox">
-                                    <input
-                                        type="checkbox"
-                                        data-required
-                                        id="agreeToRules"
-                                        name="agreeToRules"
-                                    />
-                                    <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
-                                </label>
-                                <div id="agree-error-container">
-                                    <span id="agreeToRules-error" class="help is-danger" style="visibility: hidden">
-                                    ${t("validation.agreeToRules")}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="field block">
-                            <div class="control">
-                                <button id="cancel"
-                                    class="button is-secondary"
-                                    type="button"
-                                    x-on:click="modalOpen = true">
-                                    ${t("boatApplication.cancelReservation")}
-                                </button>
-                                <button id="submit"
-                                    class="button is-primary"
-                                    type="submit">
-                                    ${t("boatApplication.continueToPaymentButton")}
-                                </button>
-                            </div>
-                        </div> 
-                    </form>
-                    
-                    <script>
-                        validation.init({forms: ['form']})
-                        window.addEventListener('load', function() {
-                            const type = localStorage.getItem('type');
-                            if (type) {
-                              document.getElementById("boatType").value = type;
-                              localStorage.removeItem('type');
-                            }
-                            const width = localStorage.getItem('width');
-                            if (width) {
-                              document.getElementById('width').value = width;
-                              localStorage.removeItem('width');
-                            }
-                            const length = localStorage.getItem('length');
-                            if (length) {
-                              document.getElementById('length').value = length;
-                              localStorage.removeItem('length');
-                            }
-                        });
-                            
-                    </script>
-                    
-                    <div id="confirm-cancel-modal" class="modal" x-show="modalOpen" style="display:none;" >
-                        <div class="modal-underlay" @click="modalOpen = false"></div>
-                        <div class="modal-content">
-                            <p class="block has-text-left">${t("boatSpaceApplication.cancelConfirmation")}</p>
-                            <p class="block has-text-left" ${t("boatSpaceApplication.cancelConfirmation2")}</p>
-                            <button id="confirm-cancel-modal-cancel"
-                                class="button"
-                                x-on:click="modalOpen = false"
-                                type="button">
-                                ${t("cancel")}
-                            </button>
-                            <button id="confirm-cancel-modal-confirm"
-                                class="button is-primary"
-                                type="button"
-                                hx-delete="/${userType.path}/venepaikka/varaus/${reservation.id}"
-                                hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
-                                ${t("confirm")}
-                            </button>
-                        </div>
-                    </div>
-                    
-                </div>
-            </section>
+                        </section>
             """.trimIndent()
     }
 
     fun boatTypeWarning() =
         """
-        <div class="warning" id="boatSize-warning">
+        <div class="warning" id="boatType-warning">
             <p class="block">${t("boatSpaceApplication.boatTypeWarning")}</p>
             <button class="icon-text"
                     type="button"
@@ -690,7 +694,7 @@ class BoatSpaceForm(
 
     fun boatWeightWarning() =
         """
-        <div class="warning" id="boatSize-warning">
+        <div class="warning" id="boatWeight-warning">
             <p class="block">${t("boatSpaceApplication.boatWeightWarning")}</p>
             <button class="icon-text"
                     type="button"
