@@ -5,9 +5,6 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
-import fi.espoo.vekkuli.domain.SentMessage
 import fi.espoo.vekkuli.views.CommonComponents
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -166,7 +163,7 @@ class CitizenDetails {
         val reservationList =
             boatSpaceReservations.joinToString("\n") { reservation ->
                 """
-                <div class="reservation-card">
+                <div class="reservation-card" x-data="{ modalOpen: false }">
                     <div class="columns is-vcentered">
                         <div class="column is-narrow">
                             <h4>${t("citizenDetails.boatSpace")}: ${reservation.locationName} ${reservation.place}</h4>
@@ -238,8 +235,47 @@ class CitizenDetails {
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.paid")}</label>
-                                <p>03.06.2024 14:56</p> <!-- Placeholder for paid date -->
+                                <p></p> 
                             </div>
+                        </div>
+                    </div>
+                    ${
+                    if (reservation.status == ReservationStatus.Invoiced) {
+                        """<button class="button is-primary" @click="modalOpen=true">Merkitse lasku maksetuksi</button>"""
+                    } else {
+                        ""
+                    }}
+                    
+                    <div class="modal" x-show="modalOpen" style="display:none;">
+                        <div class="modal-underlay" @click="modalOpen = false"></div>
+                        <div class="modal-content">
+                        <h3>Merkitse lasku maksetuksi</h3>
+                        <form 
+                            hx-post="/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi" 
+                            hx-target="#citizen-details"
+                            hx-select="#citizen-details"
+                            hx-swap="outerHTML"
+                            >
+                            ${formComponents.textInput("citizenDetails.info", "info", "")}
+                            ${formComponents.dateInput("citizenDetails.paymentDate", "paymentDate", "")}
+                            <input hidden name="reservationId" value="${reservation.id}" />
+                            <input hidden name="citizenId" value="${citizen.id}" />
+                        
+                            <div class="block">
+                                <button id="ack-modal-cancel"
+                                        class="button"
+                                        x-on:click="modalOpen = false"
+                                        type="button">
+                                    ${t("cancel")}
+                                </button>
+                                <button
+                                        id="ack-modal-confirm"
+                                        class="button is-primary"
+                                        type="submit">
+                                    ${t("confirm")}
+                                </button>
+                            </div>
+                        </form>
                         </div>
                     </div>
                 </div>
@@ -350,11 +386,9 @@ class CitizenDetails {
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${
-                        t(
-                            "cancel"
-                        )
-                    }</button>
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
+                        "cancel"
+                    )}</button>
                                             <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
                                                 ${t("boatSpaceReservation.button.confirmDeletion")}</a>
                                         </div>

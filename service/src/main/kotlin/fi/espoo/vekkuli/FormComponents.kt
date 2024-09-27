@@ -250,4 +250,60 @@ class FormComponents {
                 </div>
             """.trimIndent()
     }
+
+    fun dateInput(
+        labelKey: String,
+        id: String,
+        value: String?,
+        required: Boolean? = false,
+        pattern: Pair<String, String>? = null,
+        attributes: String = "",
+        labelAttributes: String = "",
+        compact: Boolean = false,
+        serverValidate: Pair<String, String>? = null
+    ): String {
+        //language=HTML
+        val errorContainer =
+            """
+            <div id="$id-error-container">
+                <span id="$id-error" class="help is-danger"
+                style="visibility: hidden">
+                ${t("validation.required")}
+                </span>
+            </div>
+            <div id="$id-error-container">
+                <span id="$id-pattern-error" class="help is-danger"
+                style="visibility: hidden">
+                ${if (pattern != null) t(pattern.second) else ""}
+                </span>
+            </div>
+            <div id="$id-server-error-container">
+                <span id="$id-server-error" class="help is-danger" 
+                    style="visibility: hidden">
+                    ${if (serverValidate != null) t(serverValidate.second) else ""} 
+                </span>
+            </div> 
+            """
+
+        //language=HTML
+        return """
+            <div class="field">
+                <div class="control">
+                    <label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes >${t(labelKey)}</label>
+                    <input
+                    lang="fi"
+                        class="input ${if (compact) "compact" else ""}"
+                        ${if (required == true) "data-required" else ""}
+                        ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
+                        ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
+                        type="date"
+                        id="$id"
+                        name="$id"
+                        ${if (value != null) "value=\"$value\"" else ""}
+                        $attributes />
+                   $errorContainer
+                </div>
+            </div>
+            """.trimIndent()
+    }
 }
