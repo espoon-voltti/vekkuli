@@ -69,6 +69,7 @@ class CitizenUserController {
                 citizen,
                 boatSpaceReservations,
                 boats,
+                UserType.EMPLOYEE
             )
         )
     }
@@ -82,7 +83,7 @@ class CitizenUserController {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
-        return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats)
+        return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
     @GetMapping("/kayttaja/{citizenId}/viestit")
@@ -216,7 +217,8 @@ class CitizenUserController {
             BoatType.entries.map {
                 it.toString()
             },
-            listOf("Owner", "User", "CoOwner", "FutureOwner")
+            listOf("Owner", "User", "CoOwner", "FutureOwner"),
+            UserType.EMPLOYEE
         )
     }
 
@@ -312,7 +314,8 @@ class CitizenUserController {
                 BoatType.entries.map {
                     it.toString()
                 },
-                listOf("Owner", "User", "CoOwner", "FutureOwner")
+                listOf("Owner", "User", "CoOwner", "FutureOwner"),
+                UserType.EMPLOYEE
             )
         }
 
@@ -344,7 +347,8 @@ class CitizenUserController {
                 citizen,
                 boatSpaceReservations,
                 updatedBoats,
-                errors
+                UserType.EMPLOYEE,
+                errors,
             )
         )
     }
@@ -381,6 +385,7 @@ class CitizenUserController {
                 citizen,
                 boatSpaceReservations,
                 updatedBoats,
+                UserType.EMPLOYEE,
             )
         )
     }
@@ -429,7 +434,7 @@ class CitizenUserController {
         return layout.render(
             true,
             request.requestURI,
-            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats)
+            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
         )
     }
 }

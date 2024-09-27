@@ -73,7 +73,7 @@ class BoatSpaceReservationController {
             layout.render(
                 true,
                 employee.fullName,
-                boatSpaceReservationList.render(harbors, BoatSpaceAmenity.entries.toList(), reservations, params)
+                boatSpaceReservationList.render(harbors, BoatSpaceAmenity.entries.toList(), reservations, params, UserType.EMPLOYEE)
             )
         )
     }
