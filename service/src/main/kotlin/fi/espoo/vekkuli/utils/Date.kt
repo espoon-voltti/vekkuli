@@ -6,9 +6,12 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-val shortFormat = DateTimeFormatter.ofPattern("ddMMyy")
+val shortFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")
+val datePattern: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
 fun dateToShortString(date: LocalDate): String = date.format(shortFormat)
+
+fun dateToString(date: LocalDate): String = date.format(datePattern)
 
 fun getFirstWeekdayOfMonth(
     year: Int,

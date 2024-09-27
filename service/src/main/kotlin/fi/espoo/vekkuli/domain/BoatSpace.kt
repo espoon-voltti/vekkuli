@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.utils.*
 
 enum class ReservationValidity {
     ValidUntilFurtherNotice,
-    ValidUntilNextSeason,
+    FixedTerm,
 }
 
 data class BoatSpaceOption(
