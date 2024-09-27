@@ -20,7 +20,7 @@ class BoatSpaceForm(
     private val messageUtil: MessageUtil,
     private val formComponents: FormComponents,
     private val sessionTimer: SessionTimer,
-    private val stepIndicator: StepIndicator
+    private val stepIndicator: StepIndicator,
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -34,23 +34,68 @@ class BoatSpaceForm(
         municipalities: List<Municipality>,
     ): String {
         val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+        val harborField =
+            formComponents.field(
+                "boatApplication.harbor",
+                "harbor",
+                reservation.locationName,
+            )
+        val placeField =
+            formComponents.field(
+                "boatApplication.place",
+                "place",
+                "${reservation.section}${reservation.placeNumber}",
+            )
+        val boatSpaceTypeField =
+            formComponents.field(
+                "boatApplication.boatSpaceType",
+                "boatSpaceType",
+                reservation.section,
+            )
+        val spaceDimensionField =
+            formComponents.field(
+                "boatApplication.boatSpaceDimensions",
+                "boatSpaceDimension",
+                "${reservation.widthCm.cmToM()} m x ${reservation.lengthCm.cmToM()} m",
+            )
+        val amenityField =
+            formComponents.field(
+                "boatApplication.boatSpaceAmenity",
+                "boatSpaceAmenity",
+                t("boatSpaces.amenityOption.${reservation.amenity}"),
+            )
+
+        val reservationTimeField =
+            formComponents.field(
+                "boatApplication.reservationTime",
+                "reservationTime",
+                "${reservation.startDate} - ${reservation.endDate}",
+            )
+        val priceField =
+            formComponents.field(
+                "boatApplication.price",
+                "price",
+                """ <p>${t("boatApplication.boatSpaceFee")}: ${reservation.priceWithoutAlvInEuro} &euro;</p>
+                <p>${t("boatApplication.boatSpaceFeeAlv")}: ${reservation.alvPriceInEuro} &euro;</p>
+                <p>${t("boatApplication.boatSpaceFeeTotal")}: ${reservation.priceInEuro} &euro;</p>""",
+            )
+
         // language=HTML
         val boatSpaceInformation =
             """
-            <div class="block">
-                <h3 id="boat-space-form-header" class="header">${t("boatApplication.boatSpaceToApply")}</h3>
-                <p>${reservation.locationName}</p>
-                <p>${t("boatApplication.boatSpaceSection")} ${reservation.section}</p>
-                <p>${t("boatApplication.boatSpacePlace")} ${reservation.section}${reservation.placeNumber}</p>
-                <p>${reservation.widthCm.cmToM()} m x ${reservation.lengthCm.cmToM()} m</p>
-                <p>${t("boatSpaces.amenityOption.${reservation.amenity}")}</p>
-            </div>
-            <div class="block">
-                <h4 class="label">${t("boatApplication.boatSpacePrice")}</h4>
-                <p>${t("boatApplication.boatSpaceFee")}: ${reservation.priceWithoutAlvInEuro} &euro;</p>
-                <p>${t("boatApplication.boatSpaceFeeAlv")}: ${reservation.alvPriceInEuro} &euro;</p>
-                <p>${t("boatApplication.boatSpaceFeeTotal")}: ${reservation.priceInEuro} &euro;</p>
-            </div>
+                <h3 class="header">${t("boatApplication.boatSpaceInformation")}</h3>
+                ${
+                reservationInformationFields(
+                    harborField,
+                    placeField,
+                    boatSpaceTypeField,
+                    spaceDimensionField,
+                    amenityField,
+                    reservationTimeField,
+                    priceField
+                )
+            }
+            
             """.trimIndent()
 
         // language=HTML
@@ -70,7 +115,7 @@ class BoatSpaceForm(
             """.trimIndent()
 
         // language=HTML
-        val boatRadioButtons =
+        val chooseBoatButtons =
             if (citizen !== null) {
                 """
             <div class="field" ">
@@ -200,20 +245,21 @@ class BoatSpaceForm(
                      <h4 class="label required" >${t("boatApplication.ownerShipTitle")}</h4>
                      <div class="control is-flex-direction-row">
                      
-                ${ownershipOptions.joinToString("\n") { opt ->
-                """
-                <div class="radio">
-                    <input
-                        type="radio"
-                        name="ownership"
-                        value="$opt"
-                        id="ownership-$opt"
-                        ${if (input.ownership.toString() == opt) "checked" else ""}
-                    />
-                    <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
-                </div>
-                """.trimIndent()
-            }
+                ${
+                ownershipOptions.joinToString("\n") { opt ->
+                    """
+                    <div class="radio">
+                        <input
+                            type="radio"
+                            name="ownership"
+                            value="$opt"
+                            id="ownership-$opt"
+                            ${if (input.ownership.toString() == opt) "checked" else ""}
+                        />
+                        <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
+                    </div>
+                    """.trimIndent()
+                }
             }
                      </div>
                  </div> 
@@ -236,23 +282,31 @@ class BoatSpaceForm(
                 required = true
             )
 
+        val firstNameField = formComponents.field("boatApplication.firstName", "firstName", citizen?.firstName)
+        val lastNameField = formComponents.field("boatApplication.lastName", "lastName", citizen?.lastName)
+        val birthdayField = formComponents.field("boatApplication.birthday", "birthday", citizen?.birthday)
+        val municipalityField =
+            formComponents.field("boatApplication.municipality", "municipality", citizen?.municipalityName)
+        val addressField =
+            formComponents.field(
+                "boatApplication.address",
+                "address",
+                "${citizen?.streetAddress}, ${citizen?.postalCode}, ${citizen?.municipalityName}"
+            )
+
         val citizenInformation =
             """
-            <div class='block'
-                <h4 class="label">
-                    ${t("boatApplication.personalInformation")}
-                </h4> 
-                <div class="field">
-                    <p>${citizen?.firstName} ${citizen?.lastName}</p>
-                    <p>${citizen?.nationalId}</p>
-                    <p>${citizen?.streetAddress}</p>
-                    <p>${citizen?.postalCode} ${citizen?.municipalityName}</p>
-                </div>
-            </div>
-            <div class="block">
-                $email
-                $phone
-            </div> 
+                ${
+                citizenFields(
+                    firstNameField,
+                    lastNameField,
+                    birthdayField,
+                    municipalityField,
+                    phone,
+                    email,
+                    addressField
+                )
+            }
             """.trimIndent()
 
         val citizenFirstName =
@@ -285,7 +339,6 @@ class BoatSpaceForm(
                 "boatApplication.address",
                 "address",
                 citizen?.streetAddress ?: "",
-                required = true
             )
 
         val postalCode =
@@ -293,7 +346,6 @@ class BoatSpaceForm(
                 "boatApplication.postalCode",
                 "postalCode",
                 citizen?.postalCode ?: "",
-                required = true
             )
 
         val municipalityInput =
@@ -305,36 +357,33 @@ class BoatSpaceForm(
                 required = true
             )
 
+        val cityField =
+            formComponents.textInput(
+                "boatSpaceReservation.title.city",
+                "city",
+                citizen?.municipalityName ?: "",
+            )
+
         val citizenInputFields =
             """
             <div>
                 <h3 class="header">
                     ${t("boatApplication.personalInformation")}
                 </h3> 
-                <div class="block">
-                    $citizenFirstName
-                </div>
-                <div class="block">
-                    $citizenLastName
-                </div>
-                <div class="block">
-                    $citizenSsn
-                </div>
-                <div class="block">
-                    $address
-                </div>
-                <div class="block">
-                    $postalCode
-                </div>
-                <div class="block">
-                    $municipalityInput
-                </div>
-                <div class="block">
-                 $email
-                 </div
-                 <div class="block">
-                $phone
-                </div>
+                ${
+                citizenFields(
+                    citizenFirstName,
+                    citizenLastName,
+                    citizenSsn,
+                    municipalityInput,
+                    email,
+                    phone,
+                    address,
+                    postalCode,
+                    cityField,
+                )
+            }
+                
             </div>
             """.trimIndent()
 
@@ -431,14 +480,78 @@ class BoatSpaceForm(
 
         // language=HTML
         val citizenContainer =
-            if (userType == UserType.CITIZEN) {
-                citizenInformation
-            } else {
-                customerTypeRadioButtons
+            """
+                <h3 class="header">${t("boatApplication.title.reserver")}</h3>
+            ${
+                if (userType == UserType.CITIZEN) {
+                    citizenInformation
+                } else {
+                    customerTypeRadioButtons
+                }
             }
+            """
 
         // language=HTML
-        return """
+        val registrationNumberContainer =
+            """
+            <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
+                 
+                <div class="columns" >
+                    <template x-if="!noReg">
+                         <div class="column">
+                             $registrationNumberInput
+                         </div>
+                    </template>
+                    <div class="column">
+                        <label class="checkbox">
+                             <input type="checkbox" 
+                                     name="noRegistrationNumber" 
+                                     id="noRegistrationNumber" 
+                                     @click="noReg = !noReg"
+                                     ${if (input.noRegistrationNumber == true) "checked" else ""}
+                                     />
+                             <span>${t("boatApplication.noRegistrationNumber")}</span>
+                        </label> 
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
+
+        // language=HTML
+        val boatContainer =
+            """
+                   
+               <div class="block">
+                   <h3 class="header">${t("boatApplication.boatInformation")}</h3>
+                   $chooseBoatButtons
+                   
+                    <div id="boat-size-warning" >
+                    </div>
+                   <div id="boat-weight-warning" ></div>
+                   <div id="boat-type-warning" ></div>
+               </div>
+               
+               ${
+                boatInformationFields(
+                    boatNameInput,
+                    boatTypeSelect,
+                    widthInput,
+                    lengthInput,
+                    depthInput,
+                    weightInput,
+                    registrationNumberContainer,
+                    otherIdentifierInput,
+                    extraInformationInput,
+                    ownership
+                )
+            }
+                  
+            """.trimIndent()
+
+        val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
+        // language=HTML
+        return (
+            """
             <section class="section">
                 <div class="container" id="container" x-data="{ modalOpen: false }"> 
                     <div class="container">
@@ -458,68 +571,22 @@ class BoatSpaceForm(
                         method="post"
                         novalidate>
                         
-                        $boatSpaceInformation
+                         <h1 class="title pb-l" id='boat-space-form-header'>
+                            ${t("boatApplication.title.reservation")} 
+                            $wholeLocationName
+                        </h1>
+                                            
+                        <div class='form-section'>
                         $citizenContainer  
-                        
-                        <div class="block">
-                            <h3 class="header">${t("boatApplication.boatInformation")}</h3>
-                            $boatRadioButtons
                         </div>
-                       
-                        $boatTypeSelect
-                        <div id="boat-type-warning" class="block"></div>
-                        <div class="block">
-                            <div class="columns">
-                                <div class="column">
-                                    $lengthInput
-                                </div>
-                                <div class="column">
-                                    $widthInput
-                                </div>
-                            </div>
-                            
-                            <div id="boat-size-warning" class="block">
-                            </div>
-                        
-                            <div class="columns">
-                                <div class="column">
-                                    $depthInput
-                                </div>
-                                <div class="column">
-                                    $weightInput
-                                </div>
-                            </div>
-                            
-                            <div id="boat-weight-warning" class="block" >
-                            </div>
+                         <div class='form-section'>
+                        $boatContainer
                         </div>
-                        
-                        <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
-                            
-                           $boatNameInput
-                           <div class="columns" >
-                               <template x-if="!noReg">
-                                    <div class="column">
-                                        $registrationNumberInput
-                                    </div>
-                               </template>
-                               <div class="column">
-                                   <label class="checkbox">
-                                        <input type="checkbox" 
-                                                name="noRegistrationNumber" 
-                                                id="noRegistrationNumber" 
-                                                @click="noReg = !noReg"
-                                                ${ if (input.noRegistrationNumber == true) "checked" else "" }
-                                                />
-                                        <span>${t("boatApplication.noRegistrationNumber")}</span>
-                                   </label> 
-                               </div>
-                           </div>
-                           $otherIdentifierInput
-                           $extraInformationInput
-                           $ownership
+                         <div class='form-section'>
+                        $boatSpaceInformation
                         </div>
-
+                           
+            
                         <div class="block">
                             <div id="certify-control">
                                 <label class="checkbox">
@@ -616,11 +683,12 @@ class BoatSpaceForm(
                 </div>
             </section>
             """.trimIndent()
+        )
     }
 
     fun boatTypeWarning() =
         """
-        <div class="warning" id="boatSize-warning">
+        <div class="warning" id="boatType-warning">
             <p class="block">${t("boatSpaceApplication.boatTypeWarning")}</p>
             <button class="icon-text"
                     type="button"
@@ -636,7 +704,7 @@ class BoatSpaceForm(
 
     fun boatWeightWarning() =
         """
-        <div class="warning" id="boatSize-warning">
+        <div class="warning" id="boatWeight-warning">
             <p class="block">${t("boatSpaceApplication.boatWeightWarning")}</p>
             <button class="icon-text"
                     type="button"
@@ -693,7 +761,10 @@ class BoatSpaceForm(
     }
 
     // language=HTML
-    fun citizenDetails(citizen: CitizenWithDetails): String {
+    fun citizenDetails(
+        citizen: CitizenWithDetails,
+        municipalities: List<Municipality>,
+    ): String {
         val firstNameField =
             formComponents.field(
                 "boatSpaceReservation.title.firstName",
@@ -702,44 +773,194 @@ class BoatSpaceForm(
             )
         val lastNameField = formComponents.field("boatSpaceReservation.title.lastName", "lastName", citizen.lastName)
         val birthdayField = formComponents.field("boatSpaceReservation.title.birthday", "birthday", citizen.birthday)
-        val addressInput = formComponents.textInput("boatSpaceReservation.title.address", "address", citizen.streetAddress)
+        val addressInput =
+            formComponents.textInput("boatSpaceReservation.title.address", "address", citizen.streetAddress)
         val postalCodeField =
             formComponents.textInput("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
-        val cityField = formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.municipalityName)
+        val cityField =
+            formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.municipalityName)
         val emailInput = formComponents.textInput("boatApplication.email", "email", citizen.email, true)
         val phoneInput = formComponents.textInput("boatApplication.phone", "phone", citizen.phone, true)
-
+        val municipalityInput =
+            formComponents.select(
+                "boatSpaceReservation.title.municipality",
+                "municipalityCode",
+                citizen?.municipalityCode.toString(),
+                municipalities.map { Pair(it.code.toString(), it.name) },
+                required = true
+            )
         return (
             """
-             <div class="columns">
-                <div class="column">
-                    $firstNameField
-                </div>
-                <div class="column">
-                    $lastNameField
-                </div>
-                <div class="column">
-                    $birthdayField
-                </div>
-                <div class="column">
-                    $addressInput
-                </div>
-             </div>
-             <div class="columns">
-                <div class="column">
-                    $postalCodeField
-                </div>
-                <div class="column">
-                    $cityField
-                </div>
-                <div class="column">
-                    $emailInput
-                </div>
-                <div class="column">
-                    $phoneInput
-                </div>
-            </div>
+             ${
+                citizenFields(
+                    firstNameField,
+                    lastNameField,
+                    birthdayField,
+                    municipalityInput,
+                    phoneInput,
+                    emailInput,
+                    addressInput,
+                    postalCodeField,
+                    cityField,
+                )
+            }
             """.trimIndent()
+        )
+    }
+
+    private fun reservationInformationFields(
+        harborField: String,
+        placeField: String,
+        boatSpaceTypeField: String,
+        spaceDimensionField: String,
+        amenityField: String,
+        reservationTimeField: String,
+        priceField: String,
+    ) = // language=HTML
+
+        """
+        <div class='columns'>
+            <div class='column is-one-quarter'>
+                $harborField
+            </div>
+            <div class='column is-one-quarter'>
+                $placeField
+            </div>
+            <div class='column is-one-quarter'>
+                $boatSpaceTypeField
+            </div>
+            <div class='column is-one-quarter'>
+              $spaceDimensionField
+            </div>
+         </div>
+         <div class='columns'>
+            <div class='column is-one-quarter'>
+                $amenityField
+            </div>
+            <div class='column is-one-quarter'>
+                $reservationTimeField
+            </div>
+            <div class='column is-one-quarter' >
+               $priceField
+            </div>
+        </div>
+        """.trimIndent()
+
+    private fun boatInformationFields(
+        nameInput: String,
+        boatType: String,
+        boatWidth: String,
+        boatLength: String,
+        boatDepth: String,
+        boatWeight: String,
+        registrationNumber: String,
+        otherIdentification: String,
+        extraInformation: String,
+        ownership: String,
+    ) = // language=HTML
+
+        """
+        <div class='columns'>
+            <div class='column is-one-quarter'>
+                $nameInput
+            </div>
+            <div class='column is-one-quarter'>
+                $boatType
+            </div>
+            <div class='column is-one-quarter'>
+                $boatWidth
+            </div>
+            <div class='column is-one-quarter'>
+              $boatLength
+            </div>
+         </div>
+         <div class='columns'>
+            <div class='column '>
+                $boatDepth
+            </div>
+            <div class='column'>
+                $boatWeight
+            </div>
+            <div class='column is-half' >
+               $registrationNumber
+            </div>
+        </div>
+        <div class='columns'>
+            <div class='column is-one-quarter'>
+                $otherIdentification
+            </div>
+            <div class='column is-one-quarter'>
+               $extraInformation
+            </div>
+        </div>
+        <div class='columns'>
+            $ownership
+        </div>
+        """.trimIndent()
+
+    private fun citizenFields(
+        firstNameField: String,
+        lastNameField: String,
+        birthdayField: String,
+        municipalityField: String,
+        emailInput: String,
+        phoneInput: String,
+        address: String,
+        postalCodeField: String? = null,
+        cityField: String? = null,
+    ): String { // language=HTML
+        val addressField =
+            """
+            ${
+                if (postalCodeField != null || cityField != null) {
+                    """<div class='column is-one-quarter' >
+                       $address
+                    </div>
+                    <div class='column is-one-eight'>
+                        $postalCodeField
+                    </div>
+                    <div class='column is-one-eight'>
+                       $cityField
+                    </div>
+                    """
+                } else {
+                    """<div class='column is-half' >
+                       $address
+                    </div>
+                    """
+                }
+            }
+            """.trimIndent()
+
+        // language=HTML
+        return (
+            """<div class='columns'>
+                    <div class='column is-one-quarter'>
+                        $firstNameField
+                      </div>
+                      <div class='column is-one-quarter'>
+                        $lastNameField
+                      </div>
+                      <div class='column is-one-quarter'>
+                        $birthdayField
+                      </div>
+                      <div class='column is-one-quarter'>
+                      $municipalityField
+                        
+                      </div>
+                 </div>
+                 <div class='columns'>
+                    <div class='column is-one-quarter'>
+                    $phoneInput
+                        
+                    </div>
+                    <div class='column is-one-quarter'>
+                     $emailInput
+                        
+                    </div>
+                    $addressField
+                    
+                </div>"""
         )
     }
 }
