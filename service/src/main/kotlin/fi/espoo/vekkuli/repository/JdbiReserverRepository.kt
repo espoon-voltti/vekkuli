@@ -113,22 +113,6 @@ class JdbiReserverRepository(
                 .firstOrNull()
         }
 
-    override fun getOrganizationByBusinessId(businessId: String): Organization? =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    SELECT o.*, r.*, m.name as municipality_name
-                    FROM organization o
-                    JOIN reserver r ON r.id = o.id
-                    JOIN municipality m ON r.municipality_code = m.code
-                    WHERE o.business_id = :businessId
-                    """.trimIndent()
-                ).bind("businessId", businessId)
-                .mapTo<Organization>()
-                .firstOrNull()
-        }
-
     fun updateTable(
         table: String,
         id: UUID,
@@ -251,51 +235,6 @@ class JdbiReserverRepository(
                 .execute()
 
             getCitizenByNationalId(nationalId)!!
-        }
-
-    override fun insertOrganization(
-        businessId: String,
-        name: String,
-        phone: String,
-        email: String,
-        streetAddress: String,
-        streetAddressSv: String,
-        postalCode: String,
-        postOffice: String,
-        postOfficeSv: String,
-        municipalityCode: Int
-    ): Organization =
-        jdbi.withHandleUnchecked { handle ->
-            val id = UUID.randomUUID()
-            handle
-                .createUpdate(
-                    """
-                    INSERT INTO reserver (id, type, name, email, phone, municipality_code, street_address, street_address_sv, postal_code, post_office, post_office_sv)
-                    VALUES (:id, 'Organization', :name, :email, :phone, :municipalityCode, :streetAddress, :streetAddressSv, :postalCode, :postOffice, :postOfficeSv)
-                    """.trimIndent()
-                ).bind("id", id)
-                .bind("name", name)
-                .bind("email", email)
-                .bind("phone", phone)
-                .bind("municipalityCode", municipalityCode)
-                .bind("streetAddress", streetAddress)
-                .bind("streetAddress", streetAddressSv)
-                .bind("postalCode", postalCode)
-                .bind("postOffice", postOffice)
-                .bind("postOfficeSv", postOfficeSv)
-                .execute()
-
-            handle
-                .createUpdate(
-                    """
-                    INSERT INTO organization (id, business_id)
-                    VALUES (:id, :businessId)
-                    """.trimIndent()
-                ).bind("id", id)
-                .bind("businessId", businessId)
-                .execute()
-
-            getOrganizationByBusinessId(businessId)!!
         }
 
     override fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails {
