@@ -13,17 +13,17 @@ import java.util.*
 class JdbiBoatRepository(
     private val jdbi: Jdbi
 ) : BoatRepository {
-    override fun getBoatsForCitizen(citizenId: UUID): List<Boat> =
+    override fun getBoatsForReserver(reserverId: UUID): List<Boat> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     SELECT * FROM boat
-                    WHERE citizen_id = :citizenId
+                    WHERE reserver_id = :reserverId
                     ORDER BY id
                     """.trimIndent()
                 )
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
             val boats = query.mapTo<Boat>().list()
             boats.map {
                 val warningQuery =
@@ -90,7 +90,7 @@ class JdbiBoatRepository(
         }
 
     override fun insertBoat(
-        citizenId: UUID,
+        reserverId: UUID,
         registrationCode: String,
         name: String,
         widthCm: Int,
@@ -106,12 +106,12 @@ class JdbiBoatRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat (citizen_id, registration_code, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
-                    VALUES (:citizenId, :registrationCode, :name, :widthCm, :lengthCm, :depthCm, :weightKg, :type, :otherIdentification, :extraInformation, :ownership)
+                    INSERT INTO boat (reserver_id, registration_code, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
+                    VALUES (:reserverId, :registrationCode, :name, :widthCm, :lengthCm, :depthCm, :weightKg, :type, :otherIdentification, :extraInformation, :ownership)
                     RETURNING *
                     """.trimIndent()
                 )
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
             query.bind("registrationCode", registrationCode)
             query.bind("name", name)
             query.bind("widthCm", widthCm)

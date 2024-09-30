@@ -11,7 +11,7 @@ import java.util.*
 class BoatService(
     private val boatRepository: BoatRepository
 ) {
-    fun getBoatsForCitizen(citizenId: UUID): List<Boat> = boatRepository.getBoatsForCitizen(citizenId)
+    fun getBoatsForCitizen(citizenId: UUID): List<Boat> = boatRepository.getBoatsForReserver(citizenId)
 
     fun getBoat(boatId: Int): Boat? = boatRepository.getBoat(boatId)
 

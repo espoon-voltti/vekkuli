@@ -9,18 +9,18 @@ enum class MemoCategory {
     GroupExercise,
 }
 
-data class CitizenMemo(
+data class ReserverMemo(
     val id: Int,
     val createdAt: LocalDateTime,
     val createdBy: UUID?,
     val updatedAt: LocalDateTime?,
     val updatedBy: UUID?,
     val category: MemoCategory,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val content: String,
 )
 
-data class CitizenMemoWithDetails(
+data class ReserverMemoWithDetails(
     val id: Int,
     val createdAt: LocalDateTime,
     val createdById: UUID?,
@@ -29,6 +29,6 @@ data class CitizenMemoWithDetails(
     val updatedById: UUID?,
     val updatedBy: String?,
     val category: MemoCategory,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val content: String,
 )

@@ -6,14 +6,14 @@ import fi.espoo.vekkuli.domain.OwnershipStatus
 import java.util.*
 
 interface BoatRepository {
-    fun getBoatsForCitizen(citizenId: UUID): List<Boat>
+    fun getBoatsForReserver(reserverId: UUID): List<Boat>
 
     fun getBoat(boatId: Int): Boat?
 
     fun updateBoat(boat: Boat): Boat
 
     fun insertBoat(
-        citizenId: UUID,
+        reserverId: UUID,
         registrationCode: String,
         name: String,
         widthCm: Int,

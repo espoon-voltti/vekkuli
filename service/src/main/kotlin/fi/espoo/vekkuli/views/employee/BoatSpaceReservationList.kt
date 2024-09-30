@@ -144,7 +144,7 @@ class BoatSpaceReservationList {
                 <tr class="reservation-item"
                     id="boat-space-${result.boatSpaceId}"
                     hx-trigger="click"
-                    hx-get="/virkailija/kayttaja/${result.citizenId}"
+                    hx-get="/virkailija/kayttaja/${result.reserverId}"
                     hx-push-url="true"
                     hx-target=".section"
                     hx-select=".section">
@@ -155,7 +155,7 @@ class BoatSpaceReservationList {
                     </td>
                     <td>${result.section}</td>
                     <td>${t("boatSpaces.type${result.type}Option")}</td>
-                    <td><a href="/virkailija/kayttaja/${result.citizenId}">${result.firstName} ${result.lastName}</a></td>
+                    <td><a href="/virkailija/kayttaja/${result.reserverId}">${result.firstName} ${result.lastName}</a></td>
                     <td>${result.homeTown}</td>
                     <td></td>
                     <td>$startDateFormatted</td>
