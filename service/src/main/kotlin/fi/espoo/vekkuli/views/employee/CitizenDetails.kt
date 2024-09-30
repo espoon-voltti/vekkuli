@@ -243,7 +243,10 @@ class CitizenDetails {
                     </div>
                     ${
                     if (reservation.status == ReservationStatus.Invoiced) {
-                        """<button class="button is-primary" id="invoice-paid-button" @click="modalOpen=true">Merkitse lasku maksetuksi</button>"""
+                        """<button class="button is-primary" id="invoice-paid-button" @click="modalOpen=true">
+                                Merkitse lasku maksetuksi
+                            </button>
+                        """.trimMargin()
                     } else {
                         ""
                     }}
