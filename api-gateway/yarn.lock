@@ -262,17 +262,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/client@npm:1.5.12":
-  version: 1.5.12
-  resolution: "@redis/client@npm:1.5.12"
-  dependencies:
-    cluster-key-slot: "npm:1.1.2"
-    generic-pool: "npm:3.9.0"
-    yallist: "npm:4.0.0"
-  checksum: 64eb796e9e45571543f629cbf3532c1b31f046eba07bb0944f3af97aedd689ed26756633806966efe3bbca2327b46375889f1a80a3df3ccdf2e0c69fbe32f03b
-  languageName: node
-  linkType: hard
-
 "@redis/client@npm:1.6.0":
   version: 1.6.0
   resolution: "@redis/client@npm:1.6.0"
@@ -293,15 +282,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/json@npm:1.0.6":
-  version: 1.0.6
-  resolution: "@redis/json@npm:1.0.6"
-  peerDependencies:
-    "@redis/client": ^1.0.0
-  checksum: bedd8b6fd152ed480f993c6372288f210a9c0e60bb39c02861d5ce2cb5452119229435572cd94886cdbde5fbae014471fc179dff1dbc86f045782e0358af1b0f
-  languageName: node
-  linkType: hard
-
 "@redis/json@npm:1.0.7":
   version: 1.0.7
   resolution: "@redis/json@npm:1.0.7"
@@ -311,30 +291,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/search@npm:1.1.6":
-  version: 1.1.6
-  resolution: "@redis/search@npm:1.1.6"
-  peerDependencies:
-    "@redis/client": ^1.0.0
-  checksum: 7a2543012fc2c88ff4c6a6c9c1b537b472d5af340c2717f968562ef2ead713b02dd22cfadc5d5e16c0d32279a4c04bee974e0f20de416a3561a1221b3dccc790
-  languageName: node
-  linkType: hard
-
 "@redis/search@npm:1.2.0":
   version: 1.2.0
   resolution: "@redis/search@npm:1.2.0"
   peerDependencies:
     "@redis/client": ^1.0.0
   checksum: 25bba222c0fb1ec1f2db08fe157d30d56a8ffe234214c72d3a7a991daefe77f18c5e6440ab3aa297aef88bafd5448b04ac9fcd84671f2dadc8989712c06b63b4
-  languageName: node
-  linkType: hard
-
-"@redis/time-series@npm:1.0.5":
-  version: 1.0.5
-  resolution: "@redis/time-series@npm:1.0.5"
-  peerDependencies:
-    "@redis/client": ^1.0.0
-  checksum: be735fe7497b157ef8291fed157342a9a5017884488fa519b271745cfb9500a498d6f8e4bee6d34b58892d65f8ef7a3f4c458d083fb19892b4d3633d0d6c7db6
   languageName: node
   linkType: hard
 
@@ -558,15 +520,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pino-std-serializers@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@types/pino-std-serializers@npm:4.0.0"
-  dependencies:
-    pino-std-serializers: "npm:*"
-  checksum: 5ec2a45549092c445c97bfd19a3c44186e43754095a31eebdb11ac77a3f2d3dab1a81d504c696ae86dc904f8ae1c591618dbe4ce4ffe07c65c1a005c6e98a29f
-  languageName: node
-  linkType: hard
-
 "@types/qs@npm:*":
   version: 6.9.10
   resolution: "@types/qs@npm:6.9.10"
@@ -585,15 +538,6 @@ __metadata:
   version: 1.2.7
   resolution: "@types/range-parser@npm:1.2.7"
   checksum: 95640233b689dfbd85b8c6ee268812a732cf36d5affead89e806fe30da9a430767af8ef2cd661024fd97e19d61f3dec75af2df5e80ec3bea000019ab7028629a
-  languageName: node
-  linkType: hard
-
-"@types/redis@npm:^4.0.11":
-  version: 4.0.11
-  resolution: "@types/redis@npm:4.0.11"
-  dependencies:
-    redis: "npm:*"
-  checksum: 4b2d252368a7dc78738a98a8bcc817f92ca097511a901427628566f24f53998a2b1b524a85dea6a19307d4a95b55bd7d5a6ad7cc944ae8f39e54ca2f28ddf893
   languageName: node
   linkType: hard
 
@@ -2209,10 +2153,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"helmet@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "helmet@npm:7.1.0"
-  checksum: aa13b0907d9d31b65e4ec73093b58d7e94e83c06818cc06869f5eb95d205574a14f01ed71cadfac4a68b736a1a6d7ef2290f3f6ef77ac664c7e75b8f9eddf88c
+"helmet@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "helmet@npm:8.0.0"
+  checksum: cf30579d1dbd095e301458265fb6b3446d1ee0598c99b5e946afda8a72c035a6a7ebf2176168d5ca2541e6e522a88fb58d06f0eeec4ab378646960de9aea6584
   languageName: node
   linkType: hard
 
@@ -3183,13 +3127,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-std-serializers@npm:*":
-  version: 6.2.2
-  resolution: "pino-std-serializers@npm:6.2.2"
-  checksum: a00cdff4e1fbc206da9bed047e6dc400b065f43e8b4cef1635b0192feab0e8f932cdeb0faaa38a5d93d2e777ba4cda939c2ed4c1a70f6839ff25f9aef97c27ff
-  languageName: node
-  linkType: hard
-
 "pino-std-serializers@npm:^7.0.0":
   version: 7.0.0
   resolution: "pino-std-serializers@npm:7.0.0"
@@ -3401,20 +3338,6 @@ __metadata:
   version: 0.2.0
   resolution: "real-require@npm:0.2.0"
   checksum: ddf44ee76301c774e9c9f2826da8a3c5c9f8fc87310f4a364e803ef003aa1a43c378b4323051ced212097fff1af459070f4499338b36a7469df1d4f7e8c0ba4c
-  languageName: node
-  linkType: hard
-
-"redis@npm:*":
-  version: 4.6.11
-  resolution: "redis@npm:4.6.11"
-  dependencies:
-    "@redis/bloom": "npm:1.2.0"
-    "@redis/client": "npm:1.5.12"
-    "@redis/graph": "npm:1.1.1"
-    "@redis/json": "npm:1.0.6"
-    "@redis/search": "npm:1.1.6"
-    "@redis/time-series": "npm:1.0.5"
-  checksum: 9d98b6bb857cbbe3d470084ec1e2e9eb98a32cacde67eacb4acb0d5e4cd383ba5f06231b27efd9fee279eb48352251469ce98c4ee2b3f3f861dfd75372563d19
   languageName: node
   linkType: hard
 
@@ -4130,8 +4053,6 @@ __metadata:
     "@types/node": "npm:^22.7.2"
     "@types/passport": "npm:^1.0.16"
     "@types/passport-strategy": "npm:^0.2.38"
-    "@types/pino-std-serializers": "npm:^4.0.0"
-    "@types/redis": "npm:^4.0.11"
     "@types/source-map-support": "npm:^0.5.10"
     axios: "npm:^1.7.7"
     concurrently: "npm:^9.0.1"
@@ -4146,7 +4067,7 @@ __metadata:
     express-http-proxy: "npm:^2.1.1"
     express-session: "npm:^1.18.0"
     fast-xml-parser: "npm:^4.5.0"
-    helmet: "npm:^7.1.0"
+    helmet: "npm:^8.0.0"
     jsonwebtoken: "npm:^9.0.2"
     lodash: "npm:^4.17.21"
     make-error-cause: "npm:^2.3.0"
