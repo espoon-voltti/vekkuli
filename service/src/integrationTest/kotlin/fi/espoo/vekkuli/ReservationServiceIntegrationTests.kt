@@ -320,4 +320,46 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val boatSpace = reservationService.getBoatSpaceRelatedToReservation(newReservation.id)
         assertEquals(boatSpaceId, boatSpace?.id, "Correct boat space is fetched")
     }
+
+    @Test
+    fun `should mark the reservation as paid`() {
+        val boatSpaceId = 1
+
+        val employeeId = UUID.fromString("94833b54-132b-4ab8-b841-60df45809b3e")
+
+        val newReservation =
+            reservationService.insertBoatSpaceReservationAsEmployee(
+                employeeId,
+                boatSpaceId,
+                startDate = LocalDate.now(),
+                endDate = LocalDate.now(),
+            )
+
+        reservationService.reserveBoatSpace(
+            citizenId,
+            ReserveBoatSpaceInput(
+                newReservation.id,
+                boatId = 0,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                email = "test@email.com",
+                phone = "1234567890"
+            ),
+            ReservationStatus.Invoiced
+        )
+
+        reservationService.markInvoicePaid(newReservation.id, LocalDate.now(), "")
+
+        val reservation = reservationService.getBoatSpaceReservation(newReservation.id, citizenId)
+
+        assertEquals(ReservationStatus.Confirmed, reservation?.status, "Reservation is marked as paid")
+    }
 }
