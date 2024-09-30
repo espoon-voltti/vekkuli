@@ -28,6 +28,7 @@ data class BoatSpace(
     val lengthCm: Int,
     val description: String,
     val excludedBoatTypes: List<BoatType>? = null,
+    val locationName: String?,
 )
 
 data class BoatSpaceReservation(
