@@ -88,4 +88,8 @@ class CitizenDetailsPage(
     val messages: Locator = page.getByTestId("messages-table").locator("tbody tr")
 
     val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
+
+    val invoicePaidButton = page.getByTestId("invoice-paid-button")
+    val invoicePaidInfo = page.getByTestId("invoicePaidInfo")
+    val invoiceModalConfirm = page.getByTestId("invoice-modal-confirm")
 }

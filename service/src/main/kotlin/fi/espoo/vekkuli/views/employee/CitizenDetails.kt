@@ -159,6 +159,8 @@ class CitizenDetails {
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
     ): String {
+        val today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
         // language=HTML
         val reservationList =
             boatSpaceReservations.joinToString("\n") { reservation ->
@@ -241,7 +243,7 @@ class CitizenDetails {
                     </div>
                     ${
                     if (reservation.status == ReservationStatus.Invoiced) {
-                        """<button class="button is-primary" @click="modalOpen=true">Merkitse lasku maksetuksi</button>"""
+                        """<button class="button is-primary" id="invoice-paid-button" @click="modalOpen=true">Merkitse lasku maksetuksi</button>"""
                     } else {
                         ""
                     }}
@@ -256,20 +258,20 @@ class CitizenDetails {
                             hx-select="#citizen-details"
                             hx-swap="outerHTML"
                             >
-                            ${formComponents.textInput("citizenDetails.info", "info", "")}
-                            ${formComponents.dateInput("citizenDetails.paymentDate", "paymentDate", "")}
+                            ${formComponents.textInput("citizenDetails.info", "invoicePaidInfo", "")}
+                            ${formComponents.dateInput("citizenDetails.paymentDate", "paymentDate", today)}
                             <input hidden name="reservationId" value="${reservation.id}" />
                             <input hidden name="citizenId" value="${citizen.id}" />
                         
                             <div class="block">
-                                <button id="ack-modal-cancel"
+                                <button id="invoice-modal-cancel"
                                         class="button"
                                         x-on:click="modalOpen = false"
                                         type="button">
                                     ${t("cancel")}
                                 </button>
                                 <button
-                                        id="ack-modal-confirm"
+                                        id="invoice-modal-confirm"
                                         class="button is-primary"
                                         type="submit">
                                     ${t("confirm")}

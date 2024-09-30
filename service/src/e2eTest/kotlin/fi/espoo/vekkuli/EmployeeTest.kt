@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.BoatSpaceFormPage
+import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
 import org.junit.jupiter.api.Test
@@ -10,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles("test")
 class EmployeeTest : PlaywrightTest() {
     @Test
-    fun `Employee can reserve a boat space on behalf of a citizen`() {
+    fun `Employee can reserve a boat space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
         page.navigate(baseUrl + "/virkailija")
         page.getByTestId("employeeLoginButton").click()
         page.getByText("Kirjaudu").click()
@@ -115,6 +116,17 @@ class EmployeeTest : PlaywrightTest() {
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
         formPage.submitButton.click()
+
+        // click the text "John doe"
+        page.getByText("John Doe").click()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.invoicePaidButton.click()
+        val info = "invoice has been paid"
+        citizenDetailsPage.invoicePaidInfo.fill(info)
+        citizenDetailsPage.invoiceModalConfirm.click()
+
+        citizenDetailsPage.memoNavi.click()
+        assertThat(page.getByText(info)).isVisible()
     }
 
     @Test

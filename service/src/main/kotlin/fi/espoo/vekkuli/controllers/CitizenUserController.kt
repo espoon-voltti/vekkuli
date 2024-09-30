@@ -439,18 +439,18 @@ class CitizenUserController {
     fun markPaymentDone(
         @RequestParam reservationId: Int,
         @RequestParam paymentDate: LocalDate,
-        @RequestParam info: String,
+        @RequestParam invoicePaidInfo: String,
         @RequestParam citizenId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<String> {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-        reservationService.markInvoicePaid(reservationId, paymentDate, info)
+        reservationService.markInvoicePaid(reservationId, paymentDate, invoicePaidInfo)
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
-        val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $info"
+        val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
         citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, memoContent)
 
         return ResponseEntity.ok(
