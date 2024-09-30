@@ -65,7 +65,6 @@ class EmployeeLayout {
             <body>
             <div class="columns">
                 <div class="menu">
-                    <aside class="container">
                         <p class="menu-label">
                             <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
                         </p>
@@ -80,9 +79,8 @@ class EmployeeLayout {
                         <div class="block">
                             $authMenu
                         </div>
-                    </aside>
                 </div>
-                <div class="column">
+                <div class="column" style="margin-left:190px">
                     $bodyContent 
                 </div>
             </div>

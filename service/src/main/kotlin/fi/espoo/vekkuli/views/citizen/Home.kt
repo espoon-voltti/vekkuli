@@ -15,7 +15,7 @@ class Home(
         // language=HTML
         return """
             <section class="section">
-                <div class="container">
+                <div class="container block">
                     <h2>${t("boatSpaces.title")}</h2>
                     ${markDownService.render(t("frontPage.content"))}
                     <div class="block"><a class="button is-primary" href="/kuntalainen/venepaikat">Varaa venepaikka</button></a>

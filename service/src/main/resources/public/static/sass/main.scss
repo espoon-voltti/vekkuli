@@ -13,7 +13,7 @@ $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-extralarge: 32px;
 $block-spacing: $spacing-medium;
-$menu-container-height: 1000px;
+$menu-container-height: 660px;
 $activeColor: #D9E4F4;
 
 @use "bulma/sass" with (
@@ -421,9 +421,15 @@ form .subtitle:not(:last-child) {
 }
 
 .menu {
-  width: 280px;
+  width: 190px;
   font-weight: 700;
+  font-size: 12px;
   text-transform: uppercase;
+  background: white;
+  top:0;
+  left:0;
+  position: fixed;
+  padding:8px;
 }
 
 .menu-container {
