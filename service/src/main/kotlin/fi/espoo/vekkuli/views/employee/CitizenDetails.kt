@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.CitizenUserController
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
@@ -43,6 +44,7 @@ class CitizenDetails {
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
+        userType: UserType,
         @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
     ): String {
         // language=HTML
@@ -148,7 +150,7 @@ class CitizenDetails {
                 </div>
                 ${customerInfo()}
                 $tabs
-                ${reservationTabContent(citizen, boatSpaceReservations, boats)}
+                ${reservationTabContent(citizen, boatSpaceReservations, boats, userType)}
             </section>
             """.trimIndent()
 
@@ -161,6 +163,7 @@ class CitizenDetails {
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
+        userType: UserType
     ): String {
         // language=HTML
         val reservationList =
@@ -435,7 +438,9 @@ class CitizenDetails {
                                 </div>
                                 <div class="field">
                                     <label class="label">${t("boatSpaceReservation.title.ownershipStatus")}</label>
-                                    <p id="boat-ownership-text-${boat.id}">${t("boatApplication.ownershipOption.${boat.ownership}")}</p>
+                                    <p id="boat-ownership-text-${boat.id}">${t(
+                        "boatApplication.$userType.ownershipOption.${boat.ownership}"
+                    )}</p>
                                 </div>
                             </div>
                         </div>

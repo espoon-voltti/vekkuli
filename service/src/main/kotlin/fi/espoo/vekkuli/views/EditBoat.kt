@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.views
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.controllers.CitizenUserController
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -17,7 +18,8 @@ class EditBoat {
         errors: Map<String, String>,
         citizenId: UUID,
         boatTypes: List<String>,
-        ownershipOptions: List<String>
+        ownershipOptions: List<String>,
+        userType: UserType
     ): String {
         val nameInput =
             formComponents.textInput(
@@ -78,7 +80,7 @@ class EditBoat {
                 "boatSpaceReservation.title.ownershipStatus",
                 "ownership",
                 boat.ownership.toString(),
-                ownershipOptions.map { it to formComponents.t("boatApplication.ownershipOption.$it") },
+                ownershipOptions.map { it to formComponents.t("boatApplication.$userType.ownershipOption.$it") },
                 required = true,
             )
 

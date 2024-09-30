@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +22,8 @@ class BoatSpaceReservationList {
         harbors: List<Location>,
         amenities: List<BoatSpaceAmenity>,
         reservations: List<BoatSpaceReservationItem>,
-        params: BoatSpaceReservationFilter
+        params: BoatSpaceReservationFilter,
+        userType: UserType
     ): String {
         val harborFilters =
             harbors.joinToString("\n") { harbor ->
@@ -135,7 +137,7 @@ class BoatSpaceReservationList {
             </div>
             """.trimIndent()
 
-        // Reservation list
+        // language=HTML
         val reservationRows =
             reservations.joinToString("\n") { result ->
                 val startDateFormatted = result.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -162,7 +164,7 @@ class BoatSpaceReservationList {
                     <td>$endDateFormatted</td>
                     <td class="has-text-centered">
                         <div class="is-flex is-align-items-center is-justify-content-center">
-                            <p>${t("boatApplication.ownershipOption.${result.boatOwnership}")}</p>
+                            <p>${t("boatApplication.$userType.ownershipOption.${result.boatOwnership}")}</p>
                             ${if (result.hasWarning(
                         "BoatFutureOwner"
                     ) ||
