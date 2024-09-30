@@ -5,9 +5,9 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 plugins {
     id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "2.0.20"
     kotlin("plugin.spring") version "1.9.20"
-    id("org.flywaydb.flyway") version "10.12.0"
+    id("org.flywaydb.flyway") version "10.18.2"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.0.2"
     kotlin("plugin.serialization") version "1.8.0"
@@ -97,7 +97,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.microsoft.playwright:playwright:1.42.0")
+    testImplementation("com.microsoft.playwright:playwright:1.47.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:2.3.12") // Core Ktor client
     implementation("io.ktor:ktor-client-cio:2.3.12") // CIO engine

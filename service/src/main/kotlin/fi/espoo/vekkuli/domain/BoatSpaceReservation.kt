@@ -38,7 +38,7 @@ data class BoatSpaceReservation(
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: ReservationStatus,
-    val citizenId: UUID?,
+    val reserverId: UUID?,
     val paymentId: UUID?,
 )
 
@@ -53,7 +53,7 @@ data class ReservationWithDependencies(
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: ReservationStatus,
-    val citizenId: UUID?,
+    val reserverId: UUID?,
     val employeeId: UUID?,
     val firstName: String?,
     val lastName: String?,
@@ -68,7 +68,8 @@ data class ReservationWithDependencies(
     val description: String,
     val locationName: String,
     val priceCents: Int,
-    val excludedBoatTypes: List<BoatType>?
+    val excludedBoatTypes: List<BoatType>?,
+    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice,
 ) {
     val priceInEuro: Double
         get() = priceCents.centsToEuro()
@@ -84,7 +85,7 @@ data class BoatSpaceReservationItem(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val status: ReservationStatus,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val firstName: String,
     val lastName: String,
     val homeTown: String,
@@ -109,7 +110,7 @@ data class BoatSpaceReservationItemWithWarning(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val status: ReservationStatus,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val firstName: String,
     val lastName: String,
     val homeTown: String,

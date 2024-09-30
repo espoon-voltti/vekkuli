@@ -41,7 +41,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
         val result = reservationService.getReservationWithCitizen(madeReservation.id)
         assertEquals(madeReservation.id, result?.id, "reservation is the same")
-        assertEquals(madeReservation.citizenId, result?.citizenId, "citizen is the same")
+        assertEquals(madeReservation.reserverId, result?.reserverId, "citizen is the same")
     }
 
     @Test
@@ -63,7 +63,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
         val reservation = reservationService.getReservationWithCitizen(madeReservation.id)
         assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
-        assertEquals(madeReservation.citizenId, updatedReservation.citizenId, "citizen is the same")
+        assertEquals(madeReservation.reserverId, updatedReservation.reserverId, "citizen is the same")
         assertEquals(boatId, reservation?.boatId, "boat is updated")
     }
 
@@ -98,7 +98,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val reservation = reservationService.getBoatSpaceReservation(madeReservation.id, citizenId)
         assertNotNull(reservation, "reservation is found")
         assertEquals(madeReservation.id, reservation.id, "reservation is the same")
-        assertEquals(payment.citizenId, madeReservation.citizenId, "payment is added for correct citizen")
+        assertEquals(payment.citizenId, madeReservation.reserverId, "payment is added for correct citizen")
         assertEquals(reservation.paymentId, payment.id, "payment is added to the reservation")
     }
 

@@ -4,12 +4,10 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.domain.Boat
-import fi.espoo.vekkuli.domain.CitizenWithDetails
-import fi.espoo.vekkuli.domain.Municipality
-import fi.espoo.vekkuli.domain.ReservationWithDependencies
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.dateToString
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
 
@@ -50,7 +48,7 @@ class BoatSpaceForm(
             formComponents.field(
                 "boatApplication.boatSpaceType",
                 "boatSpaceType",
-                reservation.section,
+                t("boatSpaces.typeOption.${reservation.type}"),
             )
         val spaceDimensionField =
             formComponents.field(
@@ -69,7 +67,15 @@ class BoatSpaceForm(
             formComponents.field(
                 "boatApplication.reservationTime",
                 "reservationTime",
-                "${reservation.startDate} - ${reservation.endDate}",
+                if (reservation.validity === ReservationValidity.FixedTerm) {
+                    """<p>${dateToString(reservation.startDate)} - ${dateToString(reservation.endDate)}</p>"""
+                } else {
+                    (
+                        """
+                    <p>${t("boatApplication.validUntilFurtherNotice")}</p>
+                """
+                    )
+                },
             )
         val priceField =
             formComponents.field(
@@ -256,7 +262,7 @@ class BoatSpaceForm(
                             id="ownership-$opt"
                             ${if (input.ownership.toString() == opt) "checked" else ""}
                         />
-                        <label for="ownership-$opt">${t("boatApplication.ownershipOption.$opt")}</label>
+                        <label for="ownership-$opt">${t("boatApplication.$userType.ownershipOption.$opt")}</label>
                     </div>
                     """.trimIndent()
                 }
@@ -295,7 +301,7 @@ class BoatSpaceForm(
             )
 
         val citizenInformation =
-            """
+            """     
                 ${
                 citizenFields(
                     firstNameField,
@@ -445,7 +451,6 @@ class BoatSpaceForm(
             """
             <div x-data='{citizenSelection: "newCitizen"}'>
                 <div class="field">
-                    <h4 class="label required" >${t("boatApplication.title.citizenType")}</h4>
                     <div class="control is-flex-direction-row">
                         <div class="radio">
                             <input
@@ -524,11 +529,6 @@ class BoatSpaceForm(
                <div class="block">
                    <h3 class="header">${t("boatApplication.boatInformation")}</h3>
                    $chooseBoatButtons
-                   
-                    <div id="boat-size-warning" >
-                    </div>
-                   <div id="boat-weight-warning" ></div>
-                   <div id="boat-type-warning" ></div>
                </div>
                
                ${
@@ -545,6 +545,7 @@ class BoatSpaceForm(
                     ownership
                 )
             }
+                               
                   
             """.trimIndent()
 
@@ -557,7 +558,7 @@ class BoatSpaceForm(
                     <div class="container">
                         <button x-on:click="modalOpen = true" class="icon-text">
                             <span class="icon">
-                                <div></div>
+                                <div>${icons.chevronLeft}</div>
                             </span>
                             <span >${t("boatSpaces.goBack")}</span>
                         </button>
@@ -631,7 +632,7 @@ class BoatSpaceForm(
                                 <button id="submit"
                                     class="button is-primary"
                                     type="submit">
-                                    ${t("boatApplication.continueToPaymentButton")}
+                                    ${t("boatApplication.$userType.continueToPaymentButton")}
                                 </button>
                             </div>
                         </div> 
@@ -785,7 +786,7 @@ class BoatSpaceForm(
             formComponents.select(
                 "boatSpaceReservation.title.municipality",
                 "municipalityCode",
-                citizen?.municipalityCode.toString(),
+                citizen.municipalityCode.toString(),
                 municipalities.map { Pair(it.code.toString(), it.name) },
                 required = true
             )
@@ -893,6 +894,10 @@ class BoatSpaceForm(
                $extraInformation
             </div>
         </div>
+         <div id="boat-size-warning" >
+                    </div>
+                   <div id="boat-weight-warning" ></div>
+                   <div id="boat-type-warning" ></div>
         <div class='columns'>
             $ownership
         </div>

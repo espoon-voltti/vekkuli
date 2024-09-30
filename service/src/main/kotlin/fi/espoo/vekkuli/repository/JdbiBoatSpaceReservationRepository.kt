@@ -78,7 +78,7 @@ class JdbiBoatSpaceReservationRepository(
                            ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
@@ -121,12 +121,12 @@ class JdbiBoatSpaceReservationRepository(
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
-                    WHERE bsr.citizen_id = :id
+                    WHERE bsr.reserver_id = :id
                         AND bsr.status = 'Info' 
                         AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
@@ -146,7 +146,7 @@ class JdbiBoatSpaceReservationRepository(
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
@@ -171,7 +171,7 @@ class JdbiBoatSpaceReservationRepository(
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
@@ -212,22 +212,22 @@ class JdbiBoatSpaceReservationRepository(
 
     override fun removeBoatSpaceReservation(
         id: Int,
-        citizenId: UUID,
+        reserverId: UUID,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createUpdate(
                     """
                     DELETE FROM boat_space_reservation
-                    WHERE id = :id AND citizen_id = :citizenId
+                    WHERE id = :id AND reserver_id = :reserverId
                     """.trimIndent()
                 )
             query.bind("id", id)
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
             query.execute()
         }
 
-    override fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
+    override fun getBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -270,16 +270,16 @@ class JdbiBoatSpaceReservationRepository(
                            CONCAT(bs.section, bs.place_number) as place
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
-                    WHERE c.id = :citizenId AND 
+                    WHERE c.id = :reserverId AND 
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
                     """.trimIndent()
                 )
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetails>().list()
@@ -303,7 +303,7 @@ class JdbiBoatSpaceReservationRepository(
 
     override fun getBoatSpaceReservation(
         reservationId: Int,
-        citizenId: UUID,
+        reserverId: UUID,
     ): BoatSpaceReservationDetails? =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -347,17 +347,17 @@ class JdbiBoatSpaceReservationRepository(
                            CONCAT(bs.section, bs.place_number) as place
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
                     WHERE bsr.id = :reservationId
-                    AND c.id = :citizenId
+                    AND c.id = :reserverId
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
             query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
         }
 
@@ -427,7 +427,7 @@ class JdbiBoatSpaceReservationRepository(
                         bs.section
                     FROM boat_space_reservation bsr
                     JOIN boat b on b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.citizen_id = c.id 
+                    JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
@@ -460,7 +460,7 @@ class JdbiBoatSpaceReservationRepository(
                         startDate = row.startDate,
                         endDate = row.endDate,
                         status = row.status,
-                        citizenId = row.citizenId,
+                        reserverId = row.reserverId,
                         firstName = row.firstName,
                         lastName = row.lastName,
                         homeTown = row.homeTown,
@@ -478,7 +478,7 @@ class JdbiBoatSpaceReservationRepository(
         }
 
     override fun insertBoatSpaceReservation(
-        citizenId: UUID,
+        reserverId: UUID,
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
@@ -487,12 +487,12 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (citizen_id, boat_space_id, start_date, end_date)
-                    VALUES (:citizenId, :boatSpaceId, :startDate, :endDate)
+                    INSERT INTO boat_space_reservation (reserver_id, boat_space_id, start_date, end_date)
+                    VALUES (:reserverId, :boatSpaceId, :startDate, :endDate)
                     RETURNING *
                     """.trimIndent()
                 )
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
@@ -524,7 +524,7 @@ class JdbiBoatSpaceReservationRepository(
     override fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
-        citizenId: UUID,
+        reserverId: UUID,
         reservationStatus: ReservationStatus
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
@@ -532,7 +532,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = :status, updated = :updatedTime, boat_id = :boatId, citizen_id = :citizenId
+                    SET status = :status, updated = :updatedTime, boat_id = :boatId, reserver_id = :reserverId
                     WHERE id = :id
                         AND (status = 'Info' OR status = 'Payment')
                         AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
@@ -543,7 +543,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("updatedTime", LocalDate.now())
             query.bind("id", reservationId)
             query.bind("boatId", boatId)
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.mapTo<BoatSpaceReservation>().one()
         }
@@ -551,7 +551,7 @@ class JdbiBoatSpaceReservationRepository(
     override fun updateReservationWithPayment(
         reservationId: Int,
         paymentId: UUID,
-        citizenId: UUID,
+        reserverId: UUID,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -562,14 +562,14 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE id = :id
                         AND status = 'Payment'
                         AND created > NOW() - make_interval(secs => :paymentTimeout)
-                        AND citizen_id = :citizenId
+                        AND reserver_id = :reserverId
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("updatedTime", LocalDate.now())
             query.bind("id", reservationId)
             query.bind("paymentId", paymentId)
-            query.bind("citizenId", citizenId)
+            query.bind("reserverId", reserverId)
             query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
             query.mapTo<BoatSpaceReservation>().one()
         }

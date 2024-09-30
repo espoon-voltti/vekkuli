@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.MemoService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.EditBoat
@@ -40,6 +41,9 @@ class CitizenUserController {
     lateinit var citizenService: CitizenService
 
     @Autowired
+    lateinit var memoService: MemoService
+
+    @Autowired
     lateinit var reservationService: BoatReservationService
 
     @Autowired
@@ -71,6 +75,7 @@ class CitizenUserController {
                 citizen,
                 boatSpaceReservations,
                 boats,
+                UserType.EMPLOYEE
             )
         )
     }
@@ -84,7 +89,7 @@ class CitizenUserController {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
-        return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats)
+        return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
     @GetMapping("/kayttaja/{citizenId}/viestit")
@@ -104,7 +109,7 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
-        val memos = citizenService.getMemos(citizenId, MemoCategory.Marine)
+        val memos = memoService.getMemos(citizenId, MemoCategory.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
@@ -115,7 +120,7 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @PathVariable memoId: Int,
     ): String {
-        val memo = citizenService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
+        val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
         return citizenDetails.memoContent(memo, true)
     }
 
@@ -141,8 +146,8 @@ class CitizenUserController {
         @RequestParam content: String,
     ): String {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-        citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, content)
-        val memos = citizenService.getMemos(citizenId, MemoCategory.Marine)
+        memoService.insertMemo(citizenId, userId, MemoCategory.Marine, content)
+        val memos = memoService.getMemos(citizenId, MemoCategory.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
@@ -153,8 +158,8 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @PathVariable memoId: Int,
     ): String {
-        citizenService.removeMemo(memoId)
-        val memos = citizenService.getMemos(citizenId, MemoCategory.Marine)
+        memoService.removeMemo(memoId)
+        val memos = memoService.getMemos(citizenId, MemoCategory.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
@@ -167,7 +172,7 @@ class CitizenUserController {
         @RequestParam content: String,
     ): String {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-        val memo = citizenService.updateMemo(memoId, userId, content) ?: throw IllegalArgumentException("Memo not found")
+        val memo = memoService.updateMemo(memoId, userId, content) ?: throw IllegalArgumentException("Memo not found")
         return citizenDetails.memoContent(memo, false)
     }
 
@@ -178,7 +183,7 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @PathVariable memoId: Int,
     ): String {
-        val memo = citizenService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
+        val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
         return citizenDetails.memoContent(memo, false)
     }
 
@@ -218,7 +223,8 @@ class CitizenUserController {
             BoatType.entries.map {
                 it.toString()
             },
-            listOf("Owner", "User", "CoOwner", "FutureOwner")
+            listOf("Owner", "User", "CoOwner", "FutureOwner"),
+            UserType.EMPLOYEE
         )
     }
 
@@ -314,7 +320,8 @@ class CitizenUserController {
                 BoatType.entries.map {
                     it.toString()
                 },
-                listOf("Owner", "User", "CoOwner", "FutureOwner")
+                listOf("Owner", "User", "CoOwner", "FutureOwner"),
+                UserType.EMPLOYEE
             )
         }
 
@@ -346,7 +353,8 @@ class CitizenUserController {
                 citizen,
                 boatSpaceReservations,
                 updatedBoats,
-                errors
+                UserType.EMPLOYEE,
+                errors,
             )
         )
     }
@@ -383,6 +391,7 @@ class CitizenUserController {
                 citizen,
                 boatSpaceReservations,
                 updatedBoats,
+                UserType.EMPLOYEE,
             )
         )
     }
@@ -431,7 +440,7 @@ class CitizenUserController {
         return layout.render(
             true,
             request.requestURI,
-            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats)
+            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
         )
     }
 
@@ -451,13 +460,15 @@ class CitizenUserController {
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
         val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
-        citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, memoContent)
+
+        memoService.insertMemo(citizenId, userId, MemoCategory.Marine, memoContent)
 
         return ResponseEntity.ok(
             citizenDetails.citizenPage(
                 citizen,
                 boatSpaceReservations,
                 boats,
+                UserType.EMPLOYEE
             )
         )
     }

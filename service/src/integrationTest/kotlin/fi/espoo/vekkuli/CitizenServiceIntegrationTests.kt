@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.CitizenWithDetails
-import fi.espoo.vekkuli.domain.MemoCategory
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.*
@@ -168,34 +167,6 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
         assertNotNull(updatedCitizen2)
         assertEquals(newCitizen2.municipalityName, citizen?.municipalityName, "Citizen's municipality is correctly updated")
         assertEquals(updatedCitizen2.municipalityName, citizen?.municipalityName, "Updated citizen is correctly returned")
-    }
-
-    @Test
-    fun `should store and load notes`() {
-        val memo = citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, "Test note")
-        assertNotNull(memo)
-        val memos = citizenService.getMemos(citizenId, MemoCategory.Marine)
-        val found = memos.find { it.id == memo.id }
-        assertNotNull(found)
-        assertEquals(memo, found)
-    }
-
-    @Test
-    fun `should delete a note`() {
-        val memo = citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, "Test note")
-        assertNotNull(memo)
-        citizenService.removeMemo(memo.id)
-        assertNull(citizenService.getMemo(memo.id))
-    }
-
-    @Test
-    fun `should update a note`() {
-        val memo = citizenService.insertMemo(citizenId, userId, MemoCategory.Marine, "Test note")
-        assertNotNull(memo)
-        citizenService.updateMemo(memo.id, userId, "Updated note")
-        val updated = citizenService.getMemo(memo.id)
-        assertNotNull(updated)
-        assertEquals("Updated note", updated.content)
     }
 
     @Test

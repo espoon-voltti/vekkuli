@@ -21,14 +21,14 @@ interface BoatSpaceReservationRepository {
 
     fun removeBoatSpaceReservation(
         id: Int,
-        citizenId: UUID,
+        reserverId: UUID,
     ): Unit
 
-    fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails>
+    fun getBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
 
     fun getBoatSpaceReservation(
         reservationId: Int,
-        citizenId: UUID,
+        reserverId: UUID,
     ): BoatSpaceReservationDetails?
 
     fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem>
@@ -36,7 +36,7 @@ interface BoatSpaceReservationRepository {
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace?
 
     fun insertBoatSpaceReservation(
-        citizenId: UUID,
+        reserverId: UUID,
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
@@ -52,14 +52,14 @@ interface BoatSpaceReservationRepository {
     fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
-        citizenId: UUID,
+        reserverId: UUID,
         reservationStatus: ReservationStatus
     ): BoatSpaceReservation
 
     fun updateReservationWithPayment(
         reservationId: Int,
         paymentId: UUID,
-        citizenId: UUID,
+        reserverId: UUID,
     ): BoatSpaceReservation
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation

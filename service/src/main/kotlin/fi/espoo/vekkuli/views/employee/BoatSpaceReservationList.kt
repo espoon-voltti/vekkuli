@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +22,8 @@ class BoatSpaceReservationList {
         harbors: List<Location>,
         amenities: List<BoatSpaceAmenity>,
         reservations: List<BoatSpaceReservationItem>,
-        params: BoatSpaceReservationFilter
+        params: BoatSpaceReservationFilter,
+        userType: UserType
     ): String {
         val harborFilters =
             harbors.joinToString("\n") { harbor ->
@@ -135,7 +137,7 @@ class BoatSpaceReservationList {
             </div>
             """.trimIndent()
 
-        // Reservation list
+        // language=HTML
         val reservationRows =
             reservations.joinToString("\n") { result ->
                 val startDateFormatted = result.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -144,7 +146,7 @@ class BoatSpaceReservationList {
                 <tr class="reservation-item"
                     id="boat-space-${result.boatSpaceId}"
                     hx-trigger="click"
-                    hx-get="/virkailija/kayttaja/${result.citizenId}"
+                    hx-get="/virkailija/kayttaja/${result.reserverId}"
                     hx-push-url="true"
                     hx-target=".section"
                     hx-select=".section">
@@ -155,14 +157,14 @@ class BoatSpaceReservationList {
                     </td>
                     <td>${result.section}</td>
                     <td>${t("boatSpaces.type${result.type}Option")}</td>
-                    <td><a href="/virkailija/kayttaja/${result.citizenId}">${result.firstName} ${result.lastName}</a></td>
+                    <td><a href="/virkailija/kayttaja/${result.reserverId}">${result.firstName} ${result.lastName}</a></td>
                     <td>${result.homeTown}</td>
                     <td></td>
                     <td>$startDateFormatted</td>
                     <td>$endDateFormatted</td>
                     <td class="has-text-centered">
                         <div class="is-flex is-align-items-center is-justify-content-center">
-                            <p>${t("boatApplication.ownershipOption.${result.boatOwnership}")}</p>
+                            <p>${t("boatApplication.$userType.ownershipOption.${result.boatOwnership}")}</p>
                             ${if (result.hasWarning(
                         "BoatFutureOwner"
                     ) ||
