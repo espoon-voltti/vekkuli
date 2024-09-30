@@ -244,7 +244,7 @@ class CitizenDetails {
                     ${
                     if (reservation.status == ReservationStatus.Invoiced) {
                         """<button class="button is-primary" id="invoice-paid-button" @click="modalOpen=true">
-                                Merkitse lasku maksetuksi
+                                ${t("citizenDetails.markInvoicePaid")}
                             </button>
                         """.trimMargin()
                     } else {
@@ -254,7 +254,7 @@ class CitizenDetails {
                     <div class="modal" x-show="modalOpen" style="display:none;">
                         <div class="modal-underlay" @click="modalOpen = false"></div>
                         <div class="modal-content">
-                        <h3>Merkitse lasku maksetuksi</h3>
+                        <h3>${t("citizenDetails.markInvoicePaid")}</h3>
                         <form 
                             hx-post="/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi" 
                             hx-target="#citizen-details"
