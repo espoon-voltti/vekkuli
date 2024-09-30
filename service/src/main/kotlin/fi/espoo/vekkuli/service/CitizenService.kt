@@ -51,34 +51,6 @@ class CitizenService(
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
-    fun getMemos(
-        citizenId: UUID,
-        category: MemoCategory
-    ): List<CitizenMemoWithDetails> = citizenRepository.getMemos(citizenId, category)
-
-    fun getMemo(id: Int): CitizenMemoWithDetails? = citizenRepository.getMemo(id)
-
-    fun updateMemo(
-        id: Int,
-        updatedBy: UUID,
-        content: String
-    ): CitizenMemoWithDetails? {
-        citizenRepository.updateMemo(id, updatedBy, content)
-        return citizenRepository.getMemo(id)
-    }
-
-    fun insertMemo(
-        citizenId: UUID,
-        userId: UUID,
-        category: MemoCategory,
-        content: String
-    ): CitizenMemoWithDetails? {
-        val memo = citizenRepository.insertMemo(citizenId, userId, category, content)
-        return citizenRepository.getMemo(memo.id)
-    }
-
-    fun removeMemo(id: Int): Unit = citizenRepository.removeMemo(id)
-
     fun getMunicipalities(): List<Municipality> = citizenRepository.getMunicipalities()
 
     fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails = reserverRepository.upsertCitizenUserFromAd(adUser)

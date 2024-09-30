@@ -246,7 +246,7 @@ class BoatReservationService(
                 boatRepository.updateBoat(
                     Boat(
                         id = input.boatId,
-                        citizenId = citizenId,
+                        reserverId = citizenId,
                         registrationCode = input.boatRegistrationNumber ?: "",
                         name = input.boatName!!,
                         widthCm = input.width.mToCm(),
@@ -285,13 +285,13 @@ class BoatReservationService(
     fun getReservationForEmployee(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForEmployee(id)
 
     fun insertBoatSpaceReservation(
-        citizenId: UUID,
+        reserverId: UUID,
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservation(
-            citizenId,
+            reserverId,
             boatSpaceId,
             startDate,
             endDate,

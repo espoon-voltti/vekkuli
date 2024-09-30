@@ -7,7 +7,7 @@ import java.util.*
 data class Boat(
     val id: Int,
     val registrationCode: String?,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val name: String?,
     val widthCm: Int,
     val lengthCm: Int,

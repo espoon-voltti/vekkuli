@@ -786,7 +786,7 @@ class BoatSpaceForm(
             formComponents.select(
                 "boatSpaceReservation.title.municipality",
                 "municipalityCode",
-                citizen?.municipalityCode.toString(),
+                citizen.municipalityCode.toString(),
                 municipalities.map { Pair(it.code.toString(), it.name) },
                 required = true
             )

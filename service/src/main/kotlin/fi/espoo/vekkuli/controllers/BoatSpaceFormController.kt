@@ -103,7 +103,7 @@ class BoatSpaceFormController {
             return ResponseEntity(headers, HttpStatus.FOUND)
         }
 
-        if (userType == UserType.CITIZEN && (citizen == null || reservation.citizenId != citizen.id)) {
+        if (userType == UserType.CITIZEN && (citizen == null || reservation.reserverId != citizen.id)) {
             throw UnauthorizedException()
         }
 

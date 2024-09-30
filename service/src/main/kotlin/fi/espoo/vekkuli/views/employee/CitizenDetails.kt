@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.CitizenMemoWithDetails
+import fi.espoo.vekkuli.domain.ReserverMemoWithDetails
 import fi.espoo.vekkuli.domain.SentMessage
 import fi.espoo.vekkuli.views.CommonComponents
 import fi.espoo.vekkuli.views.Icons
@@ -570,7 +570,7 @@ class CitizenDetails {
     fun formatDate(d: LocalDateTime): String = d.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
 
     fun memoContent(
-        memo: CitizenMemoWithDetails,
+        memo: ReserverMemoWithDetails,
         edit: Boolean,
     ): String {
         val createdBy =
@@ -588,7 +588,7 @@ class CitizenDetails {
             } else {
                 """
                 <a id="edit-memo-button"
-                   hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/muokkaa/${memo.id}")}"
+                   hx-get="${getTabUrl("${memo.reserverId}/muistiinpanot/muokkaa/${memo.id}")}"
                    hx-trigger="click"
                    hx-target="#memo-${memo.id}"
                    hx-swap="outerHTML">
@@ -597,7 +597,7 @@ class CitizenDetails {
                     </span>
                 </a>
                 <a id="delete-memo-button"
-                   hx-delete="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                   hx-delete="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                    hx-trigger="click"
                    hx-target="#tab-content"
                    hx-swap="outerHTML"
@@ -635,7 +635,7 @@ class CitizenDetails {
             if (edit) {
                 // language=HTML
                 """
-                <form hx-patch="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                <form hx-patch="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                       hx-target="#memo-${memo.id}"
                       hx-swap="outerHTML">
                     <div class="control memo-edit-area">
@@ -652,7 +652,7 @@ class CitizenDetails {
                                 </span>
                             </button>
                             <span id="cancel-edit-button" class="icon ml-m"
-                                  hx-get="${getTabUrl("${memo.citizenId}/muistiinpanot/${memo.id}")}"
+                                  hx-get="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                                   hx-trigger="click"
                                   hx-target="#memo-${memo.id}"
                                   hx-swap="outerHTML">
@@ -735,7 +735,7 @@ class CitizenDetails {
 
     fun memoTabContent(
         citizenId: UUID,
-        memos: List<CitizenMemoWithDetails>,
+        memos: List<ReserverMemoWithDetails>,
     ): String {
         val memoHtml =
             memos.joinToString("\n") {
