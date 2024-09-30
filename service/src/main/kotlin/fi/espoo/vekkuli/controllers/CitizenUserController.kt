@@ -18,9 +18,11 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 import java.util.*
 
 @Controller
@@ -439,6 +441,35 @@ class CitizenUserController {
             true,
             request.requestURI,
             citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
+        )
+    }
+
+    @PostMapping("/venepaikat/varaukset/merkitse-maksu-suoritetuksi")
+    fun markPaymentDone(
+        @RequestParam reservationId: Int,
+        @RequestParam paymentDate: LocalDate,
+        @RequestParam invoicePaidInfo: String,
+        @RequestParam citizenId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<String> {
+        val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
+        reservationService.markInvoicePaid(reservationId, paymentDate, invoicePaidInfo)
+
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+
+        val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
+
+        memoService.insertMemo(citizenId, userId, MemoCategory.Marine, memoContent)
+
+        return ResponseEntity.ok(
+            citizenDetails.citizenPage(
+                citizen,
+                boatSpaceReservations,
+                boats,
+                UserType.EMPLOYEE
+            )
         )
     }
 }

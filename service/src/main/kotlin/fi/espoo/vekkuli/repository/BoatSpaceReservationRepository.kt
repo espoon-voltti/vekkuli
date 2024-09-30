@@ -61,4 +61,6 @@ interface BoatSpaceReservationRepository {
         paymentId: UUID,
         reserverId: UUID,
     ): BoatSpaceReservation
+
+    fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation
 }

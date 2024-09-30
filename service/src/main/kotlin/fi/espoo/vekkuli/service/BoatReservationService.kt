@@ -8,7 +8,10 @@ import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.*
+import fi.espoo.vekkuli.repository.BoatRepository
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
+import fi.espoo.vekkuli.repository.ReserverRepository
+import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.utils.mToCm
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -321,4 +324,12 @@ class BoatReservationService(
         boatId: Int,
         key: String,
     ): Unit = reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatId, key)
+
+    fun markInvoicePaid(
+        reservationId: Int,
+        paymentDate: LocalDate,
+        info: String
+    ) {
+        val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
+    }
 }

@@ -165,11 +165,13 @@ class CitizenDetails {
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType
     ): String {
+        val today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
         // language=HTML
         val reservationList =
             boatSpaceReservations.joinToString("\n") { reservation ->
                 """
-                <div class="reservation-card">
+                <div class="reservation-card" x-data="{ modalOpen: false }">
                     <div class="columns is-vcentered">
                         <div class="column is-narrow">
                             <h4>${t("citizenDetails.boatSpace")}: ${reservation.locationName} ${reservation.place}</h4>
@@ -241,8 +243,50 @@ class CitizenDetails {
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.paid")}</label>
-                                <p>03.06.2024 14:56</p> <!-- Placeholder for paid date -->
+                                <p></p> 
                             </div>
+                        </div>
+                    </div>
+                    ${
+                    if (reservation.status == ReservationStatus.Invoiced) {
+                        """<button class="button is-primary" id="invoice-paid-button" @click="modalOpen=true">
+                                ${t("citizenDetails.markInvoicePaid")}
+                            </button>
+                        """.trimMargin()
+                    } else {
+                        ""
+                    }}
+                    
+                    <div class="modal" x-show="modalOpen" style="display:none;">
+                        <div class="modal-underlay" @click="modalOpen = false"></div>
+                        <div class="modal-content">
+                        <h3>${t("citizenDetails.markInvoicePaid")}</h3>
+                        <form 
+                            hx-post="/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi" 
+                            hx-target="#citizen-details"
+                            hx-select="#citizen-details"
+                            hx-swap="outerHTML"
+                            >
+                            ${formComponents.textInput("citizenDetails.info", "invoicePaidInfo", "")}
+                            ${formComponents.dateInput("citizenDetails.paymentDate", "paymentDate", today)}
+                            <input hidden name="reservationId" value="${reservation.id}" />
+                            <input hidden name="citizenId" value="${citizen.id}" />
+                        
+                            <div class="block">
+                                <button id="invoice-modal-cancel"
+                                        class="button"
+                                        x-on:click="modalOpen = false"
+                                        type="button">
+                                    ${t("cancel")}
+                                </button>
+                                <button
+                                        id="invoice-modal-confirm"
+                                        class="button is-primary"
+                                        type="submit">
+                                    ${t("confirm")}
+                                </button>
+                            </div>
+                        </form>
                         </div>
                     </div>
                 </div>
@@ -353,11 +397,9 @@ class CitizenDetails {
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${
-                        t(
-                            "cancel"
-                        )
-                    }</button>
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
+                        "cancel"
+                    )}</button>
                                             <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
                                                 ${t("boatSpaceReservation.button.confirmDeletion")}</a>
                                         </div>

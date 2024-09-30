@@ -573,4 +573,21 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
             query.mapTo<BoatSpaceReservation>().one()
         }
+
+    override fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET status = 'Confirmed'
+                    WHERE id = :id
+                        AND status = 'Invoiced'
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("id", reservationId)
+            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.mapTo<BoatSpaceReservation>().one()
+        }
 }
