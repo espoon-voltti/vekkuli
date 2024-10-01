@@ -75,9 +75,10 @@ class EmployeeLayout {
                                     $boatSpaceReservationsLink
                                 </li>
                             </ul>
-                        </div>
-                        <div class="block">
+                            
+                        <div style="position:absolute; bottom: 8px">
                             $authMenu
+                        </div>
                         </div>
                 </div>
                 <div class="column" style="margin-left:190px">
