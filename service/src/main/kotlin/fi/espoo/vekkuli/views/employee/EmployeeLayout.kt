@@ -75,11 +75,11 @@ class EmployeeLayout {
                             </li>
                         </ul>
                         
-                    <div style="position:absolute; bottom: 8px">
+                    <div class="auth-menu" >
                         $authMenu
                     </div>
                 </div>
-                <div class="column" style="margin-left:190px">
+                <div class="column content-column" >
                     $bodyContent 
                 </div>
             </div>
