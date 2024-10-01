@@ -65,21 +65,19 @@ class EmployeeLayout {
             <body>
             <div class="columns">
                 <div class="menu">
-                        <p class="menu-label">
-                            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                        </p>
-                        <div class="menu-container">
-                            <p class="menu-label">${t("menu.marineOutdoor")}</p>
-                            <ul class="menu-list">
-                                <li>
-                                    $boatSpaceReservationsLink
-                                </li>
-                            </ul>
-                            
-                        <div style="position:absolute; bottom: 8px">
-                            $authMenu
-                        </div>
-                        </div>
+                    <p class="menu-label">
+                        <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                    </p>
+                        <p class="menu-label">${t("menu.marineOutdoor")}</p>
+                        <ul class="menu-list">
+                            <li>
+                                $boatSpaceReservationsLink
+                            </li>
+                        </ul>
+                        
+                    <div style="position:absolute; bottom: 8px">
+                        $authMenu
+                    </div>
                 </div>
                 <div class="column" style="margin-left:190px">
                     $bodyContent 

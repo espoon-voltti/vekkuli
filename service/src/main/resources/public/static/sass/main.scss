@@ -41,6 +41,7 @@ $activeColor: #D9E4F4;
   $tabs-boxed-link-active-border-color: transparent,
   $tabs-link-color: $black,
   $tabs-link-active-color: $black,
+  $menu-label-letter-spacing: 0
 );
 
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
@@ -431,11 +432,6 @@ form .subtitle:not(:last-child) {
   left:0;
   position: fixed;
   padding:8px;
-}
-
-.menu-container {
-  height: $menu-container-height;
-  overflow-y: auto;
 }
 
 .menu-label {
