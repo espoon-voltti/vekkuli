@@ -26,7 +26,6 @@ import java.time.LocalDate
 import java.util.*
 
 @Controller
-@RequestMapping("/virkailija")
 class CitizenUserController {
     @Autowired
     private lateinit var editBoat: EditBoat
@@ -58,7 +57,7 @@ class CitizenUserController {
     @Autowired
     lateinit var editCitizen: EditCitizen
 
-    @GetMapping("/kayttaja/{citizenId}")
+    @GetMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
     fun boatSpaceSearchPage(
         request: HttpServletRequest,
@@ -80,7 +79,7 @@ class CitizenUserController {
         )
     }
 
-    @GetMapping("/kayttaja/{citizenId}/varaukset")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/varaukset")
     @ResponseBody
     fun boatSpaceReservationContent(
         request: HttpServletRequest,
@@ -92,7 +91,7 @@ class CitizenUserController {
         return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/viestit")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/viestit")
     @ResponseBody
     fun boatSpaceMessageContent(
         request: HttpServletRequest,
@@ -103,7 +102,7 @@ class CitizenUserController {
         return citizenDetails.messageTabContent(citizen, messages)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")
     @ResponseBody
     fun boatSpaceMemoContent(
         request: HttpServletRequest,
@@ -113,7 +112,7 @@ class CitizenUserController {
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/muokkaa/{memoId}")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/muokkaa/{memoId}")
     @ResponseBody
     fun boatSpaceMemoEditForm(
         request: HttpServletRequest,
@@ -124,21 +123,21 @@ class CitizenUserController {
         return citizenDetails.memoContent(memo, true)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/lisaa")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/lisaa")
     @ResponseBody
     fun boatSpaceMemoNewForm(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String = citizenDetails.newMemoContent(citizenId, true)
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/lisaa_peruuta")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/lisaa_peruuta")
     @ResponseBody
     fun boatSpaceMemoNewCancel(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String = citizenDetails.newMemoContent(citizenId, false)
 
-    @PostMapping("/kayttaja/{citizenId}/muistiinpanot")
+    @PostMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")
     @ResponseBody
     fun boatSpaceNewMemo(
         request: HttpServletRequest,
@@ -151,7 +150,7 @@ class CitizenUserController {
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
-    @DeleteMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @DeleteMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
     @ResponseBody
     fun boatSpaceDeleteMemo(
         request: HttpServletRequest,
@@ -163,7 +162,7 @@ class CitizenUserController {
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
-    @PatchMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @PatchMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
     @ResponseBody
     fun boatSpaceMemoPatch(
         request: HttpServletRequest,
@@ -176,7 +175,7 @@ class CitizenUserController {
         return citizenDetails.memoContent(memo, false)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
     @ResponseBody
     fun boatSpaceMemoItem(
         request: HttpServletRequest,
@@ -187,7 +186,7 @@ class CitizenUserController {
         return citizenDetails.memoContent(memo, false)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/maksut")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/maksut")
     @ResponseBody
     fun boatSpacePaymentContent(
         request: HttpServletRequest,
@@ -197,7 +196,7 @@ class CitizenUserController {
         return citizenDetails.paymentTabContent(citizen)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
     @ResponseBody
     fun boatEditPage(
         request: HttpServletRequest,
@@ -296,7 +295,7 @@ class CitizenUserController {
         return errors
     }
 
-    @PatchMapping("/kayttaja/{citizenId}/vene/{boatId}")
+    @PatchMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}")
     @ResponseBody
     fun updateBoatPatch(
         request: HttpServletRequest,
@@ -359,7 +358,7 @@ class CitizenUserController {
         )
     }
 
-    @DeleteMapping("/kayttaja/{citizenId}/vene/{boatId}/poista")
+    @DeleteMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/poista")
     @ResponseBody
     fun deleteBoat(
         request: HttpServletRequest,
@@ -396,7 +395,7 @@ class CitizenUserController {
         )
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muokkaa")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muokkaa")
     @ResponseBody
     fun citizenEditPage(
         request: HttpServletRequest,
@@ -408,7 +407,7 @@ class CitizenUserController {
         return editCitizen.editCitizenForm(citizen, municipalities, emptyMap())
     }
 
-    @PatchMapping("/kayttaja/{citizenId}")
+    @PatchMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
     fun citizenEdit(
         request: HttpServletRequest,
@@ -444,7 +443,7 @@ class CitizenUserController {
         )
     }
 
-    @PostMapping("/venepaikat/varaukset/merkitse-maksu-suoritetuksi")
+    @PostMapping("/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi")
     fun markPaymentDone(
         @RequestParam reservationId: Int,
         @RequestParam paymentDate: LocalDate,
