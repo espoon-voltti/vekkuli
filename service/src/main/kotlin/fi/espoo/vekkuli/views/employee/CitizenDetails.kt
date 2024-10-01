@@ -6,9 +6,6 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.ReserverMemoWithDetails
-import fi.espoo.vekkuli.domain.SentMessage
 import fi.espoo.vekkuli.views.CommonComponents
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -529,7 +526,7 @@ class CitizenDetails {
                    <div id="tab-content" class="container block" x-data="{ 
                 showAllBoats: document.getElementById('showAllBoats').checked 
             }">
-                       ${renderTabNavi(citizen.id, SubTab.Reservations)}
+                       ${if (userType == UserType.EMPLOYEE) renderTabNavi(citizen.id, SubTab.Reservations) else ""}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
                        <div class="reservation-list form-section">
                            $reservationList
