@@ -13,8 +13,8 @@ $spacing-medium: 16px;
 $spacing-large: 24px;
 $spacing-extralarge: 32px;
 $block-spacing: $spacing-medium;
-$menu-container-height: 1000px;
 $activeColor: #D9E4F4;
+$menu-width: 190px;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
@@ -41,6 +41,7 @@ $activeColor: #D9E4F4;
   $tabs-boxed-link-active-border-color: transparent,
   $tabs-link-color: $black,
   $tabs-link-active-color: $black,
+  $menu-label-letter-spacing: 0
 );
 
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
@@ -421,19 +422,30 @@ form .subtitle:not(:last-child) {
 }
 
 .menu {
-  width: 280px;
+  width: $menu-width;
+  height: 100vh;
   font-weight: 700;
+  font-size: 12px;
   text-transform: uppercase;
-}
-
-.menu-container {
-  height: $menu-container-height;
-  overflow-y: auto;
+  background: white;
+  top: 0;
+  left: 0;
+  position: fixed;
+  padding: 8px;
 }
 
 .menu-label {
   font-size: 1em;
   color: $black;
+}
+
+.auth-menu {
+  position:absolute;
+  bottom: 8px;
+}
+
+.content-column {
+  margin-left: $menu-width;
 }
 
 a.active {
