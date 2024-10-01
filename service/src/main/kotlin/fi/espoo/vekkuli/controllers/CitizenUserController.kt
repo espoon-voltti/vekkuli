@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.service.MemoService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.EditBoat
+import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -52,14 +53,17 @@ class CitizenUserController {
     lateinit var citizenDetails: CitizenDetails
 
     @Autowired
-    lateinit var layout: EmployeeLayout
+    lateinit var employeeLayout: EmployeeLayout
+
+    @Autowired
+    private lateinit var citizenLayout: Layout
 
     @Autowired
     lateinit var editCitizen: EditCitizen
 
     @GetMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
-    fun boatSpaceSearchPage(
+    fun citizenProfile(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String {
@@ -67,7 +71,7 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
-        return layout.render(
+        return employeeLayout.render(
             true,
             request.requestURI,
             citizenDetails.citizenPage(
@@ -75,6 +79,30 @@ class CitizenUserController {
                 boatSpaceReservations,
                 boats,
                 UserType.EMPLOYEE
+            )
+        )
+    }
+
+    @GetMapping("/kuntalainen/omat-tiedot")
+    @ResponseBody
+    fun ownProfile(request: HttpServletRequest,): String {
+        val citizen =
+            run {
+                val authenticatedUser = request.getAuthenticatedUser()
+                val citizen1 = authenticatedUser?.let { citizenService.getCitizen(it.id) }
+                citizen1
+            } ?: throw UnauthorizedException()
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizen.id)
+        val boats = boatService.getBoatsForCitizen(citizen.id).map { toUpdateForm(it, boatSpaceReservations) }
+
+        return citizenLayout.generateLayout(
+            true,
+            citizen.fullName,
+            citizenDetails.citizenPage(
+                citizen,
+                boatSpaceReservations,
+                boats,
+                UserType.CITIZEN
             )
         )
     }
@@ -345,7 +373,7 @@ class CitizenUserController {
         response.addHeader("HX-Retarget", "#citizen-details")
         response.addHeader("HX-Reselect", "#citizen-details")
 
-        return layout.render(
+        return employeeLayout.render(
             true,
             request.requestURI,
             citizenDetails.citizenPage(
@@ -383,7 +411,7 @@ class CitizenUserController {
         response.addHeader("HX-Retarget", "#citizen-details")
         response.addHeader("HX-Reselect", "#citizen-details")
 
-        return layout.render(
+        return employeeLayout.render(
             true,
             request.requestURI,
             citizenDetails.citizenPage(
@@ -436,7 +464,7 @@ class CitizenUserController {
                     postOfficeSv = ""
                 )
             )!!
-        return layout.render(
+        return employeeLayout.render(
             true,
             request.requestURI,
             citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
