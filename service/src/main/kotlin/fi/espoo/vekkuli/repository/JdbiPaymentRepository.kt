@@ -54,6 +54,54 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
+    override fun insertInvoicePayment(
+        params: CreateInvoiceParams,
+        reservationId: Int
+    ): Invoice {
+        val id = UUID.randomUUID()
+        return jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    INSERT INTO invoice (id, due_date, reference, reservation_id, citizen_id)
+                    VALUES (:id, :dueDate, :reference, :reservationId, :citizenId)
+                    RETURNING *
+                    """
+                ).bindKotlin(params)
+                .bind("id", id)
+                .bind("reservationId", reservationId)
+                .mapTo<Invoice>()
+                .one()
+        }
+    }
+
+    override fun getInvoicePayment(id: UUID): Invoice? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT * FROM invoice WHERE id = :id
+                    """.trimIndent()
+                ).bind("id", id)
+                .mapTo<Invoice>()
+                .firstOrNull()
+        }
+
+    override fun setInvoicePaid(invoiceId: UUID): Invoice? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    UPDATE invoice
+                    SET payment_date = now()
+                    WHERE id = :id
+                    RETURNING *
+                    """
+                ).bind("id", invoiceId)
+                .mapTo<Invoice>()
+                .firstOrNull()
+        }
+
     override fun getPayment(stamp: UUID): Payment? =
         jdbi.withHandleUnchecked { handle ->
             handle

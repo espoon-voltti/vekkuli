@@ -1,9 +1,12 @@
 CREATE TABLE invoice (
-    due_date TIMESTAMP NOT NULL,
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v1mc(),
+    due_date DATE NOT NULL,
     reference TEXT NOT NULL,
-    payment_date TIMESTAMP NOT NULL,
+    payment_date DATE,
     reservation_id INT NOT NULL,
+    citizen_id uuid NOT NULL,
 
+    FOREIGN KEY (citizen_id) REFERENCES citizen(id),
     FOREIGN KEY (reservation_id) REFERENCES boat_space_reservation(id)
 );
 

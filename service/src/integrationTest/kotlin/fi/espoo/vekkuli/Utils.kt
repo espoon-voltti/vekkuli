@@ -26,6 +26,7 @@ fun deleteAllBoats(jdbi: Jdbi) {
 fun deleteAllPayments(jdbi: Jdbi) {
     jdbi.withHandleUnchecked { handle ->
         handle.execute("DELETE FROM payment")
+        handle.execute("DELETE FROM invoice")
     }
 }
 

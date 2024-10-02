@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.domain.PaymentStatus
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,7 +29,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var paymentService: PaymentService
 
-    private fun insertNewPayment(ref: String = "1",): Payment =
+    private fun insertNewPayment(ref: String = "1"): Payment =
         paymentService.insertPayment(
             CreatePaymentParams(citizenId, ref, 1, 24.0, "1"),
             reservationId = 1
@@ -68,5 +70,39 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
         )
         val fetchedPayment = paymentService.getPayment(payment.id)
         assertEquals(PaymentStatus.Success, fetchedPayment?.status, "Payment is updated with new status")
+    }
+
+    @Test
+    fun `should add invoice`() {
+        val invoice =
+            paymentService.insertInvoicePayment(
+                CreateInvoiceParams(
+                    LocalDate.now(),
+                    "1",
+                    1,
+                    citizenId
+                ),
+                reservationId = 1
+            )
+        val fetchedInvoice = paymentService.getInvoicePayment(invoice.id)
+        assertEquals(invoice.id, fetchedInvoice?.id, "Fetched invoice ID matches the inserted invoice ID")
+        assertEquals(invoice, fetchedInvoice, "Fetched invoice matches the inserted invoice")
+    }
+
+    @Test
+    fun `should set invoice as paid`() {
+        val invoice =
+            paymentService.insertInvoicePayment(
+                CreateInvoiceParams(
+                    LocalDate.now(),
+                    "1",
+                    1,
+                    citizenId
+                ),
+                reservationId = 1
+            )
+        paymentService.setInvoicePaid(invoice.id)
+        val fetchedInvoice = paymentService.getInvoicePayment(invoice.id)
+        assertEquals(LocalDate.now(), fetchedInvoice?.paymentDate, "Fetched invoice payment date is set to today")
     }
 }
