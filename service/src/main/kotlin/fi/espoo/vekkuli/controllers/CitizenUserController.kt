@@ -230,7 +230,7 @@ class CitizenUserController {
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
     @ResponseBody
-    fun boatEditPage(
+    fun boatEditPageForEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
@@ -238,15 +238,6 @@ class CitizenUserController {
     ): String {
         val boats = boatService.getBoatsForCitizen(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
-        model.addAttribute("boat", toUpdateForm(boat))
-        model.addAttribute(
-            "boatTypes",
-            BoatType.entries.map { it.toString() }
-        )
-
-        model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
-
-        model.addAttribute("errors", mutableMapOf<String, String>())
         return editBoat.editBoatForm(
             toUpdateForm(boat),
             mutableMapOf(),
@@ -256,6 +247,29 @@ class CitizenUserController {
             },
             listOf("Owner", "User", "CoOwner", "FutureOwner"),
             UserType.EMPLOYEE
+        )
+    }
+
+    @GetMapping("/kuntalainen/vene/{boatId}/muokkaa")
+    @ResponseBody
+    fun boatEditPage(
+        request: HttpServletRequest,
+        @PathVariable boatId: Int,
+        model: Model
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+        val boats = boatService.getBoatsForCitizen(citizenId)
+        val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+        return editBoat.editBoatForm(
+            toUpdateForm(boat),
+            mutableMapOf(),
+            citizenId,
+            BoatType.entries.map {
+                it.toString()
+            },
+            listOf("Owner", "User", "CoOwner", "FutureOwner"),
+            UserType.CITIZEN
         )
     }
 
@@ -329,7 +343,7 @@ class CitizenUserController {
 
     @PatchMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}")
     @ResponseBody
-    fun updateBoatPatch(
+    fun updateBoatForEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
@@ -385,6 +399,66 @@ class CitizenUserController {
                 boatSpaceReservations,
                 updatedBoats,
                 UserType.EMPLOYEE,
+                errors,
+            )
+        )
+    }
+
+    @PatchMapping("/kuntalainen/vene/{boatId}")
+    @ResponseBody
+    fun updateBoatPatch(
+        request: HttpServletRequest,
+        @PathVariable boatId: Int,
+        input: BoatUpdateForm,
+        response: HttpServletResponse
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+        val boats = boatService.getBoatsForCitizen(citizenId)
+        val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+
+        val errors = validateBoatUpdateInput(input)
+
+        if (errors.isNotEmpty()) {
+            return editBoat.editBoatForm(
+                input,
+                errors,
+                citizenId,
+                BoatType.entries.map {
+                    it.toString()
+                },
+                listOf("Owner", "User", "CoOwner", "FutureOwner"),
+                UserType.CITIZEN
+            )
+        }
+
+        val updatedBoat =
+            boat.copy(
+                name = input.name,
+                type = input.type,
+                widthCm = input.width!!.mToCm(),
+                lengthCm = input.length!!.mToCm(),
+                depthCm = input.depth!!.mToCm(),
+                weightKg = input.weight!!,
+                registrationCode = input.registrationNumber,
+                otherIdentification = input.otherIdentifier,
+                extraInformation = input.extraInformation,
+                ownership = input.ownership,
+            )
+        boatService.updateBoat(updatedBoat)
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val updatedBoats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+
+        return employeeLayout.render(
+            true,
+            request.requestURI,
+            citizenDetails.citizenPage(
+                citizen,
+                boatSpaceReservations,
+                updatedBoats,
+                UserType.CITIZEN,
                 errors,
             )
         )

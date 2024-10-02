@@ -417,6 +417,14 @@ class CitizenDetails {
             return ""
         }
 
+        val getEditUrl = { boatId: Int ->
+            if (userType == UserType.EMPLOYEE) {
+                "/virkailija/kayttaja/${citizen.id}/vene/$boatId/muokkaa"
+            } else {
+                "/kuntalainen/vene/$boatId/muokkaa"
+            }
+        }
+
         // language=HTML
         fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
             boats
@@ -431,7 +439,7 @@ class CitizenDetails {
                             <span class="memo-edit-buttons column columns">
                                 <div class="column is-narrow">
                                     <a class="edit-link s-link"
-                                       hx-get="/virkailija/kayttaja/${citizen.id}/vene/${boat.id}/muokkaa"
+                                       hx-get="${getEditUrl(boat.id)}"
                                        hx-target="#boat-${boat.id}"
                                        hx-swap="innerHTML">
                                         <span class="icon ml-s">
