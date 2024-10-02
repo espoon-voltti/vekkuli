@@ -466,7 +466,7 @@ class CitizenUserController {
 
     @DeleteMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/poista")
     @ResponseBody
-    fun deleteBoat(
+    fun deleteBoatAsEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
@@ -486,9 +486,6 @@ class CitizenUserController {
                 .map { toUpdateForm(it, boatSpaceReservations) }
                 .filter { !boatDeletionSuccessful || it.id != boatId }
 
-        response.addHeader("HX-Retarget", "#citizen-details")
-        response.addHeader("HX-Reselect", "#citizen-details")
-
         return employeeLayout.render(
             true,
             request.requestURI,
@@ -498,6 +495,36 @@ class CitizenUserController {
                 updatedBoats,
                 UserType.EMPLOYEE,
             )
+        )
+    }
+
+    @DeleteMapping("/kuntalainen/vene/{boatId}/poista")
+    @ResponseBody
+    fun deleteBoatAsCitizen(
+        request: HttpServletRequest,
+        @PathVariable boatId: Int,
+        response: HttpServletResponse
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+
+        val boats = boatService.getBoatsForCitizen(citizenId)
+        boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val boatDeletionSuccessful = boatService.deleteBoat(boatId)
+        // Update the boat list to remove the deleted boat
+        val updatedBoats =
+            boats
+                .map { toUpdateForm(it, boatSpaceReservations) }
+                .filter { !boatDeletionSuccessful || it.id != boatId }
+
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.CITIZEN
         )
     }
 

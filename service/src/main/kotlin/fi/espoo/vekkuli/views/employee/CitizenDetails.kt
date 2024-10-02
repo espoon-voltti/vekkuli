@@ -377,6 +377,13 @@ class CitizenDetails {
             return ""
         }
 
+        fun getDeleteUrl(boatId: Int): String {
+            if (userType == UserType.EMPLOYEE) {
+                return "/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista"
+            }
+            return "/kuntalainen/vene/$boatId/poista"
+        }
+
         fun deleteButton(
             hasLinkedReservation: Boolean,
             boatId: Int,
@@ -400,11 +407,16 @@ class CitizenDetails {
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
-                        "cancel"
-                    )}</button>
-                                            <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
-                                                ${t("boatSpaceReservation.button.confirmDeletion")}</a>
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
+                                                ${t("cancel")}
+                                            </a>
+                                            <a class="button is-danger" 
+                                                id="delete-modal-confirm-$boatId" 
+                                                hx-delete="${getDeleteUrl(boatId)}"
+                                                hx-select="#citizen-details"
+                                                hx-target="#citizen-details">
+                                                ${t("boatSpaceReservation.button.confirmDeletion")}
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
