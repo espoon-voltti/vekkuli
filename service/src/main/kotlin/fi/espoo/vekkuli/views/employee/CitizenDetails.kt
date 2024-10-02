@@ -77,6 +77,12 @@ class CitizenDetails {
             val phoneNumberValue =
                 formComponents.field("boatSpaceReservation.title.phoneNumber", "phoneNumberField", citizen.phone)
             val emailValue = formComponents.field("boatSpaceReservation.title.email", "emailField", citizen.email)
+            val editUrl =
+                if (userType == UserType.EMPLOYEE) {
+                    "/virkailija/kayttaja/${citizen.id}/muokkaa"
+                } else {
+                    "/kuntalainen/kayttaja/muokkaa"
+                }
             return (
                 """
                 <div class="container block" id="citizen-information">
@@ -88,7 +94,7 @@ class CitizenDetails {
                             <div>
                                 <a class="is-link" 
                                     id="edit-customer"
-                                    hx-get="/virkailija/kayttaja/${citizen.id}/muokkaa"
+                                    hx-get="$editUrl"
                                     hx-target="#citizen-information"
                                     hx-swap="innerHTML">
                                     <span class="icon ml-s">

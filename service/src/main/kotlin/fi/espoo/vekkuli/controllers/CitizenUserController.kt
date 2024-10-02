@@ -86,12 +86,7 @@ class CitizenUserController {
     @GetMapping("/kuntalainen/omat-tiedot")
     @ResponseBody
     fun ownProfile(request: HttpServletRequest,): String {
-        val citizen =
-            run {
-                val authenticatedUser = request.getAuthenticatedUser()
-                val citizen1 = authenticatedUser?.let { citizenService.getCitizen(it.id) }
-                citizen1
-            } ?: throw UnauthorizedException()
+        val citizen = getAuthenticatedCitizen(request)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizen.id)
         val boats = boatService.getBoatsForCitizen(citizen.id).map { toUpdateForm(it, boatSpaceReservations) }
 
@@ -105,6 +100,15 @@ class CitizenUserController {
                 UserType.CITIZEN
             )
         )
+    }
+
+    fun getAuthenticatedCitizen(request: HttpServletRequest,): CitizenWithDetails {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val citizen = authenticatedUser?.let { citizenService.getCitizen(it.id) }
+        if (citizen == null) {
+            throw UnauthorizedException()
+        }
+        return citizen
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/varaukset")
@@ -425,14 +429,25 @@ class CitizenUserController {
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muokkaa")
     @ResponseBody
-    fun citizenEditPage(
+    fun citizenEditPageForEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         model: Model
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val municipalities = citizenService.getMunicipalities()
-        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap())
+        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.EMPLOYEE)
+    }
+
+    @GetMapping("/kuntalainen/kayttaja/muokkaa")
+    @ResponseBody
+    fun citizenEditPage(
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val municipalities = citizenService.getMunicipalities()
+        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.CITIZEN)
     }
 
     @PatchMapping("/virkailija/kayttaja/{citizenId}")
@@ -447,29 +462,45 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
         val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
-        val updatedCitizen =
-            citizenService.updateCitizen(
-                UpdateCitizenParams(
-                    id = citizenId,
-                    firstName = input.firstName,
-                    lastName = input.lastName,
-                    phone = input.phoneNumber,
-                    email = input.email,
-                    streetAddress = input.address,
-                    streetAddressSv = input.address,
-                    postalCode = input.postalCode,
-                    municipalityCode = input.municipalityCode,
-                    nationalId = input.nationalId,
-                    postOffice = "",
-                    postOfficeSv = ""
-                )
-            )!!
-        return employeeLayout.render(
-            true,
-            request.requestURI,
-            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
-        )
+        val updatedCitizen = updateCitizen(input, citizenId)
+        return citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
+
+    @PatchMapping("/kuntalainen/omat-tiedot")
+    @ResponseBody
+    fun editOwnProfile(
+        request: HttpServletRequest,
+        input: CitizenUpdate,
+        model: Model
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val updatedCitizen = updateCitizen(input, citizenId)
+        return citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.CITIZEN)
+    }
+
+    fun updateCitizen(
+        input: CitizenUpdate,
+        citizenId: UUID
+    ) = citizenService.updateCitizen(
+        UpdateCitizenParams(
+            id = citizenId,
+            firstName = input.firstName,
+            lastName = input.lastName,
+            phone = input.phoneNumber,
+            email = input.email,
+            streetAddress = input.address,
+            streetAddressSv = input.address,
+            postalCode = input.postalCode,
+            municipalityCode = input.municipalityCode,
+            nationalId = input.nationalId,
+            postOffice = "",
+            postOfficeSv = ""
+        )
+    )!!
 
     @PostMapping("/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi")
     fun markPaymentDone(
