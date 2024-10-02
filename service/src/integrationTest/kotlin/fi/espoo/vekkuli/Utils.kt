@@ -12,6 +12,7 @@ import java.util.*
 fun deleteAllReservations(jdbi: Jdbi) {
     jdbi.withHandleUnchecked { handle ->
         handle.execute("DELETE FROM reservation_warning")
+        handle.execute("DELETE FROM payment")
         handle.execute("DELETE FROM boat_space_reservation")
     }
 }

@@ -19,6 +19,7 @@ data class Payment(
     val totalCents: Int,
     val vatPercentage: Double,
     val productCode: String,
+    val reservationId: Int
 )
 
 data class CreatePaymentParams(

@@ -12,19 +12,23 @@ import java.util.*
 class JdbiPaymentRepository(
     private val jdbi: Jdbi
 ) : PaymentRepository {
-    override fun insertPayment(params: CreatePaymentParams): Payment =
+    override fun insertPayment(
+        params: CreatePaymentParams,
+        reservationId: Int
+    ): Payment =
         jdbi.withHandleUnchecked { handle ->
             val id = UUID.randomUUID()
             val result =
                 handle
                     .createQuery(
                         """
-                        INSERT INTO payment (id, citizen_id, reference, total_cents, vat_percentage, product_code)
-                        VALUES (:id, :citizenId,  :reference, :totalCents, :vatPercentage, :productCode)
+                        INSERT INTO payment (id, citizen_id, reference, total_cents, vat_percentage, product_code, reservation_id)
+                        VALUES (:id, :citizenId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId)
                         RETURNING *
                         """
                     ).bindKotlin(params)
                     .bind("id", id)
+                    .bind("reservationId", reservationId)
                     .mapTo<Payment>()
                     .one()
             result

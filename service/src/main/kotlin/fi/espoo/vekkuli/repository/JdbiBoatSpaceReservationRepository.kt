@@ -22,11 +22,12 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT id
-                    FROM boat_space_reservation
-                    WHERE payment_id = :paymentId
-                        AND status = 'Payment' 
-                        AND created > NOW() - make_interval(secs => :paymentTimeout)
+                    SELECT bsr.id
+                    FROM boat_space_reservation bsr
+                    JOIN payment AS p ON bsr.id = p.reservation_id
+                    WHERE p.id = :paymentId
+                        AND bsr.status = 'Payment' 
+                        AND bsr.created > NOW() - make_interval(secs => :paymentTimeout)
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
@@ -46,7 +47,6 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
-                           bsr.payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -76,16 +76,17 @@ class JdbiBoatSpaceReservationRepository(
                            price.price_cents,
                            CONCAT(bs.section, bs.place_number) as place,
                            ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
-                    FROM boat_space_reservation bsr
+                    FROM payment p
+                    JOIN boat_space_reservation bsr ON p.reservation_id = bsr.id
                     JOIN boat b ON b.id = bsr.boat_id
                     JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
-                    JOIN price ON price_id = price.id
+                    JOIN price ON bs.price_id = price.id
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
-                    WHERE bsr.payment_id = :paymentId
-                    GROUP BY bsr.id, c.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code                
+                    WHERE p.id = :paymentId
+                    GROUP BY p.id, bsr.id, c.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code                
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
@@ -97,12 +98,14 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    UPDATE boat_space_reservation
+                    UPDATE boat_space_reservation bsr
                     SET status = 'Confirmed', updated = :updatedTime
-                    WHERE payment_id = :paymentId
-                        AND status = 'Payment' 
-                        AND created > NOW() - make_interval(secs => :paymentTimeout)
-                    RETURNING id
+                    FROM payment AS p
+                    WHERE p.id = :paymentId
+                        AND bsr.id = p.reservation_id
+                        AND bsr.status = 'Payment' 
+                        AND bsr.created > NOW() - make_interval(secs => :paymentTimeout)
+                    RETURNING bsr.id
                     """.trimIndent()
                 )
             query.bind("paymentId", paymentId)
@@ -239,7 +242,6 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
-                           bsr.payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -316,7 +318,6 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
-                           bsr.payment_id,
                            CONCAT(c.last_name, ' ', c.first_name) as full_name, 
                            c.first_name, 
                            c.last_name, 
@@ -353,7 +354,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
                     WHERE bsr.id = :reservationId
-                    AND c.id = :reserverId
+                        AND c.id = :reserverId
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
@@ -558,19 +559,18 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = 'Payment', updated = :updatedTime, payment_id = :paymentId
-                    WHERE id = :id
+                    SET status = 'Payment', updated = :updatedTime
+                    WHERE id = :reservationId
                         AND status = 'Payment'
                         AND created > NOW() - make_interval(secs => :paymentTimeout)
                         AND reserver_id = :reserverId
-                    RETURNING *
+                     RETURNING *
                     """.trimIndent()
                 )
+            query.bind("reservationId", reservationId)
             query.bind("updatedTime", LocalDate.now())
-            query.bind("id", reservationId)
-            query.bind("paymentId", paymentId)
-            query.bind("reserverId", reserverId)
             query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.bind("reserverId", reserverId)
             query.mapTo<BoatSpaceReservation>().one()
         }
 

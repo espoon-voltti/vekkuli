@@ -17,5 +17,8 @@ class PaymentService(
         success: Boolean
     ): Payment? = paymentRepo.updatePayment(id, success)
 
-    fun insertPayment(params: CreatePaymentParams): Payment = paymentRepo.insertPayment(params)
+    fun insertPayment(
+        params: CreatePaymentParams,
+        reservationId: Int
+    ): Payment = paymentRepo.insertPayment(params, reservationId)
 }

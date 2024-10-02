@@ -7,7 +7,10 @@ import java.util.*
 interface PaymentRepository {
     fun getPayment(stamp: UUID): Payment?
 
-    fun insertPayment(params: CreatePaymentParams): Payment
+    fun insertPayment(
+        params: CreatePaymentParams,
+        reservationId: Int
+    ): Payment
 
     fun updatePayment(
         id: UUID,

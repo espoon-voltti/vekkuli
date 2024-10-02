@@ -27,11 +27,11 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var paymentService: PaymentService
 
-    private fun insertNewPayment(ref: String = "1"): Payment {
-        return paymentService.insertPayment(
-            CreatePaymentParams(citizenId, ref, 1, 24.0, "1")
+    private fun insertNewPayment(ref: String = "1",): Payment =
+        paymentService.insertPayment(
+            CreatePaymentParams(citizenId, ref, 1, 24.0, "1"),
+            reservationId = 1
         )
-    }
 
     @Test
     fun `should add payment`() {
