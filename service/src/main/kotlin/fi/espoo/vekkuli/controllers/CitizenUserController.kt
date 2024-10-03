@@ -85,7 +85,7 @@ class CitizenUserController {
 
     @GetMapping("/kuntalainen/omat-tiedot")
     @ResponseBody
-    fun ownProfile(request: HttpServletRequest,): String {
+    fun ownProfile(request: HttpServletRequest): String {
         val citizen = getAuthenticatedCitizen(request)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizen.id)
         val boats = boatService.getBoatsForCitizen(citizen.id).map { toUpdateForm(it, boatSpaceReservations) }
@@ -102,7 +102,7 @@ class CitizenUserController {
         )
     }
 
-    fun getAuthenticatedCitizen(request: HttpServletRequest,): CitizenWithDetails {
+    fun getAuthenticatedCitizen(request: HttpServletRequest): CitizenWithDetails {
         val authenticatedUser = request.getAuthenticatedUser()
         val citizen = authenticatedUser?.let { citizenService.getCitizen(it.id) }
         if (citizen == null) {
