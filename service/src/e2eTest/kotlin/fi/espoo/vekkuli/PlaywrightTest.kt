@@ -24,8 +24,6 @@ abstract class PlaywrightTest {
 
     @BeforeAll
     fun beforeAllSuper() {
-        createAndSeedDatabase(jdbi)
-
         playwright = Playwright.create()
         playwright.selectors().setTestIdAttribute("id")
         browser =
@@ -44,6 +42,7 @@ abstract class PlaywrightTest {
 
     @BeforeEach
     fun createContextAndPage() {
+        createAndSeedDatabase(jdbi)
         context = browser.newContext()
         page = context.newPage()
     }
