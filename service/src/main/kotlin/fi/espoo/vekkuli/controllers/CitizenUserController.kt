@@ -388,19 +388,13 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
         val updatedBoats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
-        response.addHeader("HX-Retarget", "#citizen-details")
-        response.addHeader("HX-Reselect", "#citizen-details")
 
-        return employeeLayout.render(
-            true,
-            request.requestURI,
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                updatedBoats,
-                UserType.EMPLOYEE,
-                errors,
-            )
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.EMPLOYEE,
+            errors,
         )
     }
 
@@ -451,16 +445,12 @@ class CitizenUserController {
 
         val updatedBoats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
-        return employeeLayout.render(
-            true,
-            request.requestURI,
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                updatedBoats,
-                UserType.CITIZEN,
-                errors,
-            )
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.CITIZEN,
+            errors,
         )
     }
 
@@ -486,15 +476,11 @@ class CitizenUserController {
                 .map { toUpdateForm(it, boatSpaceReservations) }
                 .filter { !boatDeletionSuccessful || it.id != boatId }
 
-        return employeeLayout.render(
-            true,
-            request.requestURI,
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                updatedBoats,
-                UserType.EMPLOYEE,
-            )
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.EMPLOYEE,
         )
     }
 
