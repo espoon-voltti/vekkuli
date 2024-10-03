@@ -12,6 +12,8 @@ import fi.espoo.vekkuli.repository.BoatRepository
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
+import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.dateToString
 import fi.espoo.vekkuli.utils.mToCm
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -280,7 +282,31 @@ class BoatReservationService(
         reserverRepo.updateCitizen(
             UpdateCitizenParams(id = citizenId, phone = input.phone ?: "", email = input.email ?: "")
         )
-        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(input.reservationId, boat.id, citizenId, reservationStatus)
+        val reservation =
+            boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
+                input.reservationId,
+                boat.id,
+                citizenId,
+                reservationStatus
+            )
+        if (reservationStatus == ReservationStatus.Invoiced) {
+            emailService.sendEmail(
+                "reservation_confirmation_invoice",
+                null,
+                emailEnv.senderAddress,
+                citizenId,
+                input.email!!,
+                mapOf(
+                    "name" to "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}",
+                    "width" to boatSpace.widthCm.cmToM(),
+                    "length" to boatSpace.lengthCm.cmToM(),
+                    "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
+                    "endDate" to reservation.endDate,
+                    // TODO: get from reservation
+                    "invoiceDueDate" to dateToString(LocalDate.now().plusDays(14))
+                )
+            )
+        }
     }
 
     fun getReservationForCitizen(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForCitizen(id)
