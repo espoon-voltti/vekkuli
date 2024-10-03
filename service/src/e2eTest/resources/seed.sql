@@ -517,6 +517,10 @@ VALUES
     ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner'),
     ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner');
 
+INSERT INTO email_template (id, subject, body)
+VALUES
+    ('reservation_confirmation_invoice', 'Espoon Resurssivaraus: Venepaikan varausvahvistus', E'Hyvä asiakas,\n\nSinulle on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}.\n\nLasku tulee sinulle postissa.\nMaksathan laskun eräpäivään {{invoiceDueDate}} mennessä tai varaus raukeaa.');
+
 INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) VALUES
     ('1', 'Slip', '1', '2', 'B', '1', 'Beam', '250', '450', 'none'),
     ('2', 'Slip', '1', '2', 'B', '3', 'Beam', '250', '450', 'none'),
