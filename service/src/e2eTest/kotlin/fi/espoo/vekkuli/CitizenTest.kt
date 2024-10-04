@@ -3,7 +3,9 @@ package fi.espoo.vekkuli
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.ActiveProfiles
 
+@ActiveProfiles("test")
 class CitizenTest : PlaywrightTest() {
     @Test
     fun `citizen can edit their own information`() {
