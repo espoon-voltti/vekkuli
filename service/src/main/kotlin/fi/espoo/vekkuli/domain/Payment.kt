@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -19,6 +20,15 @@ data class Payment(
     val totalCents: Int,
     val vatPercentage: Double,
     val productCode: String,
+    val reservationId: Int
+)
+
+data class Invoice(
+    val id: UUID,
+    val reference: String,
+    val paymentDate: LocalDate?,
+    val dueDate: LocalDate,
+    val citizenId: UUID
 )
 
 data class CreatePaymentParams(
@@ -27,4 +37,11 @@ data class CreatePaymentParams(
     val totalCents: Int,
     val vatPercentage: Double,
     val productCode: String,
+)
+
+data class CreateInvoiceParams(
+    val dueDate: LocalDate,
+    val reference: String,
+    val reservationId: Int,
+    val citizenId: UUID
 )
