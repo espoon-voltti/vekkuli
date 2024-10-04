@@ -90,9 +90,8 @@ data class BoatSpaceReservationItem(
     val status: ReservationStatus,
     val reserverId: UUID,
     val actingUserId: UUID?,
-    val firstName: String,
-    val lastName: String,
-    val homeTown: String,
+    val reserverType: ReserverType,
+    val name: String,
     val email: String,
     val phone: String,
     val type: BoatSpaceType,
@@ -101,6 +100,8 @@ data class BoatSpaceReservationItem(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
+    val municipalityCode: Int,
+    val municipalityName: String,
     val warnings: Set<String> = emptySet()
 ) {
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
@@ -116,9 +117,8 @@ data class BoatSpaceReservationItemWithWarning(
     val status: ReservationStatus,
     val reserverId: UUID,
     val actingUserId: UUID?,
-    val firstName: String,
-    val lastName: String,
-    val homeTown: String,
+    val reserverType: ReserverType,
+    val name: String,
     val email: String,
     val phone: String,
     val type: BoatSpaceType,
@@ -127,7 +127,9 @@ data class BoatSpaceReservationItemWithWarning(
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
     val warning: String?,
-    val section: String
+    val section: String,
+    val municipalityCode: Int,
+    val municipalityName: String,
 )
 
 enum class BoatSpaceFilterColumn {

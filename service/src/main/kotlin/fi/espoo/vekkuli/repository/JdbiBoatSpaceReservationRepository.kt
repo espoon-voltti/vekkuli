@@ -3,9 +3,8 @@ package fi.espoo.vekkuli.repository
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.AndExpr
+import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
 import fi.espoo.vekkuli.utils.InExpr
-import fi.espoo.vekkuli.utils.buildNameSearchClause
-import fi.espoo.vekkuli.utils.formatNameSearchParam
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -54,6 +53,7 @@ class JdbiBoatSpaceReservationRepository(
                            r.street_address,
                            r.postal_code,
                            r.municipality_code,
+                           m.name as municipality_name,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
                            b.id as boat_id,
@@ -80,9 +80,10 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON bs.price_id = price.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE p.id = :paymentId
-                    GROUP BY p.id, bsr.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code, r.name, r.type                
+                    GROUP BY p.id, bsr.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code, r.name, r.type, m.name                
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
@@ -245,6 +246,7 @@ class JdbiBoatSpaceReservationRepository(
                            r.street_address,
                            r.postal_code,
                            r.municipality_code,
+                           m.name as municipality_name,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
                            b.id as boat_id,
@@ -270,6 +272,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     WHERE c.id = :reserverId AND 
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
                     """.trimIndent()
@@ -315,6 +318,7 @@ class JdbiBoatSpaceReservationRepository(
                            r.street_address,
                            r.postal_code,
                            r.municipality_code,
+                           m.name as municipality_name,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
                            b.id as boat_id,
@@ -339,6 +343,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     WHERE bsr.id = :reservationId
                     """.trimIndent()
                 )
@@ -403,19 +408,21 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as full_name, c.first_name, c.last_name, r.email, r.phone, '' as home_town,
+                    SELECT bsr.*, r.email, r.phone, r.type as reserver_type, r.name,
+                        r.municipality_code,
                         b.registration_code as boat_registration_code,
                         b.ownership as boat_ownership,
                         location.name as location_name, 
                         bs.type, CONCAT(bs.section, bs.place_number) as place,
                         rw.key as warning,
-                        bs.section
+                        bs.section,
+                        m.name as municipality_name
                     FROM boat_space_reservation bsr
                     JOIN boat b on b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
+                    JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     WHERE
                         (bsr.status = 'Confirmed' OR bsr.status = 'Payment' OR bsr.status = 'Invoiced')
@@ -426,10 +433,8 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
 
-            if (!params.nameSearch.isNullOrEmpty()) {
-                // Replace spaces with '&' and append ':*' to each term for prefix matching
-                val formattedNameSearch = formatNameSearchParam(params.nameSearch)
-                query.bind("nameSearch", formattedNameSearch)
+            if (!params.nameSearch.isNullOrBlank()) {
+                query.bind("nameSearch", params.nameSearch.trim())
             }
 
             filter.bind(query)
@@ -446,9 +451,7 @@ class JdbiBoatSpaceReservationRepository(
                         endDate = row.endDate,
                         status = row.status,
                         reserverId = row.reserverId,
-                        firstName = row.firstName,
-                        lastName = row.lastName,
-                        homeTown = row.homeTown,
+                        name = row.name,
                         email = row.email,
                         phone = row.phone,
                         type = row.type,
@@ -459,6 +462,9 @@ class JdbiBoatSpaceReservationRepository(
                         boatOwnership = row.boatOwnership,
                         warnings = (warnings.mapNotNull { it.warning }).toSet(),
                         actingUserId = null,
+                        reserverType = row.reserverType,
+                        municipalityCode = row.municipalityCode,
+                        municipalityName = row.municipalityName,
                     )
                 }
         }

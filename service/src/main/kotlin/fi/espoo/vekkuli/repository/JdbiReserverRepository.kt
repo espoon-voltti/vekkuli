@@ -1,9 +1,8 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
 import fi.espoo.vekkuli.utils.DbUtil.Companion.updateTable
-import fi.espoo.vekkuli.utils.buildNameSearchClause
-import fi.espoo.vekkuli.utils.formatNameSearchParam
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -91,9 +90,7 @@ class JdbiReserverRepository(
                     """.trimIndent()
                 )
             if (!nameSearch.isNullOrEmpty()) {
-                val formattedNameSearch = formatNameSearchParam(nameSearch)
-
-                query.bind("nameSearch", formattedNameSearch)
+                query.bind("nameSearch", nameSearch.trim())
             }
             query.mapTo<CitizenWithDetails>().toList()
         }

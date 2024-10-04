@@ -218,7 +218,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
 
         assertEquals(1, reservationsByFirstName.size, "reservations are filtered correctly")
-        assertEquals("Leo", reservationsByFirstName.first().firstName, "correct reservation is returned")
+        assertEquals("Leo Korhonen", reservationsByFirstName.first().name, "correct reservation is returned")
 
         val reservationsByLastName =
             reservationService.getBoatSpaceReservations(
@@ -228,7 +228,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
 
         assertEquals(2, reservationsByLastName.size, "reservations are filtered correctly")
-        val reservationsNames = reservationsByLastName.map { "${it.firstName} ${it.lastName}" }
+        val reservationsNames = reservationsByLastName.map { "${it.name}" }
         assertContains(reservationsNames, "Mikko Virtanen")
         assertContains(reservationsNames, "Olivia Virtanen")
     }

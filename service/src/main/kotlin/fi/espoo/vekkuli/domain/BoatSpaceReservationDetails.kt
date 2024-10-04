@@ -21,6 +21,7 @@ data class BoatSpaceReservationDetails(
     val streetAddress: String?,
     val postalCode: String?,
     val municipalityCode: Int,
+    val municipalityName: String,
     val type: BoatSpaceType,
     val place: String,
     val locationName: String,

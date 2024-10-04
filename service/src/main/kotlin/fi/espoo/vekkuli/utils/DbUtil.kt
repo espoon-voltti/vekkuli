@@ -32,5 +32,13 @@ class DbUtil {
             bindings.forEach { (key, value) -> q.bind(key, value) }
             q.execute()
         }
+
+        fun buildNameSearchClause(nameSearchParam: String?): String {
+            return if (!nameSearchParam.isNullOrBlank()) {
+                return "(r.name ILIKE '%' || REPLACE(REPLACE(:nameSearch, '%', ''), '_', '') || '%')"
+            } else {
+                "true"
+            }
+        }
     }
 }
