@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.CreatePaymentParams
+import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.dateToShortString
 import jakarta.servlet.http.HttpServletRequest
@@ -18,10 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalDate
-
-enum class PaymentType {
-    BoatSpaceReservation
-}
 
 fun createReference(
     balanceAccount: String,
@@ -49,7 +46,7 @@ class PaymentController(
     ): String {
         val locale = LocaleContextHolder.getLocale()
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
-        val reservation = reservationService.getBoatSpaceReservation(id, citizen.id) ?: return redirectUrl("/")
+        val reservation = reservationService.getBoatSpaceReservation(id) ?: return redirectUrl("/")
 
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
         val amount = reservation.priceCents

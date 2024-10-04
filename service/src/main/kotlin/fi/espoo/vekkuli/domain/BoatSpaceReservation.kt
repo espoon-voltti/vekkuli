@@ -39,6 +39,7 @@ data class BoatSpaceReservation(
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: ReservationStatus,
+    val actingUserId: UUID?,
     val reserverId: UUID?,
     val paymentId: UUID?,
 )
@@ -54,10 +55,11 @@ data class ReservationWithDependencies(
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: ReservationStatus,
+    val actingUserId: UUID?,
     val reserverId: UUID?,
     val employeeId: UUID?,
-    val firstName: String?,
-    val lastName: String?,
+    val reserverType: ReserverType?,
+    val name: String?,
     val email: String?,
     val phone: String?,
     val type: BoatSpaceType,
@@ -87,9 +89,9 @@ data class BoatSpaceReservationItem(
     val endDate: LocalDate,
     val status: ReservationStatus,
     val reserverId: UUID,
-    val firstName: String,
-    val lastName: String,
-    val homeTown: String,
+    val actingUserId: UUID?,
+    val reserverType: ReserverType,
+    val name: String,
     val email: String,
     val phone: String,
     val type: BoatSpaceType,
@@ -98,6 +100,8 @@ data class BoatSpaceReservationItem(
     val locationName: String,
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
+    val municipalityCode: Int,
+    val municipalityName: String,
     val warnings: Set<String> = emptySet()
 ) {
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
@@ -112,9 +116,9 @@ data class BoatSpaceReservationItemWithWarning(
     val endDate: LocalDate,
     val status: ReservationStatus,
     val reserverId: UUID,
-    val firstName: String,
-    val lastName: String,
-    val homeTown: String,
+    val actingUserId: UUID?,
+    val reserverType: ReserverType,
+    val name: String,
     val email: String,
     val phone: String,
     val type: BoatSpaceType,
@@ -123,7 +127,9 @@ data class BoatSpaceReservationItemWithWarning(
     val boatRegistrationCode: String?,
     val boatOwnership: OwnershipStatus?,
     val warning: String?,
-    val section: String
+    val section: String,
+    val municipalityCode: Int,
+    val municipalityName: String,
 )
 
 enum class BoatSpaceFilterColumn {
