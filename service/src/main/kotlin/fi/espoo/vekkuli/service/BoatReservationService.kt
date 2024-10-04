@@ -199,9 +199,9 @@ class BoatReservationService(
         }
     }
 
-    fun getReservationWithCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithCitizen(id)
+    fun getReservationWithReserver(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithReserver(id)
 
-    fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithoutCitizen(id)
+    fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithoutReserver(id)
 
     fun removeBoatSpaceReservation(
         id: Int,

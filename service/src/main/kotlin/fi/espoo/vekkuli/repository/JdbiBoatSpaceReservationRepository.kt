@@ -161,18 +161,17 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getReservationWithCitizen(id: Int): ReservationWithDependencies? =
+    override fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
+                    SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
                         location.name as location_name, price.price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
+                    JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
@@ -186,7 +185,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? =
+    override fun getReservationWithoutReserver(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(

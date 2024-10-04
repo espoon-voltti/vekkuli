@@ -15,9 +15,9 @@ interface BoatSpaceReservationRepository {
 
     fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies?
 
-    fun getReservationWithCitizen(id: Int): ReservationWithDependencies?
+    fun getReservationWithReserver(id: Int): ReservationWithDependencies?
 
-    fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies?
+    fun getReservationWithoutReserver(id: Int): ReservationWithDependencies?
 
     fun removeBoatSpaceReservation(
         id: Int,

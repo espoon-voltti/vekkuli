@@ -78,7 +78,7 @@ class BoatSpaceFormController(
             if (userType == UserType.EMPLOYEE) {
                 reservationService.getReservationWithoutCitizen(reservationId)
             } else {
-                reservationService.getReservationWithCitizen(reservationId)
+                reservationService.getReservationWithReserver(reservationId)
             }
 
         if (reservation == null) {
@@ -231,7 +231,7 @@ class BoatSpaceFormController(
             return renderBoatSpaceReservationApplication(reservation, null, emptyList(), input, request, userType)
         }
         val citizen = getCitizen(request, citizenService)
-        val reservation = reservationService.getReservationWithCitizen(reservationId)
+        val reservation = reservationService.getReservationWithReserver(reservationId)
         if (reservation == null) return redirectUrl("/")
 
         val organizations = if (citizen != null) organizationService.getCitizenOrganizations(citizen.id) else emptyList()
@@ -400,7 +400,7 @@ class BoatSpaceFormController(
         }
 
         if (bindingResult.hasErrors()) {
-            val reservation = reservationService.getReservationWithCitizen(reservationId)
+            val reservation = reservationService.getReservationWithReserver(reservationId)
             if (reservation == null) {
                 return redirectUrl("/")
             }
@@ -633,9 +633,11 @@ class BoatSpaceFormController(
         @RequestParam organizationId: UUID?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        val reservation = reservationService.getReservationWithReserver(reservationId)
+        println(reservation)
         val citizen = getCitizen(request, citizenService) ?: return ResponseEntity.badRequest().build()
         val userType = UserType.fromPath(usertype)
-        val reservation = reservationService.getReservationWithCitizen(reservationId)
+
         if (reservation == null) return ResponseEntity.badRequest().build()
         val organizations = organizationService.getCitizenOrganizations(citizen.id)
         val municipalities = citizenService.getMunicipalities()
