@@ -29,7 +29,7 @@ class Layout {
                 """.trimIndent()
             } else {
                 """
-                <div class="container" x-data="{ open: false }">
+                <div x-data="{ open: false }">
                     <div class="dropdown" :class="{ 'is-active': open }">
                         <div class="dropdown-trigger">
                             <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
@@ -61,21 +61,24 @@ class Layout {
             </head>
             <body>
 
-            <nav class="navbar mb-s" role="navigation" aria-label="main navigation">
-                <div class="navbar-brand">
-                    <a class="navbar-item" href="/">
-                        <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                    </a>
-                </div>
-                <div class="navbar-end" style="margin-right: 132px">
-                    <div class="navbar-item">
-                        <div class="buttons">
-                            $menu
-                        </div>
-                    </div>
-                </div>
-            </nav>
             
+            
+            <div style="background: white; display:flex; padding-left: 28px; padding-right:28px">
+                <img style="width: 185px; height: 107px; margin-right: 16px" src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                <h1 style="margin-top:43px">Espoon resurssivaraus</h1>
+                
+                <div style="padding: 50px 20px 20px;margin-left: auto;">
+                    $menu 
+                </div>
+            </div>
+            
+            <div style="background: white; display:flex; padding-left: 28px; padding-right:28px; border-top: 8px solid #F7F7F7">
+                <span style="padding: 20px"><a class="link" style="margin-right: 16px">Venepaikat</a></span>
+                <span style="padding: 20px"><a class="link" style="margin-right: 16px">Liikuntatilat</a></span>
+                <span style="padding: 20px"><a class="link" style="margin-right: 16px">Ohjatut ryhmäliikunnat</a></span>
+                <span style="padding: 20px; margin-left: auto"><a class="link" style="margin-right: 16px">Omat tiedot</a></span>
+            </div>
+                
             <div>
                 $bodyContent 
             </div>
