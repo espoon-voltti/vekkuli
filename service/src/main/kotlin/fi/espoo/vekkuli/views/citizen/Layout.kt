@@ -63,22 +63,25 @@ class Layout {
 
             
             
-            <div style="background: white; display:flex; padding-left: 28px; padding-right:28px">
-                <img style="width: 185px; height: 107px; margin-right: 16px" src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                <h1 style="margin-top:43px">Espoon resurssivaraus</h1>
-                
-                <div style="padding: 50px 20px 20px;margin-left: auto;">
-                    $menu 
+            <nav>
+                <div class="nav-row">
+                    <img class="logo" src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                    <h1>Espoon resurssivaraus</h1>
+                    
+                    <div class="auth">
+                        $menu 
+                    </div>
                 </div>
-            </div>
-            
-            <div style="background: white; display:flex; padding-left: 28px; padding-right:28px; border-top: 8px solid #F7F7F7">
-                <span style="padding: 20px"><a class="link" style="margin-right: 16px">Venepaikat</a></span>
-                <span style="padding: 20px"><a class="link" style="margin-right: 16px">Liikuntatilat</a></span>
-                <span style="padding: 20px"><a class="link" style="margin-right: 16px">Ohjatut ryhmäliikunnat</a></span>
-                <span style="padding: 20px; margin-left: auto"><a class="link" style="margin-right: 16px">Omat tiedot</a></span>
-            </div>
                 
+                <div class="nav-row">
+                    <a class="link">Venepaikat</a>
+                    <a class="link">Liikuntatilat</a>
+                    <a class="link">Ohjatut ryhmäliikunnat</a>
+                    <a class="link" style="margin-left: auto">Omat tiedot</a>
+                </div>
+            </nav>
+            
+            
             <div>
                 $bodyContent 
             </div>
