@@ -40,7 +40,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now(),
             )
-        val result = reservationService.getReservationWithCitizen(madeReservation.id)
+        val result = reservationService.getReservationWithReserver(madeReservation.id)
         assertEquals(madeReservation.id, result?.id, "reservation is the same")
         assertEquals(madeReservation.reserverId, result?.reserverId, "citizen is the same")
     }
@@ -63,7 +63,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 citizenId,
                 ReservationStatus.Payment,
             )
-        val reservation = reservationService.getReservationWithCitizen(madeReservation.id)
+        val reservation = reservationService.getReservationWithReserver(madeReservation.id)
         assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
         assertEquals(madeReservation.reserverId, updatedReservation.reserverId, "citizen is the same")
         assertEquals(boatId, reservation?.boatId, "boat is updated")

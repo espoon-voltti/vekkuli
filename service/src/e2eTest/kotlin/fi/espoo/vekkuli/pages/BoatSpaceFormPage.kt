@@ -51,6 +51,12 @@ class BoatSpaceFormPage(
     val existingCitizenSelector = page.locator("#existing-citizen-selector")
     val citizenIdError = page.getByTestId("citizenId-error")
 
+    val organizationRadioButton = page.getByTestId("reseverTypeOrg")
+    val orgNameInput = page.getByTestId("orgName")
+    val orgBusinessIdInput = page.getByTestId("orgBusinessId")
+    val orgPhoneNumberInput = page.getByTestId("orgPhone")
+    val orgEmailInput = page.getByTestId("orgEmail")
+
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
         widthInput.fill("3")
