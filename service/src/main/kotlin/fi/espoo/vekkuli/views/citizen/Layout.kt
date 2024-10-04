@@ -63,7 +63,7 @@ class Layout {
 
             
             
-            <nav>
+            <nav role="navigation" aria-label="main navigation">
                 <div class="nav-row">
                     <img class="logo" src="/static/images/espoo_logo.png" alt="Espoo logo" />
                     <h1>Espoon resurssivaraus</h1>
