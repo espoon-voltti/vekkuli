@@ -34,8 +34,8 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     private fun insertNewBoat(
         citizenId: UUID = this.citizenId,
         name: String = "TestBoat"
-    ): Boat {
-        return boatService.insertBoat(
+    ): Boat =
+        boatService.insertBoat(
             citizenId,
             "registrationCode",
             name,
@@ -48,7 +48,6 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
             "",
             OwnershipStatus.Owner
         )
-    }
 
     @Test
     fun `should update boat`() {
@@ -64,8 +63,8 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     fun `should get boats for citizen`() {
         insertNewBoat(citizenId, "TestBoat1",)
         insertNewBoat(citizenId, "TestBoat2",)
-        boatService.getBoatsForCitizen(citizenId)
-        assertEquals(2, boatService.getBoatsForCitizen(citizenId).size, "Correct number of boats are fetched")
+        boatService.getBoatsForReserver(citizenId)
+        assertEquals(2, boatService.getBoatsForReserver(citizenId).size, "Correct number of boats are fetched")
     }
 
     @Test

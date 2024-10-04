@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Organization
+import fi.espoo.vekkuli.utils.DbUtil.Companion.updateTable
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -56,6 +57,7 @@ class JdbiOrganizationRepository(
                     """
                     INSERT INTO organization_member (organization_id, member_id)
                     VALUES (:organizationId, :citizenId)
+                    ON CONFLICT DO NOTHING
                     """.trimIndent()
                 ).bind("organizationId", organizationId)
                 .bind("citizenId", citizenId)
@@ -121,6 +123,67 @@ class JdbiOrganizationRepository(
                 .execute()
 
             getOrganizationByBusinessId(businessId)!!
+        }
+
+    override fun updateOrganization(params: UpdateOrganizationParams) {
+        val orgParams = mutableMapOf<String, Any?>()
+
+        if (params.name != null) {
+            orgParams["name"] = params.name
+        }
+        if (params.businessId != null) {
+            orgParams["business_id"] = params.businessId
+        }
+        if (orgParams.isNotEmpty()) {
+            jdbi.withHandleUnchecked { updateTable(it, "citizen", params.id, orgParams) }
+        }
+
+        val reserverParams = mutableMapOf<String, Any?>()
+
+        if (params.phone != null) {
+            reserverParams["phone"] = params.phone
+        }
+        if (params.email != null) {
+            reserverParams["email"] = params.email
+        }
+        if (params.streetAddress != null) {
+            reserverParams["street_address"] = params.streetAddress
+        }
+        if (params.streetAddressSv != null) {
+            reserverParams["street_address_sv"] = params.streetAddressSv
+        }
+        if (params.postalCode != null) {
+            reserverParams["postal_code"] = params.postalCode
+        }
+        if (params.postOffice != null) {
+            reserverParams["post_office"] = params.postOffice
+        }
+        if (params.postOfficeSv != null) {
+            reserverParams["post_office_sv"] = params.postOfficeSv
+        }
+        if (params.municipalityCode != null) {
+            reserverParams["municipality_code"] = params.municipalityCode
+        }
+
+        if (reserverParams.isNotEmpty()) {
+            jdbi.withHandleUnchecked { updateTable(it, "reserver", params.id, reserverParams) }
+        }
+    }
+
+    override fun getOrganizationById(id: UUID): Organization? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT o.business_id, r.*, m.name as municipality_name
+                    FROM organization o
+                    JOIN reserver r ON r.id = o.id
+                    JOIN municipality m ON r.municipality_code = m.code
+                    WHERE o.id = :id
+                    """.trimIndent()
+                ).bind("id", id)
+                .mapTo<Organization>()
+                .firstOrNull()
         }
 
     override fun getOrganizationByBusinessId(businessId: String): Organization? =

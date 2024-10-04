@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.DbUtil.Companion.updateTable
 import fi.espoo.vekkuli.utils.buildNameSearchClause
 import fi.espoo.vekkuli.utils.formatNameSearchParam
 import org.jdbi.v3.core.Jdbi
@@ -113,35 +114,6 @@ class JdbiReserverRepository(
                 .firstOrNull()
         }
 
-    fun updateTable(
-        table: String,
-        id: UUID,
-        params: Map<String, Any?>
-    ) {
-        val sql = mutableListOf<String>()
-        val bindings = mutableMapOf<String, Any?>()
-
-        bindings["id"] = id
-
-        params.forEach { (key, value) ->
-            sql.add("$key = :$key")
-            bindings[key] = value
-        }
-
-        val updateQuery =
-            """
-            UPDATE $table
-            SET ${sql.joinToString(", ")}
-            WHERE id = :id
-            """.trimIndent()
-
-        jdbi.withHandleUnchecked { handle ->
-            val q = handle.createUpdate(updateQuery)
-            bindings.forEach { (key, value) -> q.bind(key, value) }
-            q.execute()
-        }
-    }
-
     override fun updateCitizen(params: UpdateCitizenParams) {
         val citizenParams = mutableMapOf<String, Any?>()
 
@@ -155,7 +127,7 @@ class JdbiReserverRepository(
             citizenParams["last_name"] = params.lastName
         }
         if (citizenParams.isNotEmpty()) {
-            updateTable("citizen", params.id, citizenParams)
+            jdbi.withHandleUnchecked { updateTable(it, "citizen", params.id, citizenParams) }
         }
 
         val reserverParams = mutableMapOf<String, Any?>()
@@ -186,7 +158,7 @@ class JdbiReserverRepository(
         }
 
         if (reserverParams.isNotEmpty()) {
-            updateTable("reserver", params.id, reserverParams)
+            jdbi.withHandleUnchecked { updateTable(it, "reserver", params.id, reserverParams) }
         }
     }
 

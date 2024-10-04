@@ -503,6 +503,10 @@ VALUES
   ('8b220a43-86a0-4054-96f6-d29a5aba17e7', '1015253-4')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO organization_member (organization_id, member_id)
+VALUES
+  ('8b220a43-86a0-4054-96f6-d29a5aba17e7', '509edb00-5549-11ef-a1c7-776e76028a49');
+
 INSERT INTO citizen_memo (created_by, category, reserver_id, content)
 VALUES
   ('94833b54-132b-4ab8-b841-60df45809b3e', 'Marine', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Kiva viesti');

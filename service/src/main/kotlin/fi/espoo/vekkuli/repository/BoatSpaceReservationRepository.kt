@@ -11,9 +11,9 @@ interface BoatSpaceReservationRepository {
 
     fun updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int?
 
-    fun getReservationForCitizen(id: UUID): ReservationWithDependencies?
+    fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies?
 
-    fun getReservationForEmployee(id: UUID): ReservationWithDependencies?
+    fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies?
 
     fun getReservationWithCitizen(id: Int): ReservationWithDependencies?
 
@@ -26,10 +26,7 @@ interface BoatSpaceReservationRepository {
 
     fun getBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
 
-    fun getBoatSpaceReservation(
-        reservationId: Int,
-        reserverId: UUID,
-    ): BoatSpaceReservationDetails?
+    fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails?
 
     fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem>
 
@@ -37,6 +34,7 @@ interface BoatSpaceReservationRepository {
 
     fun insertBoatSpaceReservation(
         reserverId: UUID,
+        actingUserId: UUID?,
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
@@ -56,11 +54,7 @@ interface BoatSpaceReservationRepository {
         reservationStatus: ReservationStatus
     ): BoatSpaceReservation
 
-    fun updateReservationWithPayment(
-        reservationId: Int,
-        paymentId: UUID,
-        reserverId: UUID,
-    ): BoatSpaceReservation
+    fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation
 }

@@ -35,6 +35,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             reservationService.insertBoatSpaceReservation(
                 citizenId,
+                citizenId,
                 1,
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now(),
@@ -48,6 +49,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     fun `should update boat in reservation`() {
         val madeReservation =
             reservationService.insertBoatSpaceReservation(
+                citizenId,
                 citizenId,
                 1,
                 startDate = LocalDate.now(),
@@ -72,11 +74,12 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             reservationService.insertBoatSpaceReservation(
                 citizenId,
+                citizenId,
                 1,
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now(),
             )
-        val reservation = reservationService.getReservationForCitizen(citizenId)
+        val reservation = reservationService.getUnfinishedReservationForCitizen(citizenId)
         assertEquals(madeReservation.id, reservation?.id, "reservation is the same")
     }
 
@@ -95,7 +98,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                     productCode = "1",
                 )
             )
-        val reservation = reservationService.getBoatSpaceReservation(madeReservation.id, citizenId)
+        val reservation = reservationService.getBoatSpaceReservation(madeReservation.id)
         assertNotNull(reservation, "reservation is found")
         assertEquals(madeReservation.id, reservation.id, "reservation is the same")
         assertEquals(payment.citizenId, madeReservation.reserverId, "payment is added for correct citizen")
@@ -123,7 +126,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 extraInformation = "1",
                 ownerShip = OwnershipStatus.FutureOwner,
                 email = "email@email.com",
-                phone = "0403849283"
+                phone = "0403849283",
             ),
             ReservationStatus.Payment,
         )
@@ -314,6 +317,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val newReservation =
             reservationService.insertBoatSpaceReservation(
                 citizenId,
+                citizenId,
                 boatSpaceId,
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now(),
@@ -359,7 +363,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
         reservationService.markInvoicePaid(newReservation.id, LocalDate.now(), "")
 
-        val reservation = reservationService.getBoatSpaceReservation(newReservation.id, citizenId)
+        val reservation = reservationService.getBoatSpaceReservation(newReservation.id)
 
         assertEquals(ReservationStatus.Confirmed, reservation?.status, "Reservation is marked as paid")
     }

@@ -127,9 +127,8 @@ public interface PaytrailInterface {
 @Service
 @Profile("test")
 class PaytrailMock : PaytrailInterface {
-    override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
-        println("Creating mocked payment with params: $params")
-        return PaytrailPaymentResponse(
+    override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse =
+        PaytrailPaymentResponse(
             transactionId = "123",
             reference = params.reference,
             terms = "https://www.paytrail.com",
@@ -164,7 +163,6 @@ class PaytrailMock : PaytrailInterface {
                     )
                 )
         )
-    }
 
     override fun checkSignature(params: Map<String, String>): Boolean = true
 }

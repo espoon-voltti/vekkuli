@@ -141,7 +141,7 @@ class BoatReservationService(
         params: CreatePaymentParams
     ): Payment {
         val payment = paymentService.insertPayment(params, reservationId)
-        boatSpaceReservationRepo.updateReservationWithPayment(reservationId, payment.id, params.citizenId)
+        boatSpaceReservationRepo.setReservationStatusToPayment(reservationId)
         return payment
     }
 
@@ -208,10 +208,8 @@ class BoatReservationService(
         citizenId: UUID,
     ): Unit = boatSpaceReservationRepo.removeBoatSpaceReservation(id, citizenId)
 
-    fun getBoatSpaceReservation(
-        reservationId: Int,
-        citizenId: UUID,
-    ): BoatSpaceReservationDetails? = boatSpaceReservationRepo.getBoatSpaceReservation(reservationId, citizenId)
+    fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails? =
+        boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace? =
         boatSpaceReservationRepo.getBoatSpaceRelatedToReservation(reservationId)
@@ -225,7 +223,7 @@ class BoatReservationService(
 
     @Transactional
     fun reserveBoatSpace(
-        citizenId: UUID,
+        reserverId: UUID,
         input: ReserveBoatSpaceInput,
         reservationStatus: ReservationStatus
     ) {
@@ -235,7 +233,7 @@ class BoatReservationService(
         val boat =
             if (input.boatId == 0 || input.boatId == null) {
                 boatRepository.insertBoat(
-                    citizenId,
+                    reserverId,
                     input.boatRegistrationNumber ?: "",
                     input.boatName!!,
                     input.width.mToCm(),
@@ -251,7 +249,7 @@ class BoatReservationService(
                 boatRepository.updateBoat(
                     Boat(
                         id = input.boatId,
-                        reserverId = citizenId,
+                        reserverId = reserverId,
                         registrationCode = input.boatRegistrationNumber ?: "",
                         name = input.boatName!!,
                         widthCm = input.width.mToCm(),
@@ -280,21 +278,23 @@ class BoatReservationService(
         )
 
         reserverRepo.updateCitizen(
-            UpdateCitizenParams(id = citizenId, phone = input.phone ?: "", email = input.email ?: "")
+            UpdateCitizenParams(id = reserverId, phone = input.phone ?: "", email = input.email ?: "")
         )
+
         val reservation =
             boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
                 input.reservationId,
                 boat.id,
-                citizenId,
+                reserverId,
                 reservationStatus
             )
+
         if (reservationStatus == ReservationStatus.Invoiced) {
             emailService.sendEmail(
                 "reservation_confirmation_invoice",
                 null,
                 emailEnv.senderAddress,
-                citizenId,
+                reserverId,
                 input.email!!,
                 mapOf(
                     "name" to "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}",
@@ -309,18 +309,22 @@ class BoatReservationService(
         }
     }
 
-    fun getReservationForCitizen(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForCitizen(id)
+    fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies? =
+        boatSpaceReservationRepo.getUnfinishedReservationForCitizen(id)
 
-    fun getReservationForEmployee(id: UUID): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForEmployee(id)
+    fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies? =
+        boatSpaceReservationRepo.getUnfinishedReservationForEmployee(id)
 
     fun insertBoatSpaceReservation(
         reserverId: UUID,
+        actingUserId: UUID?,
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservation(
             reserverId,
+            actingUserId,
             boatSpaceId,
             startDate,
             endDate,
