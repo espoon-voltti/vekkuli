@@ -92,14 +92,15 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
-                    productCode = "1"
+                    productCode = "1",
                 )
             )
         val reservation = reservationService.getBoatSpaceReservation(madeReservation.id, citizenId)
         assertNotNull(reservation, "reservation is found")
         assertEquals(madeReservation.id, reservation.id, "reservation is the same")
         assertEquals(payment.citizenId, madeReservation.reserverId, "payment is added for correct citizen")
-        assertEquals(reservation.paymentId, payment.id, "payment is added to the reservation")
+        assertEquals(reservation.status, ReservationStatus.Payment, "reservation status is correct")
+        assertEquals(payment.reservationId, madeReservation.id, "payment is linked to the reservation")
     }
 
     @Test
