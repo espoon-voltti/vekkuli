@@ -10,6 +10,22 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.dateToString
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
+import java.util.*
+
+data class BoatFormInput(
+    val id: Int,
+    val boatName: String,
+    val boatType: BoatType,
+    val width: Double?,
+    val length: Double?,
+    val depth: Double?,
+    val weight: Int?,
+    val boatRegistrationNumber: String,
+    val otherIdentification: String,
+    val extraInformation: String,
+    val ownership: OwnershipStatus,
+    val noRegistrationNumber: Boolean,
+)
 
 @Service
 class BoatSpaceForm(
@@ -22,16 +38,245 @@ class BoatSpaceForm(
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
+    fun boatForm(
+        userType: UserType,
+        citizen: CitizenWithDetails?,
+        boats: List<Boat>,
+        reservationId: Int,
+        input: BoatFormInput,
+    ): String {
+        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+
+        fun boatRadioButton(boat: Boat) =
+            """
+            <div class="radio">
+                <input type="radio" id="boat-${boat.id}-radio" value="${boat.id}"
+                       hx-trigger="change"
+                       hx-get="/${userType.path}/venepaikka/varaus/$reservationId/boat-form?boatId=${boat.id}"
+                       hx-target="#boatForm"
+                       hx-swap="outerHTML"
+                       name="boatId"
+                       ${if (input.id == boat.id) "checked" else ""}
+                />
+                <label for="${boat.id}">${boat.displayName}</label>
+            </div>
+            """.trimIndent()
+
+        // language=HTML
+        val chooseBoatButtons =
+            if (citizen !== null) {
+                """
+            <div class="field" ">
+                <div class="radio">
+                    <input type="radio" 
+                        id="newBoat" 
+                        name="boatId"
+                        value="0"
+                        hx-trigger="change"
+                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/boat-form?boatId=0"
+                        hx-target="#boatForm"
+                        hx-swap="outerHTML"
+                       ${if (input.id == 0) "checked" else ""}
+                    />
+                    <label for="newBoat" >${t("boatApplication.newBoat")}</label>
+                </div>
+                ${boats.joinToString("\n") { boatRadioButton(it) }}
+            </div>
+            """
+            } else {
+                """
+                <input type="hidden" name="boatId" value="0">
+                """
+            }
+
+        val boatTypeSelect =
+            formComponents.select(
+                "boatApplication.boatType",
+                "boatType",
+                boatTypes.first(),
+                boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
+                attributes =
+                    """
+                    hx-trigger='change' 
+                    hx-get='/venepaikka/varaus/$reservationId/boat-type-warning' 
+                    hx-target='#boat-type-warning'
+                    hx-sync='closest #form:replace'
+                    """.trimIndent()
+            )
+
+        val widthInput =
+            formComponents.decimalInput(
+                "boatApplication.boatWidthInMeters",
+                "width",
+                input.width,
+                required = true,
+                """
+                hx-trigger='change' 
+                hx-get='/venepaikka/varaus/$reservationId/boat-size-warning' 
+                hx-include="#length"
+                hx-target='#boat-size-warning'
+                """.trimIndent()
+            )
+
+        val lengthInput =
+            formComponents.decimalInput(
+                "boatApplication.boatLengthInMeters",
+                "length",
+                input.length,
+                required = true,
+                """
+                hx-trigger='change' 
+                hx-get='/venepaikka/varaus/$reservationId/boat-size-warning' 
+                hx-include="#width"
+                hx-target='#boat-size-warning'
+                """.trimIndent()
+            )
+
+        val depthInput =
+            formComponents.decimalInput(
+                "boatApplication.boatDepthInMeters",
+                "depth",
+                input.depth,
+                required = true,
+                step = 0.1
+            )
+
+        val weightInput =
+            formComponents.numberInput(
+                "boatApplication.boatWeightInKg",
+                "weight",
+                input.weight,
+                required = true,
+                attributes =
+                    """
+                    hx-trigger='change' 
+                    hx-get='/venepaikka/varaus/$reservationId/boat-weight-warning' 
+                    hx-target='#boat-weight-warning'
+                    hx-sync='closest #form:replace'
+                    """.trimIndent()
+            )
+
+        val boatNameInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.boatName",
+                "boatName",
+                input.boatName,
+            )
+
+        val registrationNumberInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.registrationNumber",
+                "boatRegistrationNumber",
+                input.boatRegistrationNumber,
+                required = true
+            )
+
+        val otherIdentifierInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.otherIdentifier",
+                "otherIdentification",
+                input.otherIdentification,
+                required = true
+            )
+
+        val extraInformationInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.additionalInfo",
+                "extraInformation",
+                input.extraInformation,
+            )
+        val ownershipOptions = listOf("Owner", "User", "CoOwner", "FutureOwner")
+        // language=HTML
+        val ownership =
+            """
+            <div class="field">
+                     <h4 class="label required" >${t("boatApplication.ownerShipTitle")}</h4>
+                     <div class="control is-flex-direction-row">
+                     
+                ${
+                ownershipOptions.joinToString("\n") { opt ->
+                    """
+                    <div class="radio">
+                        <input
+                            type="radio"
+                            name="ownership"
+                            value="$opt"
+                            id="ownership-$opt"
+                            ${if (input.ownership.toString() == opt) "checked" else ""}
+                        />
+                        <label for="ownership-$opt">${t("boatApplication.$userType.ownershipOption.$opt")}</label>
+                    </div>
+                    """.trimIndent()
+                }
+            }
+                     </div>
+                 </div> 
+            """.trimIndent()
+        // language=HTML
+        val registrationNumberContainer =
+            """
+            <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
+                 
+                <div class="columns" >
+                    <template x-if="!noReg">
+                         <div class="column">
+                             $registrationNumberInput
+                         </div>
+                    </template>
+                    <div class="column">
+                        <label class="checkbox">
+                             <input type="checkbox" 
+                                     name="noRegistrationNumber" 
+                                     id="noRegistrationNumber" 
+                                     @click="noReg = !noReg"
+                                     ${if (input.noRegistrationNumber == true) "checked" else ""}
+                                     />
+                             <span>${t("boatApplication.noRegistrationNumber")}</span>
+                        </label> 
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
+
+        // language=HTML
+        val boatContainer =
+            """
+            <div id="boatForm">       
+               <div class="block">
+                   <h3 class="header">${t("boatApplication.boatInformation")}</h3>
+                   $chooseBoatButtons
+               </div>
+               
+               ${
+                boatInformationFields(
+                    boatNameInput,
+                    boatTypeSelect,
+                    widthInput,
+                    lengthInput,
+                    depthInput,
+                    weightInput,
+                    registrationNumberContainer,
+                    otherIdentifierInput,
+                    extraInformationInput,
+                    ownership
+                )
+            }
+            </div>
+            """.trimIndent()
+
+        return boatContainer
+    }
+
     fun boatSpaceForm(
         reservation: ReservationWithDependencies,
         boats: List<Boat>,
         citizen: CitizenWithDetails?,
+        organizations: List<Organization>,
         input: ReservationInput,
         reservationTimeInSeconds: Long,
         userType: UserType,
         municipalities: List<Municipality>,
     ): String {
-        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
         val harborField =
             formComponents.field(
                 "boatApplication.harbor",
@@ -105,171 +350,6 @@ class BoatSpaceForm(
             """.trimIndent()
 
         // language=HTML
-        fun boatRadioButton(boat: Boat) =
-            """
-            <div class="radio">
-                <input type="radio" id="boat-${boat.id}-radio" value="${boat.id}"
-                       hx-trigger="change"
-                       hx-get="/${userType.path}/venepaikka/varaus/${reservation.id}?boatId=${boat.id}"
-                       hx-target="body"
-                       hx-swap="outerHTML"
-                       name="boatId"
-                       ${if (input.boatId == boat.id) "checked" else ""}
-                />
-                <label for="${boat.id}">${boat.displayName}</label>
-            </div>
-            """.trimIndent()
-
-        // language=HTML
-        val chooseBoatButtons =
-            if (citizen !== null) {
-                """
-            <div class="field" ">
-                <div class="radio">
-                    <input type="radio" 
-                        id="newBoat" 
-                        name="boatId"
-                        value="0"
-                        hx-trigger="change"
-                        hx-get="/${userType.path}/venepaikka/varaus/${reservation.id}"
-                        hx-target="body"
-                        hx-swap="outerHTML"
-                       ${if (input.boatId == 0) "checked" else ""}
-                    />
-                    <label for="newBoat" >${t("boatApplication.newBoat")}</label>
-                </div>
-                ${boats.joinToString("\n") { boatRadioButton(it) }}
-            </div>
-            """
-            } else {
-                """
-            <input type="hidden" name="boatId" value="0">
-        """
-            }
-
-        val boatTypeSelect =
-            formComponents.select(
-                "boatApplication.boatType",
-                "boatType",
-                boatTypes.first(),
-                boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
-                attributes =
-                    """
-                    hx-trigger='change' 
-                    hx-get='/venepaikka/varaus/${reservation.id}/boat-type-warning' 
-                    hx-target='#boat-type-warning'
-                    hx-sync='closest #form:replace'
-                    """.trimIndent()
-            )
-
-        val widthInput =
-            formComponents.decimalInput(
-                "boatApplication.boatWidthInMeters",
-                "width",
-                input.width,
-                required = true,
-                """
-                hx-trigger='change' 
-                hx-get='/venepaikka/varaus/${reservation.id}/boat-size-warning' 
-                hx-include="#length"
-                hx-target='#boat-size-warning'
-                """.trimIndent()
-            )
-
-        val lengthInput =
-            formComponents.decimalInput(
-                "boatApplication.boatLengthInMeters",
-                "length",
-                input.length,
-                required = true,
-                """
-                hx-trigger='change' 
-                hx-get='/venepaikka/varaus/${reservation.id}/boat-size-warning' 
-                hx-include="#width"
-                hx-target='#boat-size-warning'
-                """.trimIndent()
-            )
-
-        val depthInput =
-            formComponents.decimalInput(
-                "boatApplication.boatDepthInMeters",
-                "depth",
-                input.depth,
-                required = true,
-                step = 0.1
-            )
-
-        val weightInput =
-            formComponents.numberInput(
-                "boatApplication.boatWeightInKg",
-                "weight",
-                input.weight,
-                required = true,
-                attributes =
-                    """
-                    hx-trigger='change' 
-                    hx-get='/venepaikka/varaus/${reservation.id}/boat-weight-warning' 
-                    hx-target='#boat-weight-warning'
-                    hx-sync='closest #form:replace'
-                    """.trimIndent()
-            )
-
-        val boatNameInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.boatName",
-                "boatName",
-                input.boatName,
-            )
-
-        val registrationNumberInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.registrationNumber",
-                "boatRegistrationNumber",
-                input.boatRegistrationNumber,
-                required = true
-            )
-
-        val otherIdentifierInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.otherIdentifier",
-                "otherIdentification",
-                input.otherIdentification,
-                required = true
-            )
-
-        val extraInformationInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.additionalInfo",
-                "extraInformation",
-                input.extraInformation,
-            )
-        val ownershipOptions = listOf("Owner", "User", "CoOwner", "FutureOwner")
-        // language=HTML
-        val ownership =
-            """
-            <div class="field">
-                     <h4 class="label required" >${t("boatApplication.ownerShipTitle")}</h4>
-                     <div class="control is-flex-direction-row">
-                     
-                ${
-                ownershipOptions.joinToString("\n") { opt ->
-                    """
-                    <div class="radio">
-                        <input
-                            type="radio"
-                            name="ownership"
-                            value="$opt"
-                            id="ownership-$opt"
-                            ${if (input.ownership.toString() == opt) "checked" else ""}
-                        />
-                        <label for="ownership-$opt">${t("boatApplication.$userType.ownershipOption.$opt")}</label>
-                    </div>
-                    """.trimIndent()
-                }
-            }
-                     </div>
-                 </div> 
-            """.trimIndent()
 
         val email =
             formComponents.textInput(
@@ -496,60 +576,40 @@ class BoatSpaceForm(
             }
             """
 
-        // language=HTML
-        val registrationNumberContainer =
-            """
-            <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
-                 
-                <div class="columns" >
-                    <template x-if="!noReg">
-                         <div class="column">
-                             $registrationNumberInput
-                         </div>
-                    </template>
-                    <div class="column">
-                        <label class="checkbox">
-                             <input type="checkbox" 
-                                     name="noRegistrationNumber" 
-                                     id="noRegistrationNumber" 
-                                     @click="noReg = !noReg"
-                                     ${if (input.noRegistrationNumber == true) "checked" else ""}
-                                     />
-                             <span>${t("boatApplication.noRegistrationNumber")}</span>
-                        </label> 
-                    </div>
-                </div>
-            </div>
-            """.trimIndent()
-
-        // language=HTML
-        val boatContainer =
-            """
-                   
-               <div class="block">
-                   <h3 class="header">${t("boatApplication.boatInformation")}</h3>
-                   $chooseBoatButtons
-               </div>
-               
-               ${
-                boatInformationFields(
-                    boatNameInput,
-                    boatTypeSelect,
-                    widthInput,
-                    lengthInput,
-                    depthInput,
-                    weightInput,
-                    registrationNumberContainer,
-                    otherIdentifierInput,
-                    extraInformationInput,
-                    ownership
-                )
-            }
-                               
-                  
-            """.trimIndent()
-
         val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
+
+        val slipHolderForm =
+            slipHolder(
+                organizations,
+                input.isOrganization ?: false,
+                input.organizationId,
+                userType,
+                reservation.id,
+                municipalities
+            )
+
+        val boatForm =
+            boatForm(
+                userType,
+                citizen,
+                boats,
+                reservation.id,
+                BoatFormInput(
+                    id = input.boatId ?: 0,
+                    boatName = input.boatName ?: "",
+                    boatType = input.boatType ?: BoatType.OutboardMotor,
+                    width = input.width,
+                    length = input.length,
+                    depth = input.depth,
+                    weight = input.weight,
+                    boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                    otherIdentification = input.otherIdentification ?: "",
+                    extraInformation = input.extraInformation ?: "",
+                    ownership = input.ownership ?: OwnershipStatus.Owner,
+                    noRegistrationNumber = input.noRegistrationNumber ?: false,
+                )
+            )
+
         // language=HTML
         return (
             """
@@ -579,9 +639,10 @@ class BoatSpaceForm(
                                             
                         <div class='form-section'>
                         $citizenContainer  
+                        $slipHolderForm
                         </div>
                          <div class='form-section'>
-                        $boatContainer
+                        $boatForm
                         </div>
                          <div class='form-section'>
                         $boatSpaceInformation
@@ -685,6 +746,253 @@ class BoatSpaceForm(
             </section>
             """.trimIndent()
         )
+    }
+
+    fun editOrganizationForm(
+        org: Organization,
+        municipalities: List<Municipality>
+    ): String {
+        val nameField = formComponents.field("boatApplication.organizationName", "orgName", org.name)
+        val businessIdField = formComponents.field("boatApplication.organizationId", "orgBusinessId", org.businessId)
+        val municipalityField = formComponents.field("boatApplication.municipality", "orgMunicipality", org.municipalityName)
+        val phoneInput = formComponents.textInput("boatApplication.phone", "orgPhone", org?.phone, true)
+
+        val emailInput = formComponents.textInput("boatApplication.email", "orgEmail", org?.email, true)
+
+        val addressInput =
+            formComponents.textInput(
+                "boatApplication.address",
+                "orgAddress",
+                org.streetAddress,
+            )
+
+        val postalCodeInput =
+            formComponents.textInput(
+                "boatApplication.postalCode",
+                "orgPostalCode",
+                org.postalCode,
+            )
+
+        val cityFieldInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.city",
+                "orgCity",
+                org.postOffice,
+            )
+        // language=HTML
+        return """
+            <div>
+                <div class='columns'>
+                    <div class='column is-one-quarter'>
+                      $nameField
+                    </div>
+                    <div class='column is-one-quarter'>
+                      $businessIdField
+                    </div>
+                    <div class='column is-one-quarter'>
+                      $municipalityField
+                    </div>
+                </div>
+                <div class='columns'>
+                    <div class='column is-one-quarter'>
+                      $phoneInput
+                    </div>
+                    <div class='column is-one-quarter'>
+                      $emailInput
+                    </div>
+                    <div class='column is-one-quarter'>
+                      $addressInput
+                    </div>
+                    <div class='column is-one-eight'>
+                       $postalCodeInput
+                    </div>
+                    <div class='column is-one-eight'>
+                      $cityFieldInput
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
+    }
+
+    fun newOrganizationForm(municipalities: List<Municipality>): String {
+        val nameInput =
+            formComponents.textInput(
+                "boatApplication.organizationName",
+                "orgName",
+                null,
+                required = true
+            )
+
+        val businessIdInput =
+            formComponents.textInput(
+                "boatApplication.organizationId",
+                "orgBusinessId",
+                null,
+                required = true
+            )
+
+        val municipalityInput =
+            formComponents.select(
+                "boatSpaceReservation.title.municipality",
+                "orgMunicipalityCode",
+                null,
+                municipalities.map { Pair(it.code.toString(), it.name) },
+                required = true
+            )
+
+        val phoneInput = formComponents.textInput("boatApplication.phone", "orgPhone", null, true)
+
+        val emailInput = formComponents.textInput("boatApplication.email", "orgEmail", null, true)
+
+        val addressInput =
+            formComponents.textInput(
+                "boatApplication.address",
+                "orgAddress",
+                null,
+            )
+
+        val postalCodeInput =
+            formComponents.textInput(
+                "boatApplication.postalCode",
+                "orgPostalCode",
+                null,
+            )
+
+        val cityFieldInput =
+            formComponents.textInput(
+                "boatSpaceReservation.title.city",
+                "orgCity",
+                null,
+            )
+        // language=HTML
+        return """
+            <div>
+                <div class='columns'>
+                    <div class='column is-one-quarter'>
+                        $nameInput
+                    </div>
+                    <div class='column is-one-quarter'>
+                        $businessIdInput
+                    </div>
+                    <div class='column is-one-quarter'>
+                         $municipalityInput
+                    </div>
+                </div>
+                <div class='columns'>
+                    <div class='column is-one-quarter'>
+                        $phoneInput
+                    </div>
+                    <div class='column is-one-quarter'>
+                        $emailInput
+                    </div>
+                    <div class='column is-one-quarter'>
+                        $addressInput
+                    </div>
+                    <div class='column is-one-eight'>
+                        $postalCodeInput
+                    </div>
+                    <div class='column is-one-eight'>
+                        $cityFieldInput
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
+    }
+
+    fun slipHolder(
+        organizations: List<Organization>,
+        isOrganization: Boolean,
+        selectedOrganizationId: UUID?,
+        userType: UserType,
+        reservationId: Int,
+        municipalities: List<Municipality>
+    ): String {
+        fun organizationRadioButton(org: Organization) =
+            """
+            <div class="radio">
+                <input type="radio" id="org-${org.id}-radio" value="${org.id}" name="organizationId"
+                       hx-trigger="change"
+                       hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId=${org.id}"
+                       hx-target="#slipHolder"
+                       hx-swap="outerHTML"
+                       name="organizationId"
+                       ${if (selectedOrganizationId == org.id) "checked" else ""}
+                />
+                <label for="${org.id}">${org.name}</label>
+            </div>
+            """.trimIndent()
+
+        val organizationSelect =
+            if (organizations.isNotEmpty()) {
+                """
+            <div class="field" style="margin-left: 32px">
+                ${organizations.joinToString("\n") { organizationRadioButton(it) }}
+                <div class="radio">
+                    <input type="radio" 
+                        id="newOrg" 
+                        name="organizationId"
+                        value=""
+                        hx-trigger="change"
+                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
+                        hx-target="#slipHolder"
+                        hx-swap="outerHTML"
+                       ${if (selectedOrganizationId == null) "checked" else ""}
+                    />
+                    <label for="newOrg" >${t("boatApplication.newOrg")}</label>
+                </div>
+            </div>
+            """
+            } else {
+                ""
+            }
+
+        val organizationForm =
+            if (isOrganization && selectedOrganizationId == null) {
+                newOrganizationForm(municipalities)
+            } else if (isOrganization) {
+                val org = organizations.find { it.id == selectedOrganizationId }
+                if (org == null) throw IllegalArgumentException("Organization not found")
+                editOrganizationForm(org, municipalities)
+            } else {
+                ""
+            }
+
+        val reserverType =
+            // language=HTML
+            """
+            <div class="field" id="slipHolder">
+                <div class="radio">
+                    <input type="radio" 
+                        id="reseverTypePrivate" 
+                        name="isOrganization"
+                        value="false"
+                        hx-trigger="change"
+                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=false&organizationId="
+                        hx-target="#slipHolder"
+                        hx-swap="outerHTML"
+                       ${if (!isOrganization) "checked" else ""}
+                    />
+                    <label for="reseverTypePrivate" >${t("boatApplication.reserverType.private")}</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" 
+                        id="reseverTypeOrg" 
+                        name="isOrganization"
+                        value="true"
+                        hx-trigger="change"
+                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
+                        hx-target="#slipHolder"
+                        hx-swap="outerHTML"
+                       ${if (isOrganization) "checked" else ""}
+                    />
+                    <label for="reseverTypeOrg" >${t("boatApplication.reserverType.organization")}</label>
+                </div>
+                ${if (isOrganization) organizationSelect else ""}
+                $organizationForm
+            </div>   
+            """.trimIndent()
+
+        return reserverType
     }
 
     fun boatTypeWarning() =

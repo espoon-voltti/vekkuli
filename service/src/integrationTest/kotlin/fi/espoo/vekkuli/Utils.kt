@@ -45,6 +45,7 @@ fun createReservationInConfirmedState(
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
             citizenId,
+            citizenId,
             boatSpaceId,
             startDate = LocalDate.now(),
             endDate = LocalDate.now().plusDays(365),
@@ -68,6 +69,7 @@ fun createReservationInPaymentState(
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
             citizenId,
+            citizenId,
             boatSpaceId,
             startDate = LocalDate.now(),
             endDate = LocalDate.now().plusDays(365),
@@ -83,6 +85,7 @@ fun createReservationInInfoState(
 ): BoatSpaceReservation {
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
+            citizenId,
             citizenId,
             boatSpaceId,
             startDate = LocalDate.now(),

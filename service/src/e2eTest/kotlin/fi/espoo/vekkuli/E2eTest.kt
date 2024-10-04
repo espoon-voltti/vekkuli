@@ -318,6 +318,69 @@ class E2eTest : PlaywrightTest() {
     }
 
     @Test
+    fun reservingABoatSpaceAsOrganization() {
+        try {
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateTo()
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+            reservationPage.widthFilterInput.fill("3")
+            reservationPage.lenghtFilterInput.fill("6")
+            reservationPage.lenghtFilterInput.blur()
+            reservationPage.amenityWalkBeamCheckbox.check()
+
+            reservationPage.firstReserveButton.click()
+
+            // click send to trigger validation
+            val formPage = BoatSpaceFormPage(page)
+
+            formPage.organizationRadioButton.click()
+            formPage.orgNameInput.fill("My Organization")
+            formPage.orgBusinessIdInput.fill("1234567-8")
+            formPage.orgPhoneNumberInput.fill("123456789")
+            formPage.orgEmailInput.fill("foo@bar.com")
+
+            formPage.depthInput.fill("1.5")
+            formPage.depthInput.blur()
+            assertThat(formPage.depthError).isHidden()
+
+            formPage.weightInput.fill("2000")
+            formPage.weightInput.blur()
+            assertThat(formPage.weightError).isHidden()
+
+            formPage.boatNameInput.fill("My Boat")
+            formPage.otherIdentification.fill("ID12345")
+            formPage.noRegistrationCheckbox.check()
+            assertThat(formPage.boatRegistrationNumberError).isHidden()
+
+            formPage.ownerRadioButton.check()
+
+            formPage.emailInput.fill("test@example.com")
+            formPage.emailInput.blur()
+            assertThat(formPage.emailError).isHidden()
+
+            formPage.phoneInput.fill("123456789")
+            formPage.phoneInput.blur()
+            assertThat(formPage.phoneError).isHidden()
+
+            formPage.certifyInfoCheckbox.check()
+            formPage.agreementCheckbox.check()
+
+            formPage.submitButton.click()
+
+            // assert that payment title is shown
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentPageTitle).hasCount(1)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun cancelReservationFromForm() {
         // login and pick first free space
         page.navigate(baseUrl)

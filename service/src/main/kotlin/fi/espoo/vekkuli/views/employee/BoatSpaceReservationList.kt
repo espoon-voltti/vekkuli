@@ -157,8 +157,8 @@ class BoatSpaceReservationList {
                     </td>
                     <td>${result.section}</td>
                     <td>${t("boatSpaces.type${result.type}Option")}</td>
-                    <td><a href="/virkailija/kayttaja/${result.reserverId}">${result.firstName} ${result.lastName}</a></td>
-                    <td>${result.homeTown}</td>
+                    <td><a href="/virkailija/kayttaja/${result.reserverId}">${result.name}</a></td>
+                    <td>${result.municipalityName}</td>
                     <td></td>
                     <td>$startDateFormatted</td>
                     <td>$endDateFormatted</td>

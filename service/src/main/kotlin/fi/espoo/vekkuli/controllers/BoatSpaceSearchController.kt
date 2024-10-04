@@ -78,7 +78,7 @@ class BoatSpaceSearchController {
             if (user == null) {
                 return ResponseEntity(HttpStatus.FORBIDDEN)
             }
-            val reservation = reservationService.getReservationForEmployee(user.id)
+            val reservation = reservationService.getUnfinishedReservationForEmployee(user.id)
             if (reservation != null) {
                 val headers = org.springframework.http.HttpHeaders()
                 headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/${reservation.id}"))
@@ -99,7 +99,7 @@ class BoatSpaceSearchController {
         val citizen = getCitizen(request, citizenService)
         if (citizen != null) {
             val reservation =
-                reservationService.getReservationForCitizen(citizen.id)
+                reservationService.getUnfinishedReservationForCitizen(citizen.id)
 
             if (reservation != null) {
                 val headers = org.springframework.http.HttpHeaders()
