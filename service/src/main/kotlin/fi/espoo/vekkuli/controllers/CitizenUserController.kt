@@ -66,7 +66,7 @@ class CitizenUserController {
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
-        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
         return layout.render(
             true,
@@ -88,7 +88,7 @@ class CitizenUserController {
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
-        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
         return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
@@ -205,7 +205,7 @@ class CitizenUserController {
         @PathVariable boatId: Int,
         model: Model
     ): String {
-        val boats = boatService.getBoatsForCitizen(citizenId)
+        val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
         model.addAttribute("boat", toUpdateForm(boat))
         model.addAttribute(
@@ -305,7 +305,7 @@ class CitizenUserController {
         input: BoatUpdateForm,
         response: HttpServletResponse
     ): String {
-        val boats = boatService.getBoatsForCitizen(citizenId)
+        val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
@@ -342,7 +342,7 @@ class CitizenUserController {
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
-        val updatedBoats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val updatedBoats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
         response.addHeader("HX-Retarget", "#citizen-details")
         response.addHeader("HX-Reselect", "#citizen-details")
 
@@ -367,7 +367,7 @@ class CitizenUserController {
         @PathVariable boatId: Int,
         response: HttpServletResponse
     ): String {
-        val boats = boatService.getBoatsForCitizen(citizenId)
+        val boats = boatService.getBoatsForReserver(citizenId)
         boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
@@ -419,7 +419,7 @@ class CitizenUserController {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
-        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
         val updatedCitizen =
             citizenService.updateCitizen(
                 UpdateCitizenParams(
@@ -457,7 +457,7 @@ class CitizenUserController {
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
-        val boats = boatService.getBoatsForCitizen(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
         val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
 

@@ -3,9 +3,8 @@ package fi.espoo.vekkuli.repository
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.AndExpr
+import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
 import fi.espoo.vekkuli.utils.InExpr
-import fi.espoo.vekkuli.utils.buildNameSearchClause
-import fi.espoo.vekkuli.utils.formatNameSearchParam
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -47,16 +46,14 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
-                           CONCAT(c.last_name, ' ', c.first_name) as full_name, 
-                           c.first_name, 
-                           c.last_name, 
+                           r.name,
+                           r.type as reserver_type,
                            r.email, 
                            r.phone,
-                           c.national_id,
                            r.street_address,
                            r.postal_code,
                            r.municipality_code,
-                           '' as home_town,
+                           m.name as municipality_name,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
                            b.id as boat_id,
@@ -79,14 +76,14 @@ class JdbiBoatSpaceReservationRepository(
                     FROM payment p
                     JOIN boat_space_reservation bsr ON p.reservation_id = bsr.id
                     JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
+                    JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON bs.price_id = price.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE p.id = :paymentId
-                    GROUP BY p.id, bsr.id, c.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code                
+                    GROUP BY p.id, bsr.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code, r.name, r.type, m.name                
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
@@ -114,7 +111,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<Int>().findOne().orElse(null)
         }
 
-    override fun getReservationForCitizen(id: UUID): ReservationWithDependencies? =
+    override fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -129,7 +126,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
-                    WHERE bsr.reserver_id = :id
+                    WHERE bsr.acting_citizen_id = :id
                         AND bsr.status = 'Info' 
                         AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
@@ -139,7 +136,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getReservationForEmployee(id: UUID): ReservationWithDependencies? =
+    override fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -164,18 +161,17 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getReservationWithCitizen(id: Int): ReservationWithDependencies? =
+    override fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
+                    SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
                         location.name as location_name, price.price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
+                    JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
@@ -189,7 +185,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? =
+    override fun getReservationWithoutReserver(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -242,16 +238,14 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
-                           CONCAT(c.last_name, ' ', c.first_name) as full_name, 
-                           c.first_name, 
-                           c.last_name, 
+                           r.type as reserver_type,
+                           r.name,
                            r.email, 
                            r.phone,
-                           c.national_id,
                            r.street_address,
                            r.postal_code,
                            r.municipality_code,
-                           '' as home_town,
+                           m.name as municipality_name,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
                            b.id as boat_id,
@@ -265,9 +259,9 @@ class JdbiBoatSpaceReservationRepository(
                            b.extra_information as boat_extra_information,
                            location.name as location_name, 
                            bs.type,
-                            bs.length_cm as boat_space_length_cm,
-                            bs.width_cm as boat_space_width_cm,
-                            bs.amenity,
+                           bs.length_cm as boat_space_length_cm,
+                           bs.width_cm as boat_space_width_cm,
+                           bs.amenity,
                            price.price_cents,
                            CONCAT(bs.section, bs.place_number) as place
                     FROM boat_space_reservation bsr
@@ -277,6 +271,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     WHERE c.id = :reserverId AND 
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
                     """.trimIndent()
@@ -303,10 +298,7 @@ class JdbiBoatSpaceReservationRepository(
             }
         }
 
-    override fun getBoatSpaceReservation(
-        reservationId: Int,
-        reserverId: UUID,
-    ): BoatSpaceReservationDetails? =
+    override fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -318,16 +310,14 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
-                           CONCAT(c.last_name, ' ', c.first_name) as full_name, 
-                           c.first_name, 
-                           c.last_name, 
+                           r.type as reserver_type,
+                           r.name,
                            r.email, 
                            r.phone,
-                           c.national_id,
                            r.street_address,
                            r.postal_code,
                            r.municipality_code,
-                           '' as home_town,
+                           m.name as municipality_name,
                            b.registration_code as boat_registration_code,
                            b.ownership as boat_ownership,
                            b.id as boat_id,
@@ -348,17 +338,15 @@ class JdbiBoatSpaceReservationRepository(
                            CONCAT(bs.section, bs.place_number) as place
                     FROM boat_space_reservation bsr
                     JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
+                    JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     WHERE bsr.id = :reservationId
-                        AND c.id = :reserverId
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
-            query.bind("reserverId", reserverId)
             query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
         }
 
@@ -419,19 +407,21 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, CONCAT(c.last_name, ' ', c.first_name) as full_name, c.first_name, c.last_name, r.email, r.phone, '' as home_town,
+                    SELECT bsr.*, r.email, r.phone, r.type as reserver_type, r.name,
+                        r.municipality_code,
                         b.registration_code as boat_registration_code,
                         b.ownership as boat_ownership,
                         location.name as location_name, 
                         bs.type, CONCAT(bs.section, bs.place_number) as place,
                         rw.key as warning,
-                        bs.section
+                        bs.section,
+                        m.name as municipality_name
                     FROM boat_space_reservation bsr
                     JOIN boat b on b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
+                    JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
+                    JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     WHERE
                         (bsr.status = 'Confirmed' OR bsr.status = 'Payment' OR bsr.status = 'Invoiced')
@@ -442,10 +432,8 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
 
-            if (!params.nameSearch.isNullOrEmpty()) {
-                // Replace spaces with '&' and append ':*' to each term for prefix matching
-                val formattedNameSearch = formatNameSearchParam(params.nameSearch)
-                query.bind("nameSearch", formattedNameSearch)
+            if (!params.nameSearch.isNullOrBlank()) {
+                query.bind("nameSearch", params.nameSearch.trim())
             }
 
             filter.bind(query)
@@ -462,9 +450,7 @@ class JdbiBoatSpaceReservationRepository(
                         endDate = row.endDate,
                         status = row.status,
                         reserverId = row.reserverId,
-                        firstName = row.firstName,
-                        lastName = row.lastName,
-                        homeTown = row.homeTown,
+                        name = row.name,
                         email = row.email,
                         phone = row.phone,
                         type = row.type,
@@ -473,13 +459,18 @@ class JdbiBoatSpaceReservationRepository(
                         locationName = row.locationName,
                         boatRegistrationCode = row.boatRegistrationCode,
                         boatOwnership = row.boatOwnership,
-                        warnings = (warnings.mapNotNull { it.warning }).toSet()
+                        warnings = (warnings.mapNotNull { it.warning }).toSet(),
+                        actingUserId = null,
+                        reserverType = row.reserverType,
+                        municipalityCode = row.municipalityCode,
+                        municipalityName = row.municipalityName,
                     )
                 }
         }
 
     override fun insertBoatSpaceReservation(
         reserverId: UUID,
+        actingUserId: UUID?,
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
@@ -488,12 +479,13 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, boat_space_id, start_date, end_date)
-                    VALUES (:reserverId, :boatSpaceId, :startDate, :endDate)
+                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date)
+                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate)
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
+            query.bind("actingUserId", actingUserId)
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
@@ -549,11 +541,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
-    override fun updateReservationWithPayment(
-        reservationId: Int,
-        paymentId: UUID,
-        reserverId: UUID,
-    ): BoatSpaceReservation =
+    override fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -563,14 +551,12 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE id = :reservationId
                         AND status = 'Payment'
                         AND created > NOW() - make_interval(secs => :paymentTimeout)
-                        AND reserver_id = :reserverId
-                     RETURNING *
+                    RETURNING *
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
             query.bind("updatedTime", LocalDate.now())
             query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
-            query.bind("reserverId", reserverId)
             query.mapTo<BoatSpaceReservation>().one()
         }
 

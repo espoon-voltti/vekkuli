@@ -9,6 +9,7 @@ data class Organization(
     val email: String,
     val phone: String,
     val municipalityCode: Int,
+    val municipalityName: String,
     val streetAddress: String,
     val streetAddressSv: String,
     val postOffice: String,

@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.service
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.repository.OrganizationRepository
+import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -51,4 +52,6 @@ class OrganizationService(
             postOfficeSv,
             municipalityCode
         )
+
+    fun updateOrganization(params: UpdateOrganizationParams): Unit = organizationRepository.updateOrganization(params)
 }
