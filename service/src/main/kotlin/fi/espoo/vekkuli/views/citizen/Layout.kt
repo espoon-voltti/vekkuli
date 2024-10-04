@@ -51,6 +51,12 @@ class Layout {
                 """.trimIndent()
             }
 
+        val citizenProfileLink =
+            if (isAuthenticated) {
+                """<a class="link" href="/kuntalainen/omat-tiedot" style="margin-left: auto">Omat tiedot</a>"""
+            } else {
+                ""
+            }
         // language=HTML
         return """
             <!DOCTYPE html>
@@ -60,8 +66,6 @@ class Layout {
                 $head
             </head>
             <body>
-
-            
             
             <nav role="navigation" aria-label="main navigation">
                 <div class="nav-row">
@@ -74,13 +78,12 @@ class Layout {
                 </div>
                 
                 <div class="nav-row">
-                    <a class="link">Venepaikat</a>
-                    <a class="link">Liikuntatilat</a>
-                    <a class="link">Ohjatut ryhmäliikunnat</a>
-                    <a class="link" style="margin-left: auto">Omat tiedot</a>
+                    <a class="link" href="/">Venepaikat</a>
+                    <!-- <a class="link">Liikuntatilat</a>
+                    <a class="link">Ohjatut ryhmäliikunnat</a> -->
+                    $citizenProfileLink
                 </div>
             </nav>
-            
             
             <div>
                 $bodyContent 
