@@ -6,6 +6,7 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import kotlin.io.path.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
@@ -50,5 +51,10 @@ abstract class PlaywrightTest {
     @AfterEach
     fun closeContext() {
         context.close()
+    }
+
+    fun handleError(e: AssertionError) {
+        page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
+        throw e
     }
 }
