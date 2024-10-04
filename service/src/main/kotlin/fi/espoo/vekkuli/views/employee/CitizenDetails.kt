@@ -6,9 +6,6 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.ReserverMemoWithDetails
-import fi.espoo.vekkuli.domain.SentMessage
 import fi.espoo.vekkuli.views.CommonComponents
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -80,6 +77,12 @@ class CitizenDetails {
             val phoneNumberValue =
                 formComponents.field("boatSpaceReservation.title.phoneNumber", "phoneNumberField", citizen.phone)
             val emailValue = formComponents.field("boatSpaceReservation.title.email", "emailField", citizen.email)
+            val editUrl =
+                if (userType == UserType.EMPLOYEE) {
+                    "/virkailija/kayttaja/${citizen.id}/muokkaa"
+                } else {
+                    "/kuntalainen/kayttaja/muokkaa"
+                }
             return (
                 """
                 <div class="container block" id="citizen-information">
@@ -91,7 +94,7 @@ class CitizenDetails {
                             <div>
                                 <a class="is-link" 
                                     id="edit-customer"
-                                    hx-get="/virkailija/kayttaja/${citizen.id}/muokkaa"
+                                    hx-get="$editUrl"
                                     hx-target="#citizen-information"
                                     hx-swap="innerHTML">
                                     <span class="icon ml-s">
@@ -374,6 +377,13 @@ class CitizenDetails {
             return ""
         }
 
+        fun getDeleteUrl(boatId: Int): String {
+            if (userType == UserType.EMPLOYEE) {
+                return "/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista"
+            }
+            return "/kuntalainen/vene/$boatId/poista"
+        }
+
         fun deleteButton(
             hasLinkedReservation: Boolean,
             boatId: Int,
@@ -397,11 +407,16 @@ class CitizenDetails {
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">${t(
-                        "cancel"
-                    )}</button>
-                                            <a class="button is-danger" id="delete-modal-confirm-$boatId" hx-delete="/virkailija/kayttaja/${citizen.id}/vene/$boatId/poista">
-                                                ${t("boatSpaceReservation.button.confirmDeletion")}</a>
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
+                                                ${t("cancel")}
+                                            </a>
+                                            <a class="button is-danger" 
+                                                id="delete-modal-confirm-$boatId" 
+                                                hx-delete="${getDeleteUrl(boatId)}"
+                                                hx-select="#citizen-details"
+                                                hx-target="#citizen-details">
+                                                ${t("boatSpaceReservation.button.confirmDeletion")}
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -412,6 +427,14 @@ class CitizenDetails {
                 )
             }
             return ""
+        }
+
+        val getEditUrl = { boatId: Int ->
+            if (userType == UserType.EMPLOYEE) {
+                "/virkailija/kayttaja/${citizen.id}/vene/$boatId/muokkaa"
+            } else {
+                "/kuntalainen/vene/$boatId/muokkaa"
+            }
         }
 
         // language=HTML
@@ -428,7 +451,7 @@ class CitizenDetails {
                             <span class="memo-edit-buttons column columns">
                                 <div class="column is-narrow">
                                     <a class="edit-link s-link"
-                                       hx-get="/virkailija/kayttaja/${citizen.id}/vene/${boat.id}/muokkaa"
+                                       hx-get="${getEditUrl(boat.id)}"
                                        hx-target="#boat-${boat.id}"
                                        hx-swap="innerHTML">
                                         <span class="icon ml-s">
@@ -529,7 +552,7 @@ class CitizenDetails {
                    <div id="tab-content" class="container block" x-data="{ 
                 showAllBoats: document.getElementById('showAllBoats').checked 
             }">
-                       ${renderTabNavi(citizen.id, SubTab.Reservations)}
+                       ${if (userType == UserType.EMPLOYEE) renderTabNavi(citizen.id, SubTab.Reservations) else ""}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
                        <div class="reservation-list form-section">
                            $reservationList

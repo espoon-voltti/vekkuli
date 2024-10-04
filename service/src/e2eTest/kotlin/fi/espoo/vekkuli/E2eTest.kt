@@ -1,19 +1,12 @@
 package fi.espoo.vekkuli
 
-import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
-import kotlin.io.path.Path
 
 @ActiveProfiles("test")
 class E2eTest : PlaywrightTest() {
-    fun handleError(e: AssertionError) {
-        page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
-        throw e
-    }
-
     @Test
     fun listingReservations() {
         try {
