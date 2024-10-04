@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.service.MemoService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.EditBoat
+import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -26,7 +27,6 @@ import java.time.LocalDate
 import java.util.*
 
 @Controller
-@RequestMapping("/virkailija")
 class CitizenUserController {
     @Autowired
     private lateinit var editBoat: EditBoat
@@ -53,14 +53,17 @@ class CitizenUserController {
     lateinit var citizenDetails: CitizenDetails
 
     @Autowired
-    lateinit var layout: EmployeeLayout
+    lateinit var employeeLayout: EmployeeLayout
+
+    @Autowired
+    private lateinit var citizenLayout: Layout
 
     @Autowired
     lateinit var editCitizen: EditCitizen
 
-    @GetMapping("/kayttaja/{citizenId}")
+    @GetMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
-    fun boatSpaceSearchPage(
+    fun citizenProfile(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String {
@@ -68,7 +71,7 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
-        return layout.render(
+        return employeeLayout.render(
             true,
             request.requestURI,
             citizenDetails.citizenPage(
@@ -80,7 +83,35 @@ class CitizenUserController {
         )
     }
 
-    @GetMapping("/kayttaja/{citizenId}/varaukset")
+    @GetMapping("/kuntalainen/omat-tiedot")
+    @ResponseBody
+    fun ownProfile(request: HttpServletRequest): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizen.id)
+        val boats = boatService.getBoatsForReserver(citizen.id).map { toUpdateForm(it, boatSpaceReservations) }
+
+        return citizenLayout.generateLayout(
+            true,
+            citizen.fullName,
+            citizenDetails.citizenPage(
+                citizen,
+                boatSpaceReservations,
+                boats,
+                UserType.CITIZEN
+            )
+        )
+    }
+
+    fun getAuthenticatedCitizen(request: HttpServletRequest): CitizenWithDetails {
+        val authenticatedUser = request.getAuthenticatedUser()
+        val citizen = authenticatedUser?.let { citizenService.getCitizen(it.id) }
+        if (citizen == null) {
+            throw UnauthorizedException()
+        }
+        return citizen
+    }
+
+    @GetMapping("/virkailija/kayttaja/{citizenId}/varaukset")
     @ResponseBody
     fun boatSpaceReservationContent(
         request: HttpServletRequest,
@@ -92,7 +123,7 @@ class CitizenUserController {
         return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/viestit")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/viestit")
     @ResponseBody
     fun boatSpaceMessageContent(
         request: HttpServletRequest,
@@ -103,7 +134,7 @@ class CitizenUserController {
         return citizenDetails.messageTabContent(citizen, messages)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")
     @ResponseBody
     fun boatSpaceMemoContent(
         request: HttpServletRequest,
@@ -113,7 +144,7 @@ class CitizenUserController {
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/muokkaa/{memoId}")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/muokkaa/{memoId}")
     @ResponseBody
     fun boatSpaceMemoEditForm(
         request: HttpServletRequest,
@@ -124,21 +155,21 @@ class CitizenUserController {
         return citizenDetails.memoContent(memo, true)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/lisaa")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/lisaa")
     @ResponseBody
     fun boatSpaceMemoNewForm(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String = citizenDetails.newMemoContent(citizenId, true)
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/lisaa_peruuta")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/lisaa_peruuta")
     @ResponseBody
     fun boatSpaceMemoNewCancel(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String = citizenDetails.newMemoContent(citizenId, false)
 
-    @PostMapping("/kayttaja/{citizenId}/muistiinpanot")
+    @PostMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")
     @ResponseBody
     fun boatSpaceNewMemo(
         request: HttpServletRequest,
@@ -151,7 +182,7 @@ class CitizenUserController {
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
-    @DeleteMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @DeleteMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
     @ResponseBody
     fun boatSpaceDeleteMemo(
         request: HttpServletRequest,
@@ -163,7 +194,7 @@ class CitizenUserController {
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
-    @PatchMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @PatchMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
     @ResponseBody
     fun boatSpaceMemoPatch(
         request: HttpServletRequest,
@@ -176,7 +207,7 @@ class CitizenUserController {
         return citizenDetails.memoContent(memo, false)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muistiinpanot/{memoId}")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
     @ResponseBody
     fun boatSpaceMemoItem(
         request: HttpServletRequest,
@@ -187,7 +218,7 @@ class CitizenUserController {
         return citizenDetails.memoContent(memo, false)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/maksut")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/maksut")
     @ResponseBody
     fun boatSpacePaymentContent(
         request: HttpServletRequest,
@@ -197,9 +228,9 @@ class CitizenUserController {
         return citizenDetails.paymentTabContent(citizen)
     }
 
-    @GetMapping("/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
+    @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
     @ResponseBody
-    fun boatEditPage(
+    fun boatEditPageForEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
@@ -207,15 +238,6 @@ class CitizenUserController {
     ): String {
         val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
-        model.addAttribute("boat", toUpdateForm(boat))
-        model.addAttribute(
-            "boatTypes",
-            BoatType.entries.map { it.toString() }
-        )
-
-        model.addAttribute("ownershipOptions", listOf("Owner", "User", "CoOwner", "FutureOwner"))
-
-        model.addAttribute("errors", mutableMapOf<String, String>())
         return editBoat.editBoatForm(
             toUpdateForm(boat),
             mutableMapOf(),
@@ -225,6 +247,29 @@ class CitizenUserController {
             },
             listOf("Owner", "User", "CoOwner", "FutureOwner"),
             UserType.EMPLOYEE
+        )
+    }
+
+    @GetMapping("/kuntalainen/vene/{boatId}/muokkaa")
+    @ResponseBody
+    fun boatEditPage(
+        request: HttpServletRequest,
+        @PathVariable boatId: Int,
+        model: Model
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+        val boats = boatService.getBoatsForReserver(citizenId)
+        val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+        return editBoat.editBoatForm(
+            toUpdateForm(boat),
+            mutableMapOf(),
+            citizenId,
+            BoatType.entries.map {
+                it.toString()
+            },
+            listOf("Owner", "User", "CoOwner", "FutureOwner"),
+            UserType.CITIZEN
         )
     }
 
@@ -296,9 +341,9 @@ class CitizenUserController {
         return errors
     }
 
-    @PatchMapping("/kayttaja/{citizenId}/vene/{boatId}")
+    @PatchMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}")
     @ResponseBody
-    fun updateBoatPatch(
+    fun updateBoatForEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
@@ -343,25 +388,75 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
         val updatedBoats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
-        response.addHeader("HX-Retarget", "#citizen-details")
-        response.addHeader("HX-Reselect", "#citizen-details")
 
-        return layout.render(
-            true,
-            request.requestURI,
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                updatedBoats,
-                UserType.EMPLOYEE,
-                errors,
-            )
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.EMPLOYEE,
+            errors,
         )
     }
 
-    @DeleteMapping("/kayttaja/{citizenId}/vene/{boatId}/poista")
+    @PatchMapping("/kuntalainen/vene/{boatId}")
     @ResponseBody
-    fun deleteBoat(
+    fun updateBoatPatch(
+        request: HttpServletRequest,
+        @PathVariable boatId: Int,
+        input: BoatUpdateForm,
+        response: HttpServletResponse
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+        val boats = boatService.getBoatsForReserver(citizenId)
+        val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+
+        val errors = validateBoatUpdateInput(input)
+
+        if (errors.isNotEmpty()) {
+            return editBoat.editBoatForm(
+                input,
+                errors,
+                citizenId,
+                BoatType.entries.map {
+                    it.toString()
+                },
+                listOf("Owner", "User", "CoOwner", "FutureOwner"),
+                UserType.CITIZEN
+            )
+        }
+
+        val updatedBoat =
+            boat.copy(
+                name = input.name,
+                type = input.type,
+                widthCm = input.width!!.mToCm(),
+                lengthCm = input.length!!.mToCm(),
+                depthCm = input.depth!!.mToCm(),
+                weightKg = input.weight!!,
+                registrationCode = input.registrationNumber,
+                otherIdentification = input.otherIdentifier,
+                extraInformation = input.extraInformation,
+                ownership = input.ownership,
+            )
+        boatService.updateBoat(updatedBoat)
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val updatedBoats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.CITIZEN,
+            errors,
+        )
+    }
+
+    @DeleteMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/poista")
+    @ResponseBody
+    fun deleteBoatAsEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         @PathVariable boatId: Int,
@@ -381,34 +476,68 @@ class CitizenUserController {
                 .map { toUpdateForm(it, boatSpaceReservations) }
                 .filter { !boatDeletionSuccessful || it.id != boatId }
 
-        response.addHeader("HX-Retarget", "#citizen-details")
-        response.addHeader("HX-Reselect", "#citizen-details")
-
-        return layout.render(
-            true,
-            request.requestURI,
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                updatedBoats,
-                UserType.EMPLOYEE,
-            )
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.EMPLOYEE,
         )
     }
 
-    @GetMapping("/kayttaja/{citizenId}/muokkaa")
+    @DeleteMapping("/kuntalainen/vene/{boatId}/poista")
     @ResponseBody
-    fun citizenEditPage(
+    fun deleteBoatAsCitizen(
+        request: HttpServletRequest,
+        @PathVariable boatId: Int,
+        response: HttpServletResponse
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+
+        val boats = boatService.getBoatsForReserver(citizenId)
+        boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val boatDeletionSuccessful = boatService.deleteBoat(boatId)
+        // Update the boat list to remove the deleted boat
+        val updatedBoats =
+            boats
+                .map { toUpdateForm(it, boatSpaceReservations) }
+                .filter { !boatDeletionSuccessful || it.id != boatId }
+
+        return citizenDetails.citizenPage(
+            citizen,
+            boatSpaceReservations,
+            updatedBoats,
+            UserType.CITIZEN
+        )
+    }
+
+    @GetMapping("/virkailija/kayttaja/{citizenId}/muokkaa")
+    @ResponseBody
+    fun citizenEditPageForEmployee(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
         model: Model
     ): String {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val municipalities = citizenService.getMunicipalities()
-        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap())
+        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.EMPLOYEE)
     }
 
-    @PatchMapping("/kayttaja/{citizenId}")
+    @GetMapping("/kuntalainen/kayttaja/muokkaa")
+    @ResponseBody
+    fun citizenEditPage(
+        request: HttpServletRequest,
+        model: Model
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val municipalities = citizenService.getMunicipalities()
+        return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.CITIZEN)
+    }
+
+    @PatchMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
     fun citizenEdit(
         request: HttpServletRequest,
@@ -420,31 +549,47 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
         val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
-        val updatedCitizen =
-            citizenService.updateCitizen(
-                UpdateCitizenParams(
-                    id = citizenId,
-                    firstName = input.firstName,
-                    lastName = input.lastName,
-                    phone = input.phoneNumber,
-                    email = input.email,
-                    streetAddress = input.address,
-                    streetAddressSv = input.address,
-                    postalCode = input.postalCode,
-                    municipalityCode = input.municipalityCode,
-                    nationalId = input.nationalId,
-                    postOffice = "",
-                    postOfficeSv = ""
-                )
-            )!!
-        return layout.render(
-            true,
-            request.requestURI,
-            citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
-        )
+        val updatedCitizen = updateCitizen(input, citizenId)
+        return citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
-    @PostMapping("/venepaikat/varaukset/merkitse-maksu-suoritetuksi")
+    @PatchMapping("/kuntalainen/omat-tiedot")
+    @ResponseBody
+    fun editOwnProfile(
+        request: HttpServletRequest,
+        input: CitizenUpdate,
+        model: Model
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val citizenId = citizen.id
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val updatedCitizen = updateCitizen(input, citizenId)
+        return citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.CITIZEN)
+    }
+
+    fun updateCitizen(
+        input: CitizenUpdate,
+        citizenId: UUID
+    ) = citizenService.updateCitizen(
+        UpdateCitizenParams(
+            id = citizenId,
+            firstName = input.firstName,
+            lastName = input.lastName,
+            phone = input.phoneNumber,
+            email = input.email,
+            streetAddress = input.address,
+            streetAddressSv = input.address,
+            postalCode = input.postalCode,
+            municipalityCode = input.municipalityCode,
+            nationalId = input.nationalId,
+            postOffice = "",
+            postOfficeSv = ""
+        )
+    )!!
+
+    @PostMapping("/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi")
     fun markPaymentDone(
         @RequestParam reservationId: Int,
         @RequestParam paymentDate: LocalDate,

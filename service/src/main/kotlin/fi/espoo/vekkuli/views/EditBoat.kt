@@ -98,11 +98,24 @@ class EditBoat {
                 boat.extraInformation,
             )
 
+        val editUrl =
+            if (userType == UserType.EMPLOYEE) {
+                "/virkailija/kayttaja/$citizenId/vene/${boat.id}"
+            } else {
+                "/kuntalainen/vene/${boat.id}"
+            }
+
+        val cancelUrl =
+            if (userType == UserType.EMPLOYEE) {
+                "/virkailija/kayttaja/$citizenId"
+            } else {
+                "/kuntalainen/omat-tiedot"
+            }
         //language=HTML
         return """
             <form id="form"
                   method="post" 
-                  hx-patch="/virkailija/kayttaja/$citizenId/vene/${boat.id}"
+                  hx-patch="$editUrl"
                   novalidate
                   hx-target="#citizen-details"
                   hx-select="#citizen-details"
@@ -150,7 +163,7 @@ class EditBoat {
                             id="cancel"
                             class="button"
                             type="button"
-                            hx-get="/virkailija/kayttaja/$citizenId"
+                            hx-get="$cancelUrl"
                             hx-target="#citizen-details"
                             hx-select="#citizen-details"
                             hx-swap="outerHTML"

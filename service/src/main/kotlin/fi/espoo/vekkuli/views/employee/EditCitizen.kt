@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.views.CommonComponents
@@ -19,6 +20,7 @@ class EditCitizen {
         citizen: CitizenWithDetails,
         municipalities: List<Municipality>,
         errors: Map<String, String>,
+        userType: UserType
     ): String {
         val firstNameInput =
             formComponents.textInput(
@@ -101,21 +103,35 @@ class EditCitizen {
                     )
             )
 
+        val goBackUrl =
+            if (userType == UserType.EMPLOYEE) {
+                "/virkailija/kayttaja/${citizen.id}"
+            } else {
+                "/kuntalainen/omat-tiedot"
+            }
+
         val buttons =
             formComponents.buttons(
-                "/virkailija/kayttaja/${citizen.id}",
+                goBackUrl,
                 "#citizen-details",
                 "#citizen-details",
                 "cancel-boat-edit-form",
                 "submit-boat-edit-form"
             )
 
+        val submitUrl =
+            if (userType == UserType.EMPLOYEE) {
+                "/virkailija/kayttaja/${citizen.id}"
+            } else {
+                "/kuntalainen/omat-tiedot"
+            }
+
         //language=HTML
         return (
             """
             <form id="edit-citizen-form"
                   method="post" 
-                  hx-patch="/virkailija/kayttaja/${citizen.id}"
+                  hx-patch="$submitUrl"
                   novalidate
                   hx-target="#citizen-details"
                   hx-select="#citizen-details"
