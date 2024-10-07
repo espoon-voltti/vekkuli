@@ -1,27 +1,27 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.SentMessage
 import java.util.*
 
 interface SentMessageRepository {
-    fun addSentEmail(
+    fun addSentEmails(
         senderId: UUID?,
         senderAddress: String,
-        recipientId: UUID,
-        recipientEmail: String,
+        recipients: List<Recipient>,
         subject: String,
         body: String,
-    ): SentMessage
+    ): List<SentMessage>
 
-    fun setMessageSent(
-        messageId: UUID,
+    fun setMessagesSent(
+        messageId: List<UUID>,
         providerId: String
-    ): SentMessage
+    ): List<SentMessage>
 
-    fun setMessageFailed(
-        messageId: UUID,
+    fun setMessagesFailed(
+        messageId: List<UUID>,
         providerId: String
-    ): SentMessage
+    ): List<SentMessage>
 
     fun getMessagesSentToUser(citizenId: UUID): List<SentMessage>
 }
