@@ -78,10 +78,11 @@ class BoatReservationService(
     private val messageUtil: MessageUtil,
     private val paytrail: PaytrailInterface,
     private val emailEnv: EmailEnv,
+    private val organizationService: OrganizationService,
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
-        success: Boolean
+        paymentSuccess: Boolean
     ): PaymentProcessResult {
         if (!paytrail.checkSignature(params)) {
             return PaymentProcessResult.Failure
@@ -96,28 +97,52 @@ class BoatReservationService(
 
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
 
-        handleReservationPaymentResult(stamp, success)
+        handleReservationPaymentResult(stamp, paymentSuccess)
 
-        if (!success) {
-            return PaymentProcessResult.Success(reservation)
+        if (paymentSuccess) {
+            sendConfirmationEmail(reservation, payment)
         }
-
-        emailService.sendEmail(
-            "varausvahvistus",
-            null,
-            emailEnv.senderAddress,
-            payment.citizenId,
-            reservation.email,
-            mapOf(
-                "name" to " ${reservation.locationName} ${reservation.place}",
-                "width" to reservation.boatSpaceWidthInM,
-                "length" to reservation.boatSpaceLengthInM,
-                "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${reservation.amenity}"),
-                "endDate" to reservation.endDate
-            )
-        )
-
         return PaymentProcessResult.Success(reservation)
+    }
+
+    private fun sendConfirmationEmail(
+        reservation: BoatSpaceReservationDetails,
+        payment: Payment,
+    ) {
+        if (reservation.reserverType == ReserverType.Organization) {
+            val members = organizationService.getOrganizationMembers(reservation.reserverId)
+            val organisationMembers = members.map { Recipient(it.id, it.email) }
+            val organizationInfo = Recipient(reservation.reserverId, reservation.email)
+            emailService
+                .sendBatchEmail(
+                    "reservation_organization_confirmation",
+                    null,
+                    emailEnv.senderAddress,
+                    listOf(organizationInfo) + organisationMembers,
+                    mapOf(
+                        "organizationName" to reservation.name,
+                        "name" to "${reservation.locationName} ${reservation.place}",
+                        "width" to reservation.boatSpaceWidthInM,
+                        "length" to reservation.boatSpaceLengthInM,
+                        "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${reservation.amenity}"),
+                        "endDate" to reservation.endDate
+                    )
+                )
+        } else {
+            emailService.sendEmail(
+                "varausvahvistus",
+                null,
+                emailEnv.senderAddress,
+                Recipient(payment.citizenId, reservation.email),
+                mapOf(
+                    "name" to " ${reservation.locationName} ${reservation.place}",
+                    "width" to reservation.boatSpaceWidthInM,
+                    "length" to reservation.boatSpaceLengthInM,
+                    "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${reservation.amenity}"),
+                    "endDate" to reservation.endDate
+                )
+            )
+        }
     }
 
     fun handleReservationPaymentResult(
@@ -294,8 +319,7 @@ class BoatReservationService(
                 "reservation_confirmation_invoice",
                 null,
                 emailEnv.senderAddress,
-                reserverId,
-                input.email!!,
+                Recipient(reserverId, input.email!!),
                 mapOf(
                     "name" to "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}",
                     "width" to boatSpace.widthCm.cmToM(),

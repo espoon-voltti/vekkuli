@@ -15,6 +15,7 @@ data class BoatSpaceReservationDetails(
     val endDate: LocalDate,
     val status: ReservationStatus,
     val reserverType: ReserverType,
+    val reserverId: UUID,
     val name: String,
     val email: String,
     val phone: String,
