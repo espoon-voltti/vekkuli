@@ -52,7 +52,7 @@ class PaymentController(
         val amount = reservation.priceCents
         val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         // TODO must this be configurable?
-        val productCode = "329700_1230329_T1270_0_0_0_0_0_0_0_0_0_100"
+        val productCode = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
 
         val category = "MYY255"
 
