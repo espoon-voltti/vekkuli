@@ -62,19 +62,38 @@ fun createReservationInConfirmedState(
 
 fun createReservationInPaymentState(
     reservationService: BoatReservationService,
-    citizenId: UUID,
+    reserverId: UUID,
+    citizenId: UUID = reserverId,
     boatSpaceId: Int = 1,
     boatId: Int = 1
 ): BoatSpaceReservation {
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
-            citizenId,
+            reserverId,
             citizenId,
             boatSpaceId,
             startDate = LocalDate.now(),
             endDate = LocalDate.now().plusDays(365),
         )
-    reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId, citizenId, ReservationStatus.Payment)
+    reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId, reserverId, ReservationStatus.Payment)
+    return madeReservation
+}
+
+fun createReservationInPaymentState(
+    reservationService: BoatReservationService,
+    reserverId: UUID,
+    boatSpaceId: Int = 1,
+    boatId: Int = 1
+): BoatSpaceReservation {
+    val madeReservation =
+        reservationService.insertBoatSpaceReservation(
+            reserverId,
+            reserverId,
+            boatSpaceId,
+            startDate = LocalDate.now(),
+            endDate = LocalDate.now().plusDays(365),
+        )
+    reservationService.updateBoatInBoatSpaceReservation(madeReservation.id, boatId, reserverId, ReservationStatus.Payment)
     return madeReservation
 }
 
