@@ -46,7 +46,7 @@ class HomeController {
         val user = getCitizen(request, citizenService)
         val isAuthenticatedCitizen = user != null
 
-        return layout.generateLayout(isAuthenticatedCitizen, user?.fullName, home.render())
+        return layout.render(isAuthenticatedCitizen, user?.fullName, request.requestURI, home.render())
     }
 
     @GetMapping("/virkailija")

@@ -112,9 +112,10 @@ class BoatSpaceSearchController {
                 tx.getLocations()
             }
         return ResponseEntity.ok(
-            layout.generateLayout(
+            layout.render(
                 request.getAuthenticatedUser() != null,
                 citizen?.fullName,
+                request.requestURI,
                 boatSpaceSearch.render(locations)
             )
         )

@@ -597,9 +597,10 @@ class BoatSpaceFormController(
                 )
             )
         } else {
-            layout.generateLayout(
+            layout.render(
                 true,
                 citizen?.fullName,
+                request.requestURI,
                 boatSpaceForm.boatSpaceForm(
                     reservation,
                     boats,

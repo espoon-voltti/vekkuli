@@ -438,8 +438,13 @@ form .subtitle:not(:last-child) {
   margin-left: auto;
 }
 
-.nav-row > .link {
+.nav-row > div {
   padding: 20px;
+}
+
+.link.active {
+  background: white;
+  border-bottom: 2px solid $bulma-primary;
 }
 
 .logo{

@@ -14,9 +14,10 @@ class Layout {
         return messageUtil.getMessage(key)
     }
 
-    fun generateLayout(
+    fun render(
         isAuthenticated: Boolean,
         userName: String?,
+        currentUri: String,
         bodyContent: String
     ): String {
         // language=HTML
@@ -53,10 +54,25 @@ class Layout {
 
         val citizenProfileLink =
             if (isAuthenticated) {
-                """<a class="link" href="/kuntalainen/omat-tiedot" style="margin-left: auto">Omat tiedot</a>"""
+                """<a class="link ${if (currentUri.startsWith(
+                        "/kuntalainen/omat-tiedot"
+                    )
+                ) {
+                    "active"
+                } else {
+                    ""
+                }} " href="/kuntalainen/omat-tiedot" >Omat tiedot</a>"""
             } else {
                 ""
             }
+        val boatLink = """<a class="link ${if (currentUri.startsWith(
+                "/kuntalainen/vene"
+            )
+        ) {
+            "active"
+        } else {
+            ""
+        }}" href="/kuntalainen/venepaikat">Venepaikat</a>"""
         // language=HTML
         return """
             <!DOCTYPE html>
@@ -78,10 +94,14 @@ class Layout {
                 </div>
                 
                 <div class="nav-row">
-                    <a class="link" href="/">Venepaikat</a>
+                    <div>
+                      $boatLink
+                    </div>
                     <!-- <a class="link">Liikuntatilat</a>
                     <a class="link">Ohjatut ryhmäliikunnat</a> -->
-                    $citizenProfileLink
+                    <div style="margin-left: auto">
+                        $citizenProfileLink
+                    </div>
                 </div>
             </nav>
             
