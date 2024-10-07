@@ -421,6 +421,38 @@ form .subtitle:not(:last-child) {
   background: $white;
 }
 
+.nav-row{
+  background: white;
+  display:flex;
+  padding-left: 28px;
+  padding-right:28px;
+  border-bottom: 8px solid $light-gray;
+}
+
+.nav-row > h1 {
+  margin-top: 43px
+}
+
+.nav-row > .auth {
+  padding: 50px 20px 20px;
+  margin-left: auto;
+}
+
+.nav-row > div {
+  padding: 20px;
+}
+
+.link.active {
+  background: white;
+  border-bottom: 2px solid $bulma-primary;
+}
+
+.logo{
+  width: 185px;
+  height: 107px;
+  margin-right: 16px
+}
+
 .menu {
   width: $menu-width;
   height: 100vh;

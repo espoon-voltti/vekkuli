@@ -20,6 +20,7 @@ import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatFormInput
 import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
+import fi.espoo.vekkuli.views.citizen.ReservationConfirmation
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -51,7 +52,8 @@ class BoatSpaceFormController(
     private val reservationService: BoatReservationService,
     private val boatService: BoatService,
     private val citizenService: CitizenService,
-    private val organizationService: OrganizationService
+    private val organizationService: OrganizationService,
+    private val reservationConfirmation: ReservationConfirmation
 ) {
     @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -267,6 +269,7 @@ class BoatSpaceFormController(
     }
 
     @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")
+    @ResponseBody
     fun confirmBoatSpaceReservation(
         @PathVariable usertype: String,
         @PathVariable reservationId: Int,
@@ -277,7 +280,13 @@ class BoatSpaceFormController(
         val reservation = reservationService.getBoatSpaceReservation(reservationId)
         if (reservation == null) return redirectUrl("/")
         model.addAttribute("reservation", reservation)
-        return "boat-space-reservation-confirmation"
+
+        return layout.render(
+            true,
+            citizen.fullName,
+            request.requestURI,
+            reservationConfirmation.render(reservation)
+        )
     }
 
     @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/boat-form")
@@ -597,9 +606,10 @@ class BoatSpaceFormController(
                 )
             )
         } else {
-            layout.generateLayout(
+            layout.render(
                 true,
                 citizen?.fullName,
+                request.requestURI,
                 boatSpaceForm.boatSpaceForm(
                     reservation,
                     boats,

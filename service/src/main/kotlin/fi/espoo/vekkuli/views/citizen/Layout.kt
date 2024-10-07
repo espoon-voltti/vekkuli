@@ -14,9 +14,10 @@ class Layout {
         return messageUtil.getMessage(key)
     }
 
-    fun generateLayout(
+    fun render(
         isAuthenticated: Boolean,
         userName: String?,
+        currentUri: String,
         bodyContent: String
     ): String {
         // language=HTML
@@ -29,7 +30,7 @@ class Layout {
                 """.trimIndent()
             } else {
                 """
-                <div class="container" x-data="{ open: false }">
+                <div x-data="{ open: false }">
                     <div class="dropdown" :class="{ 'is-active': open }">
                         <div class="dropdown-trigger">
                             <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
@@ -51,6 +52,27 @@ class Layout {
                 """.trimIndent()
             }
 
+        val citizenProfileLink =
+            if (isAuthenticated) {
+                """<a class="link ${if (currentUri.startsWith(
+                        "/kuntalainen/omat-tiedot"
+                    )
+                ) {
+                    "active"
+                } else {
+                    ""
+                }} " href="/kuntalainen/omat-tiedot" >Omat tiedot</a>"""
+            } else {
+                ""
+            }
+        val boatLink = """<a class="link ${if (currentUri.startsWith(
+                "/kuntalainen/vene"
+            )
+        ) {
+            "active"
+        } else {
+            ""
+        }}" href="/kuntalainen/venepaikat">Venepaikat</a>"""
         // language=HTML
         return """
             <!DOCTYPE html>
@@ -60,18 +82,25 @@ class Layout {
                 $head
             </head>
             <body>
-
-            <nav class="navbar mb-s" role="navigation" aria-label="main navigation">
-                <div class="navbar-brand">
-                    <a class="navbar-item" href="/">
-                        <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                    </a>
+            
+            <nav role="navigation" aria-label="main navigation">
+                <div class="nav-row">
+                    <img class="logo" src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                    <h1>Espoon resurssivaraus</h1>
+                    
+                    <div class="auth">
+                        $menu 
+                    </div>
                 </div>
-                <div class="navbar-end" style="margin-right: 132px">
-                    <div class="navbar-item">
-                        <div class="buttons">
-                            $menu
-                        </div>
+                
+                <div class="nav-row">
+                    <div>
+                      $boatLink
+                    </div>
+                    <!-- <a class="link">Liikuntatilat</a>
+                    <a class="link">Ohjatut ryhmäliikunnat</a> -->
+                    <div style="margin-left: auto">
+                        $citizenProfileLink
                     </div>
                 </div>
             </nav>
