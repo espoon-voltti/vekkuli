@@ -295,14 +295,14 @@ class CitizenUserController {
         )
 
     data class CitizenUpdate(
-        val phoneNumber: String,
-        val email: String,
-        val address: String?,
-        val postalCode: String?,
-        val municipalityCode: Int?,
-        val nationalId: String?,
-        val firstName: String,
-        val lastName: String,
+        val phoneNumber: String? = null,
+        val email: String? = null,
+        val address: String? = null,
+        val postalCode: String? = null,
+        val municipalityCode: Int? = null,
+        val nationalId: String? = null,
+        val firstName: String? = null,
+        val lastName: String? = null,
     )
 
     data class BoatUpdateForm(
@@ -575,12 +575,6 @@ class CitizenUserController {
             CitizenUpdate(
                 phoneNumber = input.phoneNumber,
                 email = input.email,
-                address = citizen.streetAddress,
-                postalCode = citizen.postalCode,
-                municipalityCode = citizen.municipalityCode,
-                nationalId = citizen.nationalId,
-                firstName = citizen.firstName,
-                lastName = citizen.lastName
             )
         val updatedCitizen = updateCitizen(citizenUpdate, citizenId)
         return citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.CITIZEN)
