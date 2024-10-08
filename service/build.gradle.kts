@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.20"
     id("org.flywaydb.flyway") version "10.18.2"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
-    id("com.github.node-gradle.node") version "7.0.2"
+    id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "1.8.0"
 
     idea
