@@ -2,13 +2,14 @@ package fi.espoo.vekkuli.pages
 
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.controllers.UserType
 
 class ReserveBoatSpacePage(
     private val page: Page,
-    private val isEmployee: Boolean = false
+    private val userType: UserType
 ) {
     fun navigateTo() {
-        page.navigate("$baseUrl/${if (isEmployee) "virkailija" else "kuntalainen"}/venepaikat")
+        page.navigate("$baseUrl/${userType.path}/venepaikat")
     }
 
     val header = page.getByTestId("search-page-header")
