@@ -4,17 +4,18 @@ import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 
 class ReserveBoatSpacePage(
-    private val page: Page
+    private val page: Page,
+    private val isEmployee: Boolean = false
 ) {
     fun navigateTo() {
-        page.navigate("$baseUrl/kuntalainen/venepaikat")
+        page.navigate("$baseUrl/${if (isEmployee) "virkailija" else "kuntalainen"}/venepaikat")
     }
 
     val header = page.getByTestId("search-page-header")
     val emptyDimensionsWarning = page.getByTestId("empty-dimensions-warning")
     val boatTypeSelectFilter = page.getByTestId("boatType")
     val widthFilterInput = page.getByTestId("width")
-    val lenghtFilterInput = page.getByTestId("length")
+    val lengthFilterInput = page.getByTestId("length")
 
     val boatSpaceTypeSlipRadio = page.getByTestId("boatSpaceType-slip")
     val boatSpaceTypeTrailerRadio = page.getByTestId("boatSpaceType-trailer")

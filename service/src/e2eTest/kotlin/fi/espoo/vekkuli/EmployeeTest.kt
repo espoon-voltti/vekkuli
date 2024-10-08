@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.pages.BoatSpaceFormPage
-import fi.espoo.vekkuli.pages.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.ReservationListPage
-import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
+import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
@@ -26,7 +23,7 @@ class EmployeeTest : PlaywrightTest() {
         assertThat(reservationPage.emptyDimensionsWarning).isVisible()
         reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
         reservationPage.widthFilterInput.fill("3")
-        reservationPage.lenghtFilterInput.fill("6")
+        reservationPage.lengthFilterInput.fill("6")
         reservationPage.boatSpaceTypeSlipRadio.click()
         reservationPage.amenityBuoyCheckbox.check()
         reservationPage.amenityRearBuoyCheckbox.check()
@@ -140,8 +137,8 @@ class EmployeeTest : PlaywrightTest() {
 
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.widthFilterInput.fill("3")
-        reservationPage.lenghtFilterInput.fill("6")
-        reservationPage.lenghtFilterInput.blur()
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
@@ -169,8 +166,8 @@ class EmployeeTest : PlaywrightTest() {
 
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.widthFilterInput.fill("3")
-        reservationPage.lenghtFilterInput.fill("6")
-        reservationPage.lenghtFilterInput.blur()
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
@@ -206,6 +203,68 @@ class EmployeeTest : PlaywrightTest() {
 
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
+        formPage.submitButton.click()
+    }
+
+    @Test
+    fun reservingABoatSpaceAsOrganization() {
+        page.navigate(baseUrl + "/virkailija")
+        page.getByTestId("employeeLoginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page, true)
+        reservationPage.navigateTo()
+
+        reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+        reservationPage.amenityWalkBeamCheckbox.check()
+
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+
+        formPage.existingCitizenSelector.click()
+        assertThat(formPage.citizenSearchContainer).isVisible()
+
+        formPage.submitButton.click()
+
+        formPage.citizenSearchInput.pressSequentially("virtane")
+        formPage.citizenSearchOption1.click()
+
+        formPage.organizationRadioButton.click()
+        formPage.orgNameInput.fill("My Organization")
+        formPage.orgBusinessIdInput.fill("1234567-8")
+        formPage.orgPhoneNumberInput.fill("123456789")
+        formPage.orgEmailInput.fill("foo@bar.com")
+
+        formPage.depthInput.fill("1.5")
+        formPage.depthInput.blur()
+        assertThat(formPage.depthError).isHidden()
+
+        formPage.weightInput.fill("2000")
+        formPage.weightInput.blur()
+        assertThat(formPage.weightError).isHidden()
+
+        formPage.boatNameInput.fill("My Boat")
+        formPage.otherIdentification.fill("ID12345")
+        formPage.noRegistrationCheckbox.check()
+        assertThat(formPage.boatRegistrationNumberError).isHidden()
+
+        formPage.ownerRadioButton.check()
+
+        formPage.emailInput.fill("test@example.com")
+        formPage.emailInput.blur()
+        assertThat(formPage.emailError).isHidden()
+
+        formPage.phoneInput.fill("123456789")
+        formPage.phoneInput.blur()
+        assertThat(formPage.phoneError).isHidden()
+
+        formPage.certifyInfoCheckbox.check()
+        formPage.agreementCheckbox.check()
+
         formPage.submitButton.click()
     }
 }

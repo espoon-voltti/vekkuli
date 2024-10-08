@@ -641,15 +641,19 @@ class BoatSpaceFormController(
         @PathVariable reservationId: Int,
         @RequestParam isOrganization: Boolean?,
         @RequestParam organizationId: UUID?,
+        @RequestParam citizenId: UUID?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        val reservation = reservationService.getReservationWithReserver(reservationId)
-        println(reservation)
-        val citizen = getCitizen(request, citizenService) ?: return ResponseEntity.badRequest().build()
         val userType = UserType.fromPath(usertype)
-
-        if (reservation == null) return ResponseEntity.badRequest().build()
-        val organizations = organizationService.getCitizenOrganizations(citizen.id)
+        val isEmployee = userType == UserType.EMPLOYEE
+        val usedCitizenId: UUID? =
+            if (isEmployee) {
+                citizenId
+            } else {
+                (getCitizen(request, citizenService)?.id ?: return ResponseEntity.badRequest().build())
+            }
+        if (usedCitizenId == null) return ResponseEntity.badRequest().build()
+        val organizations = organizationService.getCitizenOrganizations(usedCitizenId)
         val municipalities = citizenService.getMunicipalities()
         return ResponseEntity.ok(
             boatSpaceForm.slipHolder(organizations, isOrganization ?: false, organizationId, userType, reservationId, municipalities)

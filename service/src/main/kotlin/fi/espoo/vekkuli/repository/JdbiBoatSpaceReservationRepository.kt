@@ -171,7 +171,7 @@ class JdbiBoatSpaceReservationRepository(
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
-                    JOIN reserver r ON bsr.reserver_id = r.id
+                    LEFT JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
