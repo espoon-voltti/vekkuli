@@ -295,14 +295,14 @@ class CitizenUserController {
         )
 
     data class CitizenUpdate(
-        val phoneNumber: String,
-        val email: String,
-        val address: String?,
-        val postalCode: String?,
-        val municipalityCode: Int?,
-        val nationalId: String?,
-        val firstName: String,
-        val lastName: String,
+        val phoneNumber: String? = null,
+        val email: String? = null,
+        val address: String? = null,
+        val postalCode: String? = null,
+        val municipalityCode: Int? = null,
+        val nationalId: String? = null,
+        val firstName: String? = null,
+        val lastName: String? = null,
     )
 
     data class BoatUpdateForm(
@@ -554,11 +554,16 @@ class CitizenUserController {
         return citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
+    data class UpdateInput(
+        val phoneNumber: String,
+        val email: String,
+    )
+
     @PatchMapping("/kuntalainen/omat-tiedot")
     @ResponseBody
     fun editOwnProfile(
         request: HttpServletRequest,
-        input: CitizenUpdate,
+        input: UpdateInput,
         model: Model
     ): String {
         val citizen = getAuthenticatedCitizen(request)
@@ -566,7 +571,12 @@ class CitizenUserController {
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
         val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
-        val updatedCitizen = updateCitizen(input, citizenId)
+        val citizenUpdate =
+            CitizenUpdate(
+                phoneNumber = input.phoneNumber,
+                email = input.email,
+            )
+        val updatedCitizen = updateCitizen(citizenUpdate, citizenId)
         return citizenDetails.citizenPage(updatedCitizen, boatSpaceReservations, boats, UserType.CITIZEN)
     }
 

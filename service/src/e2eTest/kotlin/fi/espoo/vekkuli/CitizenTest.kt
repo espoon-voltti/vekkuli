@@ -21,23 +21,11 @@ class CitizenTest : PlaywrightTest() {
             citizenDetails.editButton.click()
 
             assertThat(page.getByTestId("edit-citizen-form")).isVisible()
-            val citizenFirstName = "New First Name"
-            val citizenLastName = "New Last Name"
             val citizenPhone = "0405839281"
             val citizenEmail = "test2@email.com"
-            val citizenAddress = "New Address"
-            val citizenNationalId = "031195-950Y"
-            val citizenPostalCode = "12345"
-            val citizenMunicipalityCode = "49"
 
-            citizenDetails.citizenFirstNameInput.fill(citizenFirstName)
-            citizenDetails.citizenLastNameInput.fill(citizenLastName)
-            citizenDetails.citizenAddressInput.fill(citizenAddress)
             citizenDetails.citizenEmailInput.fill("")
             citizenDetails.citizenPhoneInput.fill("")
-            citizenDetails.citizenNationalIdInput.fill(citizenNationalId)
-            citizenDetails.citizenPostalCodeInput.fill(citizenPostalCode)
-            citizenDetails.citizenMunicipalityInput.selectOption(citizenMunicipalityCode)
             citizenDetails.citizenEditSubmitButton.click()
 
             // assert that email and phone can not be empty
@@ -55,13 +43,8 @@ class CitizenTest : PlaywrightTest() {
             citizenDetails.citizenEditSubmitButton.click()
 
             // assert that the values are updated
-            assertThat(citizenDetails.citizenFirstNameField).hasText(citizenFirstName)
-            assertThat(citizenDetails.citizenLastNameField).hasText(citizenLastName)
             assertThat(citizenDetails.citizenPhoneField).hasText(citizenPhone)
             assertThat(citizenDetails.citizenEmailField).hasText(citizenEmail)
-            assertThat(citizenDetails.citizenAddressField).hasText(citizenAddress)
-            assertThat(citizenDetails.citizenNationalIdField).hasText(citizenNationalId)
-            assertThat(citizenDetails.citizenPostalCodeField).hasText(citizenPostalCode)
             assertThat(citizenDetails.citizenMunicipalityField).hasText("Espoo")
         } catch (e: AssertionError) {
             handleError(e)
