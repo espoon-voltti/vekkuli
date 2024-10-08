@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -18,7 +19,7 @@ class EmployeeTest : PlaywrightTest() {
 
         listingPage.createReservation.click()
 
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
 
         assertThat(reservationPage.emptyDimensionsWarning).isVisible()
         reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
@@ -135,7 +136,7 @@ class EmployeeTest : PlaywrightTest() {
         listingPage.navigateTo()
         listingPage.createReservation.click()
 
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
         reservationPage.lengthFilterInput.blur()
@@ -164,7 +165,7 @@ class EmployeeTest : PlaywrightTest() {
         listingPage.navigateTo()
         listingPage.createReservation.click()
 
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
         reservationPage.lengthFilterInput.blur()
@@ -212,7 +213,7 @@ class EmployeeTest : PlaywrightTest() {
         page.getByTestId("employeeLoginButton").click()
         page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page, true)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
         reservationPage.navigateTo()
 
         reservationPage.boatTypeSelectFilter.selectOption("Sailboat")

@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -216,7 +217,7 @@ class E2eTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            val reservationPage = ReserveBoatSpacePage(page)
+            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
             reservationPage.navigateTo()
             assertThat(reservationPage.emptyDimensionsWarning).isVisible()
             reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
@@ -324,7 +325,7 @@ class E2eTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            val reservationPage = ReserveBoatSpacePage(page)
+            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
             reservationPage.navigateTo()
             assertThat(reservationPage.emptyDimensionsWarning).isVisible()
             reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
@@ -387,7 +388,7 @@ class E2eTest : PlaywrightTest() {
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
         reservationPage.navigateTo()
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
@@ -412,7 +413,7 @@ class E2eTest : PlaywrightTest() {
     @Test
     fun authenticationOnReservation() {
         // go directly to reservation page
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
         reservationPage.navigateTo()
 
         reservationPage.widthFilterInput.fill("3")
@@ -437,7 +438,7 @@ class E2eTest : PlaywrightTest() {
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
         reservationPage.navigateTo()
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
@@ -471,7 +472,7 @@ class E2eTest : PlaywrightTest() {
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
         reservationPage.navigateTo()
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
@@ -493,7 +494,7 @@ class E2eTest : PlaywrightTest() {
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page)
+        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
         reservationPage.navigateTo()
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
