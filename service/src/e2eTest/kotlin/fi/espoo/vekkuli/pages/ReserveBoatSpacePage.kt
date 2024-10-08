@@ -2,19 +2,21 @@ package fi.espoo.vekkuli.pages
 
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.controllers.UserType
 
 class ReserveBoatSpacePage(
-    private val page: Page
+    private val page: Page,
+    private val userType: UserType
 ) {
     fun navigateTo() {
-        page.navigate("$baseUrl/kuntalainen/venepaikat")
+        page.navigate("$baseUrl/${userType.path}/venepaikat")
     }
 
     val header = page.getByTestId("search-page-header")
     val emptyDimensionsWarning = page.getByTestId("empty-dimensions-warning")
     val boatTypeSelectFilter = page.getByTestId("boatType")
     val widthFilterInput = page.getByTestId("width")
-    val lenghtFilterInput = page.getByTestId("length")
+    val lengthFilterInput = page.getByTestId("length")
 
     val boatSpaceTypeSlipRadio = page.getByTestId("boatSpaceType-slip")
     val boatSpaceTypeTrailerRadio = page.getByTestId("boatSpaceType-trailer")
