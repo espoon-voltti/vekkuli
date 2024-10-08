@@ -23,63 +23,120 @@ class EditCitizen {
         userType: UserType
     ): String {
         val firstNameInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.firstName",
-                "firstName",
-                citizen.firstName,
-                required = true,
-            )
+            if (userType == UserType.EMPLOYEE) {
+                formComponents.textInput(
+                    "boatSpaceReservation.title.firstName",
+                    "firstName",
+                    citizen.firstName,
+                    required = true,
+                )
+            } else {
+                formComponents.field(
+                    "boatSpaceReservation.title.firstName",
+                    "firstNameField",
+                    citizen.firstName,
+                )
+            }
+
         val lastNameInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.lastName",
-                "lastName",
-                citizen.lastName,
-                required = true,
-            )
+            if (userType == UserType.EMPLOYEE) {
+                formComponents.textInput(
+                    "boatSpaceReservation.title.lastName",
+                    "lastName",
+                    citizen.lastName,
+                    required = true,
+                )
+            } else {
+                formComponents.field(
+                    "boatSpaceReservation.title.lastName",
+                    "lastNameField",
+                    citizen.lastName,
+                )
+            }
 
         // TODO: validate nationalId properly
         val nationalIdInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.nationalId",
-                "nationalId",
-                citizen.nationalId,
-                required = true,
-                pattern =
-                    Pair(
-                        "^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{2}[\\+\\-A]\\d{3}[0-9A-FHJ-NPR-Y]\$",
-                        "validation.nationalId"
-                    )
-            )
+            if (userType == UserType.EMPLOYEE) {
+                formComponents.textInput(
+                    "boatSpaceReservation.title.nationalId",
+                    "nationalId",
+                    citizen.nationalId,
+                    required = true,
+                    pattern =
+                        Pair(
+                            "^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{2}[\\+\\-A]\\d{3}[0-9A-FHJ-NPR-Y]\$",
+                            "validation.nationalId"
+                        )
+                )
+            } else {
+                formComponents.field(
+                    "boatSpaceReservation.title.nationalId",
+                    "nationalIdField",
+                    citizen.nationalId,
+                )
+            }
 
         val postalCodeInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.postalCode",
-                "postalCode",
-                citizen.postalCode
-            )
+            if (userType == UserType.EMPLOYEE) {
+                formComponents.textInput(
+                    "boatSpaceReservation.title.postalCode",
+                    "postalCode",
+                    citizen.postalCode
+                )
+            } else {
+                formComponents.field(
+                    "boatSpaceReservation.title.postalCode",
+                    "postalCodeField",
+                    citizen.postalCode,
+                )
+            }
 
         val cityInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.city",
-                "city",
-                citizen.municipalityName
-            )
+            if (userType == UserType.EMPLOYEE) {
+                formComponents.textInput(
+                    "boatSpaceReservation.title.city",
+                    "city",
+                    citizen.municipalityName
+                )
+            } else {
+                formComponents.field(
+                    "boatSpaceReservation.title.city",
+                    "cityField",
+                    citizen.municipalityName,
+                )
+            }
 
         val municipalityInput =
-            formComponents.select(
-                "boatSpaceReservation.title.municipality",
-                "municipalityCode",
-                citizen.municipalityCode.toString(),
-                municipalities.map { Pair(it.code.toString(), it.name) },
-                required = true
-            )
+            if (userType == UserType.EMPLOYEE) {
+                formComponents.select(
+                    "boatSpaceReservation.title.municipality",
+                    "municipalityCode",
+                    citizen.municipalityCode.toString(),
+                    municipalities.map { Pair(it.code.toString(), it.name) },
+                    required = true
+                )
+            } else {
+                formComponents.field(
+                    "boatSpaceReservation.title.municipality",
+                    "municipalityField",
+                    citizen.municipalityName,
+                )
+            }
 
         val addressInput =
-            formComponents.textInput(
-                "boatSpaceReservation.title.address",
-                "address",
-                citizen.streetAddress
-            )
+            if (userType == UserType.EMPLOYEE) {
+                formComponents.textInput(
+                    "boatSpaceReservation.title.address",
+                    "address",
+                    citizen.streetAddress
+                )
+            } else {
+                formComponents.field(
+                    "boatSpaceReservation.title.address",
+                    "addressField",
+                    citizen.streetAddress,
+                )
+            }
 
         val emailInput =
             formComponents.textInput(
