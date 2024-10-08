@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.SentMessage
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -11,68 +12,93 @@ import java.util.UUID
 class JdbiSentMessageRepository(
     private val jdbi: Jdbi
 ) : SentMessageRepository {
-    override fun addSentEmail(
+    override fun addSentEmails(
         senderId: UUID?,
         senderAddress: String,
-        recipientId: UUID,
-        recipientEmail: String,
+        recipients: List<Recipient>,
         subject: String,
         body: String,
-    ): SentMessage =
+    ): List<SentMessage> =
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
+            val batch =
+                handle.prepareBatch(
                     """
-                    INSERT INTO sent_message (status, sender_id, sender_address, recipient_id, recipient_address, type, subject, body)
-                    VALUES ('Queued', :senderId, :senderAddress, :recipientId, :recipientEmail, 'Email', :subject, :body)
-                    RETURNING *
-                    """
-                ).bind("senderId", senderId)
-                .bind("senderAddress", senderAddress)
-                .bind("recipientId", recipientId)
-                .bind("recipientEmail", recipientEmail)
-                .bind("subject", subject)
-                .bind("body", body)
+            INSERT INTO sent_message (status, sender_id, sender_address, recipient_id, recipient_address, type, subject, body)
+            VALUES ('Queued', :senderId, :senderAddress, :recipientId, :recipientEmail, 'Email', :subject, :body)
+            """
+                )
+
+            recipients.forEach { recipient ->
+                batch
+                    .bind("senderId", senderId)
+                    .bind("senderAddress", senderAddress)
+                    .bind("recipientId", recipient.id)
+                    .bind("recipientEmail", recipient.email)
+                    .bind("subject", subject)
+                    .bind("body", body)
+                    .add()
+            }
+
+            batch
+                .executePreparedBatch()
                 .mapTo<SentMessage>()
-                .one()
+                .list()
         }
 
-    override fun setMessageSent(
-        messageId: UUID,
+    override fun setMessagesSent(
+        messageIds: List<UUID>,
         providerId: String
-    ): SentMessage =
+    ): List<SentMessage> =
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
+            val batch =
+                handle.prepareBatch(
                     """
-                    UPDATE sent_message
-                    SET status = 'Sent', sent_at = now(), provider_id = :providerId
-                    WHERE id = :messageId
-                    RETURNING *
-                    """
-                ).bind("messageId", messageId)
-                .bind("providerId", providerId)
+            UPDATE sent_message
+            SET status = 'Sent', sent_at = now(), provider_id = :providerId
+            WHERE id = :messageId
+            RETURNING *
+            """
+                )
+
+            messageIds.forEach { messageId ->
+                batch
+                    .bind("messageId", messageId)
+                    .bind("providerId", providerId)
+                    .add()
+            }
+
+            batch
+                .executePreparedBatch()
                 .mapTo<SentMessage>()
-                .one()
+                .list()
         }
 
-    override fun setMessageFailed(
-        messageId: UUID,
+    override fun setMessagesFailed(
+        messageIds: List<UUID>,
         providerId: String
-    ): SentMessage =
+    ): List<SentMessage> =
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
+            val batch =
+                handle.prepareBatch(
                     """
-                    UPDATE sent_message
-                    SET status = 'Failed', sent_at = now(), provider_id = :providerId
-                    WHERE id = :messageId
-                    RETURNING *
-                    """
-                ).bind("messageId", messageId)
-                .bind("providerId", providerId)
+            UPDATE sent_message
+            SET status = 'Failed', sent_at = now(), provider_id = :providerId
+            WHERE id = :messageId
+            RETURNING *
+            """
+                )
+
+            messageIds.forEach { messageId ->
+                batch
+                    .bind("messageId", messageId)
+                    .bind("providerId", providerId)
+                    .add()
+            }
+
+            batch
+                .executePreparedBatch()
                 .mapTo<SentMessage>()
-                .one()
+                .list()
         }
 
     override fun getMessagesSentToUser(citizenId: UUID): List<SentMessage> =

@@ -46,6 +46,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           r.id as reserver_id,
                            r.name,
                            r.type as reserver_type,
                            r.email, 
@@ -83,7 +84,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE p.id = :paymentId
-                    GROUP BY p.id, bsr.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code, r.name, r.type, m.name                
+                    GROUP BY r.id, p.id, bsr.id, b.id, location.id, bs.id, price.id, r.email, r.phone, r.street_address, r.postal_code, r.municipality_code, r.name, r.type, m.name                
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
@@ -238,6 +239,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,
                            r.email, 
@@ -310,6 +312,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,
                            r.email, 
