@@ -25,7 +25,25 @@ data class BoatFormInput(
     val extraInformation: String,
     val ownership: OwnershipStatus,
     val noRegistrationNumber: Boolean,
-)
+) {
+    companion object {
+        fun empty(): BoatFormInput =
+            BoatFormInput(
+                id = 0,
+                boatName = "",
+                boatType = BoatType.OutboardMotor,
+                width = null,
+                length = null,
+                depth = null,
+                weight = null,
+                boatRegistrationNumber = "",
+                otherIdentification = "",
+                extraInformation = "",
+                ownership = OwnershipStatus.Owner,
+                noRegistrationNumber = false,
+            )
+    }
+}
 
 @Service
 class BoatSpaceForm(
@@ -54,6 +72,7 @@ class BoatSpaceForm(
                        hx-trigger="change"
                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/boat-form?boatId=${boat.id}"
                        hx-target="#boatForm"
+                       hx-include="[name='citizenId'],[name='organizationId'],[name='isOrganization']"
                        hx-swap="outerHTML"
                        name="boatId"
                        ${if (input.id == boat.id) "checked" else ""}
@@ -74,6 +93,7 @@ class BoatSpaceForm(
                         value="0"
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId/boat-form?boatId=0"
+                        hx-include="[name='citizenId'],[name='organizationId'],[name='isOrganization'],[name='width'],[name='length']"
                         hx-target="#boatForm"
                         hx-swap="outerHTML"
                        ${if (input.id == 0) "checked" else ""}
@@ -567,22 +587,16 @@ class BoatSpaceForm(
 
         val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
 
-        val slipHolderForm =
-            slipHolder(
+        val slipHolder =
+            slipHolderAndBoatForm(
                 organizations,
                 input.isOrganization ?: false,
+                citizen,
+                boats,
                 input.organizationId,
                 userType,
                 reservation.id,
-                municipalities
-            )
-
-        val boatForm =
-            boatForm(
-                userType,
-                citizen,
-                boats,
-                reservation.id,
+                municipalities,
                 BoatFormInput(
                     id = input.boatId ?: 0,
                     boatName = input.boatName ?: "",
@@ -630,7 +644,8 @@ class BoatSpaceForm(
                         action="/${userType.path}/venepaikka/varaus/${reservation.id}"
                         method="post"
                         novalidate>
-                        
+                        <input type="hidden" name="width" value="${input.width ?: ""}"/>
+                        <input type="hidden" name="length" value="${input.length ?: ""}"/>
                          <h1 class="title pb-l" id='boat-space-form-header'>
                             ${t("boatApplication.title.reservation")} 
                             $wholeLocationName
@@ -638,11 +653,9 @@ class BoatSpaceForm(
                                             
                         <div class='form-section'>
                         $citizenContainer  
-                        $slipHolderForm
+                        $slipHolder
                         </div>
-                         <div class='form-section'>
-                        $boatForm
-                        </div>
+                   
                          <div class='form-section'>
                         $boatSpaceInformation
                         </div>
@@ -897,6 +910,24 @@ class BoatSpaceForm(
             """.trimIndent()
     }
 
+    fun slipHolderAndBoatForm(
+        organizations: List<Organization>,
+        isOrganization: Boolean,
+        citizen: CitizenWithDetails?,
+        boats: List<Boat>,
+        selectedOrganizationId: UUID?,
+        userType: UserType,
+        reservationId: Int,
+        municipalities: List<Municipality>,
+        boatData: BoatFormInput,
+    ): String =
+        """
+        <div id="shipHolderAndBoatForm">
+           ${slipHolder(organizations, isOrganization, selectedOrganizationId, userType, reservationId, municipalities)}
+           ${boatForm(userType, citizen, boats, reservationId, boatData)}
+        </div>
+        """.trimIndent()
+
     fun slipHolder(
         organizations: List<Organization>,
         isOrganization: Boolean,
@@ -911,9 +942,9 @@ class BoatSpaceForm(
                 <input type="radio" id="org-${org.id}-radio" value="${org.id}" name="organizationId"
                        hx-trigger="change"
                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId=${org.id}"
-                       hx-target="#slipHolder"
+                       hx-target="#shipHolderAndBoatForm"
                        hx-swap="outerHTML"
-                       hx-include="[name='citizenId']"
+                       hx-include="[name='citizenId'],[name='width'],[name='length']"
                        name="organizationId"
                        ${if (selectedOrganizationId == org.id) "checked" else ""}
                 />
@@ -933,8 +964,8 @@ class BoatSpaceForm(
                         value=""
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
-                        hx-include="[name='citizenId']"
-                        hx-target="#slipHolder"
+                        hx-include="[name='citizenId'],[name='width'],[name='length']"
+                        hx-target="#shipHolderAndBoatForm"
                         hx-swap="outerHTML"
                        ${if (selectedOrganizationId == null) "checked" else ""}
                     />
@@ -969,8 +1000,8 @@ class BoatSpaceForm(
                         value="false"
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=false&organizationId="
-                        hx-include="[name='citizenId']"
-                        hx-target="#slipHolder"
+                        hx-include="[name='citizenId'],[name='width'],[name='length']"
+                        hx-target="#shipHolderAndBoatForm"
                         hx-swap="outerHTML"
                        ${if (!isOrganization) "checked" else ""}
                     />
@@ -983,8 +1014,8 @@ class BoatSpaceForm(
                         value="true"
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
-                        hx-include="[name='citizenId']"
-                        hx-target="#slipHolder"
+                        hx-include="[name='citizenId'],[name='width'],[name='length']"
+                        hx-target="#shipHolderAndBoatForm"
                         hx-swap="outerHTML"
                        ${if (isOrganization) "checked" else ""}
                     />

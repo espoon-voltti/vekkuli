@@ -295,17 +295,35 @@ class BoatSpaceFormController(
         @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         @RequestParam boatId: Int?,
+        @RequestParam isOrganization: Boolean?,
         @RequestParam organizationId: UUID?,
+        @RequestParam citizenId: UUID?,
+        @RequestParam width: Double?,
+        @RequestParam length: Double?,
         request: HttpServletRequest,
-    ): String {
+    ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
-        val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
+        val isEmployee = userType == UserType.EMPLOYEE
+        val citizen =
+            if (isEmployee) {
+                if (citizenId == null) return ResponseEntity.badRequest().build()
+                citizenService.getCitizen(citizenId)
+            } else {
+                getCitizen(request, citizenService)
+            }
+        if (citizen == null) return ResponseEntity.badRequest().build()
+        val reserverId = if (isOrganization == true) organizationId else citizen.id
         val boats =
-            boatService
-                .getBoatsForReserver(organizationId ?: citizen.id)
-                .map { boat ->
-                    boat.updateBoatDisplayName(messageUtil)
-                }
+            if (reserverId != null) {
+                boatService
+                    .getBoatsForReserver(reserverId)
+                    .map { boat ->
+                        boat.updateBoatDisplayName(messageUtil)
+                    }
+            } else {
+                emptyList()
+            }
+
         val boat = if (boatId != null) boats.find { it.id == boatId } else null
         val input =
             if (boat !=
@@ -330,8 +348,8 @@ class BoatSpaceFormController(
                     id = boatId ?: 0,
                     boatName = "",
                     boatType = BoatType.OutboardMotor,
-                    width = null,
-                    length = null,
+                    width = width,
+                    length = length,
                     depth = null,
                     weight = null,
                     boatRegistrationNumber = "",
@@ -342,7 +360,7 @@ class BoatSpaceFormController(
                 )
             }
 
-        return boatSpaceForm.boatForm(userType, citizen, boats, reservationId, input)
+        return ResponseEntity.ok(boatSpaceForm.boatForm(userType, citizen, boats, reservationId, input))
     }
 
     @PostMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
@@ -642,21 +660,46 @@ class BoatSpaceFormController(
         @RequestParam isOrganization: Boolean?,
         @RequestParam organizationId: UUID?,
         @RequestParam citizenId: UUID?,
+        @RequestParam width: Double?,
+        @RequestParam length: Double?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
         val isEmployee = userType == UserType.EMPLOYEE
-        val usedCitizenId: UUID? =
+        val citizen =
             if (isEmployee) {
-                citizenId
+                if (citizenId == null) return ResponseEntity.badRequest().build()
+                citizenService.getCitizen(citizenId)
             } else {
-                (getCitizen(request, citizenService)?.id ?: return ResponseEntity.badRequest().build())
+                getCitizen(request, citizenService)
             }
-        if (usedCitizenId == null) return ResponseEntity.badRequest().build()
-        val organizations = organizationService.getCitizenOrganizations(usedCitizenId)
+        if (citizen == null) return ResponseEntity.badRequest().build()
+        val reserverId = if (isOrganization == true) organizationId else citizen.id
+        val organizations = organizationService.getCitizenOrganizations(citizen.id)
         val municipalities = citizenService.getMunicipalities()
+        val boats =
+            if (reserverId != null) {
+                boatService
+                    .getBoatsForReserver(reserverId)
+                    .map { boat ->
+                        boat.updateBoatDisplayName(messageUtil)
+                    }
+            } else {
+                emptyList()
+            }
+
         return ResponseEntity.ok(
-            boatSpaceForm.slipHolder(organizations, isOrganization ?: false, organizationId, userType, reservationId, municipalities)
+            boatSpaceForm.slipHolderAndBoatForm(
+                organizations,
+                isOrganization ?: false,
+                citizen,
+                boats,
+                organizationId,
+                userType,
+                reservationId,
+                municipalities,
+                BoatFormInput.empty().copy(width = width, length = length),
+            )
         )
     }
 }
