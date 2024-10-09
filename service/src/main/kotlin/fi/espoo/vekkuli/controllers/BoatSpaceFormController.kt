@@ -17,6 +17,7 @@ import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.BoatFormInput
 import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
@@ -53,7 +54,8 @@ class BoatSpaceFormController(
     private val boatService: BoatService,
     private val citizenService: CitizenService,
     private val organizationService: OrganizationService,
-    private val reservationConfirmation: ReservationConfirmation
+    private val reservationConfirmation: ReservationConfirmation,
+    private val warnings: Warnings
 ) {
     @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -508,31 +510,18 @@ class BoatSpaceFormController(
         @RequestBody request: Map<String, String>
     ): ResponseEntity<Map<String, Any>> {
         val value = request["value"]
-        println("value $value")
-        val organization = value?.let { organizationService.getOrganizationByBusinessId(value) }
-
-        val showBusinessIdWarning = !organization.isNullOrEmpty()
+        val organizations = value?.let { organizationService.getOrganizationByBusinessId(value) }
+        val showBusinessIdWarning = !organizations.isNullOrEmpty()
         if (showBusinessIdWarning) {
-            val orgList = organization?.joinToString { "<li>${it.name}</li>" }
+            val warning = warnings.businessId(organizations ?: listOf(), value ?: "")
             return ResponseEntity.ok(
                 mapOf(
                     "isValid" to false,
-                    "message" to
-                        """
-                        <div class="warning">
-                            <p class="block">Y-tunnuksella löytyy jo seuraavat yhteisöt.</p>
-                            <ul class="block">
-                               $orgList 
-                            </ul>
-                            <p class="block">
-                                Jos antamasi y-tunnus on oikein ja haluat tehdä varauksen yhteisön puolesta, pyydä että sinut lisätään yhteisön yhteyshenkilöksi tai ota yhteys asiakaspalveluun venepaikat@espoo.fi 
-                           </p>
-                        </div>
-                        """.trimMargin()
+                    "message" to warning
                 )
             )
         }
-        return ResponseEntity.ok(mapOf("isValid" to true))
+        return ResponseEntity.ok(mapOf("isValid" to true, "message" to ""))
     }
 
     // initial reservation in info state

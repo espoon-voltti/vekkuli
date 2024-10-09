@@ -90,6 +90,7 @@ const validation = (function () {
       .then((data) => {
         if (data.isValid) {
           errorMessageElement.style.visibility = "hidden";
+          errorMessageElement.innerHTML = data.message || "";
           return true;
         } else {
           errorMessageElement.style.visibility = "visible";

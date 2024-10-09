@@ -648,7 +648,6 @@ class BoatSpaceForm(
                         $boatSpaceInformation
                         </div>
                            
-            
                         <div class="block">
                             <div id="certify-control">
                                 <label class="checkbox">
@@ -823,31 +822,6 @@ class BoatSpaceForm(
                 required = true
             )
 
-//        val businessIdInput =
-//            formComponents.textInput(
-//                "boatApplication.organizationId",
-//                "orgBusinessId",
-//                null,
-//                required = true,
-//                serverValidate = Pair("/validate/businessid", "validation.uniqueSsn")
-//            )
-
-//        val errorContainer =
-//            """
-//            <div id="$id-error-container">
-//                <span id="$id-pattern-error" class="help is-danger"
-//                style="visibility: hidden">
-//                ${if (pattern != null) t(pattern.second) else ""}
-//                </span>
-//            </div>
-//            <div id="$id-server-error-container">
-//                <span id="$id-server-error" class="help is-danger"
-//                    style="visibility: hidden">
-//                    ${if (serverValidate != null) t(serverValidate.second) else ""}
-//                </span>
-//            </div>
-//            """
-
         //language=HTML
         val businessIdInput =
             """
@@ -918,7 +892,7 @@ class BoatSpaceForm(
                          $municipalityInput
                     </div>
                 </div>
-                <div id="orgBusinessId-server-error" style="visibility: hidden"></div>
+                <div id="orgBusinessId-server-error" class="block" style="visibility: hidden"></div>
                 <div class='columns'>
                     <div class='column is-one-quarter'>
                         $phoneInput
