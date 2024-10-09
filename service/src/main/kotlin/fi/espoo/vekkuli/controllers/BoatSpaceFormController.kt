@@ -503,6 +503,38 @@ class BoatSpaceFormController(
         }
     }
 
+    @PostMapping("/validate/businessid")
+    fun businessIdWarning(
+        @RequestBody request: Map<String, String>
+    ): ResponseEntity<Map<String, Any>> {
+        val value = request["value"]
+        println("value $value")
+        val organization = value?.let { organizationService.getOrganizationByBusinessId(value) }
+
+        val showBusinessIdWarning = !organization.isNullOrEmpty()
+        if (showBusinessIdWarning) {
+            val orgList = organization?.joinToString { "<li>${it.name}</li>" }
+            return ResponseEntity.ok(
+                mapOf(
+                    "isValid" to false,
+                    "message" to
+                        """
+                        <div class="warning">
+                            <p class="block">Y-tunnuksella löytyy jo seuraavat yhteisöt.</p>
+                            <ul class="block">
+                               $orgList 
+                            </ul>
+                            <p class="block">
+                                Jos antamasi y-tunnus on oikein ja haluat tehdä varauksen yhteisön puolesta, pyydä että sinut lisätään yhteisön yhteyshenkilöksi tai ota yhteys asiakaspalveluun venepaikat@espoo.fi 
+                           </p>
+                        </div>
+                        """.trimMargin()
+                )
+            )
+        }
+        return ResponseEntity.ok(mapOf("isValid" to true))
+    }
+
     // initial reservation in info state
     @GetMapping("/$USERTYPE/venepaikka/varaa/{spaceId}")
     fun reserveBoatSpace(

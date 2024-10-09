@@ -823,13 +823,53 @@ class BoatSpaceForm(
                 required = true
             )
 
+//        val businessIdInput =
+//            formComponents.textInput(
+//                "boatApplication.organizationId",
+//                "orgBusinessId",
+//                null,
+//                required = true,
+//                serverValidate = Pair("/validate/businessid", "validation.uniqueSsn")
+//            )
+
+//        val errorContainer =
+//            """
+//            <div id="$id-error-container">
+//                <span id="$id-pattern-error" class="help is-danger"
+//                style="visibility: hidden">
+//                ${if (pattern != null) t(pattern.second) else ""}
+//                </span>
+//            </div>
+//            <div id="$id-server-error-container">
+//                <span id="$id-server-error" class="help is-danger"
+//                    style="visibility: hidden">
+//                    ${if (serverValidate != null) t(serverValidate.second) else ""}
+//                </span>
+//            </div>
+//            """
+
+        //language=HTML
         val businessIdInput =
-            formComponents.textInput(
-                "boatApplication.organizationId",
-                "orgBusinessId",
-                null,
-                required = true
-            )
+            """
+            <div class="field">
+                <div class="control">
+                    <label class="label required" for="orgBusinessId" >${t("boatApplication.organizationId")}</label>
+                    <input
+                        class="input"
+                        data-required
+                        data-validate-url="/validate/businessid"
+                        type="text"
+                        id="orgBusinessId"
+                        name="orgBusinessId" />
+                   
+                    <div id="orgBusinessId-error-container">
+                        <span id="orgBusinessId-error" class="help is-danger" style="visibility: hidden">
+                            ${t("validation.required")}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
 
         val municipalityInput =
             formComponents.select(
@@ -878,6 +918,7 @@ class BoatSpaceForm(
                          $municipalityInput
                     </div>
                 </div>
+                <div id="orgBusinessId-server-error" style="visibility: hidden"></div>
                 <div class='columns'>
                     <div class='column is-one-quarter'>
                         $phoneInput

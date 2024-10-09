@@ -93,7 +93,7 @@ const validation = (function () {
           return true;
         } else {
           errorMessageElement.style.visibility = "visible";
-          errorMessageElement.innerText =
+          errorMessageElement.innerHTML =
             data.message || "This value is invalid.";
           return false;
         }
