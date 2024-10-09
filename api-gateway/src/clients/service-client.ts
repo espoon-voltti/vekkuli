@@ -43,6 +43,7 @@ export interface CitizenUser {
   nationalId: string
   postalCode?: string
   municipalityCode: number
+  dataProtection: boolean
 }
 
 export async function userLogin(
