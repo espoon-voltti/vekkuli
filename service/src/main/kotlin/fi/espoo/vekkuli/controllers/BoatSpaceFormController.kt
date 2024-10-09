@@ -394,7 +394,8 @@ class BoatSpaceFormController(
                             lastName = input.lastName ?: "",
                             address = input.address ?: "",
                             postalCode = input.postalCode ?: "",
-                            municipalityCode = input.municipalityCode ?: 1
+                            municipalityCode = input.municipalityCode ?: 1,
+                            false,
                         ).id
                 }
             } else {

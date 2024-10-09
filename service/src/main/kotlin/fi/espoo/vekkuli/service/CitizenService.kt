@@ -34,6 +34,7 @@ class CitizenService(
         address: String,
         postalCode: String,
         municipalityCode: Int,
+        dataProtection: Boolean,
     ): CitizenWithDetails =
         reserverRepository.insertCitizen(
             nationalId,
@@ -46,7 +47,8 @@ class CitizenService(
             postalCode,
             "",
             "",
-            municipalityCode
+            municipalityCode,
+            dataProtection,
         )
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
