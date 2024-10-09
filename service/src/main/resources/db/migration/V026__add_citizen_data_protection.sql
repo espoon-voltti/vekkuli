@@ -1,0 +1,2 @@
+ALTER TABLE citizen
+  ADD COLUMN data_protection BOOLEAN NOT NULL DEFAULT FALSE;

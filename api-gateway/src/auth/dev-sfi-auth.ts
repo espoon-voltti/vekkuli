@@ -37,7 +37,8 @@ const devUsers: CitizenUser[] = [
     postalCode: '00370',
     address: { fi: 'Ahertajankuja 1', sv: 'Flitargränden 1' },
     municipalityCode: 49,
-    postOffice: { fi: 'Espoo', sv: 'Esbo' }
+    postOffice: { fi: 'Espoo', sv: 'Esbo' },
+    dataProtection: false
   },
   {
     nationalId: '031298-988S',
@@ -49,7 +50,8 @@ const devUsers: CitizenUser[] = [
       sv: 'Tavastbyvägen 2B 56'
     },
     municipalityCode: 49,
-    postOffice: { fi: 'Espoo', sv: 'Esbo' }
+    postOffice: { fi: 'Espoo', sv: 'Esbo' },
+    dataProtection: false
   }
 ]
 

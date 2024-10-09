@@ -25,7 +25,8 @@ interface ReserverRepository {
         postalCode: String,
         postOffice: String,
         postOfficeSv: String,
-        municipalityCode: Int
+        municipalityCode: Int,
+        dataProtection: Boolean,
     ): CitizenWithDetails
 
     fun updateCitizen(params: UpdateCitizenParams): Unit
