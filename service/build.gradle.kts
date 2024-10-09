@@ -9,8 +9,8 @@ plugins {
     kotlin("plugin.spring") version "1.9.20"
     id("org.flywaydb.flyway") version "10.18.2"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
-    id("com.github.node-gradle.node") version "7.0.2"
-    kotlin("plugin.serialization") version "1.8.0"
+    id("com.github.node-gradle.node") version "7.1.0"
+    kotlin("plugin.serialization") version "2.0.20"
 
     idea
 }
@@ -105,7 +105,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("software.amazon.awssdk:ses:2.20.0")
     implementation("software.amazon.awssdk:core:2.20.0")

@@ -62,6 +62,7 @@ data class CitizenAdUser(
     val postOffice: LocalizedName,
     val postalCode: String?,
     val municipalityCode: Int,
+    val dataProtection: Boolean,
 )
 
 fun getBirthDateFromSSN(ssn: String): String {

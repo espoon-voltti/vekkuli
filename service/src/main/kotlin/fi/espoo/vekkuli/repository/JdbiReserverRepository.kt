@@ -22,6 +22,7 @@ data class UpdateCitizenParams(
     val postOffice: String? = null,
     val postOfficeSv: String? = null,
     val municipalityCode: Int? = null,
+    val dataProtection: Boolean? = null
 )
 
 @Repository
@@ -123,6 +124,9 @@ class JdbiReserverRepository(
         if (params.lastName != null) {
             citizenParams["last_name"] = params.lastName
         }
+        if (params.dataProtection != null) {
+            citizenParams["data_protection"] = params.dataProtection
+        }
         if (citizenParams.isNotEmpty()) {
             jdbi.withHandleUnchecked { updateTable(it, "citizen", params.id, citizenParams) }
         }
@@ -170,7 +174,8 @@ class JdbiReserverRepository(
         postalCode: String,
         postOffice: String,
         postOfficeSv: String,
-        municipalityCode: Int
+        municipalityCode: Int,
+        dataProtection: Boolean
     ): CitizenWithDetails =
         jdbi.withHandleUnchecked { handle ->
             val id = UUID.randomUUID()
@@ -194,13 +199,14 @@ class JdbiReserverRepository(
             handle
                 .createUpdate(
                     """
-                    INSERT INTO citizen (id, national_id, first_name, last_name)
-                    VALUES (:id, :nationalId, :firstName, :lastName)
+                    INSERT INTO citizen (id, national_id, first_name, last_name, data_protection)
+                    VALUES (:id, :nationalId, :firstName, :lastName, :dataProtection)
                     """.trimIndent()
                 ).bind("id", id)
                 .bind("nationalId", nationalId)
                 .bind("firstName", firstName)
                 .bind("lastName", lastName)
+                .bind("dataProtection", dataProtection)
                 .execute()
 
             getCitizenByNationalId(nationalId)!!
@@ -223,6 +229,8 @@ class JdbiReserverRepository(
                     postalCode = adUser.postalCode ?: "",
                     postOffice = adUser.postOffice.fi ?: "",
                     postOfficeSv = adUser.postOffice.sv ?: "",
+                    municipalityCode = adUser.municipalityCode,
+                    dataProtection = adUser.dataProtection,
                 )
             )
             getCitizenByNationalId(adUser.nationalId)!!
@@ -238,7 +246,8 @@ class JdbiReserverRepository(
                 postalCode = adUser.postalCode ?: "",
                 postOffice = adUser.postOffice.fi ?: "",
                 postOfficeSv = adUser.postOffice.sv ?: "",
-                municipalityCode = adUser.municipalityCode
+                municipalityCode = adUser.municipalityCode,
+                dataProtection = adUser.dataProtection,
             )
         }
     }

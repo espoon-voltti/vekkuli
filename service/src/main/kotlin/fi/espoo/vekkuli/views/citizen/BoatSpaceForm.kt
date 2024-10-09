@@ -476,18 +476,7 @@ class BoatSpaceForm(
         // language=HTML
         val citizenSearch =
             """
-            <div id="citizen-results-container" class="container" 
-                x-data='{citizenFullName: "", citizenId:"", updateFullName(event) {
-                    const selectElement = event.target;
-                    if (selectElement.selectedOptions.length > 0) {
-                        const selectedOption = selectElement.selectedOptions[0];
-                        this.citizenFullName = selectedOption.dataset.fullname;
-                        this.citizenId = selectedOption.value;
-                    } else {
-                        this.citizenFullName = "";
-                        this.citizenId = "";
-                    };
-                }}'>
+            <div id="citizen-results-container" class="container" >
                 <div class="field" id="customer-search-container">
                     <label class="label">${t("boatApplication.select.citizen")}</label>
                     <div class="control width-is-half">
@@ -614,7 +603,17 @@ class BoatSpaceForm(
         return (
             """
             <section class="section">
-                <div class="container" id="container" x-data="{ modalOpen: false }"> 
+                <div class="container" id="container" x-data='{modalOpen: false, citizenFullName: "", citizenId:"", updateFullName(event) {
+                    const selectElement = event.target;
+                    if (selectElement.selectedOptions.length > 0) {
+                        const selectedOption = selectElement.selectedOptions[0];
+                        this.citizenFullName = selectedOption.dataset.fullname;
+                        this.citizenId = selectedOption.value;
+                    } else {
+                        this.citizenFullName = "";
+                        this.citizenId = "";
+                    };
+                }}'> 
                     <div class="container">
                         <button x-on:click="modalOpen = true" class="icon-text">
                             <span class="icon">
@@ -754,9 +753,8 @@ class BoatSpaceForm(
         val nameField = formComponents.field("boatApplication.organizationName", "orgName", org.name)
         val businessIdField = formComponents.field("boatApplication.organizationId", "orgBusinessId", org.businessId)
         val municipalityField = formComponents.field("boatApplication.municipality", "orgMunicipality", org.municipalityName)
-        val phoneInput = formComponents.textInput("boatApplication.phone", "orgPhone", org?.phone, true)
-
-        val emailInput = formComponents.textInput("boatApplication.email", "orgEmail", org?.email, true)
+        val phoneInput = formComponents.textInput("boatApplication.phone", "orgPhone", org.phone, true)
+        val emailInput = formComponents.textInput("boatApplication.email", "orgEmail", org.email, true)
 
         val addressInput =
             formComponents.textInput(
@@ -930,6 +928,7 @@ class BoatSpaceForm(
                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId=${org.id}"
                        hx-target="#slipHolder"
                        hx-swap="outerHTML"
+                       hx-include="[name='citizenId']"
                        name="organizationId"
                        ${if (selectedOrganizationId == org.id) "checked" else ""}
                 />
@@ -949,6 +948,7 @@ class BoatSpaceForm(
                         value=""
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
+                        hx-include="[name='citizenId']"
                         hx-target="#slipHolder"
                         hx-swap="outerHTML"
                        ${if (selectedOrganizationId == null) "checked" else ""}
@@ -975,6 +975,7 @@ class BoatSpaceForm(
         val reserverType =
             // language=HTML
             """
+            <input type="hidden" name="citizenId" x-bind:value="`${'$'}{citizenId}`"/>
             <div class="field" id="slipHolder">
                 <div class="radio">
                     <input type="radio" 
@@ -983,6 +984,7 @@ class BoatSpaceForm(
                         value="false"
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=false&organizationId="
+                        hx-include="[name='citizenId']"
                         hx-target="#slipHolder"
                         hx-swap="outerHTML"
                        ${if (!isOrganization) "checked" else ""}
@@ -996,6 +998,7 @@ class BoatSpaceForm(
                         value="true"
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
+                        hx-include="[name='citizenId']"
                         hx-target="#slipHolder"
                         hx-swap="outerHTML"
                        ${if (isOrganization) "checked" else ""}
