@@ -32,4 +32,8 @@ interface ReserverRepository {
     fun updateCitizen(params: UpdateCitizenParams): Unit
 
     fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails
+
+    fun getMunicipalities(): List<Municipality>
+
+    fun getMunicipality(code: Int): Municipality?
 }

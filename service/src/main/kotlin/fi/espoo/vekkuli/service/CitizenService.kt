@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.CitizenRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.SentMessageRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
@@ -10,7 +9,6 @@ import java.util.*
 
 @Service
 class CitizenService(
-    private val citizenRepository: CitizenRepository,
     private val reserverRepository: ReserverRepository,
     private val sentMessagesRepository: SentMessageRepository,
 ) {
@@ -53,7 +51,7 @@ class CitizenService(
 
     fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
-    fun getMunicipalities(): List<Municipality> = citizenRepository.getMunicipalities()
+    fun getMunicipalities(): List<Municipality> = reserverRepository.getMunicipalities()
 
     fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails = reserverRepository.upsertCitizenUserFromAd(adUser)
 }
