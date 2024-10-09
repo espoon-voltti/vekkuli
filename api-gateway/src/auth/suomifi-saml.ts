@@ -37,7 +37,7 @@ const Profile = z
     [SUOMI_FI_POST_OFFICE_FI]: z.string(),
     [SUOMI_FI_POST_OFFICE_SV]: z.string(),
     [SUOMI_FI_EMAIL]: z.string(),
-    [SUOMI_FI_DATA_PROTECTION]: z.number()
+    [SUOMI_FI_DATA_PROTECTION]: z.coerce.number()
   })
   .partial({
     [SUOMI_FI_HOME_TOWN_KEY]: true,
