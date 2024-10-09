@@ -1,6 +1,7 @@
-package fi.espoo.vekkuli.views
+package fi.espoo.vekkuli.views.common
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -13,6 +14,19 @@ class CommonComponents {
     lateinit var icons: Icons
 
     fun t(key: String): String = messageUtil.getMessage(key)
+
+    // language=HTML
+    fun goBackButton(backUrl: String) =
+        """
+                        <button class="icon-text">
+                            <span class="icon">
+                                <div>${icons.chevronLeft}</div>
+                            </span>
+                            <a href=$backUrl>
+                                <span>${t("boatSpaces.goBack")}</span>
+                            </a>
+                        </button>
+                       """
 
     // language=HTML
     fun getCitizenFields(
