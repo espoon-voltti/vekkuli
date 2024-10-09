@@ -154,7 +154,7 @@ class BoatSpaceFormController(
         val reservation = reservationService.getReservationWithoutCitizen(reservationId)
         val excludedBoatTypes = reservation?.excludedBoatTypes
         if (excludedBoatTypes != null && excludedBoatTypes.contains(boatType)) {
-            return ResponseEntity.ok(boatSpaceForm.boatTypeWarning())
+            return ResponseEntity.ok(warnings.boatTypeWarning())
         }
         return ResponseEntity.ok("")
     }
@@ -181,7 +181,7 @@ class BoatSpaceFormController(
                 reservation.lengthCm
             )
         if (showBoatSizeWarning) {
-            return ResponseEntity.ok(boatSpaceForm.boatSizeWarning())
+            return ResponseEntity.ok(warnings.boatSizeWarning())
         }
         return ResponseEntity.ok("")
     }
@@ -205,7 +205,7 @@ class BoatSpaceFormController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         if (weight > BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG) {
-            return ResponseEntity.ok(boatSpaceForm.boatWeightWarning())
+            return ResponseEntity.ok(warnings.boatWeightWarning())
         }
         return ResponseEntity.ok("")
     }

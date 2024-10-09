@@ -1013,55 +1013,6 @@ class BoatSpaceForm(
         return reserverType
     }
 
-    fun boatTypeWarning() =
-        """
-        <div class="warning" id="boatType-warning">
-            <p class="block">${t("boatSpaceApplication.boatTypeWarning")}</p>
-            <button class="icon-text"
-                    type="button"
-                    id="size-warning-back-button"
-                    x-on:click="modalOpen = true">
-                <span class="icon">
-                    ${icons.chevronLeft}
-                </span>
-                <span>${t("boatSpaces.goBack")}</span>
-            </button>
-        </div>
-        """.trimIndent()
-
-    fun boatWeightWarning() =
-        """
-        <div class="warning" id="boatWeight-warning">
-            <p class="block">${t("boatSpaceApplication.boatWeightWarning")}</p>
-            <button class="icon-text"
-                    type="button"
-                    id="size-warning-back-button"
-                    x-on:click="modalOpen = true">
-                <span class="icon">
-                    ${icons.chevronLeft}
-                </span>
-                <span>${t("boatSpaces.goBack")}</span>
-            </button>
-        </div>
-        """.trimIndent()
-
-    fun boatSizeWarning() =
-        """
-        <div class="warning" id="boatSize-warning">
-            <p class="block">${t("boatSpaceApplication.boatSizeWarning")}</p>
-            <p class="block">${t("boatSpaceApplication.boatSizeWarningExplanation")}</p>
-            <button class="icon-text"
-                    type="button"
-                    id="size-warning-back-button"
-                    x-on:click="modalOpen = true">
-                <span class="icon">
-                    ${icons.chevronLeft}
-                </span>
-                <span>${t("boatSpaces.goBack")}</span>
-            </button>
-        </div>
-        """.trimIndent()
-
     // language=HTML
     fun citizensSearchForm(citizens: List<CitizenWithDetails>): String {
         val listSize = if (citizens.size > 5) 5 else citizens.size
