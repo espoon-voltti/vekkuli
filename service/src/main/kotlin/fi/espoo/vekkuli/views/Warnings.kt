@@ -25,9 +25,9 @@ class Warnings(
         return """
             <div class="warning">
                 <p class="block">$firstParagraph</p>
-                <ul class="block">
+                <p class="block"><ul >
                    $orgList 
-                </ul>
+                </ul></p>
                 <p class="block">
                     $secondParagraph
                </p>
