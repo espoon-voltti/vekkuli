@@ -40,6 +40,7 @@ const Profile = z
     [SUOMI_FI_DATA_PROTECTION]: z.string()
   })
   .partial({
+    [SUOMI_FI_HOME_TOWN_KEY]: true,
     [SUOMI_FI_STREET_ADDRESS_FI]: true,
     [SUOMI_FI_STREET_ADDRESS_SV]: true,
     [SUOMI_FI_POSTAL_CODE]: true,
@@ -66,15 +67,15 @@ export function createSuomiFiStrategy(
       nationalId: socialSecurityNumber,
       firstName: profile[SUOMI_FI_GIVEN_NAME_KEY]?.trim() ?? '',
       lastName: profile[SUOMI_FI_SURNAME_KEY]?.trim() ?? '',
-      municipalityCode: profile[SUOMI_FI_HOME_TOWN_KEY],
+      municipalityCode: profile[SUOMI_FI_HOME_TOWN_KEY] ?? 1,
       address: {
-        fi: profile[SUOMI_FI_STREET_ADDRESS_FI],
-        sv: profile[SUOMI_FI_STREET_ADDRESS_SV]
+        fi: profile[SUOMI_FI_STREET_ADDRESS_FI] ?? '',
+        sv: profile[SUOMI_FI_STREET_ADDRESS_SV] ?? ''
       },
       postalCode: profile[SUOMI_FI_POSTAL_CODE],
       postOffice: {
-        fi: profile[SUOMI_FI_POST_OFFICE_FI],
-        sv: profile[SUOMI_FI_POST_OFFICE_SV]
+        fi: profile[SUOMI_FI_POST_OFFICE_FI] ?? '',
+        sv: profile[SUOMI_FI_POST_OFFICE_SV] ?? ''
       }
     })
   })

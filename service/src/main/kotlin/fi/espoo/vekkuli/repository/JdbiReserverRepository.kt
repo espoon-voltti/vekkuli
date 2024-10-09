@@ -223,6 +223,7 @@ class JdbiReserverRepository(
                     postalCode = adUser.postalCode ?: "",
                     postOffice = adUser.postOffice.fi ?: "",
                     postOfficeSv = adUser.postOffice.sv ?: "",
+                    municipalityCode = adUser.municipalityCode,
                 )
             )
             getCitizenByNationalId(adUser.nationalId)!!
