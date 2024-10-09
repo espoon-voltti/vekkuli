@@ -186,7 +186,7 @@ class JdbiOrganizationRepository(
                 .firstOrNull()
         }
 
-    override fun getOrganizationByBusinessId(businessId: String): List<Organization> =
+    override fun getOrganizationsByBusinessId(businessId: String): List<Organization> =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(

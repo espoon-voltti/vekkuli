@@ -33,7 +33,7 @@ interface OrganizationRepository {
         citizenId: UUID
     ): Unit
 
-    fun getOrganizationByBusinessId(businessId: String): List<Organization>
+    fun getOrganizationsByBusinessId(businessId: String): List<Organization>
 
     fun getOrganizationById(id: UUID): Organization?
 

@@ -511,7 +511,7 @@ class BoatSpaceFormController(
         @RequestBody request: Map<String, String>
     ): ResponseEntity<Map<String, Any>> {
         val value = request["value"]
-        val organizations = value?.let { organizationService.getOrganizationByBusinessId(value) }
+        val organizations = value?.let { organizationService.getOrganizationsByBusinessId(value) }
         val showBusinessIdWarning = !organizations.isNullOrEmpty()
         if (showBusinessIdWarning) {
             val warning = warnings.businessId(organizations ?: listOf(), value ?: "")
