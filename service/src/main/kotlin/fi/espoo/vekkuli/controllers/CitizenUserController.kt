@@ -303,6 +303,7 @@ class CitizenUserController {
         val nationalId: String? = null,
         val firstName: String? = null,
         val lastName: String? = null,
+        val city: String? = null,
     )
 
     data class BoatUpdateForm(
@@ -595,8 +596,8 @@ class CitizenUserController {
             postalCode = input.postalCode,
             municipalityCode = input.municipalityCode,
             nationalId = input.nationalId,
-            postOffice = "",
-            postOfficeSv = ""
+            postOffice = input.city,
+            postOfficeSv = input.city
         )
     )!!
 
