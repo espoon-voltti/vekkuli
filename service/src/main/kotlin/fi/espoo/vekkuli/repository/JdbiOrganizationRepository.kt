@@ -122,7 +122,7 @@ class JdbiOrganizationRepository(
                 .bind("businessId", businessId)
                 .execute()
 
-            getOrganizationByBusinessId(businessId)!!
+            getOrganizationById(id)!!
         }
 
     override fun updateOrganization(params: UpdateOrganizationParams) {
@@ -186,7 +186,7 @@ class JdbiOrganizationRepository(
                 .firstOrNull()
         }
 
-    override fun getOrganizationByBusinessId(businessId: String): Organization? =
+    override fun getOrganizationsByBusinessId(businessId: String): List<Organization> =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
@@ -199,6 +199,6 @@ class JdbiOrganizationRepository(
                     """.trimIndent()
                 ).bind("businessId", businessId)
                 .mapTo<Organization>()
-                .firstOrNull()
+                .list()
         }
 }

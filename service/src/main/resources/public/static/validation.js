@@ -90,10 +90,11 @@ const validation = (function () {
       .then((data) => {
         if (data.isValid) {
           errorMessageElement.style.visibility = "hidden";
+          errorMessageElement.innerHTML = data.message || "";
           return true;
         } else {
           errorMessageElement.style.visibility = "visible";
-          errorMessageElement.innerText =
+          errorMessageElement.innerHTML =
             data.message || "This value is invalid.";
           return false;
         }

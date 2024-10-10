@@ -17,6 +17,7 @@ import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.BoatFormInput
 import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
@@ -53,7 +54,8 @@ class BoatSpaceFormController(
     private val boatService: BoatService,
     private val citizenService: CitizenService,
     private val organizationService: OrganizationService,
-    private val reservationConfirmation: ReservationConfirmation
+    private val reservationConfirmation: ReservationConfirmation,
+    private val warnings: Warnings
 ) {
     @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -152,7 +154,7 @@ class BoatSpaceFormController(
         val reservation = reservationService.getReservationWithoutCitizen(reservationId)
         val excludedBoatTypes = reservation?.excludedBoatTypes
         if (excludedBoatTypes != null && excludedBoatTypes.contains(boatType)) {
-            return ResponseEntity.ok(boatSpaceForm.boatTypeWarning())
+            return ResponseEntity.ok(warnings.boatTypeWarning())
         }
         return ResponseEntity.ok("")
     }
@@ -179,7 +181,7 @@ class BoatSpaceFormController(
                 reservation.lengthCm
             )
         if (showBoatSizeWarning) {
-            return ResponseEntity.ok(boatSpaceForm.boatSizeWarning())
+            return ResponseEntity.ok(warnings.boatSizeWarning())
         }
         return ResponseEntity.ok("")
     }
@@ -203,7 +205,7 @@ class BoatSpaceFormController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         if (weight > BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG) {
-            return ResponseEntity.ok(boatSpaceForm.boatWeightWarning())
+            return ResponseEntity.ok(warnings.boatWeightWarning())
         }
         return ResponseEntity.ok("")
     }
@@ -520,6 +522,25 @@ class BoatSpaceFormController(
         } else {
             ResponseEntity.ok(mapOf("isValid" to false, "message" to messageUtil.getMessage("validation.uniqueSsn")))
         }
+    }
+
+    @PostMapping("/validate/businessid")
+    fun businessIdWarning(
+        @RequestBody request: Map<String, String>
+    ): ResponseEntity<Map<String, Any>> {
+        val value = request["value"]
+        val organizations = value?.let { organizationService.getOrganizationsByBusinessId(value) }
+        val showBusinessIdWarning = !organizations.isNullOrEmpty()
+        if (showBusinessIdWarning) {
+            val warning = warnings.businessId(organizations ?: listOf(), value ?: "")
+            return ResponseEntity.ok(
+                mapOf(
+                    "isValid" to false,
+                    "message" to warning
+                )
+            )
+        }
+        return ResponseEntity.ok(mapOf("isValid" to true, "message" to ""))
     }
 
     // initial reservation in info state

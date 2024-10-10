@@ -26,7 +26,8 @@ class OrganizationService(
         citizenId: UUID
     ): Unit = organizationRepository.removeCitizenFromOrganization(organizationId, citizenId)
 
-    fun getOrganizationByBusinessId(businessId: String): Organization? = organizationRepository.getOrganizationByBusinessId(businessId)
+    fun getOrganizationsByBusinessId(businessId: String): List<Organization> =
+        organizationRepository.getOrganizationsByBusinessId(businessId)
 
     fun insertOrganization(
         businessId: String,

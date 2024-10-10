@@ -660,7 +660,6 @@ class BoatSpaceForm(
                         $boatSpaceInformation
                         </div>
                            
-            
                         <div class="block">
                             <div id="certify-control">
                                 <label class="checkbox">
@@ -834,13 +833,28 @@ class BoatSpaceForm(
                 required = true
             )
 
+        //language=HTML
         val businessIdInput =
-            formComponents.textInput(
-                "boatApplication.organizationId",
-                "orgBusinessId",
-                null,
-                required = true
-            )
+            """
+            <div class="field">
+                <div class="control">
+                    <label class="label required" for="orgBusinessId" >${t("boatApplication.organizationId")}</label>
+                    <input
+                        class="input"
+                        data-required
+                        data-validate-url="/validate/businessid"
+                        type="text"
+                        id="orgBusinessId"
+                        name="orgBusinessId" />
+                   
+                    <div id="orgBusinessId-error-container">
+                        <span id="orgBusinessId-error" class="help is-danger" style="visibility: hidden">
+                            ${t("validation.required")}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
 
         val municipalityInput =
             formComponents.select(
@@ -889,6 +903,7 @@ class BoatSpaceForm(
                          $municipalityInput
                     </div>
                 </div>
+                <div id="orgBusinessId-server-error" class="block" style="visibility: hidden"></div>
                 <div class='columns'>
                     <div class='column is-one-quarter'>
                         $phoneInput
@@ -1028,55 +1043,6 @@ class BoatSpaceForm(
 
         return reserverType
     }
-
-    fun boatTypeWarning() =
-        """
-        <div class="warning" id="boatType-warning">
-            <p class="block">${t("boatSpaceApplication.boatTypeWarning")}</p>
-            <button class="icon-text"
-                    type="button"
-                    id="size-warning-back-button"
-                    x-on:click="modalOpen = true">
-                <span class="icon">
-                    ${icons.chevronLeft}
-                </span>
-                <span>${t("boatSpaces.goBack")}</span>
-            </button>
-        </div>
-        """.trimIndent()
-
-    fun boatWeightWarning() =
-        """
-        <div class="warning" id="boatWeight-warning">
-            <p class="block">${t("boatSpaceApplication.boatWeightWarning")}</p>
-            <button class="icon-text"
-                    type="button"
-                    id="size-warning-back-button"
-                    x-on:click="modalOpen = true">
-                <span class="icon">
-                    ${icons.chevronLeft}
-                </span>
-                <span>${t("boatSpaces.goBack")}</span>
-            </button>
-        </div>
-        """.trimIndent()
-
-    fun boatSizeWarning() =
-        """
-        <div class="warning" id="boatSize-warning">
-            <p class="block">${t("boatSpaceApplication.boatSizeWarning")}</p>
-            <p class="block">${t("boatSpaceApplication.boatSizeWarningExplanation")}</p>
-            <button class="icon-text"
-                    type="button"
-                    id="size-warning-back-button"
-                    x-on:click="modalOpen = true">
-                <span class="icon">
-                    ${icons.chevronLeft}
-                </span>
-                <span>${t("boatSpaces.goBack")}</span>
-            </button>
-        </div>
-        """.trimIndent()
 
     // language=HTML
     fun citizensSearchForm(citizens: List<CitizenWithDetails>): String {
