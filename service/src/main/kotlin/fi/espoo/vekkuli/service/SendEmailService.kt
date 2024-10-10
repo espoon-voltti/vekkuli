@@ -12,7 +12,7 @@ import java.util.*
 interface SendEmailInterface {
     fun sendMultipleEmails(
         senderAddress: String?,
-        recipients: List<String>,
+        emailAddresses: List<String>,
         subject: String,
         body: String
     ): String?
@@ -23,12 +23,12 @@ interface SendEmailInterface {
 class SendEmailServiceMock : SendEmailInterface {
     override fun sendMultipleEmails(
         senderAddress: String?,
-        recipients: List<String>,
+        emailAddresses: List<String>,
         subject: String,
         body: String
     ): String? {
         println(
-            "Email from $senderAddress to ${recipients.joinToString { ", " }} with subject $subject and content $body"
+            "Email from $senderAddress to ${emailAddresses.joinToString { ", " }} with subject $subject and content $body"
         )
         return "Test-${UUID.randomUUID()}"
     }
@@ -43,12 +43,12 @@ class SendEmailService(
 
     override fun sendMultipleEmails(
         senderAddress: String?,
-        emails: List<String>,
+        emailAddresses: List<String>,
         subject: String,
         body: String
     ): String? {
-        if (emails.isEmpty()) return null
-        val uniqueEmails = emails.distinct()
+        if (emailAddresses.isEmpty()) return null
+        val uniqueEmails = emailAddresses.distinct()
         if (!emailEnv.enabled) {
             println(
                 "Email from $senderAddress (arn ${emailEnv.senderArn}, " +

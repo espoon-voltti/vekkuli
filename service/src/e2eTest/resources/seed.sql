@@ -525,7 +525,7 @@ INSERT INTO email_template (id, subject, body)
 VALUES
     ('reservation_confirmation_invoice', 'Espoon Resurssivaraus: Venepaikan varausvahvistus', E'Hyvä asiakas,\n\nSinulle on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}.\n\nLasku tulee sinulle postissa.\nMaksathan laskun eräpäivään {{invoiceDueDate}} mennessä tai varaus raukeaa.'),
     ('reservation_organization_confirmation', 'Espoon Resurssivaraus: Venepaikan varausvahvistus', E'Hyvä asiakas,\n\nYhteisölle {{organizationName}} on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}.'),
-    ('varausvahvistus', 'Varausvahvistus: uuden laituripaikan varaaminen', 'Hyvä asiakas,\n\nSinulle on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}')
+    ('varausvahvistus', 'Varausvahvistus: uuden laituripaikan varaaminen', E'Hyvä asiakas,\n\nSinulle on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}')
 ON CONFLICT (id) DO NOTHING;
 
 
