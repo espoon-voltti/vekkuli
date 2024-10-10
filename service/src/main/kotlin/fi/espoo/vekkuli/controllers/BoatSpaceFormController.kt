@@ -201,10 +201,10 @@ class BoatSpaceFormController(
     @GetMapping("/venepaikka/varaus/{reservationId}/boat-weight-warning")
     fun boatWeight(
         @PathVariable reservationId: Int,
-        @RequestParam weight: Int,
+        @RequestParam weight: Int?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        if (weight > BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG) {
+        if (weight != null && weight > BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG) {
             return ResponseEntity.ok(warnings.boatWeightWarning())
         }
         return ResponseEntity.ok("")

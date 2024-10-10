@@ -117,10 +117,9 @@ class BoatSpaceForm(
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
                 attributes =
                     """
-                    hx-trigger='change' 
-                    hx-get='/venepaikka/varaus/$reservationId/boat-type-warning' 
-                    hx-target='#boat-type-warning'
-                    hx-sync='closest #form:replace'
+                    hx-trigger="change, load" 
+                    hx-get="/venepaikka/varaus/$reservationId/boat-type-warning" 
+                    hx-target="#boat-type-warning"
                     """.trimIndent()
             )
 
@@ -131,10 +130,10 @@ class BoatSpaceForm(
                 input.width,
                 required = true,
                 """
-                hx-trigger='change' 
-                hx-get='/venepaikka/varaus/$reservationId/boat-size-warning' 
+                hx-trigger="change, load" 
+                hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
                 hx-include="#length"
-                hx-target='#boat-size-warning'
+                hx-target="#boat-size-warning"
                 """.trimIndent()
             )
 
@@ -145,10 +144,10 @@ class BoatSpaceForm(
                 input.length,
                 required = true,
                 """
-                hx-trigger='change' 
-                hx-get='/venepaikka/varaus/$reservationId/boat-size-warning' 
+                hx-trigger="change, load" 
+                hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
                 hx-include="#width"
-                hx-target='#boat-size-warning'
+                hx-target="#boat-size-warning"
                 """.trimIndent()
             )
 
@@ -169,10 +168,9 @@ class BoatSpaceForm(
                 required = true,
                 attributes =
                     """
-                    hx-trigger='change' 
-                    hx-get='/venepaikka/varaus/$reservationId/boat-weight-warning' 
-                    hx-target='#boat-weight-warning'
-                    hx-sync='closest #form:replace'
+                    hx-trigger="change, load" 
+                    hx-get="/venepaikka/varaus/$reservationId/boat-weight-warning" 
+                    hx-target="#boat-weight-warning"
                     """.trimIndent()
             )
 
