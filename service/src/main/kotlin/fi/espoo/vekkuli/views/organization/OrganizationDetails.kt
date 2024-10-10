@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.views.organization
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.common.CommonComponents
-import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,9 +13,7 @@ class OrganizationDetails(
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
-    fun organizationPage(
-        @SanitizeInput organizationId: UUID,
-    ): String {
+    fun organizationPage(organizationId: UUID): String {
         // language=HTML
         return """
             <div class="container block" style='height: 100vh'>
