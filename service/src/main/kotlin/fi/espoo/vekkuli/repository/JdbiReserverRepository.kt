@@ -213,6 +213,8 @@ class JdbiReserverRepository(
         }
 
     override fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails {
+        val municipality = getMunicipality(adUser.municipalityCode)
+        val municipalityCode = municipality?.code ?: 1
         val existingCitizen = getCitizenByNationalId(adUser.nationalId)
 
         return if (existingCitizen != null) {
@@ -229,7 +231,7 @@ class JdbiReserverRepository(
                     postalCode = adUser.postalCode ?: "",
                     postOffice = adUser.postOffice.fi ?: "",
                     postOfficeSv = adUser.postOffice.sv ?: "",
-                    municipalityCode = adUser.municipalityCode,
+                    municipalityCode = municipalityCode,
                     dataProtection = adUser.dataProtection,
                 )
             )
@@ -246,9 +248,33 @@ class JdbiReserverRepository(
                 postalCode = adUser.postalCode ?: "",
                 postOffice = adUser.postOffice.fi ?: "",
                 postOfficeSv = adUser.postOffice.sv ?: "",
-                municipalityCode = adUser.municipalityCode,
+                municipalityCode = municipalityCode,
                 dataProtection = adUser.dataProtection,
             )
         }
     }
+
+    override fun getMunicipalities(): List<Municipality> =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT * FROM municipality
+                    """.trimIndent()
+                ).mapTo<Municipality>()
+                .toList()
+        }
+
+    override fun getMunicipality(code: Int): Municipality? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT * FROM municipality
+                    WHERE code = :code
+                    """.trimIndent()
+                ).bind("code", code)
+                .mapTo<Municipality>()
+                .firstOrNull()
+        }
 }
