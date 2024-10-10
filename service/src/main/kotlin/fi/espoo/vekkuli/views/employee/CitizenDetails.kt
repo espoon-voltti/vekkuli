@@ -6,8 +6,8 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.views.CommonComponents
 import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -140,17 +140,10 @@ class CitizenDetails {
             // language=HTML
             """
             <section class="section" id="citizen-details">
-                <div class="container block">
-                    <button class="icon-text">
-                        <span class="icon">
-                            <div>${icons.chevronLeft}</div>
-                        </span>
-                        <a href="/virkailija/venepaikat/varaukset">
-                            <span>${t("boatSpaces.goBack")}</span>
-                        </a>
-                    </button>
-                    <h2>${citizen.firstName + " " + citizen.lastName}</h2>
-                </div>
+                <div class="container block">${commonComponents.goBackButton(
+                "/virkailija/venepaikat/varaukset"
+            )} <h2>${citizen.firstName + " " + citizen.lastName}</h2>
+                    </div>
                 ${customerInfo()}
                 $tabs
                 ${reservationTabContent(citizen, boatSpaceReservations, boats, userType)}
@@ -866,9 +859,5 @@ class CitizenDetails {
                </li>
             </ul>
         </div>
-
-             
-            
-        
         """.trimIndent()
 }

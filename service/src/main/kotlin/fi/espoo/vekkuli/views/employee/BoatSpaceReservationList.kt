@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Service
 class BoatSpaceReservationList {
@@ -114,6 +115,11 @@ class BoatSpaceReservationList {
             </label>
             """.trimIndent()
 
+        fun getReserverPageUrl(
+            reserverId: UUID,
+            reserverType: ReserverType
+        ) = """"/virkailija/${if (reserverType == ReserverType.Citizen) "kayttaja" else "yhteiso"}/$reserverId""""
+
         val sectionFilter =
             """
             <div x-data="{ open: false, selectedSections: [${params.sectionFilter.joinToString(
@@ -146,7 +152,7 @@ class BoatSpaceReservationList {
                 <tr class="reservation-item"
                     id="boat-space-${result.boatSpaceId}"
                     hx-trigger="click"
-                    hx-get="/virkailija/kayttaja/${result.reserverId}"
+                    hx-get=${getReserverPageUrl(result.reserverId, result.reserverType)}
                     hx-push-url="true"
                     hx-target=".section"
                     hx-select=".section">
@@ -157,7 +163,7 @@ class BoatSpaceReservationList {
                     </td>
                     <td>${result.section}</td>
                     <td>${t("boatSpaces.type${result.type}Option")}</td>
-                    <td><a href="/virkailija/kayttaja/${result.reserverId}">${result.name}</a></td>
+                    <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.municipalityName}</td>
                     <td></td>
                     <td>$startDateFormatted</td>

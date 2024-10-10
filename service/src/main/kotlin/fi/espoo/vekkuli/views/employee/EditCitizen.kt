@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
-import fi.espoo.vekkuli.views.CommonComponents
+import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
