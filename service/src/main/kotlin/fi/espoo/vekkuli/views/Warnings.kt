@@ -17,16 +17,15 @@ class Warnings(
         organizations: List<Organization>,
         businessId: String
     ): String {
-        // language=HTML
-        val firstParagraph = t("warning.businessId1").replace("""{businessId}""", businessId)
-
+        val firstParagraph = messageUtil.getMessage("warning.businessId1", listOf(businessId))
         val secondParagraph = markDownService.render(t("warning.businessId2"))
 
         val orgList = organizations.joinToString { "<li>${it.name}</li>" }
+        // language=HTML
         return """
             <div class="warning">
                 <p class="block">$firstParagraph</p>
-                <p class="block"><ul >
+                <p class="block"><ul>
                    $orgList 
                 </ul></p>
                 <p class="block">
