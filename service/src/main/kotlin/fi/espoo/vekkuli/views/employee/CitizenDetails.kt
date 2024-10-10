@@ -67,7 +67,7 @@ class CitizenDetails {
             val addressValue = formComponents.field("boatSpaceReservation.title.address", "addressField", citizen.streetAddress)
             val postalCodeValue =
                 formComponents.field("boatSpaceReservation.title.postalCode", "postalCodeField", citizen.postalCode)
-            val cityValue = formComponents.field("boatSpaceReservation.title.city", "cityField", citizen.municipalityName)
+            val cityValue = formComponents.field("boatSpaceReservation.title.city", "cityField", citizen.postOffice)
             val municipalityValue =
                 formComponents.field(
                     "boatSpaceReservation.title.municipality",
