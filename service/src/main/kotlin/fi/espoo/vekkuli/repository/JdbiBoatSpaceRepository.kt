@@ -39,10 +39,10 @@ fun amenityFilter(
     return AndExpr(
         listOf(
             OperatorExpr("amenity", "=", amenity),
-            OperatorExpr("width_cm", ">=", maxWidth),
-            OperatorExpr("width_cm", "<=", minWidth),
-            OperatorExpr("length_cm", ">=", maxLength),
-            OperatorExpr("length_cm", "<=", minLength)
+            OperatorExpr("width_cm", ">=", minWidth),
+            OperatorExpr("width_cm", "<=", maxWidth),
+            OperatorExpr("length_cm", ">=", minLength),
+            OperatorExpr("length_cm", "<=", maxLength)
         )
     )
 }

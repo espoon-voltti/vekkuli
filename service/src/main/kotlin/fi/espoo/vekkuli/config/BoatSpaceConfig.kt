@@ -62,15 +62,15 @@ object BoatSpaceConfig {
             return Pair(0, Int.MAX_VALUE)
         }
         return when (amenity) {
-            BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE) // No width limits for Buoy
-            BoatSpaceAmenity.RearBuoy -> Pair(0, boatWidth + 50) // Max width is boat width + 50 cm
-            BoatSpaceAmenity.Beam -> Pair(boatWidth + 100, boatWidth + 40) // Min width is +100 cm, max width is +40 cm
+            BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE)
+            BoatSpaceAmenity.RearBuoy -> Pair(boatWidth + 50, Int.MAX_VALUE)
+            BoatSpaceAmenity.Beam -> Pair(boatWidth + 40, boatWidth + 100)
             BoatSpaceAmenity.WalkBeam ->
                 Pair(
-                    boatWidth + 100,
-                    boatWidth + 75
-                ) // Min width is +100 cm, max width is +75 cm
-            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE) // No specific limits
+                    boatWidth + 75,
+                    boatWidth + 100
+                )
+            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
         }
     }
 
@@ -94,9 +94,9 @@ object BoatSpaceConfig {
         }
         return when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE)
-            BoatSpaceAmenity.RearBuoy -> Pair(0, boatLength + 300)
-            BoatSpaceAmenity.Beam -> Pair(boatLength + 100, boatLength - 130)
-            BoatSpaceAmenity.WalkBeam -> Pair(boatLength + 150, boatLength - 130)
+            BoatSpaceAmenity.RearBuoy -> Pair(boatLength + 300, Int.MAX_VALUE)
+            BoatSpaceAmenity.Beam -> Pair(boatLength - 130, boatLength + 100,)
+            BoatSpaceAmenity.WalkBeam -> Pair(boatLength - 130, boatLength + 150)
             BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
         }
     }
