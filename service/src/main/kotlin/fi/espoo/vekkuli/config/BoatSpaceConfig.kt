@@ -42,25 +42,64 @@ object BoatSpaceConfig {
 
     const val BOAT_WEIGHT_THRESHOLD_KG = 15000
 
-    fun getRequiredDimensions(
-        amenity: BoatSpaceAmenity,
-        boat: Dimensions
-    ): Dimensions =
+    fun getWidthLimitsForBoat(
+        spaceWidth: Int,
+        amenity: BoatSpaceAmenity
+    ): Pair<Int?, Int?> =
         when (amenity) {
-            BoatSpaceAmenity.None -> Dimensions(boat.width + MIN_WIDTH_ADJUSTMENT_CM, boat.length)
-            BoatSpaceAmenity.Buoy -> Dimensions(boat.width + BUOY_WIDTH_ADJUSTMENT_CM, boat.length + BUOY_LENGTH_ADJUSTMENT_CM)
-            BoatSpaceAmenity.Beam -> Dimensions(boat.width + BEAM_WIDTH_ADJUSTMENT_CM, boat.length + BEAM_LENGTH_ADJUSTMENT_CM)
-            BoatSpaceAmenity.WalkBeam ->
-                Dimensions(
-                    boat.width + WALK_BEAM_WIDTH_ADJUSTMENT_CM,
-                    boat.length + WALK_BEAM_LENGTH_ADJUSTMENT_CM
-                )
-            BoatSpaceAmenity.RearBuoy ->
-                Dimensions(
-                    boat.width + REAR_BUOY_WIDTH_ADJUSTMENT_CM,
-                    boat.length + REAR_BUOY_LENGTH_ADJUSTMENT_CM
-                )
+            BoatSpaceAmenity.Buoy -> Pair(null, null)
+            BoatSpaceAmenity.RearBuoy -> Pair(null, spaceWidth - 50)
+            BoatSpaceAmenity.Beam -> Pair(spaceWidth - 100, spaceWidth - 40)
+            BoatSpaceAmenity.WalkBeam -> Pair(spaceWidth - 100, spaceWidth - 75)
+            BoatSpaceAmenity.None -> Pair(null, null)
         }
+
+    fun getWidthLimitsForBoatSpace(
+        boatWidth: Int?,
+        amenity: BoatSpaceAmenity
+    ): Pair<Int, Int> {
+        if (boatWidth == null) {
+            return Pair(0, Int.MAX_VALUE)
+        }
+        return when (amenity) {
+            BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE) // No width limits for Buoy
+            BoatSpaceAmenity.RearBuoy -> Pair(0, boatWidth + 50) // Max width is boat width + 50 cm
+            BoatSpaceAmenity.Beam -> Pair(boatWidth + 100, boatWidth + 40) // Min width is +100 cm, max width is +40 cm
+            BoatSpaceAmenity.WalkBeam ->
+                Pair(
+                    boatWidth + 100,
+                    boatWidth + 75
+                ) // Min width is +100 cm, max width is +75 cm
+            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE) // No specific limits
+        }
+    }
+
+    fun getLengthLimitsForBoat(
+        spaceLength: Int,
+        amenity: BoatSpaceAmenity
+    ) = when (amenity) {
+        BoatSpaceAmenity.Buoy -> Pair(null, null)
+        BoatSpaceAmenity.RearBuoy -> Pair(null, spaceLength - 300)
+        BoatSpaceAmenity.Beam -> Pair(spaceLength - 100, spaceLength + 130)
+        BoatSpaceAmenity.WalkBeam -> Pair(spaceLength - 150, spaceLength + 130)
+        BoatSpaceAmenity.None -> Pair(null, null)
+    }
+
+    fun getLengthLimitsForBoatSpace(
+        boatLength: Int?,
+        amenity: BoatSpaceAmenity
+    ): Pair<Int, Int> {
+        if (boatLength == null) {
+            return Pair(0, Int.MAX_VALUE)
+        }
+        return when (amenity) {
+            BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE)
+            BoatSpaceAmenity.RearBuoy -> Pair(0, boatLength + 300)
+            BoatSpaceAmenity.Beam -> Pair(boatLength + 100, boatLength - 130)
+            BoatSpaceAmenity.WalkBeam -> Pair(boatLength + 150, boatLength - 130)
+            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
+        }
+    }
 
     fun doesBoatFit(
         space: Dimensions,
@@ -71,8 +110,7 @@ object BoatSpaceConfig {
         if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
             return false
         }
-        val requiredDimensions = getRequiredDimensions(amenity, boat)
-        return requiredDimensions.width <= space.width && requiredDimensions.length <= space.length
+        return isWidthOk(space, amenity, boat) && isLengthOk(space, amenity, boat)
     }
 
     fun isWidthOk(
@@ -80,11 +118,8 @@ object BoatSpaceConfig {
         amenity: BoatSpaceAmenity,
         boat: Dimensions
     ): Boolean {
-        if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
-            return false
-        }
-        val requiredDimensions = getRequiredDimensions(amenity, boat)
-        return requiredDimensions.width <= space.width
+        val (minWidth, maxWidth) = getWidthLimitsForBoat(space.width, amenity)
+        return (minWidth == null || boat.width >= minWidth) && (maxWidth == null || boat.width <= maxWidth)
     }
 
     fun isLengthOk(
@@ -95,7 +130,7 @@ object BoatSpaceConfig {
         if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
             return false
         }
-        val requiredDimensions = getRequiredDimensions(amenity, boat)
-        return requiredDimensions.length <= space.length
+        val (minLength, maxLength) = getLengthLimitsForBoat(space.length, amenity)
+        return (minLength == null || boat.length >= minLength) && (maxLength == null || boat.length <= maxLength)
     }
 }

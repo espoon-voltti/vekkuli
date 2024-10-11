@@ -47,7 +47,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                     BoatSpaceType.Slip
                 )
             )
-        assertEquals(boatSpaces.second, 7, "Correct number of boat spaces are fetched")
+        assertEquals(1, boatSpaces.second, "Correct number of boat spaces are fetched")
 
         assertTrue(
             boatSpaces.first.all {
