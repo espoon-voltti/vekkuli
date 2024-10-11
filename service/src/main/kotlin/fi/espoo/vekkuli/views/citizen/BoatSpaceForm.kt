@@ -586,7 +586,6 @@ class BoatSpaceForm(
             """
 
         val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
-
         val slipHolder =
             slipHolderAndBoatForm(
                 organizations,
@@ -712,16 +711,16 @@ class BoatSpaceForm(
                         validation.init({forms: ['form']})
                         window.addEventListener('load', function() {
                             const type = localStorage.getItem('type');
-                            if (type) {
-                              document.getElementById("boatType").value = type;
+                            if (type && !document.getElementById("boatType").value) {
+                                document.getElementById("boatType").value = type;
                             }
                             const width = localStorage.getItem('width');
-                            if (width) {
-                              document.getElementById('width').value = width;
+                            if (width && !document.getElementById('width').value) {
+                                document.getElementById('width').value = width;
                             }
                             const length = localStorage.getItem('length');
-                            if (length) {
-                              document.getElementById('length').value = length;
+                            if (length && !document.getElementById('length').value) {
+                                document.getElementById('length').value = length;
                             }
                         });
                             
