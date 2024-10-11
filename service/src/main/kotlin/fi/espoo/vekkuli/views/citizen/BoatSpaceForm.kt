@@ -85,15 +85,17 @@ class BoatSpaceForm(
         val chooseBoatButtons =
             if (citizen !== null) {
                 """
-            <div class="field" ">
+            <div class="field" x-data="{ initialWidth: localStorage.getItem('width'), 
+                                         initialLength: localStorage.getItem('length'), 
+                                         initialType: localStorage.getItem('type') }" >
                 <div class="radio">
                     <input type="radio" 
                         id="newBoat" 
                         name="boatId"
                         value="0"
                         hx-trigger="change"
-                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/boat-form?boatId=0"
-                        hx-include="[name='citizenId'],[name='organizationId'],[name='isOrganization'],[name='width'],[name='length']"
+                        x-bind:hx-get="`/${userType.path}/venepaikka/varaus/$reservationId/boat-form?boatId=0&width=${'$'}{initialWidth}&length=${'$'}{initialLength}&width=${'$'}{initialWidth}&type=${'$'}{initialType}`"
+                        hx-include="[name='citizenId'],[name='organizationId'],[name='isOrganization']"
                         hx-target="#boatForm"
                         hx-swap="outerHTML"
                        ${if (input.id == 0) "checked" else ""}
@@ -113,7 +115,7 @@ class BoatSpaceForm(
             formComponents.select(
                 "boatApplication.boatType",
                 "boatType",
-                boatTypes.first(),
+                input.boatType.toString(),
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
                 attributes =
                     """
@@ -584,7 +586,6 @@ class BoatSpaceForm(
             """
 
         val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
-
         val slipHolder =
             slipHolderAndBoatForm(
                 organizations,
@@ -642,8 +643,6 @@ class BoatSpaceForm(
                         action="/${userType.path}/venepaikka/varaus/${reservation.id}"
                         method="post"
                         novalidate>
-                        <input type="hidden" name="width" value="${input.width ?: ""}"/>
-                        <input type="hidden" name="length" value="${input.length ?: ""}"/>
                          <h1 class="title pb-l" id='boat-space-form-header'>
                             ${t("boatApplication.title.reservation")} 
                             $wholeLocationName
@@ -711,20 +710,19 @@ class BoatSpaceForm(
                     <script>
                         validation.init({forms: ['form']})
                         window.addEventListener('load', function() {
-                            const type = localStorage.getItem('type');
-                            if (type) {
-                              document.getElementById("boatType").value = type;
-                              localStorage.removeItem('type');
-                            }
-                            const width = localStorage.getItem('width');
-                            if (width) {
-                              document.getElementById('width').value = width;
-                              localStorage.removeItem('width');
-                            }
-                            const length = localStorage.getItem('length');
-                            if (length) {
-                              document.getElementById('length').value = length;
-                              localStorage.removeItem('length');
+                            if (!document.getElementById("width").value && !document.getElementById("length")) {
+                                const type = localStorage.getItem('type');
+                                if (type) {
+                                    document.getElementById("boatType").value = type;
+                                }
+                                const width = localStorage.getItem('width');
+                                if (width) {
+                                    document.getElementById('width').value = width;
+                                }
+                                const length = localStorage.getItem('length');
+                                if (length) {
+                                    document.getElementById('length').value = length;
+                                }
                             }
                         });
                             
