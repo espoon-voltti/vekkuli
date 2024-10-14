@@ -302,6 +302,7 @@ class BoatSpaceFormController(
         @RequestParam citizenId: UUID?,
         @RequestParam width: Double?,
         @RequestParam length: Double?,
+        @RequestParam type: BoatType?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
@@ -349,7 +350,7 @@ class BoatSpaceFormController(
                 BoatFormInput(
                     id = boatId ?: 0,
                     boatName = "",
-                    boatType = BoatType.OutboardMotor,
+                    boatType = type ?: BoatType.OutboardMotor,
                     width = width,
                     length = length,
                     depth = null,
