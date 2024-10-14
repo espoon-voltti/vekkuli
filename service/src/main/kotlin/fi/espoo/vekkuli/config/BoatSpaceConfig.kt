@@ -23,7 +23,6 @@ object BoatSpaceConfig {
 
     const val BEAM_MAX_WIDTH_ADJUSTMENT_CM = 40
     const val BEAM_MIN_WIDTH_ADJUSTMENT_CM = 100
-    const val BEAM_LENGTH_ADJUSTMENT_CM = -100
 
     const val WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM = 75
     const val WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM = 100

@@ -63,7 +63,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 it.boatSpaces.all {
                         bs ->
                     bs.widthCm >= (filteredBoatWidth + BoatSpaceConfig.BEAM_MAX_WIDTH_ADJUSTMENT_CM) &&
-                        bs.lengthCm >= (filteredBoatLength + BoatSpaceConfig.BEAM_LENGTH_ADJUSTMENT_CM)
+                        bs.lengthCm >= (filteredBoatLength - BoatSpaceConfig.BEAM_MIN_LENGTH_ADJUSTMENT_CM)
                 }
             },
             "Only boat spaces that are big enough are fetched"
