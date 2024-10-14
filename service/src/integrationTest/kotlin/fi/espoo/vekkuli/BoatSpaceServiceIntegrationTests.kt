@@ -62,7 +62,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             boatSpaces.first.all {
                 it.boatSpaces.all {
                         bs ->
-                    bs.widthCm >= (filteredBoatWidth + BoatSpaceConfig.BEAM_WIDTH_ADJUSTMENT_CM) &&
+                    bs.widthCm >= (filteredBoatWidth + BoatSpaceConfig.BEAM_MAX_WIDTH_ADJUSTMENT_CM) &&
                         bs.lengthCm >= (filteredBoatLength + BoatSpaceConfig.BEAM_LENGTH_ADJUSTMENT_CM)
                 }
             },

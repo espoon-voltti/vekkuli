@@ -21,21 +21,14 @@ object BoatSpaceConfig {
     const val PAYMENT_TIMEOUT = 24 * 60 * 60
     const val BOAT_RESERVATION_ALV_PERCENTAGE = 25.5
 
-    const val MIN_WIDTH_ADJUSTMENT_CM = 40
-
-    // No restrictions for buoys. We use large negative values to
-    // make sure the boat always fits
-    const val BUOY_WIDTH_ADJUSTMENT_CM = -100000
-    const val BUOY_LENGTH_ADJUSTMENT_CM = -100000
-
-    const val BEAM_WIDTH_ADJUSTMENT_CM = 40
+    const val BEAM_MAX_WIDTH_ADJUSTMENT_CM = 40
+    const val BEAM_MIN_WIDTH_ADJUSTMENT_CM = 100
     const val BEAM_LENGTH_ADJUSTMENT_CM = -100
 
-    const val WALK_BEAM_WIDTH_ADJUSTMENT_CM = 75
-    const val WALK_BEAM_LENGTH_ADJUSTMENT_CM = -100
+    const val WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM = 75
+    const val WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM = 100
 
     const val REAR_BUOY_WIDTH_ADJUSTMENT_CM = 50
-    const val REAR_BUOY_LENGTH_ADJUSTMENT_CM = 300
 
     // Boat length after which a buoy is always needed
     const val BOAT_LENGTH_THRESHOLD_CM = 1500
@@ -48,9 +41,13 @@ object BoatSpaceConfig {
     ): Pair<Int?, Int?> =
         when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(null, null)
-            BoatSpaceAmenity.RearBuoy -> Pair(null, spaceWidth - 50)
-            BoatSpaceAmenity.Beam -> Pair(spaceWidth - 100, spaceWidth - 40)
-            BoatSpaceAmenity.WalkBeam -> Pair(spaceWidth - 100, spaceWidth - 75)
+            BoatSpaceAmenity.RearBuoy -> Pair(null, spaceWidth - REAR_BUOY_WIDTH_ADJUSTMENT_CM)
+            BoatSpaceAmenity.Beam -> Pair(spaceWidth - BEAM_MIN_WIDTH_ADJUSTMENT_CM, spaceWidth - BEAM_MAX_WIDTH_ADJUSTMENT_CM)
+            BoatSpaceAmenity.WalkBeam ->
+                Pair(
+                    spaceWidth - WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM,
+                    spaceWidth - WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM
+                )
             BoatSpaceAmenity.None -> Pair(null, null)
         }
 
@@ -63,25 +60,36 @@ object BoatSpaceConfig {
         }
         return when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE)
-            BoatSpaceAmenity.RearBuoy -> Pair(boatWidth + 50, Int.MAX_VALUE)
-            BoatSpaceAmenity.Beam -> Pair(boatWidth + 40, boatWidth + 100)
+            BoatSpaceAmenity.RearBuoy -> Pair(boatWidth + REAR_BUOY_WIDTH_ADJUSTMENT_CM, Int.MAX_VALUE)
+            BoatSpaceAmenity.Beam -> Pair(boatWidth + BEAM_MAX_WIDTH_ADJUSTMENT_CM, boatWidth + BEAM_MIN_WIDTH_ADJUSTMENT_CM)
             BoatSpaceAmenity.WalkBeam ->
                 Pair(
-                    boatWidth + 75,
-                    boatWidth + 100
+                    boatWidth + WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM,
+                    boatWidth + WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM
                 )
             BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
         }
     }
+
+    const val REAR_BUYO_MAX_LENGTH_ADJUSTMENT_CM = 300
+    const val BEAM_MIN_LENGTH_ADJUSTMENT_CM = 100
+    const val BEAM_MAX_LENGTH_ADJUSTMENT_CM = 130
+
+    const val WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM = 150
+    const val WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM = 130
 
     fun getLengthLimitsForBoat(
         spaceLength: Int,
         amenity: BoatSpaceAmenity
     ) = when (amenity) {
         BoatSpaceAmenity.Buoy -> Pair(null, null)
-        BoatSpaceAmenity.RearBuoy -> Pair(null, spaceLength - 300)
-        BoatSpaceAmenity.Beam -> Pair(spaceLength - 100, spaceLength + 130)
-        BoatSpaceAmenity.WalkBeam -> Pair(spaceLength - 150, spaceLength + 130)
+        BoatSpaceAmenity.RearBuoy -> Pair(null, spaceLength - REAR_BUYO_MAX_LENGTH_ADJUSTMENT_CM)
+        BoatSpaceAmenity.Beam -> Pair(spaceLength - BEAM_MIN_LENGTH_ADJUSTMENT_CM, spaceLength + BEAM_MAX_LENGTH_ADJUSTMENT_CM)
+        BoatSpaceAmenity.WalkBeam ->
+            Pair(
+                spaceLength - WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM,
+                spaceLength + WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM
+            )
         BoatSpaceAmenity.None -> Pair(null, null)
     }
 
@@ -94,9 +102,13 @@ object BoatSpaceConfig {
         }
         return when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE)
-            BoatSpaceAmenity.RearBuoy -> Pair(boatLength + 300, Int.MAX_VALUE)
-            BoatSpaceAmenity.Beam -> Pair(boatLength - 130, boatLength + 100,)
-            BoatSpaceAmenity.WalkBeam -> Pair(boatLength - 130, boatLength + 150)
+            BoatSpaceAmenity.RearBuoy -> Pair(boatLength + REAR_BUYO_MAX_LENGTH_ADJUSTMENT_CM, Int.MAX_VALUE)
+            BoatSpaceAmenity.Beam -> Pair(boatLength - BEAM_MAX_LENGTH_ADJUSTMENT_CM, boatLength + BEAM_MIN_LENGTH_ADJUSTMENT_CM)
+            BoatSpaceAmenity.WalkBeam ->
+                Pair(
+                    boatLength - WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM,
+                    boatLength + WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM
+                )
             BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
         }
     }
