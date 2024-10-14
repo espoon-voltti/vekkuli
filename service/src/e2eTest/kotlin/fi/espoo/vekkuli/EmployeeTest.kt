@@ -2,7 +2,10 @@ package fi.espoo.vekkuli
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.pages.*
+import fi.espoo.vekkuli.pages.BoatSpaceFormPage
+import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
@@ -31,7 +34,7 @@ class EmployeeTest : PlaywrightTest() {
         reservationPage.amenityBeamCheckbox.check()
         reservationPage.amenityWalkBeamCheckbox.check()
 
-        assertThat(reservationPage.harborHeaders).hasCount(4)
+        assertThat(reservationPage.harborHeaders).hasCount(3)
         reservationPage.haukilahtiCheckbox.check()
         reservationPage.kivenlahtiCheckbox.check()
         assertThat(reservationPage.harborHeaders).hasCount(2)
@@ -220,7 +223,6 @@ class EmployeeTest : PlaywrightTest() {
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
         reservationPage.lengthFilterInput.blur()
-        reservationPage.amenityWalkBeamCheckbox.check()
 
         reservationPage.firstReserveButton.click()
 
