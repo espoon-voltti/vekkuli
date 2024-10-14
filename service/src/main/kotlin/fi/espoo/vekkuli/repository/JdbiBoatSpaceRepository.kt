@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.Harbor
@@ -35,12 +34,15 @@ fun amenityFilter(
     boatWidth: Int?,
     boatLength: Int?
 ): SqlExpr {
-    val placeDimensions = BoatSpaceConfig.getRequiredDimensions(amenity, Dimensions(boatWidth ?: 0, boatLength ?: 0))
+    val (minWidth, maxWidth) = BoatSpaceConfig.getWidthLimitsForBoatSpace(boatWidth, amenity)
+    val (minLength, maxLength) = BoatSpaceConfig.getLengthLimitsForBoatSpace(boatLength, amenity)
     return AndExpr(
         listOf(
             OperatorExpr("amenity", "=", amenity),
-            OperatorExpr("width_cm", ">=", placeDimensions.width),
-            OperatorExpr("length_cm", ">=", placeDimensions.length)
+            OperatorExpr("width_cm", ">=", minWidth),
+            OperatorExpr("width_cm", "<=", maxWidth),
+            OperatorExpr("length_cm", ">=", minLength),
+            OperatorExpr("length_cm", "<=", maxLength)
         )
     )
 }

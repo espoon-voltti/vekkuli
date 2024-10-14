@@ -47,7 +47,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                     BoatSpaceType.Slip
                 )
             )
-        assertEquals(boatSpaces.second, 7, "Correct number of boat spaces are fetched")
+        assertEquals(1, boatSpaces.second, "Correct number of boat spaces are fetched")
 
         assertTrue(
             boatSpaces.first.all {
@@ -62,8 +62,8 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             boatSpaces.first.all {
                 it.boatSpaces.all {
                         bs ->
-                    bs.widthCm >= (filteredBoatWidth + BoatSpaceConfig.BEAM_WIDTH_ADJUSTMENT_CM) &&
-                        bs.lengthCm >= (filteredBoatLength + BoatSpaceConfig.BEAM_LENGTH_ADJUSTMENT_CM)
+                    bs.widthCm >= (filteredBoatWidth + BoatSpaceConfig.BEAM_MAX_WIDTH_ADJUSTMENT_CM) &&
+                        bs.lengthCm >= (filteredBoatLength - BoatSpaceConfig.BEAM_MIN_LENGTH_ADJUSTMENT_CM)
                 }
             },
             "Only boat spaces that are big enough are fetched"
