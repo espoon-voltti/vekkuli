@@ -1,13 +1,11 @@
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.utils.getFirstWeekdayOfMonth
 import fi.espoo.vekkuli.utils.getLastDayOfNextYearsJanuary
 import fi.espoo.vekkuli.utils.getLastDayOfYear
 import fi.espoo.vekkuli.utils.isTimeWithinDateRange
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 
 enum class ExistingReservations {
     No,
@@ -41,7 +39,10 @@ data class ReservationResult(
 )
 
 data class ReservationConditions(
-    private val reservationRepository: BoatSpaceReservationRepository
+    val isCitizenOfEspoo: Boolean,
+    val existingReservations: ExistingReservations,
+    val currentYear: Int,
+    val currentDate: LocalDateTime,
 ) {
     // Returns the end date of the reservation if the reservation is allowed, otherwise null
     private fun canReserveSlipForEspooResident(
@@ -100,12 +101,7 @@ data class ReservationConditions(
         return null
     }
 
-    fun canReserveSlip(
-        isCitizenOfEspoo: Boolean,
-        existingReservations: ExistingReservations,
-        currentYear: Int,
-        currentDate: LocalDateTime
-    ): ReservationResult? =
+    fun canReserveSlip(): ReservationResult? =
         if (isCitizenOfEspoo) {
             canReserveSlipForEspooResident(existingReservations, currentYear, currentDate)
         } else {
@@ -113,12 +109,7 @@ data class ReservationConditions(
         }
 
     // Returns the end date of the reservation if the reservation is allowed, otherwise null
-    fun canRenewSlip(
-        isCitizenOfEspoo: Boolean,
-        existingReservations: ExistingReservations,
-        currentYear: Int,
-        currentDate: LocalDateTime
-    ): ReservationResult? {
+    fun canRenewSlip(): ReservationResult? {
         // Only Espoo citizens can renew a place
         // Only indefinite spaces can be renewed
         if (isCitizenOfEspoo && existingReservations == ExistingReservations.Indefinite) {
@@ -135,12 +126,7 @@ data class ReservationConditions(
     }
 
     // Returns the end date of the reservation if the reservation is allowed, otherwise null
-    fun canChangeSlip(
-        isCitizenOfEspoo: Boolean,
-        existingReservations: ExistingReservations,
-        currentYear: Int,
-        currentDate: LocalDateTime
-    ): ReservationResult? {
+    fun canChangeSlip(): ReservationResult? {
         // Only citizens of Espoo that have a place can change a place
         if (isCitizenOfEspoo && existingReservations == ExistingReservations.Indefinite) {
             val firstPeriod = periodForSlipChange(currentYear)
