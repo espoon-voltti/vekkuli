@@ -62,8 +62,8 @@ data class ReservationConditions(
                 return null
             }
             return ReservationResult(
-                currentDate.toLocalDate(), // start date
-                getLastDayOfNextYearsJanuary(currentYear), // end date
+                currentDate.toLocalDate(),
+                getLastDayOfNextYearsJanuary(currentYear),
                 existingReservations
             )
         }
@@ -72,8 +72,8 @@ data class ReservationConditions(
 
         if (isTimeWithinDateRange(currentDate, period.first, period.second)) {
             return ReservationResult(
-                currentDate.toLocalDate(), // start date
-                getLastDayOfNextYearsJanuary(currentYear), // end date
+                currentDate.toLocalDate(),
+                getLastDayOfNextYearsJanuary(currentYear),
                 ExistingReservations.Indefinite
             )
         }
@@ -92,8 +92,8 @@ data class ReservationConditions(
 
             if (isTimeWithinDateRange(currentDate, period.first, period.second)) {
                 return ReservationResult(
-                    currentDate.toLocalDate(), // start date
-                    getLastDayOfYear(currentYear), // end date
+                    currentDate.toLocalDate(),
+                    getLastDayOfYear(currentYear),
                     ExistingReservations.FixedTerm
                 )
             }
@@ -116,8 +116,8 @@ data class ReservationConditions(
             val period = periodForSlipRenewalAndChange(currentYear)
             if (isTimeWithinDateRange(currentDate, period.first, period.second)) {
                 return ReservationResult(
-                    currentDate.toLocalDate(), // start date
-                    getLastDayOfNextYearsJanuary(currentYear), // end date
+                    currentDate.toLocalDate(),
+                    getLastDayOfNextYearsJanuary(currentYear),
                     ExistingReservations.Indefinite
                 )
             }
@@ -137,8 +137,8 @@ data class ReservationConditions(
                 isTimeWithinDateRange(currentDate, secondPeriod.first, secondPeriod.second)
             ) {
                 return ReservationResult(
-                    currentDate.toLocalDate(), // start date
-                    getLastDayOfYear(currentYear), // end date
+                    currentDate.toLocalDate(),
+                    getLastDayOfYear(currentYear),
                     ExistingReservations.Indefinite
                 )
             }
