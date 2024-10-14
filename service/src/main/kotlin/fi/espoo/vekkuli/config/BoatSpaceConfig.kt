@@ -3,8 +3,8 @@ package fi.espoo.vekkuli.config
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 
 data class Dimensions(
-    val width: Int,
-    val length: Int
+    val width: Int?,
+    val length: Int?
 )
 
 enum class ReservationWarningType {
@@ -107,7 +107,7 @@ object BoatSpaceConfig {
         boat: Dimensions
     ): Boolean {
         // If the boat is longer than the threshold, it always needs a buoy place
-        if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+        if (boat.length != null && boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
             return false
         }
         return isWidthOk(space, amenity, boat) && isLengthOk(space, amenity, boat)
@@ -118,8 +118,8 @@ object BoatSpaceConfig {
         amenity: BoatSpaceAmenity,
         boat: Dimensions
     ): Boolean {
-        val (minWidth, maxWidth) = getWidthLimitsForBoat(space.width, amenity)
-        return (minWidth == null || boat.width >= minWidth) && (maxWidth == null || boat.width <= maxWidth)
+        val (minWidth, maxWidth) = getWidthLimitsForBoat(space.width ?: 0, amenity)
+        return boat.width == null || ((minWidth == null || boat.width >= minWidth) && (maxWidth == null || boat.width <= maxWidth))
     }
 
     fun isLengthOk(
@@ -127,10 +127,10 @@ object BoatSpaceConfig {
         amenity: BoatSpaceAmenity,
         boat: Dimensions
     ): Boolean {
-        if (boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
+        if (boat.length != null && boat.length > BOAT_LENGTH_THRESHOLD_CM && amenity != BoatSpaceAmenity.Buoy) {
             return false
         }
-        val (minLength, maxLength) = getLengthLimitsForBoat(space.length, amenity)
-        return (minLength == null || boat.length >= minLength) && (maxLength == null || boat.length <= maxLength)
+        val (minLength, maxLength) = getLengthLimitsForBoat(space.length ?: 0, amenity)
+        return boat.length == null || ((minLength == null || boat.length >= minLength) && (maxLength == null || boat.length <= maxLength))
     }
 }

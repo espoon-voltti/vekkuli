@@ -193,7 +193,7 @@ class BoatSpaceFormController(
         spaceWidthInCm: Int,
         spaceLengthInCm: Int,
     ): Boolean {
-        val boatDimensions = Dimensions(widthInCm ?: 0, lengthInCm ?: 0)
+        val boatDimensions = Dimensions(widthInCm, lengthInCm)
         val spaceDimensions = Dimensions(spaceWidthInCm, spaceLengthInCm)
         return !doesBoatFit(spaceDimensions, boatSpaceAmenity, boatDimensions)
     }
