@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.tests
 
-import fi.espoo.vekkuli.domain.ExistingReservations
+import fi.espoo.vekkuli.domain.HasExistingReservationsTypes
 import fi.espoo.vekkuli.domain.ReservationConditions
 import fi.espoo.vekkuli.domain.ReservationResult
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -15,15 +15,13 @@ class ReservationPeriodTest {
     private val espooCitizen =
         ReservationConditions(
             true,
-            ExistingReservations.No,
-            year,
+            HasExistingReservationsTypes.No,
             LocalDateTime.of(year, 1, 1, 0, 0),
         )
     private val otherCitizen =
         ReservationConditions(
             false,
-            ExistingReservations.No,
-            year,
+            HasExistingReservationsTypes.No,
             LocalDateTime.of(year, 1, 1, 0, 0)
         )
 
@@ -56,14 +54,14 @@ class ReservationPeriodTest {
         assertNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.FixedTerm,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
                     currentDate = LocalDateTime.of(year, 3, 31, 23, 59)
                 ).canReserveSlip()
         )
         assertNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.FixedTerm,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
                     currentDate = LocalDateTime.of(year, 10, 1, 0, 0)
                 ).canReserveSlip()
         )
@@ -74,7 +72,7 @@ class ReservationPeriodTest {
         assertNotNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.FixedTerm,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
                     currentDate = LocalDateTime.of(year, 4, 1, 0, 0)
                 ).canReserveSlip()
         )
@@ -85,13 +83,13 @@ class ReservationPeriodTest {
         assertEquals(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Indefinite,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 4, 1, 0, 0)
                 ).canReserveSlip(),
             ReservationResult(
                 LocalDateTime.of(year, 4, 1, 0, 0).toLocalDate(),
                 LocalDateTime.of(year + 1, 1, 31, 0, 0).toLocalDate(),
-                ExistingReservations.Indefinite
+                HasExistingReservationsTypes.Indefinite
             )
         )
     }
@@ -101,7 +99,7 @@ class ReservationPeriodTest {
         assertNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Both,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Both,
                     currentDate = LocalDateTime.of(2021, 4, 1, 0, 0)
                 ).canReserveSlip()
         )
@@ -112,14 +110,14 @@ class ReservationPeriodTest {
         assertNotNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Indefinite,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 1, 1, 0, 0)
                 ).canRenewSlip()
         )
         assertNotNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Indefinite,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 1, 31, 23, 59)
                 ).canRenewSlip()
         )
@@ -130,14 +128,14 @@ class ReservationPeriodTest {
         assertNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.FixedTerm,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
                     currentDate = LocalDateTime.of(year, 1, 1, 0, 0)
                 ).canRenewSlip()
         )
         assertNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.FixedTerm,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
                     currentDate = LocalDateTime.of(year, 1, 31, 23, 59)
                 ).canRenewSlip()
         )
@@ -148,14 +146,14 @@ class ReservationPeriodTest {
         assertNull(
             otherCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Indefinite,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 1, 1, 0, 0)
                 ).canRenewSlip()
         )
         assertNull(
             otherCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Indefinite,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 1, 31, 23, 59)
                 ).canRenewSlip()
         )
@@ -166,7 +164,7 @@ class ReservationPeriodTest {
         assertNotNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Indefinite,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 1, 30, 0, 0)
                 ).canChangeSlip()
         )
@@ -177,7 +175,7 @@ class ReservationPeriodTest {
         assertNotNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.Indefinite,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 3, 25, 0, 0)
                 ).canChangeSlip()
         )
@@ -188,7 +186,7 @@ class ReservationPeriodTest {
         assertNull(
             espooCitizen
                 .copy(
-                    existingReservations = ExistingReservations.No,
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.No,
                     currentDate = LocalDateTime.of(year, 2, 1, 0, 0)
                 ).canChangeSlip()
         )

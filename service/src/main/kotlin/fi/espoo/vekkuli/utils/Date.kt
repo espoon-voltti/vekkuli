@@ -38,3 +38,5 @@ fun isTimeWithinDateRange(
     val endDateTime = endDate.atTime(LocalTime.MAX) // End of the day (23:59:999)
     return !dateTime.isBefore(startDateTime) && !dateTime.isAfter(endDateTime)
 }
+
+fun getCurrentDate(): LocalDateTime = LocalDateTime.now()

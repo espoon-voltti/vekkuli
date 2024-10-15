@@ -386,4 +386,17 @@ class BoatReservationService(
     ) {
         val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
     }
+
+    fun getExistingReservationsTypes(citizenId: UUID): HasExistingReservationsTypes {
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId)
+        return when {
+            reservations.isEmpty() -> HasExistingReservationsTypes.No
+            reservations.any { it.validity == ReservationValidity.Indefinite } &&
+                reservations.any { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.Both
+            reservations.all { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.FixedTerm
+            reservations.all { it.validity == ReservationValidity.Indefinite } -> HasExistingReservationsTypes.Indefinite
+
+            else -> HasExistingReservationsTypes.No
+        }
+    }
 }

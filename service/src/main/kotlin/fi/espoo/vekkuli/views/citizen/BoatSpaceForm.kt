@@ -287,6 +287,17 @@ class BoatSpaceForm(
         return boatContainer
     }
 
+    // language=HTML
+    fun errorPage(errorText: String): String =
+        """
+        <section class="section">
+            <div class="container">
+                <h1 class="title">${t("boatApplication.title.error")}</h1>
+                <p>$errorText</p>
+            </div>
+        </section>
+        """.trimIndent()
+
     fun boatSpaceForm(
         reservation: ReservationWithDependencies,
         boats: List<Boat>,

@@ -51,8 +51,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
         assertTrue(
             boatSpaces.first.all {
-                it.boatSpaces.all {
-                        bs ->
+                it.boatSpaces.all { bs ->
                     bs.amenity == BoatSpaceAmenity.Beam
                 }
             },
@@ -60,8 +59,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         )
         assertTrue(
             boatSpaces.first.all {
-                it.boatSpaces.all {
-                        bs ->
+                it.boatSpaces.all { bs ->
                     bs.widthCm >= (filteredBoatWidth + BoatSpaceConfig.BEAM_WIDTH_ADJUSTMENT_CM) &&
                         bs.lengthCm >= (filteredBoatLength + BoatSpaceConfig.BEAM_LENGTH_ADJUSTMENT_CM)
                 }

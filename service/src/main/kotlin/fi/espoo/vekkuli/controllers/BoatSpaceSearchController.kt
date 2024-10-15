@@ -5,10 +5,7 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.getLocations
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceService
@@ -111,6 +108,7 @@ class BoatSpaceSearchController {
             jdbi.inTransactionUnchecked { tx ->
                 tx.getLocations()
             }
+
         return ResponseEntity.ok(
             layout.render(
                 request.getAuthenticatedUser() != null,
