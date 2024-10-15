@@ -136,14 +136,20 @@ class CitizenDetails {
             </div>
             """.trimIndent()
 
+        val backUrl =
+            if (userType == UserType.EMPLOYEE) {
+                "/virkailija/venepaikat/varaukset"
+            } else {
+                "/"
+            }
         val result =
             // language=HTML
             """
             <section class="section" id="citizen-details">
-                <div class="container block">${commonComponents.goBackButton(
-                "/virkailija/venepaikat/varaukset"
-            )} <h2>${citizen.firstName + " " + citizen.lastName}</h2>
-                    </div>
+                <div class="container block">
+                    ${commonComponents.goBackButton(backUrl)} 
+                    <h2>${citizen.firstName + " " + citizen.lastName}</h2>
+                </div>
                 ${customerInfo()}
                 $tabs
                 ${reservationTabContent(citizen, boatSpaceReservations, boats, userType)}
@@ -434,7 +440,6 @@ class CitizenDetails {
         fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
             boats
                 .mapIndexed { _, boat ->
-
                     """
                     <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
                         <div class="columns is-vcentered">
