@@ -48,3 +48,5 @@ fun isMonthDayWithinRange(
     // Period crosses the year
     return today >= startDate || today <= endDate
 }
+
+fun getCurrentDate(): LocalDateTime = LocalDateTime.now()

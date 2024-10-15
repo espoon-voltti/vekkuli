@@ -2,11 +2,8 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.AppUser
 import fi.espoo.vekkuli.common.getAppUser
-import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
-import fi.espoo.vekkuli.config.Dimensions
-import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
@@ -16,6 +13,7 @@ import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.getCurrentDate
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.BoatFormInput
@@ -68,22 +66,25 @@ class BoatSpaceFormController(
         @RequestParam length: Double?,
         request: HttpServletRequest,
         response: HttpServletResponse,
-        model: Model,
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
-        val citizen =
-            if (userType == UserType.EMPLOYEE) {
-                null
-            } else {
-                getCitizen(request, citizenService)
+        if (userType == UserType.EMPLOYEE) {
+            val reservation = reservationService.getReservationWithoutCitizen(reservationId)
+            if (reservation == null) {
+                val headers = org.springframework.http.HttpHeaders()
+                headers.location = URI(getServiceUrl("/${userType.path}/venepaikat"))
+                return ResponseEntity(headers, HttpStatus.FOUND)
             }
+            val input = populateFormInputs(boatType, width, length, null, boatId, reservation)
+            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, emptyList(), input, request, userType))
+        }
+
+        // usertype is citizen
+        val citizen =
+            getCitizen(request, citizenService)
 
         val reservation =
-            if (userType == UserType.EMPLOYEE) {
-                reservationService.getReservationWithoutCitizen(reservationId)
-            } else {
-                reservationService.getReservationWithReserver(reservationId)
-            }
+            reservationService.getReservationWithReserver(reservationId)
 
         if (reservation == null) {
             val headers = org.springframework.http.HttpHeaders()
@@ -91,10 +92,26 @@ class BoatSpaceFormController(
             return ResponseEntity(headers, HttpStatus.FOUND)
         }
 
-        if (userType == UserType.CITIZEN && (citizen == null || reservation.reserverId != citizen.id)) {
+        if (citizen == null || reservation.reserverId != citizen.id) {
             throw UnauthorizedException()
         }
 
+        val input = populateFormInputs(boatType, width, length, citizen, boatId, reservation)
+        val organizations: List<Organization> = organizationService.getCitizenOrganizations(citizen.id)
+
+        return ResponseEntity.ok(
+            renderBoatSpaceReservationApplication(reservation, citizen, organizations, input, request, userType)
+        )
+    }
+
+    private fun populateFormInputs(
+        boatType: BoatType?,
+        width: Double?,
+        length: Double?,
+        citizen: CitizenWithDetails?,
+        boatId: Int?,
+        reservation: ReservationWithDependencies,
+    ): ReservationInput {
         var input = ReservationInput.initializeInput(boatType, width, length, citizen)
         val usedBoatId = boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
@@ -120,18 +137,7 @@ class BoatSpaceFormController(
         } else {
             input = input.copy(boatId = 0)
         }
-        val organizations: List<Organization> =
-            if (citizen != null) {
-                organizationService.getCitizenOrganizations(citizen.id)
-            } else {
-                emptyList()
-            }
-
-        return if (userType == UserType.EMPLOYEE) {
-            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, organizations, input, request, userType))
-        } else {
-            ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, citizen, organizations, input, request, userType))
-        }
+        return input
     }
 
     @DeleteMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
@@ -557,16 +563,31 @@ class BoatSpaceFormController(
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
         val isEmployee = userType == UserType.EMPLOYEE
-        val citizenId = getCitizen(request, citizenService)?.id
+        val citizen = getCitizen(request, citizenService)
         val userId =
             if (isEmployee) {
                 getEmployee(request)?.id
             } else {
-                citizenId
+                citizen?.id
             }
-
-        if (userId == null) {
+        if (userId == null || citizen == null) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+        val canReserveSlipCondition =
+            ReservationConditions(
+                isEspooCitizen(citizen.municipalityCode),
+                reservationService.getExistingReservationsTypes(citizen.id),
+                getCurrentDate(),
+            ).canReserveSlip()
+
+        if (canReserveSlipCondition is ReservationResult.Failure) {
+            return ResponseEntity.ok(
+                renderErrorPage(
+                    citizen,
+                    request,
+                    messageUtil.getMessage("errorCode.split.${canReserveSlipCondition.errorCode}")
+                )
+            )
         }
 
         val existingReservation =
@@ -588,7 +609,7 @@ class BoatSpaceFormController(
                     reservationService
                         .insertBoatSpaceReservation(
                             userId,
-                            citizenId,
+                            citizen?.id,
                             spaceId,
                             today,
                             endOfYear,
@@ -664,6 +685,18 @@ class BoatSpaceFormController(
             )
         }
     }
+
+    fun renderErrorPage(
+        citizen: CitizenWithDetails?,
+        request: HttpServletRequest,
+        error: String
+    ): String =
+        layout.render(
+            true,
+            citizen?.fullName,
+            request.requestURI,
+            boatSpaceForm.errorPage(error, 2)
+        )
 
     fun getEmployee(request: HttpServletRequest): AppUser? {
         val authenticatedUser = request.getAuthenticatedUser() ?: return null

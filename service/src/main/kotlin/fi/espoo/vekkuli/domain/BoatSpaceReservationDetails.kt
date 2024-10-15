@@ -41,7 +41,7 @@ data class BoatSpaceReservationDetails(
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
-    val validity: ReservationValidity? = ReservationValidity.ValidUntilFurtherNotice,
+    val validity: ReservationValidity? = ReservationValidity.Indefinite,
     val warnings: Set<String> = emptySet(),
     val excludedBoatTypes: List<BoatType>?
 ) {
