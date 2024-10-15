@@ -1,7 +1,17 @@
 package fi.espoo.vekkuli.utils
 
+import org.springframework.stereotype.Service
 import java.time.*
 import java.time.format.DateTimeFormatter
+
+interface TimeProvider {
+    fun getCurrentDate(): LocalDateTime
+}
+
+@Service
+class SystemTimeProvider : TimeProvider {
+    override fun getCurrentDate(): LocalDateTime = LocalDateTime.now()
+}
 
 val shortFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")
 val datePattern: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
@@ -35,7 +45,6 @@ fun isTimeWithinDateRange(
     val endDateTime = endDate.atTime(LocalTime.MAX) // End of the day (23:59:999)
     return !dateTime.isBefore(startDateTime) && !dateTime.isAfter(endDateTime)
 }
-
 fun isMonthDayWithinRange(
     today: MonthDay,
     startDate: MonthDay,

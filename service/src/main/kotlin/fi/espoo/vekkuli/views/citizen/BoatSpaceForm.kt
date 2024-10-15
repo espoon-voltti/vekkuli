@@ -293,7 +293,7 @@ class BoatSpaceForm(
         step: Int
     ): String =
         """
-        <section class="section">
+        <section class="section" id="error-page-container">
          ${stepIndicator.render(step)}
             <div class="container">
                 <div class='column is-half'>
@@ -354,7 +354,7 @@ class BoatSpaceForm(
                 } else {
                     (
                         """
-                    <p>${t("boatApplication.validUntilFurtherNotice")}</p>
+                    <p>${t("boatApplication.Indefinite")}</p>
                 """
                     )
                 },

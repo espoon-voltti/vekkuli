@@ -12,8 +12,8 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.utils.getCurrentDate
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.BoatFormInput
@@ -53,7 +53,8 @@ class BoatSpaceFormController(
     private val citizenService: CitizenService,
     private val organizationService: OrganizationService,
     private val reservationConfirmation: ReservationConfirmation,
-    private val warnings: Warnings
+    private val warnings: Warnings,
+    private val timeProvider: TimeProvider
 ) {
     @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -512,6 +513,18 @@ class BoatSpaceFormController(
         if (userType == UserType.EMPLOYEE) {
             return redirectUrl("/virkailija/venepaikat/varaukset")
         }
+        val citizen = getCitizen(request, citizenService)
+        if (citizen == null) {
+            return redirectUrl("/")
+        }
+        val canReserveSlipCondition =
+            ReservationConditions(
+                isEspooCitizen(citizen.municipalityCode),
+                reservationService.getExistingReservationsTypes(citizen.id),
+                timeProvider.getCurrentDate(),
+            ).canReserveSlip()
+
+        println(canReserveSlipCondition)
 
         // redirect to payments page with reservation id and slip type
         return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
@@ -577,7 +590,7 @@ class BoatSpaceFormController(
             ReservationConditions(
                 isEspooCitizen(citizen.municipalityCode),
                 reservationService.getExistingReservationsTypes(citizen.id),
-                getCurrentDate(),
+                timeProvider.getCurrentDate(),
             ).canReserveSlip()
 
         if (canReserveSlipCondition is ReservationResult.Failure) {
@@ -601,8 +614,8 @@ class BoatSpaceFormController(
             if (existingReservation != null) {
                 existingReservation.id
             } else {
-                val today = LocalDate.now()
-                val endOfYear = LocalDate.of(today.getYear(), Month.DECEMBER, 31)
+                val today = timeProvider.getCurrentDate().toLocalDate()
+                val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
                 if (isEmployee) {
                     reservationService.insertBoatSpaceReservationAsEmployee(userId, spaceId, today, endOfYear).id
                 } else {
@@ -661,7 +674,7 @@ class BoatSpaceFormController(
                         citizen,
                         organizations,
                         input,
-                        getReservationTimeInSeconds(reservation.created),
+                        getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDate()),
                         userType,
                         municipalities
                     )
@@ -678,7 +691,7 @@ class BoatSpaceFormController(
                     citizen,
                     organizations,
                     input,
-                    getReservationTimeInSeconds(reservation.created),
+                    getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDate()),
                     userType,
                     municipalities
                 )
@@ -760,8 +773,11 @@ class BoatSpaceFormController(
     }
 }
 
-fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
-    val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
+fun getReservationTimeInSeconds(
+    reservationCreated: LocalDateTime,
+    currentDate: LocalDateTime
+): Long {
+    val reservationTimePassed = Duration.between(reservationCreated, currentDate).toSeconds()
     return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
 }
 
