@@ -99,7 +99,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.microsoft.playwright:playwright:1.47.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("io.ktor:ktor-client-core:2.3.12") // Core Ktor client
+    implementation("io.ktor:ktor-client-core:3.0.0") // Core Ktor client
     implementation("io.ktor:ktor-client-cio:2.3.12") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:2.3.1") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1") // kotlinx serialization
