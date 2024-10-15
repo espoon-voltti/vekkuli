@@ -120,18 +120,45 @@ class BoatSpaceFormController(
         } else {
             input = input.copy(boatId = 0)
         }
-        val organizations: List<Organization> =
-            if (citizen != null) {
-                organizationService.getCitizenOrganizations(citizen.id)
+
+        val organizations = citizen?.let { organizationService.getCitizenOrganizations(citizen.id) } ?: emptyList()
+
+        val boats =
+            citizen?.let {
+                boatService
+                    .getBoatsForReserver(citizen.id)
+                    .map { boat -> boat.updateBoatDisplayName(messageUtil) }
+            } ?: emptyList()
+
+        val municipalities = citizenService.getMunicipalities()
+        val bodyContent =
+            boatSpaceForm.boatSpaceForm(
+                reservation,
+                boats,
+                citizen,
+                organizations,
+                input,
+                getReservationTimeInSeconds(reservation.created),
+                userType,
+                municipalities
+            )
+        val page =
+            if (userType == UserType.EMPLOYEE) {
+                employeeLayout.render(
+                    true,
+                    request.requestURI,
+                    bodyContent
+                )
             } else {
-                emptyList()
+                layout.render(
+                    true,
+                    citizen?.fullName,
+                    request.requestURI,
+                    bodyContent
+                )
             }
 
-        return if (userType == UserType.EMPLOYEE) {
-            return ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, null, organizations, input, request, userType))
-        } else {
-            ResponseEntity.ok(renderBoatSpaceReservationApplication(reservation, citizen, organizations, input, request, userType))
-        }
+        return ResponseEntity.ok(page)
     }
 
     @DeleteMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
@@ -573,63 +600,6 @@ class BoatSpaceFormController(
         val headers = org.springframework.http.HttpHeaders()
         headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/$reservationId?$queryString"))
         return ResponseEntity(headers, HttpStatus.FOUND)
-    }
-
-    fun renderBoatSpaceReservationApplication(
-        reservation: ReservationWithDependencies,
-        citizen: CitizenWithDetails?,
-        organizations: List<Organization>,
-        input: ReservationInput,
-        request: HttpServletRequest,
-        userType: UserType
-    ): String {
-        val boats =
-            if (citizen == null) {
-                emptyList()
-            } else {
-                boatService
-                    .getBoatsForReserver(citizen.id)
-                    .map { boat ->
-                        boat.updateBoatDisplayName(messageUtil)
-                    }
-            }
-
-        val municipalities = citizenService.getMunicipalities()
-
-        return if (userType == UserType.EMPLOYEE) {
-            employeeLayout.render(
-                true,
-                request.requestURI,
-                (
-                    boatSpaceForm.boatSpaceForm(
-                        reservation,
-                        boats,
-                        citizen,
-                        organizations,
-                        input,
-                        getReservationTimeInSeconds(reservation.created),
-                        userType,
-                        municipalities
-                    )
-                )
-            )
-        } else {
-            layout.render(
-                true,
-                citizen?.fullName,
-                request.requestURI,
-                boatSpaceForm.boatSpaceForm(
-                    reservation,
-                    boats,
-                    citizen,
-                    organizations,
-                    input,
-                    getReservationTimeInSeconds(reservation.created),
-                    userType,
-                    municipalities
-                )
-            )
-        }
     }
 
     fun getEmployee(request: HttpServletRequest): AppUser? {
