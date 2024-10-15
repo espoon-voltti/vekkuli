@@ -59,7 +59,7 @@ $menu-width: 190px;
   color: $bulma-primary;
 }
 
-.button.is-danger {
+.button.is-danger:not(.is-outlined) {
   color: $white
 }
 
