@@ -1,11 +1,11 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,20 +22,18 @@ enum class SubTab {
 }
 
 @Service
-class CitizenDetails {
+class CitizenDetails : BaseView() {
     @Autowired
     private lateinit var formComponents: FormComponents
 
     @Autowired
-    lateinit var messageUtil: MessageUtil
+    private lateinit var reservations: Reservations
 
     @Autowired
     lateinit var icons: Icons
 
     @Autowired
     lateinit var commonComponents: CommonComponents
-
-    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun citizenPage(
         @SanitizeInput citizen: CitizenWithDetails,
