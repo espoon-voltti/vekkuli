@@ -5,10 +5,10 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.employee.SanitizeInput
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class Reservations : BaseView() {
@@ -22,7 +22,6 @@ class Reservations : BaseView() {
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
     ): String {
-
         // language=HTML
         return boatSpaceReservations.joinToString("\n") { reservation ->
             """
@@ -88,17 +87,17 @@ class Reservations : BaseView() {
                     </div>
                     <div class="buttons">
                     ${
-                        if (reservation.status == ReservationStatus.Invoiced) {
-                            """
+                if (reservation.status == ReservationStatus.Invoiced) {
+                    """
                                 <button class="button is-primary" id="invoice-paid-button" @click="modalOpen=true">
                                     ${t("citizenDetails.markInvoicePaid")}
                                 </button>
                                 ${modalInvoicePaid(citizen, reservation)}
-                            """.trimMargin()
-                        } else {
-                            ""
-                        }
-                    }
+                    """.trimMargin()
+                } else {
+                    ""
+                }
+            }
                         <button class="button is-primary">
                             ${t("boatSpaceReservation.button.swapPlace")}
                         </button>
@@ -108,7 +107,7 @@ class Reservations : BaseView() {
                         </button>
                     </div>
                 </div>
-                """.trimIndent()
+            """.trimIndent()
         }
     }
 
@@ -116,41 +115,41 @@ class Reservations : BaseView() {
         citizen: CitizenWithDetails,
         reservation: BoatSpaceReservationDetails
     ): String {
-
         val today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
         return """
-            <div class="modal" x-show="modalOpen" style="display:none;">
-            <div class="modal-underlay" @click="modalOpen = false"></div>
-            <div class="modal-content">
-            <h3>${t("citizenDetails.markInvoicePaid")}</h3>
-            <form 
-                hx-post="/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi" 
-                hx-target="#citizen-details"
-                hx-select="#citizen-details"
-                hx-swap="outerHTML"
-                >
-                ${formComponents.textInput("citizenDetails.info", "invoicePaidInfo", "")}
-                ${formComponents.dateInput("citizenDetails.paymentDate", "paymentDate", today)}
-                <input hidden name="reservationId" value="${reservation.id}" />
-                <input hidden name="citizenId" value="${citizen.id}" />
-            
-                <div class="block">
-                    <button id="invoice-modal-cancel"
-                            class="button"
-                            x-on:click="modalOpen = false"
-                            type="button">
-                        ${t("cancel")}
-                    </button>
-                    <button
-                            id="invoice-modal-confirm"
-                            class="button is-primary"
-                            type="submit">
-                        ${t("confirm")}
-                    </button>
+                <div class="modal" x-show="modalOpen" style="display:none;">
+                <div class="modal-underlay" @click="modalOpen = false"></div>
+                <div class="modal-content">
+                <h3>${t("citizenDetails.markInvoicePaid")}</h3>
+                <form 
+                    hx-post="/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi" 
+                    hx-target="#citizen-details"
+                    hx-select="#citizen-details"
+                    hx-swap="outerHTML"
+                    >
+                    ${formComponents.textInput("citizenDetails.info", "invoicePaidInfo", "")}
+                    ${formComponents.dateInput("citizenDetails.paymentDate", "paymentDate", today)}
+                    <input hidden name="reservationId" value="${reservation.id}" />
+                    <input hidden name="citizenId" value="${citizen.id}" />
+                
+                    <div class="block">
+                        <button id="invoice-modal-cancel"
+                                class="button"
+                                x-on:click="modalOpen = false"
+                                type="button">
+                            ${t("cancel")}
+                        </button>
+                        <button
+                                id="invoice-modal-confirm"
+                                class="button is-primary"
+                                type="submit">
+                            ${t("confirm")}
+                        </button>
+                    </div>
+                </form>
                 </div>
-            </form>
             </div>
-        </div>""".trimIndent()
+            """.trimIndent()
     }
 }

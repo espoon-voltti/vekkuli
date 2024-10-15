@@ -5,5 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired
 
 abstract class BaseView {
     @Autowired lateinit var messageUtil: MessageUtil
+
     fun t(key: String): String = messageUtil.getMessage(key)
 }
