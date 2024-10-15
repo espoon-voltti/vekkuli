@@ -455,7 +455,7 @@ class CitizenDetails {
                                 </div>
                                 ${deleteButton(boat.reservationId != null, boat.id)}
                                 
-                                ${showBoatWarnings(boat.hasAnyWarnings())}
+                                ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
                                 </span>
                         </div>
                         <div class="columns">
