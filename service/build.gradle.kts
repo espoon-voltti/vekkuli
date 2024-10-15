@@ -102,6 +102,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:3.0.0") // Core Ktor client
     implementation("io.ktor:ktor-client-cio:2.3.12") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:2.3.1") // Content negotiation
+    implementation("io.ktor:ktor-client-plugins:3.0.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
