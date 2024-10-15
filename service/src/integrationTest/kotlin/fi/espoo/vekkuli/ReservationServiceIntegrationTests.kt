@@ -368,7 +368,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         reservationService.markInvoicePaid(newReservation.id, LocalDate.now(), "")
 
         val reservation = reservationService.getBoatSpaceReservation(newReservation.id)
-
         assertEquals(ReservationStatus.Confirmed, reservation?.status, "Reservation is marked as paid")
     }
 
@@ -424,5 +423,12 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
         assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
         assertEquals(LocalDate.now(), terminatedReservation?.endDate, "End date is set to now")
+    }
+
+    @Test
+    fun `should get correct previous reservation types for citizen`() {
+        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
+        val reservationType = reservationService.getExistingReservationsTypes(citizenId)
+        assertEquals(HasExistingReservationsTypes.Indefinite, reservationType, "Correct reservation type is fetched")
     }
 }

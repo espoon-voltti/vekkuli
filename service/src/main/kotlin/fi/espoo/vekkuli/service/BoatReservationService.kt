@@ -414,4 +414,17 @@ class BoatReservationService(
             isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
         }
     }
+
+    fun getExistingReservationsTypes(citizenId: UUID): HasExistingReservationsTypes {
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId)
+        return when {
+            reservations.isEmpty() -> HasExistingReservationsTypes.No
+            reservations.any { it.validity == ReservationValidity.Indefinite } &&
+                reservations.any { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.Both
+            reservations.all { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.FixedTerm
+            reservations.all { it.validity == ReservationValidity.Indefinite } -> HasExistingReservationsTypes.Indefinite
+
+            else -> HasExistingReservationsTypes.No
+        }
+    }
 }
