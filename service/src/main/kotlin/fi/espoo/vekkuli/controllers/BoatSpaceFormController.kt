@@ -210,39 +210,6 @@ class BoatSpaceFormController(
         return ResponseEntity.ok("")
     }
 
-    @PostMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/validate")
-    @ResponseBody
-    fun validateForm(
-        @PathVariable usertype: String,
-        @PathVariable reservationId: Int,
-        @Valid @ModelAttribute("input") input: ReservationInput,
-        bindingResult: BindingResult,
-        request: HttpServletRequest,
-        model: Model,
-    ): String {
-        val userType = UserType.fromPath(usertype)
-        if (userType == UserType.EMPLOYEE) {
-            val employee = getEmployee(request)
-            if (employee == null) {
-                return redirectUrl("/")
-            }
-
-            val reservation = reservationService.getReservationWithoutCitizen(reservationId)
-            if (reservation == null) {
-                return redirectUrl("/")
-            }
-
-            return renderBoatSpaceReservationApplication(reservation, null, emptyList(), input, request, userType)
-        }
-        val citizen = getCitizen(request, citizenService)
-        val reservation = reservationService.getReservationWithReserver(reservationId)
-        if (reservation == null) return redirectUrl("/")
-
-        val organizations = if (citizen != null) organizationService.getCitizenOrganizations(citizen.id) else emptyList()
-
-        return renderBoatSpaceReservationApplication(reservation, citizen, organizations, input, request, userType)
-    }
-
     @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen/hae")
     @ResponseBody
     fun searchCitizens(

@@ -296,6 +296,7 @@ class BoatSpaceForm(
         reservationTimeInSeconds: Long,
         userType: UserType,
         municipalities: List<Municipality>,
+        isNewCustomer: Boolean = true
     ): String {
         val harborField =
             formComponents.field(
@@ -524,9 +525,6 @@ class BoatSpaceForm(
                         </span>
                     </div>
                 </div>
-                
-                
-                
                 <template x-if="citizenFullName != ''">
                     <div id='citizen-details' class="block">
                     
