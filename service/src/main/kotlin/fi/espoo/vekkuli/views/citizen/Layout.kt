@@ -108,7 +108,7 @@ class Layout {
             <div>
                 $bodyContent 
             </div>
-
+                <div id="modal-container"></div>
             </body>
             </html>
             """.trimIndent()

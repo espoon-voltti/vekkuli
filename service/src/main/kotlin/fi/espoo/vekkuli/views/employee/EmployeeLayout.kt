@@ -83,6 +83,7 @@ class EmployeeLayout {
                     $bodyContent 
                 </div>
             </div>
+            <div id='modal-container'></div>
             </body>
             </html>
             """.trimIndent()
