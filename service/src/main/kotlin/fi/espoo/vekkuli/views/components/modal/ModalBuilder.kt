@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.views.components.modal
 
+import fi.espoo.vekkuli.controllers.Utils
+
 class ModalBuilder {
     private val modalStateId = "isOpen"
     private var title: String? = null
@@ -48,9 +50,7 @@ class ModalBuilder {
 
     private fun buildButtons(buttons: List<ModalButtonParam>): String {
         // language=HTML
-        return """
-                                    <div class="buttons">
-                                        ${
+        return """<div class="buttons">${
             buttons.joinToString("\n") { button ->
                 val additionalAttributes =
                     button.attributes.entries.joinToString(" ") { (key, value) ->
@@ -66,9 +66,7 @@ class ModalBuilder {
                 </button>
                 """.trimIndent()
             }
-        }
-                                    </div>
-            """.trimIndent()
+        }</div>""".trimIndent()
     }
 
     private fun getButtonType(type: ModalButtonType): String {
@@ -85,13 +83,20 @@ class ModalBuilder {
         var style: ModalButtonStyle = ModalButtonStyle.Default
         val attributes: MutableMap<String, String> = mutableMapOf()
 
-        fun setTargetForm(formId: String) = apply { attributes["form"] = formId }
+        fun setTargetForm(formId: String) = apply { addAttribute("form", formId) }
 
         fun setText(text: String) = apply { this.text = text }
 
         fun setType(type: ModalButtonType) = apply { this.type = type }
 
         fun setStyle(style: ModalButtonStyle) = apply { this.style = style }
+
+        fun setTestId(testId: String) =
+            apply {
+                if (!Utils.isStagingOrProduction()) {
+                    addAttribute("data-testid", testId)
+                }
+            }
 
         fun addAttribute(
             key: String,

@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.components.modal
 
+import fi.espoo.vekkuli.controllers.Utils
 import org.springframework.stereotype.Service
 
 @Service
@@ -41,6 +42,13 @@ class Modal {
         fun setPath(path: String) = apply { this.path = path }
 
         fun setStyle(style: ModalButtonStyle) = apply { this.style = style }
+
+        fun setTestId(testId: String) =
+            apply {
+                if (!Utils.isStagingOrProduction()) {
+                    addAttribute("data-testid", testId)
+                }
+            }
 
         fun addAttribute(
             key: String,

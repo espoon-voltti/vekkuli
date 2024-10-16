@@ -105,10 +105,12 @@ class ReservationList : BaseView() {
                             ${t("boatSpaceReservation.button.swapPlace")}
                         </button>
                         
-                        <button class="button is-danger is-outlined">
-                            ${t("boatSpaceReservation.button.terminateReservation")}
-                        </button>
-                        
+                        ${modal.createOpenModalBuilder()
+                .setText(t("boatSpaceReservation.button.terminateReservation"))
+                .setPath("/reservation/modal/terminate-reservation/${reservation.id}")
+                .setStyle(ModalButtonStyle.DangerOutline)
+                .setTestId("open-terminate-reservation-modal")
+                .build()
             }
                     </div>
                 </div>
