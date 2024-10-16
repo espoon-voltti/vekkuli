@@ -258,7 +258,7 @@ input[type="radio"]:checked {
 .field.is-grouped.is-grouped-no-spacing-v {
   gap: 0;
   column-gap: 0;
-  row-gap: $block-spacing/2;
+  row-gap: calc($block-spacing/2);
 }
 
 .select {
@@ -271,7 +271,7 @@ input[type="radio"]:checked {
 
 form .block:not(:last-child),
 form .subtitle:not(:last-child) {
-  margin-bottom: $block-spacing*2;
+  margin-bottom: calc($block-spacing*2);
 }
 
 .modal {
