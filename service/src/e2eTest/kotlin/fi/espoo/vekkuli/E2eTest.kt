@@ -4,7 +4,6 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 
@@ -414,28 +413,23 @@ class E2eTest : PlaywrightTest() {
     @Test
     fun authenticationOnReservation() {
         // go directly to reservation page
-        // Mocking the LocalDateTime.now() call
-        Mockito.mockStatic(LocalDateTime::class.java, Mockito.CALLS_REAL_METHODS).use { mock ->
-            // Set the mocked value to return a specific date-time
+        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
+        reservationPage.navigateTo()
 
-            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-            reservationPage.navigateTo()
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+        reservationPage.firstReserveButton.click()
+        assertThat(reservationPage.authModal).isVisible()
 
-            reservationPage.widthFilterInput.fill("3")
-            reservationPage.lengthFilterInput.fill("6")
-            reservationPage.lengthFilterInput.blur()
-            reservationPage.firstReserveButton.click()
-            assertThat(reservationPage.authModal).isVisible()
-
-            reservationPage.authModalCancel.click()
-            assertThat(reservationPage.authModal).isHidden()
-            reservationPage.firstReserveButton.click()
-            reservationPage.authModalContinue.click()
-            page.getByText("Kirjaudu").click()
-            val formPage = BoatSpaceFormPage(page)
-            assertThat(formPage.header).isVisible()
-            formPage.fillFormAndSubmit()
-        }
+        reservationPage.authModalCancel.click()
+        assertThat(reservationPage.authModal).isHidden()
+        reservationPage.firstReserveButton.click()
+        reservationPage.authModalContinue.click()
+        page.getByText("Kirjaudu").click()
+        val formPage = BoatSpaceFormPage(page)
+        assertThat(formPage.header).isVisible()
+        formPage.fillFormAndSubmit()
     }
 
     @Test

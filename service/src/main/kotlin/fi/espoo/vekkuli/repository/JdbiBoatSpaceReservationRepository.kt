@@ -46,6 +46,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.validity,
                            r.id as reserver_id,
                            r.name,
                            r.type as reserver_type,
@@ -239,6 +240,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.validity,
                            r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,
@@ -312,6 +314,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.validity,
                            r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,
@@ -521,14 +524,17 @@ class JdbiBoatSpaceReservationRepository(
         reservationId: Int,
         boatId: Int,
         reserverId: UUID,
-        reservationStatus: ReservationStatus
+        reservationStatus: ReservationStatus,
+        validity: ReservationValidity,
+        startDate: LocalDate,
+        endDate: LocalDate,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = :status, updated = :updatedTime, boat_id = :boatId, reserver_id = :reserverId
+                    SET status = :status, updated = :updatedTime, boat_id = :boatId, reserver_id = :reserverId, validity = :validity, start_date = :startDate, end_date = :endDate
                     WHERE id = :id
                         AND (status = 'Info' OR status = 'Payment')
                         AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
@@ -540,6 +546,9 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("id", reservationId)
             query.bind("boatId", boatId)
             query.bind("reserverId", reserverId)
+            query.bind("validity", validity)
+            query.bind("startDate", startDate)
+            query.bind("endDate", endDate)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.mapTo<BoatSpaceReservation>().one()
         }

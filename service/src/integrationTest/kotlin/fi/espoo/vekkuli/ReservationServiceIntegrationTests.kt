@@ -66,6 +66,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 boatId,
                 citizenId,
                 ReservationStatus.Payment,
+                ReservationValidity.Indefinite,
+                LocalDate.now(),
+                LocalDate.now(),
             )
         val reservation = reservationService.getReservationWithReserver(madeReservation.id)
         assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
@@ -133,6 +136,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 phone = "0403849283",
             ),
             ReservationStatus.Payment,
+            ReservationValidity.FixedTerm,
+            LocalDate.now(),
+            LocalDate.now()
         )
         val reservation =
             reservationService
@@ -263,6 +269,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 phone = "0403849283"
             ),
             ReservationStatus.Payment,
+            ReservationValidity.FixedTerm,
+            LocalDate.now(),
+            LocalDate.now()
         )
 
         val reservationsWithWarnings =
@@ -362,7 +371,10 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 email = "test@email.com",
                 phone = "1234567890"
             ),
-            ReservationStatus.Invoiced
+            ReservationStatus.Invoiced,
+            ReservationValidity.FixedTerm,
+            LocalDate.now(),
+            LocalDate.now()
         )
 
         reservationService.markInvoicePaid(newReservation.id, LocalDate.now(), "")
@@ -429,6 +441,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     fun `should get correct previous reservation types for citizen`() {
         createReservationInConfirmedState(reservationService, citizenId, 1, 1)
         val reservationType = reservationService.getExistingReservationsTypes(citizenId)
-        assertEquals(HasExistingReservationsTypes.Indefinite, reservationType, "Correct reservation type is fetched")
+        assertEquals(HasExistingReservationsTypes.FixedTerm, reservationType, "Correct reservation type is fetched")
     }
 }

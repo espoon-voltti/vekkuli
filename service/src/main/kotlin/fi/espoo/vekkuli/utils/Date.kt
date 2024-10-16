@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.utils
 
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -8,6 +9,13 @@ interface TimeProvider {
     fun getCurrentDate(): LocalDateTime
 }
 
+@Profile("local")
+@Service
+class LocalTimeProvider : TimeProvider {
+    override fun getCurrentDate(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
+}
+
+@Profile("!local")
 @Service
 class SystemTimeProvider : TimeProvider {
     override fun getCurrentDate(): LocalDateTime = LocalDateTime.now()
