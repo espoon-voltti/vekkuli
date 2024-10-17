@@ -386,4 +386,6 @@ class BoatReservationService(
     ) {
         val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
     }
+
+    fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
 }

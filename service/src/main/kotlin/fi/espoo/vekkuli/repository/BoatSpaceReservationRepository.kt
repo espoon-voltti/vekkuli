@@ -57,4 +57,6 @@ interface BoatSpaceReservationRepository {
     fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation
+
+    fun getReservationPeriods(): List<ReservationPeriod>
 }

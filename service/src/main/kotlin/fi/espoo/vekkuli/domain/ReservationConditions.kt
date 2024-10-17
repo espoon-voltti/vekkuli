@@ -7,12 +7,6 @@ import fi.espoo.vekkuli.utils.isTimeWithinDateRange
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-enum class ExistingReservations {
-    No,
-    FixedTerm,
-    Indefinite,
-    Both
-}
 // Slip period restrictions
 
 private fun periodForSlipRenewalAndChange(year: Int): Pair<LocalDate, LocalDate> =
