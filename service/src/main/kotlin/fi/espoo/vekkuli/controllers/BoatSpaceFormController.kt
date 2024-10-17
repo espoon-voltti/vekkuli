@@ -391,8 +391,9 @@ class BoatSpaceFormController(
                 .header("Location", url)
                 .body("")
 
+        val isEmployee = userType == UserType.EMPLOYEE
         val citizen =
-            if (userType == UserType.EMPLOYEE) {
+            if (isEmployee) {
                 val employee = getEmployee(request)
 
                 if (employee == null) {
@@ -488,15 +489,17 @@ class BoatSpaceFormController(
         }
 
         val reservationStatus =
-            if (userType == UserType.EMPLOYEE) ReservationStatus.Invoiced else ReservationStatus.Payment
-        val canReserveSlipCondition =
+            if (isEmployee) ReservationStatus.Invoiced else ReservationStatus.Payment
+        val reservationConditions =
             ReservationConditions(
                 isEspooCitizen(citizen.municipalityCode),
                 reservationService.getExistingReservationsTypes(citizen.id),
                 timeProvider.getCurrentDate(),
-            ).canReserveSlip()
+            )
 
-        if (canReserveSlipCondition is ReservationResult.Success) {
+        if (isEmployee || reservationConditions.canReserveSlip() == null) {
+            val reserveSlipResult =
+                reservationConditions.reserveSlipResult()
             reservationService.reserveBoatSpace(
                 reserverId,
                 ReserveBoatSpaceInput(
@@ -516,15 +519,13 @@ class BoatSpaceFormController(
                     phone = input.phone!!,
                 ),
                 reservationStatus,
-                canReserveSlipCondition.reservationValidity,
-                canReserveSlipCondition.startDate,
-                canReserveSlipCondition.endDate
+                reserveSlipResult.reservationValidity,
+                reserveSlipResult.startDate,
+                reserveSlipResult.endDate
             )
-        } else {
-            return redirectUrl("/${userType.path}/venepaikat/varaus/$reservationId")
         }
 
-        if (userType == UserType.EMPLOYEE) {
+        if (isEmployee) {
             return redirectUrl("/virkailija/venepaikat/varaukset")
         }
         // redirect to payments page with reservation id and slip type
@@ -593,19 +594,19 @@ class BoatSpaceFormController(
             if ((citizen == null)) {
                 return ResponseEntity(HttpStatus.FORBIDDEN)
             }
-            val canReserveSlipCondition =
+            val reserveSlipErrorCode =
                 ReservationConditions(
                     isEspooCitizen(citizen.municipalityCode),
                     reservationService.getExistingReservationsTypes(citizen.id),
                     timeProvider.getCurrentDate(),
                 ).canReserveSlip()
 
-            if (canReserveSlipCondition is ReservationResult.Failure) {
+            if (reserveSlipErrorCode != null) {
                 return ResponseEntity.ok(
                     renderErrorPage(
                         citizen,
                         request,
-                        messageUtil.getMessage("errorCode.split.${canReserveSlipCondition.errorCode}")
+                        messageUtil.getMessage("errorCode.split.$reserveSlipErrorCode")
                     )
                 )
             }

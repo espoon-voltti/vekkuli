@@ -2,9 +2,7 @@ package fi.espoo.vekkuli.tests
 
 import fi.espoo.vekkuli.domain.HasExistingReservationsTypes
 import fi.espoo.vekkuli.domain.ReservationConditions
-import fi.espoo.vekkuli.domain.ReservationResult
-import fi.espoo.vekkuli.domain.ReservationValidity
-import org.junit.jupiter.api.Assertions.assertNotNull
+import fi.espoo.vekkuli.domain.ReservationResultErrorCode
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -28,49 +26,63 @@ class ReservationPeriodTest {
 
     @Test
     fun `should allow new slip for Espoo citizen within correct period`() {
-        assertNotNull(espooCitizen.copy(currentDate = LocalDateTime.of(year, 3, 1, 0, 0)).canReserveSlip())
-        assertNotNull(espooCitizen.copy(currentDate = LocalDateTime.of(year, 9, 30, 23, 59)).canReserveSlip())
+        assertNull(espooCitizen.copy(currentDate = LocalDateTime.of(year, 3, 1, 0, 0)).canReserveSlip())
+        assertNull(espooCitizen.copy(currentDate = LocalDateTime.of(year, 9, 30, 23, 59)).canReserveSlip())
     }
 
     @Test
     fun `should disallow new slip for Espoo citizen out of correct period`() {
-        assertNull(espooCitizen.copy(currentDate = LocalDateTime.of(year, 2, 29, 23, 59)).canReserveSlip())
-        assertNull(espooCitizen.copy(currentDate = LocalDateTime.of(year, 10, 1, 0, 0)).canReserveSlip())
+        assertEquals(
+            espooCitizen.copy(currentDate = LocalDateTime.of(year, 2, 29, 23, 59)).canReserveSlip(),
+            ReservationResultErrorCode.NotWithinPeriod
+        )
+        assertEquals(
+            espooCitizen.copy(currentDate = LocalDateTime.of(year, 10, 1, 0, 0)).canReserveSlip(),
+            ReservationResultErrorCode.NotWithinPeriod
+        )
     }
 
     @Test
     fun `should allow new slip for non Espoo citizen within correct period`() {
-        assertNotNull(otherCitizen.copy(currentDate = LocalDateTime.of(year, 4, 1, 0, 0)).canReserveSlip())
-        assertNotNull(otherCitizen.copy(currentDate = LocalDateTime.of(year, 9, 30, 23, 59)).canReserveSlip())
+        assertNull(otherCitizen.copy(currentDate = LocalDateTime.of(year, 4, 1, 0, 0)).canReserveSlip())
+        assertNull(otherCitizen.copy(currentDate = LocalDateTime.of(year, 9, 30, 23, 59)).canReserveSlip())
     }
 
     @Test
     fun `should disallow new slip for non Espoo citizen out of correct period`() {
-        assertNull(otherCitizen.copy(currentDate = LocalDateTime.of(year, 3, 31, 23, 59)).canReserveSlip())
-        assertNull(otherCitizen.copy(currentDate = LocalDateTime.of(year, 10, 1, 0, 0)).canReserveSlip())
+        assertEquals(
+            otherCitizen.copy(currentDate = LocalDateTime.of(year, 3, 31, 23, 59)).canReserveSlip(),
+            ReservationResultErrorCode.NotWithinPeriod
+        )
+        assertEquals(
+            otherCitizen.copy(currentDate = LocalDateTime.of(year, 10, 1, 0, 0)).canReserveSlip(),
+            ReservationResultErrorCode.NotWithinPeriod
+        )
     }
 
     @Test
-    fun `should now allow second slip for Espoo citizen if out of period`() {
-        assertNull(
+    fun `should not allow second slip for Espoo citizen if out of period`() {
+        assertEquals(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
                     currentDate = LocalDateTime.of(year, 3, 31, 23, 59)
-                ).canReserveSlip()
+                ).canReserveSlip(),
+            ReservationResultErrorCode.NotWithinPeriod
         )
-        assertNull(
+        assertEquals(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
                     currentDate = LocalDateTime.of(year, 10, 1, 0, 0)
-                ).canReserveSlip()
+                ).canReserveSlip(),
+            ReservationResultErrorCode.NotWithinPeriod
         )
     }
 
     @Test
     fun `should allow second slip for Espoo citizen if first one is fixed term`() {
-        assertNotNull(
+        assertNull(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.FixedTerm,
@@ -81,41 +93,37 @@ class ReservationPeriodTest {
 
     @Test
     fun `can reserve second place if first is indefinite`() {
-        assertEquals(
+        assertNull(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 4, 1, 0, 0)
-                ).canReserveSlip(),
-            ReservationResult.Success(
-                LocalDateTime.of(year, 4, 1, 0, 0).toLocalDate(),
-                LocalDateTime.of(year + 1, 1, 31, 0, 0).toLocalDate(),
-                ReservationValidity.Indefinite
-            )
-        )
-    }
-
-    @Test
-    fun `cannot add third place`() {
-        assertNull(
-            espooCitizen
-                .copy(
-                    hasExistingReservationsTypes = HasExistingReservationsTypes.Both,
-                    currentDate = LocalDateTime.of(2021, 4, 1, 0, 0)
                 ).canReserveSlip()
         )
     }
 
     @Test
+    fun `cannot add third place`() {
+        assertEquals(
+            espooCitizen
+                .copy(
+                    hasExistingReservationsTypes = HasExistingReservationsTypes.Both,
+                    currentDate = LocalDateTime.of(2021, 4, 1, 0, 0)
+                ).canReserveSlip(),
+            ReservationResultErrorCode.AlreadyHasReservation
+        )
+    }
+
+    @Test
     fun `should allow renewing indefinite slip for Espoo citizen within correct period`() {
-        assertNotNull(
+        assertNull(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
                     currentDate = LocalDateTime.of(year, 1, 1, 0, 0)
                 ).canRenewSlip()
         )
-        assertNotNull(
+        assertNull(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
@@ -162,7 +170,7 @@ class ReservationPeriodTest {
 
     @Test
     fun `should allow changing slip for Espoo citizen within renewal and change period`() {
-        assertNotNull(
+        assertNull(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
@@ -173,7 +181,7 @@ class ReservationPeriodTest {
 
     @Test
     fun `should allow changing slip for Espoo citizen within change period`() {
-        assertNotNull(
+        assertNull(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.Indefinite,
@@ -184,12 +192,13 @@ class ReservationPeriodTest {
 
     @Test
     fun `should disallow changing slip for Espoo citizen within correct period if there is no slip`() {
-        assertNull(
+        assertEquals(
             espooCitizen
                 .copy(
                     hasExistingReservationsTypes = HasExistingReservationsTypes.No,
                     currentDate = LocalDateTime.of(year, 2, 1, 0, 0)
-                ).canChangeSlip()
+                ).canChangeSlip(),
+            ReservationResultErrorCode.NoReservations
         )
     }
 }

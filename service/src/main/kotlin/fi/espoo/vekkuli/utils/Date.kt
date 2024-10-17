@@ -12,7 +12,7 @@ interface TimeProvider {
 @Profile("local")
 @Service
 class LocalTimeProvider : TimeProvider {
-    override fun getCurrentDate(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
+    override fun getCurrentDate(): LocalDateTime = LocalDateTime.of(2024, 1, 1, 0, 0)
 }
 
 @Profile("!local")

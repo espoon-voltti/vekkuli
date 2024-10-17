@@ -37,139 +37,149 @@ enum class ReservationResultErrorCode {
     AlreadyHasReservation,
     NotEspooCitizen,
     NotIndefinite,
+    NoReservations
 }
 
-sealed class ReservationResult {
-    data class Success(
-        val startDate: LocalDate,
-        val endDate: LocalDate,
-        val reservationValidity: ReservationValidity,
-    ) : ReservationResult()
-
-    data class Failure(
-        val errorCode: ReservationResultErrorCode
-    ) : ReservationResult()
-}
+data class ReservationResult(
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val reservationValidity: ReservationValidity,
+)
 
 data class ReservationConditions(
     val isCitizenOfEspoo: Boolean,
     val hasExistingReservationsTypes: HasExistingReservationsTypes,
     val currentDate: LocalDateTime,
 ) {
-    // Returns the end date of the reservation if the reservation is allowed, otherwise null
-    private fun canReserveSlipForEspooResident(
+    private fun reserveSlipForEspooResidentResult(
         hasExistingReservationsTypes: HasExistingReservationsTypes,
         currentDate: LocalDateTime,
     ): ReservationResult {
         // Handle second slip restrictions
         if (hasExistingReservationsTypes != HasExistingReservationsTypes.No) {
-            val period = periodForSecondSlip(currentDate.year)
-            if (!isTimeWithinDateRange(currentDate, period.first, period.second)) {
-                // Not a period for reserving second slip
-                return ReservationResult.Failure(ReservationResultErrorCode.NotWithinPeriod)
-            }
-            if (hasExistingReservationsTypes == HasExistingReservationsTypes.Both) {
-                // Already has an indefinite reservation
-                return ReservationResult.Failure(ReservationResultErrorCode.AlreadyHasReservation)
-            }
-            return ReservationResult.Success(
+            return ReservationResult(
                 currentDate.toLocalDate(),
                 getLastDayOfNextYearsJanuary(currentDate.year),
                 if (hasExistingReservationsTypes == HasExistingReservationsTypes.Indefinite) {
                     ReservationValidity.Indefinite
                 } else {
                     ReservationValidity.FixedTerm
-                },
+                }
             )
+        }
+        // First slip
+        return ReservationResult(
+            currentDate.toLocalDate(),
+            getLastDayOfNextYearsJanuary(currentDate.year),
+            ReservationValidity.Indefinite,
+        )
+    }
+
+    private fun canReserveSlipForEspooResident(
+        hasExistingReservationsTypes: HasExistingReservationsTypes,
+        currentDate: LocalDateTime,
+    ): ReservationResultErrorCode? {
+        // Handle second slip restrictions
+        if (hasExistingReservationsTypes != HasExistingReservationsTypes.No) {
+            val period = periodForSecondSlip(currentDate.year)
+            if (!isTimeWithinDateRange(currentDate, period.first, period.second)) {
+                // Not a period for reserving second slip
+                return ReservationResultErrorCode.NotWithinPeriod
+            }
+            if (hasExistingReservationsTypes == HasExistingReservationsTypes.Both) {
+                // Already has an indefinite reservation
+                return ReservationResultErrorCode.AlreadyHasReservation
+            }
+            return null
         }
         // First slip
         val period = periodForNewSlip(currentDate.year, true)
 
         if (isTimeWithinDateRange(currentDate, period.first, period.second)) {
-            return ReservationResult.Success(
-                currentDate.toLocalDate(),
-                getLastDayOfNextYearsJanuary(currentDate.year),
-                ReservationValidity.Indefinite,
-            )
+            return null
         }
-        return ReservationResult.Failure(ReservationResultErrorCode.NotWithinPeriod)
+        return ReservationResultErrorCode.NotWithinPeriod
     }
+
+    private fun reserveSlipForNonEspooResidentResult(currentDate: LocalDateTime,): ReservationResult =
+        ReservationResult(
+            currentDate.toLocalDate(),
+            getLastDayOfYear(currentDate.year),
+            ReservationValidity.FixedTerm
+        )
 
     private fun canReserveSlipForNonEspooResident(
         hasExistingReservationsTypes: HasExistingReservationsTypes,
         currentDate: LocalDateTime,
-    ): ReservationResult? {
-        // Handle first slip restrictions
-        if (hasExistingReservationsTypes == HasExistingReservationsTypes.No) {
-            // First slip
-            val period = periodForNewSlip(currentDate.year, false)
-
-            if (isTimeWithinDateRange(currentDate, period.first, period.second)) {
-                return ReservationResult.Success(
-                    currentDate.toLocalDate(),
-                    getLastDayOfYear(currentDate.year),
-                    ReservationValidity.FixedTerm
-                )
-            } else {
-                return ReservationResult.Failure(ReservationResultErrorCode.NotWithinPeriod)
-            }
+    ): ReservationResultErrorCode? {
+        // Second slip
+        if (hasExistingReservationsTypes != HasExistingReservationsTypes.No) {
+            return ReservationResultErrorCode.AlreadyHasReservation
         }
-        return ReservationResult.Failure(ReservationResultErrorCode.AlreadyHasReservation)
+        // First slip
+        val period = periodForNewSlip(currentDate.year, false)
+        if (!isTimeWithinDateRange(currentDate, period.first, period.second)) {
+            return ReservationResultErrorCode.NotWithinPeriod
+        }
+
+        return null
     }
 
-    fun canReserveSlip(): ReservationResult? =
+    fun reserveSlipResult(): ReservationResult =
+        if (isCitizenOfEspoo) {
+            reserveSlipForEspooResidentResult(hasExistingReservationsTypes, currentDate)
+        } else {
+            reserveSlipForNonEspooResidentResult(currentDate)
+        }
+
+    fun canReserveSlip(): ReservationResultErrorCode? =
         if (isCitizenOfEspoo) {
             canReserveSlipForEspooResident(hasExistingReservationsTypes, currentDate)
         } else {
             canReserveSlipForNonEspooResident(hasExistingReservationsTypes, currentDate)
         }
 
-    // Returns the end date of the reservation if the reservation is allowed, otherwise null
-    fun canRenewSlip(): ReservationResult? {
-        // Only Espoo citizens can renew a place
-        // Only indefinite spaces can be renewed
-        if (isCitizenOfEspoo) {
-            return if (hasExistingReservationsTypes == HasExistingReservationsTypes.Indefinite) {
-                val period = periodForSlipRenewalAndChange(currentDate.year)
-                if (isTimeWithinDateRange(currentDate, period.first, period.second)) {
-                    ReservationResult.Success(
-                        currentDate.toLocalDate(),
-                        getLastDayOfNextYearsJanuary(currentDate.year),
-                        ReservationValidity.Indefinite
-                    )
-                } else {
-                    ReservationResult.Failure(ReservationResultErrorCode.NotWithinPeriod)
-                }
-            } else {
-                ReservationResult.Failure(ReservationResultErrorCode.NotIndefinite)
-            }
+    fun canRenewSlip(): ReservationResultErrorCode? {
+        if (!isCitizenOfEspoo) return ReservationResultErrorCode.NotEspooCitizen
+        if (hasExistingReservationsTypes != HasExistingReservationsTypes.Indefinite) {
+            return ReservationResultErrorCode.NotIndefinite
         }
-        return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
+        val period = periodForSlipRenewalAndChange(currentDate.year)
+        if (!isTimeWithinDateRange(currentDate, period.first, period.second)) {
+            ReservationResultErrorCode.NotWithinPeriod
+        }
+        return null
     }
 
-    // Returns the end date of the reservation if the reservation is allowed, otherwise null
-    fun canChangeSlip(): ReservationResult? {
-        // Only citizens of Espoo that have a place can change a place
-        if (isCitizenOfEspoo) {
-            if (hasExistingReservationsTypes == HasExistingReservationsTypes.Indefinite) {
-                val firstPeriod = periodForSlipChange(currentDate.year)
-                val secondPeriod = periodForSlipRenewalAndChange(currentDate.year)
+    fun canChangeSlip(): ReservationResultErrorCode? {
+        if (hasExistingReservationsTypes == HasExistingReservationsTypes.No) return ReservationResultErrorCode.NoReservations
+        val firstPeriod = periodForSlipChange(currentDate.year)
+        val secondPeriod = periodForSlipRenewalAndChange(currentDate.year)
 
-                // Check if the current date is within the change period
-                return if (isTimeWithinDateRange(currentDate, firstPeriod.first, firstPeriod.second) ||
+        // Check if the current date is within the change period
+        if (!(
+                isTimeWithinDateRange(currentDate, firstPeriod.first, firstPeriod.second) ||
                     isTimeWithinDateRange(currentDate, secondPeriod.first, secondPeriod.second)
-                ) {
-                    ReservationResult.Success(
-                        currentDate.toLocalDate(),
-                        getLastDayOfYear(currentDate.year),
-                        ReservationValidity.Indefinite
-                    )
-                } else {
-                    ReservationResult.Failure(ReservationResultErrorCode.NotWithinPeriod)
-                }
-            }
-            return ReservationResult.Failure(ReservationResultErrorCode.NotIndefinite)
+            )
+        ) {
+            return ReservationResultErrorCode.NotWithinPeriod
         }
-        return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
+        return null
+    }
+
+    fun renewSlipResult(): ReservationResult =
+        ReservationResult(
+            currentDate.toLocalDate(),
+            getLastDayOfNextYearsJanuary(currentDate.year),
+            ReservationValidity.Indefinite
+        )
+
+    fun changeSlipResult(reservationType: ReservationValidity): ReservationResult {
+        // Only citizens of Espoo that have a place can change a place
+        return ReservationResult(
+            currentDate.toLocalDate(),
+            getLastDayOfYear(currentDate.year),
+            reservationType
+        )
     }
 }
