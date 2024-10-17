@@ -386,4 +386,25 @@ class BoatReservationService(
     ) {
         val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
     }
+
+    private fun getMatchPart(str: String?): String = str ?: "all"
+
+    private fun getReservationPeriod(
+        boatSpaceType: BoatSpaceType,
+        operation: ReservationOperation?,
+        isEspooCitizen: Boolean?,
+        existingReservations: ExistingReservations?,
+    ): ReservationPeriod? {
+        val periodId =
+            listOf(
+                boatSpaceType.toString(),
+                getMatchPart(operation?.toString()),
+                getMatchPart(isEspooCitizen?.let { if (it) "espoo" else "other" }),
+                getMatchPart(existingReservations?.toString())
+            ).joinToString("_")
+
+        return boatSpaceReservationRepo.getReservationPeriod(
+            periodId
+        )
+    }
 }
