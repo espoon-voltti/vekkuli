@@ -23,9 +23,8 @@ class TerminateReservationModal : BaseView() {
                 <form
                     id="$formId"
                     ${addTestId(formId)}
-                    hx-target="#citizen-details"
-                    hx-select="#citizen-details"
-                    hx-swap="outerHTML"
+                    hx-post="/boat-space/terminate-reservation"
+                    hx-on-htmx-after-request="window.location.reload()"
                     >
                     <div class='columns is-multiline'>
                         <div class="column is-full">

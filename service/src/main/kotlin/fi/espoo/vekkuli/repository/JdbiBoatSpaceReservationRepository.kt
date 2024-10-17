@@ -569,14 +569,32 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = 'Confirmed'
+                    SET status = 'Confirmed', updated = :updatedTime
                     WHERE id = :id
                         AND status = 'Invoiced'
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.bind("updatedTime", LocalDate.now())
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+
+    override fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET status = 'Cancelled', updated = :updatedTimestamp, end_date = :endDate
+                    WHERE id = :id
+                        AND status <> 'Cancelled'
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("id", reservationId)
+            query.bind("updatedTimestamp", LocalDate.now())
+            query.bind("endDate", LocalDate.now())
             query.mapTo<BoatSpaceReservation>().one()
         }
 }

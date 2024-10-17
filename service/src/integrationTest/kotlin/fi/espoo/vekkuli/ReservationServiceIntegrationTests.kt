@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.service.ReserveBoatSpaceInput
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -29,6 +30,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var reservationService: BoatReservationService
+
+    @Autowired
+    lateinit var citizenService: CitizenService
 
     @Test
     fun `should get correct reservation with citizen`() {
@@ -366,5 +370,59 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val reservation = reservationService.getBoatSpaceReservation(newReservation.id)
 
         assertEquals(ReservationStatus.Confirmed, reservation?.status, "Reservation is marked as paid")
+    }
+
+    @Test
+    fun `should terminate the reservation and set ending date to now`() {
+        val boatSpaceId = 1
+
+        val oliviaCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
+        val endDate = LocalDate.now().plusWeeks(2)
+        val citizen = citizenService.getCitizen(oliviaCitizenId)
+
+        // Keep this here to make sure Citizen is present
+        assertNotNull(citizen, "Citizen is not null")
+
+        val newReservation =
+            reservationService.insertBoatSpaceReservation(
+                citizen.id,
+                citizen.id,
+                boatSpaceId,
+                startDate = LocalDate.now().minusWeeks(2),
+                endDate = endDate
+            )
+
+        reservationService.reserveBoatSpace(
+            citizenId,
+            ReserveBoatSpaceInput(
+                newReservation.id,
+                boatId = 0,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                email = "test@email.com",
+                phone = "1234567890"
+            ),
+            ReservationStatus.Confirmed
+        )
+
+        val originalReservation = reservationService.getBoatSpaceReservation(newReservation.id)
+
+        assertEquals(ReservationStatus.Confirmed, originalReservation?.status, "Reservation starts as Confirmed")
+        assertEquals(endDate, originalReservation?.endDate, "Reservation endDate is $endDate")
+
+        reservationService.terminateBoatSpaceReservation(newReservation.id, citizen)
+
+        val terminatedReservation = reservationService.getBoatSpaceReservation(newReservation.id)
+
+        assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
+        assertEquals(LocalDate.now(), terminatedReservation?.endDate, "End date is set to now")
     }
 }

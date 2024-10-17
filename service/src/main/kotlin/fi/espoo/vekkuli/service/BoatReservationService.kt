@@ -386,4 +386,12 @@ class BoatReservationService(
     ) {
         val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
     }
+
+    fun terminateBoatSpaceReservation(
+        reservationId: Int,
+        currentUser: CitizenWithDetails
+    ) {
+        // @TODO check wether user is allowed to terminate tha reservation
+        boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
+    }
 }

@@ -33,7 +33,13 @@ class CitizenDetailsPage(
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
 
-    fun getByDataTestId(testId: String) = page.locator("[data-testid=\"$testId\"]")
+    fun getByDataTestId(
+        testId: String,
+        locator: Locator? = null
+    ): Locator {
+        val test = "[data-testid=\"$testId\"]"
+        return locator?.locator(test) ?: page.locator(test)
+    }
 
     // Citizen information
     val editButton = page.getByTestId("edit-customer")
@@ -94,6 +100,8 @@ class CitizenDetailsPage(
     val invoicePaidButton = page.getByTestId("invoice-paid-button")
     val invoicePaidInfo = page.getByTestId("invoicePaidInfo")
     val invoiceModalConfirm = page.getByTestId("invoice-modal-confirm")
+
+    val firstBoatSpaceReservationCard = getByDataTestId("reservation-list-card").first()
 
     val terminateReservationButton = getByDataTestId("open-terminate-reservation-modal")
     val terminateReservationModalConfirm = getByDataTestId("terminate-reservation-modal-confirm")
