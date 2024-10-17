@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
-import fi.espoo.vekkuli.views.citizen.details.Reservations
+import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -28,7 +28,7 @@ class CitizenDetails : BaseView() {
     private lateinit var formComponents: FormComponents
 
     @Autowired
-    private lateinit var reservations: Reservations
+    private lateinit var reservationListBuilder: ReservationList
 
     @Autowired
     lateinit var icons: Icons
@@ -166,7 +166,7 @@ class CitizenDetails : BaseView() {
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType
     ): String {
-        val reservationList = reservations.reservationList(citizen, boatSpaceReservations)
+        val reservationList = reservationListBuilder.build(citizen, boatSpaceReservations)
 
         fun showBoatWarnings(boatHasWarnings: Boolean): String {
             if (boatHasWarnings) {
