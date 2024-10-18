@@ -70,7 +70,7 @@ class BoatSpaceFormController(
         val userType = UserType.fromPath(usertype)
         val citizen =
             if (userType == UserType.EMPLOYEE) {
-                null
+                formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
             } else {
                 getCitizen(request, citizenService)
             }
