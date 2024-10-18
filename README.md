@@ -13,7 +13,7 @@ The application consists of
 - Service (Spring Boot, Kotlin)
   - implements the business logic and persists the data in a Postgresql database
 
-![Entiry diagram](./docs/oppivelvollisuus_entity.png)
+![Entiry diagram](./docs/vekkuli_entity.png)
 
 
 ## Local environment and development
