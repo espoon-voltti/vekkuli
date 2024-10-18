@@ -101,7 +101,7 @@ data class ReservationConditions(
         return ReservationResultErrorCode.NotWithinPeriod
     }
 
-    private fun reserveSlipForNonEspooResidentResult(currentDate: LocalDateTime,): ReservationResult =
+    private fun reserveSlipForNonEspooResidentResult(currentDate: LocalDateTime): ReservationResult =
         ReservationResult(
             currentDate.toLocalDate(),
             getLastDayOfYear(currentDate.year),
