@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.modal.*
@@ -25,7 +26,7 @@ class ReservationList : BaseView() {
         // language=HTML
         return boatSpaceReservations.joinToString("\n") { reservation ->
             """
-                <div class="reservation-card" x-data="{modalOpen: false}">
+                <div class="reservation-card" ${addTestId("reservation-list-card")} x-data="{modalOpen: false}">
                     <div class="columns is-vcentered">
                         <div class="column is-narrow">
                             <h4>${t("citizenDetails.boatSpace")}: ${reservation.locationName} ${reservation.place}</h4>
@@ -35,7 +36,7 @@ class ReservationList : BaseView() {
                         <div class="column">
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.harbor")}</label>
-                                <p>${reservation.locationName}</p>
+                                <p ${addTestId("reservation-list-card-location-name")} >${reservation.locationName}</p>
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.width")}</label>
@@ -49,7 +50,7 @@ class ReservationList : BaseView() {
                         <div class="column">
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.place")}</label>
-                                <p>${reservation.place}</p>
+                                <p ${addTestId("reservation-list-card-place")}>${reservation.place}</p>
                             </div>
                             <div class="field">
                                 <label class="label">${t("boatSpaceReservation.title.length")}</label>
