@@ -579,4 +579,17 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
             query.mapTo<BoatSpaceReservation>().one()
         }
+
+    override fun getReservationPeriods(): List<ReservationPeriod> =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT *
+                    FROM reservation_period
+                    ORDER BY match_order ASC
+                    """.trimIndent()
+                ).mapTo<ReservationPeriod>()
+                .list()
+        }
 }

@@ -40,15 +40,15 @@ export function createRouter(config: Config, redisClient: RedisClient): Router {
 
   router.use(cacheControl(() => 'forbid-cache'))
 
-  router.get('/static/*', proxy)
-  router.get('/kuntalainen/venepaikat/*', proxy)
+  router.get('/static/*splat', proxy)
+  router.get('/kuntalainen/venepaikat/*splat', proxy)
   router.get('/kuntalainen/venepaikat', proxy)
   router.get('/kuntalainen/partial/vapaat-paikat', proxy)
-  router.get('/ext/*', proxy)
+  router.get('/ext/*splat', proxy)
   router.get('/', proxy)
 
   router.all(
-    '/system/*',
+    '/system/*splat',
     // TODO fix the any. This was added to make the build pass
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_: Request, res: Response) => res.sendStatus(404) as any
