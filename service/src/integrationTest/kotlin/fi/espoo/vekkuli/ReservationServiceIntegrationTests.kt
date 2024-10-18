@@ -421,7 +421,10 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 email = "test@email.com",
                 phone = "1234567890"
             ),
-            ReservationStatus.Confirmed
+            ReservationStatus.Confirmed,
+            ReservationValidity.FixedTerm,
+            newReservation.startDate,
+            newReservation.endDate
         )
 
         val originalReservation = reservationService.getBoatSpaceReservation(newReservation.id)
