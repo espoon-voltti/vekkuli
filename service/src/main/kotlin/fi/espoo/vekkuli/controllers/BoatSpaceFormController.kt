@@ -713,44 +713,4 @@ data class ReservationInput(
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
     val citizenSelection: String? = "newCitizen"
-) {
-    companion object {
-        fun initializeInput(
-            boatType: BoatType?,
-            width: Double?,
-            length: Double?,
-            citizen: CitizenWithDetails?
-        ): ReservationInput =
-            ReservationInput(
-                reservationId = null,
-                boatId = null,
-                boatType = boatType,
-                width = width,
-                length = length,
-                depth = null,
-                weight = null,
-                noRegistrationNumber = false,
-                boatRegistrationNumber = null,
-                boatName = null,
-                otherIdentification = null,
-                extraInformation = null,
-                ownership = OwnershipStatus.Owner,
-                email = citizen?.email,
-                phone = citizen?.phone,
-                agreeToRules = false,
-                certifyInformation = false,
-                firstName = citizen?.firstName,
-                lastName = citizen?.lastName,
-                ssn = citizen?.nationalId,
-                address = citizen?.streetAddress,
-                postalCode = citizen?.postalCode,
-                municipalityCode = citizen?.municipalityCode,
-                citizenId = citizen?.id,
-                postalOffice = null,
-                organizationId = null,
-                isOrganization = null,
-                city = null,
-                citizenSelection = "newCitizen"
-            )
-    }
-}
+)
