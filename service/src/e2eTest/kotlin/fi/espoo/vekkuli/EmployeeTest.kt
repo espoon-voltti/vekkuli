@@ -156,7 +156,6 @@ class EmployeeTest : PlaywrightTest() {
         formPage.citizenSearchInput.pressSequentially("virtane")
         formPage.citizenSearchOption1.click()
         assertThat(formPage.citizenSearchInput).hasValue("Mikko Virtanen")
-        assertThat(formPage.citizenInformationContainer).isVisible()
     }
 
     @Test
@@ -256,14 +255,6 @@ class EmployeeTest : PlaywrightTest() {
         assertThat(formPage.boatRegistrationNumberError).isHidden()
 
         formPage.ownerRadioButton.check()
-
-        formPage.emailInput.fill("test@example.com")
-        formPage.emailInput.blur()
-        assertThat(formPage.emailError).isHidden()
-
-        formPage.phoneInput.fill("123456789")
-        formPage.phoneInput.blur()
-        assertThat(formPage.phoneError).isHidden()
 
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()

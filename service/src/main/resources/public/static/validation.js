@@ -140,11 +140,9 @@ const validation = (function () {
 
     if (submitButton) {
       submitButton.addEventListener("click", function (event) {
-        const updatedForm = document.getElementById(form.id);
-        setupFormValidation(updatedForm);
         let isValid = true;
 
-        const fields = updatedForm.querySelectorAll(
+        const fields = form.querySelectorAll(
           "[data-required], [data-pattern], [data-validate-url]",
         );
 
