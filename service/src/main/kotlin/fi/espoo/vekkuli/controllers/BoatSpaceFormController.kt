@@ -92,7 +92,7 @@ class BoatSpaceFormController(
             throw UnauthorizedException()
         }
 
-        var input = formInput // ReservationInput.initializeInput(formInput.boatType, formInput.width, formInput.length, citizen)
+        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
         val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)
