@@ -62,10 +62,7 @@ class BoatSpaceFormController(
     fun boatSpaceFormPage(
         @PathVariable usertype: String,
         @PathVariable reservationId: Int,
-        @RequestParam boatType: BoatType?,
-        @RequestParam boatId: Int?,
-        @RequestParam width: Double?,
-        @RequestParam length: Double?,
+        @ModelAttribute formInput: ReservationInput,
         request: HttpServletRequest,
         response: HttpServletResponse,
         model: Model,
@@ -95,8 +92,8 @@ class BoatSpaceFormController(
             throw UnauthorizedException()
         }
 
-        var input = ReservationInput.initializeInput(boatType, width, length, citizen)
-        val usedBoatId = boatId ?: reservation.boatId // use boat id from reservation if it exists
+        var input = formInput // ReservationInput.initializeInput(formInput.boatType, formInput.width, formInput.length, citizen)
+        val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)
 
@@ -237,15 +234,16 @@ class BoatSpaceFormController(
         return ResponseEntity.ok("")
     }
 
-    @GetMapping("/$USERTYPE/venepaikka/varaus/kuntalainen/hae")
+    @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/kuntalainen/hae")
     @ResponseBody
     fun searchCitizens(
         request: HttpServletRequest,
         @RequestParam nameParameter: String,
-        @PathVariable usertype: String
+        @PathVariable usertype: String,
+        @PathVariable reservationId: Int
     ): String {
         citizenService.getCitizens(nameParameter).let {
-            return boatSpaceForm.citizensSearchForm(it)
+            return boatSpaceForm.citizensSearchForm(it, reservationId)
         }
     }
 
@@ -611,57 +609,6 @@ class BoatSpaceFormController(
             }
         }
     }
-
-    @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/varaaja")
-    @ResponseBody
-    fun slipHolderForm(
-        @PathVariable usertype: String,
-        @PathVariable reservationId: Int,
-        @RequestParam isOrganization: Boolean?,
-        @RequestParam organizationId: UUID?,
-        @RequestParam citizenId: UUID?,
-        @RequestParam width: Double?,
-        @RequestParam length: Double?,
-        request: HttpServletRequest,
-    ): ResponseEntity<String> {
-        val userType = UserType.fromPath(usertype)
-        val isEmployee = userType == UserType.EMPLOYEE
-        val citizen =
-            if (isEmployee) {
-                if (citizenId == null) return ResponseEntity.badRequest().build()
-                citizenService.getCitizen(citizenId)
-            } else {
-                getCitizen(request, citizenService)
-            }
-        if (citizen == null) return ResponseEntity.badRequest().build()
-        val reserverId = if (isOrganization == true) organizationId else citizen.id
-        val organizations = organizationService.getCitizenOrganizations(citizen.id)
-        val municipalities = citizenService.getMunicipalities()
-        val boats =
-            if (reserverId != null) {
-                boatService
-                    .getBoatsForReserver(reserverId)
-                    .map { boat ->
-                        boat.updateBoatDisplayName(messageUtil)
-                    }
-            } else {
-                emptyList()
-            }
-
-        return ResponseEntity.ok(
-            boatSpaceForm.slipHolderAndBoatForm(
-                organizations,
-                isOrganization ?: false,
-                citizen,
-                boats,
-                organizationId,
-                userType,
-                reservationId,
-                municipalities,
-                BoatFormInput.empty().copy(width = width, length = length),
-            )
-        )
-    }
 }
 
 fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
@@ -743,6 +690,7 @@ data class ReservationInput(
     val address: String?,
     val postalCode: String?,
     val postalOffice: String?,
+    val city: String?,
     val municipalityCode: Int?,
     val citizenId: UUID?,
     @field:NotBlank(message = "{validation.required}")
@@ -764,6 +712,7 @@ data class ReservationInput(
     val orgAddress: String? = null,
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
+    val citizenSelection: String? = "newCitizen"
 ) {
     companion object {
         fun initializeInput(
@@ -800,6 +749,8 @@ data class ReservationInput(
                 postalOffice = null,
                 organizationId = null,
                 isOrganization = null,
+                city = null,
+                citizenSelection = "newCitizen"
             )
     }
 }

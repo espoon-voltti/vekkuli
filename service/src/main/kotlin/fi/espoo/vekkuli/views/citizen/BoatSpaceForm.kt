@@ -420,7 +420,7 @@ class BoatSpaceForm(
             formComponents.textInput(
                 "boatApplication.firstName",
                 "firstName",
-                citizen?.firstName ?: "",
+                input.firstName,
                 required = true
             )
 
@@ -428,7 +428,7 @@ class BoatSpaceForm(
             formComponents.textInput(
                 "boatApplication.lastName",
                 "lastName",
-                citizen?.lastName ?: "",
+                input.lastName,
                 required = true
             )
 
@@ -436,7 +436,7 @@ class BoatSpaceForm(
             formComponents.textInput(
                 "boatApplication.ssn",
                 "ssn",
-                citizen?.nationalId ?: "",
+                input.ssn,
                 required = true,
                 serverValidate = Pair("/validate/ssn", "validation.uniqueSsn")
             )
@@ -445,30 +445,31 @@ class BoatSpaceForm(
             formComponents.textInput(
                 "boatApplication.address",
                 "address",
-                citizen?.streetAddress ?: "",
+                input.address
             )
 
         val postalCode =
             formComponents.textInput(
                 "boatApplication.postalCode",
                 "postalCode",
-                citizen?.postalCode ?: "",
+                input.postalCode
             )
 
         val municipalityInput =
             formComponents.select(
                 "boatSpaceReservation.title.municipality",
                 "municipalityCode",
-                citizen?.municipalityCode.toString(),
+                input.municipalityCode.toString(),
                 municipalities.map { Pair(it.code.toString(), it.name) },
                 required = true
             )
 
+        // no value for this in the input.. what to map it as?
         val cityField =
             formComponents.textInput(
                 "boatSpaceReservation.title.city",
                 "city",
-                citizen?.municipalityName ?: "",
+                input.postalOffice
             )
 
         val citizenInputFields =
@@ -505,7 +506,7 @@ class BoatSpaceForm(
                             <input x-model="citizenFullName" id="customer-search" 
                                 placeholder="${t("boatApplication.placeholder.searchCitizens")}"
                                 name="nameParameter" class="input search-input" type="text" 
-                                hx-get="/virkailija/venepaikka/varaus/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
+                                hx-get="/virkailija/venepaikka/varaus/${reservation.id}/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
                                 hx-target="#citizen-results">
                             <span class="icon is-small is-left">
                                 ${icons.search}
@@ -536,7 +537,7 @@ class BoatSpaceForm(
         // language=HTML
         val customerTypeRadioButtons =
             """
-            <div x-data='{citizenSelection: "newCitizen"}'>
+            <div x-data='{citizenSelection: "${input.citizenSelection}"}'>
                 <div class="field">
                     <div class="control is-flex-direction-row">
                         <div class="radio">
@@ -546,6 +547,7 @@ class BoatSpaceForm(
                                 name="citizenSelection"
                                 value="newCitizen"
                                 id="new-citizen-selector"
+                                ${if (input.citizenSelection == "newCitizen") "checked" else ""}
                             />
                             <label for="newCitizen">${t("boatApplication.citizenOptions.newCitizen")}</label>
                         </div>
@@ -556,6 +558,7 @@ class BoatSpaceForm(
                                 name="citizenSelection"
                                 value="existingCitizen"
                                 id="existing-citizen-selector"
+                                ${if (input.citizenSelection == "existingCitizen") "checked" else ""}
                             />
                             <label for="existingCitizen">${t("boatApplication.citizenOptions.existingCitizen")}</label>
                         </div>
@@ -645,49 +648,52 @@ class BoatSpaceForm(
                             ${t("boatApplication.title.reservation")} 
                             $wholeLocationName
                         </h1>
+                        <div id="form-inputs">
                                             
-                        <div class='form-section'>
-                        $citizenContainer  
-                        $slipHolder
-                        </div>
-                   
-                         <div class='form-section'>
-                        $boatSpaceInformation
-                        </div>
-                           
-                        <div class="block">
-                            <div id="certify-control">
-                                <label class="checkbox">
-                                    <input
-                                        type="checkbox"
-                                        data-required
-                                        id="certifyInformation"
-                                        name="certifyInformation"
-                                    >
-                                    <span >${t("boatApplication.certifyInfoCheckbox")}</span>
-                                </label>
-                                <div id="certify-error-container">
-                                    <span id="certifyInformation-error" class="help is-danger" style="visibility: hidden">
-                                    ${t("validation.certifyInformation")}</span>
+                            <div class='form-section'>
+                            $citizenContainer  
+                            $slipHolder
+                            </div>
+                       
+                             <div class='form-section'>
+                            $boatSpaceInformation
+                            </div>
+                               
+                            <div class="block">
+                                <div id="certify-control">
+                                    <label class="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            data-required
+                                            id="certifyInformation"
+                                            name="certifyInformation"
+                                        >
+                                        <span >${t("boatApplication.certifyInfoCheckbox")}</span>
+                                    </label>
+                                    <div id="certify-error-container">
+                                        <span id="certifyInformation-error" class="help is-danger" style="visibility: hidden">
+                                        ${t("validation.certifyInformation")}</span>
+                                    </div>
+                                </div>
+                                <div id="agree-control">
+                                    <label class="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            data-required
+                                            id="agreeToRules"
+                                            name="agreeToRules"
+                                        />
+                                        <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
+                                    </label>
+                                    <div id="agree-error-container">
+                                        <span id="agreeToRules-error" class="help is-danger" style="visibility: hidden">
+                                        ${t("validation.agreeToRules")}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div id="agree-control">
-                                <label class="checkbox">
-                                    <input
-                                        type="checkbox"
-                                        data-required
-                                        id="agreeToRules"
-                                        name="agreeToRules"
-                                    />
-                                    <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
-                                </label>
-                                <div id="agree-error-container">
-                                    <span id="agreeToRules-error" class="help is-danger" style="visibility: hidden">
-                                    ${t("validation.agreeToRules")}</span>
-                                </div>
-                            </div>
-                        </div>
                         
+                        
+                        </div >
                         <div class="field block">
                             <div class="control">
                                 <button id="cancel"
@@ -948,14 +954,15 @@ class BoatSpaceForm(
         fun organizationRadioButton(org: Organization) =
             """
             <div class="radio">
-                <input type="radio" id="org-${org.id}-radio" value="${org.id}" name="organizationId"
-                       hx-trigger="change"
-                       hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId=${org.id}"
-                       hx-target="#shipHolderAndBoatForm"
-                       hx-swap="outerHTML"
-                       hx-include="[name='citizenId'],[name='width'],[name='length']"
-                       name="organizationId"
-                       ${if (selectedOrganizationId == org.id) "checked" else ""}
+                <input type="radio" id="org-${org.id}-radio" value="${org.id}" 
+                   name="organizationId"
+                   hx-trigger="change"
+                   hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
+                   hx-include="#form"
+                   hx-target="#form-inputs"
+                   hx-select="#form-inputs"
+                   hx-swap="outerHTML"
+                   ${if (selectedOrganizationId == org.id) "checked" else ""}
                 />
                 <label for="${org.id}">${org.name}</label>
             </div>
@@ -972,9 +979,10 @@ class BoatSpaceForm(
                         name="organizationId"
                         value=""
                         hx-trigger="change"
-                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
-                        hx-include="[name='citizenId'],[name='width'],[name='length']"
-                        hx-target="#shipHolderAndBoatForm"
+                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
+                        hx-include="#form"
+                        hx-target="#form-inputs"
+                        hx-select="#form-inputs"
                         hx-swap="outerHTML"
                        ${if (selectedOrganizationId == null) "checked" else ""}
                     />
@@ -1008,9 +1016,10 @@ class BoatSpaceForm(
                         name="isOrganization"
                         value="false"
                         hx-trigger="change"
-                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=false&organizationId="
-                        hx-include="[name='citizenId'],[name='width'],[name='length']"
-                        hx-target="#shipHolderAndBoatForm"
+                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
+                        hx-include="#form"
+                        hx-target="#form-inputs"
+                        hx-select="#form-inputs"
                         hx-swap="outerHTML"
                        ${if (!isOrganization) "checked" else ""}
                     />
@@ -1022,9 +1031,10 @@ class BoatSpaceForm(
                         name="isOrganization"
                         value="true"
                         hx-trigger="change"
-                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId/varaaja?isOrganization=true&organizationId="
-                        hx-include="[name='citizenId'],[name='width'],[name='length']"
-                        hx-target="#shipHolderAndBoatForm"
+                        hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
+                        hx-include="#form"
+                        hx-target="#form-inputs"
+                        hx-select="#form-inputs"
                         hx-swap="outerHTML"
                        ${if (isOrganization) "checked" else ""}
                     />
@@ -1039,13 +1049,24 @@ class BoatSpaceForm(
     }
 
     // language=HTML
-    fun citizensSearchForm(citizens: List<CitizenWithDetails>): String {
+    fun citizensSearchForm(
+        citizens: List<CitizenWithDetails>,
+        reservationId: Int
+    ): String {
         val listSize = if (citizens.size > 5) 5 else citizens.size
-
+        // $USERTYPE/venepaikka/varaus/{reservationId}
         return (
             """
-            <select x-show="citizenFullName != ''" multiple size="$listSize" name='citizenIdOption' hx-get="/virkailija/venepaikka/varaus/kuntalainen"  
-                hx-trigger="change" hx-target="#citizen-details" @change="updateFullName">
+            <select 
+                x-show="citizenFullName != ''" 
+                multiple 
+                size="$listSize" 
+                name='citizenIdOption' 
+                hx-get="/virkailija/venepaikka/varaus/$reservationId"  
+                hx-include="#form"
+                hx-trigger="change" 
+                hx-select="#form-inputs"
+                hx-target="#form-inputs" @change="updateFullName">
             ${
                 citizens.joinToString("\n") { citizen ->
                     """
