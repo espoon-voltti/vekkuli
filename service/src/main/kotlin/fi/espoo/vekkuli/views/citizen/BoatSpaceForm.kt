@@ -537,39 +537,43 @@ class BoatSpaceForm(
         // language=HTML
         val customerTypeRadioButtons =
             """
-            <div x-data='{citizenSelection: "${input.citizenSelection}"}'>
+            <div>
                 <div class="field">
                     <div class="control is-flex-direction-row">
                         <div class="radio">
                             <input
-                                x-model="citizenSelection"
                                 type="radio"
                                 name="citizenSelection"
                                 value="newCitizen"
                                 id="new-citizen-selector"
+                                hx-get="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                                hx-include="#form"
+                                hx-target="#form-inputs"
+                                hx-select="#form-inputs"
+                                hx-swap="outerHTML"
                                 ${if (input.citizenSelection == "newCitizen") "checked" else ""}
+                                
                             />
                             <label for="newCitizen">${t("boatApplication.citizenOptions.newCitizen")}</label>
                         </div>
                         <div class="radio">
                             <input
-                                x-model="citizenSelection"
                                 type="radio"
                                 name="citizenSelection"
                                 value="existingCitizen"
                                 id="existing-citizen-selector"
+                                hx-get="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                                hx-include="#form"
+                                hx-target="#form-inputs"
+                                hx-select="#form-inputs"
+                                hx-swap="outerHTML"
                                 ${if (input.citizenSelection == "existingCitizen") "checked" else ""}
                             />
                             <label for="existingCitizen">${t("boatApplication.citizenOptions.existingCitizen")}</label>
                         </div>
                     </div>
                 </div> 
-                <template x-if="citizenSelection === 'newCitizen'">
-                    $citizenInputFields
-                </template>
-                <template x-if="citizenSelection === 'existingCitizen'">
-                    <div x-init="htmx.process(document.getElementById('citizen-results-container'))" class="block"> $citizenSearch</div>
-                </template>
+                ${if (input.citizenSelection == "newCitizen") citizenInputFields else citizenSearch}
             </div>
             """.trimIndent()
 
