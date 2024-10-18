@@ -464,12 +464,11 @@ class BoatSpaceForm(
                 required = true
             )
 
-        // no value for this in the input.. what to map it as?
         val cityField =
             formComponents.textInput(
                 "boatSpaceReservation.title.city",
                 "city",
-                input.postalOffice
+                input.city
             )
 
         val citizenInputFields =
@@ -1058,7 +1057,6 @@ class BoatSpaceForm(
         reservationId: Int
     ): String {
         val listSize = if (citizens.size > 5) 5 else citizens.size
-        // $USERTYPE/venepaikka/varaus/{reservationId}
         return (
             """
             <select 
