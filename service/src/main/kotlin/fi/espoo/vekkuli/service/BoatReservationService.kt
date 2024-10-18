@@ -394,4 +394,6 @@ class BoatReservationService(
         // @TODO check wether user is allowed to terminate tha reservation
         boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
     }
+ 
+    fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
 }

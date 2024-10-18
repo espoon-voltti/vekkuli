@@ -1,9 +1,6 @@
 package fi.espoo.vekkuli.utils
 
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.*
 import java.time.format.DateTimeFormatter
 
 val shortFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")
@@ -37,4 +34,17 @@ fun isTimeWithinDateRange(
     val startDateTime = startDate.atStartOfDay() // Start of the day (00:00:00)
     val endDateTime = endDate.atTime(LocalTime.MAX) // End of the day (23:59:999)
     return !dateTime.isBefore(startDateTime) && !dateTime.isAfter(endDateTime)
+}
+
+fun isMonthDayWithinRange(
+    today: MonthDay,
+    startDate: MonthDay,
+    endDate: MonthDay,
+): Boolean {
+    if (startDate <= endDate) {
+        // Period does not cross the year
+        return today in startDate..endDate
+    }
+    // Period crosses the year
+    return today >= startDate || today <= endDate
 }
