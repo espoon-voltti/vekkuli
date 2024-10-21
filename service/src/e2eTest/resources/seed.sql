@@ -479,6 +479,36 @@ INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sai
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
+INSERT INTO reservation_period(is_espoo_citizen, boat_space_type, operation, start_month, start_day, end_month, end_day)
+VALUES
+    -- For Espoo citizens
+    (true, 'Slip', 'New', 3, 1, 9, 30),
+    (true, 'Slip', 'SecondNew', 4, 1, 9, 30),
+    (true, 'Slip', 'Renew', 1, 7, 1, 31),
+    (true, 'Slip', 'Change', 1, 7, 1, 31),
+    (true, 'Slip', 'Change', 3, 1, 9, 30),
+    (true, 'Trailer', 'New', 5, 1, 12, 31),
+    (true, 'Trailer', 'Renew', 4, 1, 4, 30),
+    (true, 'Trailer', 'Change',  4, 1, 12, 31),
+    (true, 'Winter', 'New', 9, 1, 12, 31),
+    (true, 'Winter', 'Renew',  8, 1, 8, 31),
+    (true, 'Winter', 'Change',  8, 1, 12, 31),
+    (true, 'Storage', 'New', 9, 1, 31, 7),
+    (true, 'Storage', 'Renew',  8, 1, 8, 31),
+    (true, 'Storage', 'Change',  8, 1, 7, 31),
+
+    -- For non-Espoo citizens
+    (false, 'Slip', 'New', 4, 1, 9, 30),
+    (false, 'Slip', 'Change', 4, 1, 9, 30),
+    (false, 'Trailer', 'New', 5, 1, 12, 31),
+    (false, 'Trailer', 'Change',  5, 1, 12, 31),
+    (false, 'Winter', 'New', 9, 15, 12, 31),
+    (false, 'Winter', 'Change',  9, 15, 12, 31),
+    (false, 'Storage', 'New', 9, 15, 7, 31),
+    (false, 'Storage', 'Renew', 9, 1, 9, 15),
+    (false, 'Storage', 'Change',  9, 1, 7, 31);
+
+
 INSERT INTO app_user (id, external_id, first_name, last_name, email)
 VALUES
     ('94833b54-132b-4ab8-b841-60df45809b3e', 'ad:001', 'Ville', 'Virkailija', 'ville@noreplytest.fi');
@@ -488,6 +518,7 @@ VALUES
     ('62d90eed-4ea3-4446-8023-8dad9c01dd34', 'Citizen', 'Mikko virtanen', now(), '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 49),
     ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Citizen', 'Leo Korhonen', now(), '0405623462', 'leo@noreplytest.fi', '', '' , 49),
     ('509edb00-5549-11ef-a1c7-776e76028a49', 'Citizen', 'Olivia Virtanen', now(), '04083677348', 'olivia@noreplytest.fi', '', '' , 49),
+    ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', 'Citizen', 'Marko Kuusinen', now(), '04583464312', 'marko@noreplytest.fi', '', '' , 91),
     ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Organization', 'Espoon Pursiseura', now(), '0448101969', 'eps@noreplytest.fi', 'Nuottatie 19', '02230', 49)
 ON CONFLICT (id) DO NOTHING;
 
@@ -495,7 +526,8 @@ INSERT INTO citizen (id, national_id, first_name, last_name)
 VALUES
   ('62d90eed-4ea3-4446-8023-8dad9c01dd34', '010106A957V', 'Mikko', 'Virtanen'),
   ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', '150499-911U', 'Leo', 'Korhonen'),
-  ('509edb00-5549-11ef-a1c7-776e76028a49', '031298-988S', 'Olivia', 'Virtanen')
+  ('509edb00-5549-11ef-a1c7-776e76028a49', '031298-988S', 'Olivia', 'Virtanen'),
+  ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', '290991-993F', 'Marko', 'Kuusinen')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO organization (id, business_id)

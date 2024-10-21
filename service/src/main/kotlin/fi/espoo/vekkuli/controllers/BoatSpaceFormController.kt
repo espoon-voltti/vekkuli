@@ -17,6 +17,7 @@ import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.getLastDayOfYear
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.BoatFormInput
@@ -24,6 +25,7 @@ import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.citizen.ReservationConfirmation
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import io.ktor.util.reflect.*
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
@@ -478,16 +480,17 @@ class BoatSpaceFormController(
 
         val reservationStatus =
             if (isEmployee) ReservationStatus.Invoiced else ReservationStatus.Payment
-        val reservationConditions =
-            ReservationConditions(
-                isEspooCitizen(citizen.municipalityCode),
-                reservationService.getExistingReservationsTypes(citizen.id),
-                timeProvider.getCurrentDate(),
-            )
+        val reserveSlipResult = reservationService.canReserveANewSlip(reserverId)
 
-        if (isEmployee || reservationConditions.canReserveSlip() == null) {
-            val reserveSlipResult =
-                reservationConditions.reserveSlipResult()
+        val data =
+            if (reserveSlipResult is ReservationResult.Success) {
+                reserveSlipResult.data
+            } else {
+                val now = LocalDate.now()
+                ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
+            }
+
+        if (isEmployee || reserveSlipResult.success) {
             reservationService.reserveBoatSpace(
                 reserverId,
                 ReserveBoatSpaceInput(
@@ -507,9 +510,9 @@ class BoatSpaceFormController(
                     phone = input.phone!!,
                 ),
                 reservationStatus,
-                reserveSlipResult.reservationValidity,
-                reserveSlipResult.startDate,
-                reserveSlipResult.endDate
+                data.reservationValidity,
+                data.startDate,
+                data.endDate
             )
         }
 
@@ -582,19 +585,13 @@ class BoatSpaceFormController(
             if ((citizen == null)) {
                 return ResponseEntity(HttpStatus.FORBIDDEN)
             }
-            val reserveSlipErrorCode =
-                ReservationConditions(
-                    isEspooCitizen(citizen.municipalityCode),
-                    reservationService.getExistingReservationsTypes(citizen.id),
-                    timeProvider.getCurrentDate(),
-                ).canReserveSlip()
-
-            if (reserveSlipErrorCode != null) {
+            val result = reservationService.canReserveANewSlip(citizen.id)
+            if (result is ReservationResult.Failure) {
                 return ResponseEntity.ok(
                     renderErrorPage(
                         citizen,
                         request,
-                        messageUtil.getMessage("errorCode.split.$reserveSlipErrorCode")
+                        messageUtil.getMessage("errorCode.split.${result.errorCode}")
                     )
                 )
             }
