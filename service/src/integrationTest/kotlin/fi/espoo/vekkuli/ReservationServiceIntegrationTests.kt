@@ -69,8 +69,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            LocalDate.now(),
-            LocalDate.now()
+            timeProvider.getCurrentDate().toLocalDate().minusWeeks(1),
+            timeProvider.getCurrentDate().toLocalDate().plusWeeks(1),
         )
         val result = reservationService.canReserveANewSlip(espooCitizenId)
         if (result is ReservationResult.Success) {
@@ -115,8 +115,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.FixedTerm,
-            LocalDate.now(),
-            LocalDate.now()
+            timeProvider.getCurrentDate().toLocalDate().minusWeeks(1),
+            timeProvider.getCurrentDate().toLocalDate().plusWeeks(1),
         )
         val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
         if (result is ReservationResult.Failure) {
