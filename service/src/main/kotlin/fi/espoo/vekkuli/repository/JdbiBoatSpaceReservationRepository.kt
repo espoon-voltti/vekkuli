@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
 import fi.espoo.vekkuli.utils.InExpr
+import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -15,6 +16,7 @@ import java.util.*
 @Repository
 class JdbiBoatSpaceReservationRepository(
     private val jdbi: Jdbi,
+    private val timeProvider: TimeProvider
 ) : BoatSpaceReservationRepository {
     override fun getBoatSpaceReservationIdForPayment(id: UUID): Int =
         jdbi.withHandleUnchecked { handle ->
@@ -109,7 +111,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("paymentId", paymentId)
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDate())
             query.mapTo<Int>().findOne().orElse(null)
         }
 
@@ -547,7 +549,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("status", reservationStatus)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDate())
             query.bind("id", reservationId)
             query.bind("boatId", boatId)
             query.bind("reserverId", reserverId)
@@ -572,7 +574,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDate())
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.mapTo<BoatSpaceReservation>().one()
         }
@@ -590,7 +592,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDate())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -607,8 +609,8 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("updatedTimestamp", LocalDate.now())
-            query.bind("endDate", LocalDate.now())
+            query.bind("updatedTimestamp", timeProvider.getCurrentDate())
+            query.bind("endDate", timeProvider.getCurrentDate())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -688,7 +690,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("endDateCut", LocalDate.now())
+            query.bind("endDateCut", timeProvider.getCurrentDate().toLocalDate())
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetails>().list()
