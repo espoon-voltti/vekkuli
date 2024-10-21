@@ -108,7 +108,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("software.amazon.awssdk:ses:2.28.21")
-    implementation("software.amazon.awssdk:core:2.20.0")
+    implementation("software.amazon.awssdk:core:2.28.26")
     implementation("software.amazon.awssdk:regions:2.20.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.22.0")
