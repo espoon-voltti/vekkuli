@@ -82,6 +82,64 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `third place should fail for Espoo citizens`() {
+        val madeReservation1 = createReservationInPaymentState(reservationService, espooCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation1.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            timeProvider.getCurrentDate().toLocalDate().minusWeeks(1),
+            timeProvider.getCurrentDate().toLocalDate().plusWeeks(1),
+        )
+        val madeReservation2 = createReservationInPaymentState(reservationService, espooCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation2.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            timeProvider.getCurrentDate().toLocalDate().minusWeeks(1),
+            timeProvider.getCurrentDate().toLocalDate().plusWeeks(1),
+        )
+        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        if (result is ReservationResult.Failure) {
+            assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
+        } else {
+            throw AssertionError("canReserveANewSlip succeeded, but it should fail")
+        }
+    }
+
+    @Test
     fun `first place should be fixed term for Helsinki citizens`() {
         val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
         if (result is ReservationResult.Success) {
