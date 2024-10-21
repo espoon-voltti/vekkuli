@@ -77,7 +77,7 @@ class BoatSpaceForm(
                        name="boatId"
                        ${if (input.id == boat.id) "checked" else ""}
                 />
-                <label for="${boat.id}">${boat.displayName}</label>
+                <label for="boat-${boat.id}-radio">${boat.displayName}</label>
             </div>
             """.trimIndent()
 
@@ -85,7 +85,7 @@ class BoatSpaceForm(
         val chooseBoatButtons =
             if (citizen !== null) {
                 """
-            <div class="field" x-data="{ initialWidth: localStorage.getItem('width'), 
+            <div id="boatOptions" class="field" x-data="{ initialWidth: localStorage.getItem('width'), 
                                          initialLength: localStorage.getItem('length'), 
                                          initialType: localStorage.getItem('type') }" >
                 <div class="radio">
@@ -1070,9 +1070,9 @@ class BoatSpaceForm(
                 hx-select="#form-inputs"
                 hx-target="#form-inputs" @change="updateFullName">
             ${
-                citizens.joinToString("\n") { citizen ->
+                citizens.withIndex().joinToString("\n") { (index, citizen) ->
                     """
-                    <option id="option-${citizen.id}" role="option" value="${citizen.id}" 
+                    <option id="option-$index" role="option" value="${citizen.id}" 
                         data-fullname="${citizen.fullName}">
                         <p>${citizen.fullName}
                         <span class='is-small'>${citizen.birthday}</span></p>

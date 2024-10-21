@@ -261,4 +261,34 @@ class EmployeeTest : PlaywrightTest() {
 
         formPage.submitButton.click()
     }
+
+    @Test
+    fun `Employee can reserve on behalf of an existing citizen acting on behalf of an existing organization`() {
+        page.navigate(baseUrl + "/virkailija")
+        page.getByTestId("employeeLoginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.navigateTo()
+
+        reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+
+        formPage.submitButton.click()
+        formPage.existingCitizenSelector.click()
+        formPage.citizenSearchInput.pressSequentially("olivia")
+        formPage.citizenSearchOption1.click()
+
+        assertThat(page.getByText("Olivian vene")).isVisible()
+
+        formPage.organizationRadioButton.click()
+
+        assertThat(page.getByText("Olivian vene")).isHidden()
+    }
 }
