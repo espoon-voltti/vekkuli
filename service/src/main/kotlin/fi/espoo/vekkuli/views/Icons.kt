@@ -140,4 +140,11 @@ class Icons {
         """
         <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_Wezc{transform-origin:center;animation:spinner_Oiah .75s step-end infinite}@keyframes spinner_Oiah{8.3%{transform:rotate(30deg)}16.6%{transform:rotate(60deg)}25%{transform:rotate(90deg)}33.3%{transform:rotate(120deg)}41.6%{transform:rotate(150deg)}50%{transform:rotate(180deg)}58.3%{transform:rotate(210deg)}66.6%{transform:rotate(240deg)}75%{transform:rotate(270deg)}83.3%{transform:rotate(300deg)}91.6%{transform:rotate(330deg)}100%{transform:rotate(360deg)}}</style><g class="spinner_Wezc"><circle cx="12" cy="2.5" r="1.5" opacity=".14"/><circle cx="16.75" cy="3.77" r="1.5" opacity=".29"/><circle cx="20.23" cy="7.25" r="1.5" opacity=".43"/><circle cx="21.50" cy="12.00" r="1.5" opacity=".57"/><circle cx="20.23" cy="16.75" r="1.5" opacity=".71"/><circle cx="16.75" cy="20.23" r="1.5" opacity=".86"/><circle cx="12" cy="21.5" r="1.5"/></g></svg>
         """.trimIndent()
+
+    val outlinedChevronDown =
+        """
+        <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.2179 1.73447L10 7.72131L2.78206 1.73447C2.27697 1.31553 1.53837 1.34057 1.06281 1.79274C0.498394 2.3294 0.531879 3.23924 1.13421 3.73296L9.68304 10.7402C9.86734 10.8913 10.1327 10.8913 10.317 10.7402L18.8658 3.73296C19.4681 3.23924 19.5016 2.3294 18.9372 1.79274C18.4616 1.34057 17.723 1.31553 17.2179 1.73447Z" stroke="#091C3B" stroke-linejoin="round"/>
+        </svg>
+        """.trimIndent()
 }

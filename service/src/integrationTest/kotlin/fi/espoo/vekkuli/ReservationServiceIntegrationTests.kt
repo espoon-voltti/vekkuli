@@ -446,4 +446,22 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val reservationType = reservationService.getExistingReservationsTypes(citizenId)
         assertEquals(HasExistingReservationsTypes.FixedTerm, reservationType, "Correct reservation type is fetched")
     }
+
+    @Test
+    fun `should return expired reservations`() {
+        val reservation = createReservationInConfirmedState(reservationService, citizenId, 1, 1)
+        val citizen = citizenService.getCitizen(citizenId)
+        // Keep this here to make sure Citizen is present
+        assertNotNull(citizen, "Citizen is not null")
+
+        val noExpiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId)
+        assertEquals(0, noExpiredReservations.size)
+
+        reservationService.terminateBoatSpaceReservation(reservation.id, citizen)
+
+        val expiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId)
+        assertEquals(1, expiredReservations.size)
+        assertEquals(ReservationStatus.Cancelled, expiredReservations.first().status, "Reservation is marked as Cancelled")
+        assertEquals(LocalDate.now(), expiredReservations.first().endDate, "End date is set to now")
+    }
 }

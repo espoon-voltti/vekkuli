@@ -13,30 +13,21 @@ class TerminateReservation : PlaywrightTest() {
     fun `citizen can open a terminate reservation modal from a reservation list item`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
-            val firstLocationName =
-                citizenDetailsPage.getByDataTestId(
-                    "reservation-list-card-location-name",
-                    citizenDetailsPage.firstBoatSpaceReservationCard
-                )
-            val firstPlace =
-                citizenDetailsPage.getByDataTestId(
-                    "reservation-list-card-place",
-                    citizenDetailsPage.firstBoatSpaceReservationCard
-                )
+
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
             page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
 
             assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
-
+            assertThat(citizenDetailsPage.expiredReservationList)
             citizenDetailsPage.terminateReservationButton.click()
             assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
             assertThat(citizenDetailsPage.terminateReservationModalConfirm).isVisible()
             assertThat(citizenDetailsPage.terminateReservationModalCancel).isVisible()
 
-            assertThat(firstLocationName).hasText("Haukilahti")
-            assertThat(firstPlace).hasText("B1")
+            assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
+            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B1")
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B1")
@@ -45,7 +36,41 @@ class TerminateReservation : PlaywrightTest() {
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
             assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
-            assertThat(firstPlace).not().isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `citizen can terminate reservation and see it in expired reservations list`() {
+        try {
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+
+            // Expired list is not on the page
+            assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
+            assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
+
+            citizenDetailsPage.terminateReservationButton.click()
+            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
+
+            // Opens up information from the first reservation of the first user
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B1")
+
+            // Hides the modal and the expired list is on the page, but not visible
+            citizenDetailsPage.terminateReservationModalConfirm.click()
+            assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
+            assertThat(citizenDetailsPage.expiredReservationList).not().isVisible()
+            assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
+
+            citizenDetailsPage.getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion).click()
+            assertThat(citizenDetailsPage.expiredReservationList).isVisible()
+            assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
+            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B1")
         } catch (e: AssertionError) {
             handleError(e)
         }

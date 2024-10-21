@@ -6,11 +6,11 @@ import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@Service
+@Component
 class InvoicePaidModal : BaseView() {
     @Autowired
     private lateinit var formComponents: FormComponents
@@ -18,7 +18,7 @@ class InvoicePaidModal : BaseView() {
     @Autowired
     private lateinit var modal: Modal
 
-    fun build(
+    fun render(
         citizen: CitizenWithDetails,
         reservation: BoatSpaceReservationDetails
     ): String {

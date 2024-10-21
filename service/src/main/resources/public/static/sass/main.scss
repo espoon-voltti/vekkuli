@@ -757,4 +757,21 @@ ul {
   margin-left: 0;
 }
 
+.accordion-title
+{
+  background-color: $light-gray;
+  cursor: pointer;
+  text-align: left;
+  padding: 0.9em;
+  margin-bottom: 1.8em;
+}
 
+.icon-transform
+{
+  transition: transform 0.5s ease
+}
+
+.icon-rotate-90
+{
+  transform: rotate(90deg);
+}
