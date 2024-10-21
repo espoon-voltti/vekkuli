@@ -1,6 +1,8 @@
-package fi.espoo.vekkuli
+package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
@@ -10,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
-class EmployeeTest : PlaywrightTest() {
+class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `Employee can reserve a boat space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
         page.navigate(baseUrl + "/virkailija")
@@ -156,7 +158,6 @@ class EmployeeTest : PlaywrightTest() {
         formPage.citizenSearchInput.pressSequentially("virtane")
         formPage.citizenSearchOption1.click()
         assertThat(formPage.citizenSearchInput).hasValue("Mikko Virtanen")
-        assertThat(formPage.citizenInformationContainer).isVisible()
     }
 
     @Test
@@ -257,17 +258,39 @@ class EmployeeTest : PlaywrightTest() {
 
         formPage.ownerRadioButton.check()
 
-        formPage.emailInput.fill("test@example.com")
-        formPage.emailInput.blur()
-        assertThat(formPage.emailError).isHidden()
-
-        formPage.phoneInput.fill("123456789")
-        formPage.phoneInput.blur()
-        assertThat(formPage.phoneError).isHidden()
-
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
 
         formPage.submitButton.click()
+    }
+
+    @Test
+    fun `Employee can reserve on behalf of an existing citizen acting on behalf of an existing organization`() {
+        page.navigate(baseUrl + "/virkailija")
+        page.getByTestId("employeeLoginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.navigateTo()
+
+        reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+
+        formPage.submitButton.click()
+        formPage.existingCitizenSelector.click()
+        formPage.citizenSearchInput.pressSequentially("olivia")
+        formPage.citizenSearchOption1.click()
+
+        assertThat(page.getByText("Olivian vene")).isVisible()
+
+        formPage.organizationRadioButton.click()
+
+        assertThat(page.getByText("Olivian vene")).isHidden()
     }
 }

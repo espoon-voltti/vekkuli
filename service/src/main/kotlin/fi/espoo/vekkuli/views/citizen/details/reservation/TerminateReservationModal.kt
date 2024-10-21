@@ -42,25 +42,22 @@ class TerminateReservationModal : BaseView() {
                             <p>${t("boatSpaceTermination.messages.moveBoatImmediately")}</p>
                         </div>
                         <div class="column is-full">
-                            <p>${t("boatSpaceTermination.messages.entitledToRefund")}</p>
+                            <p>${t("boatSpaceTermination.messages.notEntitledToRefund")}</p>
                         </div>
                     </div>
                     <input hidden name="reservationId" value="${reservation.id}" />
                 </form>
                 """.trimIndent()
-            )
-            .addButton {
+            ).addButton {
                 setText(t("cancel"))
                 setType(ModalButtonType.Cancel)
                 setTestId("terminate-reservation-modal-cancel")
-            }
-            .addButton {
+            }.addButton {
                 setStyle(ModalButtonStyle.Danger)
                 setType(ModalButtonType.Submit)
                 setText(t("boatSpaceTermination.button.confirm"))
                 setTargetForm(formId)
                 setTestId("terminate-reservation-modal-confirm")
-            }
-            .build()
+            }.build()
     }
 }
