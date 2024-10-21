@@ -416,6 +416,9 @@ class BoatReservationService(
     fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId, BoatSpaceType.Slip)
 
+    fun getExpiredBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getExpiredBoatSpaceReservationsForCitizen(citizenId)
+
     fun acknowledgeWarning(
         reservationId: Int,
         boatId: Int,
