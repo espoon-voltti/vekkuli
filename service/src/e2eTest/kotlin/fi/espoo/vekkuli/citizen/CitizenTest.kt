@@ -1,6 +1,8 @@
-package fi.espoo.vekkuli
+package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
@@ -8,58 +10,26 @@ import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
-class E2eTest : PlaywrightTest() {
+class CitizenTest : PlaywrightTest() {
     @Test
-    fun listingReservations() {
+    fun `citizen can edit their own information`() {
         try {
-            page.navigate(baseUrl + "/virkailija")
-            page.getByTestId("employeeLoginButton").click()
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            assertThat(listingPage.boatSpace1).isVisible()
-            assertThat(listingPage.boatSpace2).isVisible()
-            listingPage.boatSpace1.click()
-            val citizenDetails = CitizenDetailsPage(page)
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
+            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
 
-    @Test
-    fun editCitizen() {
-        try {
-            page.navigate(baseUrl + "/virkailija")
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.editButton.click()
 
             assertThat(page.getByTestId("edit-citizen-form")).isVisible()
-            val citizenFirstName = "New First Name"
-            val citizenLastName = "New Last Name"
             val citizenPhone = "0405839281"
             val citizenEmail = "test2@email.com"
-            val citizenAddress = "New Address"
-            val citizenNationalId = "031195-950Y"
-            val citizenPostalCode = "12345"
-            val citizenMunicipalityCode = "49"
 
-            citizenDetails.citizenFirstNameInput.fill(citizenFirstName)
-            citizenDetails.citizenLastNameInput.fill(citizenLastName)
-            citizenDetails.citizenAddressInput.fill(citizenAddress)
             citizenDetails.citizenEmailInput.fill("")
             citizenDetails.citizenPhoneInput.fill("")
-            citizenDetails.citizenNationalIdInput.fill(citizenNationalId)
-            citizenDetails.citizenPostalCodeInput.fill(citizenPostalCode)
-            citizenDetails.citizenMunicipalityInput.selectOption(citizenMunicipalityCode)
             citizenDetails.citizenEditSubmitButton.click()
 
             // assert that email and phone can not be empty
@@ -77,13 +47,8 @@ class E2eTest : PlaywrightTest() {
             citizenDetails.citizenEditSubmitButton.click()
 
             // assert that the values are updated
-            assertThat(citizenDetails.citizenFirstNameField).hasText(citizenFirstName)
-            assertThat(citizenDetails.citizenLastNameField).hasText(citizenLastName)
             assertThat(citizenDetails.citizenPhoneField).hasText(citizenPhone)
             assertThat(citizenDetails.citizenEmailField).hasText(citizenEmail)
-            assertThat(citizenDetails.citizenAddressField).hasText(citizenAddress)
-            assertThat(citizenDetails.citizenNationalIdField).hasText(citizenNationalId)
-            assertThat(citizenDetails.citizenPostalCodeField).hasText(citizenPostalCode)
             assertThat(citizenDetails.citizenMunicipalityField).hasText("Espoo")
         } catch (e: AssertionError) {
             handleError(e)
@@ -91,70 +56,14 @@ class E2eTest : PlaywrightTest() {
     }
 
     @Test
-    fun userMemos() {
+    fun `citizen can edit their own boat`() {
         try {
-            page.navigate(baseUrl + "/virkailija")
-            page.getByTestId("employeeLoginButton").click()
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            listingPage.boatSpace1.click()
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.memoNavi.click()
+            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
 
-            // Add memo
-            citizenDetails.addNewMemoBtn.click()
-            val text = "This is a new memo"
-            val memoId = 2
-            citizenDetails.newMemoContent.fill(text)
-            citizenDetails.newMemoSaveBtn.click()
-            assertThat(citizenDetails.userMemo(memoId)).containsText(text)
-
-            // Edit memo
-            val newText = "Edited memo"
-            citizenDetails.userMemo(memoId).getByTestId("edit-memo-button").click()
-            citizenDetails.userMemo(memoId).getByTestId("edit-memo-content").fill(newText)
-            citizenDetails.userMemo(memoId).getByTestId("save-edit-button").click()
-            assertThat(citizenDetails.userMemo(memoId).locator(".memo-content")).containsText(newText)
-
-            // Delete memo
-            page.onDialog { it.accept() }
-            citizenDetails.userMemo(memoId).getByTestId("delete-memo-button").click()
-            assertThat(citizenDetails.userMemo(memoId)).hasCount(0)
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
-
-    @Test
-    fun userMessages() {
-        try {
-            page.navigate(baseUrl + "/virkailija")
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            listingPage.boatSpace1.click()
-            val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.messagesNavi.click()
-            assertThat(citizenDetails.messages).containsText("Käyttöveden katko")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
-
-    @Test
-    fun editBoat() {
-        try {
-            page.navigate(baseUrl + "/virkailija")
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.showAllBoatsButton.click()
@@ -181,28 +90,11 @@ class E2eTest : PlaywrightTest() {
             assertThat(citizenDetails.registrationNumberText(3)).hasText("ABC123")
 
             assertThat(citizenDetails.lengthText(3)).hasText("6.0")
-            assertThat(citizenDetails.ownershipText(3)).hasText("Owner")
+            assertThat(citizenDetails.ownershipText(3)).hasText("I own the boat")
             assertThat(citizenDetails.otherIdentifierText(3)).hasText("ID12345")
             assertThat(citizenDetails.extraInformationText(3)).hasText("Extra info")
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
 
-    @Test
-    fun deleteBoat() {
-        try {
-            page.navigate(baseUrl + "/virkailija")
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
-            listingPage.boatSpace1.click()
-            val citizenDetails = CitizenDetailsPage(page)
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.showAllBoatsButton.click()
-            assertThat(page.getByTestId("boat-3")).isVisible()
+            // delete the boat
             page.getByTestId("delete-boat-3").click()
             page.getByTestId("delete-modal-confirm-3").click()
             assertThat(page.getByTestId("boat-3")).isHidden()
