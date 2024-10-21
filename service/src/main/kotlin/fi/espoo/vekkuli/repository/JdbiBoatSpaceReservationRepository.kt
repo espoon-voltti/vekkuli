@@ -498,8 +498,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date)
-                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate)
+                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created)
+                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate, :currentDate)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -508,6 +508,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
+            query.bind("currentDate", timeProvider.getCurrentDate())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -521,8 +522,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date)
-                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate)
+                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date, created)
+                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate, :currentDate)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -530,6 +531,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
+            query.bind("currentDate", timeProvider.getCurrentDate())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
