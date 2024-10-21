@@ -21,6 +21,9 @@ import kotlin.test.assertNotNull
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
+    val espooCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
+    val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
+
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
@@ -31,6 +34,97 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var citizenService: CitizenService
+
+    @Test
+    fun `first place should be indefinite for Espoo citizens`() {
+        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        if (result is ReservationResult.Success) {
+            assertEquals(LocalDate.of(2025, 1, 31), result.data.endDate)
+            assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
+        } else {
+            throw AssertionError("canReserveANewSlip failed")
+        }
+    }
+
+    @Test
+    fun `second place should be fixed term for Espoo citizens`() {
+        val madeReservation = createReservationInPaymentState(reservationService, espooCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            LocalDate.now(),
+            LocalDate.now()
+        )
+        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        if (result is ReservationResult.Success) {
+            assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
+            assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
+        } else {
+            throw AssertionError("canReserveANewSlip failed")
+        }
+    }
+
+    @Test
+    fun `first place should be fixed term for Helsinki citizens`() {
+        val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
+        if (result is ReservationResult.Success) {
+            assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
+            assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
+        } else {
+            throw AssertionError("canReserveANewSlip failed")
+        }
+    }
+
+    @Test
+    fun `should not allow second place for Helsinki citizens`() {
+        val madeReservation = createReservationInPaymentState(reservationService, helsinkiCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            helsinkiCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.FixedTerm,
+            LocalDate.now(),
+            LocalDate.now()
+        )
+        val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
+        if (result is ReservationResult.Failure) {
+            assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
+        } else {
+            throw AssertionError("canReserveANewSlip succeeded, but it should fail")
+        }
+    }
 
     @Test
     fun `should get correct reservation with citizen`() {
