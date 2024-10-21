@@ -12,7 +12,7 @@ class TerminateReservationModal : BaseView() {
     @Autowired
     private lateinit var modal: Modal
 
-    fun build(reservation: BoatSpaceReservationDetails): String {
+    fun render(reservation: BoatSpaceReservationDetails): String {
         val formId = "terminate-reservation-form"
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder

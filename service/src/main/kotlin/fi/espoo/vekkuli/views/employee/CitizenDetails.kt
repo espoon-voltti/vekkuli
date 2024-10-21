@@ -166,7 +166,7 @@ class CitizenDetails : BaseView() {
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType
     ): String {
-        val reservationList = reservationListBuilder.build(citizen, boatSpaceReservations)
+        val reservationList = reservationListBuilder.render(citizen, boatSpaceReservations)
 
         fun showBoatWarnings(boatHasWarnings: Boolean): String {
             if (boatHasWarnings) {

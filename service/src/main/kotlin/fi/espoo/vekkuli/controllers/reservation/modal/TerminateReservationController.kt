@@ -27,7 +27,7 @@ class TerminateReservationController {
                 ?: throw IllegalArgumentException("Reservation not found")
 
         return ResponseEntity.ok(
-            terminateReservationModal.build(reservation)
+            terminateReservationModal.render(reservation)
         )
     }
 }

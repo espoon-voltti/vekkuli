@@ -8,9 +8,9 @@ import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.modal.*
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 class ReservationList : BaseView() {
     @Autowired
     lateinit var icons: Icons
@@ -19,7 +19,7 @@ class ReservationList : BaseView() {
 
     @Autowired private lateinit var modal: Modal
 
-    fun build(
+    fun render(
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
     ): String {

@@ -34,7 +34,7 @@ class InvoicePaidController {
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Reservation not found")
 
         return ResponseEntity.ok(
-            invoicePaidModal.build(citizen, reservation)
+            invoicePaidModal.render(citizen, reservation)
         )
     }
 }
