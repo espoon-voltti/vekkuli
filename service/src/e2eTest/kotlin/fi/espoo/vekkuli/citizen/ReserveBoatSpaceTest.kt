@@ -15,6 +15,40 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
+    fun reservingShouldFailOutsidePeriod() {
+        try {
+            mockDateTime(LocalDateTime.of(2024, 1, 1, 22, 22, 22))
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
+            reservationPage.navigateTo()
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+            reservationPage.widthFilterInput.fill("3")
+            reservationPage.lengthFilterInput.fill("6")
+            reservationPage.lengthFilterInput.blur()
+            reservationPage.boatSpaceTypeSlipRadio.click()
+            reservationPage.amenityBuoyCheckbox.check()
+            reservationPage.amenityRearBuoyCheckbox.check()
+            reservationPage.amenityBeamCheckbox.check()
+            reservationPage.amenityWalkBeamCheckbox.check()
+
+            assertThat(reservationPage.harborHeaders).hasCount(3)
+            reservationPage.haukilahtiCheckbox.check()
+            reservationPage.kivenlahtiCheckbox.check()
+            assertThat(reservationPage.harborHeaders).hasCount(2)
+
+            reservationPage.firstReserveButton.click()
+
+            assertThat(page.locator("body")).containsText("Reservation not possible")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun reservingABoatSpace() {
         try {
             page.navigate(baseUrl)
