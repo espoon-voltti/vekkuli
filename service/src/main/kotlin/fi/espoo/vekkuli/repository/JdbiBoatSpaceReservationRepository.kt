@@ -30,7 +30,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
-            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.mapTo<Int>().findOne().orElse(null)
         }
 
@@ -108,7 +108,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("paymentId", paymentId)
-            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("updatedTime", LocalDate.now())
             query.mapTo<Int>().findOne().orElse(null)
         }
@@ -568,7 +568,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("reservationId", reservationId)
             query.bind("updatedTime", LocalDate.now())
-            query.bind("paymentTimeout", BoatSpaceConfig.PAYMENT_TIMEOUT)
+            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.mapTo<BoatSpaceReservation>().one()
         }
 
