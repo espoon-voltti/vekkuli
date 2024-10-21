@@ -455,8 +455,6 @@ class BoatReservationService(
     ): Boolean {
         val periods = getReservationPeriods(isEspooCitizen, boatSpaceType, operation)
         val today = MonthDay.from(now)
-        println("hasActiveReservationPeriod($now, $isEspooCitizen, $boatSpaceType, $operation)")
-        println("Perids $periods")
         return periods.any {
             isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
         }
@@ -466,7 +464,6 @@ class BoatReservationService(
         val reserver = reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(ReservationResultErrorCode.NoReserver)
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
-        println("hasSomePlace: $hasSomePlace, municipalityCode: ${reserver.municipalityCode}, num reservations ${reservations.size}")
         if (hasSomePlace && reserver.municipalityCode != ESPOO_MUNICIPALITY_CODE) {
             return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
@@ -475,8 +472,6 @@ class BoatReservationService(
             return return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
         val now = timeProvider.getCurrentDate().toLocalDate()
-
-        println("\n\nNow is $now\n\n")
         val hasActivePeriod =
             hasActiveReservationPeriod(
                 now,
@@ -484,7 +479,6 @@ class BoatReservationService(
                 BoatSpaceType.Slip,
                 if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
             )
-        println("hasActivePeriod: $hasActivePeriod")
         if (!hasActivePeriod) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }

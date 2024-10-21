@@ -631,7 +631,6 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("isEspooCitizen", isEspooCitizen)
             query.bind("operation", operation)
             query.bind("boatSpaceType", boatSpaceType)
-            println(query)
             query.mapTo<ReservationPeriod>().list()
         }
 
