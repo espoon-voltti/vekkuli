@@ -425,9 +425,7 @@ class CitizenDetails : BaseView() {
             }">
                        ${if (userType == UserType.EMPLOYEE) renderTabNavi(citizen.id, SubTab.Reservations) else ""}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
-                       <div class="reservation-list form-section">
-                           $reservationList
-                       </div>
+                        $reservationList
                        <h3>${t("boatSpaceReservation.title.boats")}</h3>
                        <div class="reservation-list form-section no-bottom-border">
                            ${getBoatsList(boats.filter { it.reservationId != null })} 
@@ -439,6 +437,11 @@ class CitizenDetails : BaseView() {
                             ${getBoatsList(boats.filter { it.reservationId == null })} 
                            </div>
                       </div>
+                      <div 
+                          hx-get="/reservation/partial/expired-boat-space-reservation-list/${citizen.id}" 
+                          hx-trigger="load"
+                          class='mt-1'>  
+                       </div>
                    </div>
             """.trimIndent()
     }

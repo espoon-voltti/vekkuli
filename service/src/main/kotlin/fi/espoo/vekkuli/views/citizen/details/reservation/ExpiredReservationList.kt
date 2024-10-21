@@ -4,13 +4,14 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.components.accordion.Accordion
 import fi.espoo.vekkuli.views.components.modal.*
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class ReservationList : BaseView() {
+class ExpiredReservationList : BaseView() {
     @Autowired
     lateinit var icons: Icons
 
@@ -18,25 +19,32 @@ class ReservationList : BaseView() {
 
     @Autowired private lateinit var cardInfo: ReservationCardInformation
 
-    @Autowired private lateinit var cardButtons: ReservationCardButtons
+    @Autowired private lateinit var accordion: Accordion
 
     fun render(
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
     ): String {
+        val accordionBuilder = accordion.createBuilder()
+
         // language=HTML
-        return """
-                        <div class="reservation-list form-section">
-                            ${boatSpaceReservations.joinToString("\n") { reservation ->
+        val content =
             """
-            <div class="reservation-card" ${addTestId("reservation-list-card")}>
-                ${cardHeading.render(reservation)}
-                ${cardInfo.render(reservation)}
-                ${cardButtons.render(reservation, citizen)}
-            </div>
+            <div class="reservation-list form-section">
+                ${boatSpaceReservations.joinToString("\n") { reservation ->
+                """
+                <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
+                    ${cardHeading.render(reservation)}
+                    ${cardInfo.render(reservation)}
+                </div>
+                """.trimIndent()
+            }}
+            <div>
             """.trimIndent()
-        }}
-                        </div>
-            """.trimIndent()
+
+        return accordionBuilder
+            .setTitle(t("boatSpaceExpiredReservation.title"))
+            .setContent(content)
+            .build()
     }
 }
