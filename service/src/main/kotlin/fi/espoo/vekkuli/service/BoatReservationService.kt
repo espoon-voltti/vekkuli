@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.repository.BoatRepository
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.dateToString
 import fi.espoo.vekkuli.utils.isMonthDayWithinRange
@@ -81,6 +82,7 @@ class BoatReservationService(
     private val paytrail: PaytrailInterface,
     private val emailEnv: EmailEnv,
     private val organizationService: OrganizationService,
+    private val timeProvider: TimeProvider,
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -244,15 +246,30 @@ class BoatReservationService(
     fun updateBoatInBoatSpaceReservation(
         reservationId: Int,
         boatId: Int,
-        citizenId: UUID,
-        status: ReservationStatus
-    ): BoatSpaceReservation = boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(reservationId, boatId, citizenId, status)
+        reserverId: UUID,
+        reservationStatus: ReservationStatus,
+        validity: ReservationValidity,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): BoatSpaceReservation =
+        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
+            reservationId,
+            boatId,
+            reserverId,
+            reservationStatus,
+            validity,
+            startDate,
+            endDate
+        )
 
     @Transactional
     fun reserveBoatSpace(
         reserverId: UUID,
         input: ReserveBoatSpaceInput,
-        reservationStatus: ReservationStatus
+        reservationStatus: ReservationStatus,
+        reservationValidity: ReservationValidity,
+        startDate: LocalDate,
+        endDate: LocalDate,
     ) {
         val boatSpace =
             getBoatSpaceRelatedToReservation(input.reservationId)
@@ -313,9 +330,11 @@ class BoatReservationService(
                 input.reservationId,
                 boat.id,
                 reserverId,
-                reservationStatus
+                reservationStatus,
+                reservationValidity,
+                startDate,
+                endDate
             )
-
         if (reservationStatus == ReservationStatus.Invoiced) {
             emailService.sendEmail(
                 "reservation_confirmation_invoice",
@@ -412,6 +431,19 @@ class BoatReservationService(
         val today = MonthDay.from(LocalDate.now())
         return periods.any {
             isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
+        }
+    }
+
+    fun getExistingReservationsTypes(citizenId: UUID): HasExistingReservationsTypes {
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId)
+        return when {
+            reservations.isEmpty() -> HasExistingReservationsTypes.No
+            reservations.any { it.validity == ReservationValidity.Indefinite } &&
+                reservations.any { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.Both
+            reservations.all { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.FixedTerm
+            reservations.all { it.validity == ReservationValidity.Indefinite } -> HasExistingReservationsTypes.Indefinite
+
+            else -> HasExistingReservationsTypes.No
         }
     }
 }

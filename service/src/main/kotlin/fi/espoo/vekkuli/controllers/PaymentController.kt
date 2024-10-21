@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.dateToShortString
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class PaymentController(
     private val messageUtil: MessageUtil,
     private val citizenService: CitizenService,
     private val paytrailEnv: PaytrailEnv,
+    private val timeProvider: TimeProvider
 ) {
     @GetMapping("/maksa")
     suspend fun payment(
@@ -90,7 +92,7 @@ class PaymentController(
         val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled", locale = locale) else null
         model.addAttribute("providers", response.providers)
         model.addAttribute("error", errorMessage)
-        model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created))
+        model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDate()))
         model.addAttribute("reservationId", reservation.id)
 
         return "boat-space-reservation-payment"

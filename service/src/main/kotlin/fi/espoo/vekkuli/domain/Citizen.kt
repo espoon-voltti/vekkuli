@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.DomainConstants
 import java.util.*
 
 data class Citizen(
@@ -84,6 +85,8 @@ fun getBirthDateFromSSN(ssn: String): String {
     // Return the formatted birthdate as dd.mm.yyyy
     return "$day.$month.$fullYear"
 }
+
+fun isEspooCitizen(municipalityCode: Int): Boolean = municipalityCode == DomainConstants.ESPOO_MUNICIPALITY_CODE
 
 data class Municipality(
     val code: Int,

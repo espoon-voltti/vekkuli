@@ -35,6 +35,7 @@ class SendEmailServiceMock : SendEmailInterface {
 }
 
 @Service
+@Profile("!test")
 class SendEmailService(
     private val sesClient: SesClient,
     private val emailEnv: EmailEnv
