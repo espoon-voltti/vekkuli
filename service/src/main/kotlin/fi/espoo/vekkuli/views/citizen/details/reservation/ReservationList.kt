@@ -26,7 +26,7 @@ class ReservationList : BaseView() {
     ): String {
         // language=HTML
         return """
-                        <div class="reservation-list form-section">
+                        <div class="reservation-list form-section" ${addTestId("reservation-list")}>
                             ${boatSpaceReservations.joinToString("\n") { reservation ->
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>

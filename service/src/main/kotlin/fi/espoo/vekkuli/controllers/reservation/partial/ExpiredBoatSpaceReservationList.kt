@@ -25,10 +25,7 @@ class ExpiredBoatSpaceReservationList {
     lateinit var citizenService: CitizenService
 
     @Autowired
-    lateinit var reservationList: ExpiredReservationList
-
-    @Autowired
-    lateinit var partial: ReservationList
+    lateinit var partial: ExpiredReservationList
 
     @GetMapping("/expired-boat-space-reservation-list/{citizenId}")
     @ResponseBody
@@ -36,20 +33,16 @@ class ExpiredBoatSpaceReservationList {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): ResponseEntity<String> {
-        /*
-        val authenticatedUser = request.getAuthenticatedUser()
-        if (authenticatedUser == null) {
-            return throw Unauthorized()
-        }
-         */
-
         val reservations =
             reservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId)
+
+        if(reservations.isEmpty())
+            return ResponseEntity.ok("")
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
         return ResponseEntity.ok(
-            reservationList.render(
+            partial.render(
                 citizen,
                 reservations
             )

@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
@@ -440,6 +441,8 @@ class CitizenDetails : BaseView() {
                       <div 
                           hx-get="/reservation/partial/expired-boat-space-reservation-list/${citizen.id}" 
                           hx-trigger="load"
+                          hx-swap="outerHTML"
+                          ${addTestId("expired-reservation-list-loader")}
                           class='mt-1'>  
                        </div>
                    </div>

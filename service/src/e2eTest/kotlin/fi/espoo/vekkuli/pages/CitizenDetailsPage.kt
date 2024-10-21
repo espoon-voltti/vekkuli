@@ -110,4 +110,9 @@ class CitizenDetailsPage(
     val terminateReservationFormLocation = getByDataTestId("terminate-reservation-location")
     val terminateReservationFormSize = getByDataTestId("terminate-reservation-size")
     val terminateReservationFormAmenity = getByDataTestId("terminate-reservation-amenity")
+
+    val expiredReservationList = getByDataTestId("expired-reservation-list")
+    val expiredReservationListLoader = getByDataTestId("expired-reservation-list-loader")
+    val expiredReservationListAccordion = getByDataTestId("expired-reservation-list-accordion")
+
 }

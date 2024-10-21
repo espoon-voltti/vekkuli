@@ -634,13 +634,14 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.id,
+                     SELECT bsr.id,
                            bsr.start_date,
                            bsr.end_date,
                            bsr.created,
                            bsr.updated,
                            bsr.status,
                            bsr.boat_space_id,
+                           bsr.validity,
                            r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,

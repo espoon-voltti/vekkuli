@@ -5,7 +5,7 @@ import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.accordion.Accordion
-import fi.espoo.vekkuli.views.components.modal.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -30,7 +30,7 @@ class ExpiredReservationList : BaseView() {
         // language=HTML
         val content =
             """
-            <div class="reservation-list form-section">
+            <div class="reservation-list form-section" ${addTestId("expired-reservation-list")}>
                 ${boatSpaceReservations.joinToString("\n") { reservation ->
                 """
                 <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
@@ -44,6 +44,7 @@ class ExpiredReservationList : BaseView() {
 
         return accordionBuilder
             .setTitle(t("boatSpaceExpiredReservation.title"))
+            .setTestId("expired-reservation-list-accordion")
             .setContent(content)
             .build()
     }
