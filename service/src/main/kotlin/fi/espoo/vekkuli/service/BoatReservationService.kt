@@ -14,10 +14,12 @@ import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.dateToString
+import fi.espoo.vekkuli.utils.isMonthDayWithinRange
 import fi.espoo.vekkuli.utils.mToCm
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.MonthDay
 import java.util.*
 
 sealed class PaymentProcessResult {
@@ -395,5 +397,21 @@ class BoatReservationService(
         boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
     }
 
-    fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
+    private fun getReservationPeriods(
+        isEspooCitizen: Boolean,
+        boatSpaceType: BoatSpaceType,
+        operation: ReservationOperation
+    ): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods(isEspooCitizen, boatSpaceType, operation)
+
+    fun hasActiveReservationPeriod(
+        isEspooCitizen: Boolean,
+        boatSpaceType: BoatSpaceType,
+        operation: ReservationOperation
+    ): Boolean {
+        val periods = getReservationPeriods(isEspooCitizen, boatSpaceType, operation)
+        val today = MonthDay.from(LocalDate.now())
+        return periods.any {
+            isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
+        }
+    }
 }

@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.domain
 
 data class ReservationPeriod(
-    val id: String,
+    val isEspooCitizen: Boolean,
+    val operation: ReservationOperation,
+    val boatSpaceType: BoatSpaceType,
     val startMonth: Int,
     val startDay: Int,
     val endMonth: Int,

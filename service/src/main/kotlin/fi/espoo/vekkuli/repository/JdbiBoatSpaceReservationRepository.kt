@@ -598,16 +598,25 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
-    override fun getReservationPeriods(): List<ReservationPeriod> =
+    override fun getReservationPeriods(
+        isEspooCitizen: Boolean,
+        boatSpaceType: BoatSpaceType,
+        operation: ReservationOperation
+    ): List<ReservationPeriod> =
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
+            val query =
+                handle.createQuery(
                     """
                     SELECT *
                     FROM reservation_period
-                    ORDER BY match_order ASC
+                    WHERE is_espoo_citizen = :isEspooCitizen
+                        AND operation = :operation
+                        AND boat_space_type = :boatSpaceType
                     """.trimIndent()
-                ).mapTo<ReservationPeriod>()
-                .list()
+                )
+            query.bind("isEspooCitizen", isEspooCitizen)
+            query.bind("operation", operation)
+            query.bind("boatSpaceType", boatSpaceType)
+            query.mapTo<ReservationPeriod>().list()
         }
 }
