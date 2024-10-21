@@ -464,26 +464,36 @@ class BoatReservationService(
         val reserver = reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(ReservationResultErrorCode.NoReserver)
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
-        if (hasSomePlace && reserver.municipalityCode != ESPOO_MUNICIPALITY_CODE) {
+        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
+
+        if (hasSomePlace && !isEspooCitizen) {
+            // Non-Espoo citizens can only have one reservation
             return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
+
         if (reservations.size >= 2) {
-            // Only two reservations are allowed ever
+            // Only two reservations are allowed
             return return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
+
         val now = timeProvider.getCurrentDate().toLocalDate()
+
         val hasActivePeriod =
             hasActiveReservationPeriod(
                 now,
-                reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE,
+                isEspooCitizen,
                 BoatSpaceType.Slip,
                 if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
             )
+
         if (!hasActivePeriod) {
+            // If no period found, reservation is not possible
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
-        val validity = if (hasSomePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+
+        val validity = if (!isEspooCitizen || hasSomePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
         val endDate = if (validity == ReservationValidity.Indefinite) getLastDayOfNextYearsJanuary(now.year) else getLastDayOfYear(now.year)
+
         return ReservationResult.Success(
             ReservationResultSuccess(
                 now,
