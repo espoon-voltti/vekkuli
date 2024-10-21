@@ -486,7 +486,7 @@ class BoatSpaceFormController(
             if (reserveSlipResult is ReservationResult.Success) {
                 reserveSlipResult.data
             } else {
-                val now = LocalDate.now()
+                val now = timeProvider.getCurrentDate().toLocalDate()
                 ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
             }
 
