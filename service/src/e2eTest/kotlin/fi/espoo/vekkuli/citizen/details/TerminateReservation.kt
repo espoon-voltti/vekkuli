@@ -13,16 +13,7 @@ class TerminateReservation : PlaywrightTest() {
     fun `citizen can open a terminate reservation modal from a reservation list item`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
-            val firstLocationName =
-                citizenDetailsPage.getByDataTestId(
-                    "reservation-list-card-location-name",
-                    citizenDetailsPage.firstBoatSpaceReservationCard
-                )
-            val firstPlace =
-                citizenDetailsPage.getByDataTestId(
-                    "reservation-list-card-place",
-                    citizenDetailsPage.firstBoatSpaceReservationCard
-                )
+
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
@@ -35,8 +26,8 @@ class TerminateReservation : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationModalConfirm).isVisible()
             assertThat(citizenDetailsPage.terminateReservationModalCancel).isVisible()
 
-            assertThat(firstLocationName).hasText("Haukilahti")
-            assertThat(firstPlace).hasText("B1")
+            assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
+            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B1")
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B1")
@@ -54,16 +45,7 @@ class TerminateReservation : PlaywrightTest() {
     fun `citizen can terminate reservation and see it in expired reservations list`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
-            val firstLocationName =
-                citizenDetailsPage.getByDataTestId(
-                    "reservation-list-card-location-name",
-                    citizenDetailsPage.expiredReservationList
-                )
-            val firstPlace =
-                citizenDetailsPage.getByDataTestId(
-                    "reservation-list-card-place",
-                    citizenDetailsPage.expiredReservationList
-                )
+
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
@@ -87,8 +69,8 @@ class TerminateReservation : PlaywrightTest() {
 
             citizenDetailsPage.getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion).click()
             assertThat(citizenDetailsPage.expiredReservationList).isVisible()
-            assertThat(firstLocationName).hasText("Haukilahti")
-            assertThat(firstPlace).hasText("B1")
+            assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
+            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B1")
         } catch (e: AssertionError) {
             handleError(e)
         }
