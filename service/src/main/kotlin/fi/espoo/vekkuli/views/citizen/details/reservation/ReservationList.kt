@@ -26,8 +26,19 @@ class ReservationList : BaseView() {
     ): String {
         // language=HTML
         return """
-                        <div class="reservation-list form-section" ${addTestId("reservation-list")}>
-                            ${boatSpaceReservations.joinToString("\n") { reservation ->
+            <div class="reservation-list form-section" ${addTestId("reservation-list")}>
+                ${createReservationCards(boatSpaceReservations, citizen)}
+            </div>
+            """.trimIndent()
+    }
+
+    fun createReservationCards(
+        boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        citizen: CitizenWithDetails
+    ): String {
+        return boatSpaceReservations.joinToString("\n") {
+                // language=HTML
+                reservation ->
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
@@ -35,8 +46,6 @@ class ReservationList : BaseView() {
                 ${cardButtons.render(reservation, citizen)}
             </div>
             """.trimIndent()
-        }}
-                        </div>
-            """.trimIndent()
+        }
     }
 }

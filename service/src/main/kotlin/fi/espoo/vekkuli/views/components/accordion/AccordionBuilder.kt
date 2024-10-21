@@ -5,7 +5,7 @@ import fi.espoo.vekkuli.views.Icons
 
 class AccordionBuilder {
     private val openStateId = "accordionIsOpen"
-    private var testId  = "accordion-container"
+    private var testId = "accordion-container"
     private var title: String? = null
     private var content: String? = null
     private var isOpen: Boolean = false
@@ -20,9 +20,10 @@ class AccordionBuilder {
             this.content = content
         }
 
-    fun setTestId(testId: String) = apply {
-        this.testId = testId
-    }
+    fun setTestId(testId: String) =
+        apply {
+            this.testId = testId
+        }
 
     fun setIsOpen(isOpen: Boolean) =
         apply {
@@ -37,7 +38,10 @@ class AccordionBuilder {
                 x-data="{ $openStateId: $isOpen }"
                 ${addTestId(testId)}
                 >
-                <h4 class="accordion-title is-flex is-align-items-center" @click="$openStateId = !$openStateId" ${addTestId("accordion-title")}>
+                <h4 
+                    class="accordion-title is-flex is-align-items-center"
+                    @click="$openStateId = !$openStateId"
+                    ${addTestId("accordion-title")}>
                     $title
                     <span class="ml-5 icon icon-transform" style="margin-left: 1.5em" :class="{'icon-rotate-90': !$openStateId}">
                         ${Icons().outlinedChevronDown}

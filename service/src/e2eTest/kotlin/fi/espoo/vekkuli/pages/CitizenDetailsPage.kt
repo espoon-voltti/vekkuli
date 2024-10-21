@@ -114,5 +114,4 @@ class CitizenDetailsPage(
     val expiredReservationList = getByDataTestId("expired-reservation-list")
     val expiredReservationListLoader = getByDataTestId("expired-reservation-list-loader")
     val expiredReservationListAccordion = getByDataTestId("expired-reservation-list-accordion")
-
 }

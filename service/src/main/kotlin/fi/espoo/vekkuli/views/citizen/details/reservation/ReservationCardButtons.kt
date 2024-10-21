@@ -21,30 +21,37 @@ class ReservationCardButtons : BaseView() {
     ): String {
         // language=HTML
         return """
-                        <div class="buttons">
-                            ${if (reservation.status == ReservationStatus.Invoiced) {
-            modal.createOpenModalBuilder()
-                .addAttribute("id","invoice-paid-button")
+            <div class="buttons">
+                ${createInvoicePaidModalButton(reservation, citizen)}
+                <button class="button is-primary">
+                    ${t("boatSpaceReservation.button.swapPlace")}
+                </button>
+                ${createTerminateReservationModalButton(reservation)}
+            </div>
+            """.trimIndent()
+    }
+
+    fun createInvoicePaidModalButton(
+        reservation: BoatSpaceReservationDetails,
+        citizen: CitizenWithDetails
+    ): String {
+        if (reservation.status == ReservationStatus.Invoiced) {
+            return modal.createOpenModalBuilder()
+                .addAttribute("id", "invoice-paid-button")
                 .setText(t("citizenDetails.markInvoicePaid"))
                 .setPath("/reservation/modal/mark-invoice-paid/${reservation.id}/${citizen.id}")
                 .setStyle(ModalButtonStyle.Primary)
                 .build()
-        } else {
-            ""
         }
-        }
-                            <button class="button is-primary">
-                                ${t("boatSpaceReservation.button.swapPlace")}
-                            </button>
-                            ${
-            modal.createOpenModalBuilder()
-                .setText(t("boatSpaceReservation.button.terminateReservation"))
-                .setPath("/reservation/modal/terminate-reservation/${reservation.id}")
-                .setStyle(ModalButtonStyle.DangerOutline)
-                .setTestId("open-terminate-reservation-modal")
-                .build()
-        }
-                        </div>
-            """.trimIndent()
+        return ""
+    }
+
+    fun createTerminateReservationModalButton(reservation: BoatSpaceReservationDetails): String {
+        return modal.createOpenModalBuilder()
+            .setText(t("boatSpaceReservation.button.terminateReservation"))
+            .setPath("/reservation/modal/terminate-reservation/${reservation.id}")
+            .setStyle(ModalButtonStyle.DangerOutline)
+            .setTestId("open-terminate-reservation-modal")
+            .build()
     }
 }

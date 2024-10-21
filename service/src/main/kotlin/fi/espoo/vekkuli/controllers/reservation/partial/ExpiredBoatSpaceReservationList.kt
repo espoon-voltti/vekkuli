@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.controllers.reservation.partial
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.views.citizen.details.reservation.ExpiredReservationList
-import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
@@ -36,8 +35,9 @@ class ExpiredBoatSpaceReservationList {
         val reservations =
             reservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId)
 
-        if(reservations.isEmpty())
+        if (reservations.isEmpty()) {
             return ResponseEntity.ok("")
+        }
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
