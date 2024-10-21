@@ -177,7 +177,7 @@ class FormComponents {
         //language=HTML
         return """
             <div class='field'>
-                <label class="label" for="$id">${t(labelKey)}</label>
+                <label class="label">${t(labelKey)}</label>
                  <p id="$id">${if (value.isNullOrEmpty()) '-' else value}</p>
              </div>
             """.trimIndent()

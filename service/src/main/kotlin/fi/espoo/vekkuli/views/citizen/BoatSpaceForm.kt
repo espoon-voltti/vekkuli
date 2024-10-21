@@ -553,7 +553,7 @@ class BoatSpaceForm(
                                 ${if (input.citizenSelection == "newCitizen") "checked" else ""}
                                 
                             />
-                            <label for="newCitizen">${t("boatApplication.citizenOptions.newCitizen")}</label>
+                            <label for="new-citizen-selector">${t("boatApplication.citizenOptions.newCitizen")}</label>
                         </div>
                         <div class="radio">
                             <input
@@ -568,7 +568,7 @@ class BoatSpaceForm(
                                 hx-swap="outerHTML"
                                 ${if (input.citizenSelection == "existingCitizen") "checked" else ""}
                             />
-                            <label for="existingCitizen">${t("boatApplication.citizenOptions.existingCitizen")}</label>
+                            <label for="existing-citizen-selector">${t("boatApplication.citizenOptions.existingCitizen")}</label>
                         </div>
                     </div>
                 </div> 
