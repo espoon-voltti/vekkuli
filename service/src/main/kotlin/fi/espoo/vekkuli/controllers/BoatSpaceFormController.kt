@@ -120,10 +120,12 @@ class BoatSpaceFormController(
 
         val organizations = citizen?.let { organizationService.getCitizenOrganizations(citizen.id) } ?: emptyList()
 
+        val boatReserver = if (input.isOrganization == true) input.organizationId else citizen?.id
+
         val boats =
-            citizen?.let {
+            boatReserver?.let {
                 boatService
-                    .getBoatsForReserver(citizen.id)
+                    .getBoatsForReserver(boatReserver)
                     .map { boat -> boat.updateBoatDisplayName(messageUtil) }
             } ?: emptyList()
 
