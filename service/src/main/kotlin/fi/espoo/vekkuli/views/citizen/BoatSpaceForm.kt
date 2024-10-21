@@ -542,11 +542,7 @@ class BoatSpaceForm(
                         </span>
                     </div>
                 </div>
-                <template x-if="citizenFullName != ''">
-                    <div id='citizen-details' class="block">
-                    
-                    </div>
-                </template>
+                ${ if (citizen != null) citizenDetails(citizen, municipalities) else "" }
             </div>
             """.trimIndent()
 
