@@ -15,6 +15,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
@@ -55,7 +56,8 @@ class BoatSpaceFormController(
     private val citizenService: CitizenService,
     private val organizationService: OrganizationService,
     private val reservationConfirmation: ReservationConfirmation,
-    private val warnings: Warnings
+    private val warnings: Warnings,
+    private val timeProvider: TimeProvider
 ) {
     @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -65,7 +67,6 @@ class BoatSpaceFormController(
         @ModelAttribute formInput: ReservationInput,
         request: HttpServletRequest,
         response: HttpServletResponse,
-        model: Model,
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
         val citizen =
@@ -137,7 +138,7 @@ class BoatSpaceFormController(
                 citizen,
                 organizations,
                 input,
-                getReservationTimeInSeconds(reservation.created),
+                getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDate()),
                 userType,
                 municipalities
             )
@@ -378,8 +379,9 @@ class BoatSpaceFormController(
                 .header("Location", url)
                 .body("")
 
-        val citizenId =
-            if (userType == UserType.EMPLOYEE) {
+        val isEmployee = userType == UserType.EMPLOYEE
+        val citizen =
+            if (isEmployee) {
                 val employee = getEmployee(request)
 
                 if (employee == null) {
@@ -398,7 +400,7 @@ class BoatSpaceFormController(
                                 postOffice = input.postalOffice,
                                 postOfficeSv = input.postalOffice
                             )
-                        )?.id
+                        )
                 } else {
                     citizenService
                         .insertCitizen(
@@ -411,13 +413,13 @@ class BoatSpaceFormController(
                             postalCode = input.postalCode ?: "",
                             municipalityCode = input.municipalityCode ?: 1,
                             false,
-                        ).id
+                        )
                 }
             } else {
-                getCitizen(request, citizenService)?.id
+                getCitizen(request, citizenService)
             }
 
-        if (citizenId == null) {
+        if (citizen == null) {
             return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .header("Location", "/")
@@ -432,7 +434,7 @@ class BoatSpaceFormController(
             return badRequest("Invalid input")
         }
 
-        var reserverId: UUID = citizenId
+        var reserverId: UUID = citizen.id
 
         if (input.isOrganization == true) {
             if (input.organizationId == null) {
@@ -451,7 +453,7 @@ class BoatSpaceFormController(
                         municipalityCode = (input.orgMunicipalityCode ?: "1").toInt()
                     )
                 // add person to organization
-                organizationService.addCitizenToOrganization(newOrg.id, citizenId)
+                organizationService.addCitizenToOrganization(newOrg.id, citizen.id)
                 reserverId = newOrg.id
             } else {
                 // update organization
@@ -474,33 +476,46 @@ class BoatSpaceFormController(
             }
         }
 
-        val reservationStatus = if (userType == UserType.EMPLOYEE) ReservationStatus.Invoiced else ReservationStatus.Payment
+        val reservationStatus =
+            if (isEmployee) ReservationStatus.Invoiced else ReservationStatus.Payment
+        val reservationConditions =
+            ReservationConditions(
+                isEspooCitizen(citizen.municipalityCode),
+                reservationService.getExistingReservationsTypes(citizen.id),
+                timeProvider.getCurrentDate(),
+            )
 
-        reservationService.reserveBoatSpace(
-            reserverId,
-            ReserveBoatSpaceInput(
-                reservationId = reservationId,
-                boatId = input.boatId,
-                boatType = input.boatType!!,
-                width = input.width ?: 0.0,
-                length = input.length ?: 0.0,
-                depth = input.depth ?: 0.0,
-                weight = input.weight,
-                boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                boatName = input.boatName ?: "",
-                otherIdentification = input.otherIdentification ?: "",
-                extraInformation = input.extraInformation ?: "",
-                ownerShip = input.ownership!!,
-                email = input.email!!,
-                phone = input.phone!!,
-            ),
-            reservationStatus
-        )
-
-        if (userType == UserType.EMPLOYEE) {
-            return redirectUrl("/virkailija/venepaikat/varaukset")
+        if (isEmployee || reservationConditions.canReserveSlip() == null) {
+            val reserveSlipResult =
+                reservationConditions.reserveSlipResult()
+            reservationService.reserveBoatSpace(
+                reserverId,
+                ReserveBoatSpaceInput(
+                    reservationId = reservationId,
+                    boatId = input.boatId,
+                    boatType = input.boatType!!,
+                    width = input.width ?: 0.0,
+                    length = input.length ?: 0.0,
+                    depth = input.depth ?: 0.0,
+                    weight = input.weight,
+                    boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                    boatName = input.boatName ?: "",
+                    otherIdentification = input.otherIdentification ?: "",
+                    extraInformation = input.extraInformation ?: "",
+                    ownerShip = input.ownership!!,
+                    email = input.email!!,
+                    phone = input.phone!!,
+                ),
+                reservationStatus,
+                reserveSlipResult.reservationValidity,
+                reserveSlipResult.startDate,
+                reserveSlipResult.endDate
+            )
         }
 
+        if (isEmployee) {
+            return redirectUrl("/virkailija/venepaikat/varaukset")
+        }
         // redirect to payments page with reservation id and slip type
         return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
@@ -551,16 +566,38 @@ class BoatSpaceFormController(
     ): ResponseEntity<String> {
         val userType = UserType.fromPath(usertype)
         val isEmployee = userType == UserType.EMPLOYEE
-        val citizenId = getCitizen(request, citizenService)?.id
+        val citizen = getCitizen(request, citizenService)
         val userId =
             if (isEmployee) {
                 getEmployee(request)?.id
             } else {
-                citizenId
+                citizen?.id
             }
-
         if (userId == null) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+
+        // Show error page if citizen can not reserve slip
+        if (!isEmployee) {
+            if ((citizen == null)) {
+                return ResponseEntity(HttpStatus.FORBIDDEN)
+            }
+            val reserveSlipErrorCode =
+                ReservationConditions(
+                    isEspooCitizen(citizen.municipalityCode),
+                    reservationService.getExistingReservationsTypes(citizen.id),
+                    timeProvider.getCurrentDate(),
+                ).canReserveSlip()
+
+            if (reserveSlipErrorCode != null) {
+                return ResponseEntity.ok(
+                    renderErrorPage(
+                        citizen,
+                        request,
+                        messageUtil.getMessage("errorCode.split.$reserveSlipErrorCode")
+                    )
+                )
+            }
         }
 
         val existingReservation =
@@ -574,15 +611,15 @@ class BoatSpaceFormController(
             if (existingReservation != null) {
                 existingReservation.id
             } else {
-                val today = LocalDate.now()
-                val endOfYear = LocalDate.of(today.getYear(), Month.DECEMBER, 31)
+                val today = timeProvider.getCurrentDate().toLocalDate()
+                val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
                 if (isEmployee) {
                     reservationService.insertBoatSpaceReservationAsEmployee(userId, spaceId, today, endOfYear).id
                 } else {
                     reservationService
                         .insertBoatSpaceReservation(
                             userId,
-                            citizenId,
+                            citizen?.id,
                             spaceId,
                             today,
                             endOfYear,
@@ -602,6 +639,18 @@ class BoatSpaceFormController(
         return ResponseEntity(headers, HttpStatus.FOUND)
     }
 
+    fun renderErrorPage(
+        citizen: CitizenWithDetails?,
+        request: HttpServletRequest,
+        error: String
+    ): String =
+        layout.render(
+            true,
+            citizen?.fullName,
+            request.requestURI,
+            boatSpaceForm.errorPage(error, 2)
+        )
+
     fun getEmployee(request: HttpServletRequest): AppUser? {
         val authenticatedUser = request.getAuthenticatedUser() ?: return null
 
@@ -613,8 +662,11 @@ class BoatSpaceFormController(
     }
 }
 
-fun getReservationTimeInSeconds(reservationCreated: LocalDateTime): Long {
-    val reservationTimePassed = Duration.between(reservationCreated, LocalDateTime.now()).toSeconds()
+fun getReservationTimeInSeconds(
+    reservationCreated: LocalDateTime,
+    currentDate: LocalDateTime
+): Long {
+    val reservationTimePassed = Duration.between(reservationCreated, currentDate).toSeconds()
     return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
 }
 

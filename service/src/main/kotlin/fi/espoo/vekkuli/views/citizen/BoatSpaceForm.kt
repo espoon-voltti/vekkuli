@@ -287,6 +287,23 @@ class BoatSpaceForm(
         return boatContainer
     }
 
+    // language=HTML
+    fun errorPage(
+        errorText: String,
+        step: Int
+    ): String =
+        """
+        <section class="section" id="error-page-container">
+         ${stepIndicator.render(step)}
+            <div class="container">
+                <div class='column is-half'>
+                    <h3 >${t("boatApplication.title.errorPage")}</h3>
+                    <p >$errorText</p>
+                </div>
+            </div>
+        </section>
+        """.trimIndent()
+
     fun boatSpaceForm(
         reservation: ReservationWithDependencies,
         boats: List<Boat>,
@@ -338,7 +355,7 @@ class BoatSpaceForm(
                 } else {
                     (
                         """
-                    <p>${t("boatApplication.validUntilFurtherNotice")}</p>
+                    <p>${t("boatApplication.Indefinite")}</p>
                 """
                     )
                 },

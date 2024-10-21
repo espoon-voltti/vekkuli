@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: ${ENVIRONMENT:local}
   main:
     banner-mode: "off"
   application:
@@ -26,3 +28,4 @@ vekkuli:
   paytrail:
     merchant_id: ${PAYTRAIL_MERCHANT_ID:375917}
     merchant_secret: ${PAYTRAIL_MERCHANT_SECRET:SAIPPUAKAUPPIAS}
+

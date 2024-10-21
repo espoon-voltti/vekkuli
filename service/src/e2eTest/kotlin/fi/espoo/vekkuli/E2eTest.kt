@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 class E2eTest : PlaywrightTest() {
@@ -511,5 +512,23 @@ class E2eTest : PlaywrightTest() {
         assertThat(formPage.confirmCancelModal).isVisible()
         formPage.confirmCancelModalConfirm.click()
         assertThat(reservationPage.header).isVisible()
+    }
+
+    @Test
+    fun `show error page when reserving space off season`() {
+        // login and pick first free space
+        mockDateTime(LocalDateTime.of(2024, 1, 1, 0, 0, 0))
+        page.navigate(baseUrl)
+        page.getByTestId("loginButton").click()
+        page.getByText("Kirjaudu").click()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
+        reservationPage.navigateTo()
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+        reservationPage.firstReserveButton.click()
+        val errorPage = ErrorPage(page)
+        assertThat(errorPage.errorPageContainer).isVisible()
     }
 }

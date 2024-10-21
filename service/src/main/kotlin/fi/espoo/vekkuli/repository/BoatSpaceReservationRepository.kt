@@ -51,7 +51,10 @@ interface BoatSpaceReservationRepository {
         reservationId: Int,
         boatId: Int,
         reserverId: UUID,
-        reservationStatus: ReservationStatus
+        reservationStatus: ReservationStatus,
+        validity: ReservationValidity,
+        startDate: LocalDate,
+        endDate: LocalDate,
     ): BoatSpaceReservation
 
     fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation
@@ -60,5 +63,9 @@ interface BoatSpaceReservationRepository {
 
     fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation
 
-    fun getReservationPeriods(): List<ReservationPeriod>
+    fun getReservationPeriods(
+        isEspooCitizen: Boolean,
+        boatSpaceType: BoatSpaceType,
+        operation: ReservationOperation
+    ): List<ReservationPeriod>
 }

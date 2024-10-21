@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.utils.*
 
 enum class ReservationValidity {
-    ValidUntilFurtherNotice,
+    Indefinite,
     FixedTerm,
 }
 
