@@ -29,7 +29,7 @@ data class UpdateCitizenParams(
 class JdbiReserverRepository(
     private val jdbi: Jdbi
 ) : ReserverRepository {
-    override fun getReserverById(id: UUID): ReserverWithDetails =
+    override fun getReserverById(id: UUID): ReserverWithDetails? =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
@@ -41,7 +41,7 @@ class JdbiReserverRepository(
                     """.trimIndent()
                 ).bind("id", id)
                 .mapTo<ReserverWithDetails>()
-                .one()
+                .firstOrNull()
         }
 
     override fun getCitizenById(id: UUID): CitizenWithDetails? =

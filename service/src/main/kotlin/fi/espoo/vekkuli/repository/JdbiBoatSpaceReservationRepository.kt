@@ -228,7 +228,10 @@ class JdbiBoatSpaceReservationRepository(
             query.execute()
         }
 
-    override fun getBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails> =
+    override fun getBoatSpaceReservationsForCitizen(
+        reserverId: UUID,
+        spaceType: BoatSpaceType
+    ): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -277,10 +280,12 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN price ON price_id = price.id
                     JOIN municipality m ON r.municipality_code = m.code
                     WHERE c.id = :reserverId AND 
+                      bs.type = :spaceType AND
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
+            query.bind("spaceType", spaceType)
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetails>().list()

@@ -24,7 +24,10 @@ interface BoatSpaceReservationRepository {
         reserverId: UUID,
     ): Unit
 
-    fun getBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
+    fun getBoatSpaceReservationsForCitizen(
+        reserverId: UUID,
+        spaceType: BoatSpaceType
+    ): List<BoatSpaceReservationDetails>
 
     fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails?
 
