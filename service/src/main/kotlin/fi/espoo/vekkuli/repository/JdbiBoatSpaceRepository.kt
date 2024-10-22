@@ -115,7 +115,8 @@ class LocationFilter(
 
 @Repository
 class JdbiBoatSpaceRepository(
-    private val jdbi: Jdbi
+    private val jdbi: Jdbi,
+    private val timeProvider: TimeProvider
 ) : BoatSpaceRepository {
     override fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
         return jdbi.withHandleUnchecked { handle ->
@@ -161,8 +162,8 @@ class JdbiBoatSpaceRepository(
                 LEFT JOIN boat_space_reservation
                 ON boat_space.id = boat_space_reservation.boat_space_id
                 AND (
-                    (boat_space_reservation.status = 'Info' AND boat_space_reservation.created > NOW() - INTERVAL '30 minutes') OR
-                    (boat_space_reservation.status = 'Payment' AND boat_space_reservation.created > NOW() - INTERVAL '24 hours') OR
+                    (boat_space_reservation.status = 'Info' AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
+                    (boat_space_reservation.status = 'Payment' AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
                     (boat_space_reservation.status = 'Confirmed') 
                 )
                 WHERE 
@@ -173,6 +174,8 @@ class JdbiBoatSpaceRepository(
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
 
             combinedFilter.bind(query)
 

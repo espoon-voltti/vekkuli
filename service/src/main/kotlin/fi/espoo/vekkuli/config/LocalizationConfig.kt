@@ -17,11 +17,10 @@ class LocalizationConfig {
         val messageSource = ReloadableResourceBundleMessageSource()
         messageSource.setBasenames("classpath:locales/messages")
         messageSource.setDefaultLocale(Locale.ENGLISH)
+        messageSource.setDefaultEncoding("UTF-8")
         return messageSource
     }
 
     @Bean
-    fun messageUtil(messageSource: MessageSource): MessageUtil {
-        return MessageUtil(messageSource)
-    }
+    fun messageUtil(messageSource: MessageSource): MessageUtil = MessageUtil(messageSource)
 }

@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.config.Dimensions
+import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
@@ -12,16 +13,37 @@ import fi.espoo.vekkuli.repository.BoatRepository
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
-import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.utils.dateToString
-import fi.espoo.vekkuli.utils.isMonthDayWithinRange
-import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.utils.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.MonthDay
 import java.util.*
+
+enum class ReservationResultErrorCode {
+    NoReserver,
+    NotPossible,
+    MaxReservations,
+    NotEspooCitizen,
+}
+
+data class ReservationResultSuccess(
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val reservationValidity: ReservationValidity
+)
+
+sealed class ReservationResult(
+    val success: Boolean
+) {
+    data class Success(
+        val data: ReservationResultSuccess
+    ) : ReservationResult(true)
+
+    data class Failure(
+        val errorCode: ReservationResultErrorCode
+    ) : ReservationResult(false)
+}
 
 sealed class PaymentProcessResult {
     data class Success(
@@ -348,7 +370,7 @@ class BoatReservationService(
                     "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
                     "endDate" to reservation.endDate,
                     // TODO: get from reservation
-                    "invoiceDueDate" to dateToString(LocalDate.now().plusDays(14))
+                    "invoiceDueDate" to dateToString(timeProvider.getCurrentDate().plusDays(14))
                 )
             )
         }
@@ -392,7 +414,7 @@ class BoatReservationService(
         boatSpaceReservationRepo.getBoatSpaceReservations(params)
 
     fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
-        boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId)
+        boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId, BoatSpaceType.Slip)
 
     fun getExpiredBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getExpiredBoatSpaceReservationsForCitizen(citizenId)
@@ -426,27 +448,59 @@ class BoatReservationService(
     ): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods(isEspooCitizen, boatSpaceType, operation)
 
     fun hasActiveReservationPeriod(
+        now: LocalDate,
         isEspooCitizen: Boolean,
         boatSpaceType: BoatSpaceType,
         operation: ReservationOperation
     ): Boolean {
         val periods = getReservationPeriods(isEspooCitizen, boatSpaceType, operation)
-        val today = MonthDay.from(LocalDate.now())
+        val today = MonthDay.from(now)
         return periods.any {
             isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
         }
     }
 
-    fun getExistingReservationsTypes(citizenId: UUID): HasExistingReservationsTypes {
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId)
-        return when {
-            reservations.isEmpty() -> HasExistingReservationsTypes.No
-            reservations.any { it.validity == ReservationValidity.Indefinite } &&
-                reservations.any { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.Both
-            reservations.all { it.validity == ReservationValidity.FixedTerm } -> HasExistingReservationsTypes.FixedTerm
-            reservations.all { it.validity == ReservationValidity.Indefinite } -> HasExistingReservationsTypes.Indefinite
+    fun canReserveANewSlip(reserverID: UUID): ReservationResult {
+        val reserver = reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(ReservationResultErrorCode.NoReserver)
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
+        val hasSomePlace = reservations.isNotEmpty()
+        val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
+        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
 
-            else -> HasExistingReservationsTypes.No
+        if (hasSomePlace && !isEspooCitizen) {
+            // Non-Espoo citizens can only have one reservation
+            return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
+
+        if (reservations.size >= 2) {
+            // Only two reservations are allowed
+            return return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
+        }
+
+        val now = timeProvider.getCurrentDate()
+
+        val hasActivePeriod =
+            hasActiveReservationPeriod(
+                now,
+                isEspooCitizen,
+                BoatSpaceType.Slip,
+                if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
+            )
+
+        if (!hasActivePeriod) {
+            // If no period found, reservation is not possible
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        val validity = if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+        val endDate = if (validity == ReservationValidity.Indefinite) getLastDayOfNextYearsJanuary(now.year) else getLastDayOfYear(now.year)
+
+        return ReservationResult.Success(
+            ReservationResultSuccess(
+                now,
+                endDate,
+                validity
+            )
+        )
     }
 }

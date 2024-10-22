@@ -92,7 +92,7 @@ class PaymentController(
         val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled", locale = locale) else null
         model.addAttribute("providers", response.providers)
         model.addAttribute("error", errorMessage)
-        model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDate()))
+        model.addAttribute("reservationTimeInSeconds", getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDateTime()))
         model.addAttribute("reservationId", reservation.id)
 
         return "boat-space-reservation-payment"

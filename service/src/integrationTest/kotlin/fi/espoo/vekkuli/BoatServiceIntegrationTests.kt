@@ -79,7 +79,7 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should not delete a boat that is linked to a reservation`() {
         val newBoat = insertNewBoat()
-        createReservationInConfirmedState(reservationService, citizenId, 1, newBoat.id)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, newBoat.id)
         val boatDeleted = boatService.deleteBoat(newBoat.id)
         val boat = boatService.getBoat(newBoat.id)
         assertEquals(false, boatDeleted, "Boat is not deleted according to return value")

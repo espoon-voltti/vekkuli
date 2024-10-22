@@ -5,9 +5,9 @@ import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
-import java.time.LocalDate
 import java.util.*
 
 fun deleteAllReservations(jdbi: Jdbi) {
@@ -38,18 +38,19 @@ fun deleteAllOrganizationMembers(jdbi: Jdbi) {
 }
 
 fun createReservationInConfirmedState(
+    timeProvider: TimeProvider,
     reservationService: BoatReservationService,
     citizenId: UUID,
     boatSpaceId: Int,
-    boatId: Int
+    boatId: Int,
 ): BoatSpaceReservation {
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
             citizenId,
             citizenId,
             boatSpaceId,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now().plusDays(365),
+            startDate = timeProvider.getCurrentDate(),
+            endDate = timeProvider.getCurrentDate().plusDays(365),
         )
     reservationService.updateBoatInBoatSpaceReservation(
         madeReservation.id,
@@ -57,8 +58,8 @@ fun createReservationInConfirmedState(
         citizenId,
         ReservationStatus.Payment,
         ReservationValidity.FixedTerm,
-        startDate = LocalDate.now(),
-        endDate = LocalDate.now().plusDays(365),
+        startDate = timeProvider.getCurrentDate(),
+        endDate = timeProvider.getCurrentDate().plusDays(365),
     )
     val payment =
         reservationService.addPaymentToReservation(
@@ -70,6 +71,7 @@ fun createReservationInConfirmedState(
 }
 
 fun createReservationInPaymentState(
+    timeProvider: TimeProvider,
     reservationService: BoatReservationService,
     reserverId: UUID,
     citizenId: UUID = reserverId,
@@ -81,8 +83,8 @@ fun createReservationInPaymentState(
             reserverId,
             citizenId,
             boatSpaceId,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now().plusDays(365),
+            startDate = timeProvider.getCurrentDate(),
+            endDate = timeProvider.getCurrentDate().plusDays(365),
         )
     reservationService.updateBoatInBoatSpaceReservation(
         madeReservation.id,
@@ -90,13 +92,14 @@ fun createReservationInPaymentState(
         reserverId,
         ReservationStatus.Payment,
         ReservationValidity.FixedTerm,
-        startDate = LocalDate.now(),
-        endDate = LocalDate.now().plusDays(365)
+        startDate = timeProvider.getCurrentDate(),
+        endDate = timeProvider.getCurrentDate().plusDays(365)
     )
     return madeReservation
 }
 
 fun createReservationInPaymentState(
+    timeProvider: TimeProvider,
     reservationService: BoatReservationService,
     reserverId: UUID,
     boatSpaceId: Int = 1,
@@ -107,8 +110,8 @@ fun createReservationInPaymentState(
             reserverId,
             reserverId,
             boatSpaceId,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now().plusDays(365),
+            startDate = timeProvider.getCurrentDate(),
+            endDate = timeProvider.getCurrentDate().plusDays(365),
         )
     reservationService.updateBoatInBoatSpaceReservation(
         madeReservation.id,
@@ -116,13 +119,14 @@ fun createReservationInPaymentState(
         reserverId,
         ReservationStatus.Payment,
         ReservationValidity.FixedTerm,
-        startDate = LocalDate.now(),
-        endDate = LocalDate.now().plusDays(365)
+        startDate = timeProvider.getCurrentDate(),
+        endDate = timeProvider.getCurrentDate().plusDays(365)
     )
     return madeReservation
 }
 
 fun createReservationInInfoState(
+    timeProvider: TimeProvider,
     reservationService: BoatReservationService,
     citizenId: UUID,
     boatSpaceId: Int = 1,
@@ -132,8 +136,8 @@ fun createReservationInInfoState(
             citizenId,
             citizenId,
             boatSpaceId,
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now().plusDays(365),
+            startDate = timeProvider.getCurrentDate(),
+            endDate = timeProvider.getCurrentDate().plusDays(365),
         )
     return madeReservation
 }

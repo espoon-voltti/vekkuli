@@ -8,12 +8,47 @@ import fi.espoo.vekkuli.pages.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.ErrorPage
 import fi.espoo.vekkuli.pages.PaymentPage
 import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
+    @Test
+    fun reservingShouldFailOutsidePeriod() {
+        try {
+            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 22, 22, 22))
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
+            reservationPage.navigateTo()
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+            reservationPage.widthFilterInput.fill("3")
+            reservationPage.lengthFilterInput.fill("6")
+            reservationPage.lengthFilterInput.blur()
+            reservationPage.boatSpaceTypeSlipRadio.click()
+            reservationPage.amenityBuoyCheckbox.check()
+            reservationPage.amenityRearBuoyCheckbox.check()
+            reservationPage.amenityBeamCheckbox.check()
+            reservationPage.amenityWalkBeamCheckbox.check()
+
+            assertThat(reservationPage.harborHeaders).hasCount(3)
+            reservationPage.haukilahtiCheckbox.check()
+            reservationPage.kivenlahtiCheckbox.check()
+            assertThat(reservationPage.harborHeaders).hasCount(2)
+
+            reservationPage.firstReserveButton.click()
+
+            assertThat(page.locator("body")).containsText("Reservation not possible")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
     @Test
     fun reservingABoatSpace() {
         try {
@@ -320,7 +355,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun `show error page when reserving space off season`() {
         // login and pick first free space
-        mockDateTime(LocalDateTime.of(2024, 1, 1, 0, 0, 0))
+        mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 0, 0, 0))
         page.navigate(baseUrl)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()

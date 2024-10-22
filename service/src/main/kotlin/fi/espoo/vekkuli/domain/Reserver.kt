@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.domain
 
-import java.time.LocalDateTime
 import java.util.UUID
 
 enum class ReserverType {
@@ -11,8 +10,6 @@ enum class ReserverType {
 data class Reserver(
     val id: UUID,
     val type: ReserverType,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
     val email: String,
     val phone: String,
     val municipalityCode: Int,
@@ -26,8 +23,6 @@ data class Reserver(
 data class ReserverWithDetails(
     val id: UUID,
     val type: ReserverType,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
     val email: String,
     val phone: String,
     val municipalityCode: Int,

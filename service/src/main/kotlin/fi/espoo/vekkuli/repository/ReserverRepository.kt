@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.domain.*
 import java.util.*
 
 interface ReserverRepository {
-    fun getReserverById(id: UUID): ReserverWithDetails
+    fun getReserverById(id: UUID): ReserverWithDetails?
 
     fun getCitizenById(id: UUID): CitizenWithDetails?
 

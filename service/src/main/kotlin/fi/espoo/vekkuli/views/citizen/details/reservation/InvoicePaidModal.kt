@@ -3,11 +3,11 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.CitizenWithDetails
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component
@@ -18,11 +18,14 @@ class InvoicePaidModal : BaseView() {
     @Autowired
     private lateinit var modal: Modal
 
+    @Autowired
+    private lateinit var timeProvider: TimeProvider
+
     fun render(
         citizen: CitizenWithDetails,
         reservation: BoatSpaceReservationDetails
     ): String {
-        val today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val today = timeProvider.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val formId = "invoice-paid-form"
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder
@@ -43,19 +46,16 @@ class InvoicePaidModal : BaseView() {
                     <input hidden name="citizenId" value="${citizen.id}" />
                 </form>
                 """.trimIndent()
-            )
-            .addButton {
+            ).addButton {
                 setText(t("cancel"))
                 setType(ModalButtonType.Cancel)
                 addAttribute("id", "invoice-modal-cancel")
-            }
-            .addButton {
+            }.addButton {
                 addAttribute("id", "invoice-modal-confirm")
                 setText(t("confirm"))
                 setType(ModalButtonType.Submit)
                 setStyle(ModalButtonStyle.Primary)
                 setTargetForm(formId)
-            }
-            .build()
+            }.build()
     }
 }

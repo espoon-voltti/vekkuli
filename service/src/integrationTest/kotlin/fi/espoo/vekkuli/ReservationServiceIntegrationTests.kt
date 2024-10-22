@@ -1,9 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.service.ReserveBoatSpaceInput
+import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,6 +21,9 @@ import kotlin.test.assertNotNull
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
+    val espooCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
+    val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
+
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
@@ -35,14 +36,163 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     lateinit var citizenService: CitizenService
 
     @Test
+    fun `first place should be indefinite for Espoo citizens`() {
+        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        if (result is ReservationResult.Success) {
+            assertEquals(LocalDate.of(2025, 1, 31), result.data.endDate)
+            assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
+        } else {
+            throw AssertionError("canReserveANewSlip failed")
+        }
+    }
+
+    @Test
+    fun `second place should be fixed term for Espoo citizens`() {
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            timeProvider.getCurrentDate().minusWeeks(1),
+            timeProvider.getCurrentDate().plusWeeks(1),
+        )
+        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        if (result is ReservationResult.Success) {
+            assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
+            assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
+        } else {
+            throw AssertionError("canReserveANewSlip failed")
+        }
+    }
+
+    @Test
+    fun `third place should fail for Espoo citizens`() {
+        val madeReservation1 = createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation1.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            timeProvider.getCurrentDate().minusWeeks(1),
+            timeProvider.getCurrentDate().plusWeeks(1),
+        )
+        val madeReservation2 = createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation2.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            timeProvider.getCurrentDate().minusWeeks(1),
+            timeProvider.getCurrentDate().plusWeeks(1),
+        )
+        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        if (result is ReservationResult.Failure) {
+            assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
+        } else {
+            throw AssertionError("canReserveANewSlip succeeded, but it should fail")
+        }
+    }
+
+    @Test
+    fun `first place should be fixed term for Helsinki citizens`() {
+        val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
+        if (result is ReservationResult.Success) {
+            assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
+            assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
+        } else {
+            throw AssertionError("canReserveANewSlip failed")
+        }
+    }
+
+    @Test
+    fun `should not allow second place for Helsinki citizens`() {
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, helsinkiCitizenId, 1)
+        reservationService.reserveBoatSpace(
+            helsinkiCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = madeReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = 3.5,
+                length = 6.5,
+                depth = 3.0,
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.FutureOwner,
+                phone = "",
+                email = ""
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.FixedTerm,
+            timeProvider.getCurrentDate().minusWeeks(1),
+            timeProvider.getCurrentDate().plusWeeks(1),
+        )
+        val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
+        if (result is ReservationResult.Failure) {
+            assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
+        } else {
+            throw AssertionError("canReserveANewSlip succeeded, but it should fail")
+        }
+    }
+
+    @Test
     fun `should get correct reservation with citizen`() {
         val madeReservation =
             reservationService.insertBoatSpaceReservation(
                 citizenId,
                 citizenId,
                 1,
-                startDate = LocalDate.now(),
-                endDate = LocalDate.now(),
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate(),
             )
         val result = reservationService.getReservationWithReserver(madeReservation.id)
         assertEquals(madeReservation.id, result?.id, "reservation is the same")
@@ -56,8 +206,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 citizenId,
                 citizenId,
                 1,
-                startDate = LocalDate.now(),
-                endDate = LocalDate.now(),
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate(),
             )
         val boatId = 1
         val updatedReservation =
@@ -67,8 +217,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 citizenId,
                 ReservationStatus.Payment,
                 ReservationValidity.Indefinite,
-                LocalDate.now(),
-                LocalDate.now(),
+                timeProvider.getCurrentDate(),
+                timeProvider.getCurrentDate(),
             )
         val reservation = reservationService.getReservationWithReserver(madeReservation.id)
         assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
@@ -83,8 +233,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 citizenId,
                 citizenId,
                 1,
-                startDate = LocalDate.now(),
-                endDate = LocalDate.now(),
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate(),
             )
         val reservation = reservationService.getUnfinishedReservationForCitizen(citizenId)
         assertEquals(madeReservation.id, reservation?.id, "reservation is the same")
@@ -92,7 +242,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should handle payment result`() {
-        val madeReservation = createReservationInPaymentState(reservationService, citizenId)
+        println(timeProvider.getCurrentDateTime())
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId)
 
         val payment =
             reservationService.addPaymentToReservation(
@@ -115,7 +266,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should add reservation warnings on reservation with issues`() {
-        val madeReservation = createReservationInPaymentState(reservationService, citizenId, 1)
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId, 1)
 
         reservationService.reserveBoatSpace(
             citizenId,
@@ -137,8 +288,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Payment,
             ReservationValidity.FixedTerm,
-            LocalDate.now(),
-            LocalDate.now()
+            timeProvider.getCurrentDate(),
+            timeProvider.getCurrentDate()
         )
         val reservation =
             reservationService
@@ -160,15 +311,15 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should get correct reservations with filter`() {
         // Location id 1 and amenity type beam
-        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
-        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
-        createReservationInInfoState(reservationService, citizenId, 3)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, 1)
+        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInInfoState(timeProvider, reservationService, citizenId, 3)
         // Location id 2 and amenity type walk beam
-        createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 200, 2)
+        createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 200, 2)
         // Location id 2 and amenity type beam
-        createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)
+        createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)
         // Location id 4 and amenity type walk beam
-        createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 725, 2)
+        createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 725, 2)
 
         val reservations =
             reservationService.getBoatSpaceReservations(
@@ -184,8 +335,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should filter by payment status`() {
-        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
-        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, 1)
+        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
 
         val unfilteredReservations =
             reservationService.getBoatSpaceReservations(
@@ -216,9 +367,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should filter by name search`() {
-        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
-        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
-        createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 3, 2)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, 1)
+        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 3, 2)
 
         val reservationsByFirstName =
             reservationService.getBoatSpaceReservations(
@@ -245,10 +396,10 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should filter reservations that have warnings`() {
-        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
-        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, 1)
+        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
 
-        val madeReservation = createReservationInPaymentState(reservationService, citizenId, 3)
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId, 3)
 
         reservationService.reserveBoatSpace(
             citizenId,
@@ -270,8 +421,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Payment,
             ReservationValidity.FixedTerm,
-            LocalDate.now(),
-            LocalDate.now()
+            timeProvider.getCurrentDate(),
+            timeProvider.getCurrentDate()
         )
 
         val reservationsWithWarnings =
@@ -290,9 +441,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val spaceInSectionB = 1
         val spaceInSectionD = 64
         val spaceInSectionE = 85
-        createReservationInConfirmedState(reservationService, citizenId, spaceInSectionB, 1)
-        createReservationInConfirmedState(reservationService, citizenId, spaceInSectionD, 2)
-        createReservationInConfirmedState(reservationService, citizenId, spaceInSectionE, 3)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, spaceInSectionB, 1)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, spaceInSectionD, 2)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, spaceInSectionE, 3)
 
         val reservationsBySection =
             reservationService.getBoatSpaceReservations(
@@ -308,9 +459,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should sort reservations correctly`() {
-        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
-        createReservationInConfirmedState(reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)
-        createReservationInPaymentState(reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, 1)
+        createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)
+        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
 
         val reservations =
             reservationService.getBoatSpaceReservations(
@@ -332,8 +483,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 citizenId,
                 citizenId,
                 boatSpaceId,
-                startDate = LocalDate.now(),
-                endDate = LocalDate.now(),
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate(),
             )
         val boatSpace = reservationService.getBoatSpaceRelatedToReservation(newReservation.id)
         assertEquals(boatSpaceId, boatSpace?.id, "Correct boat space is fetched")
@@ -349,8 +500,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             reservationService.insertBoatSpaceReservationAsEmployee(
                 employeeId,
                 boatSpaceId,
-                startDate = LocalDate.now(),
-                endDate = LocalDate.now(),
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate(),
             )
 
         reservationService.reserveBoatSpace(
@@ -373,11 +524,11 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Invoiced,
             ReservationValidity.FixedTerm,
-            LocalDate.now(),
-            LocalDate.now()
+            timeProvider.getCurrentDate(),
+            timeProvider.getCurrentDate()
         )
 
-        reservationService.markInvoicePaid(newReservation.id, LocalDate.now(), "")
+        reservationService.markInvoicePaid(newReservation.id, timeProvider.getCurrentDate(), "")
 
         val reservation = reservationService.getBoatSpaceReservation(newReservation.id)
         assertEquals(ReservationStatus.Confirmed, reservation?.status, "Reservation is marked as paid")
@@ -388,7 +539,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val boatSpaceId = 1
 
         val oliviaCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
-        val endDate = LocalDate.now().plusWeeks(2)
+        val endDate = timeProvider.getCurrentDate().plusWeeks(2)
         val citizen = citizenService.getCitizen(oliviaCitizenId)
 
         // Keep this here to make sure Citizen is present
@@ -399,7 +550,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 citizen.id,
                 citizen.id,
                 boatSpaceId,
-                startDate = LocalDate.now().minusWeeks(2),
+                startDate = timeProvider.getCurrentDate().minusWeeks(2),
                 endDate = endDate
             )
 
@@ -437,19 +588,12 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val terminatedReservation = reservationService.getBoatSpaceReservation(newReservation.id)
 
         assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
-        assertEquals(LocalDate.now(), terminatedReservation?.endDate, "End date is set to now")
-    }
-
-    @Test
-    fun `should get correct previous reservation types for citizen`() {
-        createReservationInConfirmedState(reservationService, citizenId, 1, 1)
-        val reservationType = reservationService.getExistingReservationsTypes(citizenId)
-        assertEquals(HasExistingReservationsTypes.FixedTerm, reservationType, "Correct reservation type is fetched")
+        assertEquals(timeProvider.getCurrentDate(), terminatedReservation?.endDate, "End date is set to now")
     }
 
     @Test
     fun `should return expired reservations`() {
-        val reservation = createReservationInConfirmedState(reservationService, citizenId, 1, 1)
+        val reservation = createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, 1)
         val citizen = citizenService.getCitizen(citizenId)
         // Keep this here to make sure Citizen is present
         assertNotNull(citizen, "Citizen is not null")
@@ -462,6 +606,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val expiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId)
         assertEquals(1, expiredReservations.size)
         assertEquals(ReservationStatus.Cancelled, expiredReservations.first().status, "Reservation is marked as Cancelled")
-        assertEquals(LocalDate.now(), expiredReservations.first().endDate, "End date is set to now")
+        assertEquals(timeProvider.getCurrentDate(), expiredReservations.first().endDate, "End date is set to now")
     }
 }
