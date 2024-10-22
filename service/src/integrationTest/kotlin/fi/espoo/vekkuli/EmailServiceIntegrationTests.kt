@@ -113,8 +113,8 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Invoiced,
             ReservationValidity.FixedTerm,
-            timeProvider.getCurrentDateTime().toLocalDate(),
-            timeProvider.getCurrentDateTime().toLocalDate()
+            timeProvider.getCurrentDate(),
+            timeProvider.getCurrentDate()
         )
         verify(emailServiceMock).sendEmail(
             eq("reservation_confirmation_invoice"),
@@ -211,8 +211,8 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Invoiced,
             ReservationValidity.FixedTerm,
-            timeProvider.getCurrentDateTime().toLocalDate(),
-            timeProvider.getCurrentDateTime().toLocalDate()
+            timeProvider.getCurrentDate(),
+            timeProvider.getCurrentDate()
         )
         verify(sendEmailInterfaceMock).sendMultipleEmails(
             any(),

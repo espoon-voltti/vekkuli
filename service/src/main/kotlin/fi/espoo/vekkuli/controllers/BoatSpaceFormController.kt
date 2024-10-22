@@ -485,7 +485,7 @@ class BoatSpaceFormController(
             if (reserveSlipResult is ReservationResult.Success) {
                 reserveSlipResult.data
             } else {
-                val now = timeProvider.getCurrentDateTime().toLocalDate()
+                val now = timeProvider.getCurrentDate()
                 ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
             }
 
@@ -607,7 +607,7 @@ class BoatSpaceFormController(
             if (existingReservation != null) {
                 existingReservation.id
             } else {
-                val today = timeProvider.getCurrentDateTime().toLocalDate()
+                val today = timeProvider.getCurrentDate()
                 val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
                 if (isEmployee) {
                     reservationService.insertBoatSpaceReservationAsEmployee(userId, spaceId, today, endOfYear).id

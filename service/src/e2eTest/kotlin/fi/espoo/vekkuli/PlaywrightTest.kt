@@ -3,13 +3,12 @@ package fi.espoo.vekkuli
 import com.microsoft.playwright.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.*
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import java.time.LocalDateTime
 import kotlin.io.path.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -54,11 +53,7 @@ abstract class PlaywrightTest {
         context = browser.newContext()
         page = context.newPage()
         // Mock the behavior to return a specific date-time
-        mockDateTime()
-    }
-
-    fun mockDateTime(date: LocalDateTime = LocalDateTime.of(2024, 4, 1, 22, 22, 22)) {
-        Mockito.`when`(timeProvider.getCurrentDateTime()).thenReturn(date)
+        mockTimeProvider(timeProvider)
     }
 
     @AfterEach

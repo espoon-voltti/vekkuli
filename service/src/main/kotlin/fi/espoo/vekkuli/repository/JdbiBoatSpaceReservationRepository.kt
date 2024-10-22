@@ -700,7 +700,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("endDateCut", timeProvider.getCurrentDateTime().toLocalDate())
+            query.bind("endDateCut", timeProvider.getCurrentDate())
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetails>().list()

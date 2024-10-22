@@ -5,25 +5,27 @@ import org.springframework.stereotype.Service
 import java.time.*
 import java.time.format.DateTimeFormatter
 
-interface TimeProvider {
-    fun getCurrentDateTime(): LocalDateTime
+abstract class TimeProvider {
+    abstract fun getCurrentDateTime(): LocalDateTime
+
+    fun getCurrentDate(): LocalDate = getCurrentDateTime().toLocalDate()
 }
 
 @Profile("staging")
 @Service
-class StagingTimeProvider : TimeProvider {
+class StagingTimeProvider : TimeProvider() {
     override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
 }
 
 @Profile("local")
 @Service
-class LocalTimeProvider : TimeProvider {
+class LocalTimeProvider : TimeProvider() {
     override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
 }
 
 @Profile("!local & !staging")
 @Service
-class SystemTimeProvider : TimeProvider {
+class SystemTimeProvider : TimeProvider() {
     override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now()
 }
 
