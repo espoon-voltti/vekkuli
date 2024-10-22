@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
+import fi.espoo.vekkuli.utils.TimeProvider
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
@@ -14,7 +15,6 @@ import org.apache.commons.codec.digest.HmacAlgorithms
 import org.apache.commons.codec.digest.HmacUtils
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -170,11 +170,12 @@ class PaytrailMock : PaytrailInterface {
 @Service
 @Profile("!test")
 class Paytrail(
-    private val paytrailEnv: PaytrailEnv
+    private val paytrailEnv: PaytrailEnv,
+    private val timeProvider: TimeProvider
 ) : PaytrailInterface {
     override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
         val nonce = UUID.randomUUID().toString()
-        val timestamp = LocalDateTime.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
+        val timestamp = timeProvider.getCurrentDateTime().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
 
         var headers =
             mapOf(

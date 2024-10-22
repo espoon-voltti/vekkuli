@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.pages.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.ErrorPage
 import fi.espoo.vekkuli.pages.PaymentPage
 import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -17,7 +18,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun reservingShouldFailOutsidePeriod() {
         try {
-            mockDateTime(LocalDateTime.of(2024, 1, 1, 22, 22, 22))
+            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 22, 22, 22))
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
@@ -354,7 +355,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun `show error page when reserving space off season`() {
         // login and pick first free space
-        mockDateTime(LocalDateTime.of(2024, 1, 1, 0, 0, 0))
+        mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 0, 0, 0))
         page.navigate(baseUrl)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()

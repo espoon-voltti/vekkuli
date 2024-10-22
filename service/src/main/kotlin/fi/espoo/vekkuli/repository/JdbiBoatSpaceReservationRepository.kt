@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
 import fi.espoo.vekkuli.utils.InExpr
+import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -15,6 +16,7 @@ import java.util.*
 @Repository
 class JdbiBoatSpaceReservationRepository(
     private val jdbi: Jdbi,
+    private val timeProvider: TimeProvider
 ) : BoatSpaceReservationRepository {
     override fun getBoatSpaceReservationIdForPayment(id: UUID): Int =
         jdbi.withHandleUnchecked { handle ->
@@ -26,11 +28,12 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN payment AS p ON bsr.id = p.reservation_id
                     WHERE p.id = :paymentId
                         AND bsr.status = 'Payment' 
-                        AND bsr.created > NOW() - make_interval(secs => :paymentTimeout)
+                        AND bsr.created > :currentTime - make_interval(secs => :paymentTimeout)
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<Int>().findOne().orElse(null)
         }
 
@@ -103,13 +106,14 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE p.id = :paymentId
                         AND bsr.id = p.reservation_id
                         AND bsr.status = 'Payment' 
-                        AND bsr.created > NOW() - make_interval(secs => :paymentTimeout)
+                        AND bsr.created > :currentTime - make_interval(secs => :paymentTimeout)
                     RETURNING bsr.id
                     """.trimIndent()
                 )
             query.bind("paymentId", paymentId)
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<Int>().findOne().orElse(null)
         }
 
@@ -130,11 +134,12 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN price ON price_id = price.id
                     WHERE bsr.acting_citizen_id = :id
                         AND bsr.status = 'Info' 
-                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -155,11 +160,12 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN price ON price_id = price.id
                     WHERE bsr.employee_id = :id
                         AND bsr.status = 'Info' 
-                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -179,11 +185,12 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN price ON price_id = price.id
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment')
-                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -202,12 +209,13 @@ class JdbiBoatSpaceReservationRepository(
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment')
-                        AND bsr.created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     GROUP BY bsr.id, location.name, price.price_cents, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -490,8 +498,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date)
-                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate)
+                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created)
+                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate, :currentDate)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -500,6 +508,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
+            query.bind("currentDate", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -513,8 +522,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date)
-                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate)
+                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date, created)
+                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate, :currentDate)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -522,6 +531,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
+            query.bind("currentDate", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -542,12 +552,12 @@ class JdbiBoatSpaceReservationRepository(
                     SET status = :status, updated = :updatedTime, boat_id = :boatId, reserver_id = :reserverId, validity = :validity, start_date = :startDate, end_date = :endDate
                     WHERE id = :id
                         AND (status = 'Info' OR status = 'Payment')
-                        AND created > NOW() - make_interval(secs => :sessionTimeInSeconds)
+                        AND created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("status", reservationStatus)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.bind("id", reservationId)
             query.bind("boatId", boatId)
             query.bind("reserverId", reserverId)
@@ -555,6 +565,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -567,13 +578,14 @@ class JdbiBoatSpaceReservationRepository(
                     SET status = 'Payment', updated = :updatedTime
                     WHERE id = :reservationId
                         AND status = 'Payment'
-                        AND created > NOW() - make_interval(secs => :paymentTimeout)
+                        AND created > :currentTime - make_interval(secs => :paymentTimeout)
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -590,7 +602,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("updatedTime", LocalDate.now())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -607,8 +619,8 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("updatedTimestamp", LocalDate.now())
-            query.bind("endDate", LocalDate.now())
+            query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
+            query.bind("endDate", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -688,7 +700,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("endDateCut", LocalDate.now())
+            query.bind("endDateCut", timeProvider.getCurrentDate())
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetails>().list()

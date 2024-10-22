@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.time.LocalDate
 import java.util.*
 
 @ExtendWith(SpringExtension::class)
@@ -27,7 +26,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `send single email on confirmation`() {
-        val madeReservation = createReservationInPaymentState(reservationService, citizenId)
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId)
 
         val payment =
             reservationService.addPaymentToReservation(
@@ -58,7 +57,8 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `send organization email on confirmation`() {
-        val madeReservation = createReservationInPaymentState(reservationService, organizationId, citizenId)
+        val madeReservation =
+            createReservationInPaymentState(timeProvider, reservationService, organizationId, citizenId)
 
         val payment =
             reservationService.addPaymentToReservation(
@@ -92,7 +92,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send correct template email on invoice`() {
-        val madeReservation = createReservationInInfoState(reservationService, citizenId)
+        val madeReservation = createReservationInInfoState(timeProvider, reservationService, citizenId)
         reservationService.reserveBoatSpace(
             citizenId,
             ReserveBoatSpaceInput(
@@ -113,8 +113,8 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Invoiced,
             ReservationValidity.FixedTerm,
-            LocalDate.now(),
-            LocalDate.now()
+            timeProvider.getCurrentDate(),
+            timeProvider.getCurrentDate()
         )
         verify(emailServiceMock).sendEmail(
             eq("reservation_confirmation_invoice"),
@@ -142,7 +142,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send single email on confirmation`() {
-        val madeReservation = createReservationInPaymentState(reservationService, citizenId, citizenId)
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId, citizenId)
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
@@ -166,7 +166,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send multiple emails on confirmation`() {
-        val madeReservation = createReservationInPaymentState(reservationService, organizationId, citizenId)
+        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, organizationId, citizenId)
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
@@ -190,7 +190,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send email on invoice`() {
-        val madeReservation = createReservationInInfoState(reservationService, citizenId)
+        val madeReservation = createReservationInInfoState(timeProvider, reservationService, citizenId)
         reservationService.reserveBoatSpace(
             citizenId,
             ReserveBoatSpaceInput(
@@ -211,8 +211,8 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Invoiced,
             ReservationValidity.FixedTerm,
-            LocalDate.now(),
-            LocalDate.now()
+            timeProvider.getCurrentDate(),
+            timeProvider.getCurrentDate()
         )
         verify(sendEmailInterfaceMock).sendMultipleEmails(
             any(),
