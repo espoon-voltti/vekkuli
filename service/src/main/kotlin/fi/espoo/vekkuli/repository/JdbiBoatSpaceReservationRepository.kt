@@ -289,11 +289,13 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN municipality m ON r.municipality_code = m.code
                     WHERE c.id = :reserverId AND 
                       bs.type = :spaceType AND
-                        (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
+                        (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
+                        bsr.end_date >= :endDateCut
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
             query.bind("spaceType", spaceType)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetails>().list()
@@ -694,9 +696,14 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON price_id = price.id
                     JOIN municipality m ON r.municipality_code = m.code
-                    WHERE c.id = :reserverId AND 
-                        (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced' OR bsr.status = 'Cancelled') AND
-                        bsr.end_date <= :endDateCut
+                    WHERE c.id = :reserverId AND (
+                        bsr.status = 'Cancelled'
+                        OR 
+                        (
+                            (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
+                            bsr.end_date < :endDateCut
+                         )
+                     )
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
