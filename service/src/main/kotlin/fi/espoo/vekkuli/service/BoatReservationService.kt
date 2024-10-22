@@ -464,6 +464,7 @@ class BoatReservationService(
         val reserver = reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(ReservationResultErrorCode.NoReserver)
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
+        val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
         val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
 
         if (hasSomePlace && !isEspooCitizen) {
@@ -491,7 +492,7 @@ class BoatReservationService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val validity = if (!isEspooCitizen || hasSomePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+        val validity = if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
         val endDate = if (validity == ReservationValidity.Indefinite) getLastDayOfNextYearsJanuary(now.year) else getLastDayOfYear(now.year)
 
         return ReservationResult.Success(
