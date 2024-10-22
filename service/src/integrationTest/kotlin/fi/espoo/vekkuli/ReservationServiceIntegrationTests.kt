@@ -605,6 +605,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         val expiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId)
         assertEquals(1, expiredReservations.size)
         assertEquals(ReservationStatus.Cancelled, expiredReservations.first().status, "Reservation is marked as Cancelled")
-        assertEquals(LocalDate.now(), expiredReservations.first().endDate, "End date is set to now")
+        assertEquals(timeProvider.getCurrentDateTime().toLocalDate(), expiredReservations.first().endDate, "End date is set to now")
     }
 }
