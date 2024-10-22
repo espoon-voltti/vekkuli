@@ -18,7 +18,6 @@ enum class ReservationWarningType {
 
 object BoatSpaceConfig {
     const val SESSION_TIME_IN_SECONDS = 20 * 60
-    const val PAYMENT_TIMEOUT = 24 * 60 * 60
     const val BOAT_RESERVATION_ALV_PERCENTAGE = 25.5
 
     const val BEAM_MAX_WIDTH_ADJUSTMENT_CM = 40
