@@ -6,25 +6,25 @@ import java.time.*
 import java.time.format.DateTimeFormatter
 
 interface TimeProvider {
-    fun getCurrentDate(): LocalDateTime
+    fun getCurrentDateTime(): LocalDateTime
 }
 
 @Profile("staging")
 @Service
 class StagingTimeProvider : TimeProvider {
-    override fun getCurrentDate(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
+    override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
 }
 
 @Profile("local")
 @Service
 class LocalTimeProvider : TimeProvider {
-    override fun getCurrentDate(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
+    override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
 }
 
 @Profile("!local & !staging")
 @Service
 class SystemTimeProvider : TimeProvider {
-    override fun getCurrentDate(): LocalDateTime = LocalDateTime.now()
+    override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now()
 }
 
 val shortFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")

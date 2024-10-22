@@ -175,7 +175,7 @@ class Paytrail(
 ) : PaytrailInterface {
     override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
         val nonce = UUID.randomUUID().toString()
-        val timestamp = timeProvider.getCurrentDate().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
+        val timestamp = timeProvider.getCurrentDateTime().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT)
 
         var headers =
             mapOf(

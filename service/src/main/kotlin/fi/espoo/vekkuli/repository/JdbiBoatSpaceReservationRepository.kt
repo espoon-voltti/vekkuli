@@ -33,7 +33,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("paymentId", id)
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<Int>().findOne().orElse(null)
         }
 
@@ -112,8 +112,8 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("paymentId", paymentId)
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("updatedTime", timeProvider.getCurrentDate())
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<Int>().findOne().orElse(null)
         }
 
@@ -139,7 +139,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -165,7 +165,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -190,7 +190,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -215,7 +215,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -508,7 +508,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
-            query.bind("currentDate", timeProvider.getCurrentDate())
+            query.bind("currentDate", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -531,7 +531,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
-            query.bind("currentDate", timeProvider.getCurrentDate())
+            query.bind("currentDate", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -557,7 +557,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("status", reservationStatus)
-            query.bind("updatedTime", timeProvider.getCurrentDate())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.bind("id", reservationId)
             query.bind("boatId", boatId)
             query.bind("reserverId", reserverId)
@@ -565,7 +565,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -583,9 +583,9 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
-            query.bind("updatedTime", timeProvider.getCurrentDate())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -602,7 +602,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("updatedTime", timeProvider.getCurrentDate())
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -619,8 +619,8 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("updatedTimestamp", timeProvider.getCurrentDate())
-            query.bind("endDate", timeProvider.getCurrentDate())
+            query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
+            query.bind("endDate", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -700,7 +700,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("endDateCut", timeProvider.getCurrentDate().toLocalDate())
+            query.bind("endDateCut", timeProvider.getCurrentDateTime().toLocalDate())
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetails>().list()

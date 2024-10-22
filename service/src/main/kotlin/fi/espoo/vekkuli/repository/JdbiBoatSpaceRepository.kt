@@ -174,7 +174,7 @@ class JdbiBoatSpaceRepository(
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
-            query.bind("currentTime", timeProvider.getCurrentDate())
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
 
             combinedFilter.bind(query)

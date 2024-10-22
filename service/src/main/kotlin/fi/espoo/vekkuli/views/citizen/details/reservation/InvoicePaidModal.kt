@@ -25,7 +25,7 @@ class InvoicePaidModal : BaseView() {
         citizen: CitizenWithDetails,
         reservation: BoatSpaceReservationDetails
     ): String {
-        val today = timeProvider.getCurrentDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val today = timeProvider.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val formId = "invoice-paid-form"
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder

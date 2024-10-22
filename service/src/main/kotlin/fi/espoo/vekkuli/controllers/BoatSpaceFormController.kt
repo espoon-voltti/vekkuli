@@ -25,7 +25,6 @@ import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.citizen.ReservationConfirmation
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
-import io.ktor.util.reflect.*
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
@@ -140,7 +139,7 @@ class BoatSpaceFormController(
                 citizen,
                 organizations,
                 input,
-                getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDate()),
+                getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDateTime()),
                 userType,
                 municipalities
             )
@@ -486,7 +485,7 @@ class BoatSpaceFormController(
             if (reserveSlipResult is ReservationResult.Success) {
                 reserveSlipResult.data
             } else {
-                val now = timeProvider.getCurrentDate().toLocalDate()
+                val now = timeProvider.getCurrentDateTime().toLocalDate()
                 ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
             }
 
@@ -608,7 +607,7 @@ class BoatSpaceFormController(
             if (existingReservation != null) {
                 existingReservation.id
             } else {
-                val today = timeProvider.getCurrentDate().toLocalDate()
+                val today = timeProvider.getCurrentDateTime().toLocalDate()
                 val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
                 if (isEmployee) {
                     reservationService.insertBoatSpaceReservationAsEmployee(userId, spaceId, today, endOfYear).id

@@ -58,7 +58,7 @@ abstract class PlaywrightTest {
     }
 
     fun mockDateTime(date: LocalDateTime = LocalDateTime.of(2024, 4, 1, 22, 22, 22)) {
-        Mockito.`when`(timeProvider.getCurrentDate()).thenReturn(date)
+        Mockito.`when`(timeProvider.getCurrentDateTime()).thenReturn(date)
     }
 
     @AfterEach
