@@ -19,14 +19,37 @@ class ReservationCardButtons : BaseView() {
         @SanitizeInput reservation: BoatSpaceReservationDetails,
         @SanitizeInput citizen: CitizenWithDetails,
     ): String {
-        // language=HTML
-        return """
-            <div class="buttons">
-                ${createInvoicePaidModalButton(reservation, citizen)}
+        val swapPlace =
+            if (reservation.canSwitch) {
+                """
                 <button class="button is-primary">
                     ${t("boatSpaceReservation.button.swapPlace")}
                 </button>
-                ${createTerminateReservationModalButton(reservation)}
+                """.trimIndent()
+            } else {
+                ""
+            }
+        val renewPlace =
+            if (reservation.canRenew) {
+                """
+                <button 
+                  class="button is-primary"
+                  hx-get="/kuntalainen/venepaikka/jatka-varausta/${reservation.id}"
+                  hx-target="body"
+                  hx-push-url="true">
+                    ${t("boatSpaceReservation.button.renewPlace")}
+                </button>
+                """.trimIndent()
+            } else {
+                ""
+            }
+        // language=HTML
+        return """
+            <div class="buttons">
+                $renewPlace
+                ${createInvoicePaidModalButton(reservation, citizen)}
+                $swapPlace
+                ${if (reservation.canTerminate) createTerminateReservationModalButton(reservation) else ""}
             </div>
             """.trimIndent()
     }
@@ -36,7 +59,8 @@ class ReservationCardButtons : BaseView() {
         citizen: CitizenWithDetails
     ): String {
         if (reservation.status == ReservationStatus.Invoiced) {
-            return modal.createOpenModalBuilder()
+            return modal
+                .createOpenModalBuilder()
                 .addAttribute("id", "invoice-paid-button")
                 .setText(t("citizenDetails.markInvoicePaid"))
                 .setPath("/reservation/modal/mark-invoice-paid/${reservation.id}/${citizen.id}")
@@ -46,12 +70,12 @@ class ReservationCardButtons : BaseView() {
         return ""
     }
 
-    fun createTerminateReservationModalButton(reservation: BoatSpaceReservationDetails): String {
-        return modal.createOpenModalBuilder()
+    fun createTerminateReservationModalButton(reservation: BoatSpaceReservationDetails): String =
+        modal
+            .createOpenModalBuilder()
             .setText(t("boatSpaceReservation.button.terminateReservation"))
             .setPath("/reservation/modal/terminate-reservation/${reservation.id}")
             .setStyle(ModalButtonStyle.DangerOutline)
             .setTestId("open-terminate-reservation-modal")
             .build()
-    }
 }

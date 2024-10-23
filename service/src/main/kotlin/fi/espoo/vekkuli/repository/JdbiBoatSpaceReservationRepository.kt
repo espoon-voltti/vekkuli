@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
@@ -12,6 +13,10 @@ import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.util.*
+
+data class IdItem(
+    val id: Int
+)
 
 @Repository
 class JdbiBoatSpaceReservationRepository(
@@ -169,6 +174,54 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
+    override fun getRenewalReservationForCitizen(id: UUID): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
+                        location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                          bs.description
+                    FROM boat_space_reservation bsr
+                    JOIN citizen c ON bsr.reserver_id = c.id 
+                    JOIN reserver r ON c.id = r.id
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.acting_citizen_id = :id AND bsr.status = 'Renewal' 
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
+    override fun getRenewalReservationForEmployee(id: UUID): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
+                        location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                          bs.description
+                    FROM boat_space_reservation bsr
+                    JOIN citizen c ON bsr.reserver_id = c.id 
+                    JOIN reserver r ON c.id = r.id
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.employee_id = :id AND bsr.status = 'Renewal' 
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
     override fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -184,13 +237,34 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
                     WHERE bsr.id = :id
-                        AND (bsr.status = 'Info' OR bsr.status = 'Payment')
+                        AND (bsr.status = 'Info' OR bsr.status = 'Payment' OR bsr.status = 'Renewal')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
+    override fun getReservationForRenewal(id: Int): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
+                        location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                          bs.description
+                    FROM boat_space_reservation bsr
+                    LEFT JOIN reserver r ON bsr.reserver_id = r.id
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.id = :id
+                    """.trimIndent()
+                )
+            query.bind("id", id)
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -208,7 +282,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN price ON price_id = price.id
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :id
-                        AND (bsr.status = 'Info' OR bsr.status = 'Payment')
+                        AND (bsr.status = 'Info' OR bsr.status = 'Payment' OR bsr.status = 'Renewal')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     GROUP BY bsr.id, location.name, price.price_cents, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
                     """.trimIndent()
@@ -489,6 +563,47 @@ class JdbiBoatSpaceReservationRepository(
                 }
         }
 
+    override fun createRenewalRow(
+        reservationId: Int,
+        userType: UserType,
+        userId: UUID
+    ): Int =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    INSERT INTO boat_space_reservation (
+                      reserver_id, 
+                      acting_citizen_id, 
+                      boat_space_id, 
+                      start_date, 
+                      end_date, 
+                      status, 
+                      validity, 
+                      boat_id, 
+                      employee_id
+                    )
+                    (
+                      SELECT reserver_id, 
+                             :actingCitizenId as acting_citizen_id, 
+                             boat_space_id, 
+                             (end_date + INTERVAL '1 day') as start_date, 
+                             (end_date + INTERVAL '1 year') as end_date, 'Renewal' as status, 
+                             validity, 
+                             boat_id, 
+                             :employeeId as employee_id
+                      FROM boat_space_reservation
+                      WHERE id = :reservationId
+                    )
+                    RETURNING id
+                    """.trimIndent()
+                ).bind("reservationId", reservationId)
+                .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
+                .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
+                .mapTo<Int>()
+                .one()
+        }
+
     override fun insertBoatSpaceReservation(
         reserverId: UUID,
         actingUserId: UUID?,
@@ -553,7 +668,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET status = :status, updated = :updatedTime, boat_id = :boatId, reserver_id = :reserverId, validity = :validity, start_date = :startDate, end_date = :endDate
                     WHERE id = :id
-                        AND (status = 'Info' OR status = 'Payment')
+                        AND (status = 'Info' OR status = 'Payment' OR status = 'Renewal')
                         AND created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     RETURNING *
                     """.trimIndent()
@@ -626,25 +741,14 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
-    override fun getReservationPeriods(
-        isEspooCitizen: Boolean,
-        boatSpaceType: BoatSpaceType,
-        operation: ReservationOperation
-    ): List<ReservationPeriod> =
+    override fun getReservationPeriods(): List<ReservationPeriod> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT *
-                    FROM reservation_period
-                    WHERE is_espoo_citizen = :isEspooCitizen
-                        AND operation = :operation
-                        AND boat_space_type = :boatSpaceType
+                    SELECT * FROM reservation_period
                     """.trimIndent()
                 )
-            query.bind("isEspooCitizen", isEspooCitizen)
-            query.bind("operation", operation)
-            query.bind("boatSpaceType", boatSpaceType)
             query.mapTo<ReservationPeriod>().list()
         }
 
