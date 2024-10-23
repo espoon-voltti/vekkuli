@@ -1,69 +1,14 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.Invoice
+import fi.espoo.vekkuli.utils.LocalDateSerializer
+import fi.espoo.vekkuli.utils.TimeProvider
 import kotlinx.serialization.Serializable
+import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.util.*
 
-interface InvoiceClient {
-    fun sendInvoice(invoice: Invoice): Boolean
-}
-
-class MockInvoiceClient : InvoiceClient {
-    override fun sendInvoice(invoice: Invoice): Boolean {
-        println("sending invoice ${invoice.id}")
-        return true
-    }
-}
-
-// dtos
-@Serializable
-data class InvoiceBatch(
-    val agreementType: Int,
-    val batchDate: String,
-    val batchNumber: Long,
-    val currency: String = "EUR",
-    val sourcePrinted: Boolean,
-    val systemId: String,
-    val invoices: List<InvoiceDto>,
-    val totalObjects: Int?,
-    val totalAmount: Long?
-)
-
-@Serializable
-data class InvoiceDto(
-    val invoiceNumber: Long,
-    val useInvoiceNumber: Boolean?,
-    val date: String?,
-    val dueDate: String?,
-    val printDate: String?,
-    val client: Client?,
-    val recipient: Recipient?,
-    val rows: List<Row>?
-)
-
-@Serializable
-data class Recipient(
-    val ssn: String?
-)
-
-@Serializable
-data class Client(
-    val ssn: String?,
-    val ytunnus: String?,
-    val registerNumber: String?,
-    val lastname: String,
-    val firstnames: String,
-    val contactPerson: String?,
-    val street: String?,
-    val post: String?,
-    val postalCode: String?,
-    val language: String,
-    val homePhone: String?,
-    val mobilePhone: String?,
-    val faxNumber: String?,
-    val email: String?
-)
-
-@Serializable
 data class Row(
     val productGroup: String?,
     val productComponent: String?,
@@ -81,3 +26,94 @@ data class Row(
     val project: String?,
     val product: String?
 )
+
+data class InvoiceAddress(
+    val street: String,
+    val postalCode: String,
+    val postOffice: String,
+)
+
+data class InvoiceRecipient(
+    val ssn: String,
+    val firstName: String,
+    val lastName: String,
+    val address: InvoiceAddress,
+)
+
+data class InvoiceParameters(
+    val invoiceNumber: Long,
+    val dueDate: LocalDate,
+    val recipient: InvoiceRecipient,
+    val rows: List<Row>
+)
+
+data class InvoiceBatchParameters(
+    val agreementType: Int,
+    @Serializable(with = LocalDateSerializer::class) val batchDate: LocalDate,
+    val batchNumber: Long,
+    val currency: String = "EUR",
+    val sourcePrinted: Boolean = false,
+    val systemId: String,
+    val invoices: List<InvoiceParameters>,
+)
+
+interface InvoiceClient {
+    fun sendBatchInvoice(invoiceBatch: InvoiceBatchParameters): Boolean
+}
+
+@Service
+class MockInvoiceClient(
+    private val timeProvider: TimeProvider
+) : InvoiceClient {
+    override fun sendBatchInvoice(invoiceBatch: InvoiceBatchParameters): Boolean {
+        val invoice = invoiceBatch.invoices.first()
+        println("sending invoice ${invoice.invoiceNumber}")
+        return true
+    }
+}
+
+@Service
+class BoatSpaceInvoiceService(
+    private val invoiceClient: InvoiceClient,
+    private val paymentService: PaymentService,
+    private val timeProvider: TimeProvider
+) {
+    fun createInvoice(
+        invoiceNumber: Long,
+        dueDate: LocalDate,
+        recipient: InvoiceRecipient,
+        reservationId: Int,
+        citizenId: UUID,
+        invoiceRows: List<Row>
+    ): Invoice? {
+        val invoice =
+            InvoiceParameters(
+                invoiceNumber = invoiceNumber,
+                dueDate = dueDate,
+                recipient = recipient,
+                rows = invoiceRows
+            )
+        val batch =
+            InvoiceBatchParameters(
+                // TODO: add correct values
+                agreementType = 249,
+                batchDate = timeProvider.getCurrentDate(),
+                batchNumber = 1,
+                systemId = System.getenv("INVOICE_SYSTEM_ID") ?: "vekkuli",
+                invoices = listOf(invoice),
+            )
+        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(batch)
+        if (!sendInvoiceSuccess) {
+            // error handling
+            return null
+        }
+        return paymentService.insertInvoicePayment(
+            CreateInvoiceParams(
+                dueDate = invoice.dueDate,
+                reference = invoice.invoiceNumber.toString(),
+                citizenId = citizenId,
+                reservationId = reservationId
+            )
+        )
+    }
+}
