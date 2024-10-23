@@ -19,10 +19,7 @@ interface PaymentRepository {
         success: Boolean
     ): Payment?
 
-    fun insertInvoicePayment(
-        params: CreateInvoiceParams,
-        reservationId: Int
-    ): Invoice
+    fun insertInvoicePayment(params: CreateInvoiceParams): Invoice
 
     fun getInvoicePayment(stamp: UUID): Invoice?
 

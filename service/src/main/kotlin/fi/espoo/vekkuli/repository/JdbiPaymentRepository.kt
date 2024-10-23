@@ -54,10 +54,7 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    override fun insertInvoicePayment(
-        params: CreateInvoiceParams,
-        reservationId: Int
-    ): Invoice {
+    override fun insertInvoicePayment(params: CreateInvoiceParams): Invoice {
         val id = UUID.randomUUID()
         return jdbi.withHandleUnchecked { handle ->
             handle

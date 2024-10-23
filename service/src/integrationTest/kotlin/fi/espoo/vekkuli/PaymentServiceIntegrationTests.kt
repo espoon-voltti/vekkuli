@@ -97,9 +97,8 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                     LocalDate.now(),
                     "1",
                     1,
-                    citizenId
-                ),
-                reservationId = 1
+                    citizenId,
+                )
             )
         paymentService.setInvoicePaid(invoice.id)
         val fetchedInvoice = paymentService.getInvoicePayment(invoice.id)

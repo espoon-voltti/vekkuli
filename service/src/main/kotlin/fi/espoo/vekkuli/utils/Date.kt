@@ -1,5 +1,11 @@
 package fi.espoo.vekkuli.utils
 
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.*
@@ -73,4 +79,20 @@ fun isMonthDayWithinRange(
     }
     // Period crosses the year
     return today >= startDate || today <= endDate
+}
+
+// Create a custom serializer for LocalDate
+object LocalDateSerializer : KSerializer<LocalDate> {
+    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDate", PrimitiveKind.STRING)
+
+    override fun serialize(
+        encoder: Encoder,
+        value: LocalDate
+    ) {
+        encoder.encodeString(value.format(formatter))
+    }
+
+    override fun deserialize(decoder: Decoder): LocalDate = LocalDate.parse(decoder.decodeString(), formatter)
 }
