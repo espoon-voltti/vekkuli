@@ -516,7 +516,7 @@ class BoatSpaceFormController(
         }
 
         if (isEmployee) {
-            return redirectUrl("/virkailija/venepaikat/varaukset")
+            return redirectUrl("/virkailija/venepaikka/varaus/$reservationId/lasku")
         }
         // redirect to payments page with reservation id and slip type
         return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
