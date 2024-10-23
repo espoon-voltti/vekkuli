@@ -299,6 +299,7 @@ jobs:
       matrix:
         environment:
           - staging
+          - prod
 
     environment:
       name: ${{ matrix.environment }}
