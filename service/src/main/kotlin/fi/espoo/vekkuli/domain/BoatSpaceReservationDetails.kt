@@ -59,6 +59,8 @@ data class BoatSpaceReservationDetails(
         get() = priceCents.centsToEuro()
     val alvPriceInEuro: Double
         get() = (priceCents - getPriceWithoutAlv(priceCents)).centsToEuro()
+    val alvPriceInCents: Int
+        get() = getPriceWithoutAlv(priceCents)
     val priceWithoutAlvInEuro: Double
         get() = getPriceWithoutAlv(priceCents).centsToEuro()
 

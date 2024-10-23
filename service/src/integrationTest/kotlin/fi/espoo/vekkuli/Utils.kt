@@ -37,6 +37,12 @@ fun deleteAllOrganizationMembers(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllInvoices(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM invoice")
+    }
+}
+
 fun createReservationInConfirmedState(
     timeProvider: TimeProvider,
     reservationService: BoatReservationService,

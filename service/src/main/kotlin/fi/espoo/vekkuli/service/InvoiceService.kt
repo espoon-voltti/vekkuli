@@ -1,7 +1,5 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.domain.CreateInvoiceParams
-import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.utils.LocalDateSerializer
 import fi.espoo.vekkuli.utils.TimeProvider
 import kotlinx.serialization.Serializable
@@ -10,6 +8,8 @@ import java.time.LocalDate
 import java.util.*
 
 data class Row(
+    // reservationId is used as productId
+    val productId: String,
     val productGroup: String?,
     val productComponent: String?,
     val periodStartDate: String,
@@ -19,10 +19,6 @@ data class Row(
     val amount: Long,
     val vatAmount: Long?,
     val description: String?,
-    val account: Long?,
-    val costCenter: String?,
-    val subCostCenter1: String?,
-    val subCostCenter2: String?,
     val project: String?,
     val product: String?
 )
@@ -34,6 +30,7 @@ data class InvoiceAddress(
 )
 
 data class InvoiceRecipient(
+    val id: UUID,
     val ssn: String,
     val firstName: String,
     val lastName: String,
@@ -69,51 +66,5 @@ class MockInvoiceClient(
         val invoice = invoiceBatch.invoices.first()
         println("sending invoice ${invoice.invoiceNumber}")
         return true
-    }
-}
-
-@Service
-class BoatSpaceInvoiceService(
-    private val invoiceClient: InvoiceClient,
-    private val paymentService: PaymentService,
-    private val timeProvider: TimeProvider
-) {
-    fun createInvoice(
-        invoiceNumber: Long,
-        dueDate: LocalDate,
-        recipient: InvoiceRecipient,
-        reservationId: Int,
-        citizenId: UUID,
-        invoiceRows: List<Row>
-    ): Invoice? {
-        val invoice =
-            InvoiceParameters(
-                invoiceNumber = invoiceNumber,
-                dueDate = dueDate,
-                recipient = recipient,
-                rows = invoiceRows
-            )
-        val batch =
-            InvoiceBatchParameters(
-                // TODO: add correct values
-                agreementType = 249,
-                batchDate = timeProvider.getCurrentDate(),
-                batchNumber = 1,
-                systemId = System.getenv("INVOICE_SYSTEM_ID") ?: "vekkuli",
-                invoices = listOf(invoice),
-            )
-        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(batch)
-        if (!sendInvoiceSuccess) {
-            // error handling
-            return null
-        }
-        return paymentService.insertInvoicePayment(
-            CreateInvoiceParams(
-                dueDate = invoice.dueDate,
-                reference = invoice.invoiceNumber.toString(),
-                citizenId = citizenId,
-                reservationId = reservationId
-            )
-        )
     }
 }

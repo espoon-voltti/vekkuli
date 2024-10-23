@@ -105,6 +105,7 @@ class BoatReservationService(
     private val emailEnv: EmailEnv,
     private val organizationService: OrganizationService,
     private val timeProvider: TimeProvider,
+    private val boatSpaceInvoiceService: BoatSpaceInvoiceService
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -358,6 +359,7 @@ class BoatReservationService(
                 endDate
             )
         if (reservationStatus == ReservationStatus.Invoiced) {
+            boatSpaceInvoiceService.createInvoice(reservation.id, reserverId)
             emailService.sendEmail(
                 "reservation_confirmation_invoice",
                 null,
