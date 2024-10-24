@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
-import fi.espoo.vekkuli.domain.SentMessage
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
@@ -29,7 +29,7 @@ class TemplateEmailService(
         senderAddress: String,
         recipient: Recipient,
         variables: Map<String, Any>
-    ): List<SentMessage> =
+    ): List<QueuedMessage> =
         sendBatchEmail(
             template = template,
             userId = userId,
@@ -44,7 +44,7 @@ class TemplateEmailService(
         senderAddress: String,
         recipients: List<Recipient>,
         variables: Map<String, Any>
-    ): List<SentMessage> {
+    ): List<QueuedMessage> {
         val tpl = templateRepo.getTemplate(template)
         if (tpl == null) {
             logger.warn("Email template not found: $template")

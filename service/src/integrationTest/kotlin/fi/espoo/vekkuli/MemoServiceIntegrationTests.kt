@@ -20,9 +20,9 @@ class MemoServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should store and load notes`() {
-        val memo = memoService.insertMemo(citizenId, userId, MemoCategory.Marine, "Test note")
+        val memo = memoService.insertMemo(this.citizenIdLeo, userId, MemoCategory.Marine, "Test note")
         assertNotNull(memo)
-        val memos = memoService.getMemos(citizenId, MemoCategory.Marine)
+        val memos = memoService.getMemos(this.citizenIdLeo, MemoCategory.Marine)
         val found = memos.find { it.id == memo.id }
         assertNotNull(found)
         assertEquals(memo, found)
@@ -30,7 +30,7 @@ class MemoServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should delete a note`() {
-        val memo = memoService.insertMemo(citizenId, userId, MemoCategory.Marine, "Test note")
+        val memo = memoService.insertMemo(this.citizenIdLeo, userId, MemoCategory.Marine, "Test note")
         assertNotNull(memo)
         memoService.removeMemo(memo.id)
         assertNull(memoService.getMemo(memo.id))
@@ -38,7 +38,7 @@ class MemoServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should update a note`() {
-        val memo = memoService.insertMemo(citizenId, userId, MemoCategory.Marine, "Test note")
+        val memo = memoService.insertMemo(this.citizenIdLeo, userId, MemoCategory.Marine, "Test note")
         assertNotNull(memo)
         memoService.updateMemo(memo.id, userId, "Updated note")
         val updated = memoService.getMemo(memo.id)

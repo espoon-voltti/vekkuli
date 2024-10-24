@@ -82,4 +82,6 @@ interface BoatSpaceReservationRepository {
     fun getReservationPeriods(): List<ReservationPeriod>
 
     fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
+
+    fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails>
 }

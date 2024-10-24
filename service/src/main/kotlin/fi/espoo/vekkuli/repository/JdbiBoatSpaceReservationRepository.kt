@@ -318,49 +318,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.id,
-                           bsr.start_date,
-                           bsr.end_date,
-                           bsr.created,
-                           bsr.updated,
-                           bsr.status,
-                           bsr.boat_space_id,
-                           bsr.validity,
-                           r.id as reserver_id,
-                           r.type as reserver_type,
-                           r.name,
-                           r.email, 
-                           r.phone,
-                           r.street_address,
-                           r.postal_code,
-                           r.municipality_code,
-                           m.name as municipality_name,
-                           b.registration_code as boat_registration_code,
-                           b.ownership as boat_ownership,
-                           b.id as boat_id,
-                           b.name as boat_name,
-                           b.width_cm as boat_width_cm,
-                           b.length_cm as boat_length_cm,
-                           b.weight_kg as boat_weight_kg,
-                           b.depth_cm as boat_depth_cm,
-                           b.type as boat_type,
-                           b.other_identification as boat_other_identification,
-                           b.extra_information as boat_extra_information,
-                           location.name as location_name, 
-                           bs.type,
-                           bs.length_cm as boat_space_length_cm,
-                           bs.width_cm as boat_space_width_cm,
-                           bs.amenity,
-                           price.price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
-                    FROM boat_space_reservation bsr
-                    JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location.id = bs.location_id
-                    JOIN price ON price_id = price.id
-                    JOIN municipality m ON r.municipality_code = m.code
+                    ${getBoatSpaceReservation()}
                     WHERE c.id = :reserverId AND 
                       bs.type = :spaceType AND
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
@@ -757,49 +715,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                     SELECT bsr.id,
-                           bsr.start_date,
-                           bsr.end_date,
-                           bsr.created,
-                           bsr.updated,
-                           bsr.status,
-                           bsr.boat_space_id,
-                           bsr.validity,
-                           r.id as reserver_id,
-                           r.type as reserver_type,
-                           r.name,
-                           r.email, 
-                           r.phone,
-                           r.street_address,
-                           r.postal_code,
-                           r.municipality_code,
-                           m.name as municipality_name,
-                           b.registration_code as boat_registration_code,
-                           b.ownership as boat_ownership,
-                           b.id as boat_id,
-                           b.name as boat_name,
-                           b.width_cm as boat_width_cm,
-                           b.length_cm as boat_length_cm,
-                           b.weight_kg as boat_weight_kg,
-                           b.depth_cm as boat_depth_cm,
-                           b.type as boat_type,
-                           b.other_identification as boat_other_identification,
-                           b.extra_information as boat_extra_information,
-                           location.name as location_name, 
-                           bs.type,
-                           bs.length_cm as boat_space_length_cm,
-                           bs.width_cm as boat_space_width_cm,
-                           bs.amenity,
-                           price.price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
-                    FROM boat_space_reservation bsr
-                    JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location.id = bs.location_id
-                    JOIN price ON price_id = price.id
-                    JOIN municipality m ON r.municipality_code = m.code
+                     ${getBoatSpaceReservation()}
                     WHERE c.id = :reserverId AND (
                         bsr.status = 'Cancelled'
                         OR 
@@ -832,4 +748,68 @@ class JdbiBoatSpaceReservationRepository(
                 )
             }
         }
+
+    override fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    ${getBoatSpaceReservation()}
+                    WHERE status = 'Confirmed' AND validity = :validity
+                        AND end_date < :endDateCut
+                    """.trimIndent()
+                )
+            query.bind("validity", validity)
+            query.bind(
+                "endDateCut",
+                timeProvider.getCurrentDate().plusDays(BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())
+            )
+            query.mapTo<BoatSpaceReservationDetails>().list()
+        }
+
+    private fun getBoatSpaceReservation() =
+        """SELECT bsr.id,
+                               bsr.start_date,
+                               bsr.end_date,
+                               bsr.created,
+                               bsr.updated,
+                               bsr.status,
+                               bsr.boat_space_id,
+                               bsr.validity,
+                               r.id as reserver_id,
+                               r.type as reserver_type,
+                               r.name,
+                               r.email, 
+                               r.phone,
+                               r.street_address,
+                               r.postal_code,
+                               r.municipality_code,
+                               m.name as municipality_name,
+                               b.registration_code as boat_registration_code,
+                               b.ownership as boat_ownership,
+                               b.id as boat_id,
+                               b.name as boat_name,
+                               b.width_cm as boat_width_cm,
+                               b.length_cm as boat_length_cm,
+                               b.weight_kg as boat_weight_kg,
+                               b.depth_cm as boat_depth_cm,
+                               b.type as boat_type,
+                               b.other_identification as boat_other_identification,
+                               b.extra_information as boat_extra_information,
+                               location.name as location_name, 
+                               bs.type,
+                               bs.length_cm as boat_space_length_cm,
+                               bs.width_cm as boat_space_width_cm,
+                               bs.amenity,
+                               price.price_cents,
+                               CONCAT(bs.section, bs.place_number) as place,
+                               ARRAY_AGG(harbor_restriction.excluded_boat_type) AS excluded_boat_types
+                        FROM boat_space_reservation bsr
+                        JOIN boat b ON b.id = bsr.boat_id
+                        JOIN citizen c ON bsr.reserver_id = c.id 
+                        JOIN reserver r ON c.id = r.id
+                        JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                        JOIN location ON location.id = bs.location_id
+                        JOIN price ON price_id = price.id
+                        JOIN municipality m ON r.municipality_code = m.code"""
 }

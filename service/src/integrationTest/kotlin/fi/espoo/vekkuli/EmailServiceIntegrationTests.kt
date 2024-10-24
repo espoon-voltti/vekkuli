@@ -26,13 +26,18 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `send single email on confirmation`() {
-        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId)
+        val madeReservation =
+            createReservationInPaymentState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo
+            )
 
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = citizenId,
+                    citizenId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
@@ -47,7 +52,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
             any(),
             eq(
                 Recipient(
-                    citizenId,
+                    this.citizenIdLeo,
                     "leo@noreplytest.fi"
                 )
             ),
@@ -58,13 +63,18 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `send organization email on confirmation`() {
         val madeReservation =
-            createReservationInPaymentState(timeProvider, reservationService, organizationId, citizenId)
+            createReservationInPaymentState(
+                timeProvider,
+                reservationService,
+                organizationId,
+                this.citizenIdLeo
+            )
 
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = citizenId,
+                    citizenId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
@@ -92,9 +102,14 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send correct template email on invoice`() {
-        val madeReservation = createReservationInInfoState(timeProvider, reservationService, citizenId)
+        val madeReservation =
+            createReservationInInfoState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo
+            )
         reservationService.reserveBoatSpace(
-            citizenId,
+            this.citizenIdLeo,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation.id,
                 boatId = 1,
@@ -122,7 +137,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
             any(),
             eq(
                 Recipient(
-                    citizenId,
+                    this.citizenIdLeo,
                     "leo@noreplytest.fi"
                 )
             ),
@@ -138,16 +153,22 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 class EmailServiceIntegrationTests : IntegrationTestBase() {
     @Autowired lateinit var reservationService: BoatReservationService
 
-    @MockBean lateinit var sendEmailInterfaceMock: SendEmailInterface
+    @MockBean lateinit var messageServiceMock: MessageService
 
     @Test
     fun `should send single email on confirmation`() {
-        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId, citizenId)
+        val madeReservation =
+            createReservationInPaymentState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo,
+                this.citizenIdLeo
+            )
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = citizenId,
+                    citizenId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
@@ -156,9 +177,10 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
             )
 
         reservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
-        verify(sendEmailInterfaceMock).sendMultipleEmails(
+        verify(messageServiceMock).sendEmails(
+            eq(null),
             any(),
-            eq(listOf("leo@noreplytest.fi")),
+            eq(listOf(Recipient(this.citizenIdLeo, "leo@noreplytest.fi"))),
             any(),
             any()
         )
@@ -166,12 +188,18 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send multiple emails on confirmation`() {
-        val madeReservation = createReservationInPaymentState(timeProvider, reservationService, organizationId, citizenId)
+        val madeReservation =
+            createReservationInPaymentState(
+                timeProvider,
+                reservationService,
+                organizationId,
+                this.citizenIdLeo
+            )
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = citizenId,
+                    citizenId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
@@ -180,19 +208,25 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
             )
 
         reservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
-        verify(sendEmailInterfaceMock).sendMultipleEmails(
+        verify(messageServiceMock).sendEmails(
+            eq(null),
             any(),
-            eq(listOf("eps@noreplytest.fi", "olivia@noreplytest.fi")),
+            eq(listOf(Recipient(organizationId, "eps@noreplytest.fi"), Recipient(citizenIdOlivia, "olivia@noreplytest.fi"))),
             any(),
-            any()
+            any(),
         )
     }
 
     @Test
     fun `should send email on invoice`() {
-        val madeReservation = createReservationInInfoState(timeProvider, reservationService, citizenId)
+        val madeReservation =
+            createReservationInInfoState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo
+            )
         reservationService.reserveBoatSpace(
-            citizenId,
+            this.citizenIdLeo,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation.id,
                 boatId = 1,
@@ -214,9 +248,10 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate(),
             timeProvider.getCurrentDate()
         )
-        verify(sendEmailInterfaceMock).sendMultipleEmails(
+        verify(messageServiceMock).sendEmails(
+            eq(null),
             any(),
-            eq(listOf("leo@noreplytest.fi")),
+            eq(listOf(Recipient(this.citizenIdLeo, "leo@noreplytest.fi"))),
             any(),
             any()
         )

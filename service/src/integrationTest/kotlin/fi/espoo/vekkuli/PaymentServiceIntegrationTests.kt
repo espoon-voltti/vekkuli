@@ -31,7 +31,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
 
     private fun insertNewPayment(ref: String = "1"): Payment =
         paymentService.insertPayment(
-            CreatePaymentParams(citizenId, ref, 1, 24.0, "1"),
+            CreatePaymentParams(this.citizenIdLeo, ref, 1, 24.0, "1"),
             reservationId = 1
         )
 
@@ -80,7 +80,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                     LocalDate.now(),
                     "1",
                     1,
-                    citizenId
+                    this.citizenIdLeo
                 ),
             )
         val fetchedInvoice = paymentService.getInvoicePayment(invoice.id)
@@ -96,7 +96,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                     LocalDate.now(),
                     "1",
                     1,
-                    citizenId,
+                    this.citizenIdLeo
                 )
             )
         paymentService.setInvoicePaid(invoice.id)
