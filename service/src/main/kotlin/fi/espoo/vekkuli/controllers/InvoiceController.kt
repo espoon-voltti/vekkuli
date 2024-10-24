@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoice
@@ -16,6 +17,7 @@ import java.time.LocalDate
 class InvoiceController(
     private val employeeLayout: EmployeeLayout,
     private val sendInvoiceView: SendInvoice,
+    private val reservationService: BoatReservationService,
 ) {
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     @ResponseBody
@@ -23,12 +25,17 @@ class InvoiceController(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        val reservation = reservationService.getReservationWithReserver(reservationId)
+        if (reservation == null) {
+            throw IllegalArgumentException("Reservation not found")
+        }
+
         val model =
             SendInvoiceModel(
-                reserverName = "Testi",
-                reserverSsn = "123456-7890",
+                reserverName = reservation.name ?: "",
+                reserverSsn = "",
                 reserverAddress = "Testikatu 1",
-                product = "Testituote",
+                product = reservation.locationName,
                 functionInformation = "Testitieto",
                 billingPeriodStart = LocalDate.of(2021, 1, 1),
                 billingPeriodEnd = LocalDate.of(2021, 12, 31),
@@ -41,11 +48,11 @@ class InvoiceController(
                 invoiceRows =
                     listOf(
                         InvoiceRow(
-                            description = "Venepaikka, Haukilahti, 2025",
-                            customer = "Veikko Veneilijä",
-                            priceWithoutVat = "333,06",
-                            vat = "79,93",
-                            priceWithVat = "413",
+                            description = "Venepaikka, ${reservation.locationName} ${reservation.section} ${reservation.placeNumber}, 2025",
+                            customer = reservation.name ?: "",
+                            priceWithoutVat = reservation.priceWithoutAlvInEuro.toString(),
+                            vat = reservation.alvPriceInEuro.toString(),
+                            priceWithVat = reservation.priceInEuro.toString(),
                             organization = "Merellinen ulkoilu",
                             paymentDate = LocalDate.of(2021, 1, 1)
                         )
