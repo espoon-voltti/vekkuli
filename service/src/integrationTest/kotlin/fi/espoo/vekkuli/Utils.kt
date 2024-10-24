@@ -43,6 +43,12 @@ fun deleteAllInvoices(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllEmails(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM sent_message")
+    }
+}
+
 fun createReservationInConfirmedState(
     timeProvider: TimeProvider,
     reservationService: BoatReservationService,

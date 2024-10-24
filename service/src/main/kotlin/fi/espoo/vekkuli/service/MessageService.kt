@@ -20,7 +20,7 @@ interface MessageServiceInterface {
 @Service
 class MessageService(
     private val messageRepository: SentMessageRepository,
-    private val sendEmailService: SendEmailInterface,
+    private val sendEmailService: SendEmailInterface
 ) : MessageServiceInterface {
     override fun sendEmails(
         // Who initiated the sending of the email (null if automated)
@@ -40,7 +40,6 @@ class MessageService(
 
     @Scheduled(fixedRate = 60000)
     fun sendScheduledEmails() {
-        // Get all unsent messages
         val unsentEmails = messageRepository.getUnsentEmails()
 
         val failedMessageIds = mutableListOf<UUID>()

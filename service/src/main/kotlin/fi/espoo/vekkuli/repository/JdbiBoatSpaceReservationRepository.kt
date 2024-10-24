@@ -802,8 +802,7 @@ class JdbiBoatSpaceReservationRepository(
                                bs.width_cm as boat_space_width_cm,
                                bs.amenity,
                                price.price_cents,
-                               CONCAT(bs.section, bs.place_number) as place,
-                               ARRAY_AGG(harbor_restriction.excluded_boat_type) AS excluded_boat_types
+                               CONCAT(bs.section, bs.place_number) as place
                         FROM boat_space_reservation bsr
                         JOIN boat b ON b.id = bsr.boat_id
                         JOIN citizen c ON bsr.reserver_id = c.id 
