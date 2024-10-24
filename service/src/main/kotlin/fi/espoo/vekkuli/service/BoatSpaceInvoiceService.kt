@@ -14,7 +14,7 @@ class BoatSpaceInvoiceService(
     private val boatReservationService: BoatReservationService,
     private val citizenService: CitizenService
 ) {
-    fun sendInvoice(batch: InvoiceBatchParameters,): Invoice? {
+    fun sendInvoice(batch: InvoiceBatchParameters): Invoice? {
         val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(batch)
         if (!sendInvoiceSuccess) {
             // error handling
