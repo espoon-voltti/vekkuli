@@ -109,9 +109,28 @@ class JdbiSentMessageRepository(
                 .list()
         }
 
-    override fun getUnsentEmails(batchSize: Int): List<QueuedMessage> {
-        // set status to processing
-        // get batch size
-        TODO("Not yet implemented")
-    }
+    override fun getUnsentEmails(batchSize: Int): List<QueuedMessage> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle
+                    .createQuery(
+                        """
+                        WITH first_ten AS (
+                            SELECT *
+                            FROM sent_message
+                            WHERE status = 'Queued' OR status = 'Failed'
+                            ORDER BY created DESC
+                            LIMIT :batchSize
+                        )
+                        UPDATE sent_message
+                        SET status = 'Processing' 
+                        WHERE id IN (SELECT id FROM first_ten)
+                        RETURNING *;
+                        """.trimIndent()
+                    )
+            query.bind("batchSize", batchSize)
+            query
+                .mapTo<QueuedMessage>()
+                .list()
+        }
 }
