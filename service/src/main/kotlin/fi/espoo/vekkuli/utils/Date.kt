@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.utils
 
+import fi.espoo.vekkuli.service.VariableService
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.time.*
@@ -11,16 +12,19 @@ abstract class TimeProvider {
     fun getCurrentDate(): LocalDate = getCurrentDateTime().toLocalDate()
 }
 
-@Profile("staging")
+@Profile("staging || local")
 @Service
-class StagingTimeProvider : TimeProvider() {
-    override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
-}
-
-@Profile("local")
-@Service
-class LocalTimeProvider : TimeProvider() {
-    override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0)
+class StagingTimeProvider(
+    private val variable: VariableService,
+) : TimeProvider() {
+    override fun getCurrentDateTime(): LocalDateTime {
+        val dateTimeVariable = variable.get("current_system_staging_datetime")
+        return if (dateTimeVariable != null && isValidDateTime(dateTimeVariable.value)) {
+            LocalDateTime.parse(dateTimeVariable.value)
+        } else {
+            LocalDateTime.now()
+        }
+    }
 }
 
 @Profile("!local & !staging")
@@ -74,3 +78,6 @@ fun isMonthDayWithinRange(
     // Period crosses the year
     return today >= startDate || today <= endDate
 }
+
+fun isValidDateTime(dateTimeString: String?): Boolean =
+    !dateTimeString.isNullOrBlank() && runCatching { LocalDateTime.parse(dateTimeString) }.isSuccess
