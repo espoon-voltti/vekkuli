@@ -56,8 +56,8 @@ class SendInvoice : BaseView() {
                 ${invoiceLine("Veneilykausi", "${model.boatingSeasonStart} - ${model.boatingSeasonEnd}")}
                 ${invoiceLine("Laskun numero", model.invoiceNumber)}
                 ${invoiceLine("Laskun eräpäivä", model.dueDate.toString())}
-                ${invoiceLine("Kustannuspaikka",model.costCenter)}
-                ${invoiceLine("Laskulaji",model.invoiceType)}
+                ${invoiceLine("Kustannuspaikka", model.costCenter)}
+                ${invoiceLine("Laskulaji", model.invoiceType)}
                 ${invoiceLine("Hintaryhmä", "100%")}
                 
                 <hr/>
@@ -65,19 +65,34 @@ class SendInvoice : BaseView() {
                 <h3 class="subtitle">Laskurivi</h3>
                 
                 <table class="table">
-                <thead>
-                    <td>Selite</td>
-                    <td>Asiakas</td>
-                    <td>Hinta ilman alv</td>
-                    <td>Alv 24 %</td>
-                    <td>Verollinen hinta </td>
-                    <td>Organisaatio</td>
-                    <td>Maksupäivä</td>
-                </thead>
-                <tbody>
-                    ${invoiceRows(model.invoiceRows)}
-                </tbody>
+                    <thead>
+                        <td>Selite</td>
+                        <td>Asiakas</td>
+                        <td>Hinta ilman alv</td>
+                        <td>Alv 24 %</td>
+                        <td>Verollinen hinta </td>
+                        <td>Organisaatio</td>
+                        <td>Maksupäivä</td>
+                    </thead>
+                    <tbody>
+                        ${invoiceRows(model.invoiceRows)}
+                    </tbody>
                 </table>
+                
+                <div class="field block">
+                    <div class="control">
+                        <button id="cancel"
+                            class="button is-secondary"
+                            type="button">
+                            ${t("cancel")}
+                        </button>
+                        <button id="submit"
+                            class="button is-primary"
+                            type="submit">
+                            Lähetä lasku
+                        </button>
+                    </div>
+                </div> 
             </div>
             </section>
 
@@ -88,7 +103,7 @@ class SendInvoice : BaseView() {
         name: String,
         value: String
     ) = """
-        <div>
+        <div class="block">
             <span style="display:inline-block; width: 250px">$name:</span><span>$value</span>
         </div>
         """.trimIndent()
