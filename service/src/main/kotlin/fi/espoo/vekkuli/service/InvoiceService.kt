@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.utils.LocalDateSerializer
-import fi.espoo.vekkuli.utils.TimeProvider
 import kotlinx.serialization.Serializable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -59,9 +58,7 @@ interface InvoiceClient {
 }
 
 @Service
-class MockInvoiceClient(
-    private val timeProvider: TimeProvider
-) : InvoiceClient {
+class MockInvoiceClient : InvoiceClient {
     override fun sendBatchInvoice(invoiceBatch: InvoiceBatchParameters): Boolean {
         val invoice = invoiceBatch.invoices.first()
         println("sending invoice ${invoice.invoiceNumber}")

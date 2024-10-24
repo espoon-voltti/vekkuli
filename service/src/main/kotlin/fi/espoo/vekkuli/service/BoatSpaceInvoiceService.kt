@@ -35,7 +35,11 @@ class BoatSpaceInvoiceService(
         reservationId: Int,
         citizenId: UUID,
     ): InvoiceBatchParameters? {
-        val reservation = boatReservationService.getBoatSpaceReservation(reservationId) ?: return null
+        val reservation = boatReservationService.getBoatSpaceReservation(reservationId)
+        if (reservation == null) {
+            // error handling
+            return null
+        }
         val reserver = citizenService.getCitizen(citizenId) ?: return null
         val invoiceRow =
             Row(
