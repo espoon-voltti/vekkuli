@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatRepository
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -254,6 +255,8 @@ class BoatReservationService(
 
     fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithoutReserver(id)
 
+    fun getReservationForRenewal(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForRenewal(id)
+
     fun removeBoatSpaceReservation(
         id: Int,
         citizenId: UUID,
@@ -283,6 +286,15 @@ class BoatReservationService(
             startDate,
             endDate
         )
+
+    fun createRenewalReservation(
+        reservationId: Int,
+        userType: UserType,
+        userId: UUID
+    ): ReservationWithDependencies? {
+        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, userType, userId)
+        return getReservationWithReserver(newId)
+    }
 
     @Transactional
     fun reserveBoatSpace(
@@ -382,6 +394,12 @@ class BoatReservationService(
     fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies? =
         boatSpaceReservationRepo.getUnfinishedReservationForEmployee(id)
 
+    fun getRenewalReservationForCitizen(id: UUID): ReservationWithDependencies? =
+        boatSpaceReservationRepo.getRenewalReservationForCitizen(id)
+
+    fun getRenewalReservationForEmployee(id: UUID): ReservationWithDependencies? =
+        boatSpaceReservationRepo.getRenewalReservationForEmployee(id)
+
     fun insertBoatSpaceReservation(
         reserverId: UUID,
         actingUserId: UUID?,
@@ -414,7 +432,13 @@ class BoatReservationService(
         boatSpaceReservationRepo.getBoatSpaceReservations(params)
 
     fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
-        boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(citizenId, BoatSpaceType.Slip)
+        extendReservationsWithPeriodInformation(
+            citizenId,
+            boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
+                citizenId,
+                BoatSpaceType.Slip
+            )
+        )
 
     fun getExpiredBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getExpiredBoatSpaceReservationsForCitizen(citizenId)
@@ -441,19 +465,21 @@ class BoatReservationService(
         boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
     }
 
-    private fun getReservationPeriods(
-        isEspooCitizen: Boolean,
-        boatSpaceType: BoatSpaceType,
-        operation: ReservationOperation
-    ): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods(isEspooCitizen, boatSpaceType, operation)
+    fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
 
     fun hasActiveReservationPeriod(
+        allPeriods: List<ReservationPeriod>,
         now: LocalDate,
         isEspooCitizen: Boolean,
-        boatSpaceType: BoatSpaceType,
+        boatSpaceType: BoatSpaceType?,
         operation: ReservationOperation
     ): Boolean {
-        val periods = getReservationPeriods(isEspooCitizen, boatSpaceType, operation)
+        val periods =
+            allPeriods.filter {
+                it.boatSpaceType == boatSpaceType &&
+                    it.operation == operation &&
+                    it.isEspooCitizen == isEspooCitizen
+            }
         val today = MonthDay.from(now)
         return periods.any {
             isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
@@ -466,6 +492,7 @@ class BoatReservationService(
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
         val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
+        val periods = boatSpaceReservationRepo.getReservationPeriods()
 
         if (hasSomePlace && !isEspooCitizen) {
             // Non-Espoo citizens can only have one reservation
@@ -481,6 +508,7 @@ class BoatReservationService(
 
         val hasActivePeriod =
             hasActiveReservationPeriod(
+                periods,
                 now,
                 isEspooCitizen,
                 BoatSpaceType.Slip,
@@ -502,5 +530,91 @@ class BoatReservationService(
                 validity
             )
         )
+    }
+
+    fun canRenewAReservation(
+        periods: List<ReservationPeriod>,
+        oldValidity: ReservationValidity
+    ): ReservationResult {
+        if (oldValidity == ReservationValidity.FixedTerm) {
+            // Fixed term reservations cannot be renewed
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        val now = timeProvider.getCurrentDate()
+
+        val hasActivePeriod =
+            hasActiveReservationPeriod(
+                periods,
+                now,
+                true,
+                BoatSpaceType.Slip,
+                ReservationOperation.Renew
+            )
+
+        if (!hasActivePeriod) {
+            // If no period found, reservation is not possible
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        return ReservationResult.Success(
+            ReservationResultSuccess(
+                now,
+                getLastDayOfNextYearsJanuary(now.year),
+                ReservationValidity.Indefinite
+            )
+        )
+    }
+
+    fun canSwitchAReservation(
+        reservation: BoatSpaceReservationDetails,
+        periods: List<ReservationPeriod>,
+        isEspooCitizen: Boolean,
+    ): ReservationResult {
+        val now = timeProvider.getCurrentDate()
+
+        val hasActivePeriod =
+            hasActiveReservationPeriod(
+                periods,
+                now,
+                isEspooCitizen,
+                BoatSpaceType.Slip,
+                ReservationOperation.Change
+            )
+
+        if (!hasActivePeriod) {
+            // If no period found, reservation is not possible
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        return ReservationResult.Success(
+            ReservationResultSuccess(
+                reservation.startDate,
+                reservation.endDate,
+                reservation.validity
+            )
+        )
+    }
+
+    private fun extendReservationsWithPeriodInformation(
+        reserverID: UUID,
+        reservations: List<BoatSpaceReservationDetails>
+    ): List<BoatSpaceReservationDetails> {
+        val reserver = reserverRepo.getReserverById(reserverID) ?: throw java.lang.IllegalArgumentException("Reserver not found")
+        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
+        if (!isEspooCitizen) {
+            // Only Espoo citizens can renew reservations
+            return reservations
+        }
+        val periods = getReservationPeriods()
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
+        return reservations.map { reservation ->
+            val canRenewResult = canRenewAReservation(periods, reservation.validity)
+            val canSwitchResult = canSwitchAReservation(reservation, periods, isEspooCitizen)
+            reservation.copy(
+                canRenew = canRenewResult.success,
+                canSwitch = canSwitchResult.success,
+            )
+        }
     }
 }

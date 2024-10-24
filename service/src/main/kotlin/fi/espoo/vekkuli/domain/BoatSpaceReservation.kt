@@ -12,6 +12,7 @@ import kotlin.math.roundToInt
 
 enum class ReservationStatus {
     Info,
+    Renewal,
     Payment,
     Confirmed,
     Cancelled,
