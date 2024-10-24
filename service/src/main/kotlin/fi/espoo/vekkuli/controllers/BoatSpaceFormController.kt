@@ -477,8 +477,6 @@ class BoatSpaceFormController(
             }
         }
 
-        val reservationStatus =
-            if (isEmployee) ReservationStatus.Invoiced else ReservationStatus.Payment
         val reserveSlipResult = reservationService.canReserveANewSlip(reserverId)
 
         val data =
@@ -508,7 +506,7 @@ class BoatSpaceFormController(
                     email = input.email!!,
                     phone = input.phone!!,
                 ),
-                reservationStatus,
+                ReservationStatus.Payment,
                 data.reservationValidity,
                 data.startDate,
                 data.endDate
