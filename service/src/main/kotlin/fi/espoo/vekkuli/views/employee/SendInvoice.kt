@@ -9,7 +9,7 @@ data class SendInvoiceModel(
     val reserverSsn: String,
     val reserverAddress: String,
     val product: String,
-    val functionInformation: String, // toimintotieto
+    val functionInformation: String,
     val billingPeriodStart: LocalDate,
     val billingPeriodEnd: LocalDate,
     val boatingSeasonStart: LocalDate,
