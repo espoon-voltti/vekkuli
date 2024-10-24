@@ -46,7 +46,6 @@ data class BoatSpaceReservationDetails(
     val excludedBoatTypes: List<BoatType>?,
     val canSwitch: Boolean = false,
     val canRenew: Boolean = false,
-    val canTerminate: Boolean = true,
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()

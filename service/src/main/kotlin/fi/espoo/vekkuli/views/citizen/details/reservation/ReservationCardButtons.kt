@@ -50,7 +50,7 @@ class ReservationCardButtons : BaseView() {
                 $renewPlace
                 ${createInvoicePaidModalButton(reservation, citizen)}
                 $swapPlace
-                ${if (reservation.canTerminate) createTerminateReservationModalButton(reservation) else ""}
+                ${createTerminateReservationModalButton(reservation)}
             </div>
             """.trimIndent()
     }

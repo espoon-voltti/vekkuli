@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.dateToString
 import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.components.modal.Modal
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -53,6 +54,7 @@ class BoatSpaceForm(
     private val formComponents: FormComponents,
     private val sessionTimer: SessionTimer,
     private val stepIndicator: StepIndicator,
+    private val modal: Modal
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
