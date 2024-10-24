@@ -49,7 +49,7 @@ class CitizenService(
             dataProtection,
         )
 
-    fun getMessages(citizenId: UUID): List<SentMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
+    fun getMessages(citizenId: UUID): List<QueuedMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
     fun getMunicipalities(): List<Municipality> = reserverRepository.getMunicipalities()
 

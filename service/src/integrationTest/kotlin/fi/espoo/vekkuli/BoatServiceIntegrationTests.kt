@@ -32,7 +32,7 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     lateinit var reservationService: BoatReservationService
 
     private fun insertNewBoat(
-        citizenId: UUID = this.citizenId,
+        citizenId: UUID = this.citizenIdLeo,
         name: String = "TestBoat"
     ): Boat =
         boatService.insertBoat(
@@ -61,10 +61,10 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should get boats for citizen`() {
-        insertNewBoat(citizenId, "TestBoat1",)
-        insertNewBoat(citizenId, "TestBoat2",)
-        boatService.getBoatsForReserver(citizenId)
-        assertEquals(2, boatService.getBoatsForReserver(citizenId).size, "Correct number of boats are fetched")
+        insertNewBoat(this.citizenIdLeo, "TestBoat1",)
+        insertNewBoat(this.citizenIdLeo, "TestBoat2",)
+        boatService.getBoatsForReserver(this.citizenIdLeo)
+        assertEquals(2, boatService.getBoatsForReserver(this.citizenIdLeo).size, "Correct number of boats are fetched")
     }
 
     @Test
@@ -79,7 +79,13 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should not delete a boat that is linked to a reservation`() {
         val newBoat = insertNewBoat()
-        createReservationInConfirmedState(timeProvider, reservationService, citizenId, 1, newBoat.id)
+        createReservationInConfirmedState(
+            timeProvider,
+            reservationService,
+            this.citizenIdLeo,
+            1,
+            newBoat.id
+        )
         val boatDeleted = boatService.deleteBoat(newBoat.id)
         val boat = boatService.getBoat(newBoat.id)
         assertEquals(false, boatDeleted, "Boat is not deleted according to return value")

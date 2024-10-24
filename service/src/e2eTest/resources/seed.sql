@@ -553,13 +553,17 @@ VALUES
     ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner'),
     ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner');
 
+
 INSERT INTO email_template (id, subject, body)
 VALUES
     ('reservation_confirmation_invoice', 'Espoon Resurssivaraus: Venepaikan varausvahvistus', E'Hyvä asiakas,\n\nSinulle on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}.\n\nLasku tulee sinulle postissa.\nMaksathan laskun eräpäivään {{invoiceDueDate}} mennessä tai varaus raukeaa.'),
     ('reservation_organization_confirmation', 'Espoon Resurssivaraus: Venepaikan varausvahvistus', E'Hyvä asiakas,\n\nYhteisölle {{organizationName}} on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}.'),
     ('varausvahvistus', 'Varausvahvistus: uuden laituripaikan varaaminen', E'Hyvä asiakas,\n\nSinulle on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}'),
     ('reservation_termination_notice_no_refund', 'Venepaikkasi on irtisanottu', E'Hei!,\n\nOlet sanonut irti venepaikkasi {{location}} {{place}}. Sinun on viipymättä poistettava veneesi paikalta.\n\nIrtisanotusta paikasta ei makseta hyvitystä.\n\nYstävällisin terveisin,\n\nMerellinen ulkoilu\nvenepaikat@espoo.fi\n\nTämä on automaattinen viesti, älä vastaa tähän viestiin.'),
-    ('reservation_termination_notice_to_employee', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.')
+    ('reservation_termination_notice_to_employee', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.'),
+    ('varausvahvistus', 'Varausvahvistus: uuden laituripaikan varaaminen', E'Hyvä asiakas,\n\nSinulle on varattu alla oleva venepaikka:\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}'),
+    ('boat_reservation_expiry_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nSinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}'),
+    ('boat_reservation_renew_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nVoit uusia venepaikkasi uusimalla sen omilta sivuiltasi.\n\nJos et uusi venepaikkaasi, sinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}')
 ON CONFLICT (id) DO NOTHING;
 
 

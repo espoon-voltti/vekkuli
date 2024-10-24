@@ -1,13 +1,11 @@
 package fi.espoo.vekkuli
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.SentMessageRepository
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -22,6 +20,9 @@ import kotlin.test.assertNotNull
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class TerminateReservationIntegrationTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var messageService: MessageService
+
     @MockBean lateinit var sendEmailInterfaceMock: SendEmailInterface
 
     @BeforeEach
@@ -37,6 +38,9 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var citizenService: CitizenService
+
+    @Autowired
+    lateinit var messageRepository: SentMessageRepository
 
     @Test
     fun `should terminate the reservation and set ending date to now`() {
@@ -59,7 +63,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
             )
 
         reservationService.reserveBoatSpace(
-            citizenId,
+            this.citizenIdLeo,
             ReserveBoatSpaceInput(
                 newReservation.id,
                 boatId = 0,
@@ -97,19 +101,14 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send email notice to person terminating the reservation`() {
-        val oliviaCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
-        val citizen = citizenService.getCitizen(oliviaCitizenId)
-        val reservation = createReservationInConfirmedState(timeProvider, reservationService, oliviaCitizenId, 1, 1)
+        val citizen = citizenService.getCitizen(this.citizenIdOlivia)
+        val reservation = createReservationInConfirmedState(timeProvider, reservationService, this.citizenIdOlivia, 1, 1)
 
         // Keep this here to make sure Citizen is present
         assertNotNull(citizen, "Citizen is not null")
         terminateService.terminateBoatSpaceReservation(reservation.id, citizen)
-
-        verify(sendEmailInterfaceMock).sendMultipleEmails(
-            any(),
-            eq(listOf("olivia@noreplytest.fi")),
-            any(),
-            any()
-        )
+        val sentEmails = messageRepository.getUnsentEmails()
+        assertEquals(1, sentEmails.size, "One email is to waiting to be sent")
+        assertEquals(citizen.email, sentEmails[0].recipientAddress, "Email is set to be sent to the citizen")
     }
 }

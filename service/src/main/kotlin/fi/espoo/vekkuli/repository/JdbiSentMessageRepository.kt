@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
-import fi.espoo.vekkuli.domain.SentMessage
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -18,7 +18,7 @@ class JdbiSentMessageRepository(
         recipients: List<Recipient>,
         subject: String,
         body: String,
-    ): List<SentMessage> =
+    ): List<QueuedMessage> =
         jdbi.withHandleUnchecked { handle ->
             val batch =
                 handle.prepareBatch(
@@ -41,14 +41,11 @@ class JdbiSentMessageRepository(
 
             batch
                 .executePreparedBatch()
-                .mapTo<SentMessage>()
+                .mapTo<QueuedMessage>()
                 .list()
         }
 
-    override fun setMessagesSent(
-        messageIds: List<UUID>,
-        providerId: String
-    ): List<SentMessage> =
+    override fun setMessagesSent(messageIds: List<Pair<UUID, String>>): List<QueuedMessage> =
         jdbi.withHandleUnchecked { handle ->
             val batch =
                 handle.prepareBatch(
@@ -62,27 +59,24 @@ class JdbiSentMessageRepository(
 
             messageIds.forEach { messageId ->
                 batch
-                    .bind("messageId", messageId)
-                    .bind("providerId", providerId)
+                    .bind("messageId", messageId.first)
+                    .bind("providerId", messageId.second)
                     .add()
             }
 
             batch
                 .executePreparedBatch()
-                .mapTo<SentMessage>()
+                .mapTo<QueuedMessage>()
                 .list()
         }
 
-    override fun setMessagesFailed(
-        messageIds: List<UUID>,
-        providerId: String
-    ): List<SentMessage> =
+    override fun setMessagesFailed(messageIds: List<UUID>): List<QueuedMessage> =
         jdbi.withHandleUnchecked { handle ->
             val batch =
                 handle.prepareBatch(
                     """
             UPDATE sent_message
-            SET status = 'Failed', sent_at = now(), provider_id = :providerId
+            SET status = 'Failed', sent_at = now()
             WHERE id = :messageId
             RETURNING *
             """
@@ -91,17 +85,16 @@ class JdbiSentMessageRepository(
             messageIds.forEach { messageId ->
                 batch
                     .bind("messageId", messageId)
-                    .bind("providerId", providerId)
                     .add()
             }
 
             batch
                 .executePreparedBatch()
-                .mapTo<SentMessage>()
+                .mapTo<QueuedMessage>()
                 .list()
         }
 
-    override fun getMessagesSentToUser(citizenId: UUID): List<SentMessage> =
+    override fun getMessagesSentToUser(citizenId: UUID): List<QueuedMessage> =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
@@ -112,7 +105,13 @@ class JdbiSentMessageRepository(
                     ORDER BY created DESC
                     """
                 ).bind("citizenId", citizenId)
-                .mapTo<SentMessage>()
+                .mapTo<QueuedMessage>()
                 .list()
         }
+
+    override fun getUnsentEmails(batchSize: Int): List<QueuedMessage> {
+        // set status to processing
+        // get batch size
+        TODO("Not yet implemented")
+    }
 }

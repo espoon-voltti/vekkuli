@@ -143,4 +143,6 @@ object BoatSpaceConfig {
         val (minLength, maxLength) = getLengthLimitsForBoat(space.length ?: 0, amenity)
         return boat.length == null || ((minLength == null || boat.length >= minLength) && (maxLength == null || boat.length <= maxLength))
     }
+
+    const val DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE = 30
 }

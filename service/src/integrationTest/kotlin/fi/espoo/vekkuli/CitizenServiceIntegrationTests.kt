@@ -24,9 +24,9 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should get correct citizen`() {
-        val citizen = citizenService.getCitizen(citizenId)
+        val citizen = citizenService.getCitizen(this.citizenIdLeo)
         assertNotNull(citizen, "Citizen is not null")
-        assertEquals(citizenId, citizen.id, "Citizen is correctly fetched")
+        assertEquals(this.citizenIdLeo, citizen.id, "Citizen is correctly fetched")
     }
 
     @Test
@@ -55,8 +55,8 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
         val updatedPhoneNumber = "123456789"
         val updatedEmail = "new@email.com"
         val updatedCitizen =
-            citizenService.updateCitizen(UpdateCitizenParams(id = citizenId, phone = updatedPhoneNumber, email = updatedEmail))
-        val citizen = citizenService.getCitizen(citizenId)
+            citizenService.updateCitizen(UpdateCitizenParams(id = this.citizenIdLeo, phone = updatedPhoneNumber, email = updatedEmail))
+        val citizen = citizenService.getCitizen(this.citizenIdLeo)
         assertNotNull(updatedCitizen)
         assertEquals(updatedPhoneNumber, citizen?.phone, "Citizen's phone is correctly updated")
         assertEquals(updatedEmail, citizen?.email, "Citizen's email is correctly updated")
@@ -67,7 +67,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
     fun `should update all citizen fields`() {
         val newCitizen =
             CitizenWithDetails(
-                id = citizenId,
+                id = this.citizenIdLeo,
                 firstName = "Testi",
                 lastName = "Testeri",
                 phone = "123456789",
@@ -84,7 +84,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
         val updatedCitizen =
             citizenService.updateCitizen(
                 UpdateCitizenParams(
-                    id = citizenId,
+                    id = this.citizenIdLeo,
                     phone = newCitizen.phone,
                     email = newCitizen.email,
                     firstName = newCitizen.firstName,
@@ -98,7 +98,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                     postOfficeSv = newCitizen.postOfficeSv
                 )
             )
-        val citizen = citizenService.getCitizen(citizenId)
+        val citizen = citizenService.getCitizen(this.citizenIdLeo)
         assertNotNull(updatedCitizen)
         assertEquals(newCitizen.municipalityName, citizen?.municipalityName, "Citizen's municipality is correctly updated")
         assertEquals(newCitizen, citizen, "Citizen is correctly updated")
@@ -109,7 +109,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
     fun `should update citizen multiple times`() {
         val newCitizen1 =
             CitizenWithDetails(
-                id = citizenId,
+                id = this.citizenIdLeo,
                 firstName = "Testi",
                 lastName = "Testeri",
                 phone = "123456789",
@@ -125,7 +125,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
             )
         citizenService.updateCitizen(
             UpdateCitizenParams(
-                id = citizenId,
+                id = this.citizenIdLeo,
                 phone = newCitizen1.phone,
                 email = newCitizen1.email,
                 firstName = newCitizen1.firstName,
@@ -148,7 +148,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
         val updatedCitizen2 =
             citizenService.updateCitizen(
                 UpdateCitizenParams(
-                    id = citizenId,
+                    id = this.citizenIdLeo,
                     phone = newCitizen2.phone,
                     email = newCitizen2.email,
                     firstName = newCitizen2.firstName,
@@ -163,7 +163,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        val citizen = citizenService.getCitizen(citizenId)
+        val citizen = citizenService.getCitizen(this.citizenIdLeo)
         assertNotNull(updatedCitizen2)
         assertEquals(newCitizen2.municipalityName, citizen?.municipalityName, "Citizen's municipality is correctly updated")
         assertEquals(updatedCitizen2.municipalityName, citizen?.municipalityName, "Updated citizen is correctly returned")
