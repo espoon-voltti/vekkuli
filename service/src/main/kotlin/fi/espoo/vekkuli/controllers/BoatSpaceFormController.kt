@@ -60,6 +60,138 @@ class BoatSpaceFormController(
     private val warnings: Warnings,
     private val timeProvider: TimeProvider
 ) {
+    @RequestMapping("/$USERTYPE/venepaikka/jatka-varausta/{reservationId}")
+    @ResponseBody
+    fun boatSpaceRenewForward(
+        @PathVariable usertype: String,
+        @PathVariable reservationId: Int,
+        @ModelAttribute formInput: ReservationInput,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ): ResponseEntity<String> {
+        val userType = UserType.fromPath(usertype)
+
+        val userId = if (userType == UserType.EMPLOYEE) getEmployee(request)?.id else getCitizen(request, citizenService)?.id
+        if (userId == null) throw UnauthorizedException()
+
+        val renewal =
+            if (userType == UserType.EMPLOYEE) {
+                reservationService.getRenewalReservationForEmployee(userId)
+            } else {
+                reservationService.getRenewalReservationForCitizen(userId)
+            }
+
+        val reservation = renewal ?: reservationService.createRenewalReservation(reservationId, userType, userId)
+        if (reservation == null) throw IllegalStateException("Reservation not found")
+
+        val headers = org.springframework.http.HttpHeaders()
+        headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/jatka/${reservation.id}"))
+        return ResponseEntity(headers, HttpStatus.FOUND)
+    }
+
+    @RequestMapping("/$USERTYPE/venepaikka/jatka/{renewalId}")
+    @ResponseBody
+    fun boatSpaceRenewPage(
+        @PathVariable usertype: String,
+        @PathVariable renewalId: Int,
+        @ModelAttribute formInput: ReservationInput,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ): ResponseEntity<String> {
+        val userType = UserType.fromPath(usertype)
+
+        val userId = if (userType == UserType.EMPLOYEE) getEmployee(request)?.id else getCitizen(request, citizenService)?.id
+        if (userId == null) throw UnauthorizedException()
+
+        val citizen =
+            if (userType == UserType.EMPLOYEE && formInput.citizenSelection != "newCitizen") {
+                formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
+            } else {
+                getCitizen(request, citizenService)
+            }
+
+        val reservation =
+            if (userType == UserType.EMPLOYEE) {
+                reservationService.getRenewalReservationForEmployee(userId)
+            } else {
+                reservationService.getRenewalReservationForCitizen(userId)
+            }
+
+        if (reservation == null) {
+            val headers = org.springframework.http.HttpHeaders()
+            headers.location = URI(getServiceUrl("/${userType.path}/venepaikat"))
+            return ResponseEntity(headers, HttpStatus.FOUND)
+        }
+
+        if (userType == UserType.CITIZEN && (citizen == null || reservation.reserverId != citizen.id)) {
+            throw UnauthorizedException()
+        }
+
+        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
+        if (usedBoatId != null && usedBoatId != 0) {
+            val boat = boatService.getBoat(usedBoatId)
+
+            if (boat != null) {
+                input =
+                    input.copy(
+                        boatId = boat.id,
+                        depth = boat.depthCm.cmToM(),
+                        boatName = boat.name,
+                        weight = boat.weightKg,
+                        width = boat.widthCm.cmToM(),
+                        length = boat.lengthCm.cmToM(),
+                        otherIdentification = boat.otherIdentification,
+                        extraInformation = boat.extraInformation,
+                        ownership = boat.ownership,
+                        boatType = boat.type,
+                        boatRegistrationNumber = boat.registrationCode,
+                        noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
+                    )
+            }
+        } else {
+            input = input.copy(boatId = 0)
+        }
+
+        val boatReserver = if (input.isOrganization == true) input.organizationId else citizen?.id
+
+        val boats =
+            boatReserver?.let {
+                boatService
+                    .getBoatsForReserver(boatReserver)
+                    .map { boat -> boat.updateBoatDisplayName(messageUtil) }
+            } ?: emptyList()
+
+        val municipalities = citizenService.getMunicipalities()
+        val bodyContent =
+            boatSpaceForm.boatSpaceRenewForm(
+                reservation,
+                boats,
+                citizen,
+                input,
+                getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDateTime()),
+                userType,
+                municipalities
+            )
+        val page =
+            if (userType == UserType.EMPLOYEE) {
+                employeeLayout.render(
+                    true,
+                    request.requestURI,
+                    bodyContent
+                )
+            } else {
+                layout.render(
+                    true,
+                    citizen?.fullName,
+                    request.requestURI,
+                    bodyContent
+                )
+            }
+
+        return ResponseEntity.ok(page)
+    }
+
     @RequestMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
     @ResponseBody
     fun boatSpaceFormPage(
@@ -477,40 +609,75 @@ class BoatSpaceFormController(
             }
         }
 
-        val reserveSlipResult = reservationService.canReserveANewSlip(reserverId)
+        val reservation = reservationService.getReservationWithReserver(reservationId)
+        if (reservation == null) {
+            return badRequest("Reservation not found")
+        }
 
-        val data =
-            if (reserveSlipResult is ReservationResult.Success) {
-                reserveSlipResult.data
-            } else {
-                val now = timeProvider.getCurrentDate()
-                ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
+        if (reservation.status == ReservationStatus.Renewal) {
+            val periods = reservationService.getReservationPeriods()
+            val result = reservationService.canRenewAReservation(periods, reservation.validity ?: ReservationValidity.FixedTerm)
+            if (result is ReservationResult.Success) {
+                reservationService.reserveBoatSpace(
+                    reserverId,
+                    ReserveBoatSpaceInput(
+                        reservationId = reservationId,
+                        boatId = input.boatId,
+                        boatType = input.boatType!!,
+                        width = input.width ?: 0.0,
+                        length = input.length ?: 0.0,
+                        depth = input.depth ?: 0.0,
+                        weight = input.weight,
+                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                        boatName = input.boatName ?: "",
+                        otherIdentification = input.otherIdentification ?: "",
+                        extraInformation = input.extraInformation ?: "",
+                        ownerShip = input.ownership!!,
+                        email = input.email!!,
+                        phone = input.phone!!,
+                    ),
+                    ReservationStatus.Payment,
+                    reservation.validity ?: ReservationValidity.FixedTerm,
+                    reservation.startDate,
+                    reservation.endDate
+                )
             }
+        } else {
+            val reserveSlipResult = reservationService.canReserveANewSlip(reserverId)
 
-        if (isEmployee || reserveSlipResult.success) {
-            reservationService.reserveBoatSpace(
-                reserverId,
-                ReserveBoatSpaceInput(
-                    reservationId = reservationId,
-                    boatId = input.boatId,
-                    boatType = input.boatType!!,
-                    width = input.width ?: 0.0,
-                    length = input.length ?: 0.0,
-                    depth = input.depth ?: 0.0,
-                    weight = input.weight,
-                    boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                    boatName = input.boatName ?: "",
-                    otherIdentification = input.otherIdentification ?: "",
-                    extraInformation = input.extraInformation ?: "",
-                    ownerShip = input.ownership!!,
-                    email = input.email!!,
-                    phone = input.phone!!,
-                ),
-                ReservationStatus.Payment,
-                data.reservationValidity,
-                data.startDate,
-                data.endDate
-            )
+            val data =
+                if (reserveSlipResult is ReservationResult.Success) {
+                    reserveSlipResult.data
+                } else {
+                    val now = timeProvider.getCurrentDate()
+                    ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
+                }
+
+            if (isEmployee || reserveSlipResult.success) {
+                reservationService.reserveBoatSpace(
+                    reserverId,
+                    ReserveBoatSpaceInput(
+                        reservationId = reservationId,
+                        boatId = input.boatId,
+                        boatType = input.boatType!!,
+                        width = input.width ?: 0.0,
+                        length = input.length ?: 0.0,
+                        depth = input.depth ?: 0.0,
+                        weight = input.weight,
+                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                        boatName = input.boatName ?: "",
+                        otherIdentification = input.otherIdentification ?: "",
+                        extraInformation = input.extraInformation ?: "",
+                        ownerShip = input.ownership!!,
+                        email = input.email!!,
+                        phone = input.phone!!,
+                    ),
+                    ReservationStatus.Payment,
+                    data.reservationValidity,
+                    data.startDate,
+                    data.endDate
+                )
+            }
         }
 
         if (isEmployee) {

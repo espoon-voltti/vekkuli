@@ -37,6 +37,12 @@ fun deleteAllOrganizationMembers(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllInvoices(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM invoice")
+    }
+}
+
 fun createReservationInConfirmedState(
     timeProvider: TimeProvider,
     reservationService: BoatReservationService,
@@ -77,6 +83,33 @@ fun createReservationInPaymentState(
     citizenId: UUID = reserverId,
     boatSpaceId: Int = 1,
     boatId: Int = 1
+): BoatSpaceReservation = createReservationWithBoat(reservationService, reserverId, citizenId, boatSpaceId, timeProvider, boatId)
+
+fun createReservationInPaymentState(
+    timeProvider: TimeProvider,
+    reservationService: BoatReservationService,
+    reserverId: UUID,
+    boatSpaceId: Int = 1,
+    boatId: Int = 1
+): BoatSpaceReservation = createReservationWithBoat(reservationService, reserverId, reserverId, boatSpaceId, timeProvider, boatId)
+
+fun createReservationInInvoiceState(
+    timeProvider: TimeProvider,
+    reservationService: BoatReservationService,
+    reserverId: UUID,
+    boatSpaceId: Int = 1,
+    boatId: Int = 1
+): BoatSpaceReservation =
+    createReservationWithBoat(reservationService, reserverId, reserverId, boatSpaceId, timeProvider, boatId, ReservationStatus.Invoiced)
+
+private fun createReservationWithBoat(
+    reservationService: BoatReservationService,
+    reserverId: UUID,
+    citizenId: UUID,
+    boatSpaceId: Int,
+    timeProvider: TimeProvider,
+    boatId: Int,
+    state: ReservationStatus = ReservationStatus.Payment,
 ): BoatSpaceReservation {
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
@@ -90,34 +123,7 @@ fun createReservationInPaymentState(
         madeReservation.id,
         boatId,
         reserverId,
-        ReservationStatus.Payment,
-        ReservationValidity.FixedTerm,
-        startDate = timeProvider.getCurrentDate(),
-        endDate = timeProvider.getCurrentDate().plusDays(365)
-    )
-    return madeReservation
-}
-
-fun createReservationInPaymentState(
-    timeProvider: TimeProvider,
-    reservationService: BoatReservationService,
-    reserverId: UUID,
-    boatSpaceId: Int = 1,
-    boatId: Int = 1
-): BoatSpaceReservation {
-    val madeReservation =
-        reservationService.insertBoatSpaceReservation(
-            reserverId,
-            reserverId,
-            boatSpaceId,
-            startDate = timeProvider.getCurrentDate(),
-            endDate = timeProvider.getCurrentDate().plusDays(365),
-        )
-    reservationService.updateBoatInBoatSpaceReservation(
-        madeReservation.id,
-        boatId,
-        reserverId,
-        ReservationStatus.Payment,
+        state,
         ReservationValidity.FixedTerm,
         startDate = timeProvider.getCurrentDate(),
         endDate = timeProvider.getCurrentDate().plusDays(365)

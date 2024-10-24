@@ -137,4 +137,6 @@ class CitizenDetailsPage(
         )
     val expiredReservationListLoader = getByDataTestId("expired-reservation-list-loader")
     val expiredReservationListAccordion = getByDataTestId("expired-reservation-list-accordion")
+
+    fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 }

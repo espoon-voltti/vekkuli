@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import java.time.LocalDate
 import java.util.*
@@ -14,6 +15,12 @@ interface BoatSpaceReservationRepository {
     fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies?
 
     fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies?
+
+    fun getRenewalReservationForCitizen(id: UUID): ReservationWithDependencies?
+
+    fun getRenewalReservationForEmployee(id: UUID): ReservationWithDependencies?
+
+    fun getReservationForRenewal(id: Int): ReservationWithDependencies?
 
     fun getReservationWithReserver(id: Int): ReservationWithDependencies?
 
@@ -34,6 +41,12 @@ interface BoatSpaceReservationRepository {
     fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem>
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace?
+
+    fun createRenewalRow(
+        reservationId: Int,
+        userType: UserType,
+        userId: UUID
+    ): Int
 
     fun insertBoatSpaceReservation(
         reserverId: UUID,
@@ -66,11 +79,7 @@ interface BoatSpaceReservationRepository {
 
     fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation
 
-    fun getReservationPeriods(
-        isEspooCitizen: Boolean,
-        boatSpaceType: BoatSpaceType,
-        operation: ReservationOperation
-    ): List<ReservationPeriod>
+    fun getReservationPeriods(): List<ReservationPeriod>
 
     fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
 }

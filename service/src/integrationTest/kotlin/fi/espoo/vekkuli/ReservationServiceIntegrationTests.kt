@@ -242,7 +242,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should handle payment result`() {
-        println(timeProvider.getCurrentDateTime())
         val madeReservation = createReservationInPaymentState(timeProvider, reservationService, citizenId)
 
         val payment =

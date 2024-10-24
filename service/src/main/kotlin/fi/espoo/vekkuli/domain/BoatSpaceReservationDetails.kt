@@ -43,7 +43,9 @@ data class BoatSpaceReservationDetails(
     val amenity: BoatSpaceAmenity,
     val validity: ReservationValidity,
     val warnings: Set<String> = emptySet(),
-    val excludedBoatTypes: List<BoatType>?
+    val excludedBoatTypes: List<BoatType>?,
+    val canSwitch: Boolean = false,
+    val canRenew: Boolean = false,
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()
@@ -59,6 +61,8 @@ data class BoatSpaceReservationDetails(
         get() = priceCents.centsToEuro()
     val alvPriceInEuro: Double
         get() = (priceCents - getPriceWithoutAlv(priceCents)).centsToEuro()
+    val alvPriceInCents: Int
+        get() = getPriceWithoutAlv(priceCents)
     val priceWithoutAlvInEuro: Double
         get() = getPriceWithoutAlv(priceCents).centsToEuro()
 
