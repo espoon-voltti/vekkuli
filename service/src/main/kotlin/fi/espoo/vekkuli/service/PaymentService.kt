@@ -24,10 +24,7 @@ class PaymentService(
         reservationId: Int
     ): Payment = paymentRepo.insertPayment(params, reservationId)
 
-    fun insertInvoicePayment(
-        params: CreateInvoiceParams,
-        reservationId: Int
-    ): Invoice = paymentRepo.insertInvoicePayment(params, reservationId)
+    fun insertInvoicePayment(params: CreateInvoiceParams): Invoice = paymentRepo.insertInvoicePayment(params)
 
     fun getInvoicePayment(stamp: UUID): Invoice? = paymentRepo.getInvoicePayment(stamp)
 
