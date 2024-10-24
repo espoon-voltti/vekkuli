@@ -3,12 +3,43 @@ package fi.espoo.vekkuli.citizen.details
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.pages.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.PaymentPage
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
+    @Test
+    fun `citizen can renew reservation`() {
+        try {
+            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 7, 12, 0, 0))
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            citizenDetails.renewReservationButton(1).click()
+
+            val formPage = BoatSpaceFormPage(page)
+            formPage.certifyInfoCheckbox.check()
+            formPage.agreementCheckbox.check()
+            formPage.submitButton.click()
+
+            // assert that payment title is shown
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentPageTitle).hasCount(1)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
     @Test
     fun `citizen can edit their own information`() {
         try {

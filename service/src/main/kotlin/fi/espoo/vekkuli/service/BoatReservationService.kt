@@ -293,7 +293,6 @@ class BoatReservationService(
         userId: UUID
     ): ReservationWithDependencies? {
         val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, userType, userId)
-        println("newId: $newId")
         return getReservationWithReserver(newId)
     }
 

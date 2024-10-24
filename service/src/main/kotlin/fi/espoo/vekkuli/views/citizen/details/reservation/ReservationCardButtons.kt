@@ -34,6 +34,7 @@ class ReservationCardButtons : BaseView() {
                 """
                 <button 
                   class="button is-primary"
+                  id="renew-place-button-${reservation.id}"
                   hx-get="/kuntalainen/venepaikka/jatka-varausta/${reservation.id}"
                   hx-target="body"
                   hx-push-url="true">
