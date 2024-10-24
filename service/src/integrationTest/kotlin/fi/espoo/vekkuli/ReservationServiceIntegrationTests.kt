@@ -615,7 +615,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 reservationService,
                 this.citizenIdLeo,
                 1,
-                1
+                1,
             )
         val citizen = citizenService.getCitizen(this.citizenIdLeo)
         // Keep this here to make sure Citizen is present
@@ -633,7 +633,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should return correct amount of expiring reservations`() {
+    fun `should return correct amount of expiring fixed term reservations`() {
         val madeReservation =
             createReservationInConfirmedState(
                 timeProvider,
@@ -665,6 +665,46 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         )
 
         val reservations = reservationService.getExpiringFixedTermBoatSpaceReservations()
+        assertEquals(2, reservations.size)
+        assertEquals(listOf(madeReservation.id, madeReservation2.id).sorted(), reservations.map { it.id }.sorted())
+    }
+
+    @Test
+    fun `should return correct amount of expiring indefinite reservations`() {
+        val madeReservation =
+            createReservationInConfirmedState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo,
+                1,
+                1,
+                ReservationValidity.Indefinite
+            )
+        val madeReservation2 =
+            createReservationInConfirmedState(
+                timeProvider,
+                reservationService,
+                this.citizenIdOlivia,
+                2,
+                3,
+                ReservationValidity.Indefinite
+            )
+
+        // mock time to be 20 days before the end date
+        mockTimeProvider(
+            timeProvider,
+            madeReservation.endDate.minusDays(20).atStartOfDay()
+        )
+        createReservationInConfirmedState(
+            timeProvider,
+            reservationService,
+            this.citizenIdMikko,
+            3,
+            2,
+            ReservationValidity.Indefinite
+        )
+
+        val reservations = reservationService.getExpiringIndefiniteBoatSpaceReservations()
         assertEquals(2, reservations.size)
         assertEquals(listOf(madeReservation.id, madeReservation2.id).sorted(), reservations.map { it.id }.sorted())
     }
