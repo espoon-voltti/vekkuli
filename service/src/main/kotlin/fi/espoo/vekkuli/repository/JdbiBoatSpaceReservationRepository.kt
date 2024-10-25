@@ -687,12 +687,21 @@ class JdbiBoatSpaceReservationRepository(
         }
 
     override fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation =
+        setReservationStatus(reservationId, ReservationStatus.Payment)
+
+    override fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
+        setReservationStatus(reservationId, ReservationStatus.Invoiced)
+
+    private fun setReservationStatus(
+        reservationId: Int,
+        status: ReservationStatus
+    ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = 'Payment', updated = :updatedTime
+                    SET status = :reservationStatus, updated = :updatedTime
                     WHERE id = :reservationId
                         AND status = 'Payment'
                         AND created > :currentTime - make_interval(secs => :paymentTimeout)
@@ -700,6 +709,8 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
+
+            query.bind("reservationStatus", status)
             query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())

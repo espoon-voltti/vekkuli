@@ -2,13 +2,15 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.InvoiceRow
-import fi.espoo.vekkuli.views.employee.SendInvoice
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import java.time.LocalDate
@@ -16,7 +18,7 @@ import java.time.LocalDate
 @Controller
 class InvoiceController(
     private val employeeLayout: EmployeeLayout,
-    private val sendInvoiceView: SendInvoice,
+    private val sendInvoiceView: InvoicePreview,
     private val reservationService: BoatReservationService,
 ) {
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
@@ -32,6 +34,7 @@ class InvoiceController(
 
         val model =
             SendInvoiceModel(
+                reservationId = reservationId,
                 reserverName = reservation.name ?: "",
                 reserverSsn = "",
                 reserverAddress = "Testikatu 1",
@@ -61,5 +64,17 @@ class InvoiceController(
         val content = sendInvoiceView.render(model)
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
+    }
+
+    @PostMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
+    fun sendInvoice(
+        @PathVariable reservationId: Int,
+    ): ResponseEntity<String> {
+        // send the invoice, update reservation status
+        reservationService.sendInvoiceForReservations(reservationId)
+        return ResponseEntity
+            .status(HttpStatus.FOUND)
+            .header("Location", "/virkailija/venepaikat/varaukset")
+            .body("")
     }
 }

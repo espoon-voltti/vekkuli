@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 data class SendInvoiceModel(
+    val reservationId: Int,
     val reserverName: String,
     val reserverSsn: String,
     val reserverAddress: String,
@@ -32,7 +33,7 @@ data class InvoiceRow(
 )
 
 @Service
-class SendInvoice : BaseView() {
+class InvoicePreview : BaseView() {
     fun render(model: SendInvoiceModel): String {
         println("")
         // language=HTML
@@ -40,7 +41,7 @@ class SendInvoice : BaseView() {
             <section class="section">
             
             <div class="container">
-                <h2 class="title pb-l">Laskuluonnos</h2>
+                <h2 class="title pb-l" id="invoice-preview-header">Laskuluonnos</h2>
                 
                 <h3 class="subtitle">Varaajan tiedot</h3>
                 ${invoiceLine("Varaaja", model.reserverName)}
@@ -88,7 +89,10 @@ class SendInvoice : BaseView() {
                         </button>
                         <button id="submit"
                             class="button is-primary"
-                            type="submit">
+                            type="submit"
+                            hx-post="/virkailija/venepaikka/varaus/${model.reservationId}/lasku"
+                            hx-target="body"
+                            >
                             Lähetä lasku
                         </button>
                     </div>
