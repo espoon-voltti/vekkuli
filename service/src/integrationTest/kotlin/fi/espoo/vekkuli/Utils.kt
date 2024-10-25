@@ -46,6 +46,7 @@ fun deleteAllInvoices(jdbi: Jdbi) {
 fun deleteAllEmails(jdbi: Jdbi) {
     jdbi.withHandleUnchecked { handle ->
         handle.execute("DELETE FROM sent_message")
+        handle.execute("DELETE FROM processed_message")
     }
 }
 

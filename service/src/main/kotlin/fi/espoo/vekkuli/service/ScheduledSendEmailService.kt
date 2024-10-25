@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.Recipient
+import fi.espoo.vekkuli.domain.ReservationType
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.ses.model.*
@@ -16,6 +17,7 @@ class ScheduledSendEmailService(
     @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     fun sendReservationRenewReminderEmails() {
         val expiringIndefiniteReservations = reservationService.getExpiringIndefiniteBoatSpaceReservations()
+
         expiringIndefiniteReservations.forEach { reservation ->
             val recipients = listOf(Recipient(reservation.reserverId, reservation.email))
             val sender = emailEnv.senderAddress
@@ -24,6 +26,9 @@ class ScheduledSendEmailService(
                 null,
                 sender,
                 recipients,
+                ReservationType.Marine,
+                reservation.id,
+                "renew",
                 mapOf(
                     "name" to "${reservation.locationName} ${reservation.place}",
                     "endDate" to reservation.endDate,
@@ -44,6 +49,9 @@ class ScheduledSendEmailService(
                 null,
                 sender,
                 recipients,
+                ReservationType.Marine,
+                reservation.id,
+                "expiry",
                 mapOf(
                     "name" to "${reservation.locationName} ${reservation.place}",
                     "endDate" to reservation.endDate,

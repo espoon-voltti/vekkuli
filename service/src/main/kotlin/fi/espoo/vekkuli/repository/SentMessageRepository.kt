@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
+import fi.espoo.vekkuli.domain.ReservationType
 import java.util.*
 
 interface SentMessageRepository {
@@ -21,4 +22,11 @@ interface SentMessageRepository {
 
     /** Get all unsent messages in batches and set their status to processing **/
     fun getUnsentEmails(batchSize: Int = 10): List<QueuedMessage>
+
+    fun getAndInsertUnsentEmails(
+        reservationType: ReservationType,
+        reservationId: Int,
+        source: String,
+        recipientEmails: List<String>
+    ): List<String>
 }

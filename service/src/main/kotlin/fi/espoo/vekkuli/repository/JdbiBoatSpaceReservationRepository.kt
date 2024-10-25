@@ -713,7 +713,7 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     ${getBoatSpaceReservation()}
                     WHERE status = 'Confirmed' AND validity = :validity
-                        AND end_date < :endDateCut
+                        AND end_date < :endDateCut AND end_date > :currentTime
                     """.trimIndent()
                 )
             query.bind("validity", validity)
@@ -721,6 +721,7 @@ class JdbiBoatSpaceReservationRepository(
                 "endDateCut",
                 timeProvider.getCurrentDate().plusDays(BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())
             )
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
