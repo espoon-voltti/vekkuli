@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -44,7 +43,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 citizenId
             )
         val invoiceBatchParameters =
-            boatSpaceInvoiceService.createInvoice(
+            boatSpaceInvoiceService.createInvoiceBatchParameters(
                 madeReservation.id,
                 citizenId
             )

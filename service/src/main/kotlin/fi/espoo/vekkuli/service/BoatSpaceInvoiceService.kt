@@ -31,7 +31,7 @@ class BoatSpaceInvoiceService(
         )
     }
 
-    fun createInvoice(
+    fun createInvoiceBatchParameters(
         reservationId: Int,
         citizenId: UUID,
     ): InvoiceBatchParameters? {

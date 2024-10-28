@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.InvoiceRow
@@ -20,6 +21,7 @@ class InvoiceController(
     private val employeeLayout: EmployeeLayout,
     private val sendInvoiceView: InvoicePreview,
     private val reservationService: BoatReservationService,
+    private val invoiceService: BoatSpaceInvoiceService,
 ) {
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     @ResponseBody
@@ -28,36 +30,48 @@ class InvoiceController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val reservation = reservationService.getReservationWithReserver(reservationId)
-        if (reservation == null) {
+        if (reservation == null || reservation.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
+        val invoiceBatch = invoiceService.createInvoiceBatchParameters(reservationId, reservation.reserverId)
+        val invoice = invoiceBatch?.invoices?.first()
+        val invoiceRow =
+            invoiceBatch
+                ?.invoices
+                ?.first()
+                ?.rows
+                ?.first()
+        val recipient = invoice?.recipient
+        val recipientAddress = recipient?.address
+
+        val recipientName = "${recipient?.firstName} ${recipient?.lastName}"
 
         val model =
             SendInvoiceModel(
                 reservationId = reservationId,
-                reserverName = reservation.name ?: "",
-                reserverSsn = "",
-                reserverAddress = "Testikatu 1",
+                reserverName = recipientName,
+                reserverSsn = recipient?.ssn ?: "",
+                reserverAddress = "${recipientAddress?.street} ${recipientAddress?.postalCode} ${recipientAddress?.postOffice}",
                 product = reservation.locationName,
-                functionInformation = "Testitieto",
-                billingPeriodStart = LocalDate.of(2021, 1, 1),
-                billingPeriodEnd = LocalDate.of(2021, 12, 31),
-                boatingSeasonStart = LocalDate.of(2021, 5, 1),
-                boatingSeasonEnd = LocalDate.of(2021, 9, 30),
-                invoiceNumber = "123456",
-                dueDate = LocalDate.of(2021, 12, 31),
-                costCenter = "123456",
-                invoiceType = "Testilasku",
+                functionInformation = "?",
+                billingPeriodStart = LocalDate.of(2025, 1, 1),
+                billingPeriodEnd = LocalDate.of(2025, 12, 31),
+                boatingSeasonStart = LocalDate.of(2025, 5, 1),
+                boatingSeasonEnd = LocalDate.of(2025, 9, 30),
+                invoiceNumber = invoice?.invoiceNumber.toString() ?: "",
+                dueDate = LocalDate.of(2025, 12, 31),
+                costCenter = "?",
+                invoiceType = "?",
                 invoiceRows =
                     listOf(
                         InvoiceRow(
-                            description = "Venepaikka, ${reservation.locationName} ${reservation.section} ${reservation.placeNumber}, 2025",
-                            customer = reservation.name ?: "",
+                            description = invoiceRow?.description ?: "",
+                            customer = recipientName,
                             priceWithoutVat = reservation.priceWithoutAlvInEuro.toString(),
                             vat = reservation.alvPriceInEuro.toString(),
                             priceWithVat = reservation.priceInEuro.toString(),
                             organization = "Merellinen ulkoilu",
-                            paymentDate = LocalDate.of(2021, 1, 1)
+                            paymentDate = LocalDate.of(2025, 1, 1)
                         )
                     )
             )
