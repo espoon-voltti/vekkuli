@@ -14,6 +14,7 @@ data class RawReportRow(
     val amenity: String = "",
     val widthCm: Int,
     val lengthCm: Int,
+    val description: String = "",
     // BoatSpaceReservation fields
     val reservationId: Int,
     val startDate: String = "",
@@ -44,6 +45,7 @@ fun getRawReport(jdbi: Jdbi): List<RawReportRow> {
                 bs.amenity,
                 bs.width_cm,
                 bs.length_cm,
+                bs.description,
                 bsr.id AS reservation_id,
                 bsr.start_date,
                 bsr.end_date,
