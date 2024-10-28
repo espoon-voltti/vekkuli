@@ -34,6 +34,8 @@ COPY . .
 
 RUN ./gradlew compileSass
 
+RUN ./gradlew bundleJs
+
 # --offline is used to be sure that all dependencies are installed in previous steps
 RUN ./gradlew --offline --no-daemon ktlintCheck
 RUN ./gradlew --offline --no-daemon assemble  \

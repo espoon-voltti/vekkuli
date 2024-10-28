@@ -160,9 +160,15 @@ tasks.register("compileSass", NpxTask::class) {
     args = listOf("--load-path=node_modules", "src/main/resources/public/static/sass:src/main/resources/public/static/css")
 }
 
+tasks.register("bundleJs", NpxTask::class) {
+    dependsOn("npmInstall")
+    command = "webpack"
+    args = listOf("--config", "webpack.config.js") // Optional: specify config path if needed
+}
+
 tasks {
     bootRun {
-        dependsOn("compileSass")
+        dependsOn("compileSass", "bundleJs")
         systemProperty("spring.profiles.active", "local")
     }
 
