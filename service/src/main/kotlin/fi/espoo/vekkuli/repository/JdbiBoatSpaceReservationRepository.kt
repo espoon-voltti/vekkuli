@@ -3,9 +3,8 @@ package fi.espoo.vekkuli.repository
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.utils.AndExpr
-import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
-import fi.espoo.vekkuli.utils.InExpr
+import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
+import fi.espoo.vekkuli.utils.SqlExpr
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -460,104 +459,66 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpace>().findOne().orElse(null)
         }
 
-    override fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> =
-        jdbi.withHandleUnchecked { handle ->
-
-            var statusFilter =
-                params.payment
-                    .map {
-                        when (it) {
-                            PaymentFilter.PAID -> listOf("Confirmed")
-                            PaymentFilter.UNPAID -> listOf("Payment", "Invoiced")
-                        }
-                    }.flatten()
-
-            if (statusFilter.isEmpty()) {
-                statusFilter = listOf("Confirmed", "Payment", "Invoiced")
-            }
-
-            val nameSearch = buildNameSearchClause(params.nameSearch)
-
-            val warningFilter =
-                if (params.warningFilter == true) {
-                    "rw.key IS NOT NULL"
-                } else {
-                    "true"
-                }
-
-            val filter =
-                AndExpr(
-                    listOf(
-                        InExpr("bs.location_id", params.harbor),
-                        InExpr("bs.amenity", params.amenity) { "'$it'" },
-                        InExpr("bsr.status", statusFilter) { "'$it'" },
-                        InExpr("bs.section", params.sectionFilter) { "'$it'" }
-                    )
+    override fun getBoatSpaceReservations(
+        filter: SqlExpr,
+        sortBy: BoatSpaceReservationSortBy?
+    ) = jdbi.withHandleUnchecked { handle ->
+        val filterQuery = filter.toSql()
+        val sortByQuery = sortBy?.apply()?.takeIf { it.isNotEmpty() } ?: ""
+        val query =
+            handle.createQuery(
+                """
+                SELECT bsr.*, r.email, r.phone, r.type as reserver_type, r.name,
+                    r.municipality_code,
+                    b.registration_code as boat_registration_code,
+                    b.ownership as boat_ownership,
+                    location.name as location_name, 
+                    bs.type, CONCAT(bs.section, bs.place_number) as place,
+                    rw.key as warning,
+                    bs.section,
+                    m.name as municipality_name
+                FROM boat_space_reservation bsr
+                JOIN boat b on b.id = bsr.boat_id
+                JOIN reserver r ON bsr.reserver_id = r.id
+                JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                JOIN location ON location_id = location.id
+                JOIN municipality m ON r.municipality_code = m.code
+                LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
+                WHERE $filterQuery
+                $sortByQuery
+                """.trimIndent()
+            )
+        filter.bind(query)
+        query
+            .mapTo<BoatSpaceReservationItemWithWarning>()
+            .list()
+            .groupBy { it.id }
+            .map { (id, warnings) ->
+                val row = warnings.first()
+                BoatSpaceReservationItem(
+                    id = id,
+                    boatSpaceId = row.boatSpaceId,
+                    startDate = row.startDate,
+                    endDate = row.endDate,
+                    status = row.status,
+                    reserverId = row.reserverId,
+                    name = row.name,
+                    email = row.email,
+                    phone = row.phone,
+                    type = row.type,
+                    place = row.place,
+                    section = row.section,
+                    locationName = row.locationName,
+                    boatRegistrationCode = row.boatRegistrationCode,
+                    boatOwnership = row.boatOwnership,
+                    warnings = (warnings.mapNotNull { it.warning }).toSet(),
+                    actingUserId = null,
+                    reserverType = row.reserverType,
+                    municipalityCode = row.municipalityCode,
+                    municipalityName = row.municipalityName,
                 )
-
-            val query =
-                handle.createQuery(
-                    """
-                    SELECT bsr.*, r.email, r.phone, r.type as reserver_type, r.name,
-                        r.municipality_code,
-                        b.registration_code as boat_registration_code,
-                        b.ownership as boat_ownership,
-                        location.name as location_name, 
-                        bs.type, CONCAT(bs.section, bs.place_number) as place,
-                        rw.key as warning,
-                        bs.section,
-                        m.name as municipality_name
-                    FROM boat_space_reservation bsr
-                    JOIN boat b on b.id = bsr.boat_id
-                    JOIN reserver r ON bsr.reserver_id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN municipality m ON r.municipality_code = m.code
-                    LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
-                    WHERE
-                        (bsr.status = 'Confirmed' OR bsr.status = 'Payment' OR bsr.status = 'Invoiced')
-                        AND $nameSearch
-                        AND $warningFilter
-                        AND ${filter.toSql().ifBlank { "true" }}
-                    ${getSortingSql(params)}
-                    """.trimIndent()
-                )
-
-            if (!params.nameSearch.isNullOrBlank()) {
-                query.bind("nameSearch", params.nameSearch.trim())
             }
-
-            filter.bind(query)
-            query
-                .mapTo<BoatSpaceReservationItemWithWarning>()
-                .list()
-                .groupBy { it.id }
-                .map { (id, warnings) ->
-                    val row = warnings.first()
-                    BoatSpaceReservationItem(
-                        id = id,
-                        boatSpaceId = row.boatSpaceId,
-                        startDate = row.startDate,
-                        endDate = row.endDate,
-                        status = row.status,
-                        reserverId = row.reserverId,
-                        name = row.name,
-                        email = row.email,
-                        phone = row.phone,
-                        type = row.type,
-                        place = row.place,
-                        section = row.section,
-                        locationName = row.locationName,
-                        boatRegistrationCode = row.boatRegistrationCode,
-                        boatOwnership = row.boatOwnership,
-                        warnings = (warnings.mapNotNull { it.warning }).toSet(),
-                        actingUserId = null,
-                        reserverType = row.reserverType,
-                        municipalityCode = row.municipalityCode,
-                        municipalityName = row.municipalityName,
-                    )
-                }
-        }
+    }
 
     override fun createRenewalRow(
         reservationId: Int,
