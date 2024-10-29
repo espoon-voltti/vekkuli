@@ -450,7 +450,7 @@ class CitizenDetails(
 
     fun messageTabContent(
         citizen: CitizenWithDetails,
-        messages: List<SentMessage>,
+        messages: List<QueuedMessage>,
     ): String {
         val messageHtml =
             messages.joinToString("\n") { message ->

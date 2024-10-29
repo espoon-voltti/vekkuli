@@ -1,9 +1,13 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
-import fi.espoo.vekkuli.domain.SentMessage
+import fi.espoo.vekkuli.domain.ReservationType
 import fi.espoo.vekkuli.repository.SentMessageRepository
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 interface MessageServiceInterface {
@@ -13,13 +17,20 @@ interface MessageServiceInterface {
         recipients: List<Recipient>,
         subject: String,
         body: String,
-    ): List<SentMessage>
+    ): List<QueuedMessage>
+
+    fun getAndInsertUnsentEmails(
+        reservationType: ReservationType,
+        reservationId: Int,
+        source: String,
+        recipientEmails: List<String>
+    ): List<String>
 }
 
 @Service
 class MessageService(
     private val messageRepository: SentMessageRepository,
-    private val sendEmailService: SendEmailInterface,
+    private val sendEmailService: SendEmailInterface
 ) : MessageServiceInterface {
     override fun sendEmails(
         // Who initiated the sending of the email (null if automated)
@@ -32,12 +43,43 @@ class MessageService(
         subject: String,
         // Email message body
         body: String,
-    ): List<SentMessage> {
+    ): List<QueuedMessage> {
         val msg = messageRepository.addSentEmails(userId, senderAddress, recipients, subject, body)
-        val messageId = sendEmailService.sendMultipleEmails(senderAddress, recipients.map { it.email }, subject, body)
-        if (messageId == null) {
-            return messageRepository.setMessagesFailed(msg.map { it.id }, "Failed to send email")
+        return msg
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    override fun getAndInsertUnsentEmails(
+        reservationType: ReservationType,
+        reservationId: Int,
+        source: String,
+        recipientEmails: List<String>
+    ): List<String> = messageRepository.getAndInsertUnsentEmails(reservationType, reservationId, source, recipientEmails)
+
+    @Scheduled(fixedRate = 60000)
+    fun sendScheduledEmails() {
+        val unsentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
+
+        val failedMessageIds = mutableListOf<UUID>()
+        val sentMessageIds = mutableListOf<Pair<UUID, String>>()
+        unsentEmails.forEach {
+            // Send email
+            var providerId =
+                sendEmailService.sendEmail(
+                    it.senderAddress,
+                    it.recipientAddress,
+                    it.subject,
+                    it.body
+                )
+            if (providerId == null) {
+                failedMessageIds.add(it.id)
+            } else {
+                sentMessageIds.add(Pair(it.id, providerId))
+            }
+
+            messageRepository.setMessagesFailed(failedMessageIds)
+
+            messageRepository.setMessagesSent(sentMessageIds)
         }
-        return messageRepository.setMessagesSent(msg.map { it.id }, messageId)
     }
 }
