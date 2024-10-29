@@ -49,7 +49,7 @@ class AndExpr(
     }
 }
 
-class OperatorExpr(
+open class OperatorExpr(
     private val columnName: String,
     private val operator: String,
     private val value: Any?
@@ -69,24 +69,39 @@ class OperatorExpr(
     }
 }
 
-data class InExpr<T>(
+open class InExpr<T>(
     private val columnName: String,
     private val data: List<T>,
-    private val convert: (v: T) -> String = fun (v) = v.toString(),
+    private val convert: (v: T) -> Any = { v -> v as Any },
 ) : SqlExpr() {
+    private lateinit var names: List<String>
+
     override fun toSql(): String =
         if (data.isNotEmpty()) {
-            "$columnName IN (${data.map { convert(it) }.joinToString(", ")})"
+            names = data.indices.map { "in_${columnName}_${getNextIndex()}" }
+            "$columnName IN (${names.joinToString(", ") {":$it"}})"
         } else {
             ""
         }
 
     override fun bind(query: Query) {
+        data.forEachIndexed { index, item ->
+            query.bind(names[index], convert(item))
+        }
     }
 }
 
 class EmptyExpr : SqlExpr() {
     override fun toSql(): String = ""
+
+    override fun bind(query: Query) {
+    }
+}
+
+open class ExecuteExpr(
+    private val query: String,
+) : SqlExpr() {
+    override fun toSql(): String = query
 
     override fun bind(query: Query) {
     }
