@@ -4,22 +4,19 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.components.WarningBox
 import fi.espoo.vekkuli.views.components.modal.*
 import fi.espoo.vekkuli.views.employee.SanitizeInput
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class ReservationList : BaseView() {
-    @Autowired
-    lateinit var icons: Icons
-
-    @Autowired private lateinit var cardHeading: ReservationCardHeading
-
-    @Autowired private lateinit var cardInfo: ReservationCardInformation
-
-    @Autowired private lateinit var cardButtons: ReservationCardButtons
-
+class ReservationList(
+    private val icons: Icons,
+    private val cardHeading: ReservationCardHeading,
+    private val cardInfo: ReservationCardInformation,
+    private val cardButtons: ReservationCardButtons,
+    private val warningBox: WarningBox,
+) : BaseView() {
     fun render(
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
@@ -35,17 +32,16 @@ class ReservationList : BaseView() {
     fun createReservationCards(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
         citizen: CitizenWithDetails
-    ): String {
-        return boatSpaceReservations.joinToString("\n") {
-                // language=HTML
-                reservation ->
+    ): String =
+        boatSpaceReservations.joinToString("\n") { reservation ->
+            // language=HTML
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
                 ${cardInfo.render(reservation)}
+                ${if (reservation.canRenew) warningBox.render(t("reservationWarning.renewInfo")) else ""}
                 ${cardButtons.render(reservation, citizen)}
             </div>
             """.trimIndent()
         }
-    }
 }
