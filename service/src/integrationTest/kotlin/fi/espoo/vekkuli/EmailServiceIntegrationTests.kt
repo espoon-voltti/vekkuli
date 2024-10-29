@@ -98,9 +98,6 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
                     )
                 )
             ),
-            eq(ReservationType.Marine),
-            eq(madeReservation.id),
-            any(),
             any()
         )
     }
