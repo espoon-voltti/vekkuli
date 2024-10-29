@@ -297,7 +297,6 @@ class BoatReservationService(
         userId: UUID
     ): ReservationWithDependencies? {
         val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, userType, userId)
-        println("newId $newId")
         return getReservationWithReserver(newId)
     }
 
@@ -364,7 +363,6 @@ class BoatReservationService(
             UpdateCitizenParams(id = reserverId, phone = input.phone ?: "", email = input.email ?: "")
         )
 
-        println("updateBoatInBoatSpaceReservation")
         val reservation =
             boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
                 input.reservationId,
@@ -603,7 +601,6 @@ class BoatReservationService(
         oldValidity: ReservationValidity,
         oldEndDate: LocalDate,
     ): ReservationResult {
-        println("canRenew($oldValidity, $oldEndDate)")
         if (oldValidity == ReservationValidity.FixedTerm) {
             // Fixed term reservations cannot be renewed
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
@@ -611,7 +608,6 @@ class BoatReservationService(
 
         val now = timeProvider.getCurrentDate()
 
-        println("now $now")
         if (now.isBefore(oldEndDate.minusDays(30)) || now.isAfter(oldEndDate)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
@@ -624,7 +620,6 @@ class BoatReservationService(
                 BoatSpaceType.Slip,
                 ReservationOperation.Renew
             )
-        println("hasActivePeriod $hasActivePeriod")
 
         if (!hasActivePeriod) {
             // If no period found, reservation is not possible

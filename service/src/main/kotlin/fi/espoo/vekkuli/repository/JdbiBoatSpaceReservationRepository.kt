@@ -584,7 +584,6 @@ class JdbiBoatSpaceReservationRepository(
         endDate: LocalDate,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
-            println("Updating reservation $reservationId. Status $reservationStatus, start $startDate, end $endDate")
             val query =
                 handle.createQuery(
                     """
