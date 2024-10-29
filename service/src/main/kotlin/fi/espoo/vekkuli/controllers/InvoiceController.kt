@@ -46,6 +46,7 @@ class InvoiceController(
 
         val recipientName = "${recipient?.firstName} ${recipient?.lastName}"
 
+        // TODO: get the actual data
         val model =
             SendInvoiceModel(
                 reservationId = reservationId,
