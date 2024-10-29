@@ -108,7 +108,7 @@ class InvoicePreview : BaseView() {
         value: String
     ) = """
         <div class="block">
-            <span style="display:inline-block; width: 250px">$name:</span><span>$value</span>
+            <span class="invoice-line">$name:</span><span>$value</span>
         </div>
         """.trimIndent()
 
