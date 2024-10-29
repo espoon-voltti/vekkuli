@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.domain.MemoCategory
+import fi.espoo.vekkuli.domain.ReservationType
 import fi.espoo.vekkuli.domain.ReserverMemo
 import fi.espoo.vekkuli.domain.ReserverMemoWithDetails
 import org.jdbi.v3.core.Jdbi
@@ -15,7 +15,7 @@ class JdbiMemoRepository(
 ) : MemoRepository {
     override fun getMemos(
         reserverId: UUID,
-        category: MemoCategory
+        category: ReservationType
     ): List<ReserverMemoWithDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -86,7 +86,7 @@ class JdbiMemoRepository(
     override fun insertMemo(
         reserverId: UUID,
         userId: UUID,
-        category: MemoCategory,
+        category: ReservationType,
         content: String
     ): ReserverMemo =
         jdbi.withHandleUnchecked { handle ->

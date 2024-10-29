@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.domain.MemoCategory
+import fi.espoo.vekkuli.domain.ReservationType
 import fi.espoo.vekkuli.domain.ReserverMemoWithDetails
 import fi.espoo.vekkuli.repository.MemoRepository
 import org.springframework.stereotype.Service
@@ -12,7 +12,7 @@ class MemoService(
 ) {
     fun getMemos(
         reserverId: UUID,
-        category: MemoCategory
+        category: ReservationType
     ): List<ReserverMemoWithDetails> = memoRepository.getMemos(reserverId, category)
 
     fun getMemo(id: Int): ReserverMemoWithDetails? = memoRepository.getMemo(id)
@@ -29,7 +29,7 @@ class MemoService(
     fun insertMemo(
         reserverId: UUID,
         userId: UUID,
-        category: MemoCategory,
+        category: ReservationType,
         content: String
     ): ReserverMemoWithDetails? {
         val memo = memoRepository.insertMemo(reserverId, userId, category, content)

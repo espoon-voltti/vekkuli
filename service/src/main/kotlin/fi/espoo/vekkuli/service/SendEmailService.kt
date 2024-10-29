@@ -10,9 +10,9 @@ import software.amazon.awssdk.services.ses.model.*
 import java.util.*
 
 interface SendEmailInterface {
-    fun sendMultipleEmails(
+    fun sendEmail(
         senderAddress: String?,
-        emailAddresses: List<String>,
+        emailAddress: String,
         subject: String,
         body: String
     ): String?
@@ -21,14 +21,14 @@ interface SendEmailInterface {
 @Service
 @Profile("test")
 class SendEmailServiceMock : SendEmailInterface {
-    override fun sendMultipleEmails(
+    override fun sendEmail(
         senderAddress: String?,
-        emailAddresses: List<String>,
+        emailAddress: String,
         subject: String,
         body: String
     ): String? {
         println(
-            "Email from $senderAddress to ${emailAddresses.joinToString { ", " }} with subject $subject and content $body"
+            "Email from $senderAddress to $emailAddress with subject $subject and content $body"
         )
         return "Test-${UUID.randomUUID()}"
     }
@@ -42,26 +42,23 @@ class SendEmailService(
 ) : SendEmailInterface {
     private val logger = LoggerFactory.getLogger(CitizenUserController::class.java)
 
-    override fun sendMultipleEmails(
+    override fun sendEmail(
         senderAddress: String?,
-        emailAddresses: List<String>,
+        emailAddress: String,
         subject: String,
         body: String
     ): String? {
-        if (emailAddresses.isEmpty()) return null
-        val uniqueEmails = emailAddresses.distinct()
         if (!emailEnv.enabled) {
             println(
                 "Email from $senderAddress (arn ${emailEnv.senderArn}, " +
-                    "region ${emailEnv.region}) to ${uniqueEmails.joinToString { ", " }} with subject $subject and content $body"
+                    "region ${emailEnv.region}) to $emailAddress with subject $subject and content $body"
             )
             return "Test-${UUID.randomUUID()}"
         }
-
         val emailRequest =
             SendEmailRequest
                 .builder()
-                .destination(Destination.builder().toAddresses(uniqueEmails).build())
+                .destination(Destination.builder().toAddresses(emailAddress).build())
                 .sourceArn(emailEnv.senderArn)
                 .message(
                     Message
@@ -79,7 +76,7 @@ class SendEmailService(
             val response = sesClient.sendEmail(emailRequest)
             return response.messageId()
         } catch (ex: SesException) {
-            logger.warn("Failed to send email to ${uniqueEmails.joinToString { ", " }}: ${ex.awsErrorDetails().errorMessage()}")
+            logger.warn("Failed to send email to $emailAddress: ${ex.awsErrorDetails().errorMessage()}")
             return null
         }
     }

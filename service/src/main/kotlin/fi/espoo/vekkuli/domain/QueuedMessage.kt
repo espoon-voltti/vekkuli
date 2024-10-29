@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.domain
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class SentMessage(
+data class QueuedMessage(
     val id: UUID,
     val providerId: String?,
     val created: LocalDateTime,

@@ -3,9 +3,8 @@ package fi.espoo.vekkuli.repository
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.utils.AndExpr
-import fi.espoo.vekkuli.utils.DbUtil.Companion.buildNameSearchClause
-import fi.espoo.vekkuli.utils.InExpr
+import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
+import fi.espoo.vekkuli.utils.SqlExpr
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -13,10 +12,6 @@ import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.util.*
-
-data class IdItem(
-    val id: Int
-)
 
 @Repository
 class JdbiBoatSpaceReservationRepository(
@@ -318,49 +313,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.id,
-                           bsr.start_date,
-                           bsr.end_date,
-                           bsr.created,
-                           bsr.updated,
-                           bsr.status,
-                           bsr.boat_space_id,
-                           bsr.validity,
-                           r.id as reserver_id,
-                           r.type as reserver_type,
-                           r.name,
-                           r.email, 
-                           r.phone,
-                           r.street_address,
-                           r.postal_code,
-                           r.municipality_code,
-                           m.name as municipality_name,
-                           b.registration_code as boat_registration_code,
-                           b.ownership as boat_ownership,
-                           b.id as boat_id,
-                           b.name as boat_name,
-                           b.width_cm as boat_width_cm,
-                           b.length_cm as boat_length_cm,
-                           b.weight_kg as boat_weight_kg,
-                           b.depth_cm as boat_depth_cm,
-                           b.type as boat_type,
-                           b.other_identification as boat_other_identification,
-                           b.extra_information as boat_extra_information,
-                           location.name as location_name, 
-                           bs.type,
-                           bs.length_cm as boat_space_length_cm,
-                           bs.width_cm as boat_space_width_cm,
-                           bs.amenity,
-                           price.price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
-                    FROM boat_space_reservation bsr
-                    JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location.id = bs.location_id
-                    JOIN price ON price_id = price.id
-                    JOIN municipality m ON r.municipality_code = m.code
+                    ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE c.id = :reserverId AND 
                       bs.type = :spaceType AND
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
@@ -464,104 +417,66 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpace>().findOne().orElse(null)
         }
 
-    override fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> =
-        jdbi.withHandleUnchecked { handle ->
-
-            var statusFilter =
-                params.payment
-                    .map {
-                        when (it) {
-                            PaymentFilter.PAID -> listOf("Confirmed")
-                            PaymentFilter.UNPAID -> listOf("Payment", "Invoiced")
-                        }
-                    }.flatten()
-
-            if (statusFilter.isEmpty()) {
-                statusFilter = listOf("Confirmed", "Payment", "Invoiced")
-            }
-
-            val nameSearch = buildNameSearchClause(params.nameSearch)
-
-            val warningFilter =
-                if (params.warningFilter == true) {
-                    "rw.key IS NOT NULL"
-                } else {
-                    "true"
-                }
-
-            val filter =
-                AndExpr(
-                    listOf(
-                        InExpr("bs.location_id", params.harbor),
-                        InExpr("bs.amenity", params.amenity) { "'$it'" },
-                        InExpr("bsr.status", statusFilter) { "'$it'" },
-                        InExpr("bs.section", params.sectionFilter) { "'$it'" }
-                    )
+    override fun getBoatSpaceReservations(
+        filter: SqlExpr,
+        sortBy: BoatSpaceReservationSortBy?
+    ) = jdbi.withHandleUnchecked { handle ->
+        val filterQuery = filter.toSql()
+        val sortByQuery = sortBy?.apply()?.takeIf { it.isNotEmpty() } ?: ""
+        val query =
+            handle.createQuery(
+                """
+                SELECT bsr.*, r.email, r.phone, r.type as reserver_type, r.name,
+                    r.municipality_code,
+                    b.registration_code as boat_registration_code,
+                    b.ownership as boat_ownership,
+                    location.name as location_name, 
+                    bs.type, CONCAT(bs.section, bs.place_number) as place,
+                    rw.key as warning,
+                    bs.section,
+                    m.name as municipality_name
+                FROM boat_space_reservation bsr
+                JOIN boat b on b.id = bsr.boat_id
+                JOIN reserver r ON bsr.reserver_id = r.id
+                JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                JOIN location ON location_id = location.id
+                JOIN municipality m ON r.municipality_code = m.code
+                LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
+                WHERE $filterQuery
+                $sortByQuery
+                """.trimIndent()
+            )
+        filter.bind(query)
+        query
+            .mapTo<BoatSpaceReservationItemWithWarning>()
+            .list()
+            .groupBy { it.id }
+            .map { (id, warnings) ->
+                val row = warnings.first()
+                BoatSpaceReservationItem(
+                    id = id,
+                    boatSpaceId = row.boatSpaceId,
+                    startDate = row.startDate,
+                    endDate = row.endDate,
+                    status = row.status,
+                    reserverId = row.reserverId,
+                    name = row.name,
+                    email = row.email,
+                    phone = row.phone,
+                    type = row.type,
+                    place = row.place,
+                    section = row.section,
+                    locationName = row.locationName,
+                    boatRegistrationCode = row.boatRegistrationCode,
+                    boatOwnership = row.boatOwnership,
+                    warnings = (warnings.mapNotNull { it.warning }).toSet(),
+                    actingUserId = null,
+                    reserverType = row.reserverType,
+                    municipalityCode = row.municipalityCode,
+                    municipalityName = row.municipalityName,
                 )
-
-            val query =
-                handle.createQuery(
-                    """
-                    SELECT bsr.*, r.email, r.phone, r.type as reserver_type, r.name,
-                        r.municipality_code,
-                        b.registration_code as boat_registration_code,
-                        b.ownership as boat_ownership,
-                        location.name as location_name, 
-                        bs.type, CONCAT(bs.section, bs.place_number) as place,
-                        rw.key as warning,
-                        bs.section,
-                        m.name as municipality_name
-                    FROM boat_space_reservation bsr
-                    JOIN boat b on b.id = bsr.boat_id
-                    JOIN reserver r ON bsr.reserver_id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN municipality m ON r.municipality_code = m.code
-                    LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
-                    WHERE
-                        (bsr.status = 'Confirmed' OR bsr.status = 'Payment' OR bsr.status = 'Invoiced')
-                        AND $nameSearch
-                        AND $warningFilter
-                        AND ${filter.toSql().ifBlank { "true" }}
-                    ${getSortingSql(params)}
-                    """.trimIndent()
-                )
-
-            if (!params.nameSearch.isNullOrBlank()) {
-                query.bind("nameSearch", params.nameSearch.trim())
             }
-
-            filter.bind(query)
-            query
-                .mapTo<BoatSpaceReservationItemWithWarning>()
-                .list()
-                .groupBy { it.id }
-                .map { (id, warnings) ->
-                    val row = warnings.first()
-                    BoatSpaceReservationItem(
-                        id = id,
-                        boatSpaceId = row.boatSpaceId,
-                        startDate = row.startDate,
-                        endDate = row.endDate,
-                        status = row.status,
-                        reserverId = row.reserverId,
-                        name = row.name,
-                        email = row.email,
-                        phone = row.phone,
-                        type = row.type,
-                        place = row.place,
-                        section = row.section,
-                        locationName = row.locationName,
-                        boatRegistrationCode = row.boatRegistrationCode,
-                        boatOwnership = row.boatOwnership,
-                        warnings = (warnings.mapNotNull { it.warning }).toSet(),
-                        actingUserId = null,
-                        reserverType = row.reserverType,
-                        municipalityCode = row.municipalityCode,
-                        municipalityName = row.municipalityName,
-                    )
-                }
-        }
+    }
 
     override fun createRenewalRow(
         reservationId: Int,
@@ -687,12 +602,21 @@ class JdbiBoatSpaceReservationRepository(
         }
 
     override fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation =
+        setReservationStatus(reservationId, ReservationStatus.Payment)
+
+    override fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
+        setReservationStatus(reservationId, ReservationStatus.Invoiced)
+
+    private fun setReservationStatus(
+        reservationId: Int,
+        status: ReservationStatus
+    ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = 'Payment', updated = :updatedTime
+                    SET status = :reservationStatus, updated = :updatedTime
                     WHERE id = :reservationId
                         AND status = 'Payment'
                         AND created > :currentTime - make_interval(secs => :paymentTimeout)
@@ -700,6 +624,8 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
+
+            query.bind("reservationStatus", status)
             query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
@@ -757,49 +683,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                     SELECT bsr.id,
-                           bsr.start_date,
-                           bsr.end_date,
-                           bsr.created,
-                           bsr.updated,
-                           bsr.status,
-                           bsr.boat_space_id,
-                           bsr.validity,
-                           r.id as reserver_id,
-                           r.type as reserver_type,
-                           r.name,
-                           r.email, 
-                           r.phone,
-                           r.street_address,
-                           r.postal_code,
-                           r.municipality_code,
-                           m.name as municipality_name,
-                           b.registration_code as boat_registration_code,
-                           b.ownership as boat_ownership,
-                           b.id as boat_id,
-                           b.name as boat_name,
-                           b.width_cm as boat_width_cm,
-                           b.length_cm as boat_length_cm,
-                           b.weight_kg as boat_weight_kg,
-                           b.depth_cm as boat_depth_cm,
-                           b.type as boat_type,
-                           b.other_identification as boat_other_identification,
-                           b.extra_information as boat_extra_information,
-                           location.name as location_name, 
-                           bs.type,
-                           bs.length_cm as boat_space_length_cm,
-                           bs.width_cm as boat_space_width_cm,
-                           bs.amenity,
-                           price.price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
-                    FROM boat_space_reservation bsr
-                    JOIN boat b ON b.id = bsr.boat_id
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location.id = bs.location_id
-                    JOIN price ON price_id = price.id
-                    JOIN municipality m ON r.municipality_code = m.code
+                     ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE c.id = :reserverId AND (
                         bsr.status = 'Cancelled'
                         OR 
@@ -832,4 +716,68 @@ class JdbiBoatSpaceReservationRepository(
                 )
             }
         }
+
+    override fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    ${buildSqlSelectForBoatSpaceReservationDetails()}
+                    WHERE status = 'Confirmed' AND validity = :validity
+                        AND end_date < :endDateCut AND end_date > :currentTime
+                    """.trimIndent()
+                )
+            query.bind("validity", validity)
+            query.bind(
+                "endDateCut",
+                timeProvider.getCurrentDate().plusDays(BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())
+            )
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<BoatSpaceReservationDetails>().list()
+        }
+
+    private fun buildSqlSelectForBoatSpaceReservationDetails() =
+        """SELECT bsr.id,
+                               bsr.start_date,
+                               bsr.end_date,
+                               bsr.created,
+                               bsr.updated,
+                               bsr.status,
+                               bsr.boat_space_id,
+                               bsr.validity,
+                               r.id as reserver_id,
+                               r.type as reserver_type,
+                               r.name,
+                               r.email, 
+                               r.phone,
+                               r.street_address,
+                               r.postal_code,
+                               r.municipality_code,
+                               m.name as municipality_name,
+                               b.registration_code as boat_registration_code,
+                               b.ownership as boat_ownership,
+                               b.id as boat_id,
+                               b.name as boat_name,
+                               b.width_cm as boat_width_cm,
+                               b.length_cm as boat_length_cm,
+                               b.weight_kg as boat_weight_kg,
+                               b.depth_cm as boat_depth_cm,
+                               b.type as boat_type,
+                               b.other_identification as boat_other_identification,
+                               b.extra_information as boat_extra_information,
+                               location.name as location_name, 
+                               bs.type,
+                               bs.length_cm as boat_space_length_cm,
+                               bs.width_cm as boat_space_width_cm,
+                               bs.amenity,
+                               price.price_cents,
+                               CONCAT(bs.section, bs.place_number) as place
+                        FROM boat_space_reservation bsr
+                        JOIN boat b ON b.id = bsr.boat_id
+                        JOIN citizen c ON bsr.reserver_id = c.id 
+                        JOIN reserver r ON c.id = r.id
+                        JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                        JOIN location ON location.id = bs.location_id
+                        JOIN price ON price_id = price.id
+                        JOIN municipality m ON r.municipality_code = m.code"""
 }

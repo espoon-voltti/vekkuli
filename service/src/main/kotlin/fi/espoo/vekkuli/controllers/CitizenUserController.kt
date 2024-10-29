@@ -141,7 +141,7 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
-        val memos = memoService.getMemos(citizenId, MemoCategory.Marine)
+        val memos = memoService.getMemos(citizenId, ReservationType.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
@@ -178,8 +178,8 @@ class CitizenUserController {
         @RequestParam content: String,
     ): String {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-        memoService.insertMemo(citizenId, userId, MemoCategory.Marine, content)
-        val memos = memoService.getMemos(citizenId, MemoCategory.Marine)
+        memoService.insertMemo(citizenId, userId, ReservationType.Marine, content)
+        val memos = memoService.getMemos(citizenId, ReservationType.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
@@ -191,7 +191,7 @@ class CitizenUserController {
         @PathVariable memoId: Int,
     ): String {
         memoService.removeMemo(memoId)
-        val memos = memoService.getMemos(citizenId, MemoCategory.Marine)
+        val memos = memoService.getMemos(citizenId, ReservationType.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
     }
 
@@ -618,7 +618,7 @@ class CitizenUserController {
 
         val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
 
-        memoService.insertMemo(citizenId, userId, MemoCategory.Marine, memoContent)
+        memoService.insertMemo(citizenId, userId, ReservationType.Marine, memoContent)
 
         return ResponseEntity.ok(
             citizenDetails.citizenPage(

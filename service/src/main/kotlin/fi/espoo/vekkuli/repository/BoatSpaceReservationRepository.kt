@@ -2,6 +2,8 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
+import fi.espoo.vekkuli.utils.SqlExpr
 import java.time.LocalDate
 import java.util.*
 
@@ -38,7 +40,10 @@ interface BoatSpaceReservationRepository {
 
     fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails?
 
-    fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem>
+    fun getBoatSpaceReservations(
+        filter: SqlExpr,
+        sortBy: BoatSpaceReservationSortBy? = null
+    ): List<BoatSpaceReservationItem>
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace?
 
@@ -75,6 +80,8 @@ interface BoatSpaceReservationRepository {
 
     fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation
 
+    fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation
+
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation
 
     fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation
@@ -82,4 +89,6 @@ interface BoatSpaceReservationRepository {
     fun getReservationPeriods(): List<ReservationPeriod>
 
     fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
+
+    fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails>
 }

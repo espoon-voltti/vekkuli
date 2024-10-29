@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,12 +40,12 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
             createReservationInInvoiceState(
                 timeProvider,
                 boatReservationService,
-                citizenId
+                this.citizenIdLeo
             )
         val invoiceBatchParameters =
-            boatSpaceInvoiceService.createInvoice(
+            boatSpaceInvoiceService.createInvoiceBatchParameters(
                 madeReservation.id,
-                citizenId
+                this.citizenIdLeo
             )
         assertNotNull(invoiceBatchParameters, "Invoice is created")
         assertEquals(15000, invoiceBatchParameters!!.invoices[0].rows[0].amount, "Price is correct")
@@ -64,7 +63,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
         )
         assertNotNull(invoice, "Invoice is sent")
         assertEquals(
-            citizenId,
+            this.citizenIdLeo,
             invoice!!.citizenId,
             "Invoice is sent to correct citizen"
         )

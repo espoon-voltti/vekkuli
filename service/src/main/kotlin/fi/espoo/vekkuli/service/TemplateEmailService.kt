@@ -1,7 +1,8 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
-import fi.espoo.vekkuli.domain.SentMessage
+import fi.espoo.vekkuli.domain.ReservationType
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
@@ -28,14 +29,14 @@ class TemplateEmailService(
         userId: UUID?,
         senderAddress: String,
         recipient: Recipient,
-        variables: Map<String, Any>
-    ): List<SentMessage> =
+        variables: Map<String, Any>,
+    ): List<QueuedMessage> =
         sendBatchEmail(
             template = template,
             userId = userId,
             senderAddress = senderAddress,
             recipients = listOf(recipient),
-            variables = variables
+            variables = variables,
         )
 
     fun sendBatchEmail(
@@ -43,8 +44,8 @@ class TemplateEmailService(
         userId: UUID?,
         senderAddress: String,
         recipients: List<Recipient>,
-        variables: Map<String, Any>
-    ): List<SentMessage> {
+        variables: Map<String, Any>,
+    ): List<QueuedMessage> {
         val tpl = templateRepo.getTemplate(template)
         if (tpl == null) {
             logger.warn("Email template not found: $template")
@@ -55,6 +56,34 @@ class TemplateEmailService(
             userId = userId,
             senderAddress = senderAddress,
             recipients = recipients,
+            subject = tpl.subject,
+            body = replaceTags(tpl.body, variables),
+        )
+    }
+
+    fun sendBatchEmail(
+        template: String,
+        userId: UUID?,
+        senderAddress: String,
+        recipients: List<Recipient>,
+        reservationType: ReservationType,
+        reservationId: Int,
+        messageType: String,
+        variables: Map<String, Any>,
+    ): List<QueuedMessage> {
+        val tpl = templateRepo.getTemplate(template)
+        if (tpl == null) {
+            logger.warn("Email template not found: $template")
+            return emptyList()
+        }
+        // Get emails that have not been sent
+        var emails =
+            messageService
+                .getAndInsertUnsentEmails(reservationType, reservationId, messageType, recipients.map { it.email })
+        return messageService.sendEmails(
+            userId = userId,
+            senderAddress = senderAddress,
+            recipients = recipients.filter { emails.contains(it.email) },
             subject = tpl.subject,
             body = replaceTags(tpl.body, variables),
         )
