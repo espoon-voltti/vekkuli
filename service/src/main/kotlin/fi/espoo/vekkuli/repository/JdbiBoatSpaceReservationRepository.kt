@@ -50,6 +50,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.status,
                            bsr.boat_space_id,
                            bsr.validity,
+                           bsr.renewed_from,
                            r.id as reserver_id,
                            r.name,
                            r.type as reserver_type,
@@ -357,6 +358,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.status,
                            bsr.boat_space_id,
                            bsr.validity,
+                           bsr.renewed_from,
                            r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,
@@ -488,6 +490,7 @@ class JdbiBoatSpaceReservationRepository(
                 .createQuery(
                     """
                     INSERT INTO boat_space_reservation (
+                      created,
                       reserver_id, 
                       acting_citizen_id, 
                       boat_space_id, 
@@ -496,23 +499,27 @@ class JdbiBoatSpaceReservationRepository(
                       status, 
                       validity, 
                       boat_id, 
-                      employee_id
+                      employee_id,
+                      renewed_from
                     )
                     (
-                      SELECT reserver_id, 
+                      SELECT :created as created,
+                             reserver_id, 
                              :actingCitizenId as acting_citizen_id, 
                              boat_space_id, 
-                             (end_date + INTERVAL '1 day') as start_date, 
+                             start_date, 
                              (end_date + INTERVAL '1 year') as end_date, 'Renewal' as status, 
                              validity, 
                              boat_id, 
-                             :employeeId as employee_id
+                             :employeeId as employee_id,
+                             id as renewed_from
                       FROM boat_space_reservation
                       WHERE id = :reservationId
                     )
                     RETURNING id
                     """.trimIndent()
-                ).bind("reservationId", reservationId)
+                ).bind("created", timeProvider.getCurrentDateTime())
+                .bind("reservationId", reservationId)
                 .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
                 .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
                 .mapTo<Int>()
@@ -577,6 +584,7 @@ class JdbiBoatSpaceReservationRepository(
         endDate: LocalDate,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
+            println("Updating reservation $reservationId. Status $reservationStatus, start $startDate, end $endDate")
             val query =
                 handle.createQuery(
                     """
@@ -745,39 +753,41 @@ class JdbiBoatSpaceReservationRepository(
                                bsr.status,
                                bsr.boat_space_id,
                                bsr.validity,
-                               r.id as reserver_id,
-                               r.type as reserver_type,
-                               r.name,
-                               r.email, 
-                               r.phone,
-                               r.street_address,
-                               r.postal_code,
-                               r.municipality_code,
-                               m.name as municipality_name,
-                               b.registration_code as boat_registration_code,
-                               b.ownership as boat_ownership,
-                               b.id as boat_id,
-                               b.name as boat_name,
-                               b.width_cm as boat_width_cm,
-                               b.length_cm as boat_length_cm,
-                               b.weight_kg as boat_weight_kg,
-                               b.depth_cm as boat_depth_cm,
-                               b.type as boat_type,
-                               b.other_identification as boat_other_identification,
-                               b.extra_information as boat_extra_information,
-                               location.name as location_name, 
-                               bs.type,
-                               bs.length_cm as boat_space_length_cm,
-                               bs.width_cm as boat_space_width_cm,
-                               bs.amenity,
-                               price.price_cents,
-                               CONCAT(bs.section, bs.place_number) as place
-                        FROM boat_space_reservation bsr
-                        JOIN boat b ON b.id = bsr.boat_id
-                        JOIN citizen c ON bsr.reserver_id = c.id 
-                        JOIN reserver r ON c.id = r.id
-                        JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                        JOIN location ON location.id = bs.location_id
-                        JOIN price ON price_id = price.id
-                        JOIN municipality m ON r.municipality_code = m.code"""
+                               bsr.renewed_from,
+                           r.id as reserver_id,
+                           r.type as reserver_type,
+                           r.name,
+                           r.email, 
+                           r.phone,
+                           r.street_address,
+                           r.postal_code,
+                           r.municipality_code,
+                           m.name as municipality_name,
+                           b.registration_code as boat_registration_code,
+                           b.ownership as boat_ownership,
+                           b.id as boat_id,
+                           b.name as boat_name,
+                           b.width_cm as boat_width_cm,
+                           b.length_cm as boat_length_cm,
+                           b.weight_kg as boat_weight_kg,
+                           b.depth_cm as boat_depth_cm,
+                           b.type as boat_type,
+                           b.other_identification as boat_other_identification,
+                           b.extra_information as boat_extra_information,
+                           location.name as location_name, 
+                           bs.type,
+                           bs.length_cm as boat_space_length_cm,
+                           bs.width_cm as boat_space_width_cm,
+                           bs.amenity,
+                           price.price_cents,
+                           CONCAT(bs.section, bs.place_number) as place
+                    FROM boat_space_reservation bsr
+                    JOIN boat b ON b.id = bsr.boat_id
+                    JOIN citizen c ON bsr.reserver_id = c.id 
+                    JOIN reserver r ON c.id = r.id
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location.id = bs.location_id
+                    JOIN price ON price_id = price.id
+                    JOIN municipality m ON r.municipality_code = m.code
+                    """
 }
