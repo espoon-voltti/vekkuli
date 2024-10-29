@@ -40,7 +40,7 @@ class ScheduledSendEmailService(
 
     @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     fun sendReservationExpiryReminderEmails() {
-        val expiringFixedTermReservations = reservationService.getExpiringIndefiniteBoatSpaceReservations()
+        val expiringFixedTermReservations = reservationService.getExpiringFixedTermBoatSpaceReservations()
         expiringFixedTermReservations.forEach { reservation ->
             val recipients = listOf(Recipient(reservation.reserverId, reservation.email))
             val sender = emailEnv.senderAddress

@@ -124,7 +124,7 @@ class JdbiSentMessageRepository(
                             FROM sent_message
                             WHERE status = 'Queued' OR (status = 'Failed' AND retry_count < :failedMessageRetryLimit)
                                 OR (status = 'Processing' AND created < :currentDateTime - interval '30 minutes')
-                            ORDER BY created DESC
+                            ORDER BY created ASC
                             LIMIT :batchSize
                         )
                         UPDATE sent_message

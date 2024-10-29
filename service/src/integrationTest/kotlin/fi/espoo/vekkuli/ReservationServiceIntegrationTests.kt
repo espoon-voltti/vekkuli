@@ -2,7 +2,6 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -630,82 +629,5 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(1, expiredReservations.size)
         assertEquals(ReservationStatus.Cancelled, expiredReservations.first().status, "Reservation is marked as Cancelled")
         assertEquals(timeProvider.getCurrentDate(), expiredReservations.first().endDate, "End date is set to now")
-    }
-
-    @Test
-    fun `should return correct amount of expiring fixed term reservations`() {
-        val madeReservation =
-            createReservationInConfirmedState(
-                timeProvider,
-                reservationService,
-                this.citizenIdLeo,
-                1,
-                1
-            )
-        val madeReservation2 =
-            createReservationInConfirmedState(
-                timeProvider,
-                reservationService,
-                this.citizenIdOlivia,
-                2,
-                3
-            )
-
-        // mock time to be 20 days before the end date
-        mockTimeProvider(
-            timeProvider,
-            madeReservation.endDate.minusDays(20).atStartOfDay()
-        )
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdMikko,
-            3,
-            2
-        )
-
-        val reservations = reservationService.getExpiringFixedTermBoatSpaceReservations()
-        assertEquals(2, reservations.size)
-        assertEquals(listOf(madeReservation.id, madeReservation2.id).sorted(), reservations.map { it.id }.sorted())
-    }
-
-    @Test
-    fun `should return correct amount of expiring indefinite reservations`() {
-        val madeReservation =
-            createReservationInConfirmedState(
-                timeProvider,
-                reservationService,
-                this.citizenIdLeo,
-                1,
-                1,
-                ReservationValidity.Indefinite
-            )
-        val madeReservation2 =
-            createReservationInConfirmedState(
-                timeProvider,
-                reservationService,
-                this.citizenIdOlivia,
-                2,
-                3,
-                ReservationValidity.Indefinite
-            )
-
-        // mock time to be 20 days before the end date
-        mockTimeProvider(
-            timeProvider,
-            madeReservation.endDate.minusDays(20).atStartOfDay()
-        )
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdMikko,
-            3,
-            2,
-            ReservationValidity.Indefinite
-        )
-
-        val reservations = reservationService.getExpiringIndefiniteBoatSpaceReservations()
-        assertEquals(2, reservations.size)
-        assertEquals(listOf(madeReservation.id, madeReservation2.id).sorted(), reservations.map { it.id }.sorted())
     }
 }

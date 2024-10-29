@@ -43,20 +43,26 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
     fun `should set emails to be sent in batches`() {
         val recipients =
             listOf(
-                Recipient(this.citizenIdLeo, "test@email.com"),
-                Recipient(this.organizationId, "test@email.com"),
-                Recipient(this.citizenIdOlivia, "test@email.com"),
-                Recipient(this.citizenIdMikko, "test@email.com"),
+                Recipient(this.citizenIdLeo, "test1@email.com"),
+                Recipient(this.organizationId, "test2@email.com"),
+                Recipient(this.citizenIdOlivia, "test3@email.com"),
+                Recipient(this.citizenIdMikko, "test4@email.com"),
             )
-        // Send 4 emails
-        messageService.sendEmails(null, "sender@gmail.com", recipients, "Subject", "Email body")
-        val batchSize = 4
-        val emails = messageRepository.getUnsentEmailsAndSetToProcessing(batchSize)
+        // Send 4 emails in two different times
+        messageService.sendEmails(null, "sender@gmail.com", recipients.subList(0, 2), "Subject", "Email body")
+        messageService.sendEmails(null, "sender@gmail.com", recipients.subList(2, 4), "Subject", "Email body")
+        val batchSize = 2
+        var emails = messageRepository.getUnsentEmailsAndSetToProcessing(batchSize)
         assertEquals(batchSize, emails.size, "Fetched emails should match batch size")
-        assertEquals(batchSize, emails.filter { it.status == MessageStatus.Processing }.size, "All emails are processing")
+        assertEquals(batchSize, emails.filter { it.status == MessageStatus.Processing }.size, "Two emails are processing")
 
-        val emails2 = messageRepository.getUnsentEmailsAndSetToProcessing()
-        assertEquals(0, emails2.size, "No emails left to send")
+        emails = messageRepository.getUnsentEmailsAndSetToProcessing(10)
+        assertEquals(2, emails.size, "Two emails left to send")
+        assertEquals(
+            listOf(recipients[3].email, recipients[2].email).sorted(),
+            emails.map { it.recipientAddress }.sorted(),
+            "Should start from the oldest emails"
+        )
     }
 
     @Test

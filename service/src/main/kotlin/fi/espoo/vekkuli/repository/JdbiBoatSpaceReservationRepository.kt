@@ -313,7 +313,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    ${getBoatSpaceReservation()}
+                    ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE c.id = :reserverId AND 
                       bs.type = :spaceType AND
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
@@ -672,7 +672,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                     ${getBoatSpaceReservation()}
+                     ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE c.id = :reserverId AND (
                         bsr.status = 'Cancelled'
                         OR 
@@ -711,7 +711,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    ${getBoatSpaceReservation()}
+                    ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE status = 'Confirmed' AND validity = :validity
                         AND end_date < :endDateCut AND end_date > :currentTime
                     """.trimIndent()
@@ -725,7 +725,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
-    private fun getBoatSpaceReservation() =
+    private fun buildSqlSelectForBoatSpaceReservationDetails() =
         """SELECT bsr.id,
                                bsr.start_date,
                                bsr.end_date,
