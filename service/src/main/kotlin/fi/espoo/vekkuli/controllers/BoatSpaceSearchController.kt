@@ -111,9 +111,10 @@ class BoatSpaceSearchController {
             jdbi.inTransactionUnchecked { tx ->
                 tx.getLocations()
             }
+
         return ResponseEntity.ok(
             layout.render(
-                request.getAuthenticatedUser() != null,
+                isAuthenticated(userType, request),
                 citizen?.fullName,
                 request.requestURI,
                 boatSpaceSearch.render(locations)
@@ -148,12 +149,24 @@ class BoatSpaceSearchController {
                 params
             )
 
+        val isAuthenticated =
+            isAuthenticated(userType, request)
+
         return boatSpaceSearch.renderResults(
             harbors.first,
             BoatFilter(width, length, boatType),
             harbors.second,
-            request.getAuthenticatedUser() != null,
+            isAuthenticated,
             userType == UserType.EMPLOYEE
         )
+    }
+
+    private fun isAuthenticated(
+        userType: UserType,
+        request: HttpServletRequest
+    ) = if (userType == UserType.CITIZEN) {
+        getCitizen(request, citizenService) != null
+    } else {
+        true
     }
 }
