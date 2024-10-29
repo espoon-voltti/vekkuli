@@ -86,7 +86,18 @@ class InvoiceController(
         @PathVariable reservationId: Int,
     ): ResponseEntity<String> {
         // send the invoice, update reservation status
-        reservationService.sendInvoiceForReservations(reservationId)
+        val reservation = reservationService.getReservationWithReserver(reservationId)
+        if (reservation?.reserverId == null) {
+            throw IllegalArgumentException("Reservation not found")
+        }
+        val invoiceBatch =
+            invoiceService.createInvoiceBatchParameters(reservationId, reservation.reserverId)
+                ?: throw InternalError("Failed to create invoice batch")
+
+        invoiceService.sendInvoice(invoiceBatch) ?: throw InternalError("Failed to send invoice")
+
+        reservationService.setReservationStatusToInvoiced(reservationId)
+
         return ResponseEntity
             .status(HttpStatus.FOUND)
             .header("Location", "/virkailija/venepaikat/varaukset")
