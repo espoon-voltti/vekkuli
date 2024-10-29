@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.views.employee.BoatSpaceReservationList
+import fi.espoo.vekkuli.service.TerminateBoatSpaceReservationService
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
@@ -16,9 +15,7 @@ class BoatSpaceTerminateReservationController {
 
     @Autowired lateinit var citizenUserController: CitizenUserController
 
-    @Autowired lateinit var reservationService: BoatReservationService
-
-    @Autowired lateinit var boatSpaceReservationList: BoatSpaceReservationList
+    @Autowired lateinit var terminateService: TerminateBoatSpaceReservationService
 
     @Autowired lateinit var layout: EmployeeLayout
 
@@ -28,7 +25,7 @@ class BoatSpaceTerminateReservationController {
         @RequestParam("reservationId") reservationId: Int,
     ): ResponseEntity<Void> {
         val currentCitizen = citizenUserController.getAuthenticatedCitizen(request)
-        reservationService.terminateBoatSpaceReservation(reservationId, currentCitizen)
+        terminateService.terminateBoatSpaceReservation(reservationId, currentCitizen)
 
         return ResponseEntity.noContent().build()
     }

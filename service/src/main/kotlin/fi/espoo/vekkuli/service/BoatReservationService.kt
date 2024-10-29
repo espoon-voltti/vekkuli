@@ -10,10 +10,10 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.BoatRepository
-import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
-import fi.espoo.vekkuli.repository.ReserverRepository
-import fi.espoo.vekkuli.repository.UpdateCitizenParams
+import fi.espoo.vekkuli.repository.*
+import fi.espoo.vekkuli.repository.filter.SortDirection
+import fi.espoo.vekkuli.repository.filter.boatspacereservation.*
+import fi.espoo.vekkuli.repository.filter.boatspacereservation.LocationExpr
 import fi.espoo.vekkuli.utils.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -431,8 +431,56 @@ class BoatReservationService(
             endDate,
         )
 
-    fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> =
-        boatSpaceReservationRepo.getBoatSpaceReservations(params)
+    fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> {
+        val filters: MutableList<SqlExpr> = mutableListOf()
+
+        // Add status filters based on the payment status
+        filters.add(
+            StatusExpr(
+                params.payment
+                    .flatMap {
+                        when (it) {
+                            PaymentFilter.PAID -> listOf(ReservationStatus.Confirmed)
+                            PaymentFilter.UNPAID -> listOf(ReservationStatus.Payment, ReservationStatus.Invoiced)
+                        }
+                    }.ifEmpty { listOf(ReservationStatus.Confirmed, ReservationStatus.Payment, ReservationStatus.Invoiced) }
+            )
+        )
+
+        filters.add(EndDateNotPassedExpr(timeProvider.getCurrentDate()))
+
+        if (params.warningFilter == true) {
+            filters.add(HasWarningExpr())
+        }
+
+        if (!params.nameSearch.isNullOrBlank()) {
+            filters.add(NameSearchExpr(params.nameSearch))
+        }
+
+        if (params.harbor.isNotEmpty()) {
+            filters.add(LocationExpr(params.harbor))
+        }
+
+        if (params.amenity.isNotEmpty()) {
+            filters.add(AmenityExpr(params.amenity))
+        }
+        if (params.sectionFilter.isNotEmpty()) {
+            filters.add(SectionExpr(params.sectionFilter))
+        }
+
+        val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
+        val sortBy =
+            BoatSpaceReservationSortBy(
+                listOf(params.sortBy to direction)
+            )
+
+        return boatSpaceReservationRepo.getBoatSpaceReservations(
+            AndExpr(
+                filters
+            ),
+            sortBy
+        )
+    }
 
     fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
         extendReservationsWithPeriodInformation(
@@ -460,14 +508,6 @@ class BoatReservationService(
         val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
     }
 
-    fun terminateBoatSpaceReservation(
-        reservationId: Int,
-        currentUser: CitizenWithDetails
-    ) {
-        // @TODO check wether user is allowed to terminate tha reservation
-        boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
-    }
-
     fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
 
     fun hasActiveReservationPeriod(
@@ -490,7 +530,10 @@ class BoatReservationService(
     }
 
     fun canReserveANewSlip(reserverID: UUID): ReservationResult {
-        val reserver = reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(ReservationResultErrorCode.NoReserver)
+        val reserver =
+            reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
+                ReservationResultErrorCode.NoReserver
+            )
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
@@ -523,8 +566,16 @@ class BoatReservationService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val validity = if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
-        val endDate = if (validity == ReservationValidity.Indefinite) getLastDayOfNextYearsJanuary(now.year) else getLastDayOfYear(now.year)
+        val validity =
+            if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+        val endDate =
+            if (validity == ReservationValidity.Indefinite) {
+                getLastDayOfNextYearsJanuary(now.year)
+            } else {
+                getLastDayOfYear(
+                    now.year
+                )
+            }
 
         return ReservationResult.Success(
             ReservationResultSuccess(
@@ -619,5 +670,13 @@ class BoatReservationService(
                 canSwitch = canSwitchResult.success,
             )
         }
+    }
+
+    fun getContactDetailsForReservation(reservationId: Int): List<Recipient> {
+        val reservation = boatSpaceReservationRepo.getReservationWithReserver(reservationId)
+        if (reservation?.reserverId == null || reservation.email == null) {
+            return listOf()
+        }
+        return listOf<Recipient>(Recipient(reservation.reserverId, reservation.email))
     }
 }
