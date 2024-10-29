@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
+import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.config.Dimensions
@@ -608,7 +609,7 @@ class BoatReservationService(
 
         val now = timeProvider.getCurrentDate()
 
-        if (now.isBefore(oldEndDate.minusDays(30)) || now.isAfter(oldEndDate)) {
+        if (now.isBefore(oldEndDate.minusDays(DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())) || now.isAfter(oldEndDate)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
