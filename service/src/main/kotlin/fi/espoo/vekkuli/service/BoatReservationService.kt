@@ -457,14 +457,6 @@ class BoatReservationService(
         val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
     }
 
-    fun terminateBoatSpaceReservation(
-        reservationId: Int,
-        currentUser: CitizenWithDetails
-    ) {
-        // @TODO check wether user is allowed to terminate tha reservation
-        boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
-    }
-
     fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
 
     fun hasActiveReservationPeriod(
@@ -487,7 +479,10 @@ class BoatReservationService(
     }
 
     fun canReserveANewSlip(reserverID: UUID): ReservationResult {
-        val reserver = reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(ReservationResultErrorCode.NoReserver)
+        val reserver =
+            reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
+                ReservationResultErrorCode.NoReserver
+            )
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
@@ -520,8 +515,16 @@ class BoatReservationService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val validity = if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
-        val endDate = if (validity == ReservationValidity.Indefinite) getLastDayOfNextYearsJanuary(now.year) else getLastDayOfYear(now.year)
+        val validity =
+            if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+        val endDate =
+            if (validity == ReservationValidity.Indefinite) {
+                getLastDayOfNextYearsJanuary(now.year)
+            } else {
+                getLastDayOfYear(
+                    now.year
+                )
+            }
 
         return ReservationResult.Success(
             ReservationResultSuccess(
@@ -616,5 +619,13 @@ class BoatReservationService(
                 canSwitch = canSwitchResult.success,
             )
         }
+    }
+
+    fun getContactDetailsForReservation(reservationId: Int): List<Recipient> {
+        val reservation = boatSpaceReservationRepo.getReservationWithReserver(reservationId)
+        if (reservation?.reserverId == null || reservation.email == null) {
+            return listOf()
+        }
+        return listOf<Recipient>(Recipient(reservation.reserverId, reservation.email))
     }
 }

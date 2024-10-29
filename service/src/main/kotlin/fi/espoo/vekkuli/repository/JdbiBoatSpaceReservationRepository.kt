@@ -14,10 +14,6 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.util.*
 
-data class IdItem(
-    val id: Int
-)
-
 @Repository
 class JdbiBoatSpaceReservationRepository(
     private val jdbi: Jdbi,
