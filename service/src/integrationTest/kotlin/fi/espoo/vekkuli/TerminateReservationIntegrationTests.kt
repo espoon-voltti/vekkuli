@@ -102,7 +102,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         // Keep this here to make sure Citizen is present
         assertNotNull(citizen, "Citizen is not null")
         terminateService.terminateBoatSpaceReservation(reservation.id, citizen)
-        val sentEmails = messageRepository.getUnsentEmails()
+        val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertEquals(1, sentEmails.size, "One email is to waiting to be sent")
         assertEquals(citizen.email, sentEmails[0].recipientAddress, "Email is set to be sent to the citizen")
     }

@@ -10,4 +10,7 @@ CREATE TABLE processed_message (
     recipient_email VARCHAR(255) NOT NULL,
     PRIMARY KEY (reservation_type, reservation_id, message_type, recipient_email)
 );
+ALTER TABLE citizen_memo DROP COLUMN category;
+ALTER TABLE citizen_memo ADD COLUMN category ReservationType DEFAULT 'Marine' NOT NULL;
+DROP TYPE IF EXISTS MemoCategory;
 

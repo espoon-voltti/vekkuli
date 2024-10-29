@@ -21,7 +21,7 @@ interface SentMessageRepository {
     fun getMessagesSentToUser(citizenId: UUID): List<QueuedMessage>
 
     /** Get all unsent messages in batches and set their status to processing **/
-    fun getUnsentEmails(batchSize: Int = 10): List<QueuedMessage>
+    fun getUnsentEmailsAndSetToProcessing(batchSize: Int = 10): List<QueuedMessage>
 
     fun getAndInsertUnsentEmails(
         reservationType: ReservationType,

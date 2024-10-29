@@ -51,11 +51,11 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
         // Send 4 emails
         messageService.sendEmails(null, "sender@gmail.com", recipients, "Subject", "Email body")
         val batchSize = 4
-        val emails = messageRepository.getUnsentEmails(batchSize)
+        val emails = messageRepository.getUnsentEmailsAndSetToProcessing(batchSize)
         assertEquals(batchSize, emails.size, "Fetched emails should match batch size")
         assertEquals(batchSize, emails.filter { it.status == MessageStatus.Processing }.size, "All emails are processing")
 
-        val emails2 = messageRepository.getUnsentEmails()
+        val emails2 = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertEquals(0, emails2.size, "No emails left to send")
     }
 
@@ -82,7 +82,7 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
         val sentEmail = messageRepository.getMessagesSentToUser(this.citizenIdLeo)[0]
         assertEquals(MessageStatus.Sent, sentEmail.status, "One email successfully sent to user")
 
-        val emails = messageRepository.getUnsentEmails()
+        val emails = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertEquals(1, emails.size, "One email left to send")
     }
 
@@ -120,6 +120,6 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
                 mapOf()
             )
         assertEquals(1, emails.size, "Only one email was not already sent")
-        assertEquals(2, messageRepository.getUnsentEmails().size, "Two emails to be sent")
+        assertEquals(2, messageRepository.getUnsentEmailsAndSetToProcessing().size, "Two emails to be sent")
     }
 }

@@ -113,7 +113,7 @@ class JdbiSentMessageRepository(
                 .list()
         }
 
-    override fun getUnsentEmails(batchSize: Int): List<QueuedMessage> =
+    override fun getUnsentEmailsAndSetToProcessing(batchSize: Int): List<QueuedMessage> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle

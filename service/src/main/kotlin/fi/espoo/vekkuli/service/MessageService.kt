@@ -58,7 +58,7 @@ class MessageService(
 
     @Scheduled(fixedRate = 60000)
     fun sendScheduledEmails() {
-        val unsentEmails = messageRepository.getUnsentEmails()
+        val unsentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
 
         val failedMessageIds = mutableListOf<UUID>()
         val sentMessageIds = mutableListOf<Pair<UUID, String>>()
