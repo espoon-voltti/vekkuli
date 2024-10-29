@@ -80,6 +80,8 @@ interface BoatSpaceReservationRepository {
 
     fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation
 
+    fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation
+
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation
 
     fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation

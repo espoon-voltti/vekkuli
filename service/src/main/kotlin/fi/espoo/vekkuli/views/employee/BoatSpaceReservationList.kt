@@ -205,7 +205,7 @@ class BoatSpaceReservationList {
         return """
             <section class="section">
                 <div class="container block">
-                    <h2>${t("boatSpaceReservation.title")}</h2>
+                    <h2 id="reservations-header">${t("boatSpaceReservation.title")}</h2>
                     <a id="create-reservation" href="/virkailija/venepaikat">${t("boatSpaceReservation.createReservation")}</a>
                 </div>
                 <div class="container" x-data="{
