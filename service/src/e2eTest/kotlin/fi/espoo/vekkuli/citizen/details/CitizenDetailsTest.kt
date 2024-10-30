@@ -41,6 +41,24 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    fun `citizen cannot renew reservation if it is not time to renew`() {
+        try {
+            mockTimeProvider(timeProvider, LocalDateTime.of(2026, 1, 7, 12, 0, 0))
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            assertThat(citizenDetails.renewReservationButton(1)).not().isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `citizen can edit their own information`() {
         try {
             page.navigate(baseUrl)
