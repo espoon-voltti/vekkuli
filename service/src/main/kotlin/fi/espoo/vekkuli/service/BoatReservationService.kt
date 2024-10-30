@@ -123,8 +123,8 @@ class BoatReservationService(
         val reservation = boatSpaceReservationRepo.getBoatSpaceReservationWithPaymentId(stamp)
         if (reservation == null) return PaymentProcessResult.Failure
 
-        if (reservation.renewedFrom != null) {
-            boatSpaceReservationRepo.terminateBoatSpaceReservation(reservation.renewedFrom)
+        if (reservation.renewedFromId != null) {
+            boatSpaceReservationRepo.terminateBoatSpaceReservation(reservation.renewedFromId)
         }
 
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)

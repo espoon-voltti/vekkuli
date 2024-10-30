@@ -50,7 +50,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.status,
                            bsr.boat_space_id,
                            bsr.validity,
-                           bsr.renewed_from,
+                           bsr.renewed_from_id,
                            r.id as reserver_id,
                            r.name,
                            r.type as reserver_type,
@@ -358,7 +358,7 @@ class JdbiBoatSpaceReservationRepository(
                            bsr.status,
                            bsr.boat_space_id,
                            bsr.validity,
-                           bsr.renewed_from,
+                           bsr.renewed_from_id,
                            r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,
@@ -500,7 +500,7 @@ class JdbiBoatSpaceReservationRepository(
                       validity, 
                       boat_id, 
                       employee_id,
-                      renewed_from
+                      renewed_from_id
                     )
                     (
                       SELECT :created as created,
@@ -512,7 +512,7 @@ class JdbiBoatSpaceReservationRepository(
                              validity, 
                              boat_id, 
                              :employeeId as employee_id,
-                             id as renewed_from
+                             id as renewed_from_id
                       FROM boat_space_reservation
                       WHERE id = :reservationId
                     )
@@ -752,7 +752,7 @@ class JdbiBoatSpaceReservationRepository(
                                bsr.status,
                                bsr.boat_space_id,
                                bsr.validity,
-                               bsr.renewed_from,
+                               bsr.renewed_from_id,
                            r.id as reserver_id,
                            r.type as reserver_type,
                            r.name,
