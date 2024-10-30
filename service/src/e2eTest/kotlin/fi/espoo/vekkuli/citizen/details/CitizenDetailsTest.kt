@@ -43,7 +43,9 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen cannot renew reservation if it is not time to renew`() {
         try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2026, 1, 7, 12, 0, 0))
+            // Set time over month before the reservation ends. Renewal should not be possible.
+            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 12, 30, 12, 0, 0))
+
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
