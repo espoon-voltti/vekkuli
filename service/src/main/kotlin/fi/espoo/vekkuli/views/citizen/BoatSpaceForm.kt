@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.utils.dateToString
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.modal.Modal
 import org.springframework.stereotype.Service
@@ -351,7 +351,7 @@ class BoatSpaceForm(
                 "boatApplication.reservationTime",
                 "reservationTime",
                 if (reservation.validity === ReservationValidity.FixedTerm) {
-                    """<p>${dateToString(reservation.startDate)} - ${dateToString(reservation.endDate)}</p>"""
+                    """<p>${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>"""
                 } else {
                     (
                         """
@@ -723,7 +723,7 @@ class BoatSpaceForm(
                 "boatApplication.reservationTime",
                 "reservationTime",
                 if (reservation.validity === ReservationValidity.FixedTerm) {
-                    """<p>${dateToString(reservation.startDate)} - ${dateToString(reservation.endDate)}</p>"""
+                    """<p>${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>"""
                 } else {
                     (
                         """

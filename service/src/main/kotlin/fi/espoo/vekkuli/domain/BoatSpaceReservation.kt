@@ -104,6 +104,7 @@ data class BoatSpaceReservationItem(
     val boatOwnership: OwnershipStatus?,
     val municipalityCode: Int,
     val municipalityName: String,
+    val paymentDate: LocalDate?,
     val warnings: Set<String> = emptySet()
 ) {
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
@@ -132,6 +133,7 @@ data class BoatSpaceReservationItemWithWarning(
     val section: String,
     val municipalityCode: Int,
     val municipalityName: String,
+    val paymentDate: LocalDate?,
 )
 
 enum class BoatSpaceFilterColumn {

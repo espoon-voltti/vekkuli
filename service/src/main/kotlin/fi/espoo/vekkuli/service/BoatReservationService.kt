@@ -382,7 +382,7 @@ class BoatReservationService(
                     "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
                     "endDate" to reservation.endDate,
                     // TODO: get from reservation
-                    "invoiceDueDate" to dateToString(timeProvider.getCurrentDate().plusDays(14))
+                    "invoiceDueDate" to formatAsFullDate(timeProvider.getCurrentDate().plusDays(14))
                 )
             )
         }

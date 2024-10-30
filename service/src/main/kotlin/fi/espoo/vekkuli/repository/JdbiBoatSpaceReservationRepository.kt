@@ -434,7 +434,8 @@ class JdbiBoatSpaceReservationRepository(
                     bs.type, CONCAT(bs.section, bs.place_number) as place,
                     rw.key as warning,
                     bs.section,
-                    m.name as municipality_name
+                    m.name as municipality_name,
+                    p.created as payment_date
                 FROM boat_space_reservation bsr
                 JOIN boat b on b.id = bsr.boat_id
                 JOIN reserver r ON bsr.reserver_id = r.id
@@ -442,6 +443,7 @@ class JdbiBoatSpaceReservationRepository(
                 JOIN location ON location_id = location.id
                 JOIN municipality m ON r.municipality_code = m.code
                 LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
+                LEFT JOIN payment p ON (p.reservation_id = bsr.id AND p.status = 'Success')
                 WHERE $filterQuery
                 $sortByQuery
                 """.trimIndent()
@@ -474,6 +476,7 @@ class JdbiBoatSpaceReservationRepository(
                     reserverType = row.reserverType,
                     municipalityCode = row.municipalityCode,
                     municipalityName = row.municipalityName,
+                    paymentDate = row.paymentDate
                 )
             }
     }
