@@ -61,5 +61,14 @@ class Utils {
             val citizen = authenticatedUser?.let { service.getCitizen(it.id) }
             return citizen
         }
+
+        fun isAuthenticated(
+            userType: UserType,
+            request: HttpServletRequest
+        ) = if (userType == UserType.CITIZEN) {
+            request.getAuthenticatedUser()?.type == "citizen"
+        } else {
+            request.getAuthenticatedUser()?.type == "user"
+        }
     }
 }

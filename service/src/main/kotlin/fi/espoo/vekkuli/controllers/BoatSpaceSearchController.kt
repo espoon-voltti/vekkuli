@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
+import fi.espoo.vekkuli.controllers.Utils.Companion.isAuthenticated
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
@@ -149,24 +150,12 @@ class BoatSpaceSearchController {
                 params
             )
 
-        val isAuthenticated =
-            isAuthenticated(userType, request)
-
         return boatSpaceSearch.renderResults(
             harbors.first,
             BoatFilter(width, length, boatType),
             harbors.second,
-            isAuthenticated,
+            isAuthenticated(userType, request),
             userType == UserType.EMPLOYEE
         )
-    }
-
-    private fun isAuthenticated(
-        userType: UserType,
-        request: HttpServletRequest
-    ) = if (userType == UserType.CITIZEN) {
-        getCitizen(request, citizenService) != null
-    } else {
-        request.getAuthenticatedUser()?.type == "user"
     }
 }
