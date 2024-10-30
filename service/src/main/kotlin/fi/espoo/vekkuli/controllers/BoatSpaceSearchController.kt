@@ -167,6 +167,6 @@ class BoatSpaceSearchController {
     ) = if (userType == UserType.CITIZEN) {
         getCitizen(request, citizenService) != null
     } else {
-        true
+        request.getAuthenticatedUser()?.type == "user"
     }
 }
