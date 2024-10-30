@@ -93,7 +93,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
                 listOf(
                     Recipient(organizationId, "eps@noreplytest.fi"),
                     Recipient(
-                        UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"),
+                        citizenIdOlivia,
                         "olivia@noreplytest.fi"
                     )
                 )
