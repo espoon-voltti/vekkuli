@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.util.UUID
 import kotlin.test.assertNotNull
 
 @ExtendWith(SpringExtension::class)
@@ -19,8 +18,6 @@ import kotlin.test.assertNotNull
 class CitizenServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var citizenService: CitizenService
-
-    private val oliviaCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
 
     @Test
     fun `should get correct citizen`() {
@@ -33,21 +30,21 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
     fun `should get citizen by full name`() {
         val citizens = citizenService.getCitizens("Olivia Virtanen")
         assertEquals(1, citizens.size, "Should find a citizen")
-        assertEquals(oliviaCitizenId, citizens[0].id, "Citizen is correctly fetched")
+        assertEquals(citizenIdOlivia, citizens[0].id, "Citizen is correctly fetched")
     }
 
     @Test
     fun `should get citizen by first name`() {
         val citizens = citizenService.getCitizens("olivia")
         assertEquals(1, citizens.size, "Should find a citizen")
-        assertEquals(oliviaCitizenId, citizens[0].id, "Citizen is correctly fetched")
+        assertEquals(citizenIdOlivia, citizens[0].id, "Citizen is correctly fetched")
     }
 
     @Test
     fun `should get citizen by last name`() {
         val citizens = citizenService.getCitizens("Virtanen")
         assertEquals(2, citizens.size, "Should find two citizens")
-        assertNotNull(citizens.first { it.id == oliviaCitizenId }, "Citizen is correctly fetched")
+        assertNotNull(citizens.first { it.id == citizenIdOlivia }, "Citizen is correctly fetched")
     }
 
     @Test
