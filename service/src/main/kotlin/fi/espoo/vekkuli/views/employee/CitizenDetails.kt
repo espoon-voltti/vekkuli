@@ -10,7 +10,7 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.common.CommonComponents
-import org.springframework.beans.factory.annotation.Autowired
+import fi.espoo.vekkuli.views.components.WarningBox
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,19 +24,13 @@ enum class SubTab {
 }
 
 @Service
-class CitizenDetails : BaseView() {
-    @Autowired
-    private lateinit var formComponents: FormComponents
-
-    @Autowired
-    private lateinit var reservationListBuilder: ReservationList
-
-    @Autowired
-    lateinit var icons: Icons
-
-    @Autowired
-    lateinit var commonComponents: CommonComponents
-
+class CitizenDetails(
+    private val formComponents: FormComponents,
+    private val reservationListBuilder: ReservationList,
+    private val icons: Icons,
+    private val commonComponents: CommonComponents,
+    private val warningBox: WarningBox,
+) : BaseView() {
     fun citizenPage(
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
@@ -222,12 +216,7 @@ class CitizenDetails : BaseView() {
                                         <textarea class="textarea" rows="1"></textarea>
                                     </div>
                                 </div>
-                                <div class="ack-info">
-                                    <div class="info-icon">${icons.warningExclamation(false)}</div>
-                                    <div class="info-content">
-                                        ${t("reservationWarning.ackInfo")}
-                                    </div>
-                                </div>
+                                ${warningBox.render(t("reservationWarning.ackInfo"))}
                                 <div class="block">
                                     <button id="ack-modal-cancel"
                                             class="button"
@@ -461,7 +450,7 @@ class CitizenDetails : BaseView() {
 
     fun messageTabContent(
         citizen: CitizenWithDetails,
-        messages: List<SentMessage>,
+        messages: List<QueuedMessage>,
     ): String {
         val messageHtml =
             messages.joinToString("\n") { message ->

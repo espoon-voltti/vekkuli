@@ -18,8 +18,6 @@ class OrganizationServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var organizationService: OrganizationService
 
-    private val oliviaId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
-    private val leoId = UUID.fromString("f5d377ea-5547-11ef-a1c7-7f2b94cf9afd")
     private val pursiseuraId = UUID.fromString("8b220a43-86a0-4054-96f6-d29a5aba17e7")
 
     @BeforeEach
@@ -29,21 +27,21 @@ class OrganizationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should add a member`() {
-        organizationService.addCitizenToOrganization(pursiseuraId, oliviaId)
+        organizationService.addCitizenToOrganization(pursiseuraId, citizenIdOlivia)
         organizationService.getOrganizationMembers(pursiseuraId).let { members ->
             assertEquals(1, members.size, "Should have one member")
-            assertEquals(oliviaId, members[0].id, "Correct member is added")
+            assertEquals(citizenIdOlivia, members[0].id, "Correct member is added")
         }
     }
 
     @Test
     fun `should remove a member`() {
-        organizationService.addCitizenToOrganization(pursiseuraId, oliviaId)
-        organizationService.addCitizenToOrganization(pursiseuraId, leoId)
-        organizationService.removeCitizenFromOrganization(pursiseuraId, oliviaId)
+        organizationService.addCitizenToOrganization(pursiseuraId, citizenIdOlivia)
+        organizationService.addCitizenToOrganization(pursiseuraId, citizenIdLeo)
+        organizationService.removeCitizenFromOrganization(pursiseuraId, citizenIdOlivia)
         organizationService.getOrganizationMembers(pursiseuraId).let { members ->
             assertEquals(1, members.size, "Should have one member")
-            assertEquals(leoId, members[0].id, "Correct member is left")
+            assertEquals(citizenIdLeo, members[0].id, "Correct member is left")
         }
     }
 
@@ -62,9 +60,9 @@ class OrganizationServiceIntegrationTests : IntegrationTestBase() {
                 "Espoo",
                 49,
             )
-        organizationService.addCitizenToOrganization(org.id, oliviaId)
-        organizationService.addCitizenToOrganization(pursiseuraId, oliviaId)
-        organizationService.getCitizenOrganizations(oliviaId).let { orgs ->
+        organizationService.addCitizenToOrganization(org.id, citizenIdOlivia)
+        organizationService.addCitizenToOrganization(pursiseuraId, citizenIdOlivia)
+        organizationService.getCitizenOrganizations(citizenIdOlivia).let { orgs ->
             assertEquals(2, orgs.size, "Should have two organizations")
             orgs.map { it.name }.sorted().let { names ->
                 assertEquals("Espoon Pursiseura", names[0], "Correct organization is listed")

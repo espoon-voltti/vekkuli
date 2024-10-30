@@ -43,6 +43,7 @@ data class BoatSpaceReservation(
     val actingUserId: UUID?,
     val reserverId: UUID?,
     val paymentId: UUID?,
+    val validity: ReservationValidity
 )
 
 fun getPriceWithoutAlv(priceCents: Int) = (priceCents / (1.0 + (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100.0))).roundToInt()

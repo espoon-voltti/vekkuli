@@ -388,6 +388,9 @@ class BoatReservationService(
         }
     }
 
+    fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
+        boatSpaceReservationRepo.setReservationStatusToInvoiced(reservationId)
+
     fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies? =
         boatSpaceReservationRepo.getUnfinishedReservationForCitizen(id)
 
@@ -490,6 +493,12 @@ class BoatReservationService(
 
     fun getExpiredBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getExpiredBoatSpaceReservationsForCitizen(citizenId)
+
+    fun getExpiringIndefiniteBoatSpaceReservations(): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getExpiringBoatSpaceReservations(ReservationValidity.Indefinite)
+
+    fun getExpiringFixedTermBoatSpaceReservations(): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getExpiringBoatSpaceReservations(ReservationValidity.FixedTerm)
 
     fun acknowledgeWarning(
         reservationId: Int,

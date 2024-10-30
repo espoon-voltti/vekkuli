@@ -43,12 +43,20 @@ fun deleteAllInvoices(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllEmails(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM sent_message")
+        handle.execute("DELETE FROM processed_message")
+    }
+}
+
 fun createReservationInConfirmedState(
     timeProvider: TimeProvider,
     reservationService: BoatReservationService,
     citizenId: UUID,
     boatSpaceId: Int,
     boatId: Int,
+    validity: ReservationValidity = ReservationValidity.FixedTerm
 ): BoatSpaceReservation {
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
@@ -63,7 +71,7 @@ fun createReservationInConfirmedState(
         boatId,
         citizenId,
         ReservationStatus.Payment,
-        ReservationValidity.FixedTerm,
+        validity,
         startDate = timeProvider.getCurrentDate(),
         endDate = timeProvider.getCurrentDate().plusDays(365),
     )

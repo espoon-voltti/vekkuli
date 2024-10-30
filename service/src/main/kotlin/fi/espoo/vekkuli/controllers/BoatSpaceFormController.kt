@@ -614,9 +614,6 @@ class BoatSpaceFormController(
             return badRequest("Reservation not found")
         }
 
-        val reservationStatus =
-            if (isEmployee) ReservationStatus.Invoiced else ReservationStatus.Payment
-
         if (reservation.status == ReservationStatus.Renewal) {
             val periods = reservationService.getReservationPeriods()
             val result = reservationService.canRenewAReservation(periods, reservation.validity ?: ReservationValidity.FixedTerm)
@@ -639,7 +636,7 @@ class BoatSpaceFormController(
                         email = input.email!!,
                         phone = input.phone!!,
                     ),
-                    reservationStatus,
+                    ReservationStatus.Payment,
                     reservation.validity ?: ReservationValidity.FixedTerm,
                     reservation.startDate,
                     reservation.endDate
@@ -675,7 +672,7 @@ class BoatSpaceFormController(
                         email = input.email!!,
                         phone = input.phone!!,
                     ),
-                    reservationStatus,
+                    ReservationStatus.Payment,
                     data.reservationValidity,
                     data.startDate,
                     data.endDate
@@ -684,7 +681,7 @@ class BoatSpaceFormController(
         }
 
         if (isEmployee) {
-            return redirectUrl("/virkailija/venepaikat/varaukset")
+            return redirectUrl("/virkailija/venepaikka/varaus/$reservationId/lasku")
         }
         // redirect to payments page with reservation id and slip type
         return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
