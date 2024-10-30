@@ -16,7 +16,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can renew reservation`() {
         try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 7, 12, 0, 0))
+            mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 12, 0, 0))
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
