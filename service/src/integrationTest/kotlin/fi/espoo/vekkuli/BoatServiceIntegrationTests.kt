@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -73,7 +74,7 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         val boatDeleted = boatService.deleteBoat(addedBoat.id)
         val boat = boatService.getBoat(addedBoat.id)
         assertEquals(true, boatDeleted, "Boat is deleted according to return value")
-        assertEquals(null, boat, "Boat is deleted")
+        assertEquals(timeProvider.getCurrentDateTime(), boat?.deletedAt, "Boat is deleted at current time")
     }
 
     @Test
@@ -90,5 +91,36 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         val boat = boatService.getBoat(newBoat.id)
         assertEquals(false, boatDeleted, "Boat is not deleted according to return value")
         assertEquals(newBoat, boat, "Boat is not deleted")
+    }
+
+    @Test
+    fun `should delete a boat that is linked to an expired reservation`() {
+        val newBoat = insertNewBoat()
+        createReservationInConfirmedState(
+            timeProvider,
+            reservationService,
+            this.citizenIdLeo,
+            1,
+            newBoat.id
+        )
+        // go forth a year, the previous reservation has now expired
+        mockTimeProvider(
+            timeProvider,
+            timeProvider.getCurrentDateTime().plusYears(1),
+        )
+        val boatDeleted = boatService.deleteBoat(newBoat.id)
+        val boat = boatService.getBoat(newBoat.id)
+        assertEquals(true, boatDeleted, "Boat is deleted according to return value")
+        assertEquals(timeProvider.getCurrentDateTime(), boat?.deletedAt, "Boat is deleted at current time")
+    }
+
+    @Test
+    fun `should get active boats for citizen`() {
+        insertNewBoat(this.citizenIdLeo, "TestBoat1",)
+        insertNewBoat(this.citizenIdLeo, "TestBoat2",)
+        val deleteBoat = insertNewBoat(this.citizenIdLeo, "TestBoat3",)
+        boatService.deleteBoat(deleteBoat.id)
+        boatService.getBoatsForReserver(this.citizenIdLeo)
+        assertEquals(2, boatService.getBoatsForReserver(this.citizenIdLeo).size, "Correct number of boats are fetched")
     }
 }
