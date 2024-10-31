@@ -9,7 +9,7 @@ import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.dateToShortString
+import fi.espoo.vekkuli.utils.formatAsShortDate
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,7 +26,7 @@ fun createReference(
     merchantId: String,
     reservationId: Int,
     now: LocalDate
-): String = "$balanceAccount$merchantId${dateToShortString(now)}$reservationId"
+): String = "$balanceAccount$merchantId${formatAsShortDate(now)}$reservationId"
 
 @Controller
 @RequestMapping("/kuntalainen/maksut")

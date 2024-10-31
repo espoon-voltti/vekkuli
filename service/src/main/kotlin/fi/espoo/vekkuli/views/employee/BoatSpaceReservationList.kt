@@ -3,10 +3,10 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Service
@@ -146,8 +146,9 @@ class BoatSpaceReservationList {
         // language=HTML
         val reservationRows =
             reservations.joinToString("\n") { result ->
-                val startDateFormatted = result.startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                val endDateFormatted = result.endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                val startDateFormatted = formatAsShortYearDate(result.startDate)
+                val endDateFormatted = formatAsShortYearDate(result.endDate)
+                val paymentDateFormatted = formatAsShortYearDate(result.paymentDate)
                 """
                 <tr class="reservation-item"
                     id="boat-space-${result.boatSpaceId}"
@@ -165,7 +166,7 @@ class BoatSpaceReservationList {
                     <td>${t("boatSpaces.type${result.type}Option")}</td>
                     <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.municipalityName}</td>
-                    <td></td>
+                    <td>$paymentDateFormatted</td>
                     <td>$startDateFormatted</td>
                     <td>$endDateFormatted</td>
                     <td class="has-text-centered">

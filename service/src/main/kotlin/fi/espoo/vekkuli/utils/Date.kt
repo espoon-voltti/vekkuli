@@ -39,12 +39,15 @@ class SystemTimeProvider : TimeProvider() {
     override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now()
 }
 
-val shortFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")
-val datePattern: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+val shortDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")
+val fullDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+val shortYearDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")
 
-fun dateToShortString(date: LocalDate): String = date.format(shortFormat)
+fun formatAsShortDate(date: LocalDate): String = date.format(shortDateFormat)
 
-fun dateToString(date: LocalDate): String = date.format(datePattern)
+fun formatAsFullDate(date: LocalDate): String = date.format(fullDateFormat)
+
+fun formatAsShortYearDate(date: LocalDate?): String = if (date == null) "-" else date.format(shortYearDateFormat)
 
 fun getFirstWeekdayOfMonth(
     year: Int,

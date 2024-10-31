@@ -1,14 +1,11 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
 import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
-import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
-import fi.espoo.vekkuli.config.EmailEnv
-import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
@@ -386,8 +383,9 @@ class BoatReservationService(
                     "length" to boatSpace.lengthCm.cmToM(),
                     "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
                     "endDate" to reservation.endDate,
-                    // TODO: get from reservation
-                    "invoiceDueDate" to dateToString(timeProvider.getCurrentDate().plusDays(14))
+                    // TODO: get due date from invoice
+                    "invoiceDueDate" to
+                        formatAsFullDate(timeProvider.getCurrentDate().plusDays(DomainConstants.INVOICE_PAYMENT_PERIOD.toLong()))
                 )
             )
         }
