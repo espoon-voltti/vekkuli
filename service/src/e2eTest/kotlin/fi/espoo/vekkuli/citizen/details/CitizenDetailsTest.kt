@@ -16,7 +16,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can renew reservation`() {
         try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 7, 12, 0, 0))
+            mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 12, 0, 0))
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
@@ -35,6 +35,26 @@ class CitizenDetailsTest : PlaywrightTest() {
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `citizen cannot renew reservation if it is not time to renew`() {
+        try {
+            // Set time over month before the reservation ends. Renewal should not be possible.
+            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 12, 30, 12, 0, 0))
+
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            assertThat(citizenDetails.renewReservationButton(1)).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }

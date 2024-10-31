@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
+import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.config.Dimensions
@@ -121,6 +122,10 @@ class BoatReservationService(
 
         val reservation = boatSpaceReservationRepo.getBoatSpaceReservationWithPaymentId(stamp)
         if (reservation == null) return PaymentProcessResult.Failure
+
+        if (reservation.renewedFromId != null) {
+            boatSpaceReservationRepo.terminateBoatSpaceReservation(reservation.renewedFromId)
+        }
 
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
 
@@ -594,7 +599,8 @@ class BoatReservationService(
 
     fun canRenewAReservation(
         periods: List<ReservationPeriod>,
-        oldValidity: ReservationValidity
+        oldValidity: ReservationValidity,
+        oldEndDate: LocalDate,
     ): ReservationResult {
         if (oldValidity == ReservationValidity.FixedTerm) {
             // Fixed term reservations cannot be renewed
@@ -602,6 +608,10 @@ class BoatReservationService(
         }
 
         val now = timeProvider.getCurrentDate()
+
+        if (now.isBefore(oldEndDate.minusDays(DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())) || now.isAfter(oldEndDate)) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
 
         val hasActivePeriod =
             hasActiveReservationPeriod(
@@ -669,7 +679,7 @@ class BoatReservationService(
         val periods = getReservationPeriods()
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         return reservations.map { reservation ->
-            val canRenewResult = canRenewAReservation(periods, reservation.validity)
+            val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate)
             val canSwitchResult = canSwitchAReservation(reservation, periods, isEspooCitizen)
             reservation.copy(
                 canRenew = canRenewResult.success,
@@ -684,5 +694,9 @@ class BoatReservationService(
             return listOf()
         }
         return listOf<Recipient>(Recipient(reservation.reserverId, reservation.email))
+    }
+
+    fun markReservationEnded(reservationId: Int) {
+        boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
     }
 }
