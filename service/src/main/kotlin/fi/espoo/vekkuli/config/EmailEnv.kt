@@ -8,6 +8,7 @@ data class EmailEnv(
     val region: Region,
     val senderArn: String,
     val senderAddress: String,
+    val employeeAddress: String,
 ) {
     companion object {
         fun fromEnvironment(env: Environment) =
@@ -29,7 +30,11 @@ data class EmailEnv(
                 senderAddress =
                     env.getProperty(
                         "vekkuli.email.sender_address",
-                    ) ?: "no-reply@espoo.fi"
+                    ) ?: "no-reply@espoo.fi",
+                employeeAddress =
+                    env.getProperty(
+                        "vekkuli.email.employee_address",
+                    ) ?: "venepaikat@espoo.fi"
             )
     }
 }

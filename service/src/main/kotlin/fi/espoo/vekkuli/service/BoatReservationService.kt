@@ -441,9 +441,9 @@ class BoatReservationService(
                     .flatMap {
                         when (it) {
                             PaymentFilter.PAID -> listOf(ReservationStatus.Confirmed)
-                            PaymentFilter.UNPAID -> listOf(ReservationStatus.Payment, ReservationStatus.Invoiced)
+                            PaymentFilter.UNPAID -> listOf(ReservationStatus.Invoiced)
                         }
-                    }.ifEmpty { listOf(ReservationStatus.Confirmed, ReservationStatus.Payment, ReservationStatus.Invoiced) }
+                    }.ifEmpty { listOf(ReservationStatus.Confirmed, ReservationStatus.Invoiced) }
             )
         )
 

@@ -21,7 +21,7 @@ import kotlin.test.assertNotNull
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
-    val espooCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
+    val espooCitizenId = citizenIdOlivia
     val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
 
     @BeforeEach
@@ -299,7 +299,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 email = "email@email.com",
                 phone = "0403849283",
             ),
-            ReservationStatus.Payment,
+            ReservationStatus.Confirmed,
             ReservationValidity.FixedTerm,
             timeProvider.getCurrentDate(),
             timeProvider.getCurrentDate()
@@ -331,7 +331,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             1,
             1
         )
-        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInPaymentState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
         createReservationInInfoState(
             timeProvider,
             reservationService,
@@ -353,8 +353,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        assertEquals(4, reservations.size, "reservations are out filtered correctly")
-        assertEquals(listOf(177, 200, 2, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
+        assertEquals(3, reservations.size, "reservations are out filtered correctly")
+        assertEquals(listOf(177, 200, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
     }
 
     @Test
@@ -366,7 +366,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             1,
             1
         )
-        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInInvoiceState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
 
         val unfilteredReservations =
             reservationService.getBoatSpaceReservations(
@@ -404,8 +404,11 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             1,
             1
         )
-        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
-        createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 3, 2)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenIdMikko, 3, 2)
+        createReservationInConfirmedState(timeProvider, reservationService, citizenIdOlivia, 3, 2)
+
+        // Create a reservation for Olivia Virtanen in payment state
+        createReservationInPaymentState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
 
         val reservationsByFirstName =
             reservationService.getBoatSpaceReservations(
@@ -439,7 +442,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             1,
             1
         )
-        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInPaymentState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
 
         val madeReservation =
             createReservationInPaymentState(
@@ -467,7 +470,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 email = "email@email.com",
                 phone = "0403849283"
             ),
-            ReservationStatus.Payment,
+            ReservationStatus.Confirmed,
             ReservationValidity.FixedTerm,
             timeProvider.getCurrentDate(),
             timeProvider.getCurrentDate()
@@ -533,7 +536,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             1
         )
         createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)
-        createReservationInPaymentState(timeProvider, reservationService, UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49"), 2, 3)
+        createReservationInInvoiceState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
 
         val reservations =
             reservationService.getBoatSpaceReservations(

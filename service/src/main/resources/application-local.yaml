@@ -22,6 +22,7 @@ vekkuli:
     region: "eu-west-1"
     sender_address: "varaukset@espoo.fi"
     sender_arn: "n/a"
+    employee_address: "venepaikat@espoo.fi"
   paytrail:
     merchant_id: ${PAYTRAIL_MERCHANT_ID:375917}
     merchant_secret: ${PAYTRAIL_MERCHANT_SECRET:SAIPPUAKAUPPIAS}

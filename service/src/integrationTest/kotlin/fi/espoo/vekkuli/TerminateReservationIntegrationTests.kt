@@ -1,4 +1,5 @@
 package fi.espoo.vekkuli
+import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.SentMessageRepository
 import fi.espoo.vekkuli.service.*
@@ -13,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.*
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,6 +38,8 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var messageRepository: SentMessageRepository
+
+    @Autowired lateinit var emailEnv: EmailEnv
 
     @Test
     fun `should terminate the reservation and set ending date to now`() {
@@ -103,7 +107,24 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         assertNotNull(citizen, "Citizen is not null")
         terminateService.terminateBoatSpaceReservation(reservation.id, citizen)
         val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
-        assertEquals(1, sentEmails.size, "One email is to waiting to be sent")
-        assertEquals(citizen.email, sentEmails[0].recipientAddress, "Email is set to be sent to the citizen")
+        assertTrue(
+            sentEmails.any { it.recipientAddress == citizen.email },
+            "Email is set to be sent to the citizen"
+        )
+    }
+
+    @Test
+    fun `should send email notice to employee email`() {
+        val citizen = citizenService.getCitizen(this.citizenIdOlivia)
+        val reservation = createReservationInConfirmedState(timeProvider, reservationService, this.citizenIdOlivia, 1, 1)
+
+        // Keep this here to make sure Citizen is present
+        assertNotNull(citizen, "Citizen is not null")
+        terminateService.terminateBoatSpaceReservation(reservation.id, citizen)
+        val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
+        assertTrue(
+            sentEmails.any { it.recipientAddress == emailEnv.employeeAddress },
+            "Email is set to be sent to the employee address"
+        )
     }
 }
