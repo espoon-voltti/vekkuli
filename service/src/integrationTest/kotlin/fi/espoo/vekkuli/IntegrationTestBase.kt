@@ -1,9 +1,12 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.bindKotlin
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -43,5 +46,33 @@ abstract class IntegrationTestBase {
     @BeforeEach
     fun resetDatabase() {
         // Override this method in subclasses to reset the database before each test
+    }
+
+    data class DevBoatSpace(
+        val id: Int,
+        val type: BoatSpaceType,
+        val locationId: Int,
+        val priceId: Int,
+        val section: String,
+        val placeNumber: Int,
+        val amenity: BoatSpaceAmenity,
+        val widthCm: Int,
+        val lengthCm: Int,
+        val description: String,
+    )
+
+    fun insertDevBoatSpace(boatSpace: DevBoatSpace) {
+        jdbi.inTransaction<Unit, Exception> { handle ->
+            handle.createUpdate(
+                """
+                INSERT INTO boat_space (
+                    id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description
+                ) VALUES (
+                    :id, :type, :locationId, :priceId, :section, :placeNumber, :amenity, :widthCm, :lengthCm, :description
+                )
+                """
+            ).bindKotlin(boatSpace)
+                .execute()
+        }
     }
 }
