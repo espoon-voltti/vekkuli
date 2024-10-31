@@ -547,11 +547,12 @@ INSERT INTO sent_message (provider_id, created, sent_at, type, status, sender_id
 VALUES
     ('1000', '2024-09-01 13:01:20', '2024-09-01 13:01:21', 'Email', 'Sent', '94833b54-132b-4ab8-b841-60df45809b3e', 'ville@noreplytest.fi', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'leo@gmail.com', 'Käyttöveden katko', 'Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.');
 
-INSERT INTO boat (registration_code, reserver_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership)
+INSERT INTO boat (registration_code, reserver_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership, deleted_at)
 VALUES
-    ('A1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon vene', 120, 400, 20, 180, 'OutboardMotor', 'Terhi 400', '', 'Owner'),
-    ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner'),
-    ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner');
+    ('A1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon vene', 120, 400, 20, 180, 'OutboardMotor', 'Terhi 400', '', 'Owner', null),
+    ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner', null),
+    ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner', null),
+    ('D1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon poistettu vene', 120, 400, 20, 180, 'OutboardMotor', 'Delmo 600', '', 'Owner', '2024-04-01T00:00:00');
 
 
 INSERT INTO email_template (id, subject, body)
