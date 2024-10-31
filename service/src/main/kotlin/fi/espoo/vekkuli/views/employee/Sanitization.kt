@@ -14,14 +14,13 @@ import kotlin.reflect.jvm.isAccessible
 
 @Component
 class SanitizationUtil {
-    fun sanitize(input: Any?): Any? {
-        return when (input) {
-            is String -> HtmlUtils.htmlEscape(input) // Sanitize strings
+    fun sanitize(input: Any?): Any? =
+        when (input) {
+            is String -> htmlEscape(input) // Sanitize strings
             is Collection<*> -> input.map { sanitize(it) } // Recursively sanitize collections
             is Map<*, *> -> input.mapValues { sanitize(it.value) } // Recursively sanitize maps
             else -> sanitizeObject(input) // Sanitize objects
         }
-    }
 
     private fun <T : Any> sanitizeObject(obj: T?): T? {
         if (obj == null) return null
@@ -41,7 +40,7 @@ class SanitizationUtil {
                     it.isAccessible = true
                     val value = it.getter.call(obj) ?: return@associateWith null
                     when (it.returnType.classifier) {
-                        String::class -> HtmlUtils.htmlEscape(value as String) // Sanitize strings
+                        String::class -> htmlEscape(value as String) // Sanitize strings
                         Collection::class -> sanitize(value) // Recursively sanitize collections
                         Map::class -> sanitize(value) // Recursively sanitize maps
                         else -> if (value::class.isData) sanitize(value) else value // Recursively sanitize objects
@@ -51,13 +50,17 @@ class SanitizationUtil {
         // Return the new sanitized object using the primary constructor
         return constructor.callBy(params)
     }
+
+    private fun htmlEscape(input: String) = HtmlUtils.htmlEscape(input, "UTF-8")
 }
 
 @Aspect
 @Component
 class SanitizationAspect
     @Autowired
-    constructor(private val sanitizationUtil: SanitizationUtil) {
+    constructor(
+        private val sanitizationUtil: SanitizationUtil
+    ) {
         // This advice will be applied to all methods that have a parameter annotated with @SanitizeInput
         @Around("execution(* *(.., @SanitizeInput (*), ..))")
         fun sanitizeInputs(joinPoint: ProceedingJoinPoint): Any? {
@@ -67,14 +70,15 @@ class SanitizationAspect
 
             // Sanitize the arguments based on the custom annotation
             val sanitizedArgs =
-                args.mapIndexed { index, arg ->
-                    if (parameters[index].getAnnotation(SanitizeInput::class.java) != null) {
-                        val sanitizedArg = sanitizationUtil.sanitize(arg)
-                        sanitizedArg
-                    } else {
-                        arg
-                    }
-                }.toTypedArray() // Convert back to an array to use with proceed
+                args
+                    .mapIndexed { index, arg ->
+                        if (parameters[index].getAnnotation(SanitizeInput::class.java) != null) {
+                            val sanitizedArg = sanitizationUtil.sanitize(arg)
+                            sanitizedArg
+                        } else {
+                            arg
+                        }
+                    }.toTypedArray() // Convert back to an array to use with proceed
 
             // Proceed with the sanitized arguments
             return joinPoint.proceed(sanitizedArgs)
