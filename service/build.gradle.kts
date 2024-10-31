@@ -1,4 +1,5 @@
 import com.github.gradle.node.npm.task.NpxTask
+import org.flywaydb.core.Flyway
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
@@ -170,6 +171,18 @@ tasks.register("compileSass", NpxTask::class) {
     args = listOf("--load-path=node_modules", "src/main/resources/public/static/sass:src/main/resources/public/static/css")
 }
 
+task("testMigration") {
+    group = "build"
+    doFirst {
+        Flyway
+            .configure()
+            .dataSource("jdbc:postgresql://localhost:5432/vekkuli_it", "vekkuli", "postgres")
+            .load()
+            .migrate()
+    }
+    dependsOn("flywayMigrate")
+}
+
 tasks {
     bootRun {
         dependsOn("compileSass")
@@ -197,6 +210,7 @@ tasks {
     }
     register("integrationTest", Test::class) {
         useJUnitPlatform()
+        dependsOn("testMigration")
         group = "verification"
         testClassesDirs = sourceSets["integrationTest"].output.classesDirs
         classpath = sourceSets["integrationTest"].runtimeClasspath

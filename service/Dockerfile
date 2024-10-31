@@ -35,8 +35,7 @@ COPY . .
 RUN ./gradlew compileSass
 
 # --offline is used to be sure that all dependencies are installed in previous steps
-RUN ./gradlew --offline --no-daemon ktlintCheck \
-&& ./gradlew --offline --no-daemon flywayValidate
+RUN ./gradlew --offline --no-daemon ktlintCheck
 RUN ./gradlew --offline --no-daemon assemble  \
  && unzip -oq build/libs/vekkuli-service-boot.jar -d target
 
