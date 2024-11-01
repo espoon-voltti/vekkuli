@@ -1,18 +1,19 @@
 package fi.espoo.vekkuli.views.citizen
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.head
-import org.springframework.beans.factory.annotation.Autowired
+import io.ktor.util.*
 import org.springframework.stereotype.Service
 
 @Service
-class Layout {
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+class Layout(
+    private val messageUtil: MessageUtil,
+    private val icons: Icons,
+    private val commonComponents: CommonComponents
+) {
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(
         isAuthenticated: Boolean,
@@ -36,7 +37,7 @@ class Layout {
                             <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
                                 <span>${userName ?: "Dropdown"}</span>
                                 <span class="icon is-small">
-                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                     ${icons.chevronDown}
                                 </span>
                             </a>
                         </div>
@@ -76,7 +77,7 @@ class Layout {
         // language=HTML
         return """
             <!DOCTYPE html>
-            <html class="theme-light">
+            <html class="theme-light" lang="${messageUtil.getLocaleLanguageCode()}">
             <head>
                 <title>Varaukset</title>
                 $head
@@ -85,11 +86,13 @@ class Layout {
             
             <nav role="navigation" aria-label="main navigation">
                 <div class="nav-row">
-                    <img class="logo" src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                    <h1>Espoon resurssivaraus</h1>
-                    
-                    <div class="auth">
-                        $menu 
+                    <div class='columns'>
+                        <img class="logo" src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                        <h1>Espoon resurssivaraus</h1>
+                    </div>
+                    <div class="columns">
+                            ${commonComponents.languageSelection()}
+                            $menu 
                     </div>
                 </div>
                 
@@ -99,7 +102,7 @@ class Layout {
                     </div>
                     <!-- <a class="link">Liikuntatilat</a>
                     <a class="link">Ohjatut ryhmäliikunnat</a> -->
-                    <div style="margin-left: auto">
+                    <div>
                         $citizenProfileLink
                     </div>
                 </div>

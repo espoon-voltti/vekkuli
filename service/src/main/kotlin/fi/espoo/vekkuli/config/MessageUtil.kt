@@ -19,5 +19,5 @@ class MessageUtil(
         locale: Locale = LocaleContextHolder.getLocale()
     ): String = messageSource.getMessage(code, args.toTypedArray(), locale)
 
-    fun getLocale(): String = LocaleContextHolder.getLocale().toString()
+    fun getLocaleLanguageCode(): String = LocaleContextHolder.getLocale().language
 }
