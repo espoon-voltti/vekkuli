@@ -25,12 +25,8 @@ class BoatSpaceTerminateReservationController {
         @RequestParam("reservationId") reservationId: Int,
     ): ResponseEntity<Void> {
         val currentCitizen = citizenUserController.getAuthenticatedCitizen(request)
-        terminateService.terminateBoatSpaceReservation(reservationId, currentCitizen)
+        terminateService.terminateBoatSpaceReservation(reservationId, currentCitizen.id)
 
         return ResponseEntity.noContent().build()
     }
 }
-/*
-
-
-*/

@@ -243,6 +243,27 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
+    override fun getReservationWithDependencies(id: Int): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
+                        location.name as location_name, price.price_cents, 
+                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+                          bs.description
+                    FROM boat_space_reservation bsr
+                    LEFT JOIN reserver r ON bsr.reserver_id = r.id
+                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
+                    JOIN location ON location_id = location.id
+                    JOIN price ON price_id = price.id
+                    WHERE bsr.id = :id
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+        }
+
     override fun getReservationForRenewal(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
