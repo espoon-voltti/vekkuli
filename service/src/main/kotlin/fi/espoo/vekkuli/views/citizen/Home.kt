@@ -16,16 +16,16 @@ class Home(
     fun render(): String {
         // language=HTML
         return """
-                        <section class="section">
-                            <div class="container">
-                                <h2>${t("boatSpaces.title")}</h2>
-                                ${markDownService.render(t("frontPage.content"))}
-                                ${currentDate.render()}
-                                <div class="block"><a class="button is-primary" href="/kuntalainen/venepaikat">${t(
-            "home.reserveBoatSpace"
-        )}</button></a>
-                            </div>
-                        </section>
+            <section class="section">
+                <div class="container">
+                    <h2>${t("boatSpaces.title")}</h2>
+                    ${markDownService.render(t("frontPage.content"))}
+                    ${currentDate.render()}
+                    <div class="block"><a class="button is-primary" href="/kuntalainen/venepaikat">
+                        ${t("home.reserveBoatSpace")}
+                    </button></a>
+                </div>
+            </section>
             """.trimIndent()
     }
 }
