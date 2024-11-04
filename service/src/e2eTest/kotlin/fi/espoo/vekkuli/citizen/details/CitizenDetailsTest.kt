@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.citizen.details
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.PaymentPage
@@ -21,7 +22,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -50,7 +51,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -67,7 +68,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -111,7 +112,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()

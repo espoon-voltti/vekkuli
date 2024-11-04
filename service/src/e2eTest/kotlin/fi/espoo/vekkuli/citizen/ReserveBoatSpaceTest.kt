@@ -3,11 +3,9 @@ package fi.espoo.vekkuli.citizen
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.pages.BoatSpaceFormPage
-import fi.espoo.vekkuli.pages.ErrorPage
-import fi.espoo.vekkuli.pages.PaymentPage
-import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
+import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -16,10 +14,24 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
+    fun `employee can change the language`() {
+        page.navigate("$baseUrl?lang=fi")
+        assertThat(page.getByText("Venepaikat").first()).isVisible()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        page.getByTestId("language-selection").click()
+        page.getByText("Englanti").click()
+        assertThat(page.getByText("Boat spaces").first()).isVisible()
+        page.getByTestId("language-selection").click()
+        page.getByText("Swedish").click()
+        assertThat(page.getByText("Båtplats").first()).isVisible()
+    }
+
+    @Test
     fun reservingShouldFailOutsidePeriod() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 22, 22, 22))
-            page.navigate(baseUrl)
+            page.navigate(baseUrlWithEnglishLangParam)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -42,7 +54,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             assertThat(reservationPage.harborHeaders).hasCount(2)
 
             reservationPage.firstReserveButton.click()
-
             assertThat(page.locator("body")).containsText("Reservation not possible")
         } catch (e: AssertionError) {
             handleError(e)
@@ -52,7 +63,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun reservingABoatSpace() {
         try {
-            page.navigate(baseUrl)
+            page.navigate(baseUrlWithEnglishLangParam)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -160,7 +171,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun reservingABoatSpaceAsOrganization() {
         try {
-            page.navigate(baseUrl)
+            page.navigate(baseUrlWithEnglishLangParam)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -222,7 +233,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun cancelReservationFromForm() {
         // login and pick first free space
-        page.navigate(baseUrl)
+        page.navigate(baseUrlWithEnglishLangParam)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
@@ -272,7 +283,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
     @Test
     fun formValuesArePreservedAfterPaymentPageBackButton() {
-        page.navigate(baseUrl)
+        page.navigate(baseUrlWithEnglishLangParam)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
@@ -306,7 +317,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun paymentSuccess() {
         // login and pick first free space
-        page.navigate(baseUrl)
+        page.navigate(baseUrlWithEnglishLangParam)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
@@ -328,7 +339,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun paymentFailed() {
         // login and pick first free space
-        page.navigate(baseUrl)
+        page.navigate(baseUrlWithEnglishLangParam)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
@@ -356,7 +367,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     fun `show error page when reserving space off season`() {
         // login and pick first free space
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 0, 0, 0))
-        page.navigate(baseUrl)
+        page.navigate(baseUrlWithEnglishLangParam)
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 

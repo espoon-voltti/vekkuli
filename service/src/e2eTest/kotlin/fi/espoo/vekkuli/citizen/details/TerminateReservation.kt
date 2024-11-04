@@ -9,6 +9,8 @@ import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
 class TerminateReservation : PlaywrightTest() {
+    val citizenPageInEnglish = "$baseUrl/kuntalainen/omat-tiedot?lang=en"
+
     @Test
     fun `citizen can open a terminate reservation modal from a reservation list item`() {
         try {
@@ -17,7 +19,7 @@ class TerminateReservation : PlaywrightTest() {
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
             assertThat(citizenDetailsPage.expiredReservationList)
@@ -49,7 +51,7 @@ class TerminateReservation : PlaywrightTest() {
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             // Expired list is not on the page
             assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)

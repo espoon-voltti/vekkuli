@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.citizen.details
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -18,7 +19,7 @@ class CitizenReservationsTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByTestId("031298-988S").click() // Olivia Virtanen
             page.getByText("Kirjaudu").click()
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
@@ -40,7 +41,7 @@ class CitizenReservationsTest : PlaywrightTest() {
             page.getByTestId("loginButton").click()
             page.getByTestId("031298-988S").click() // Olivia Virtanen
             page.getByText("Kirjaudu").click()
-            page.navigate(baseUrl + "/kuntalainen/omat-tiedot")
+            page.navigate(citizenPageInEnglish)
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")

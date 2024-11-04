@@ -55,11 +55,4 @@ class GlobalControllerAdvice
 
         @ModelAttribute("currentUri")
         fun currentUri(request: HttpServletRequest): String = request.requestURI
-
-        @ModelAttribute("lang")
-        fun setLanguage(request: HttpServletRequest): String {
-            val locale = messageUtil.getLocale()
-            // Get the first language from the Accept-Language header
-            return locale.split("_")[0]
-        }
     }

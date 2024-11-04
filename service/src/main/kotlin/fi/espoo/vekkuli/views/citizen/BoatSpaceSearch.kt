@@ -105,7 +105,7 @@ class BoatSpaceSearch(
             <section class="section">
                 <div class="container">
                     <div>
-                        <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
+                        <h2>${t("boatApplication.title.search")}</h2>
                     </div>
                     ${if (!isEmployee) infoBox else ""}
                     <div class="columns">

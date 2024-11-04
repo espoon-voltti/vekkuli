@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import org.junit.jupiter.api.Test
@@ -13,7 +13,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun listingReservations() {
         try {
-            page.navigate(baseUrl + "/virkailija")
+            page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -32,7 +32,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editCitizen() {
         try {
-            page.navigate(baseUrl + "/virkailija")
+            page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -94,7 +94,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMemos() {
         try {
-            page.navigate(baseUrl + "/virkailija")
+            page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -131,7 +131,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMessages() {
         try {
-            page.navigate(baseUrl + "/virkailija")
+            page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -149,7 +149,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editBoat() {
         try {
-            page.navigate(baseUrl + "/virkailija")
+            page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
 
@@ -193,7 +193,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun deleteBoat() {
         try {
-            page.navigate(baseUrl + "/virkailija")
+            page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
 
