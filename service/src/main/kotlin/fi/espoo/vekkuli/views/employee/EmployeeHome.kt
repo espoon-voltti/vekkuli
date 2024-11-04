@@ -1,11 +1,13 @@
-package fi.espoo.vekkuli.views.citizen
+package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.views.common.CurrentDate
 import org.springframework.stereotype.Service
 
 @Service
 class EmployeeHome(
     private val messageUtil: MessageUtil,
+    private val currentDate: CurrentDate
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -26,12 +28,14 @@ class EmployeeHome(
             } else {
                 ""
             }
+
         return """
             <section class="section">
               <div class="container">
                 <h1 class="title">Varaukset</h1>
                 <h2 class="subtitle">Virkailijan kirjautuminen</h2>
                 $content
+                ${currentDate.render()}
               </div>
             </section>
             """.trimIndent()

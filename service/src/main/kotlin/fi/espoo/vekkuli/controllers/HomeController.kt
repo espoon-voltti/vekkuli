@@ -4,9 +4,9 @@ import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.views.citizen.EmployeeHome
 import fi.espoo.vekkuli.views.citizen.Home
 import fi.espoo.vekkuli.views.citizen.Layout
+import fi.espoo.vekkuli.views.employee.EmployeeHome
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
