@@ -51,28 +51,30 @@ class EmployeeLayout(
             }
         // language=HTML
         return """
-            <!DOCTYPE html>
-            <html class="theme-light" lang="${messageUtil.getLocaleLanguageCode()}>
+             <!DOCTYPE html>
+            <html class="theme-light" lang="${messageUtil.getLocaleLanguageCode()}">
             <head>
                 <title>Varaukset</title>
                 $head
             </head>
             <body>
-            <div class="columns">
-                <div class="menu">
-                    <p class="menu-label">
-                        <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                    </p>
-                        <div class='pb-m'>${commonComponents.languageSelection()}</div>
+            <div class="columns is-gapless">
+                <div class=" column is-one-fifth">
+                    <div class='menu'>
+                        <p class="menu-label">
+                            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                        </p>
                         <p class="menu-label">${t("menu.marineOutdoor")}</p>
                         <ul class="menu-list">
                             <li>
                                 $boatSpaceReservationsLink
                             </li>
                         </ul>
-                        
-                    <div class="auth-menu" >
-                        $authMenu
+                                                   
+                        <div class="login-section" >
+                            ${commonComponents.languageSelection()}
+                            $authMenu
+                        </div>
                     </div>
                 </div>
                 <div class="column content-column" >

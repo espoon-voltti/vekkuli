@@ -17,16 +17,17 @@ class CommonComponents {
 
     fun languageSelection(): String {
         val languageCode = messageUtil.getLocaleLanguageCode().uppercase()
+        // language=HTML
         return(
             """
-            <div class="dropdown is-hoverable language-selection" >
+            <div class="dropdown is-hoverable" id="language-selection" >
               <div class="dropdown-trigger">
-                <a aria-haspopup="true" aria-controls="dropdown-menu">
-                <span class="icon is-small">
-                    ${icons.globe}
-                  </span>
-                  <span >$languageCode</span>
-                </a>
+                <a class="dropdown-title" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span class="icon is-small">
+                        ${icons.globe}
+                      </span>
+                      <span class='pl-xs'>$languageCode</span>
+                    </a>
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
