@@ -24,8 +24,7 @@ FROM base AS builder
 WORKDIR /app
 
 COPY ./gradle/ ./gradle/
-COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./
-COPY ./webpack.config.js ./
+COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./webpack.config.js ./
 
 RUN ./gradlew --no-daemon resolveDependencies \
  && ./gradlew e2eTestDeps
