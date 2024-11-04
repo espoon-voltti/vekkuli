@@ -162,4 +162,12 @@ class SanitizationUtilTest {
 
         assertEquals(expected, result)
     }
+
+    @Test
+    fun `should sanitize strings with special characters in utf-8`() {
+        val input = "Laila Äijälä"
+        val result = sanitizationUtil.sanitize(input)
+
+        assertEquals(input, result)
+    }
 }

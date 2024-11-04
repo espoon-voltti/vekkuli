@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.repository
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -11,7 +12,8 @@ import java.util.*
 
 @Repository
 class JdbiBoatRepository(
-    private val jdbi: Jdbi
+    private val jdbi: Jdbi,
+    private val timeProvider: TimeProvider
 ) : BoatRepository {
     override fun getBoatsForReserver(reserverId: UUID): List<Boat> =
         jdbi.withHandleUnchecked { handle ->
@@ -19,7 +21,7 @@ class JdbiBoatRepository(
                 handle.createQuery(
                     """
                     SELECT * FROM boat
-                    WHERE reserver_id = :reserverId
+                    WHERE reserver_id = :reserverId AND deleted_at IS NULL
                     ORDER BY id
                     """.trimIndent()
                 )
@@ -130,16 +132,21 @@ class JdbiBoatRepository(
             val query =
                 handle.createUpdate(
                     """
-                    DELETE FROM boat
+                    UPDATE boat
+                    SET deleted_at = :timestamp
                     WHERE boat.id = :id
                       AND NOT EXISTS (
-                          SELECT boat_id
+                          SELECT 1
                           FROM boat_space_reservation
-                          WHERE boat_space_reservation.boat_id = boat.id
+                          WHERE 
+                            boat_space_reservation.boat_id = boat.id
+                            AND
+                            boat_space_reservation.end_date > :timestamp
                       );
                     """.trimIndent()
                 )
             query.bind("id", boatId)
+            query.bind("timestamp", timeProvider.getCurrentDateTime())
             query.execute() == 1
         }
 }

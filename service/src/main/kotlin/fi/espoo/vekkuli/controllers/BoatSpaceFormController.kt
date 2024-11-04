@@ -615,33 +615,29 @@ class BoatSpaceFormController(
         }
 
         if (reservation.status == ReservationStatus.Renewal) {
-            val periods = reservationService.getReservationPeriods()
-            val result = reservationService.canRenewAReservation(periods, reservation.validity ?: ReservationValidity.FixedTerm)
-            if (result is ReservationResult.Success) {
-                reservationService.reserveBoatSpace(
-                    reserverId,
-                    ReserveBoatSpaceInput(
-                        reservationId = reservationId,
-                        boatId = input.boatId,
-                        boatType = input.boatType!!,
-                        width = input.width ?: 0.0,
-                        length = input.length ?: 0.0,
-                        depth = input.depth ?: 0.0,
-                        weight = input.weight,
-                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                        boatName = input.boatName ?: "",
-                        otherIdentification = input.otherIdentification ?: "",
-                        extraInformation = input.extraInformation ?: "",
-                        ownerShip = input.ownership!!,
-                        email = input.email!!,
-                        phone = input.phone!!,
-                    ),
-                    ReservationStatus.Payment,
-                    reservation.validity ?: ReservationValidity.FixedTerm,
-                    reservation.startDate,
-                    reservation.endDate
-                )
-            }
+            reservationService.reserveBoatSpace(
+                reserverId,
+                ReserveBoatSpaceInput(
+                    reservationId = reservationId,
+                    boatId = input.boatId,
+                    boatType = input.boatType!!,
+                    width = input.width ?: 0.0,
+                    length = input.length ?: 0.0,
+                    depth = input.depth ?: 0.0,
+                    weight = input.weight,
+                    boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                    boatName = input.boatName ?: "",
+                    otherIdentification = input.otherIdentification ?: "",
+                    extraInformation = input.extraInformation ?: "",
+                    ownerShip = input.ownership!!,
+                    email = input.email!!,
+                    phone = input.phone!!,
+                ),
+                ReservationStatus.Payment,
+                reservation.validity ?: ReservationValidity.FixedTerm,
+                reservation.startDate,
+                reservation.endDate
+            )
         } else {
             val reserveSlipResult = reservationService.canReserveANewSlip(reserverId)
 

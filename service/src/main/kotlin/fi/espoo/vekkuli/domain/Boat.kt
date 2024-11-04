@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.utils.cmToM
+import java.time.LocalDateTime
 import java.util.*
 
 data class Boat(
@@ -19,6 +20,7 @@ data class Boat(
     val ownership: OwnershipStatus,
     val displayName: String? = null,
     val warnings: Set<String> = emptySet(),
+    val deletedAt: LocalDateTime? = null
 ) {
     fun updateBoatDisplayName(messageUtil: MessageUtil): Boat =
         this.copy(

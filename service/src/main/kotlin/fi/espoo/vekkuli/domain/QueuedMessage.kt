@@ -12,7 +12,7 @@ data class QueuedMessage(
     val status: MessageStatus,
     val senderId: UUID?,
     val senderAddress: String?,
-    val recipientId: UUID,
+    val recipientId: UUID?,
     val recipientAddress: String,
     val subject: String,
     val body: String,

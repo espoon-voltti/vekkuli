@@ -1,0 +1,59 @@
+package fi.espoo.vekkuli
+
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.getRawReport
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.time.LocalDate
+import kotlin.test.assertEquals
+
+@ExtendWith(SpringExtension::class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class ReportingIntegrationTest : IntegrationTestBase() {
+    @Autowired
+    lateinit var reservationService: BoatReservationService
+
+    @Test
+    fun `raw report`() {
+        val boatSpaceId = 4242
+
+        insertDevBoatSpace(
+            DevBoatSpace(
+                id = boatSpaceId,
+                type = BoatSpaceType.Slip,
+                locationId = 1,
+                priceId = 1,
+                section = "A",
+                placeNumber = 1,
+                amenity = BoatSpaceAmenity.None,
+                widthCm = 100,
+                lengthCm = 200,
+                description = "Test boat space"
+            )
+        )
+
+        val today = LocalDate.of(2024, 10, 1)
+        reservationService.insertBoatSpaceReservation(
+            citizenIdLeo,
+            citizenIdLeo,
+            boatSpaceId,
+            today,
+            today.plusMonths(12)
+        )
+
+        val rawReportRows = getRawReport(jdbi)
+        assertEquals(true, rawReportRows.size > 0)
+        val row = rawReportRows.find { it.boatSpaceId == boatSpaceId.toString() }
+        assertEquals("Test boat space", row?.description)
+        assertEquals(today.plusMonths(12).toString(), row?.endDate)
+    }
+}
