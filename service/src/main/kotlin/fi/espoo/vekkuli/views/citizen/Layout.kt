@@ -64,7 +64,7 @@ class Layout(
                     "active"
                 } else {
                     ""
-                }} " href="/kuntalainen/omat-tiedot" >Omat tiedot</a>"""
+                }} " href="/kuntalainen/omat-tiedot">${t("home.ownInformation")}</a>"""
             } else {
                 ""
             }
@@ -75,13 +75,13 @@ class Layout(
             "active"
         } else {
             ""
-        }}" href="/kuntalainen/venepaikat">Venepaikat</a>"""
+        }}" href="/kuntalainen/venepaikat">${t("boatSpaces.title")}</a>"""
         // language=HTML
         return """
             <!DOCTYPE html>
             <html class="theme-light" lang="${localeUtil.getLocaleLanguageCode()}">
             <head>
-                <title>Varaukset</title>
+                <title>${t("boatSpaceReservation.title.reservations")}</title>
                 $head
             </head>
             <body>
@@ -90,7 +90,7 @@ class Layout(
                 <div class="nav-row">
                     <div class='columns'>
                         <img class="logo" src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                        <h1>Espoon resurssivaraus</h1>
+                        <h1>${t("home.title")}</h1>
                     </div>
                     <div class="columns">
                             ${commonComponents.languageSelection()}
