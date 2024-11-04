@@ -1,22 +1,20 @@
 package fi.espoo.vekkuli.views.common
 
+import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class CommonComponents {
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    @Autowired
-    lateinit var icons: Icons
-
+class CommonComponents(
+    private val messageUtil: MessageUtil,
+    private val icons: Icons,
+    private val localeUtil: LocaleUtil
+) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun languageSelection(): String {
-        val languageCode = messageUtil.getLocaleLanguageCode().uppercase()
+        val languageCode = localeUtil.getLocaleLanguageCode().uppercase()
         // language=HTML
         return(
             """

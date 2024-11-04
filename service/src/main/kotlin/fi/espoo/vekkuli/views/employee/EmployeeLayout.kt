@@ -1,4 +1,5 @@
 package fi.espoo.vekkuli.views.employee
+import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Service
 class EmployeeLayout(
     private val icons: Icons,
     private val messageUtil: MessageUtil,
-    private val commonComponents: CommonComponents
+    private val commonComponents: CommonComponents,
+    private val localeUtil: LocaleUtil
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -52,7 +54,7 @@ class EmployeeLayout(
         // language=HTML
         return """
              <!DOCTYPE html>
-            <html class="theme-light" lang="${messageUtil.getLocaleLanguageCode()}">
+            <html class="theme-light" lang="${localeUtil.getLocaleLanguageCode()}">
             <head>
                 <title>Varaukset</title>
                 $head
