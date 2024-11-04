@@ -4,6 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -25,7 +26,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `Employee can reserve a boat space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
-        page.navigate(baseUrl + "/virkailija")
+        page.navigate(employeePageInEnglish)
         page.getByTestId("employeeLoginButton").click()
         page.getByText("Kirjaudu").click()
 
@@ -149,7 +150,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `existing citizens can be searched`() {
-        page.navigate(baseUrl + "/virkailija")
+        page.navigate(employeePageInEnglish)
         page.getByTestId("employeeLoginButton").click()
         page.getByText("Kirjaudu").click()
         val listingPage = ReservationListPage(page)
@@ -177,7 +178,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `Employee can reserve a boat space on behalf of an existing citizen`() {
-        page.navigate(baseUrl + "/virkailija")
+        page.navigate(employeePageInEnglish)
         page.getByTestId("employeeLoginButton").click()
         page.getByText("Kirjaudu").click()
         val listingPage = ReservationListPage(page)
@@ -228,7 +229,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun reservingABoatSpaceAsOrganization() {
-        page.navigate(baseUrl + "/virkailija")
+        page.navigate(employeePageInEnglish)
         page.getByTestId("employeeLoginButton").click()
         page.getByText("Kirjaudu").click()
 
@@ -281,7 +282,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `Employee can reserve on behalf of an existing citizen acting on behalf of an existing organization`() {
-        page.navigate(baseUrl + "/virkailija")
+        page.navigate(employeePageInEnglish)
         page.getByTestId("employeeLoginButton").click()
         page.getByText("Kirjaudu").click()
 
