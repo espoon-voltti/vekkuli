@@ -4,12 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "sass": "sass --watch  --load-path=node_modules src/main/resources/public/static/sass:src/main/resources/public/static/css"
+    "sass": "sass --watch  --load-path=node_modules src/main/resources/public/static/sass:src/main/resources/public/static/css",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "alpinejs": "^3.14.3",
     "bulma": "^1.0.2",
+    "htmx.org": "^1.9.12",
     "sass": "^1.77.8"
+  },
+  "devDependencies": {
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
   }
 }
