@@ -7,3 +7,4 @@
 !.editorconfig
 !package.json
 !webpack.config.js
+!index.js
