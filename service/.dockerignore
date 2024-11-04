@@ -6,3 +6,4 @@
 !src
 !.editorconfig
 !package.json
+!webpack.config.js
