@@ -4,10 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.pages.BoatSpaceFormPage
-import fi.espoo.vekkuli.pages.ErrorPage
-import fi.espoo.vekkuli.pages.PaymentPage
-import fi.espoo.vekkuli.pages.ReserveBoatSpacePage
+import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -15,6 +12,20 @@ import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
+    @Test
+    fun `employee can change the language`() {
+        page.navigate(baseUrl + "?lang=fi")
+        assertThat(page.getByText("Venepaikat").first()).isVisible()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        page.getByTestId("language-selection").click()
+        page.getByText("Englanti").click()
+        assertThat(page.getByText("Boat spaces").first()).isVisible()
+        page.getByTestId("language-selection").click()
+        page.getByText("Swedish").click()
+        assertThat(page.getByText("Båtplats").first()).isVisible()
+    }
+
     @Test
     fun reservingShouldFailOutsidePeriod() {
         try {

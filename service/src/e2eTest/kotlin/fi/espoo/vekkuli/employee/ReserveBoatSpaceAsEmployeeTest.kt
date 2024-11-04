@@ -11,6 +11,19 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles("test")
 class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
+    fun `employee can change the language`() {
+        page.navigate(baseUrl + "/virkailija?lang=fi")
+        assertThat(page.getByText("Varaukset").first()).isVisible()
+        val listingPage = ReservationListPage(page)
+        page.getByTestId("language-selection").click()
+        page.getByText("Englanti").click()
+        assertThat(page.getByText("Reservations").first()).isVisible()
+        page.getByTestId("language-selection").click()
+        page.getByText("Swedish").click()
+        assertThat(page.getByText("Reservationer").first()).isVisible()
+    }
+
+    @Test
     fun `Employee can reserve a boat space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
         page.navigate(baseUrl + "/virkailija")
         page.getByTestId("employeeLoginButton").click()
