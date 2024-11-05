@@ -18,7 +18,7 @@ class PaymentService(
     fun updatePayment(
         id: UUID,
         success: Boolean,
-        paidDate: LocalDate?
+        paidDate: LocalDate? = null
     ): Payment? = paymentRepo.updatePayment(id, success, paidDate)
 
     fun insertPayment(

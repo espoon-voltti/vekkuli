@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Invoice
+import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import java.util.*
@@ -17,17 +18,17 @@ class BoatSpaceInvoiceService(
     private val citizenService: CitizenService
 ) {
     fun createAndSendInvoice(batch: InvoiceBatchParameters): Invoice? {
+        val invoiceParams = batch.invoices.first()
+        val (createdInvoice, createdPayment) = createInvoice(invoiceParams)
+
         val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(batch)
         if (!sendInvoiceSuccess) {
-            // error handling
-            return null
+            paymentService.updatePayment(createdPayment.id, false, null)
         }
-        val invoice = batch.invoices.first()
-
-        return createInvoice(invoice)
+        return createdInvoice
     }
 
-    fun createInvoice(invoice: InvoiceParameters): Invoice {
+    fun createInvoice(invoice: InvoiceParameters): Pair<Invoice, Payment> {
         val invoiceRow = invoice.rows[0]
 
         val payment =
@@ -43,15 +44,17 @@ class BoatSpaceInvoiceService(
                 ),
                 invoiceRow.productId.toInt()
             )
-        return paymentService.insertInvoicePayment(
-            CreateInvoiceParams(
-                dueDate = invoice.dueDate,
-                reference = invoice.invoiceNumber.toString(),
-                citizenId = invoice.recipient.id,
-                reservationId = invoiceRow.productId.toInt(),
-                paymentId = payment.id
+        val invoice =
+            paymentService.insertInvoicePayment(
+                CreateInvoiceParams(
+                    dueDate = invoice.dueDate,
+                    reference = invoice.invoiceNumber.toString(),
+                    citizenId = invoice.recipient.id,
+                    reservationId = invoiceRow.productId.toInt(),
+                    paymentId = payment.id
+                )
             )
-        )
+        return Pair(invoice, payment)
     }
 
     fun createInvoiceBatchParameters(

@@ -28,8 +28,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Autowired lateinit var terminateService: TerminateBoatSpaceReservationService
 
-    @Autowired lateinit var citizenService: CitizenService
-
     @Autowired lateinit var invoiceService: BoatSpaceInvoiceService
 
     @BeforeEach

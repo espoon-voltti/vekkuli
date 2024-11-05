@@ -178,7 +178,7 @@ class BoatReservationService(
         paymentId: UUID,
         success: Boolean
     ): Int? {
-        paymentService.updatePayment(paymentId, success, timeProvider.getCurrentDate())
+        paymentService.updatePayment(paymentId, success, if (success) timeProvider.getCurrentDate() else null)
         if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(paymentId)
 
         val reservationId =

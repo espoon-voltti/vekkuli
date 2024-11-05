@@ -199,7 +199,7 @@ fun createInvoiceWithTestParameters(
     citizenId: UUID,
 ): Invoice {
     val citizen = citizenService.getCitizen(citizenId)!!
-    val invoice =
+    val (invoice, payment) =
         invoiceService.createInvoice(
             InvoiceParameters(
                 1,
