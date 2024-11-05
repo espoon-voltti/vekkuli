@@ -4,9 +4,9 @@ import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Service
@@ -89,7 +89,7 @@ class TerminateBoatSpaceReservationService(
                     "terminator" to citizen.fullName,
                     "time" to
                         timeProvider.getCurrentDateTime().format(
-                            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+                            fullDateTimeFormat
                         ),
                     "location" to reservationWithDetails.locationName,
                     "place" to reservationWithDetails.place

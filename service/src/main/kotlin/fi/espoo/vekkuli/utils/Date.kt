@@ -42,6 +42,7 @@ class SystemTimeProvider : TimeProvider() {
 val shortDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")
 val fullDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val shortYearDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")
+val fullDateTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
 fun formatAsShortDate(date: LocalDate): String = date.format(shortDateFormat)
 
