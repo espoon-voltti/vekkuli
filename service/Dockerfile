@@ -24,7 +24,8 @@ FROM base AS builder
 WORKDIR /app
 
 COPY ./gradle/ ./gradle/
-COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./webpack.config.js ./index.js ./
+COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./
+
 
 RUN ./gradlew --no-daemon resolveDependencies \
  && ./gradlew e2eTestDeps
@@ -32,8 +33,6 @@ RUN ./gradlew --no-daemon resolveDependencies \
 COPY . .
 
 RUN ./gradlew compileSass
-
-RUN ./gradlew bundleJs
 
 # --offline is used to be sure that all dependencies are installed in previous steps
 RUN ./gradlew --offline --no-daemon ktlintCheck
