@@ -1,0 +1,1 @@
+ALTER TYPE BoatType ADD VALUE 'Other';
