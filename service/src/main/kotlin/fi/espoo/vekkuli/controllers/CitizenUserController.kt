@@ -610,7 +610,7 @@ class CitizenUserController {
         request: HttpServletRequest
     ): ResponseEntity<String> {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-        reservationService.markInvoicePaid(reservationId, paymentDate, invoicePaidInfo)
+        reservationService.markInvoicePaid(reservationId, paymentDate)
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)

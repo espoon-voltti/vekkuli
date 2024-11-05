@@ -175,15 +175,15 @@ class BoatReservationService(
     }
 
     fun handleReservationPaymentResult(
-        stamp: UUID,
+        paymentId: UUID,
         success: Boolean
     ): Int? {
-        paymentService.updatePayment(stamp, success)
-        if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(stamp)
+        paymentService.updatePayment(paymentId, success, timeProvider.getCurrentDate())
+        if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(paymentId)
 
         val reservationId =
             boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
-                stamp
+                paymentId
             )
 
         return reservationId
@@ -513,10 +513,14 @@ class BoatReservationService(
 
     fun markInvoicePaid(
         reservationId: Int,
-        paymentDate: LocalDate,
-        info: String
+        paymentDate: LocalDate
     ) {
-        val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
+        boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId, paymentDate)
+        val reservation = boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)
+        if (reservation?.paymentId == null) {
+            throw IllegalArgumentException("Reservation has no payment")
+        }
+        paymentService.updatePayment(reservation.paymentId, true, paymentDate)
     }
 
     fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()

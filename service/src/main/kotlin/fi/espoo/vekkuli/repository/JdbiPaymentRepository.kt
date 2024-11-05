@@ -1,16 +1,19 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import java.util.*
 
 @Repository
 class JdbiPaymentRepository(
-    private val jdbi: Jdbi
+    private val jdbi: Jdbi,
+    private val timeProvider: TimeProvider
 ) : PaymentRepository {
     override fun insertPayment(
         params: CreatePaymentParams,
@@ -37,18 +40,21 @@ class JdbiPaymentRepository(
     // Update payment only if it is 'Created' state
     override fun updatePayment(
         id: UUID,
-        success: Boolean
+        success: Boolean,
+        paidDate: LocalDate?
     ): Payment? =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
                     UPDATE payment
-                    SET status = :status, updated = now()
+                    SET status = :status, updated = :updated, paid = :paid
                     WHERE id = :id AND status = 'Created'
                     RETURNING *
                     """
                 ).bind("id", id)
+                .bind("paid", paidDate)
+                .bind("updated", timeProvider.getCurrentDateTime())
                 .bind("status", if (success) PaymentStatus.Success else PaymentStatus.Failed)
                 .mapTo<Payment>()
                 .firstOrNull()
@@ -60,41 +66,40 @@ class JdbiPaymentRepository(
             handle
                 .createQuery(
                     """
-                    INSERT INTO invoice (id, due_date, reference, reservation_id, citizen_id)
-                    VALUES (:id, :dueDate, :reference, :reservationId, :citizenId)
+                    INSERT INTO invoice (id, due_date, reference, reservation_id, citizen_id, payment_id)
+                    VALUES (:id, :dueDate, :reference, :reservationId, :citizenId, :paymentId)
                     RETURNING *
                     """
                 ).bindKotlin(params)
                 .bind("id", id)
                 .bind("reservationId", params.reservationId)
+                .bind("citizenId", params.citizenId)
+                .bind("paymentId", params.paymentId)
                 .mapTo<Invoice>()
                 .one()
         }
     }
 
-    override fun getInvoicePayment(id: UUID): Invoice? =
+    override fun getInvoice(invoiceId: UUID): Invoice? =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
-                    SELECT * FROM invoice WHERE id = :id
+                    SELECT * FROM invoice WHERE id = :invoiceId
                     """.trimIndent()
-                ).bind("id", id)
+                ).bind("invoiceId", invoiceId)
                 .mapTo<Invoice>()
                 .firstOrNull()
         }
 
-    override fun setInvoicePaid(invoiceId: UUID): Invoice? =
+    override fun getInvoice(reservationId: Int): Invoice? =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
-                    UPDATE invoice
-                    SET payment_date = now()
-                    WHERE id = :id
-                    RETURNING *
-                    """
-                ).bind("id", invoiceId)
+                    SELECT * FROM invoice WHERE reservation_id = :reservationId
+                    """.trimIndent()
+                ).bind("reservationId", reservationId)
                 .mapTo<Invoice>()
                 .firstOrNull()
         }

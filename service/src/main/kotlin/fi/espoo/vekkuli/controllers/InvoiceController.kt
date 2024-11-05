@@ -94,7 +94,7 @@ class InvoiceController(
             invoiceService.createInvoiceBatchParameters(reservationId, reservation.reserverId)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        invoiceService.sendInvoice(invoiceBatch) ?: throw InternalError("Failed to send invoice")
+        invoiceService.createAndSendInvoice(invoiceBatch) ?: throw InternalError("Failed to send invoice")
 
         reservationService.setReservationStatusToInvoiced(reservationId)
 
