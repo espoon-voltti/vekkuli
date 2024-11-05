@@ -26,6 +26,8 @@ interface BoatSpaceReservationRepository {
 
     fun getReservationWithReserver(id: Int): ReservationWithDependencies?
 
+    fun getReservationWithDependencies(id: Int): ReservationWithDependencies?
+
     fun getReservationWithoutReserver(id: Int): ReservationWithDependencies?
 
     fun removeBoatSpaceReservation(

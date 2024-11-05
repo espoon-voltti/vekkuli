@@ -56,11 +56,12 @@ fun createReservationInConfirmedState(
     citizenId: UUID,
     boatSpaceId: Int,
     boatId: Int,
-    validity: ReservationValidity = ReservationValidity.FixedTerm
+    validity: ReservationValidity = ReservationValidity.FixedTerm,
+    reserverId: UUID = citizenId
 ): BoatSpaceReservation {
     val madeReservation =
         reservationService.insertBoatSpaceReservation(
-            citizenId,
+            reserverId,
             citizenId,
             boatSpaceId,
             startDate = timeProvider.getCurrentDate(),
@@ -69,7 +70,7 @@ fun createReservationInConfirmedState(
     reservationService.updateBoatInBoatSpaceReservation(
         madeReservation.id,
         boatId,
-        citizenId,
+        reserverId,
         ReservationStatus.Payment,
         validity,
         startDate = timeProvider.getCurrentDate(),

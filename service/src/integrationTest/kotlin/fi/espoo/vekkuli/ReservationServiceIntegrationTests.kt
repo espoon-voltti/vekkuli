@@ -619,14 +619,11 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 1,
                 1,
             )
-        val citizen = citizenService.getCitizen(this.citizenIdLeo)
-        // Keep this here to make sure Citizen is present
-        assertNotNull(citizen, "Citizen is not null")
 
         val noExpiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(this.citizenIdLeo)
         assertEquals(0, noExpiredReservations.size)
 
-        terminateService.terminateBoatSpaceReservation(reservation.id, citizen)
+        terminateService.terminateBoatSpaceReservation(reservation.id, citizenIdLeo)
 
         val expiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(this.citizenIdLeo)
         assertEquals(1, expiredReservations.size)
