@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.Harbor
 import fi.espoo.vekkuli.domain.Location
 import fi.espoo.vekkuli.service.MarkDownService
@@ -23,7 +24,7 @@ class BoatSpaceSearch(
         locations: List<Location>,
         isEmployee: Boolean = false
     ): String {
-        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+        val boatTypes = BoatType.entries.map { it.name }
         val boatTypeSelect =
             formComponents.select(
                 "boatApplication.boatType",
