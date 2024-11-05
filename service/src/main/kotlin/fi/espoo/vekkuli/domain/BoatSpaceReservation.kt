@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.utils.centsToEuro
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.math.roundToInt
 
 enum class ReservationStatus {
     Info,
@@ -46,8 +44,6 @@ data class BoatSpaceReservation(
     val validity: ReservationValidity
 )
 
-fun getPriceWithoutAlv(priceCents: Int) = (priceCents / (1.0 + (BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE / 100.0))).roundToInt()
-
 data class ReservationWithDependencies(
     val id: Int,
     val boatId: Int?,
@@ -73,6 +69,8 @@ data class ReservationWithDependencies(
     val description: String,
     val locationName: String,
     val priceCents: Int,
+    val vatCents: Int,
+    val netPriceCents: Int,
     val excludedBoatTypes: List<BoatType>?,
     val validity: ReservationValidity? = ReservationValidity.Indefinite,
     val renewedFromId: Int? = null,
@@ -80,9 +78,9 @@ data class ReservationWithDependencies(
     val priceInEuro: Double
         get() = priceCents.centsToEuro()
     val alvPriceInEuro: Double
-        get() = (priceCents - getPriceWithoutAlv(priceCents)).centsToEuro()
+        get() = vatCents.centsToEuro()
     val priceWithoutAlvInEuro: Double
-        get() = getPriceWithoutAlv(priceCents).centsToEuro()
+        get() = netPriceCents.centsToEuro()
 }
 
 data class BoatSpaceReservationItem(
