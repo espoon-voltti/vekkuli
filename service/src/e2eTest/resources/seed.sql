@@ -456,13 +456,16 @@ VALUES
     (992, 'Äänekoski')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO price (name, price_cents)
-VALUES ('ML1', 10000),
-       ('ML2', 15000),
-       ('ML3', 20000),
-       ('ML4', 25000),
-       ('ML5', 30000),
-       ('ML6', 35000);
+INSERT INTO price (name, net_price_cents, vat_cents, price_cents)
+VALUES ('ML1', 17823, 4545, 22367),
+       ('ML2', 21290, 5429, 26719),
+       ('ML3', 27500, 7012, 34512),
+       ('ML4', 33306, 8493, 41800),
+       ('ML5', 36048, 9193, 45241),
+       ('ML6', 43548, 11105, 54000);
+
+
+
 
 -- Populate the location table with 7 different locations with made-up Finnish addresses
 INSERT INTO location (id, name, address)
