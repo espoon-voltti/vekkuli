@@ -81,9 +81,9 @@ class PaymentController(
                     language = "FI",
                     customer =
                         PaytrailCustomer(
-                            email = citizen.email,
-                            firstName = citizen.firstName,
-                            lastName = citizen.lastName,
+                            email = citizen.email.take(200),
+                            firstName = citizen.firstName.take(50),
+                            lastName = citizen.lastName.take(50),
                             phone = citizen.phone
                         ),
                     items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode, description, category))
