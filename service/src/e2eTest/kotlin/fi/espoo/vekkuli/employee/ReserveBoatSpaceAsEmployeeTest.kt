@@ -143,6 +143,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         val info = "invoice has been paid"
         citizenDetailsPage.invoicePaidInfo.fill(info)
         citizenDetailsPage.invoiceModalConfirm.click()
+        assertThat(citizenDetailsPage.paidFieldInfo).hasText("2024-04-01")
 
         citizenDetailsPage.memoNavi.click()
         assertThat(page.getByText(info)).isVisible()

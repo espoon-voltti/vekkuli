@@ -68,7 +68,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.paid")}</label>
-                         <p></p> 
+                         <p id="paidFieldInfo">${reservation.paymentDate ?: "-"}</p> 
                      </div>
                  </div>
              </div>
