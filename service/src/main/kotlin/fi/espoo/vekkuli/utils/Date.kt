@@ -50,6 +50,8 @@ fun formatAsFullDate(date: LocalDate): String = date.format(fullDateFormat)
 
 fun formatAsShortYearDate(date: LocalDate?): String = if (date == null) "-" else date.format(shortYearDateFormat)
 
+fun formatAsFullDateTime(date: LocalDateTime): String = date.format(fullDateTimeFormat)
+
 fun getFirstWeekdayOfMonth(
     year: Int,
     month: Int
