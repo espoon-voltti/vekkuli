@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
+import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
@@ -13,7 +14,6 @@ import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.components.WarningBox
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 enum class SubTab {
@@ -498,7 +498,7 @@ class CitizenDetails(
             """.trimIndent()
     }
 
-    fun formatDate(d: LocalDateTime): String = d.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+    fun formatDate(d: LocalDateTime): String = d.format(fullDateTimeFormat)
 
     fun memoContent(
         memo: ReserverMemoWithDetails,

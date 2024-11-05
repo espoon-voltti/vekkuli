@@ -45,24 +45,19 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     fun `should terminate the reservation and set ending date to now`() {
         val boatSpaceId = 1
 
-        val oliviaCitizenId = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
         val endDate = timeProvider.getCurrentDate().plusWeeks(2)
-        val citizen = citizenService.getCitizen(oliviaCitizenId)
-
-        // Keep this here to make sure Citizen is present
-        assertNotNull(citizen, "Citizen is not null")
 
         val newReservation =
             reservationService.insertBoatSpaceReservation(
-                citizen.id,
-                citizen.id,
+                citizenIdOlivia,
+                citizenIdOlivia,
                 boatSpaceId,
                 startDate = timeProvider.getCurrentDate().minusWeeks(2),
                 endDate = endDate
             )
 
         reservationService.reserveBoatSpace(
-            this.citizenIdLeo,
+            citizenIdOlivia,
             ReserveBoatSpaceInput(
                 newReservation.id,
                 boatId = 0,
@@ -86,14 +81,12 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         )
 
         val originalReservation = reservationService.getBoatSpaceReservation(newReservation.id)
-
-        assertEquals(ReservationStatus.Confirmed, originalReservation?.status, "Reservation starts as Confirmed")
-        assertEquals(endDate, originalReservation?.endDate, "Reservation endDate is $endDate")
-
-        terminateService.terminateBoatSpaceReservation(newReservation.id, citizen)
-
+        val terminationSuccess = terminateService.terminateBoatSpaceReservation(newReservation.id, citizenIdOlivia)
         val terminatedReservation = reservationService.getBoatSpaceReservation(newReservation.id)
 
+        assertTrue(terminationSuccess, "reservation was terminated successfully")
+        assertEquals(ReservationStatus.Confirmed, originalReservation?.status, "Reservation starts as Confirmed")
+        assertEquals(endDate, originalReservation?.endDate, "Reservation endDate is $endDate")
         assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
         assertEquals(timeProvider.getCurrentDate(), terminatedReservation?.endDate, "End date is set to now")
     }
@@ -105,7 +98,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
         // Keep this here to make sure Citizen is present
         assertNotNull(citizen, "Citizen is not null")
-        terminateService.terminateBoatSpaceReservation(reservation.id, citizen)
+        terminateService.terminateBoatSpaceReservation(reservation.id, citizen.id)
         val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertTrue(
             sentEmails.any { it.recipientAddress == citizen.email },
@@ -115,16 +108,68 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send email notice to employee email`() {
-        val citizen = citizenService.getCitizen(this.citizenIdOlivia)
         val reservation = createReservationInConfirmedState(timeProvider, reservationService, this.citizenIdOlivia, 1, 1)
 
-        // Keep this here to make sure Citizen is present
-        assertNotNull(citizen, "Citizen is not null")
-        terminateService.terminateBoatSpaceReservation(reservation.id, citizen)
+        terminateService.terminateBoatSpaceReservation(reservation.id, citizenIdOlivia)
         val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
         assertTrue(
             sentEmails.any { it.recipientAddress == emailEnv.employeeAddress },
             "Email is set to be sent to the employee address"
         )
+    }
+
+    @Test
+    fun `should not be able to terminate another citizen reservation as a citizen`() {
+        val citizenOlivia = citizenService.getCitizen(citizenIdOlivia)
+        // create the reservation for Leo
+        val reservation = createReservationInConfirmedState(timeProvider, reservationService, this.citizenIdLeo, 1, 1)
+
+        // Try to terminate the reservation as olivia
+        val terminationSuccess = terminateService.terminateBoatSpaceReservation(reservation.id, citizenIdOlivia)
+        val terminatedReservation = reservationService.getBoatSpaceReservation(reservation.id)
+
+        assertEquals(false, terminationSuccess, "reservation was not terminated")
+        assertEquals(ReservationStatus.Confirmed, terminatedReservation?.status, "reservation was not terminated")
+    }
+
+    @Test
+    fun `should be able to terminate organization reservation as a member`() {
+        // create the reservation acting as Leo, but using the organization as reserver
+        val reservation =
+            createReservationInConfirmedState(
+                timeProvider,
+                reservationService,
+                citizenIdLeo,
+                1,
+                1,
+                ReservationValidity.FixedTerm,
+                organizationId
+            )
+
+        // Try to terminate the reservation as olivia, Olivia is a member of the test organization (seed.sql)
+        val terminationSuccess = terminateService.terminateBoatSpaceReservation(reservation.id, citizenIdOlivia)
+        val terminatedReservation = reservationService.getBoatSpaceReservation(reservation.id)
+
+        assertTrue(terminationSuccess, "reservation was terminated")
+        assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "reservation was terminated")
+    }
+
+    @Test
+    fun `should be able to terminate reservation as an employee`() {
+        val reservation =
+            createReservationInConfirmedState(
+                timeProvider,
+                reservationService,
+                citizenIdOlivia,
+                1,
+                1
+            )
+
+        // Try to terminate the reservation as employee
+        val terminationSuccess = terminateService.terminateBoatSpaceReservation(reservation.id, userId)
+        val terminatedReservation = reservationService.getBoatSpaceReservation(reservation.id)
+
+        assertTrue(terminationSuccess, "reservation was terminated")
+        assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "reservation was terminated")
     }
 }
