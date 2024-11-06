@@ -21,7 +21,7 @@ data class Payment(
     val vatPercentage: Double,
     val productCode: String,
     val reservationId: Int,
-    val paid: LocalDate?
+    val paid: LocalDateTime?
 )
 
 data class Invoice(

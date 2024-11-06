@@ -99,6 +99,7 @@ class CitizenDetailsPage(
 
     val invoicePaidButton = page.getByTestId("invoice-paid-button")
     val invoicePaidInfo = page.getByTestId("invoicePaidInfo")
+    val invoicePaymentDate = page.getByTestId("paymentDate")
     val invoiceModalConfirm = page.getByTestId("invoice-modal-confirm")
     val paidFieldInfo = page.getByTestId("paidFieldInfo")
 

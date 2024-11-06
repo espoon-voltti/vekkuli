@@ -6,7 +6,7 @@ import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.repository.PaymentRepository
 import org.springframework.stereotype.Service
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -18,8 +18,8 @@ class PaymentService(
     fun updatePayment(
         id: UUID,
         success: Boolean,
-        paidDate: LocalDate? = null
-    ): Payment? = paymentRepo.updatePayment(id, success, paidDate)
+        paidDate: LocalDateTime?
+    ): Payment? = paymentRepo.updatePaymentStatus(id, success, paidDate)
 
     fun insertPayment(
         params: CreatePaymentParams,

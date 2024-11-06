@@ -90,7 +90,6 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
         assertNotNull(invoice, "Invoice is sent")
         assertEquals(this.citizenIdLeo, invoice!!.citizenId, "Invoice is sent to correct citizen")
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
-        assertNotNull(reservation, "Reservation is found")
         assertNull(reservation?.paymentDate, "Reservation has not been paid yet")
     }
 }

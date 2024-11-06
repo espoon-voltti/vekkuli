@@ -7,7 +7,7 @@ import org.jdbi.v3.core.kotlin.bindKotlin
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Repository
@@ -38,10 +38,10 @@ class JdbiPaymentRepository(
         }
 
     // Update payment only if it is 'Created' state
-    override fun updatePayment(
+    override fun updatePaymentStatus(
         id: UUID,
         success: Boolean,
-        paidDate: LocalDate?
+        paidDate: LocalDateTime?
     ): Payment? =
         jdbi.withHandleUnchecked { handle ->
             handle

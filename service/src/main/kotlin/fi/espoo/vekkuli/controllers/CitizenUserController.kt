@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Controller
@@ -610,7 +611,10 @@ class CitizenUserController {
         request: HttpServletRequest
     ): ResponseEntity<String> {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-        reservationService.markInvoicePaid(reservationId, paymentDate)
+        reservationService.markInvoicePaid(
+            reservationId,
+            LocalDateTime.of(paymentDate.year, paymentDate.month, paymentDate.dayOfMonth, 0, 0)
+        )
 
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)

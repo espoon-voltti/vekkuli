@@ -16,6 +16,7 @@ import fi.espoo.vekkuli.utils.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.MonthDay
 import java.util.*
 
@@ -178,7 +179,7 @@ class BoatReservationService(
         paymentId: UUID,
         success: Boolean
     ): Int? {
-        paymentService.updatePayment(paymentId, success, if (success) timeProvider.getCurrentDate() else null)
+        paymentService.updatePayment(paymentId, success, if (success) timeProvider.getCurrentDateTime() else null)
         if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(paymentId)
 
         val reservationId =
@@ -513,9 +514,9 @@ class BoatReservationService(
 
     fun markInvoicePaid(
         reservationId: Int,
-        paymentDate: LocalDate
+        paymentDate: LocalDateTime
     ) {
-        boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId, paymentDate)
+        boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
         val reservation = boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)
         if (reservation?.paymentId == null) {
             throw IllegalArgumentException("Reservation has no payment")

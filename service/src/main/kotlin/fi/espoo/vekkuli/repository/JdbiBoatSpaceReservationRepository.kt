@@ -621,10 +621,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
-    override fun updateReservationInvoicePaid(
-        reservationId: Int,
-        paymentDate: LocalDate
-    ): BoatSpaceReservation? =
+    override fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(

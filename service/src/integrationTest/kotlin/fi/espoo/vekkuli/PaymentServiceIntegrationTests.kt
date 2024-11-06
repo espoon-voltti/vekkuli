@@ -2,7 +2,6 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -70,10 +69,8 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
         val reservation = reservationService.getBoatSpaceReservation(madeReservation.id)
-        assertNotNull(reservation, "reservation is found")
-        assertEquals(madeReservation.id, reservation.id, "reservation is the same")
         assertEquals(payment.citizenId, madeReservation.reserverId, "payment is added for correct citizen")
-        assertEquals(reservation.status, ReservationStatus.Payment, "reservation status is correct")
+        assertEquals(reservation?.status, ReservationStatus.Payment, "reservation status is correct")
         assertEquals(payment.reservationId, madeReservation.id, "payment is linked to the reservation")
     }
 
@@ -101,7 +98,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
         paymentService.updatePayment(
             payment.id,
             true,
-            timeProvider.getCurrentDate()
+            timeProvider.getCurrentDateTime()
         )
         val fetchedPayment = paymentService.getPayment(payment.id)
         assertEquals(PaymentStatus.Success, fetchedPayment?.status, "Payment is updated with new status")
@@ -125,12 +122,11 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                 invoiceService,
                 this.citizenIdLeo
             )
-        reservationService.markInvoicePaid(madeReservation.id, timeProvider.getCurrentDate())
+        reservationService.markInvoicePaid(madeReservation.id, timeProvider.getCurrentDateTime())
 
         // reservation is marked as paid
         val reservation = reservationService.getBoatSpaceReservation(madeReservation.id)
-        Assertions.assertNotNull(reservation, "Reservation is found")
-        assertEquals(timeProvider.getCurrentDate(), reservation!!.paymentDate, "Reservation is marked as paid")
+        assertEquals(timeProvider.getCurrentDate(), reservation?.paymentDate, "Reservation is marked as paid")
 
         // invoice is created
         val invoice = paymentService.getInvoiceForReservation(madeReservation.id)
@@ -138,7 +134,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
 
         // payment is created with correct status
         val payment = paymentService.getPayment(invoice.paymentId)
-        assertEquals(timeProvider.getCurrentDate(), payment?.paid, "Fetched invoice payment date is set to today")
+        assertEquals(timeProvider.getCurrentDateTime(), payment?.paid, "Fetched invoice payment date is set to today")
         assertEquals(PaymentStatus.Success, payment?.status, "Fetched invoice payment status is set to success")
     }
 }

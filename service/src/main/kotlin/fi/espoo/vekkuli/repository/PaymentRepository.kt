@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 interface PaymentRepository {
@@ -15,10 +15,10 @@ interface PaymentRepository {
         reservationId: Int
     ): Payment
 
-    fun updatePayment(
+    fun updatePaymentStatus(
         id: UUID,
         success: Boolean,
-        paidDate: LocalDate?
+        paidDate: LocalDateTime?
     ): Payment?
 
     fun insertInvoicePayment(params: CreateInvoiceParams): Invoice
