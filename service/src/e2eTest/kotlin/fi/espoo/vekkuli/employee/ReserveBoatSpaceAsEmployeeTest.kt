@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.employee
 
+import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
@@ -11,6 +12,7 @@ import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
+import kotlin.io.path.Path
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
@@ -153,8 +155,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.invoicePaidInfo.fill(info)
             val testDate = LocalDate.of(2024, 7, 22)
             citizenDetailsPage.invoicePaymentDate.pressSequentially(formatAsFullDate(testDate))
+            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-0.png")))
             citizenDetailsPage.invoiceModalConfirm.click()
+            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-1.png")))
             assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsShortYearDate(testDate))
+            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-2.png")))
 
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText(info)).isVisible()
