@@ -303,7 +303,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment' OR bsr.status = 'Renewal')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
-                    GROUP BY bsr.id, location.name, price.price_cents, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
+                    GROUP BY bsr.id, location.name, price.id, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
                     """.trimIndent()
                 )
             query.bind("id", id)
