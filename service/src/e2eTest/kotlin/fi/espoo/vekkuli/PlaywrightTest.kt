@@ -63,6 +63,7 @@ abstract class PlaywrightTest {
 
     fun handleError(e: AssertionError) {
         page.screenshot(Page.ScreenshotOptions().setPath(Path("build/failure-screenshot.png")))
+
         throw e
     }
 }

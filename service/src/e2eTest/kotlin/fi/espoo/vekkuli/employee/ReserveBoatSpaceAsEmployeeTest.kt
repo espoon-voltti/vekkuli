@@ -156,6 +156,9 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val testDate = LocalDate.of(2024, 7, 22)
             citizenDetailsPage.invoicePaymentDate.pressSequentially(formatAsFullDate(testDate))
             page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-0.png")))
+
+            assertThat(citizenDetailsPage.invoicePaymentDate).hasText(formatAsShortYearDate(testDate))
+
             citizenDetailsPage.invoiceModalConfirm.click()
             page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-1.png")))
             assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsShortYearDate(testDate))
