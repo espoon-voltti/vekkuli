@@ -300,7 +300,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         formPage.submitButton.click()
         formPage.existingCitizenSelector.click()
-        formPage.citizenSearchInput.pressSequentially("olivia")
+        "olivia".forEach { character ->
+            formPage.citizenSearchInput.press("$character")
+            Thread.sleep(50)
+        }
         formPage.citizenSearchOption1.click()
 
         assertThat(page.getByText("Olivian vene")).isVisible()
