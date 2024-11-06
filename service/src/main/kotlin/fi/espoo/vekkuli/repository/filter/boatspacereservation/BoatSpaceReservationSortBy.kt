@@ -26,8 +26,8 @@ class BoatSpaceReservationSortBy(
                         "place"
                     ),
                 BoatSpaceFilterColumn.PLACE_TYPE to listOf("type"),
-                BoatSpaceFilterColumn.CUSTOMER to listOf("full_name"),
-                BoatSpaceFilterColumn.HOME_TOWN to listOf("home_town"),
+                BoatSpaceFilterColumn.CUSTOMER to listOf("name"),
+                BoatSpaceFilterColumn.HOME_TOWN to listOf("municipality_name"),
                 BoatSpaceFilterColumn.BOAT to listOf("boat_registration_code")
             )
     }
