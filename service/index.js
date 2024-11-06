@@ -1,4 +1,8 @@
 import 'htmx.org';
+import './htmx'
 import Alpine from 'alpinejs';
 window.Alpine = Alpine
-Alpine.start();
+
+document.addEventListener("DOMContentLoaded", function (){
+  Alpine.start();
+})
