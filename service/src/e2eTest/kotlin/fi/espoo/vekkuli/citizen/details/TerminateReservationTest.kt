@@ -1,14 +1,17 @@
 package fi.espoo.vekkuli.citizen.details
 
+import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
-class TerminateReservation : PlaywrightTest() {
+class TerminateReservationTest : PlaywrightTest() {
     val citizenPageInEnglish = "$baseUrl/kuntalainen/omat-tiedot?lang=en"
 
     @Test
@@ -36,7 +39,7 @@ class TerminateReservation : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationFormSize).hasText("2.5 x 4.5 m")
             assertThat(citizenDetailsPage.terminateReservationFormAmenity).hasText("Beam")
 
-            citizenDetailsPage.terminateReservationModalConfirm.click()
+            citizenDetailsPage.terminateReservationModalCancel.click()
             assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
@@ -63,8 +66,18 @@ class TerminateReservation : PlaywrightTest() {
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B1")
 
-            // Hides the modal and the expired list is on the page, but not visible
             citizenDetailsPage.terminateReservationModalConfirm.click()
+
+            // Shows a success message in modal
+            assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
+
+            // Hides the modal and the expired list is on the page, but not visible
+            citizenDetailsPage.modalWindow.click(
+                Locator
+                    .ClickOptions()
+                    .setPosition(5.0, 5.0)
+            )
+
             assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
             assertThat(citizenDetailsPage.expiredReservationList).not().isVisible()
             assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
@@ -73,6 +86,38 @@ class TerminateReservation : PlaywrightTest() {
             assertThat(citizenDetailsPage.expiredReservationList).isVisible()
             assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
             assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B1")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `citizen sees an error message if the termination is unsuccessful`() {
+        try {
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+            page.navigate(citizenPageInEnglish)
+
+            citizenDetailsPage.terminateReservationButton.click()
+            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
+
+            // Opens up information from the first reservation of the first user
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B1")
+            jdbi.inTransactionUnchecked { tx ->
+                tx
+                    .createUpdate("UPDATE boat_space_reservation SET status = :status WHERE id = :id")
+                    .bind("status", ReservationStatus.Cancelled)
+                    .bind("id", 1)
+                    .execute()
+            }
+            citizenDetailsPage.terminateReservationModalConfirm.click()
+            assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
+            assertThat(citizenDetailsPage.terminateReservationFail).isVisible()
+            citizenDetailsPage.terminateReservationFailOkButton.click()
+            assertThat(citizenDetailsPage.terminateReservationFail).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
