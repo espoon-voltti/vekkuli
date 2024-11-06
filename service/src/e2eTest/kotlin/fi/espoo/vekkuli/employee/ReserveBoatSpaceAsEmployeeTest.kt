@@ -1,18 +1,16 @@
 package fi.espoo.vekkuli.employee
 
-import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.*
-import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsShortYearDate
+import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
-import kotlin.io.path.Path
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
@@ -154,15 +152,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val info = "invoice has been paid"
             citizenDetailsPage.invoicePaidInfo.fill(info)
             val testDate = LocalDate.of(2024, 7, 22)
-            citizenDetailsPage.invoicePaymentDate.pressSequentially(formatAsFullDate(testDate))
-            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-0.png")))
 
-            assertThat(citizenDetailsPage.invoicePaymentDate).hasText(formatAsShortYearDate(testDate))
+            citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
 
             citizenDetailsPage.invoiceModalConfirm.click()
-            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-1.png")))
             assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsShortYearDate(testDate))
-            page.screenshot(Page.ScreenshotOptions().setPath(Path("build/test-screenshot-2.png")))
 
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText(info)).isVisible()
