@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
-import fi.espoo.vekkuli.controllers.UnauthorizedException
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -26,7 +26,7 @@ class TerminateBoatSpaceReservationService(
         terminatorId: UUID
     ): Boolean {
         if (!permissionService.canTerminateBoatSpaceReservation(terminatorId, reservationId)) {
-            throw UnauthorizedException()
+            throw Unauthorized()
         }
         val reservation = boatSpaceReservationRepository.terminateBoatSpaceReservation(reservationId)
         sendTerminationNotice(reservation, terminatorId)
