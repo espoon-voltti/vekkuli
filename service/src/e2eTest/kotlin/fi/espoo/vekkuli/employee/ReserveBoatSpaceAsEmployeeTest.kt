@@ -108,55 +108,59 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `Employee can reserve a boat space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
-        page.navigate(employeePageInEnglish)
-        page.getByTestId("employeeLoginButton").click()
-        page.getByText("Kirjaudu").click()
+        try {
+            page.navigate(employeePageInEnglish)
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
 
-        val listingPage = ReservationListPage(page)
-        listingPage.navigateTo()
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
 
-        listingPage.createReservation.click()
+            listingPage.createReservation.click()
 
-        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+            val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
 
-        // fill in the filters
-        assertThat(reservationPage.emptyDimensionsWarning).isVisible()
-        reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.boatSpaceTypeSlipRadio.click()
-        reservationPage.amenityBuoyCheckbox.check()
-        reservationPage.amenityRearBuoyCheckbox.check()
-        reservationPage.amenityBeamCheckbox.check()
-        reservationPage.amenityWalkBeamCheckbox.check()
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+            reservationPage.widthFilterInput.fill("3")
+            reservationPage.lengthFilterInput.fill("6")
+            reservationPage.boatSpaceTypeSlipRadio.click()
+            reservationPage.amenityBuoyCheckbox.check()
+            reservationPage.amenityRearBuoyCheckbox.check()
+            reservationPage.amenityBeamCheckbox.check()
+            reservationPage.amenityWalkBeamCheckbox.check()
 
-        assertThat(reservationPage.harborHeaders).hasCount(3)
-        reservationPage.haukilahtiCheckbox.check()
-        reservationPage.kivenlahtiCheckbox.check()
-        assertThat(reservationPage.harborHeaders).hasCount(2)
+            assertThat(reservationPage.harborHeaders).hasCount(3)
+            reservationPage.haukilahtiCheckbox.check()
+            reservationPage.kivenlahtiCheckbox.check()
+            assertThat(reservationPage.harborHeaders).hasCount(2)
 
-        reservationPage.firstReserveButton.click()
+            reservationPage.firstReserveButton.click()
 
-        fillAndTestAndSubmitForm(reservationPage)
+            fillAndTestAndSubmitForm(reservationPage)
 
-        val invoicePreviewPage = InvoicePreviewPage(page)
-        assertThat(invoicePreviewPage.header).isVisible()
-        invoicePreviewPage.sendButton.click()
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.sendButton.click()
 
-        val reservationListPage = ReservationListPage(page)
-        assertThat(reservationListPage.header).isVisible()
-        page.getByText("John Doe").click()
-        val citizenDetailsPage = CitizenDetailsPage(page)
-        citizenDetailsPage.invoicePaidButton.click()
-        val info = "invoice has been paid"
-        citizenDetailsPage.invoicePaidInfo.fill(info)
-        val testDate = LocalDate.of(2024, 7, 22)
-        citizenDetailsPage.invoicePaymentDate.pressSequentially(formatAsFullDate(testDate))
-        citizenDetailsPage.invoiceModalConfirm.click()
-        assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsShortYearDate(testDate))
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("John Doe").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.invoicePaidButton.click()
+            val info = "invoice has been paid"
+            citizenDetailsPage.invoicePaidInfo.fill(info)
+            val testDate = LocalDate.of(2024, 7, 22)
+            citizenDetailsPage.invoicePaymentDate.pressSequentially(formatAsFullDate(testDate))
+            citizenDetailsPage.invoiceModalConfirm.click()
+            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsShortYearDate(testDate))
 
-        citizenDetailsPage.memoNavi.click()
-        assertThat(page.getByText(info)).isVisible()
+            citizenDetailsPage.memoNavi.click()
+            assertThat(page.getByText(info)).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
     }
 
     @Test
