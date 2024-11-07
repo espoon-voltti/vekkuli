@@ -1,7 +1,10 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.CreateInvoiceParams
+import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Invoice
+import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import java.util.*
@@ -14,32 +17,53 @@ class BoatSpaceInvoiceService(
     private val boatReservationService: BoatReservationService,
     private val citizenService: CitizenService
 ) {
-    fun sendInvoice(batch: InvoiceBatchParameters): Invoice? {
+    fun createAndSendInvoice(batch: InvoiceBatchParameters): Invoice? {
+        val invoiceParams = batch.invoices.first()
+        val (createdInvoice, createdPayment) = createInvoice(invoiceParams)
+
         val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(batch)
         if (!sendInvoiceSuccess) {
-            // error handling
-            return null
+            paymentService.updatePayment(createdPayment.id, false, null)
         }
-        val invoice = batch.invoices.first()
-        return paymentService.insertInvoicePayment(
-            CreateInvoiceParams(
-                dueDate = invoice.dueDate,
-                reference = invoice.invoiceNumber.toString(),
-                citizenId = invoice.recipient.id,
-                reservationId = invoice.rows[0].productId.toInt(),
+        return createdInvoice
+    }
+
+    fun createInvoice(invoice: InvoiceParameters): Pair<Invoice, Payment> {
+        val invoiceRow = invoice.rows[0]
+
+        val payment =
+            paymentService.insertPayment(
+                CreatePaymentParams(
+                    invoice.recipient.id,
+                    invoice.invoiceNumber.toString(),
+                    invoiceRow
+                        .amount
+                        .toInt(),
+                    BOAT_RESERVATION_ALV_PERCENTAGE,
+                    invoiceRow.productId
+                ),
+                invoiceRow.productId.toInt()
             )
-        )
+        val invoice =
+            paymentService.insertInvoicePayment(
+                CreateInvoiceParams(
+                    dueDate = invoice.dueDate,
+                    reference = invoice.invoiceNumber.toString(),
+                    citizenId = invoice.recipient.id,
+                    reservationId = invoiceRow.productId.toInt(),
+                    paymentId = payment.id
+                )
+            )
+        return Pair(invoice, payment)
     }
 
     fun createInvoiceBatchParameters(
         reservationId: Int,
         citizenId: UUID,
     ): InvoiceBatchParameters? {
-        val reservation = boatReservationService.getBoatSpaceReservation(reservationId)
-        if (reservation == null) {
-            // error handling
-            return null
-        }
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: return null
         val reserver = citizenService.getCitizen(citizenId) ?: return null
         val invoiceRow =
             Row(
