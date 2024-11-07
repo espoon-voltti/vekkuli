@@ -590,15 +590,12 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
-    override fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation =
-        setReservationStatus(reservationId, ReservationStatus.Payment)
-
     override fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
         setReservationStatus(reservationId, ReservationStatus.Invoiced)
 
     private fun setReservationStatus(
         reservationId: Int,
-        status: ReservationStatus
+        status: ReservationStatus,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =

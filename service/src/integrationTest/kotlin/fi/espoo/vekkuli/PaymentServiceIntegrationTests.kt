@@ -49,7 +49,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should handle payment result`() {
+    fun `should create payment and link it to reservation`() {
         val madeReservation =
             createReservationInPaymentState(
                 timeProvider,
@@ -68,10 +68,9 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                     productCode = "1",
                 )
             )
-        val reservation = reservationService.getBoatSpaceReservation(madeReservation.id)
-        assertEquals(payment.citizenId, madeReservation.reserverId, "payment is added for correct citizen")
-        assertEquals(reservation?.status, ReservationStatus.Payment, "reservation status is correct")
-        assertEquals(payment.reservationId, madeReservation.id, "payment is linked to the reservation")
+        assertEquals(madeReservation.reserverId, payment.citizenId, "payment is added for correct citizen")
+        assertEquals(madeReservation.id, payment.reservationId, "payment is linked to the reservation")
+        assertEquals(null, payment.paid, "payment is not set to paid")
     }
 
     @Test
@@ -114,7 +113,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should mark the reservation as paid`() {
+    fun `should set the reservation as paid and set status to confirmed`() {
         val madeReservation =
             createReservationInInvoiceState(
                 timeProvider,
@@ -136,5 +135,6 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
         val payment = paymentService.getPayment(invoice.paymentId)
         assertEquals(timeProvider.getCurrentDateTime(), payment?.paid, "Fetched invoice payment date is set to today")
         assertEquals(PaymentStatus.Success, payment?.status, "Fetched invoice payment status is set to success")
+        assertEquals(reservation?.status, ReservationStatus.Confirmed, "Reservation status is set to confirmed")
     }
 }

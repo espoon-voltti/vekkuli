@@ -196,7 +196,6 @@ class BoatReservationService(
         params: CreatePaymentParams
     ): Payment {
         val payment = paymentService.insertPayment(params, reservationId)
-        boatSpaceReservationRepo.setReservationStatusToPayment(reservationId)
         return payment
     }
 
