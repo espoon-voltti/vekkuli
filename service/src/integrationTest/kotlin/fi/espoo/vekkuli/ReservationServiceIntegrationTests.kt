@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
 import java.util.*
 import kotlin.test.assertContains
-import kotlin.test.assertNotNull
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,19 +23,17 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     val espooCitizenId = citizenIdOlivia
     val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
 
+    @Autowired
+    lateinit var reservationService: BoatReservationService
+
+    @Autowired lateinit var terminateService: TerminateBoatSpaceReservationService
+
+    @Autowired lateinit var invoiceService: BoatSpaceInvoiceService
+
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
     }
-
-    @Autowired
-    lateinit var reservationService: BoatReservationService
-
-    @Autowired
-    lateinit var terminateService: TerminateBoatSpaceReservationService
-
-    @Autowired
-    lateinit var citizenService: CitizenService
 
     @Test
     fun `first place should be indefinite for Espoo citizens`() {
@@ -197,6 +194,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
             )
+
         val result = reservationService.getReservationWithReserver(madeReservation.id)
         assertEquals(madeReservation.id, result?.id, "reservation is the same")
         assertEquals(madeReservation.reserverId, result?.reserverId, "citizen is the same")
@@ -241,34 +239,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
         val reservation = reservationService.getUnfinishedReservationForCitizen(this.citizenIdLeo)
         assertEquals(madeReservation.id, reservation?.id, "reservation is the same")
-    }
-
-    @Test
-    fun `should handle payment result`() {
-        val madeReservation =
-            createReservationInPaymentState(
-                timeProvider,
-                reservationService,
-                this.citizenIdLeo
-            )
-
-        val payment =
-            reservationService.addPaymentToReservation(
-                madeReservation.id,
-                CreatePaymentParams(
-                    citizenId = this.citizenIdLeo,
-                    reference = "1",
-                    totalCents = 1,
-                    vatPercentage = 24.0,
-                    productCode = "1",
-                )
-            )
-        val reservation = reservationService.getBoatSpaceReservation(madeReservation.id)
-        assertNotNull(reservation, "reservation is found")
-        assertEquals(madeReservation.id, reservation.id, "reservation is the same")
-        assertEquals(payment.citizenId, madeReservation.reserverId, "payment is added for correct citizen")
-        assertEquals(reservation.status, ReservationStatus.Payment, "reservation status is correct")
-        assertEquals(payment.reservationId, madeReservation.id, "payment is linked to the reservation")
     }
 
     @Test
@@ -366,7 +336,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             1,
             1
         )
-        createReservationInInvoiceState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
+        createReservationInInvoiceState(timeProvider, reservationService, invoiceService, citizenIdOlivia, 2, 3)
 
         val unfilteredReservations =
             reservationService.getBoatSpaceReservations(
@@ -536,7 +506,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             1
         )
         createReservationInConfirmedState(timeProvider, reservationService, UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34"), 177, 2)
-        createReservationInInvoiceState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
+        createReservationInInvoiceState(timeProvider, reservationService, invoiceService, citizenIdOlivia, 2, 3)
 
         val reservations =
             reservationService.getBoatSpaceReservations(
@@ -563,50 +533,6 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
         val boatSpace = reservationService.getBoatSpaceRelatedToReservation(newReservation.id)
         assertEquals(boatSpaceId, boatSpace?.id, "Correct boat space is fetched")
-    }
-
-    @Test
-    fun `should mark the reservation as paid`() {
-        val boatSpaceId = 1
-
-        val employeeId = UUID.fromString("94833b54-132b-4ab8-b841-60df45809b3e")
-
-        val newReservation =
-            reservationService.insertBoatSpaceReservationAsEmployee(
-                employeeId,
-                boatSpaceId,
-                startDate = timeProvider.getCurrentDate(),
-                endDate = timeProvider.getCurrentDate(),
-            )
-
-        reservationService.reserveBoatSpace(
-            this.citizenIdLeo,
-            ReserveBoatSpaceInput(
-                newReservation.id,
-                boatId = 0,
-                boatType = BoatType.Sailboat,
-                width = 3.5,
-                length = 6.5,
-                depth = 3.0,
-                weight = 180,
-                boatRegistrationNumber = "JFK293",
-                boatName = "Boat",
-                otherIdentification = "1",
-                extraInformation = "1",
-                ownerShip = OwnershipStatus.FutureOwner,
-                email = "test@email.com",
-                phone = "1234567890"
-            ),
-            ReservationStatus.Invoiced,
-            ReservationValidity.FixedTerm,
-            timeProvider.getCurrentDate(),
-            timeProvider.getCurrentDate()
-        )
-
-        reservationService.markInvoicePaid(newReservation.id, timeProvider.getCurrentDate(), "")
-
-        val reservation = reservationService.getBoatSpaceReservation(newReservation.id)
-        assertEquals(ReservationStatus.Confirmed, reservation?.status, "Reservation is marked as paid")
     }
 
     @Test
