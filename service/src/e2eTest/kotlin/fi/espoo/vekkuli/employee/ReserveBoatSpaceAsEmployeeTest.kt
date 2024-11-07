@@ -302,7 +302,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.existingCitizenSelector.click()
         "olivia".forEach { character ->
             formPage.citizenSearchInput.press("$character")
-            Thread.sleep(50)
         }
         formPage.citizenSearchOption1.click()
 
