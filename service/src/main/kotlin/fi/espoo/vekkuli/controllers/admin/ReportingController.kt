@@ -41,9 +41,7 @@ class ReportingController(
             .header("Content-Type", "text/html")
             .body(
                 reportingLayout.render(
-                    reportingLayout.render(
-                        reportingView.render()
-                    )
+                    reportingView.render()
                 )
             )
 }
