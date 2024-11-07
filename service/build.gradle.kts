@@ -111,7 +111,7 @@ dependencies {
     implementation("software.amazon.awssdk:core:2.28.26")
     implementation("software.amazon.awssdk:regions:2.20.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.commonmark:commonmark:0.22.0")
+    implementation("org.commonmark:commonmark:0.24.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 }
