@@ -24,9 +24,11 @@ class TerminateReservationModal : BaseView() {
                     id="$formId"
                     ${addTestId(formId)}
                     hx-post="/boat-space/terminate-reservation"
-                    hx-on-htmx-after-request="window.location.reload()"
+                    hx-swap="innerHTML"
+                    hx-target="#modal-container"
                     >
                     <div class='columns is-multiline'>
+                   
                         <div class="column is-full">
                             <ul class="no-bullets">
                                 <li ${addTestId("terminate-reservation-location")}>${reservation.locationName} ${reservation.place}</li>

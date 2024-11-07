@@ -30,6 +30,7 @@ class InvoicePaidModal : BaseView() {
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder
             .setTitle(t("citizenDetails.markInvoicePaid"))
+            .setCloseModalOnPost(true)
             // language=HTML
             .setContent(
                 """
