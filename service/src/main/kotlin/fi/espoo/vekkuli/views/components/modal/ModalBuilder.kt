@@ -50,7 +50,7 @@ class ModalBuilder {
                 class="modal" 
                 x-data="{ $modalStateId: true }" 
                 x-show="$modalStateId" 
-                ${if (closeModalOnPost || reloadPageOnClose) "x-on:htmx:after-on-load=\"$modalStateId = false\"" else ""}
+                ${if (closeModalOnPost) "x-on:htmx:after-on-load=\"$modalStateId = false\"" else ""}
                 x-effect="
                     if (!$modalStateId) {
                         ${'$'}el.remove()
