@@ -1,3 +1,4 @@
+environment: ${ENVIRONMENT:local}
 spring:
   profiles:
     active: ${ENVIRONMENT:local}
