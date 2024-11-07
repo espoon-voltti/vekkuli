@@ -23,18 +23,13 @@ class Utils {
             }
 
         fun getEnv(): EnvType {
-            val env = System.getenv("VOLTTI_ENV")
-            val runningInDocker = System.getenv("E2E_ENV") == "docker"
+            val env = System.getenv("ENVIRONMENT")
             return when (env) {
                 "production" -> EnvType.Production
                 "staging" -> EnvType.Staging
-                else -> {
-                    if (runningInDocker) {
-                        EnvType.LocalDocker
-                    } else {
-                        EnvType.Local
-                    }
-                }
+                "local" -> EnvType.Local
+                "local-docker" -> EnvType.LocalDocker
+                else -> EnvType.Local
             }
         }
 

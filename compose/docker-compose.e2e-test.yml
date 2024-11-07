@@ -36,7 +36,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://vekkuli-db:5432/vekkuli
       SPRING_DATASOURCE_USERNAME: vekkuli
       SPRING_DATASOURCE_PASSWORD: postgres
-      E2E_ENV: docker
+      ENVIRONMENT: local-docker
     entrypoint: ./e2e-test-entrypoint.sh
     depends_on:
       - vekkuli-db
