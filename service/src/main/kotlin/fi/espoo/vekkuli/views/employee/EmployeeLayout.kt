@@ -1,28 +1,25 @@
 package fi.espoo.vekkuli.views.employee
+import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.head
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class EmployeeLayout {
-    @Autowired
-    lateinit var icons: Icons
-
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+class EmployeeLayout(
+    private val icons: Icons,
+    private val messageUtil: MessageUtil,
+    private val commonComponents: CommonComponents,
+    private val localeUtil: LocaleUtil
+) {
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(
         isAuthenticated: Boolean,
         currentUri: String,
         bodyContent: String,
     ): String {
-        val lang = messageUtil.getLocale().split("_")[0]
         val authMenu =
             if (isAuthenticated) {
                 """
@@ -56,27 +53,30 @@ class EmployeeLayout {
             }
         // language=HTML
         return """
-            <!DOCTYPE html>
-            <html class="theme-light" lang="$lang">
+             <!DOCTYPE html>
+            <html class="theme-light" lang="${localeUtil.getLocaleLanguageCode()}">
             <head>
                 <title>Varaukset</title>
                 $head
             </head>
             <body>
-            <div class="columns">
-                <div class="menu">
-                    <p class="menu-label">
-                        <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
-                    </p>
+            <div class="columns is-gapless">
+                <div class=" column is-one-fifth">
+                    <div class='menu'>
+                        <p class="menu-label">
+                            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                        </p>
                         <p class="menu-label">${t("menu.marineOutdoor")}</p>
                         <ul class="menu-list">
                             <li>
                                 $boatSpaceReservationsLink
                             </li>
                         </ul>
-                        
-                    <div class="auth-menu" >
-                        $authMenu
+                                                   
+                        <div class="login-section" >
+                            ${commonComponents.languageSelection()}
+                            $authMenu
+                        </div>
                     </div>
                 </div>
                 <div class="column content-column" >

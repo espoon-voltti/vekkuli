@@ -82,7 +82,7 @@ object BoatSpaceConfig {
     ) = when (amenity) {
         BoatSpaceAmenity.Buoy -> Pair(null, null)
         BoatSpaceAmenity.RearBuoy -> Pair(null, spaceLength - REAR_BUYO_MAX_LENGTH_ADJUSTMENT_CM)
-        BoatSpaceAmenity.Beam -> Pair(spaceLength - BEAM_MIN_LENGTH_ADJUSTMENT_CM, spaceLength + BEAM_MAX_LENGTH_ADJUSTMENT_CM)
+        BoatSpaceAmenity.Beam -> Pair(null, spaceLength + BEAM_MAX_LENGTH_ADJUSTMENT_CM)
         BoatSpaceAmenity.WalkBeam ->
             Pair(
                 spaceLength - WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM,
@@ -101,7 +101,7 @@ object BoatSpaceConfig {
         return when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE)
             BoatSpaceAmenity.RearBuoy -> Pair(boatLength + REAR_BUYO_MAX_LENGTH_ADJUSTMENT_CM, Int.MAX_VALUE)
-            BoatSpaceAmenity.Beam -> Pair(boatLength - BEAM_MAX_LENGTH_ADJUSTMENT_CM, boatLength + BEAM_MIN_LENGTH_ADJUSTMENT_CM)
+            BoatSpaceAmenity.Beam -> Pair(boatLength - BEAM_MAX_LENGTH_ADJUSTMENT_CM, Int.MAX_VALUE)
             BoatSpaceAmenity.WalkBeam ->
                 Pair(
                     boatLength - WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM,

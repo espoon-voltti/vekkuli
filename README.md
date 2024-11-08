@@ -33,7 +33,9 @@ To start database and redis
 - `docker-compose up -d`
 
 To populate the database with some test data you can use the seed.sql file
-- `psql -h localhost -U postgres -d vekkuli -f seed.sql`
+- `psql -h localhost -U vekkuli -d vekkuli -f ./service/src/e2eTest/resources/seed.sql`
+
+password is postgres
 
 The actual boat spaces are in a separate file, which you can insert to the database using psql
 - `\copy boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) from 'boat_space.csv' DELIMITER ',' CSV;`

@@ -18,6 +18,4 @@ class MessageUtil(
         args: List<Any> = emptyList(),
         locale: Locale = LocaleContextHolder.getLocale()
     ): String = messageSource.getMessage(code, args.toTypedArray(), locale)
-
-    fun getLocale(): String = LocaleContextHolder.getLocale().toString()
 }

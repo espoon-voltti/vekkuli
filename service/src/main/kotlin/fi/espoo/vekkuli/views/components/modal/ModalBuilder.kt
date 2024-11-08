@@ -1,12 +1,19 @@
 package fi.espoo.vekkuli.views.components.modal
 
 import fi.espoo.vekkuli.controllers.Utils
+import fi.espoo.vekkuli.utils.addTestId
 
 class ModalBuilder {
     private val modalStateId = "isOpen"
     private var title: String? = null
     private var content: String? = null
+    private var reloadPageOnClose: Boolean = false
+    private var reloadPageOnPost: Boolean = false
+    private var closeModalOnPost: Boolean = false
+    private var centerButtons: Boolean = false
     private val buttons: MutableList<ModalButtonParam> = mutableListOf()
+
+    fun getModalStateId(): String = modalStateId
 
     fun setTitle(title: String) =
         apply {
@@ -25,6 +32,17 @@ class ModalBuilder {
             buttons.add(builder.build())
         }
 
+    fun setReloadPageOnClose(reloadPageOnClose: Boolean) =
+        apply {
+            this.reloadPageOnClose = reloadPageOnClose
+        }
+
+    fun setButtonsCentered(isCentered: Boolean) = apply { this.centerButtons = isCentered }
+
+    fun setReloadPageOnPost(reloadPageOnPost: Boolean) = apply { this.reloadPageOnPost = reloadPageOnPost }
+
+    fun setCloseModalOnPost(closeModalOnPost: Boolean) = apply { this.closeModalOnPost = closeModalOnPost }
+
     fun build(): String {
         // language=HTML
         return """
@@ -32,13 +50,20 @@ class ModalBuilder {
                 class="modal" 
                 x-data="{ $modalStateId: true }" 
                 x-show="$modalStateId" 
-                x-on:htmx:after-on-load="$modalStateId = false"
+                ${if (closeModalOnPost) "x-on:htmx:after-on-load=\"$modalStateId = false\"" else ""}
                 x-effect="
                     if (!$modalStateId) {
                         ${'$'}el.remove()
+                        ${if (reloadPageOnClose) "window.location.reload()" else ""}
                     }
-                ">
-                <div class="modal-underlay" @click="$modalStateId = false;"></div>
+                "
+                ${addTestId("modal-window")}
+                >
+                <div 
+                    ${addTestId("modal-underlay")} 
+                    class="modal-underlay"
+                    @click="$modalStateId = false;"
+                ></div>
                 <div class="modal-content">
                     ${if (!title.isNullOrEmpty()) """<h3>$title</h3>""" else ""}
                     $content
@@ -50,7 +75,7 @@ class ModalBuilder {
 
     private fun buildButtons(buttons: List<ModalButtonParam>): String {
         // language=HTML
-        return """<div class="buttons">${
+        return """<div class="buttons ${if (centerButtons) "is-justify-content-center" else ""}">${
             buttons.joinToString("\n") { button ->
                 val additionalAttributes =
                     button.attributes.entries.joinToString(" ") { (key, value) ->
@@ -69,13 +94,12 @@ class ModalBuilder {
         }</div>""".trimIndent()
     }
 
-    private fun getButtonType(type: ModalButtonType): String {
-        return when (type) {
+    private fun getButtonType(type: ModalButtonType): String =
+        when (type) {
             ModalButtonType.Button -> "type=\"button\""
             ModalButtonType.Cancel -> "type=\"button\" x-on:click=\"$modalStateId = false\""
             ModalButtonType.Submit -> "type=\"submit\""
         }
-    }
 
     class ModalButtonBuilder {
         var text: String = ""
@@ -103,8 +127,6 @@ class ModalBuilder {
             value: String
         ) = apply { attributes[key] = value }
 
-        fun build(): ModalButtonParam {
-            return ModalButtonParam(text, type, style, attributes)
-        }
+        fun build(): ModalButtonParam = ModalButtonParam(text, type, style, attributes)
     }
 }

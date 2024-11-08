@@ -5,16 +5,16 @@ $black: #536076;
 $grey: #A9B0BB;
 $light-gray: #F7F7F7;
 $darkGray: #536076;
+$gainsboro: #dddddd;
 $warning: #FF8E31;
 $error: #FF3D3D;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
 $spacing-large: 24px;
-$spacing-extralarge: 32px;
+$spacing-xl: 32px;
 $block-spacing: $spacing-medium;
 $activeColor: #D9E4F4;
-$menu-width: 190px;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
@@ -24,7 +24,7 @@ $menu-width: 190px;
   $spacing-horizontal: "h",
   $spacing-vertical: "v",
   $spacing-values: ("none": 0, "s": $spacing-small, "m": $spacing-medium,
-          "l": $spacing-large, "xl": $spacing-extralarge),
+          "l": $spacing-large, "xl": $spacing-xl),
   $icon-text-spacing: $spacing-small,
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
@@ -36,12 +36,14 @@ $menu-width: 190px;
   $dropdown-content-shadow: none,
   $button-padding-vertical: calc($spacing-small * 2),
   $button-padding-horizontal: calc($spacing-small * 4),
-  $box-padding: $spacing-extralarge,
+  $box-padding: $spacing-xl,
   $tabs-boxed-link-active-background-color: $white,
   $tabs-boxed-link-active-border-color: transparent,
   $tabs-link-color: $black,
   $tabs-link-active-color: $black,
-  $menu-label-letter-spacing: 0
+  $menu-label-letter-spacing: 0,
+  $dropdown-menu-min-width: 100%,
+  $column-gap: $spacing-small,
 );
 
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
@@ -64,8 +66,9 @@ $menu-width: 190px;
 }
 
 html, body {
-  min-height: 100%;
+  height: 100%;
   background: $light-gray;
+  margin: 0;
 }
 
 .container {
@@ -76,6 +79,7 @@ html, body {
 .section {
   padding-top: $spacing-medium;
 }
+
 h1 {
   font-size: 32px;
   font-weight: 700;
@@ -287,6 +291,10 @@ form .subtitle:not(:last-child) {
   align-items: center;
 }
 
+body > .columns {
+  height: 100%;
+}
+
 .modal > .modal-underlay {
   position: absolute;
   z-index: -1;
@@ -352,7 +360,7 @@ form .subtitle:not(:last-child) {
   }
 
   th, td {
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid $gainsboro ;
     text-align: left;
     padding: $spacing-small;
     vertical-align: middle;
@@ -410,12 +418,11 @@ form .subtitle:not(:last-child) {
 .dropdown-content {
   border: 1px solid #A9B0BB;
   border-top: 0;
-  padding-left: $spacing-extralarge;
-  padding-right: $spacing-extralarge;
 }
 
 .dropdown-item {
   color: $bulma-primary;
+  text-transform: initial;
 }
 
 .dropdown-item:hover {
@@ -425,22 +432,22 @@ form .subtitle:not(:last-child) {
 .nav-row{
   background: white;
   display:flex;
-  padding-left: 28px;
-  padding-right:28px;
-  border-bottom: 8px solid $light-gray;
+  padding: $spacing-large $spacing-xl;
+  border-bottom: $spacing-small solid $light-gray;
+  justify-content: space-between;
 }
 
-.nav-row > h1 {
-  margin-top: 43px
+.nav-row div {
+  align-items: center;
+  gap: $spacing-medium;
 }
 
-.nav-row > .auth {
-  padding: 50px 20px 20px;
-  margin-left: auto;
+.nav-row h1 {
+  align-content: center;
+  margin: 0;
 }
-
-.nav-row > div {
-  padding: 20px;
+.nav-row > .columns {
+    margin: 0;
 }
 
 .link.active {
@@ -455,16 +462,14 @@ form .subtitle:not(:last-child) {
 }
 
 .menu {
-  width: $menu-width;
-  height: 100vh;
+  overflow: auto;
+  height: 100%;
   font-weight: 700;
   font-size: 12px;
   text-transform: uppercase;
   background: white;
-  top: 0;
-  left: 0;
-  position: fixed;
-  padding: 8px;
+  padding: 0 $spacing-medium;
+  margin:0;
 }
 
 .menu-label {
@@ -472,13 +477,13 @@ form .subtitle:not(:last-child) {
   color: $black;
 }
 
-.auth-menu {
-  position:absolute;
-  bottom: 8px;
-}
-
-.content-column {
-  margin-left: $menu-width;
+.login-section {
+  margin-top: $spacing-large;
+  padding-top: $spacing-large;
+  border-top: 1px solid $gainsboro;
+  display: flex;
+  gap: $spacing-medium;
+  flex-direction: column;
 }
 
 a.active {
@@ -514,8 +519,8 @@ a.active {
   display: flex;
   flex-direction: column;
   gap: $spacing-large;
-  padding-bottom: $spacing-extralarge;
-  margin-bottom: $spacing-extralarge;
+  padding-bottom: $spacing-xl;
+  margin-bottom: $spacing-xl;
   border-bottom: solid 1px $grey;
 }
 
@@ -554,7 +559,7 @@ tr.table-borderless th {
   position: absolute;
   left: 0;
   top: 0;
-  bottom: -$spacing-extralarge; // to cover the border
+  bottom: -$spacing-xl; // to cover the border
   width: $spacing-small;
   background-color: $grey;
   border-radius: $spacing-small;
@@ -617,7 +622,6 @@ label.filter-button .icon {
 label.filter-button:has(input:checked) .icon {
   display: inline-block; /* Show the icon when checked */
 }
-
 
 .filter-dropdown-menu {
   min-width: unset;
@@ -683,7 +687,7 @@ label.filter-button:has(input:checked) .icon {
   }
 
   th, td {
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid $gainsboro;
     text-align: left;
     padding: $spacing-small;
     vertical-align: middle;
@@ -747,8 +751,7 @@ label.filter-button:has(input:checked) .icon {
 
 
 ul {
-  list-style-type: disc;
-  margin-left: 16px;
+  margin-left: $spacing-small;
 }
 
 .no-bullets
@@ -780,4 +783,10 @@ ul {
 {
   display:inline-block;
   width: 250px
+}
+
+.dropdown-title {
+  align-items: center;
+  display: flex;
+  gap: $spacing-small;
 }

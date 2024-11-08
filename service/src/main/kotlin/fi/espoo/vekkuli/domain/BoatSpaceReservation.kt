@@ -42,7 +42,6 @@ data class BoatSpaceReservation(
     val status: ReservationStatus,
     val actingUserId: UUID?,
     val reserverId: UUID?,
-    val paymentId: UUID?,
     val validity: ReservationValidity
 )
 

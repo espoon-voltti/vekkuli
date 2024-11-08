@@ -120,7 +120,7 @@ dependencies {
     implementation("software.amazon.awssdk:core:2.28.26")
     implementation("software.amazon.awssdk:regions:2.20.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.commonmark:commonmark:0.22.0")
+    implementation("org.commonmark:commonmark:0.24.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 }
@@ -170,9 +170,15 @@ tasks.register("compileSass", NpxTask::class) {
     args = listOf("--load-path=node_modules", "src/main/resources/public/static/sass:src/main/resources/public/static/css")
 }
 
+tasks.register("bundleJs", NpxTask::class) {
+    dependsOn("npmInstall")
+    command = "webpack"
+    args = listOf("--config", "webpack.config.js") // Optional: specify config path if needed
+}
+
 tasks {
     bootRun {
-        dependsOn("compileSass")
+        dependsOn("compileSass", "bundleJs")
         systemProperty("spring.profiles.active", "local")
     }
 

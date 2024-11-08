@@ -26,6 +26,8 @@ interface BoatSpaceReservationRepository {
 
     fun getReservationWithReserver(id: Int): ReservationWithDependencies?
 
+    fun getReservationWithDependencies(id: Int): ReservationWithDependencies?
+
     fun getReservationWithoutReserver(id: Int): ReservationWithDependencies?
 
     fun removeBoatSpaceReservation(
@@ -78,11 +80,9 @@ interface BoatSpaceReservationRepository {
         endDate: LocalDate,
     ): BoatSpaceReservation
 
-    fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation
-
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation
 
-    fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation
+    fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation?
 
     fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation
 

@@ -65,7 +65,7 @@ class BoatSpaceForm(
         reservationId: Int,
         input: BoatFormInput,
     ): String {
-        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+        val boatTypes = BoatType.entries.map { it.name }
 
         fun boatRadioButton(boat: Boat) =
             """

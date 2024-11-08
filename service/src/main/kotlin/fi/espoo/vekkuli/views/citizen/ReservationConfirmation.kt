@@ -16,7 +16,7 @@ class ReservationConfirmation(
         return """
             <section class="section">
                 <div class="box">
-                    ${stepIndicator.render(2)}
+                    ${stepIndicator.render(4)}
                     <div id="reservation-confirmation-container" class="block">
                         <h2>${t("boatSpaceReservation.title.confirmation")}</h2>
                         <div class="block">

@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.domain.CreateInvoiceParams
-import fi.espoo.vekkuli.domain.CreatePaymentParams
-import fi.espoo.vekkuli.domain.Payment
-import fi.espoo.vekkuli.domain.PaymentStatus
-import fi.espoo.vekkuli.service.PaymentService
+import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,20 +11,27 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.time.LocalDate
+import kotlin.test.assertNotNull
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class PaymentServiceIntegrationTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var reservationService: BoatReservationService
+
+    @Autowired
+    private lateinit var citizenService: CitizenService
+
+    @Autowired private lateinit var paymentService: PaymentService
+
+    @Autowired private lateinit var invoiceService: BoatSpaceInvoiceService
+
     @BeforeEach
     override fun resetDatabase() {
         deleteAllPayments(jdbi)
     }
-
-    @Autowired
-    lateinit var paymentService: PaymentService
 
     private fun insertNewPayment(ref: String = "1"): Payment =
         paymentService.insertPayment(
@@ -45,6 +49,31 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should create payment and link it to reservation`() {
+        val madeReservation =
+            createReservationInPaymentState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo
+            )
+
+        val payment =
+            reservationService.addPaymentToReservation(
+                madeReservation.id,
+                CreatePaymentParams(
+                    citizenId = this.citizenIdLeo,
+                    reference = "1",
+                    totalCents = 1,
+                    vatPercentage = 24.0,
+                    productCode = "1",
+                )
+            )
+        assertEquals(madeReservation.reserverId, payment.citizenId, "payment is added for correct citizen")
+        assertEquals(madeReservation.id, payment.reservationId, "payment is linked to the reservation")
+        assertEquals(null, payment.paid, "payment is not set to paid")
+    }
+
+    @Test
     fun `payment is created with correct status`() {
         val payment = insertNewPayment()
         assertEquals(PaymentStatus.Created, payment.status, "Payment is created with correct status")
@@ -55,7 +84,8 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
         val payment = insertNewPayment()
         paymentService.updatePayment(
             payment.id,
-            false
+            false,
+            null
         )
         val fetchedPayment = paymentService.getPayment(payment.id)
         assertEquals(PaymentStatus.Failed, fetchedPayment?.status, "Payment is updated with new status")
@@ -66,7 +96,8 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
         val payment = insertNewPayment()
         paymentService.updatePayment(
             payment.id,
-            true
+            true,
+            timeProvider.getCurrentDateTime()
         )
         val fetchedPayment = paymentService.getPayment(payment.id)
         assertEquals(PaymentStatus.Success, fetchedPayment?.status, "Payment is updated with new status")
@@ -75,32 +106,35 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should add invoice`() {
         val invoice =
-            paymentService.insertInvoicePayment(
-                CreateInvoiceParams(
-                    LocalDate.now(),
-                    "1",
-                    1,
-                    this.citizenIdLeo
-                ),
-            )
-        val fetchedInvoice = paymentService.getInvoicePayment(invoice.id)
+            createInvoiceWithTestParameters(citizenService, invoiceService, timeProvider, this.citizenIdLeo)
+        val fetchedInvoice = paymentService.getInvoice(invoice.id)
         assertEquals(invoice.id, fetchedInvoice?.id, "Fetched invoice ID matches the inserted invoice ID")
         assertEquals(invoice, fetchedInvoice, "Fetched invoice matches the inserted invoice")
     }
 
     @Test
-    fun `should set invoice as paid`() {
-        val invoice =
-            paymentService.insertInvoicePayment(
-                CreateInvoiceParams(
-                    LocalDate.now(),
-                    "1",
-                    1,
-                    this.citizenIdLeo
-                )
+    fun `should set the reservation as paid and set status to confirmed`() {
+        val madeReservation =
+            createReservationInInvoiceState(
+                timeProvider,
+                reservationService,
+                invoiceService,
+                this.citizenIdLeo
             )
-        paymentService.setInvoicePaid(invoice.id)
-        val fetchedInvoice = paymentService.getInvoicePayment(invoice.id)
-        assertEquals(LocalDate.now(), fetchedInvoice?.paymentDate, "Fetched invoice payment date is set to today")
+        reservationService.markInvoicePaid(madeReservation.id, timeProvider.getCurrentDateTime())
+
+        // reservation is marked as paid
+        val reservation = reservationService.getBoatSpaceReservation(madeReservation.id)
+        assertEquals(timeProvider.getCurrentDate(), reservation?.paymentDate, "Reservation is marked as paid")
+
+        // invoice is created
+        val invoice = paymentService.getInvoiceForReservation(madeReservation.id)
+        assertNotNull(invoice, "Invoice is found")
+
+        // payment is created with correct status
+        val payment = paymentService.getPayment(invoice.paymentId)
+        assertEquals(timeProvider.getCurrentDateTime(), payment?.paid, "Fetched invoice payment date is set to today")
+        assertEquals(PaymentStatus.Success, payment?.status, "Fetched invoice payment status is set to success")
+        assertEquals(reservation?.status, ReservationStatus.Confirmed, "Reservation status is set to confirmed")
     }
 }

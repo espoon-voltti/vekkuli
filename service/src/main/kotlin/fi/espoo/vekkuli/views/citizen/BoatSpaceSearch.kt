@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.Harbor
 import fi.espoo.vekkuli.domain.Location
 import fi.espoo.vekkuli.service.MarkDownService
@@ -15,7 +16,8 @@ class BoatSpaceSearch(
     private val messageUtil: MessageUtil,
     private val formComponents: FormComponents,
     private val markDownService: MarkDownService,
-    private val icons: Icons
+    private val icons: Icons,
+    private val stepIndicator: StepIndicator
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -23,7 +25,7 @@ class BoatSpaceSearch(
         locations: List<Location>,
         isEmployee: Boolean = false
     ): String {
-        val boatTypes = listOf("Rowboat", "OutboardMotor", "InboardMotor", "Sailboat", "JetSki")
+        val boatTypes = BoatType.entries.map { it.name }
         val boatTypeSelect =
             formComponents.select(
                 "boatApplication.boatType",
@@ -104,8 +106,10 @@ class BoatSpaceSearch(
         return """
             <section class="section">
                 <div class="container">
+                    ${stepIndicator.render(1)}
+                
                     <div>
-                        <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
+                        <h2>${t("boatApplication.title.search")}</h2>
                     </div>
                     ${if (!isEmployee) infoBox else ""}
                     <div class="columns">
