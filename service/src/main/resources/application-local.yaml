@@ -4,8 +4,6 @@ app:
     public_keys_url: classpath:local-development/jwks.json
 
 spring:
-  profiles:
-    active: "local"
   datasource:
     url: "jdbc:postgresql://localhost:5432/vekkuli"
     username: "vekkuli"
