@@ -33,41 +33,33 @@ class InvoiceController(
         if (reservation == null || reservation.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
-        val invoiceBatch = invoiceService.createInvoiceBatchParameters(reservationId, reservation.reserverId)
-        val invoice = invoiceBatch?.invoices?.first()
-        val invoiceRow =
-            invoiceBatch
-                ?.invoices
-                ?.first()
-                ?.rows
-                ?.first()
-        val recipient = invoice?.recipient
-        val recipientAddress = recipient?.address
-
-        val recipientName = "${recipient?.firstName} ${recipient?.lastName}"
+        val invoiceData = invoiceService.createInvoiceData(reservationId, reservation.reserverId)
+        if (invoiceData == null) {
+            throw IllegalArgumentException("Failed to create invoice data")
+        }
 
         // TODO: get the actual data
         val model =
             SendInvoiceModel(
                 reservationId = reservationId,
-                reserverName = recipientName,
-                reserverSsn = recipient?.ssn ?: "",
-                reserverAddress = "${recipientAddress?.street} ${recipientAddress?.postalCode} ${recipientAddress?.postOffice}",
+                reserverName = "${invoiceData.firstnames} ${invoiceData.lastname}",
+                reserverSsn = invoiceData.ssn,
+                reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
                 product = reservation.locationName,
                 functionInformation = "?",
-                billingPeriodStart = invoiceRow?.periodStartDate ?: "",
-                billingPeriodEnd = invoiceRow?.periodEndDate ?: "",
+                billingPeriodStart = "",
+                billingPeriodEnd = "",
                 boatingSeasonStart = LocalDate.of(2025, 5, 1),
                 boatingSeasonEnd = LocalDate.of(2025, 9, 30),
-                invoiceNumber = invoice?.invoiceNumber.toString(),
+                invoiceNumber = "",
                 dueDate = LocalDate.of(2025, 12, 31),
                 costCenter = "?",
                 invoiceType = "?",
                 invoiceRows =
                     listOf(
                         InvoiceRow(
-                            description = invoiceRow?.description ?: "",
-                            customer = recipientName,
+                            description = invoiceData.description,
+                            customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
                             priceWithoutVat = reservation.priceWithoutAlvInEuro.toString(),
                             vat = reservation.alvPriceInEuro.toString(),
                             priceWithVat = reservation.priceInEuro.toString(),
@@ -90,11 +82,12 @@ class InvoiceController(
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
-        val invoiceBatch =
-            invoiceService.createInvoiceBatchParameters(reservationId, reservation.reserverId)
+        val invoiceData =
+            invoiceService.createInvoiceData(reservationId, reservation.reserverId)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        invoiceService.createAndSendInvoice(invoiceBatch) ?: throw InternalError("Failed to send invoice")
+        invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservationId)
+            ?: throw InternalError("Failed to send invoice")
 
         reservationService.setReservationStatusToInvoiced(reservationId)
 

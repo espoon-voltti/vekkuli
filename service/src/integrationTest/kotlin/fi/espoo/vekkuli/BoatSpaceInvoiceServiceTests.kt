@@ -47,20 +47,17 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 this.citizenIdLeo
             )
         val invoiceBatchParameters =
-            boatSpaceInvoiceService.createInvoiceBatchParameters(
+            boatSpaceInvoiceService.createInvoiceData(
                 madeReservation.id,
                 this.citizenIdLeo
             )
         assertNotNull(invoiceBatchParameters, "Invoice is created")
-        assertEquals(15000, invoiceBatchParameters!!.invoices[0].rows[0].amount, "Price is correct")
-        assertEquals(
-            madeReservation.id.toString(),
-            invoiceBatchParameters.invoices[0].rows[0].productId,
-            "Reservation id is used as productId"
-        )
+        assertEquals(15000, invoiceBatchParameters?.priceCents, "Price is correct")
         val invoice =
             boatSpaceInvoiceService.createAndSendInvoice(
-                invoiceBatchParameters!!
+                invoiceBatchParameters!!,
+                this.citizenIdLeo,
+                madeReservation.id
             )
         verify(invoiceClientMock).sendBatchInvoice(
             eq(invoiceBatchParameters)
@@ -82,11 +79,11 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 this.citizenIdLeo
             )
         val invoiceBatchParameters =
-            boatSpaceInvoiceService.createInvoiceBatchParameters(
+            boatSpaceInvoiceService.createInvoiceData(
                 madeReservation.id,
                 this.citizenIdLeo
             )
-        val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!)
+        val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!, this.citizenIdLeo, madeReservation.id)
         assertNotNull(invoice, "Invoice is sent")
         assertEquals(this.citizenIdLeo, invoice!!.citizenId, "Invoice is sent to correct citizen")
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)

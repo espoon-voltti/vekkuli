@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
+import java.time.LocalDate
 import java.util.*
 
 fun deleteAllReservations(jdbi: Jdbi) {
@@ -119,30 +120,13 @@ fun createReservationInInvoiceState(
             boatId,
             ReservationStatus.Invoiced
         )
+    val invoiceData = invoiceService.createInvoiceData(madeReservation.id, reserverId)
+
     val invoice =
         invoiceService.createInvoice(
-            InvoiceParameters(
-                invoiceNumber.toLong(),
-                dueDate = timeProvider.getCurrentDate().plusDays(14),
-                recipient = InvoiceRecipient(reserverId, "", "First", "Name", InvoiceAddress("Address1", "20720", "Turku")),
-                rows =
-                    listOf(
-                        Row(
-                            madeReservation.id.toString(),
-                            "boat",
-                            "space",
-                            timeProvider.getCurrentDate().toString(),
-                            timeProvider.getCurrentDate().plusDays(365).toString(),
-                            1,
-                            15000,
-                            15000,
-                            0,
-                            "Description",
-                            "Project",
-                            "boatSpace"
-                        )
-                    )
-            )
+            invoiceData!!,
+            reserverId,
+            madeReservation.id
         )
     return madeReservation
 }
@@ -199,35 +183,33 @@ fun createInvoiceWithTestParameters(
     citizenId: UUID,
 ): Invoice {
     val citizen = citizenService.getCitizen(citizenId)!!
+
     val (invoice, payment) =
         invoiceService.createInvoice(
-            InvoiceParameters(
-                1,
-                timeProvider.getCurrentDate().plusDays(14),
-                InvoiceRecipient(
-                    citizen.id,
-                    citizen.nationalId,
-                    citizen.firstName,
-                    citizen.lastName,
-                    InvoiceAddress(citizen.streetAddress, citizen.postalCode, citizen.postOffice)
-                ),
-                listOf(
-                    Row(
-                        "1",
-                        "space",
-                        "productComponent",
-                        "2021-01-01",
-                        "2021-12-31",
-                        1,
-                        100,
-                        100,
-                        24,
-                        "project",
-                        "boatSpace",
-                        "1",
-                    )
-                )
+            InvoiceData(
+                invoiceNumber = 1L,
+                dueDate = timeProvider.getCurrentDate().plusDays(14),
+                ssn = citizen.nationalId,
+                firstnames = citizen.firstName,
+                lastname = citizen.lastName,
+                street = citizen.streetAddress,
+                post = citizen.postOffice,
+                postalCode = citizen.postalCode,
+                mobilePhone = citizen.phone,
+                email = citizen.email,
+                priceCents = 100,
+                vat = 24,
+                startDate = LocalDate.of(2021, 1, 1),
+                endDate = LocalDate.of(2021, 12, 31),
+                description = "",
+                orgId = "",
+                registerNumber = "",
+                contactPerson = "",
+                language = "FI",
             ),
+            citizenId,
+            1
         )
+
     return invoice
 }

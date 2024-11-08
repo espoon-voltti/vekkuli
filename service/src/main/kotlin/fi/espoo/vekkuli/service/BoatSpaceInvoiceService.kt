@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -17,97 +18,102 @@ class BoatSpaceInvoiceService(
     private val boatReservationService: BoatReservationService,
     private val citizenService: CitizenService
 ) {
-    fun createAndSendInvoice(batch: InvoiceBatchParameters): Invoice? {
-        val invoiceParams = batch.invoices.first()
-        val (createdInvoice, createdPayment) = createInvoice(invoiceParams)
-
-        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(batch)
+    fun createAndSendInvoice(
+        invoiceData: InvoiceData,
+        citizenId: UUID,
+        reservationId: Int
+    ): Invoice? {
+        val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
+        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(invoiceData)
         if (!sendInvoiceSuccess) {
             paymentService.updatePayment(createdPayment.id, false, null)
         }
         return createdInvoice
     }
 
-    fun createInvoice(invoice: InvoiceParameters): Pair<Invoice, Payment> {
-        val invoiceRow = invoice.rows[0]
-
+    fun createInvoice(
+        invoiceData: InvoiceData,
+        citizenId: UUID,
+        reservationId: Int
+    ): Pair<Invoice, Payment> {
         val payment =
             paymentService.insertPayment(
                 CreatePaymentParams(
-                    invoice.recipient.id,
-                    invoice.invoiceNumber.toString(),
-                    invoiceRow
-                        .amount
-                        .toInt(),
+                    citizenId,
+                    invoiceData.invoiceNumber.toString(),
+                    invoiceData.priceCents,
                     BOAT_RESERVATION_ALV_PERCENTAGE,
-                    invoiceRow.productId
+                    reservationId.toString()
                 ),
-                invoiceRow.productId.toInt()
+                reservationId
             )
         val invoice =
             paymentService.insertInvoicePayment(
                 CreateInvoiceParams(
-                    dueDate = invoice.dueDate,
-                    reference = invoice.invoiceNumber.toString(),
-                    citizenId = invoice.recipient.id,
-                    reservationId = invoiceRow.productId.toInt(),
+                    dueDate = invoiceData.dueDate,
+                    reference = invoiceData.invoiceNumber.toString(),
+                    citizenId = citizenId,
+                    reservationId = reservationId,
                     paymentId = payment.id
                 )
             )
         return Pair(invoice, payment)
     }
 
-    fun createInvoiceBatchParameters(
+    fun createInvoiceData(
         reservationId: Int,
         citizenId: UUID,
-    ): InvoiceBatchParameters? {
-        val reservation =
-            boatReservationService.getBoatSpaceReservation(reservationId)
-                ?: return null
+    ): InvoiceData? {
+        val reservation = boatReservationService.getBoatSpaceReservation(reservationId)
+        if (reservation == null) {
+            // error handling
+            return null
+        }
         val reserver = citizenService.getCitizen(citizenId) ?: return null
-        val invoiceRow =
-            Row(
-                // TODO: add correct values for productGroup, productComponent, project, description(?) and product
-                productGroup = "boat",
-                productComponent = "space",
-                periodStartDate = reservation.startDate.toString(),
-                periodEndDate = reservation.endDate.toString(),
-                unitCount = 1,
-                unitPrice = reservation.priceCents.toLong(),
-                amount = reservation.priceCents.toLong(),
-                vatAmount = reservation.alvPriceInCents.toLong(),
-                description = "${reservation.locationName} ${reservation.startDate.year}",
-                project = "project",
-                product = "boatSpace",
-                productId = reservationId.toString()
-            )
-        val recipient =
-            InvoiceRecipient(
-                reserver.id,
-                reserver.nationalId,
-                reserver.firstName,
-                reserver.lastName,
-                InvoiceAddress(reserver.streetAddress, reserver.postalCode, reserver.postOffice)
-            )
-        // TODO: calculate due date
-        val dueDate = timeProvider.getCurrentDate().plusDays(14)
-        val invoice =
-            InvoiceParameters(
-                // TODO: add correct invoice number
-                invoiceNumber = 1,
-                dueDate = dueDate,
-                recipient = recipient,
-                rows = listOf(invoiceRow)
-            )
-        val batch =
-            InvoiceBatchParameters(
-                // TODO: add correct values for agreementType, systemId and batchNumber
-                agreementType = 249,
-                batchDate = timeProvider.getCurrentDate(),
-                batchNumber = 1,
-                systemId = System.getenv("INVOICE_SYSTEM_ID") ?: "vekkuli",
-                invoices = listOf(invoice),
-            )
-        return batch
+
+        // TODO: missing some fields
+        return InvoiceData(
+            dueDate = timeProvider.getCurrentDate().plusDays(21),
+            invoiceNumber = 1,
+            ssn = reserver.nationalId,
+            orgId = "1234567-8",
+            registerNumber = "1234567-8",
+            lastname = reserver.lastName,
+            firstnames = reserver.firstName,
+            contactPerson = reserver.firstName,
+            street = reserver.streetAddress,
+            post = reserver.postOffice,
+            postalCode = reserver.postalCode,
+            language = "fi",
+            mobilePhone = reserver.phone,
+            email = reserver.email,
+            priceCents = reservation.priceCents,
+            vat = reservation.alvPriceInCents,
+            description = "${reservation.locationName} ${reservation.startDate.year}",
+            startDate = reservation.startDate,
+            endDate = reservation.endDate
+        )
     }
 }
+
+data class InvoiceData(
+    val dueDate: LocalDate,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val invoiceNumber: Long,
+    val ssn: String,
+    val orgId: String,
+    val registerNumber: String,
+    val lastname: String,
+    val firstnames: String,
+    val contactPerson: String?,
+    val street: String,
+    val post: String,
+    val postalCode: String,
+    val language: String,
+    val mobilePhone: String,
+    val email: String,
+    val priceCents: Int,
+    val vat: Int,
+    val description: String,
+)
