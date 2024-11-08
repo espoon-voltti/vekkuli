@@ -50,9 +50,7 @@ private data class Client(
     val post: String? = null,
     val postalCode: String? = null,
     val language: String? = null,
-    val homePhone: String? = null,
     val mobilePhone: String? = null,
-    val faxNumber: String? = null,
     val email: String? = null
 )
 
@@ -113,9 +111,8 @@ class EspiInvoiceClient(
 private fun createInvoiceBatch(
     invoiceData: InvoiceData,
     timeProvider: TimeProvider
-): InvoiceBatch {
-    val dueDate = timeProvider.getCurrentDate().plusDays(21)
-    return InvoiceBatch(
+): InvoiceBatch =
+    InvoiceBatch(
         // TODO: add correct values for batchNumber
         agreementType = 256,
         batchDate = timeProvider.getCurrentDate().toString(),
@@ -129,6 +126,7 @@ private fun createInvoiceBatch(
                     // TODO: add correct invoice number
                     invoiceNumber = invoiceData.invoiceNumber,
                     useInvoiceNumber = true,
+                    dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
                     client =
                         Client(
                             ssn = invoiceData.ssn,
@@ -164,4 +162,3 @@ private fun createInvoiceBatch(
                 )
             ),
     )
-}
