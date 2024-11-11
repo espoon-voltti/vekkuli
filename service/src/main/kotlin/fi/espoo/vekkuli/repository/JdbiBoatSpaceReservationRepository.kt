@@ -769,7 +769,7 @@ class JdbiBoatSpaceReservationRepository(
             JOIN reserver r ON bsr.reserver_id =  r.id
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location.id = bs.location_id
-            LEFTJOIN price ON price_id = price.id
+            LEFT JOIN price ON price_id = price.id
             JOIN municipality m ON r.municipality_code = m.code
     LEFT JOIN payment p ON p.reservation_id = bsr.id
                     """
