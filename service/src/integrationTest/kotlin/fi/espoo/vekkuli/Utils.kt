@@ -72,17 +72,17 @@ class TestUtils(
                 params.reserverId,
                 params.citizenId,
                 params.boatSpaceId,
-                startDate = params.timeProvider.getCurrentDate(),
-                endDate = params.timeProvider.getCurrentDate().plusDays(365),
+                startDate = params.startDate,
+                endDate = params.endDate,
             )
         reservationService.updateBoatInBoatSpaceReservation(
             madeReservation.id,
             params.boatId,
             params.reserverId,
-            ReservationStatus.Payment,
+            params.status,
             params.validity,
-            startDate = params.timeProvider.getCurrentDate(),
-            endDate = params.timeProvider.getCurrentDate().plusDays(365),
+            startDate = params.startDate,
+            endDate = params.endDate,
         )
         val payment =
             reservationService.addPaymentToReservation(

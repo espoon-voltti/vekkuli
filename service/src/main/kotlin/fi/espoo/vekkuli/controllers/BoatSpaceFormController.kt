@@ -93,41 +93,25 @@ class BoatSpaceFormController(
         return ResponseEntity(headers, HttpStatus.FOUND)
     }
 
-    @RequestMapping("/$USERTYPE/venepaikka/jatka/{renewalId}")
+    @RequestMapping("/kuntalainen/venepaikka/jatka/{renewalId}")
     @ResponseBody
     fun boatSpaceRenewPage(
-        @PathVariable usertype: String,
         @PathVariable renewalId: Int,
         @ModelAttribute formInput: ReservationInput,
         request: HttpServletRequest,
         response: HttpServletResponse,
     ): ResponseEntity<String> {
-        val userType = UserType.fromPath(usertype)
+        val citizen = getCitizen(request, citizenService)
 
-        val userId = if (userType == UserType.EMPLOYEE) getEmployee(request)?.id else getCitizen(request, citizenService)?.id
-        if (userId == null) throw UnauthorizedException()
-
-        val citizen =
-            if (userType == UserType.EMPLOYEE && formInput.citizenSelection != "newCitizen") {
-                formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
-            } else {
-                getCitizen(request, citizenService)
-            }
-
-        val reservation =
-            if (userType == UserType.EMPLOYEE) {
-                reservationService.getRenewalReservationForEmployee(userId)
-            } else {
-                reservationService.getRenewalReservationForCitizen(userId)
-            }
+        val reservation = reservationService.getReservationWithReserver(renewalId)
 
         if (reservation == null) {
             val headers = org.springframework.http.HttpHeaders()
-            headers.location = URI(getServiceUrl("/${userType.path}/venepaikat"))
+            headers.location = URI(getServiceUrl("/${UserType.CITIZEN.path}venepaikat"))
             return ResponseEntity(headers, HttpStatus.FOUND)
         }
 
-        if (userType == UserType.CITIZEN && (citizen == null || reservation.reserverId != citizen.id)) {
+        if (citizen == null || reservation.reserverId != citizen.id) {
             throw UnauthorizedException()
         }
 
@@ -174,24 +158,16 @@ class BoatSpaceFormController(
                 citizen,
                 input,
                 getReservationTimeInSeconds(reservation.created, timeProvider.getCurrentDateTime()),
-                userType,
+                UserType.CITIZEN,
                 municipalities
             )
         val page =
-            if (userType == UserType.EMPLOYEE) {
-                employeeLayout.render(
-                    true,
-                    request.requestURI,
-                    bodyContent
-                )
-            } else {
-                layout.render(
-                    true,
-                    citizen?.fullName,
-                    request.requestURI,
-                    bodyContent
-                )
-            }
+            layout.render(
+                true,
+                citizen?.fullName,
+                request.requestURI,
+                bodyContent
+            )
 
         return ResponseEntity.ok(page)
     }

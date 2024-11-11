@@ -39,7 +39,7 @@ class ReservationList(
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
                 ${cardInfo.render(reservation)}
-                ${if (reservation.canRenew) warningBox.render(t("reservationWarning.renewInfo")) else ""}
+                ${if (reservation.canRenew) warningBox.render(t("reservationWarning.$userType.renewInfo")) else ""}
                 ${
                 if (userType == UserType.EMPLOYEE) {
                     employeeButtons.render(reservation, citizen)

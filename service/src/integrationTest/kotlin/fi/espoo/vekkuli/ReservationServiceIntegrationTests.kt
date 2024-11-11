@@ -655,7 +655,9 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                     timeProvider,
                     this.citizenIdLeo,
                     1,
-                    1
+                    1,
+                    validity = ReservationValidity.Indefinite,
+                    endDate = timeProvider.getCurrentDate().plusMonths(9)
                 )
             )
         var reservation =
@@ -664,7 +666,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 .firstOrNull {
                     it.id == madeReservation.id
                 }
-        assertEquals(reservation?.canRenew, false, "Reservation can be renewed")
+        assertEquals(reservation?.canRenew, false, "Reservation can not be renewed")
         assertNotNull(reservation?.endDate, "Reservation has end date")
         val expiringDate = (reservation?.endDate?.minusDays(20) ?: LocalDate.now()).atTime(12, 0, 0)
         mockTimeProvider(timeProvider, expiringDate)
