@@ -45,11 +45,11 @@ class ReservationConfirmation(
                             <label>${t("boatSpaceReservation.label.price")}</label>
                             <div>
                                 <label>${t("boatSpaceReservation.label.payment")}</label>
-                                <span>${reservation.priceWithoutAlvInEuro} &euro;</span>
+                                <span>${reservation.priceWithoutVatInEuro} &euro;</span>
                             </div>
                             <div>
                                 <label>${t("boatSpaceReservation.label.vat")}</label> 
-                                <span>${reservation.alvPriceInEuro} &euro;</span>
+                                <span>${reservation.vatPriceInEuro} &euro;</span>
                             </div>
                             <div>
                                 <label>${t("boatSpaceReservation.label.total")}</label>

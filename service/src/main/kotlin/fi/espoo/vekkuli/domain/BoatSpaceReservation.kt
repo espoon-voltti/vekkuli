@@ -76,9 +76,9 @@ data class ReservationWithDependencies(
 ) {
     val priceInEuro: Double
         get() = priceCents.centsToEuro()
-    val alvPriceInEuro: Double
+    val vatPriceInEuro: Double
         get() = vatCents.centsToEuro()
-    val priceWithoutAlvInEuro: Double
+    val priceWithoutVatInEuro: Double
         get() = netPriceCents.centsToEuro()
 }
 
