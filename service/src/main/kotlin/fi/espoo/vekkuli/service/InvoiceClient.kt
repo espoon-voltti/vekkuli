@@ -5,12 +5,14 @@ import fi.espoo.vekkuli.config.EspiEnv
 import fi.espoo.vekkuli.utils.TimeProvider
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.util.*
 
+@Serializable
 private data class Row(
     val productGroup: String? = null,
     val productComponent: String? = null,
@@ -29,6 +31,7 @@ private data class Row(
     val product: String? = null
 )
 
+@Serializable
 private data class Invoice(
     val invoiceNumber: Long,
     val useInvoiceNumber: Boolean? = false,
@@ -39,6 +42,7 @@ private data class Invoice(
     val rows: List<Row>
 )
 
+@Serializable
 private data class Client(
     val ssn: String? = null,
     val ytunnus: String? = null,
@@ -54,6 +58,7 @@ private data class Client(
     val email: String? = null
 )
 
+@Serializable
 private data class InvoiceBatch(
     val agreementType: Int,
     val batchDate: String,
