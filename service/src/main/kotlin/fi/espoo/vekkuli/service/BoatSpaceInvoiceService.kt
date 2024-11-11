@@ -75,7 +75,7 @@ class BoatSpaceInvoiceService(
                 unitCount = 1,
                 unitPrice = reservation.priceCents.toLong(),
                 amount = reservation.priceCents.toLong(),
-                vatAmount = reservation.alvPriceInCents.toLong(),
+                vatAmount = reservation.vatCents.toLong(),
                 description = "${reservation.locationName} ${reservation.startDate.year}",
                 project = "project",
                 product = "boatSpace",
