@@ -251,7 +251,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
