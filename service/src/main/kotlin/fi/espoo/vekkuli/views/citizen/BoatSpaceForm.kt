@@ -551,17 +551,7 @@ class BoatSpaceForm(
         return (
             """
             <section class="section">
-                <div class="container" id="container" x-data='{modalOpen: false, citizenFullName: "", citizenId:"", updateFullName(event) {
-                    const selectElement = event.target;
-                    if (selectElement.selectedOptions.length > 0) {
-                        const selectedOption = selectElement.selectedOptions[0];
-                        this.citizenFullName = selectedOption.dataset.fullname;
-                        this.citizenId = selectedOption.value;
-                    } else {
-                        this.citizenFullName = "";
-                        this.citizenId = "";
-                    };
-                }}'> 
+                <div class="container" id="container" x-data='{modalOpen: false'> 
                     <div class="container">
                         <button x-on:click="modalOpen = true" class="icon-text">
                             <span class="icon">
@@ -575,7 +565,7 @@ class BoatSpaceForm(
                     <form
                         id="form"
                         class="column"
-                        action="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                        action="/${userType.path}/venepaikka/jatka/${reservation.id}"
                         method="post"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>
@@ -583,7 +573,6 @@ class BoatSpaceForm(
                             $wholeLocationName
                         </h1>
                         <div id="form-inputs">
-                                            
                             <div class='form-section'>
                             $citizenContainer  
                             $boatForm
@@ -663,7 +652,7 @@ class BoatSpaceForm(
                             <button id="confirm-cancel-modal-confirm"
                                 class="button is-primary"
                                 type="button"
-                                hx-delete="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                                hx-delete="/${userType.path}/venepaikka/jatka/${reservation.id}"
                                 hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
                                 ${t("confirm")}
                             </button>
@@ -1037,7 +1026,7 @@ class BoatSpaceForm(
                             $wholeLocationName
                         </h1>
                         <div id="form-inputs">
-                                            
+                             <input hidden name="citizenId" value="${citizen?.id}" />
                             <div class='form-section'>
                             $citizenContainer  
                             $slipHolder

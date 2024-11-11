@@ -4,9 +4,12 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
@@ -208,6 +211,34 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             page.getByTestId("delete-boat-3").click()
             page.getByTestId("delete-modal-confirm-3").click()
             assertThat(page.getByTestId("boat-3")).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `employee can renew a boat space reservation`() {
+        try {
+            mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
+            page.navigate(employeePageInEnglish)
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+
+            citizenDetails.renewReservationButton(1).click()
+            val invoiceDetails = InvoicePreviewPage(page)
+            assertThat(invoiceDetails.header).isVisible()
+            invoiceDetails.sendButton.click()
+            assertThat(listingPage.header).isVisible()
+            listingPage.boatSpace1.click()
+            assertThat(citizenDetails.invoicePaidButton).isVisible()
+            assertThat(citizenDetails.renewReservationButton(1)).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }

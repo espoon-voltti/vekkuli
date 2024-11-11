@@ -81,11 +81,15 @@ class BoatSpaceFormController(
                 reservationService.getRenewalReservationForCitizen(userId)
             }
 
-        val reservation = renewal ?: reservationService.createRenewalReservation(reservationId, userType, userId)
-        if (reservation == null) throw IllegalStateException("Reservation not found")
-
+        val renewalReservation = renewal ?: reservationService.createRenewalReservation(reservationId, userType, userId)
+        if (renewalReservation == null) throw IllegalStateException("Reservation not found")
         val headers = org.springframework.http.HttpHeaders()
-        headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/jatka/${reservation.id}"))
+
+        if (userType == UserType.EMPLOYEE) {
+            headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/jatka/${renewalReservation.id}/lasku"))
+        } else {
+            headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/jatka/${renewalReservation.id}"))
+        }
         return ResponseEntity(headers, HttpStatus.FOUND)
     }
 
@@ -491,6 +495,89 @@ class BoatSpaceFormController(
             }
 
         return ResponseEntity.ok(boatSpaceForm.boatForm(userType, citizen, boats, reservationId, input))
+    }
+
+    @PostMapping("/kuntalainen/venepaikka/jatka/{renewalId}")
+    fun renewBoatSpace(
+        @PathVariable renewalId: Int,
+        @Valid @ModelAttribute("input") input: ReservationInput,
+        bindingResult: BindingResult,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        fun badRequest(body: String): ResponseEntity<String> = ResponseEntity.badRequest().body(body)
+
+        fun redirectUrl(url: String): ResponseEntity<String> =
+            ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", url)
+                .body("")
+
+        val citizen =
+            getCitizen(request, citizenService)
+                ?: return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .header("Location", "/")
+                    .build()
+
+        if (bindingResult.hasErrors()) {
+            reservationService.getReservationWithReserver(renewalId) ?: return redirectUrl("/")
+            return badRequest("Invalid input")
+        }
+
+        val reserverId = getReserverId(input, citizen.id)
+
+        val reservation = reservationService.getReservationWithReserver(renewalId)
+        if (reservation == null) {
+            return badRequest("Reservation not found")
+        }
+
+        reservationService.reserveBoatSpace(
+            reserverId,
+            ReserveBoatSpaceInput(
+                reservationId = renewalId,
+                boatId = input.boatId,
+                boatType = input.boatType!!,
+                width = input.width ?: 0.0,
+                length = input.length ?: 0.0,
+                depth = input.depth ?: 0.0,
+                weight = input.weight,
+                boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                boatName = input.boatName ?: "",
+                otherIdentification = input.otherIdentification ?: "",
+                extraInformation = input.extraInformation ?: "",
+                ownerShip = input.ownership!!,
+                email = input.email!!,
+                phone = input.phone!!,
+            ),
+            ReservationStatus.Payment,
+            reservation.validity ?: ReservationValidity.FixedTerm,
+            reservation.startDate,
+            reservation.endDate
+        )
+
+        // redirect to payments page with reservation id and slip type
+        return redirectUrl("/kuntalainen/maksut/maksa?id=$renewalId&type=${PaymentType.BoatSpaceReservation}")
+    }
+
+    private fun getReserverId(
+        input: ReservationInput,
+        citizenId: UUID,
+    ): UUID {
+        if (input.isOrganization == true) {
+            return organizationService.updateOrCreateOrganization(
+                input.organizationId,
+                input.orgBusinessId,
+                input.orgName,
+                input.orgPhone,
+                input.orgEmail,
+                input.orgAddress,
+                input.orgPostalCode,
+                input.orgCity,
+                input.orgMunicipalityCode,
+                citizenId
+            )
+        }
+        return citizenId
     }
 
     @PostMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")

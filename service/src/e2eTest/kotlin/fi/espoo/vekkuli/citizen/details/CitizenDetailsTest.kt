@@ -23,7 +23,6 @@ class CitizenDetailsTest : PlaywrightTest() {
             page.getByText("Kirjaudu").click()
 
             page.navigate(citizenPageInEnglish)
-
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
