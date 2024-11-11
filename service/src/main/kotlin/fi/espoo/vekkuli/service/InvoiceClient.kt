@@ -93,7 +93,6 @@ class EspiInvoiceClient(
     val timeProvider: TimeProvider
 ) : InvoiceClient {
     override fun sendBatchInvoice(invoiceData: InvoiceData): Boolean {
-        println("sending invoice ${invoiceData.invoiceNumber}")
         val json =
             Json {
                 encodeDefaults = false
@@ -109,7 +108,7 @@ class EspiInvoiceClient(
         val invoiceBatch = createInvoiceBatch(invoiceData, timeProvider)
         val encodedBody = json.encodeToString(invoiceBatch)
         val response = runBlocking { VekkuliHttpClient.makePostRequest(url, encodedBody, headers) }
-        return response.status == HttpStatusCode.OK
+        return response?.status == HttpStatusCode.OK
     }
 }
 
@@ -158,7 +157,6 @@ private fun createInvoiceBatch(
                                 amount = invoiceData.priceCents.toLong(),
                                 vatAmount = invoiceData.vat.toLong(),
                                 description = invoiceData.description,
-                                project = "project",
                                 product = "T1270",
                                 account = 329700,
                                 costCenter = "1230329",

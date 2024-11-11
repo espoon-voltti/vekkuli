@@ -91,8 +91,7 @@ class InvoicePreview : BaseView() {
                             class="button is-primary"
                             type="submit"
                             hx-post="/virkailija/venepaikka/varaus/${model.reservationId}/lasku"
-                            hx-target="body"
-                            >
+                            hx-target="body">
                             Lähetä lasku
                         </button>
                     </div>
@@ -126,4 +125,14 @@ class InvoicePreview : BaseView() {
             </tr>
             """.trimIndent()
         }
+
+    fun invoiceErrorPage() =
+        """
+        <section class="section">
+            <div class="container">
+                <h2 class="title pb-l">Laskun luonti epäonnistui</h2>
+                <p>Laskun luonti epäonnistui. Yritä myöhemmin uudelleen.</p>
+            </div>
+        </section>
+        """.trimIndent()
 }

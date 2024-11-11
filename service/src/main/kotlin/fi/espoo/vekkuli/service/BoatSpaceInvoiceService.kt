@@ -27,6 +27,7 @@ class BoatSpaceInvoiceService(
         val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(invoiceData)
         if (!sendInvoiceSuccess) {
             paymentService.updatePayment(createdPayment.id, false, null)
+            return null
         }
         return createdInvoice
     }

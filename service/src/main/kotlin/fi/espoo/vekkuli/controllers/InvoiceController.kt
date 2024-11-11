@@ -76,6 +76,7 @@ class InvoiceController(
     @PostMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     fun sendInvoice(
         @PathVariable reservationId: Int,
+        request: HttpServletRequest,
     ): ResponseEntity<String> {
         // send the invoice, update reservation status
         val reservation = reservationService.getReservationWithReserver(reservationId)
@@ -86,8 +87,12 @@ class InvoiceController(
             invoiceService.createInvoiceData(reservationId, reservation.reserverId)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservationId)
-            ?: throw InternalError("Failed to send invoice")
+        val invoice = invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservationId)
+
+        if (invoice == null) {
+            val content = sendInvoiceView.invoiceErrorPage()
+            return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
+        }
 
         reservationService.setReservationStatusToInvoiced(reservationId)
 
