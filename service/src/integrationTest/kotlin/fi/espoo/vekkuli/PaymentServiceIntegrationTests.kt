@@ -51,7 +51,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should create payment and link it to reservation`() {
         val madeReservation =
-            createReservationInPaymentState(
+            testUtils.createReservationInPaymentState(
                 timeProvider,
                 reservationService,
                 this.citizenIdLeo
@@ -106,7 +106,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should add invoice`() {
         val invoice =
-            createInvoiceWithTestParameters(citizenService, invoiceService, timeProvider, this.citizenIdLeo)
+            testUtils.createInvoiceWithTestParameters(citizenService, invoiceService, timeProvider, this.citizenIdLeo)
         val fetchedInvoice = paymentService.getInvoice(invoice.id)
         assertEquals(invoice.id, fetchedInvoice?.id, "Fetched invoice ID matches the inserted invoice ID")
         assertEquals(invoice, fetchedInvoice, "Fetched invoice matches the inserted invoice")
@@ -115,7 +115,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should set the reservation as paid and set status to confirmed`() {
         val madeReservation =
-            createReservationInInvoiceState(
+            testUtils.createReservationInInvoiceState(
                 timeProvider,
                 reservationService,
                 invoiceService,

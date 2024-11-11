@@ -488,7 +488,7 @@ class BoatReservationService(
     }
 
     fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
-        extendReservationsWithPeriodInformation(
+        addPeriodInformationToReservation(
             citizenId,
             boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
                 citizenId,
@@ -670,7 +670,7 @@ class BoatReservationService(
         )
     }
 
-    private fun extendReservationsWithPeriodInformation(
+    private fun addPeriodInformationToReservation(
         reserverID: UUID,
         reservations: List<BoatSpaceReservationDetails>
     ): List<BoatSpaceReservationDetails> {

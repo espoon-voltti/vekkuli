@@ -97,7 +97,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should send email notice to person terminating the reservation`() {
         val citizen = citizenService.getCitizen(this.citizenIdOlivia)
-        val reservation = createReservationInConfirmedState(timeProvider, reservationService, this.citizenIdOlivia, 1, 1)
+        val reservation = testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, this.citizenIdOlivia, 1, 1))
 
         // Keep this here to make sure Citizen is present
         assertNotNull(citizen, "Citizen is not null")
@@ -111,7 +111,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send email notice to employee email when terminating your own reservation`() {
-        val reservation = createReservationInConfirmedState(timeProvider, reservationService, this.citizenIdOlivia, 1, 1)
+        val reservation = testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, this.citizenIdOlivia, 1, 1))
 
         terminateService.terminateBoatSpaceReservationAsOwner(reservation.id, citizenIdOlivia)
         val sentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
@@ -124,7 +124,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should not be able to terminate another citizen reservation as a citizen`() {
         // create the reservation for Leo
-        val reservation = createReservationInConfirmedState(timeProvider, reservationService, citizenIdLeo, 1, 1)
+        val reservation = testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdLeo, 1, 1))
 
         // Try to terminate the reservation as olivia
         val exception =
@@ -140,14 +140,15 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     fun `should be able to terminate organization reservation as a member of the organisation`() {
         // create the reservation acting as Leo, but using the organization as reserver
         val reservation =
-            createReservationInConfirmedState(
-                timeProvider,
-                reservationService,
-                citizenIdLeo,
-                1,
-                1,
-                ReservationValidity.FixedTerm,
-                organizationId
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                    1,
+                    ReservationValidity.FixedTerm,
+                    organizationId
+                )
             )
 
         // Try to terminate the reservation as olivia, Olivia is a member of the test organization (seed.sql)
@@ -165,22 +166,23 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         val oliviaTerminationReason = ReservationTerminationReason.RuleViolation
         val oliviaTerminationComment = "Olivia's comment"
         val reservationOfOlivia =
-            createReservationInConfirmedState(
-                timeProvider,
-                reservationService,
-                citizenIdOlivia,
-                1,
-                1
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    1,
+                    1
+                )
             )
         val leoEndDate = timeProvider.getCurrentDate().minusDays(1)
         val leoTerminationReason = ReservationTerminationReason.PaymentViolation
         val reservationOfLeo =
-            createReservationInConfirmedState(
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
                 timeProvider,
-                reservationService,
                 citizenIdLeo,
                 2,
-                2
+                2)
             )
 
         val originalOliviaReservation = reservationService.getBoatSpaceReservation(reservationOfOlivia.id)
@@ -237,7 +239,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should not be able to terminate reservation for other users as a citizen`() {
         // create the reservation for Leo
-        val reservation = createReservationInConfirmedState(timeProvider, reservationService, citizenIdLeo, 1, 1)
+        val reservation = testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdLeo, 1, 1))
 
         // Try to terminate the reservation as Leo but with employee special method
         val exception =
