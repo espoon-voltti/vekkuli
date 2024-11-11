@@ -14,7 +14,7 @@ class TerminationSuccessModal(
     fun render(): String {
         val modalBuilder = modal.createModalBuilder()
         val stateId = modalBuilder.getModalStateId()
-        val closeModalInMs = 50000
+        val closeModalInMs = 3000
         return modalBuilder
             .setReloadPageOnClose(true)
             // language=HTML
