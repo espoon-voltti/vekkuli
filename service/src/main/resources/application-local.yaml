@@ -1,3 +1,4 @@
+environment: "local"
 app:
   jwt:
     public_keys_url: classpath:local-development/jwks.json
@@ -14,7 +15,6 @@ spring:
   web:
     resources:
       static-locations: classpath:/public/
-
 
 vekkuli:
   email:

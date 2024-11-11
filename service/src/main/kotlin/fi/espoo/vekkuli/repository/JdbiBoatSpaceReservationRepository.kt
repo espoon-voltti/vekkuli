@@ -18,7 +18,7 @@ class JdbiBoatSpaceReservationRepository(
     private val jdbi: Jdbi,
     private val timeProvider: TimeProvider
 ) : BoatSpaceReservationRepository {
-    override fun getBoatSpaceReservationIdForPayment(id: UUID): Int =
+    override fun getBoatSpaceReservationIdForPayment(paymentId: UUID): Int =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -31,7 +31,7 @@ class JdbiBoatSpaceReservationRepository(
                         AND bsr.created > :currentTime - make_interval(secs => :paymentTimeout)
                     """.trimIndent()
                 )
-            query.bind("paymentId", id)
+            query.bind("paymentId", paymentId)
             query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<Int>().findOne().orElse(null)
@@ -338,7 +338,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     ${buildSqlSelectForBoatSpaceReservationDetails()}
-                    WHERE c.id = :reserverId AND 
+                    WHERE r.id = :reserverId AND 
                       bs.type = :spaceType AND
                         (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
                         bsr.end_date >= :endDateCut
@@ -373,51 +373,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.id,
-                           bsr.start_date,
-                           bsr.end_date,
-                           bsr.created,
-                           bsr.updated,
-                           bsr.status,
-                           bsr.boat_space_id,
-                           bsr.validity,
-                           bsr.renewed_from_id,
-                           r.id as reserver_id,
-                           r.type as reserver_type,
-                           r.name,
-                           r.email, 
-                           r.phone,
-                           r.street_address,
-                           r.postal_code,
-                           r.municipality_code,
-                           m.name as municipality_name,
-                           b.registration_code as boat_registration_code,
-                           b.ownership as boat_ownership,
-                           b.id as boat_id,
-                           b.name as boat_name,
-                           b.width_cm as boat_width_cm,
-                           b.length_cm as boat_length_cm,
-                           b.weight_kg as boat_weight_kg,
-                           b.depth_cm as boat_depth_cm,
-                           b.type as boat_type,
-                           b.other_identification as boat_other_identification,
-                           b.extra_information as boat_extra_information,
-                           location.name as location_name, 
-                           bs.type,
-                           bs.length_cm as boat_space_length_cm,
-                           bs.width_cm as boat_space_width_cm,
-                           bs.amenity,
-                           price.price_cents,
-                           price.vat_cents,
-                           price.net_price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
-                    FROM boat_space_reservation bsr
-                    JOIN boat b ON b.id = bsr.boat_id
-                    JOIN reserver r ON bsr.reserver_id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location.id = bs.location_id
-                    JOIN price ON price_id = price.id
-                    JOIN municipality m ON r.municipality_code = m.code
+                    ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE bsr.id = :reservationId
                     """.trimIndent()
                 )
@@ -636,15 +592,12 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
-    override fun setReservationStatusToPayment(reservationId: Int): BoatSpaceReservation =
-        setReservationStatus(reservationId, ReservationStatus.Payment)
-
     override fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
         setReservationStatus(reservationId, ReservationStatus.Invoiced)
 
     private fun setReservationStatus(
         reservationId: Int,
-        status: ReservationStatus
+        status: ReservationStatus,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -667,7 +620,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
-    override fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation =
+    override fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
@@ -681,7 +634,7 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("id", reservationId)
             query.bind("updatedTime", timeProvider.getCurrentDateTime())
-            query.mapTo<BoatSpaceReservation>().one()
+            query.mapTo<BoatSpaceReservation>().singleOrNull()
         }
 
     override fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation =
@@ -719,7 +672,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                      ${buildSqlSelectForBoatSpaceReservationDetails()}
-                    WHERE c.id = :reserverId AND (
+                    WHERE r.id = :reserverId AND (
                         bsr.status = 'Cancelled'
                         OR 
                         (
@@ -758,7 +711,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     ${buildSqlSelectForBoatSpaceReservationDetails()}
-                    WHERE status = 'Confirmed' AND validity = :validity
+                    WHERE bsr.status = 'Confirmed' AND validity = :validity
                         AND end_date < :endDateCut AND end_date > :currentTime
                     """.trimIndent()
                 )
@@ -781,7 +734,8 @@ class JdbiBoatSpaceReservationRepository(
                 bsr.boat_space_id,
                 bsr.validity,
                 bsr.renewed_from_id,
-                r.id as reserver_id,
+                p.id as payment_id,
+                           p.paid as payment_date,r.id as reserver_id,
                 r.type as reserver_type,
                 r.name,
                 r.email, 
@@ -812,11 +766,11 @@ class JdbiBoatSpaceReservationRepository(
                 CONCAT(bs.section, bs.place_number) as place
             FROM boat_space_reservation bsr
             JOIN boat b ON b.id = bsr.boat_id
-            JOIN citizen c ON bsr.reserver_id = c.id 
-            JOIN reserver r ON c.id = r.id
+            JOIN reserver r ON bsr.reserver_id =  r.id
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location.id = bs.location_id
-            JOIN price ON price_id = price.id
+            LEFTJOIN price ON price_id = price.id
             JOIN municipality m ON r.municipality_code = m.code
-    """
+    LEFT JOIN payment p ON p.reservation_id = bsr.id
+                    """
 }

@@ -25,6 +25,9 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
     @Autowired
     lateinit var boatReservationService: BoatReservationService
 
+    @Autowired
+    lateinit var invoiceService: BoatSpaceInvoiceService
+
     @MockBean
     lateinit var invoiceClientMock: InvoiceClient
 
@@ -40,6 +43,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
             createReservationInInvoiceState(
                 timeProvider,
                 boatReservationService,
+                invoiceService,
                 this.citizenIdLeo
             )
         val invoiceBatchParameters =
@@ -55,7 +59,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
             "Reservation id is used as productId"
         )
         val invoice =
-            boatSpaceInvoiceService.sendInvoice(
+            boatSpaceInvoiceService.createAndSendInvoice(
                 invoiceBatchParameters!!
             )
         verify(invoiceClientMock).sendBatchInvoice(
@@ -67,5 +71,25 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
             invoice!!.citizenId,
             "Invoice is sent to correct citizen"
         )
+    }
+
+    @Test
+    fun `should send invoice`() {
+        val madeReservation =
+            createReservationInPaymentState(
+                timeProvider,
+                boatReservationService,
+                this.citizenIdLeo
+            )
+        val invoiceBatchParameters =
+            boatSpaceInvoiceService.createInvoiceBatchParameters(
+                madeReservation.id,
+                this.citizenIdLeo
+            )
+        val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!)
+        assertNotNull(invoice, "Invoice is sent")
+        assertEquals(this.citizenIdLeo, invoice!!.citizenId, "Invoice is sent to correct citizen")
+        val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
+        assertNull(reservation?.paymentDate, "Reservation has not been paid yet")
     }
 }

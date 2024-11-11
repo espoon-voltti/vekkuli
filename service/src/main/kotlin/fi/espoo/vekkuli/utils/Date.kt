@@ -44,6 +44,9 @@ val fullDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"
 val shortYearDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy")
 val fullDateTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
+// For filling dates in playwright tests
+val testDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
 fun formatAsShortDate(date: LocalDate): String = date.format(shortDateFormat)
 
 fun formatAsFullDate(date: LocalDate): String = date.format(fullDateFormat)
@@ -51,6 +54,8 @@ fun formatAsFullDate(date: LocalDate): String = date.format(fullDateFormat)
 fun formatAsShortYearDate(date: LocalDate?): String = if (date == null) "-" else date.format(shortYearDateFormat)
 
 fun formatAsFullDateTime(date: LocalDateTime): String = date.format(fullDateTimeFormat)
+
+fun formatAsTestDate(date: LocalDate): String = date.format(testDateFormat)
 
 fun getFirstWeekdayOfMonth(
     year: Int,

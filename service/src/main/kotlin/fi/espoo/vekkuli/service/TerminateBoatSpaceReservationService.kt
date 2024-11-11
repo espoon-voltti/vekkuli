@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -17,7 +18,6 @@ class TerminateBoatSpaceReservationService(
     private val emailEnv: EmailEnv,
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
-    private val userService: UserService,
     private val citizenService: CitizenService
 ) {
     @Transactional
@@ -25,12 +25,12 @@ class TerminateBoatSpaceReservationService(
         reservationId: Int,
         terminatorId: UUID
     ): Boolean {
-        // @TODO handle failures
         if (!permissionService.canTerminateBoatSpaceReservation(terminatorId, reservationId)) {
-            return false
+            throw Unauthorized()
         }
         val reservation = boatSpaceReservationRepository.terminateBoatSpaceReservation(reservationId)
         sendTerminationNotice(reservation, terminatorId)
+
         return true
     }
 

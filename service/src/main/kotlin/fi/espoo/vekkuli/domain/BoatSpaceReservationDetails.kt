@@ -49,6 +49,8 @@ data class BoatSpaceReservationDetails(
     val canSwitch: Boolean = false,
     val canRenew: Boolean = false,
     val renewedFromId: Int? = null,
+    val paymentDate: LocalDate?,
+    val paymentId: UUID?,
 ) {
     val boatLengthInM: Double
         get() = boatLengthCm.cmToM()

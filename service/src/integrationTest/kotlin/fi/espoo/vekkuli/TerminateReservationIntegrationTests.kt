@@ -1,9 +1,11 @@
 package fi.espoo.vekkuli
+import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.SentMessageRepository
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -120,15 +122,16 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should not be able to terminate another citizen reservation as a citizen`() {
-        val citizenOlivia = citizenService.getCitizen(citizenIdOlivia)
         // create the reservation for Leo
-        val reservation = createReservationInConfirmedState(timeProvider, reservationService, this.citizenIdLeo, 1, 1)
+        val reservation = createReservationInConfirmedState(timeProvider, reservationService, citizenIdLeo, 1, 1)
 
         // Try to terminate the reservation as olivia
-        val terminationSuccess = terminateService.terminateBoatSpaceReservation(reservation.id, citizenIdOlivia)
+        val exception =
+            assertThrows(Unauthorized::class.java) {
+                terminateService.terminateBoatSpaceReservation(reservation.id, citizenIdOlivia)
+            }
+        assertEquals("Unauthorized", exception.message, "termination throws unauthorized exception")
         val terminatedReservation = reservationService.getBoatSpaceReservation(reservation.id)
-
-        assertEquals(false, terminationSuccess, "reservation was not terminated")
         assertEquals(ReservationStatus.Confirmed, terminatedReservation?.status, "reservation was not terminated")
     }
 

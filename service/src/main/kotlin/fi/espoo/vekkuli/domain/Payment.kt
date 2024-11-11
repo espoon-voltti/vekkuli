@@ -20,15 +20,16 @@ data class Payment(
     val totalCents: Int,
     val vatPercentage: Double,
     val productCode: String,
-    val reservationId: Int
+    val reservationId: Int,
+    val paid: LocalDateTime?
 )
 
 data class Invoice(
     val id: UUID,
     val reference: String,
-    val paymentDate: LocalDate?,
     val dueDate: LocalDate,
-    val citizenId: UUID
+    val citizenId: UUID,
+    val paymentId: UUID
 )
 
 data class CreatePaymentParams(
@@ -43,5 +44,6 @@ data class CreateInvoiceParams(
     val dueDate: LocalDate,
     val reference: String,
     val reservationId: Int,
-    val citizenId: UUID
+    val citizenId: UUID,
+    val paymentId: UUID,
 )

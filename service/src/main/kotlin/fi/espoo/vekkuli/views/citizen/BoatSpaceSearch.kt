@@ -16,7 +16,8 @@ class BoatSpaceSearch(
     private val messageUtil: MessageUtil,
     private val formComponents: FormComponents,
     private val markDownService: MarkDownService,
-    private val icons: Icons
+    private val icons: Icons,
+    private val stepIndicator: StepIndicator
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -105,6 +106,8 @@ class BoatSpaceSearch(
         return """
             <section class="section">
                 <div class="container">
+                    ${stepIndicator.render(1)}
+                
                     <div>
                         <h2>${t("boatApplication.title.search")}</h2>
                     </div>

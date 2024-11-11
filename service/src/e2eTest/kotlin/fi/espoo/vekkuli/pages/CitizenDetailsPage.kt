@@ -99,7 +99,9 @@ class CitizenDetailsPage(
 
     val invoicePaidButton = page.getByTestId("invoice-paid-button")
     val invoicePaidInfo = page.getByTestId("invoicePaidInfo")
+    val invoicePaymentDate = page.getByTestId("paymentDate")
     val invoiceModalConfirm = page.getByTestId("invoice-modal-confirm")
+    val paidFieldInfo = page.getByTestId("paidFieldInfo")
 
     val reservationList = getByDataTestId("reservation-list")
     val reservationListCards = getByDataTestId("reservation-list-card", reservationList)
@@ -119,6 +121,9 @@ class CitizenDetailsPage(
     val terminateReservationModalConfirm = getByDataTestId("terminate-reservation-modal-confirm")
     val terminateReservationModalCancel = getByDataTestId("terminate-reservation-modal-cancel")
     val terminateReservationForm = getByDataTestId("terminate-reservation-form")
+    val terminateReservationSuccess = getByDataTestId("termination-success-modal")
+    val terminateReservationFail = getByDataTestId("termination-fail-modal")
+    val terminateReservationFailOkButton = getByDataTestId("terminate-reservation-fail-modal-ok")
     val terminateReservationFormLocation = getByDataTestId("terminate-reservation-location")
     val terminateReservationFormSize = getByDataTestId("terminate-reservation-size")
     val terminateReservationFormAmenity = getByDataTestId("terminate-reservation-amenity")
@@ -137,6 +142,7 @@ class CitizenDetailsPage(
         )
     val expiredReservationListLoader = getByDataTestId("expired-reservation-list-loader")
     val expiredReservationListAccordion = getByDataTestId("expired-reservation-list-accordion")
+    val modalWindow = getByDataTestId("modal-window")
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 }

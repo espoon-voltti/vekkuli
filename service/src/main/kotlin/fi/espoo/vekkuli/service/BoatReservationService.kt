@@ -16,6 +16,7 @@ import fi.espoo.vekkuli.utils.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.MonthDay
 import java.util.*
 
@@ -175,15 +176,15 @@ class BoatReservationService(
     }
 
     fun handleReservationPaymentResult(
-        stamp: UUID,
+        paymentId: UUID,
         success: Boolean
     ): Int? {
-        paymentService.updatePayment(stamp, success)
-        if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(stamp)
+        paymentService.updatePayment(paymentId, success, if (success) timeProvider.getCurrentDateTime() else null)
+        if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(paymentId)
 
         val reservationId =
             boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
-                stamp
+                paymentId
             )
 
         return reservationId
@@ -195,7 +196,6 @@ class BoatReservationService(
         params: CreatePaymentParams
     ): Payment {
         val payment = paymentService.insertPayment(params, reservationId)
-        boatSpaceReservationRepo.setReservationStatusToPayment(reservationId)
         return payment
     }
 
@@ -513,10 +513,14 @@ class BoatReservationService(
 
     fun markInvoicePaid(
         reservationId: Int,
-        paymentDate: LocalDate,
-        info: String
+        paymentDate: LocalDateTime
     ) {
-        val reservation = boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
+        boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
+        val reservation = boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)
+        if (reservation?.paymentId == null) {
+            throw IllegalArgumentException("Reservation has no payment")
+        }
+        paymentService.updatePayment(reservation.paymentId, true, paymentDate)
     }
 
     fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
