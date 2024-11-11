@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
@@ -18,6 +19,7 @@ class ReservationCardButtons : BaseView() {
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
         @SanitizeInput citizen: CitizenWithDetails,
+        userType: UserType
     ): String {
         val swapPlace =
             if (reservation.canSwitch) {
@@ -48,7 +50,7 @@ class ReservationCardButtons : BaseView() {
         return """
             <div class="buttons">
                 $renewPlace
-                ${createInvoicePaidModalButton(reservation, citizen)}
+                ${createInvoicePaidModalButton(reservation, citizen, userType)}
                 $swapPlace
                 ${createTerminateReservationModalButton(reservation)}
             </div>
@@ -57,9 +59,10 @@ class ReservationCardButtons : BaseView() {
 
     fun createInvoicePaidModalButton(
         reservation: BoatSpaceReservationDetails,
-        citizen: CitizenWithDetails
+        citizen: CitizenWithDetails,
+        userType: UserType
     ): String {
-        if (reservation.status == ReservationStatus.Invoiced) {
+        if (userType == UserType.EMPLOYEE && reservation.status == ReservationStatus.Invoiced) {
             return modal
                 .createOpenModalBuilder()
                 .addAttribute("id", "invoice-paid-button")
