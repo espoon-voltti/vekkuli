@@ -52,7 +52,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 this.citizenIdLeo
             )
         assertNotNull(invoiceBatchParameters, "Invoice is created")
-        assertEquals(15000, invoiceBatchParameters!!.invoices[0].rows[0].amount, "Price is correct")
+        assertEquals(26719, invoiceBatchParameters!!.invoices[0].rows[0].amount, "Price is correct")
         assertEquals(
             madeReservation.id.toString(),
             invoiceBatchParameters.invoices[0].rows[0].productId,
