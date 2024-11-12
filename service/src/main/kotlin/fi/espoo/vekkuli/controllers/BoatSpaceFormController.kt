@@ -409,7 +409,6 @@ class BoatSpaceFormController(
         val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
         val reservation = reservationService.getBoatSpaceReservation(reservationId)
         if (reservation == null) return redirectUrl("/")
-        model.addAttribute("reservation", reservation)
 
         return layout.render(
             true,

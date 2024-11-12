@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
@@ -20,18 +21,20 @@ class ReservationList(
     fun render(
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        userType: UserType
     ): String {
         // language=HTML
         return """
             <div class="reservation-list form-section" ${addTestId("reservation-list")}>
-                ${createReservationCards(boatSpaceReservations, citizen)}
+                ${createReservationCards(boatSpaceReservations, citizen, userType)}
             </div>
             """.trimIndent()
     }
 
     fun createReservationCards(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        citizen: CitizenWithDetails
+        citizen: CitizenWithDetails,
+        userType: UserType
     ): String =
         boatSpaceReservations.joinToString("\n") { reservation ->
             // language=HTML
@@ -40,7 +43,7 @@ class ReservationList(
                 ${cardHeading.render(reservation)}
                 ${cardInfo.render(reservation)}
                 ${if (reservation.canRenew) warningBox.render(t("reservationWarning.renewInfo")) else ""}
-                ${cardButtons.render(reservation, citizen)}
+                ${cardButtons.render(reservation, citizen, userType)}
             </div>
             """.trimIndent()
         }

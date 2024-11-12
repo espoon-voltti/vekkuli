@@ -10,6 +10,8 @@ data class BoatSpaceReservationDetails(
     val id: Int,
     val created: LocalDateTime,
     val priceCents: Int,
+    val vatCents: Int,
+    val netPriceCents: Int,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -62,12 +64,10 @@ data class BoatSpaceReservationDetails(
         get() = boatSpaceWidthCm.cmToM()
     val priceInEuro: Double
         get() = priceCents.centsToEuro()
-    val alvPriceInEuro: Double
-        get() = (priceCents - getPriceWithoutAlv(priceCents)).centsToEuro()
-    val alvPriceInCents: Int
-        get() = getPriceWithoutAlv(priceCents)
-    val priceWithoutAlvInEuro: Double
-        get() = getPriceWithoutAlv(priceCents).centsToEuro()
+    val vatPriceInEuro: Double
+        get() = vatCents.centsToEuro()
+    val priceWithoutVatInEuro: Double
+        get() = netPriceCents.centsToEuro()
 
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 

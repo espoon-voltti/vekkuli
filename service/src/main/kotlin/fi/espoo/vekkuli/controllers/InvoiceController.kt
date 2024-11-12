@@ -60,8 +60,8 @@ class InvoiceController(
                         InvoiceRow(
                             description = invoiceData.description,
                             customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
-                            priceWithoutVat = reservation.priceWithoutAlvInEuro.toString(),
-                            vat = reservation.alvPriceInEuro.toString(),
+                            priceWithoutVat = reservation.priceWithoutVatInEuro.toString(),
+                            vat = reservation.vatPriceInEuro.toString(),
                             priceWithVat = reservation.priceInEuro.toString(),
                             organization = "Merellinen ulkoilu",
                             paymentDate = LocalDate.of(2025, 1, 1)

@@ -73,10 +73,12 @@ class JdbiBoatSpaceReservationRepository(
                            b.extra_information as boat_extra_information,
                            location.name as location_name, 
                            bs.type,
-                            bs.length_cm as boat_space_length_cm,
-                            bs.width_cm as boat_space_width_cm,
-                            bs.amenity,
+                           bs.length_cm as boat_space_length_cm,
+                           bs.width_cm as boat_space_width_cm,
+                           bs.amenity,
                            price.price_cents,
+                           price.vat_cents,
+                           price.net_price_cents,
                            CONCAT(bs.section, bs.place_number) as place,
                            ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM payment p
@@ -124,7 +126,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
@@ -150,7 +152,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
@@ -176,7 +178,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
@@ -200,7 +202,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
@@ -224,7 +226,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
@@ -249,7 +251,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description
                     FROM boat_space_reservation bsr
@@ -290,7 +292,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, location.name as location_name, price.price_cents, 
+                    SELECT bsr.*, location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description,
                         ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM boat_space_reservation bsr
@@ -301,7 +303,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment' OR bsr.status = 'Renewal')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
-                    GROUP BY bsr.id, location.name, price.price_cents, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
+                    GROUP BY bsr.id, location.name, price.id, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
                     """.trimIndent()
                 )
             query.bind("id", id)
@@ -724,50 +726,51 @@ class JdbiBoatSpaceReservationRepository(
 
     private fun buildSqlSelectForBoatSpaceReservationDetails() =
         """SELECT bsr.id,
-                           bsr.start_date,
-                           bsr.end_date,
-                           bsr.created,
-                           bsr.updated,
-                           bsr.status,
-                           bsr.boat_space_id,
-                           bsr.validity,
-                           bsr.renewed_from_id,
-                           p.id as payment_id,
-                           p.paid as payment_date,
-                           r.id as reserver_id,
-                           r.type as reserver_type,
-                           r.name,
-                           r.email, 
-                           r.phone,
-                           r.street_address,
-                           r.postal_code,
-                           r.municipality_code,
-                           m.name as municipality_name,
-                           b.registration_code as boat_registration_code,
-                           b.ownership as boat_ownership,
-                           b.id as boat_id,
-                           b.name as boat_name,
-                           b.width_cm as boat_width_cm,
-                           b.length_cm as boat_length_cm,
-                           b.weight_kg as boat_weight_kg,
-                           b.depth_cm as boat_depth_cm,
-                           b.type as boat_type,
-                           b.other_identification as boat_other_identification,
-                           b.extra_information as boat_extra_information,
-                           location.name as location_name, 
-                           bs.type,
-                           bs.length_cm as boat_space_length_cm,
-                           bs.width_cm as boat_space_width_cm,
-                           bs.amenity,
-                           price.price_cents,
-                           CONCAT(bs.section, bs.place_number) as place
-                    FROM boat_space_reservation bsr
-                    JOIN boat b ON b.id = bsr.boat_id
-                    JOIN reserver r ON bsr.reserver_id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location.id = bs.location_id
-                    LEFT JOIN price ON price_id = price.id
-                    JOIN municipality m ON r.municipality_code = m.code
-                    LEFT JOIN payment p ON p.reservation_id = bsr.id
+                bsr.start_date,
+                bsr.end_date,
+                bsr.created,
+                bsr.updated,
+                bsr.status,
+                bsr.boat_space_id,
+                bsr.validity,
+                bsr.renewed_from_id,
+                p.id as payment_id,
+                           p.paid as payment_date,r.id as reserver_id,
+                r.type as reserver_type,
+                r.name,
+                r.email, 
+                r.phone,
+                r.street_address,
+                r.postal_code,
+                r.municipality_code,
+                m.name as municipality_name,
+                b.registration_code as boat_registration_code,
+                b.ownership as boat_ownership,
+                b.id as boat_id,
+                b.name as boat_name,
+                b.width_cm as boat_width_cm,
+                b.length_cm as boat_length_cm,
+                b.weight_kg as boat_weight_kg,
+                b.depth_cm as boat_depth_cm,
+                b.type as boat_type,
+                b.other_identification as boat_other_identification,
+                b.extra_information as boat_extra_information,
+                location.name as location_name, 
+                bs.type,
+                bs.length_cm as boat_space_length_cm,
+                bs.width_cm as boat_space_width_cm,
+                bs.amenity,
+                price.price_cents,
+                price.vat_cents,
+                price.net_price_cents,
+                CONCAT(bs.section, bs.place_number) as place
+            FROM boat_space_reservation bsr
+            JOIN boat b ON b.id = bsr.boat_id
+            JOIN reserver r ON bsr.reserver_id =  r.id
+            JOIN boat_space bs ON bsr.boat_space_id = bs.id
+            JOIN location ON location.id = bs.location_id
+            LEFT JOIN price ON price_id = price.id
+            JOIN municipality m ON r.municipality_code = m.code
+    LEFT JOIN payment p ON p.reservation_id = bsr.id
                     """
 }

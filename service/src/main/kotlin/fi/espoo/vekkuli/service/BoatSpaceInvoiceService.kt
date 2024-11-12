@@ -89,7 +89,7 @@ class BoatSpaceInvoiceService(
             mobilePhone = reserver.phone,
             email = reserver.email,
             priceCents = reservation.priceCents,
-            vat = reservation.alvPriceInCents,
+            vat = reservation.vatCents,
             description = "${reservation.locationName} ${reservation.startDate.year}",
             startDate = reservation.startDate,
             endDate = reservation.endDate

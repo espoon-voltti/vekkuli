@@ -13,6 +13,8 @@ import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/admin/reporting")
@@ -30,7 +32,12 @@ class ReportingController(
     fun rawReport(request: HttpServletRequest): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Forbidden("No authenticated user")
         logger.audit(authenticatedUser, "DOWNLOAD_RAW_REPORT")
-        return ResponseEntity.ok(rawReportToCsv(getRawReport(jdbi)))
+
+        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-raakaraportti-$today.csv\"")
+            .body(rawReportToCsv(getRawReport(jdbi)))
     }
 
     @GetMapping

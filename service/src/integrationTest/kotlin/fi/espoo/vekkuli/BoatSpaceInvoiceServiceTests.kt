@@ -52,7 +52,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 this.citizenIdLeo
             )
         assertNotNull(invoiceBatchParameters, "Invoice is created")
-        assertEquals(15000, invoiceBatchParameters?.priceCents, "Price is correct")
+        assertEquals(26719, invoiceBatchParameters?.priceCents, "Price is correct")
         val invoice =
             boatSpaceInvoiceService.createAndSendInvoice(
                 invoiceBatchParameters!!,
