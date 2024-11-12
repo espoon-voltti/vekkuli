@@ -11,4 +11,6 @@ class EnvConfig {
     @Bean fun emailEnv(env: Environment): EmailEnv = EmailEnv.fromEnvironment(env)
 
     @Bean fun paytrailEnv(env: Environment): PaytrailEnv = PaytrailEnv.fromEnvironment(env)
+
+    @Bean fun espiEnv(env: Environment): EspiEnv = EspiEnv.fromEnvironment(env)
 }

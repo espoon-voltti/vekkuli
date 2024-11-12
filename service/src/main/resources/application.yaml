@@ -30,4 +30,8 @@ vekkuli:
   paytrail:
     merchant_id: ${PAYTRAIL_MERCHANT_ID:375917}
     merchant_secret: ${PAYTRAIL_MERCHANT_SECRET:SAIPPUAKAUPPIAS}
+  espi:
+    api_url: ${ESPI_API_URL:https://integration.internal.staging.sst.espoon-voltti.fi}
+    api_username: ${ESPI_API_USERNAME:vekkuli}
+    api_password: ${ESPI_API_PASSWORD:password}
 
