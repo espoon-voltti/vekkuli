@@ -6,8 +6,6 @@ import fi.espoo.vekkuli.utils.TimeProvider
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.util.*
@@ -72,7 +70,8 @@ private data class InvoiceBatch(
 )
 
 interface InvoiceClient {
-    fun sendBatchInvoice(invoiceData: InvoiceData): Boolean
+//    fun sendBatchInvoice(invoiceData: InvoiceData): Boolean
+    fun sendBatchInvoice(invoiceData: String): Boolean
 }
 
 @Service
@@ -80,8 +79,8 @@ interface InvoiceClient {
 class MockInvoiceClient(
     val timeProvider: TimeProvider
 ) : InvoiceClient {
-    override fun sendBatchInvoice(invoiceData: InvoiceData): Boolean {
-        println("sending invoice ${invoiceData.invoiceNumber}")
+    override fun sendBatchInvoice(invoiceData: String): Boolean {
+        println("sending invoice $invoiceData")
         return true
     }
 }
@@ -92,11 +91,11 @@ class EspiInvoiceClient(
     val espiEnv: EspiEnv,
     val timeProvider: TimeProvider
 ) : InvoiceClient {
-    override fun sendBatchInvoice(invoiceData: InvoiceData): Boolean {
-        val json =
-            Json {
-                encodeDefaults = false
-            }
+    override fun sendBatchInvoice(invoiceData: String): Boolean {
+//        val json =
+//            Json {
+//                encodeDefaults = false
+//            }
         val (apiUrl, apiUsername, apiPassword) = espiEnv
         val url = "$apiUrl/invoice/api/v1/invoice-batches"
         val authHeader = Base64.getEncoder().encodeToString("$apiUsername:$apiPassword".toByteArray())
@@ -105,9 +104,9 @@ class EspiInvoiceClient(
                 "Content-Type" to "application/json",
                 "Authorization" to "Basic $authHeader"
             )
-        val invoiceBatch = createInvoiceBatch(invoiceData, timeProvider)
-        val encodedBody = json.encodeToString(invoiceBatch)
-        val response = runBlocking { VekkuliHttpClient.makePostRequest(url, encodedBody, headers) }
+//        val invoiceBatch = createInvoiceBatch(invoiceData, timeProvider)
+//        val encodedBody = json.encodeToString(invoiceBatch)
+        val response = runBlocking { VekkuliHttpClient.makePostRequest(url, invoiceData, headers) }
         return response?.status == HttpStatusCode.OK
     }
 }

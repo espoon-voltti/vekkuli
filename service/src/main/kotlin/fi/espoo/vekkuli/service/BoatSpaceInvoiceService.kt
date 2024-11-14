@@ -1,5 +1,8 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.asyncJob.AsyncJob
+import fi.espoo.vekkuli.asyncJob.AsyncJobRunner
+import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
@@ -7,6 +10,8 @@ import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.util.*
 
@@ -16,7 +21,8 @@ class BoatSpaceInvoiceService(
     private val paymentService: PaymentService,
     private val timeProvider: TimeProvider,
     private val boatReservationService: BoatReservationService,
-    private val citizenService: CitizenService
+    private val citizenService: CitizenService,
+    private val asyncJobRunner: AsyncJobRunner<AsyncJob>
 ) {
     fun createAndSendInvoice(
         invoiceData: InvoiceData,
@@ -24,11 +30,12 @@ class BoatSpaceInvoiceService(
         reservationId: Int
     ): Invoice? {
         val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
-        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(invoiceData)
-        if (!sendInvoiceSuccess) {
-            paymentService.updatePayment(createdPayment.id, false, null)
-            return null
-        }
+        asyncJobRunner.plan(sequenceOf(JobParams(AsyncJob.SendInvoiceBatch("test"), 3, Duration.ofMinutes(5), Instant.now())))
+//        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(invoiceData)
+//        if (!sendInvoiceSuccess) {
+//            paymentService.updatePayment(createdPayment.id, false, null)
+//            return null
+//        }
         return createdInvoice
     }
 
