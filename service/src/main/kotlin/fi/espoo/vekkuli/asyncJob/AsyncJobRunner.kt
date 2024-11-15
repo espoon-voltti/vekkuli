@@ -5,11 +5,12 @@
 package fi.espoo.vekkuli.asyncJob
 
 import mu.KotlinLogging
+import org.jdbi.v3.core.statement.Query
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.Instant
-import java.util.Timer
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -22,7 +23,7 @@ import kotlin.reflect.KClass
 open class AsyncJobRunner<T : Any>(
     payloadType: KClass<T>,
     pools: Iterable<Pool<T>>,
-    private val repository: AsyncJobRepository
+    private val repository: IAsyncJobRepository
 ) : AutoCloseable {
     data class Pool<T : Any>(
         val id: AsyncJobPool.Id<T>,
@@ -138,4 +139,51 @@ open class AsyncJobRunner<T : Any>(
         stopBackgroundPolling()
         pools.forEach { it.close() }
     }
+}
+
+interface IAsyncJobRepository {
+    @Transactional
+    fun insertJob(jobParams: JobParams<*>): UUID
+
+    @Transactional
+    fun upsertPermit(pool: AsyncJobPool.Id<*>)
+
+    @Transactional
+    fun claimPermit(pool: AsyncJobPool.Id<*>): WorkPermit
+
+    @Transactional
+    fun updatePermit(
+        pool: AsyncJobPool.Id<*>,
+        availableAt: Instant
+    ): Query?
+
+    @Transactional
+    fun <T : Any> claimJob(
+        now: Instant,
+        jobTypes: Collection<AsyncJobType<out T>>,
+    ): ClaimedJobRef<T>?
+
+    fun <T : Any> startJob(
+        job: ClaimedJobRef<T>,
+        now: Instant,
+    ): T?
+
+    @Transactional
+    fun completeJob(
+        job: ClaimedJobRef<*>,
+        now: Instant
+    ): Query?
+
+    @Transactional
+    fun <T : Any> temp(pool: AsyncJobPool<T>): ClaimedJobRef<T>?
+
+    @Transactional
+    fun <T : Any> temp2(
+        pool: AsyncJobPool<T>,
+        job: ClaimedJobRef<out T>
+    ): Boolean
+
+    fun setLockTimeout(duration: Duration): Int
+
+    fun setStatementTimeout(duration: Duration): Int
 }

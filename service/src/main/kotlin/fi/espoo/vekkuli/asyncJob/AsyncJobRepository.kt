@@ -21,9 +21,9 @@ private val logger = KotlinLogging.logger {}
 @Repository
 class AsyncJobRepository(
     val jdbi: Jdbi
-) {
+) : IAsyncJobRepository {
     @Transactional
-    fun insertJob(jobParams: JobParams<*>): UUID =
+    override fun insertJob(jobParams: JobParams<*>): UUID =
         jdbi
             .withHandleUnchecked { handle ->
                 handle
@@ -43,7 +43,7 @@ RETURNING id
             }
 
     @Transactional
-    fun upsertPermit(pool: AsyncJobPool.Id<*>) {
+    override fun upsertPermit(pool: AsyncJobPool.Id<*>) {
         jdbi
             .withHandleUnchecked { handle ->
                 handle
@@ -58,7 +58,7 @@ ON CONFLICT DO NOTHING
     }
 
     @Transactional
-    fun claimPermit(pool: AsyncJobPool.Id<*>): WorkPermit =
+    override fun claimPermit(pool: AsyncJobPool.Id<*>): WorkPermit =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
@@ -74,7 +74,7 @@ FOR UPDATE
         }
 
     @Transactional
-    fun updatePermit(
+    override fun updatePermit(
         pool: AsyncJobPool.Id<*>,
         availableAt: Instant
     ) = jdbi
@@ -91,7 +91,7 @@ WHERE pool_id = :poolId
         }
 
     @Transactional
-    fun <T : Any> claimJob(
+    override fun <T : Any> claimJob(
         now: Instant,
         jobTypes: Collection<AsyncJobType<out T>>,
     ): ClaimedJobRef<T>? =
@@ -135,7 +135,7 @@ RETURNING id AS jobId, type AS jobType, txid_current() AS txId, retry_count AS r
                 .orElse(null)
         }
 
-    fun <T : Any> startJob(
+    override fun <T : Any> startJob(
         job: ClaimedJobRef<T>,
         now: Instant,
     ): T? =
@@ -166,7 +166,7 @@ RETURNING payload
             }
 
     @Transactional
-    fun completeJob(
+    override fun completeJob(
         job: ClaimedJobRef<*>,
         now: Instant
     ) = jdbi
@@ -183,7 +183,7 @@ WHERE id = :jobId
         }
 
     @Transactional
-    fun <T : Any> temp(pool: AsyncJobPool<T>): ClaimedJobRef<T>? {
+    override fun <T : Any> temp(pool: AsyncJobPool<T>): ClaimedJobRef<T>? {
         setStatementTimeout(Duration.ofSeconds(120))
         // In the worst case we need to wait for the duration of (N service
         // instances) * (M workers per pool) * (throttle interval) if every
@@ -206,7 +206,7 @@ WHERE id = :jobId
     }
 
     @Transactional
-    fun <T : Any> temp2(
+    override fun <T : Any> temp2(
         pool: AsyncJobPool<T>,
         job: ClaimedJobRef<out T>
     ): Boolean {
@@ -218,9 +218,12 @@ WHERE id = :jobId
         } ?: false
     }
 
-    fun setLockTimeout(duration: Duration) = jdbi.withHandleUnchecked { it.execute("SET LOCAL lock_timeout = '${duration.toMillis()}ms'") }
+    override fun setLockTimeout(duration: Duration) =
+        jdbi.withHandleUnchecked {
+            it.execute("SET LOCAL lock_timeout = '${duration.toMillis()}ms'")
+        }
 
-    fun setStatementTimeout(duration: Duration) =
+    override fun setStatementTimeout(duration: Duration) =
         jdbi.withHandleUnchecked { it.execute("SET LOCAL statement_timeout = '${duration.toMillis()}ms'") }
 
 //    fun removeCompletedJobs(completedBefore: HelsinkiDateTime): Int =

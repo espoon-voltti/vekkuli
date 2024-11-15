@@ -21,7 +21,7 @@ class AsyncJobPool<T : Any>(
     val id: Id<T>,
     config: Config,
     val registration: Registration<T>,
-    private val asyncJobRepository: AsyncJobRepository
+    private val asyncJobRepository: IAsyncJobRepository
 ) : AutoCloseable {
     data class Id<T : Any>(
         val jobType: KClass<T>,
