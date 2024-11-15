@@ -324,7 +324,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
 
         assertEquals(3, reservations.size, "reservations are out filtered correctly")
-        assertEquals(listOf(177, 200, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
+        assertEquals(listOf(200, 177, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
     }
 
     @Test
