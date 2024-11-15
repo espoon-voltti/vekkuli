@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.service.ReserveBoatSpaceInput
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.InvoiceRow
@@ -26,17 +27,11 @@ class InvoiceController(
     private val sendInvoiceView: InvoicePreview,
     private val reservationService: BoatReservationService,
     private val invoiceService: BoatSpaceInvoiceService,
+    private val timeProvider: TimeProvider,
 ) {
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     @ResponseBody
     fun invoiceView(
-        @PathVariable reservationId: Int,
-        request: HttpServletRequest,
-    ): ResponseEntity<String> = renderInvoicePage(reservationId, request)
-
-    @RequestMapping("/virkailija/venepaikka/jatka/{reservationId}/lasku")
-    @ResponseBody
-    fun invoiceRenewView(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> = renderInvoicePage(reservationId, request)
@@ -118,7 +113,7 @@ class InvoiceController(
         if (newReservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
-        updateBoatReservationFromExisting(newReservation.id, reservationId)
+        renewBoatSpace(newReservation.id, reservationId)
 
         try {
             handleInvoiceSending(newReservation)
@@ -133,7 +128,7 @@ class InvoiceController(
             .body("")
     }
 
-    private fun updateBoatReservationFromExisting(
+    private fun renewBoatSpace(
         newReservationId: Int,
         oldReservationId: Int
     ) {
@@ -161,7 +156,7 @@ class InvoiceController(
             ReservationStatus.Payment,
             oldReservation.validity,
             oldReservation.startDate,
-            oldReservation.endDate
+            timeProvider.getCurrentDate().minusDays(1)
         )
     }
 

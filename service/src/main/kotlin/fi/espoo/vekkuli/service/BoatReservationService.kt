@@ -291,12 +291,19 @@ class BoatReservationService(
             endDate
         )
 
-    fun createRenewalReservation(
+    fun createRenewalReservationForEmployee(
         reservationId: Int,
-        userType: UserType,
         userId: UUID
     ): ReservationWithDependencies? {
-        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, userType, userId)
+        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.EMPLOYEE, userId)
+        return getReservationWithReserver(newId)
+    }
+
+    fun createRenewalReservationForCitizen(
+        reservationId: Int,
+        userId: UUID
+    ): ReservationWithDependencies? {
+        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.CITIZEN, userId)
         return getReservationWithReserver(newId)
     }
 
@@ -401,12 +408,6 @@ class BoatReservationService(
 
     fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies? =
         boatSpaceReservationRepo.getUnfinishedReservationForEmployee(id)
-
-    fun getRenewalReservationForCitizen(id: UUID): ReservationWithDependencies? =
-        boatSpaceReservationRepo.getRenewalReservationForCitizen(id)
-
-    fun getRenewalReservationForEmployee(id: UUID): ReservationWithDependencies? =
-        boatSpaceReservationRepo.getRenewalReservationForEmployee(id)
 
     fun insertBoatSpaceReservation(
         reserverId: UUID,
