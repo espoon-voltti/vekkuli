@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
@@ -638,13 +639,23 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().singleOrNull()
         }
 
-    override fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation =
+    override fun terminateBoatSpaceReservation(
+        reservationId: Int,
+        endDate: LocalDate,
+        terminationReason: ReservationTerminationReason,
+        terminationComment: String?
+    ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     UPDATE boat_space_reservation
-                    SET status = 'Cancelled', updated = :updatedTimestamp, end_date = :endDate
+                    SET 
+                        status = 'Cancelled', 
+                        updated = :updatedTimestamp, 
+                        end_date = :endDate,
+                        termination_reason = :terminationReason,
+                        termination_comment = :terminationComment
                     WHERE id = :id
                         AND status <> 'Cancelled'
                     RETURNING *
@@ -652,7 +663,9 @@ class JdbiBoatSpaceReservationRepository(
                 )
             query.bind("id", reservationId)
             query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
-            query.bind("endDate", timeProvider.getCurrentDateTime())
+            query.bind("endDate", endDate)
+            query.bind("terminationReason", terminationReason)
+            query.bind("terminationComment", terminationComment)
             query.mapTo<BoatSpaceReservation>().one()
         }
 

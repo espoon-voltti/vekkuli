@@ -4,24 +4,22 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.WarningBox
-import fi.espoo.vekkuli.views.components.modal.*
-import fi.espoo.vekkuli.views.employee.SanitizeInput
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 
 @Component
 class ReservationList(
-    private val icons: Icons,
     private val cardHeading: ReservationCardHeading,
     private val cardInfo: ReservationCardInformation,
-    private val cardButtons: ReservationCardButtons,
+    @Qualifier("reservationCardButtons") private val cardButtons: ReservationCardButtons,
+    @Qualifier("employeeReservationCardButtons") private val employeeCardButtons: EmployeeReservationCardButtons,
     private val warningBox: WarningBox,
 ) : BaseView() {
     fun render(
-        @SanitizeInput citizen: CitizenWithDetails,
-        @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        userType: UserType
+        citizen: CitizenWithDetails,
+        boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        userType: UserType = UserType.CITIZEN
     ): String {
         // language=HTML
         return """
@@ -31,7 +29,7 @@ class ReservationList(
             """.trimIndent()
     }
 
-    fun createReservationCards(
+    private fun createReservationCards(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
         citizen: CitizenWithDetails,
         userType: UserType
@@ -43,7 +41,12 @@ class ReservationList(
                 ${cardHeading.render(reservation)}
                 ${cardInfo.render(reservation)}
                 ${if (reservation.canRenew) warningBox.render(t("reservationWarning.renewInfo")) else ""}
-                ${cardButtons.render(reservation, citizen, userType)}
+                ${
+                if (userType == UserType.EMPLOYEE) {
+                    employeeCardButtons.render(reservation, citizen)
+                } else {
+                    cardButtons.render(reservation, citizen)
+                }}
             </div>
             """.trimIndent()
         }

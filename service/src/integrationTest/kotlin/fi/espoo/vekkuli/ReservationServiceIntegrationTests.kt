@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.modal.TerminateBoatSpaceReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals

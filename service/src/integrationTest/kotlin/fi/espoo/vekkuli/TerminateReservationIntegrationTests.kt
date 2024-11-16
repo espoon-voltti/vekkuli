@@ -1,4 +1,5 @@
 package fi.espoo.vekkuli
+import fi.espoo.vekkuli.boatSpace.terminateReservation.modal.TerminateBoatSpaceReservationService
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
@@ -14,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.util.*
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 

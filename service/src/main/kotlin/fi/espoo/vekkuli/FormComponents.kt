@@ -23,27 +23,7 @@ class FormComponents {
         serverValidate: Pair<String, String>? = null
     ): String {
         //language=HTML
-        val errorContainer =
-            """
-            <div id="$id-error-container">
-                <span id="$id-error" class="help is-danger"
-                style="visibility: hidden">
-                ${t("validation.required")}
-                </span>
-            </div>
-            <div id="$id-error-container">
-                <span id="$id-pattern-error" class="help is-danger"
-                style="visibility: hidden">
-                ${if (pattern != null) t(pattern.second) else ""}
-                </span>
-            </div>
-            <div id="$id-server-error-container">
-                <span id="$id-server-error" class="help is-danger" 
-                    style="visibility: hidden">
-                    ${if (serverValidate != null) t(serverValidate.second) else ""} 
-                </span>
-            </div> 
-            """
+        val errorContainer = renderErrorContainer(id, pattern, serverValidate)
 
         //language=HTML
         return """
@@ -74,6 +54,7 @@ class FormComponents {
         compact: Boolean = false,
         attributes: String = ""
     ): String {
+        val errorContainer = renderValidationErrorContainer(id)
         //language=HTML
         return """
             <div class="field">
@@ -88,12 +69,7 @@ class FormComponents {
                         ${if (value != null) "value=\"$value\"" else ""}
                         $attributes
                         />
-                    <div id="$id-error-container">
-                        <span id="$id-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${t("validation.required")} 
-                        </span>
-                    </div> 
+                    $errorContainer 
                 </div>
             </div>
             """.trimIndent()
@@ -108,6 +84,7 @@ class FormComponents {
         step: Double? = 0.01,
         compact: Boolean = false
     ): String {
+        val errorContainer = renderErrorContainer(id, null, null)
         //language=HTML
         return """
             <div class="field">
@@ -123,12 +100,7 @@ class FormComponents {
                         ${if (value != null) "value=\"$value\"" else ""}
                         $attributes
                         />
-                    <div id="$id-error-container">
-                        <span id="$id-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${t("validation.required")} 
-                        </span>
-                    </div> 
+                    $errorContainer 
                 </div>
             </div>
             """.trimIndent()
@@ -140,30 +112,26 @@ class FormComponents {
         selectedValue: String?,
         options: List<Pair<String, String>>,
         required: Boolean? = false,
-        attributes: String = ""
+        attributes: String = "",
+        isFullWidth: Boolean = false
     ): String {
         //language=HTML
         val opts =
             options.joinToString("\n") { (value, text) ->
                 """<option value="$value" ${if (value == selectedValue) "selected" else ""}>$text</option>"""
             }
-
+        val errorContainer = renderValidationErrorContainer(id)
         //language=HTML
         return """
             <div class="field">
                 <div class="control">
                     <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
-                    <div class="select">
+                    <div class="select${if (isFullWidth == true) " is-fullwidth" else ""}">
                         <select id="$id" name="$id" $attributes >
                             $opts
                         </select>
                     </div>
-                    <div id="$id-error-container">
-                        <span id="$id-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${t("validation.required")} 
-                        </span>
-                    </div> 
+                    $errorContainer
                 </div>
             </div>
             """.trimIndent()
@@ -196,7 +164,7 @@ class FormComponents {
                 """<input type="radio" id="$id" name="$id" value="$key" ${if (key == value) "checked" else ""}>
                 <label for="$key">$value</label>"""
             }
-
+        val errorContainer = renderValidationErrorContainer(id)
         //language=HTML
         return """
             <div class="field">
@@ -205,12 +173,7 @@ class FormComponents {
                     <div class="select">
                         $opts
                     </div>
-                    <div id="$id-error-container">
-                        <span id="$id-error" class="help is-danger" 
-                            style="visibility: hidden">
-                            ${t("validation.required")} 
-                        </span>
-                    </div> 
+                    $errorContainer 
                 </div>
             </div>
             """.trimIndent()
@@ -263,27 +226,7 @@ class FormComponents {
         serverValidate: Pair<String, String>? = null
     ): String {
         //language=HTML
-        val errorContainer =
-            """
-            <div id="$id-error-container">
-                <span id="$id-error" class="help is-danger"
-                style="visibility: hidden">
-                ${t("validation.required")}
-                </span>
-            </div>
-            <div id="$id-error-container">
-                <span id="$id-pattern-error" class="help is-danger"
-                style="visibility: hidden">
-                ${if (pattern != null) t(pattern.second) else ""}
-                </span>
-            </div>
-            <div id="$id-server-error-container">
-                <span id="$id-server-error" class="help is-danger" 
-                    style="visibility: hidden">
-                    ${if (serverValidate != null) t(serverValidate.second) else ""} 
-                </span>
-            </div> 
-            """
+        val errorContainer = renderErrorContainer(id, pattern, serverValidate)
 
         //language=HTML
         return """
@@ -306,4 +249,107 @@ class FormComponents {
             </div>
             """.trimIndent()
     }
+
+    fun textArea(options: TextAreaOptions): String {
+        //language=HTML
+        val errorContainer = renderErrorContainer(options.id, null, options.serverValidate)
+
+        //language=HTML
+        return """
+            <div class="field">
+                <div class="control">
+                    <label 
+                        class="label ${if (options.required == true) "required" else ""}"
+                        for="${options.id}"
+                        ${options.labelAttributes}
+                    >
+                        ${t(options.labelKey)}
+                    </label>
+                    <textarea
+                        class="textarea ${if (options.compact) "compact" else ""}"
+                        ${if (options.required == true) "data-required" else ""}
+                        ${if (options.serverValidate != null) "data-validate-url=\"${options.serverValidate.first}\"" else ""}
+                        ${if (options.rows != null) "rows=\"${options.rows}\"" else ""}
+                        id="${options.id}"
+                        name="${options.name}"
+                        ${options.attributes}>
+                        ${options.value}
+                        </textarea>
+                   $errorContainer
+                </div>
+            </div>
+            """.trimIndent()
+    }
+
+    private fun renderErrorContainer(
+        id: String,
+        pattern: Pair<String, String>? = null,
+        serverValidate: Pair<String, String>? = null
+    ): String =
+        """
+        ${renderValidationErrorContainer(id)}
+        ${renderPatternErrorContainer(id, pattern)}
+        ${renderServerErrorContainer(id, serverValidate)}
+        """.trimIndent()
+
+    private fun renderValidationErrorContainer(id: String): String {
+        //language=HTML
+        return """
+            <div id="$id-error-container">
+                <span id="$id-error" class="help is-danger"
+                style="visibility: hidden">
+                ${t("validation.required")}
+                </span>
+            </div>
+            """.trimIndent()
+    }
+
+    private fun renderPatternErrorContainer(
+        id: String,
+        pattern: Pair<String, String>? = null
+    ): String {
+        if (pattern == null) {
+            return ""
+        }
+        //language=HTML
+        return """
+            <div id="$id-error-container">
+                <span id="$id-pattern-error" class="help is-danger"
+                style="visibility: hidden">
+                ${t(pattern.second)}
+                </span>
+            </div>
+            """.trimIndent()
+    }
+
+    private fun renderServerErrorContainer(
+        id: String,
+        serverValidate: Pair<String, String>? = null
+    ): String {
+        if (serverValidate == null) {
+            return ""
+        }
+        //language=HTML
+        return """
+            <div id="$id-server-error-container">
+                <span id="$id-server-error" class="help is-danger" 
+                    style="visibility: hidden">
+                    ${t(serverValidate.second)} 
+                </span>
+            </div>
+            """.trimIndent()
+    }
 }
+
+data class TextAreaOptions(
+    val labelKey: String,
+    val id: String,
+    val name: String = id,
+    val value: String? = "",
+    val required: Boolean? = false,
+    val attributes: String = "",
+    val labelAttributes: String = "",
+    val rows: Int? = null,
+    val compact: Boolean = false,
+    val serverValidate: Pair<String, String>? = null
+)
