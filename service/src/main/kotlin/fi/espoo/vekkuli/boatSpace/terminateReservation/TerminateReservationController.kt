@@ -19,17 +19,14 @@ class TerminateReservationController(
     private val terminationFailModalView: TerminationFailModalView,
     private val timeProvider: TimeProvider
 ) {
-    @PostMapping("/")
+    @PostMapping
     @ResponseBody
-    fun ackWarning(
+    fun terminateReservation(
         request: HttpServletRequest,
         @RequestParam("reservationId") reservationId: Int,
     ): ResponseEntity<String> {
         try {
-            val user = request.getAuthenticatedUser()
-            if (user == null || !user.isCitizen()) {
-                throw Unauthorized()
-            }
+            val user = request.getAuthenticatedUser() ?: throw Unauthorized()
             terminateService.terminateBoatSpaceReservationAsOwner(reservationId, user.id)
             return ResponseEntity.ok(
                 terminationSuccessModalView.render()
@@ -43,20 +40,17 @@ class TerminateReservationController(
 
     @PostMapping("/as-employee")
     @ResponseBody
-    fun ackWarning(
+    fun terminateReservationAsEmployee(
         request: HttpServletRequest,
         @RequestParam("reservationId") reservationId: Int,
-        @RequestParam("reason") reason: ReservationTerminationReason,
-        @RequestParam("endDate") endDate: LocalDate?,
+        @RequestParam("termination-reason") reason: ReservationTerminationReason,
+        @RequestParam("end-date") endDate: LocalDate?,
         @RequestParam("explanation") explanation: String?
     ): ResponseEntity<String> {
         try {
-            val user = request.getAuthenticatedUser()
-            if (user == null || !user.isEmployee()) {
-                throw Unauthorized()
-            }
+            val user = request.getAuthenticatedUser() ?: throw Unauthorized()
 
-            terminateService.terminateBoatSpaceReservationForOtherUser(
+            terminateService.terminateBoatSpaceReservationAsEmployee(
                 reservationId,
                 user.id,
                 reason,

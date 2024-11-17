@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
@@ -85,16 +84,11 @@ interface BoatSpaceReservationRepository {
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation?
 
-    fun terminateBoatSpaceReservation(
-        reservationId: Int,
-        endDate: LocalDate,
-        terminationReason: ReservationTerminationReason,
-        terminationComment: String? = null
-    ): BoatSpaceReservation
-
     fun getReservationPeriods(): List<ReservationPeriod>
 
     fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
 
     fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails>
+
+    fun setReservationAsExpired(reservationId: Int)
 }

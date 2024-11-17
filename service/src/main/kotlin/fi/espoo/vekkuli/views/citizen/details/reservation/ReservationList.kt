@@ -5,15 +5,14 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.WarningBox
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 
 @Component
 class ReservationList(
     private val cardHeading: ReservationCardHeading,
     private val cardInfo: ReservationCardInformation,
-    @Qualifier("reservationCardButtons") private val cardButtons: ReservationCardButtons,
-    @Qualifier("employeeReservationCardButtons") private val employeeCardButtons: EmployeeReservationCardButtons,
+    private val citizenButtons: CitizenCardButtons,
+    private val employeeButtons: EmployeeCardButtons,
     private val warningBox: WarningBox,
 ) : BaseView() {
     fun render(
@@ -43,9 +42,9 @@ class ReservationList(
                 ${if (reservation.canRenew) warningBox.render(t("reservationWarning.renewInfo")) else ""}
                 ${
                 if (userType == UserType.EMPLOYEE) {
-                    employeeCardButtons.render(reservation, citizen)
+                    employeeButtons.render(reservation, citizen)
                 } else {
-                    cardButtons.render(reservation, citizen)
+                    citizenButtons.render(reservation, citizen)
                 }}
             </div>
             """.trimIndent()

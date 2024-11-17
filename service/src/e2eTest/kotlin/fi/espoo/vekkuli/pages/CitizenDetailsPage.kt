@@ -143,6 +143,12 @@ class CitizenDetailsPage(
     val expiredReservationListLoader = getByDataTestId("expired-reservation-list-loader")
     val expiredReservationListAccordion = getByDataTestId("expired-reservation-list-accordion")
     val modalWindow = getByDataTestId("modal-window")
+    val terminateReservationAsEmployeeButton = getByDataTestId("open-terminate-reservation-modal-for-employee")
+    val terminateReservationAsEmployeeForm = getByDataTestId("terminate-reservation-employee-form")
+
+    val terminateReservationEndDate = terminateReservationAsEmployeeForm.getByTestId("end-date")
+    val terminateReservationReason = terminateReservationAsEmployeeForm.getByTestId("termination-reason")
+    val terminateReservationExplanation = terminateReservationAsEmployeeForm.getByTestId("termination-explanation")
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 }

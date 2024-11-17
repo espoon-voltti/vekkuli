@@ -25,4 +25,13 @@ class PermissionService(
             else -> false
         }
     }
+
+    fun canTerminateBoatSpaceReservationForOtherUser(
+        terminatorId: UUID,
+        reservationId: Int
+    ): Boolean =
+        when {
+            userService.isAppUser(terminatorId) -> true
+            else -> false
+        }
 }

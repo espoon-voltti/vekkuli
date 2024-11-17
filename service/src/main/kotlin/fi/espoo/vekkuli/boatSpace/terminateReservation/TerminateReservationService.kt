@@ -46,14 +46,14 @@ class TerminateBoatSpaceReservationService(
         sendTerminationNotice(reservation, terminatorId)
     }
 
-    fun terminateBoatSpaceReservationForOtherUser(
+    fun terminateBoatSpaceReservationAsEmployee(
         reservationId: Int,
         terminatorId: UUID,
         terminationReason: ReservationTerminationReason,
         endDate: LocalDate,
-        comment: String?
+        comment: String? = null
     ) {
-        if (!permissionService.canTerminateBoatSpaceReservation(terminatorId, reservationId)) {
+        if (!permissionService.canTerminateBoatSpaceReservationForOtherUser(terminatorId, reservationId)) {
             throw Unauthorized()
         }
         val reservation =

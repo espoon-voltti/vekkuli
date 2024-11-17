@@ -113,14 +113,20 @@ class FormComponents {
         options: List<Pair<String, String>>,
         required: Boolean? = false,
         attributes: String = "",
-        isFullWidth: Boolean = false
+        isFullWidth: Boolean = false,
+        placeholder: String? = ""
     ): String {
         //language=HTML
-        val opts =
+        var opts =
             options.joinToString("\n") { (value, text) ->
                 """<option value="$value" ${if (value == selectedValue) "selected" else ""}>$text</option>"""
             }
         val errorContainer = renderValidationErrorContainer(id)
+
+        if (selectedValue == null && placeholder != null) {
+            opts = "<option disabled selected>$placeholder</option>$opts"
+        }
+
         //language=HTML
         return """
             <div class="field">
@@ -214,18 +220,8 @@ class FormComponents {
             """.trimIndent()
     }
 
-    fun dateInput(
-        labelKey: String,
-        id: String,
-        value: String?,
-        required: Boolean? = false,
-        pattern: Pair<String, String>? = null,
-        attributes: String = "",
-        labelAttributes: String = "",
-        compact: Boolean = false,
-        serverValidate: Pair<String, String>? = null
-    ): String {
-        //language=HTML
+    fun dateInput(options: DateInputOptions): String {
+        val (id, labelKey, value, required, pattern, attributes, labelAttributes, compact, serverValidate, autoWidth) = options
         val errorContainer = renderErrorContainer(id, pattern, serverValidate)
 
         //language=HTML
@@ -235,7 +231,7 @@ class FormComponents {
                     <label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes >${t(labelKey)}</label>
                     <input
                     lang="fi"
-                        class="input ${if (compact) "compact" else ""}"
+                        class="input${if (compact) " compact" else ""}${if (autoWidth) " auto-width" else ""}"
                         ${if (required == true) "data-required" else ""}
                         ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
                         ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
@@ -266,15 +262,13 @@ class FormComponents {
                         ${t(options.labelKey)}
                     </label>
                     <textarea
-                        class="textarea ${if (options.compact) "compact" else ""}"
+                        class="textarea ${if (options.compact) "compact" else ""}${if (options.compact) "compact" else ""}"
                         ${if (options.required == true) "data-required" else ""}
                         ${if (options.serverValidate != null) "data-validate-url=\"${options.serverValidate.first}\"" else ""}
                         ${if (options.rows != null) "rows=\"${options.rows}\"" else ""}
                         id="${options.id}"
                         name="${options.name}"
-                        ${options.attributes}>
-                        ${options.value}
-                        </textarea>
+                        ${options.attributes}>${options.value}</textarea>
                    $errorContainer
                 </div>
             </div>
@@ -340,6 +334,19 @@ class FormComponents {
             """.trimIndent()
     }
 }
+
+data class DateInputOptions(
+    val id: String,
+    val labelKey: String,
+    val value: String?,
+    val required: Boolean? = false,
+    val pattern: Pair<String, String>? = null,
+    val attributes: String = "",
+    val labelAttributes: String = "",
+    val compact: Boolean = false,
+    val serverValidate: Pair<String, String>? = null,
+    val autoWidth: Boolean = false
+)
 
 data class TextAreaOptions(
     val labelKey: String,

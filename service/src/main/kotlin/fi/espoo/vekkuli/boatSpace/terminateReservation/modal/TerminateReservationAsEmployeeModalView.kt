@@ -1,5 +1,6 @@
-package fi.espoo.vekkuli.views.employee.reservation
+package fi.espoo.vekkuli.boatSpace.terminateReservation.modal
 
+import fi.espoo.vekkuli.DateInputOptions
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.TextAreaOptions
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
@@ -11,20 +12,23 @@ import fi.espoo.vekkuli.views.components.modal.*
 import org.springframework.stereotype.Service
 
 @Service
-class TerminateReservationForOtherUserModal(
+class TerminateReservationAsEmployeeModalView(
     private var formComponents: FormComponents,
     private var modal: Modal,
     private var timeProvider: TimeProvider
 ) : BaseView() {
     fun render(reservation: BoatSpaceReservationDetails): String {
-        val formId = "terminate-reservation-form"
+        val formId = "terminate-reservation-employee-form"
         val modalBuilder = modal.createModalBuilder()
 
         val endDateField =
             formComponents.dateInput(
-                "boatSpaceTermination.fields.endDate",
-                "endDate",
-                timeProvider.getCurrentDate().toString()
+                DateInputOptions(
+                    id = "end-date",
+                    labelKey = "boatSpaceTermination.fields.endDate",
+                    value = timeProvider.getCurrentDate().toString(),
+                    autoWidth = true
+                )
             )
         val terminationReasonOptions: List<Pair<String, String>> =
             enumValues<ReservationTerminationReasonOptions>()
@@ -32,12 +36,13 @@ class TerminateReservationForOtherUserModal(
         val reasonField =
             formComponents.select(
                 "boatSpaceTermination.fields.reason",
-                "reason",
+                "termination-reason",
                 null,
                 terminationReasonOptions,
-                false,
+                true,
                 "",
-                true
+                true,
+                t("boatSpaceTermination.fields.selectReason"),
             )
         val explanationField =
             formComponents.textArea(
@@ -57,7 +62,7 @@ class TerminateReservationForOtherUserModal(
                 <form
                     id="$formId"
                     ${addTestId(formId)}
-                    hx-post="/boat-space/terminate-reservation-for-other-user"
+                    hx-post="/boat-space/terminate-reservation/as-employee"
                     hx-swap="innerHTML"
                     hx-target="#modal-container"
                     xmlns="http://www.w3.org/1999/html">

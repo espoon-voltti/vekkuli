@@ -4,7 +4,6 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.service.BoatReservationService
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,16 +13,14 @@ import org.springframework.web.bind.annotation.ResponseBody
 
 @Controller
 @RequestMapping("/boat-space/terminate-reservation/modal")
-class TerminateReservationModalController {
-    @Autowired
-    private lateinit var terminateReservationModalView: TerminateReservationModalView
-
-    @Autowired
-    private lateinit var reservationService: BoatReservationService
-
-    @GetMapping("/terminate-reservation/{reservationId}")
+class TerminateReservationModalController(
+    private val terminateReservationModalView: TerminateReservationModalView,
+    private val terminateReservationAsEmployeeModalView: TerminateReservationAsEmployeeModalView,
+    private val reservationService: BoatReservationService
+) {
+    @GetMapping("/{reservationId}")
     @ResponseBody
-    fun citizenProfile(
+    fun terminateModal(
         @PathVariable reservationId: Int,
     ): ResponseEntity<String> {
         val reservation =
@@ -35,9 +32,9 @@ class TerminateReservationModalController {
         )
     }
 
-    @GetMapping("/terminate-reservation-for-other-user/{reservationId}")
+    @GetMapping("/as-employee/{reservationId}")
     @ResponseBody
-    fun citizenProfile(
+    fun employeeTerminateModal(
         request: HttpServletRequest,
         @PathVariable reservationId: Int,
     ): ResponseEntity<String> {
@@ -50,7 +47,7 @@ class TerminateReservationModalController {
                 ?: throw IllegalArgumentException("Reservation not found")
 
         return ResponseEntity.ok(
-            terminateReservationModalView.render(reservation)
+            terminateReservationAsEmployeeModalView.render(reservation)
         )
     }
 }
