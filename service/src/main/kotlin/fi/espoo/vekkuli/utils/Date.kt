@@ -15,6 +15,8 @@ import java.time.format.DateTimeFormatter
 abstract class TimeProvider {
     abstract fun getCurrentDateTime(): LocalDateTime
 
+    abstract fun isOverwritten(): Boolean
+
     fun getCurrentDate(): LocalDate = getCurrentDateTime().toLocalDate()
 }
 
@@ -31,12 +33,16 @@ class StagingTimeProvider(
             LocalDateTime.now()
         }
     }
+
+    override fun isOverwritten(): Boolean = variable.get("current_system_staging_datetime") != null
 }
 
 @Profile("!local & !staging")
 @Service
 class SystemTimeProvider : TimeProvider() {
     override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now()
+
+    override fun isOverwritten(): Boolean = false
 }
 
 val shortDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")

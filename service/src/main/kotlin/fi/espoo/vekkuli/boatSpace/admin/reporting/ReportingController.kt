@@ -1,12 +1,11 @@
-package fi.espoo.vekkuli.controllers.admin
+package fi.espoo.vekkuli.boatSpace.admin.reporting
 
+import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.service.getRawReport
 import fi.espoo.vekkuli.service.rawReportToCsv
-import fi.espoo.vekkuli.views.admin.Layout
-import fi.espoo.vekkuli.views.admin.ReportingView
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi

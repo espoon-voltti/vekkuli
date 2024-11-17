@@ -1,11 +1,11 @@
 package fi.espoo.vekkuli.views.citizen
 
+import fi.espoo.vekkuli.boatSpace.admin.DebugInfoOverlayView
 import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.head
-import io.ktor.util.*
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,7 +13,8 @@ class Layout(
     private val messageUtil: MessageUtil,
     private val icons: Icons,
     private val commonComponents: CommonComponents,
-    private val localeUtil: LocaleUtil
+    private val localeUtil: LocaleUtil,
+    private val debugOverlay: DebugInfoOverlayView
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -114,6 +115,7 @@ class Layout(
                 $bodyContent 
             </div>
                 <div id="modal-container"></div>
+                ${debugOverlay.render()}
             </body>
             </html>
             """.trimIndent()
