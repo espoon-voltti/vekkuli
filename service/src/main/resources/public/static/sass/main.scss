@@ -782,6 +782,18 @@ ul {
   transform: rotate(90deg);
 }
 
+.icon-rotate-180 {
+  transform: rotate(180deg);
+}
+
+.icon-rotate-270 {
+  transform: rotate(270deg);
+}
+
+.icon-rotate-360 {
+  transform: rotate(360deg);
+}
+
 .invoice-line
 {
   display:inline-block;
@@ -792,4 +804,18 @@ ul {
   align-items: center;
   display: flex;
   gap: $spacing-small;
+}
+
+.debug-info {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.debug-info__content {
+  pointer-events: auto;
 }
