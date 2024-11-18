@@ -168,7 +168,7 @@ class JdbiBoatSpaceRepository(
                     boat_space_reservation.id IS NULL
                     AND ${combinedFilter.toSql()}
                     
-                ORDER BY width_cm, length_cm 
+                ORDER BY width_cm, length_cm, section, place_number
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
@@ -193,9 +193,9 @@ class JdbiBoatSpaceRepository(
                                 ),
                             boatSpaces = spaces
                         )
-                    }
+                    }.sortedBy { it.location.name }
 
-            return@withHandleUnchecked Pair(harbors, count)
+            Pair(harbors, count)
         }
     }
 }
