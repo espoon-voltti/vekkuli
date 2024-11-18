@@ -113,7 +113,7 @@ class AsyncJobPool<T : Any>(
         var executed = 0
         while (maxCount - executed > 0 && !executor.isTerminating) {
             val job =
-                asyncJobRepository.temp(this) ?: break
+                asyncJobRepository.claimJob(this) ?: break
             runPendingJob(job)
             metrics.get()?.executedJobs?.increment()
             executed += 1
@@ -125,7 +125,7 @@ class AsyncJobPool<T : Any>(
         try {
             logger.info { "Running async job $job" }
             val completed =
-                asyncJobRepository.temp2(this, job)
+                asyncJobRepository.runJob(this, job)
 
             if (completed) {
                 logger.info { "Completed async job $job" }

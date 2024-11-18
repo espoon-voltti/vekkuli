@@ -4,10 +4,7 @@
 
 package fi.espoo.vekkuli.config
 
-import fi.espoo.vekkuli.asyncJob.AsyncJob
-import fi.espoo.vekkuli.asyncJob.AsyncJobPool
-import fi.espoo.vekkuli.asyncJob.AsyncJobRunner
-import fi.espoo.vekkuli.asyncJob.IAsyncJobRepository
+import fi.espoo.vekkuli.asyncJob.*
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
@@ -17,7 +14,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class AsyncJobConfig {
     @Bean
-    fun asyncJobRunner(repository: IAsyncJobRepository): AsyncJobRunner<AsyncJob> =
+    fun asyncJobRunner(repository: IAsyncJobRepository): IAsyncJobRunner<AsyncJob> =
         AsyncJobRunner(
             AsyncJob::class,
             listOf(
@@ -33,7 +30,7 @@ class AsyncJobConfig {
         )
 
     @Bean
-    fun asyncJobRunnerStarter(asyncJobRunners: List<AsyncJobRunner<*>>,) =
+    fun asyncJobRunnerStarter(asyncJobRunners: List<IAsyncJobRunner<*>>,) =
         ApplicationListener<ApplicationReadyEvent> {
             val logger = KotlinLogging.logger {}
             asyncJobRunners.forEach {

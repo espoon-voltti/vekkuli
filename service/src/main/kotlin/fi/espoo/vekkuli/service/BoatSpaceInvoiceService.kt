@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.asyncJob.AsyncJob
-import fi.espoo.vekkuli.asyncJob.AsyncJobRunner
+import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.CreateInvoiceParams
@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -22,8 +23,9 @@ class BoatSpaceInvoiceService(
     private val timeProvider: TimeProvider,
     private val boatReservationService: BoatReservationService,
     private val citizenService: CitizenService,
-    private val asyncJobRunner: AsyncJobRunner<AsyncJob>
+    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>
 ) {
+    @Transactional
     fun createAndSendInvoice(
         invoiceData: InvoiceData,
         citizenId: UUID,

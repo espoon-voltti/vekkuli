@@ -5,7 +5,6 @@
 package fi.espoo.vekkuli.asyncJob
 
 import mu.KotlinLogging
-import org.jdbi.v3.core.statement.Query
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
@@ -20,11 +19,33 @@ import kotlin.concurrent.write
 import kotlin.math.max
 import kotlin.reflect.KClass
 
+interface IAsyncJobRunner<T : Any> {
+    val name: String
+
+    fun <P : T> registerHandler(
+        jobType: AsyncJobType<out P>,
+        handler: (msg: P) -> Unit,
+    )
+
+    fun plan(jobs: Sequence<JobParams<out T>>)
+
+    fun startBackgroundPolling(pollingInterval: Duration = Duration.ofMinutes(1),)
+
+    fun stopBackgroundPolling()
+
+    fun runPendingJobsSync(maxCount: Int = 1_000): Int
+
+    fun waitUntilNoRunningJobs(timeout: Duration = Duration.ofSeconds(10))
+
+    fun close()
+}
+
 open class AsyncJobRunner<T : Any>(
     payloadType: KClass<T>,
     pools: Iterable<Pool<T>>,
     private val repository: IAsyncJobRepository
-) : AutoCloseable {
+) : AutoCloseable,
+    IAsyncJobRunner<T> {
     data class Pool<T : Any>(
         val id: AsyncJobPool.Id<T>,
         val config: AsyncJobPool.Config,
@@ -33,7 +54,7 @@ open class AsyncJobRunner<T : Any>(
         fun withThrottleInterval(throttleInterval: Duration?) = copy(config = config.copy(throttleInterval = throttleInterval))
     }
 
-    val name = "${AsyncJobRunner::class.simpleName}.${payloadType.simpleName}"
+    override val name = "${AsyncJobRunner::class.simpleName}.${payloadType.simpleName}"
 
     private val logger = KotlinLogging.logger {}
     private val stateLock = ReentrantReadWriteLock()
@@ -62,12 +83,7 @@ open class AsyncJobRunner<T : Any>(
     private val isBusy: Boolean
         get() = pools.any { it.activeWorkerCount > 0 }
 
-    inline fun <reified P : T> registerHandler(noinline handler: (msg: P) -> Unit) =
-        registerHandler(AsyncJobType(P::class)) { msg ->
-            handler(msg)
-        }
-
-    fun <P : T> registerHandler(
+    override fun <P : T> registerHandler(
         jobType: AsyncJobType<out P>,
         handler: (msg: P) -> Unit,
     ): Unit =
@@ -87,7 +103,7 @@ open class AsyncJobRunner<T : Any>(
         }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun plan(jobs: Sequence<JobParams<out T>>) =
+    override fun plan(jobs: Sequence<JobParams<out T>>) =
         stateLock.read {
             jobs.forEach { job ->
                 val jobType = AsyncJobType.ofPayload(job.payload)
@@ -98,7 +114,7 @@ open class AsyncJobRunner<T : Any>(
             }
         }
 
-    fun startBackgroundPolling(pollingInterval: Duration = Duration.ofMinutes(1),) {
+    override fun startBackgroundPolling(pollingInterval: Duration,) {
         val newTimer =
             fixedRateTimer("$name.timer", period = pollingInterval.toMillis()) {
                 pools.forEach { it.runPendingJobs(maxCount = 1_000) }
@@ -106,11 +122,11 @@ open class AsyncJobRunner<T : Any>(
         backgroundTimer.getAndSet(newTimer)?.cancel()
     }
 
-    fun stopBackgroundPolling() {
+    override fun stopBackgroundPolling() {
         backgroundTimer.getAndSet(null)?.cancel()
     }
 
-    fun runPendingJobsSync(maxCount: Int = 1_000): Int {
+    override fun runPendingJobsSync(maxCount: Int): Int {
         var totalCount = 0
         do {
             val executed =
@@ -126,7 +142,7 @@ open class AsyncJobRunner<T : Any>(
         return totalCount
     }
 
-    fun waitUntilNoRunningJobs(timeout: Duration = Duration.ofSeconds(10)) {
+    override fun waitUntilNoRunningJobs(timeout: Duration) {
         val start = Instant.now()
         do {
             if (!isBusy) return
@@ -143,25 +159,10 @@ open class AsyncJobRunner<T : Any>(
 
 interface IAsyncJobRepository {
     @Transactional
-    fun insertJob(jobParams: JobParams<*>): UUID
+    fun insertJob(jobParams: JobParams<out Any>): UUID
 
     @Transactional
     fun upsertPermit(pool: AsyncJobPool.Id<*>)
-
-    @Transactional
-    fun claimPermit(pool: AsyncJobPool.Id<*>): WorkPermit
-
-    @Transactional
-    fun updatePermit(
-        pool: AsyncJobPool.Id<*>,
-        availableAt: Instant
-    ): Query?
-
-    @Transactional
-    fun <T : Any> claimJob(
-        now: Instant,
-        jobTypes: Collection<AsyncJobType<out T>>,
-    ): ClaimedJobRef<T>?
 
     fun <T : Any> startJob(
         job: ClaimedJobRef<T>,
@@ -169,21 +170,11 @@ interface IAsyncJobRepository {
     ): T?
 
     @Transactional
-    fun completeJob(
-        job: ClaimedJobRef<*>,
-        now: Instant
-    ): Query?
+    fun <T : Any> claimJob(pool: AsyncJobPool<T>): ClaimedJobRef<T>?
 
     @Transactional
-    fun <T : Any> temp(pool: AsyncJobPool<T>): ClaimedJobRef<T>?
-
-    @Transactional
-    fun <T : Any> temp2(
+    fun <T : Any> runJob(
         pool: AsyncJobPool<T>,
         job: ClaimedJobRef<out T>
     ): Boolean
-
-    fun setLockTimeout(duration: Duration): Int
-
-    fun setStatementTimeout(duration: Duration): Int
 }
