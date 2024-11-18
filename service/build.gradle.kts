@@ -113,7 +113,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.3.1") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("software.amazon.awssdk:ses:2.29.15")
