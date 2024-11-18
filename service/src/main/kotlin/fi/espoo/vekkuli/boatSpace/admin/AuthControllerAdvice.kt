@@ -14,12 +14,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class AuthControllerAdvice : ResponseEntityExceptionHandler() {
     @ModelAttribute
     fun handleAuth(request: HttpServletRequest) {
-        val isEmployee = request.getAuthenticatedUser()?.isEmployee() ?: false
-        if ((getEnv() != EnvType.Staging && getEnv() != EnvType.Local) || isEmployee) {
+        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
+
+        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local) && !authenticatedUser.isEmployee()) {
             throw NotFound()
-        }
-        if (request.getAuthenticatedUser()?.id == null) {
-            throw Unauthorized()
         }
     }
 }
