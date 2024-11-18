@@ -115,7 +115,7 @@ class Layout(
                 $bodyContent 
             </div>
                 <div id="modal-container"></div>
-                ${debugOverlay.render()}
+                ${debugOverlay.render(isAuthenticated)}
             </body>
             </html>
             """.trimIndent()

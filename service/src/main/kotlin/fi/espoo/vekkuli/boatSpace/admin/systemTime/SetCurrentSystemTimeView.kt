@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.admin.systemTime
 
+import fi.espoo.vekkuli.controllers.EnvType
+import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import org.springframework.stereotype.Component
@@ -11,6 +13,9 @@ class SetCurrentSystemTimeView(
     private val timeProvider: TimeProvider
 ) {
     fun render(time: LocalDateTime): String {
+        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local)) {
+            return ""
+        }
         val currentTime = timeProvider.getCurrentDateTime()
         val isOverwritten = timeProvider.isOverwritten()
         val currentTimeLabel = if (isOverwritten) "Ylikirjoitettu järjestelmän aika" else "Järjestelmän aikaa ei ole ylikirjoitettu"

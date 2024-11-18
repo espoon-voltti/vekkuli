@@ -12,8 +12,8 @@ class DebugInfoOverlayView(
     private val timeProvider: TimeProvider,
     private val icons: Icons
 ) {
-    fun render(): String =
-        if (getEnv() != EnvType.Staging && getEnv() != EnvType.Local) {
+    fun render(isAuthenticated: Boolean): String =
+        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local) || !isAuthenticated) {
             ""
         } else {
             // language=HTML

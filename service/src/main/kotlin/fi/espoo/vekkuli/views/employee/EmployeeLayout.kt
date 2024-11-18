@@ -86,7 +86,7 @@ class EmployeeLayout(
                 </div>
             </div>
             <div id='modal-container'></div>
-            ${debugOver.render()}
+            ${debugOver.render(isAuthenticated)}
             </body>
             </html>
             """.trimIndent()
