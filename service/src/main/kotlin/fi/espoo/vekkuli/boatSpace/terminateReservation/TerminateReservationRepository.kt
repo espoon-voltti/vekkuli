@@ -13,59 +13,6 @@ class TerminateReservationRepository(
     private val jdbi: Jdbi,
     private val timeProvider: TimeProvider
 ) {
-    fun terminateBoatSpaceReservationAsOwner(reservationId: Int,): BoatSpaceReservation =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    UPDATE boat_space_reservation
-                    SET 
-                        status = 'Cancelled', 
-                        updated = :updatedTimestamp, 
-                        end_date = :endDate,
-                        termination_reason = :terminationReason
-                    WHERE id = :id
-                        AND status <> 'Cancelled'
-                    RETURNING *
-                    """.trimIndent()
-                )
-            query.bind("id", reservationId)
-            query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
-            query.bind("endDate", timeProvider.getCurrentDate())
-            query.bind("terminationReason", ReservationTerminationReason.UserRequest)
-            query.mapTo<BoatSpaceReservation>().one()
-        }
-
-    fun terminateBoatSpaceReservationAsEmployee(
-        reservationId: Int,
-        reason: ReservationTerminationReason,
-        endDate: LocalDate,
-        comment: String?
-    ): BoatSpaceReservation =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    UPDATE boat_space_reservation
-                    SET 
-                        status = 'Cancelled', 
-                        updated = :updatedTimestamp, 
-                        end_date = :endDate,
-                        termination_reason = :terminationReason,
-                        termination_comment = :terminationComment
-                    WHERE id = :id
-                        AND status <> 'Cancelled'
-                    RETURNING *
-                    """.trimIndent()
-                )
-            query.bind("id", reservationId)
-            query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
-            query.bind("endDate", endDate)
-            query.bind("terminationReason", reason)
-            query.bind("terminationComment", comment)
-            query.mapTo<BoatSpaceReservation>().one()
-        }
-
     fun terminateBoatSpaceReservation(
         reservationId: Int,
         endDate: LocalDate,

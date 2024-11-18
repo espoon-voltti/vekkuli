@@ -12,7 +12,7 @@ class ExpiredReservationList(
     private val cardInfo: ReservationCardInformation,
     private val accordion: Accordion,
 ) : BaseView() {
-    fun render(boatSpaceReservations: List<BoatSpaceReservationDetails>,): String {
+    fun render(boatSpaceReservations: List<BoatSpaceReservationDetails>): String {
         val accordionBuilder = accordion.createBuilder()
 
         // language=HTML

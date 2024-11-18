@@ -24,19 +24,21 @@ class TerminateReservationAsEmployeeModalView(
         val endDateField =
             formComponents.dateInput(
                 DateInputOptions(
-                    id = "end-date",
+                    id = "endDate",
                     labelKey = "boatSpaceTermination.fields.endDate",
                     value = timeProvider.getCurrentDate().toString(),
                     autoWidth = true
                 )
             )
+
         val terminationReasonOptions: List<Pair<String, String>> =
             enumValues<ReservationTerminationReasonOptions>()
-                .map { it.name to t(it.translationKey) }
+                .map { it.name to t("""boatSpaceReservation.terminateReason.${it.name.replaceFirstChar { char -> char.lowercase() }}""") }
+
         val reasonField =
             formComponents.select(
                 "boatSpaceTermination.fields.reason",
-                "termination-reason",
+                "terminationReason",
                 null,
                 terminationReasonOptions,
                 true,

@@ -43,8 +43,8 @@ class TerminateReservationController(
     fun terminateReservationAsEmployee(
         request: HttpServletRequest,
         @RequestParam("reservationId") reservationId: Int,
-        @RequestParam("termination-reason") reason: ReservationTerminationReason,
-        @RequestParam("end-date") endDate: LocalDate?,
+        @RequestParam("terminationReason") reason: ReservationTerminationReason,
+        @RequestParam("endDate") endDate: LocalDate?,
         @RequestParam("explanation") explanation: String?
     ): ResponseEntity<String> {
         try {
