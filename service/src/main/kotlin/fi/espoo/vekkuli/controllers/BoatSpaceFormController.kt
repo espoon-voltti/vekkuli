@@ -709,9 +709,9 @@ annotation class ValidBoatRegistration(
     val payload: Array<KClass<out Payload>> = [],
 )
 
-class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, ReservationInput> {
+class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, BoatRegistrationInput> {
     override fun isValid(
-        value: ReservationInput,
+        value: BoatRegistrationInput,
         context: ConstraintValidatorContext,
     ): Boolean {
         var isValid = true
@@ -739,6 +739,12 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Res
     }
 }
 
+interface BoatRegistrationInput {
+    val noRegistrationNumber: Boolean?
+    val boatRegistrationNumber: String?
+    val otherIdentification: String?
+}
+
 @ValidBoatRegistration
 data class ReservationInput(
     @field:NotNull(message = "{validation.required}")
@@ -758,11 +764,11 @@ data class ReservationInput(
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
     val weight: Int?,
-    val noRegistrationNumber: Boolean?,
-    val boatRegistrationNumber: String?,
     val boatName: String?,
-    val otherIdentification: String?,
     val extraInformation: String?,
+    override val noRegistrationNumber: Boolean?,
+    override val boatRegistrationNumber: String?,
+    override val otherIdentification: String?,
     @field:NotNull(message = "{validation.required}")
     val ownership: OwnershipStatus?,
     val firstName: String?,
@@ -794,4 +800,4 @@ data class ReservationInput(
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
     val citizenSelection: String? = "newCitizen"
-)
+) : BoatRegistrationInput

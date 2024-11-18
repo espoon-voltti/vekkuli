@@ -93,6 +93,17 @@ class TestUtils(
         return madeReservation
     }
 
+    fun createReservationInRenewState(params: CreateReservationParams): BoatSpaceReservation =
+        createReservationWithBoat(
+            reservationService,
+            params.reserverId,
+            params.citizenId,
+            params.boatSpaceId,
+            params.timeProvider,
+            params.boatId,
+            ReservationStatus.Renewal
+        )
+
     fun createReservationInPaymentState(
         timeProvider: TimeProvider,
         reservationService: BoatReservationService,
@@ -196,29 +207,29 @@ class TestUtils(
             invoiceService.createInvoice(
                 InvoiceData(
                     invoiceNumber = 1L,
-                    dueDate =timeProvider.getCurrentDate().plusDays(14),
+                    dueDate = timeProvider.getCurrentDate().plusDays(14),
                     ssn =
                         citizen.nationalId,
-                       firstnames = citizen.firstName,
-                       lastname = citizen.lastName,
-                        street = citizen.streetAddress,
-                post = citizen.postOffice,
-                postalCode = citizen.postalCode,
+                    firstnames = citizen.firstName,
+                    lastname = citizen.lastName,
+                    street = citizen.streetAddress,
+                    post = citizen.postOffice,
+                    postalCode = citizen.postalCode,
                     mobilePhone = citizen.phone,
-                            email = citizen.email,
-                            priceCents = 100,
-                            vat = 24,
-                            startDate = LocalDate.of(2021, 1, 1),
-                            endDate = LocalDate.of(2021, 12, 31),
-                            description = "",
-                orgId = "",
-                            registerNumber = "",
-                            contactPerson = "",
-                            language = "FI",
-                            ),
-                            citizenId,
-                            1
-                )
+                    email = citizen.email,
+                    priceCents = 100,
+                    vat = 24,
+                    startDate = LocalDate.of(2021, 1, 1),
+                    endDate = LocalDate.of(2021, 12, 31),
+                    description = "",
+                    orgId = "",
+                    registerNumber = "",
+                    contactPerson = "",
+                    language = "FI",
+                ),
+                citizenId,
+                1
+            )
 
         return invoice
     }

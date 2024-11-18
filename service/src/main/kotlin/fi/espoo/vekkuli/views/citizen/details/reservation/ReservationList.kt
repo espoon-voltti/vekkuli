@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.WarningBox
 import org.springframework.stereotype.Component
@@ -39,7 +40,13 @@ class ReservationList(
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
                 ${cardInfo.render(reservation)}
-                ${if (reservation.canRenew) warningBox.render(t("reservationWarning.$userType.renewInfo")) else ""}
+                ${if (reservation.canRenew) {
+                warningBox.render(
+                    t("reservationWarning.$userType.renewInfo", listOf(formatAsFullDate(reservation.endDate)))
+                )
+            } else {
+                ""
+            }}
                 ${
                 if (userType == UserType.EMPLOYEE) {
                     employeeButtons.render(reservation, citizen)

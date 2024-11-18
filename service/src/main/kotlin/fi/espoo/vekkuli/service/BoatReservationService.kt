@@ -196,6 +196,7 @@ class BoatReservationService(
         params: CreatePaymentParams
     ): Payment {
         val payment = paymentService.insertPayment(params, reservationId)
+
         return payment
     }
 

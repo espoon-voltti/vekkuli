@@ -10,9 +10,6 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
-import fi.espoo.vekkuli.views.employee.InvoicePreview
-import fi.espoo.vekkuli.views.employee.InvoiceRow
-import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.net.URI
-import java.time.LocalDate
 
 @Controller
 class BoatSpaceRenewController(
@@ -32,10 +28,7 @@ class BoatSpaceRenewController(
     private val employeeLayout: EmployeeLayout,
     private val reservationService: BoatReservationService,
     private val citizenService: CitizenService,
-    private val boatSpaceRenewalRepository: BoatSpaceRenewalRepository,
     private val boatSpaceRenewalService: BoatSpaceRenewalService,
-    private val invoiceService: BoatSpaceInvoiceService,
-    private val sendInvoiceView: InvoicePreview,
 ) {
     @RequestMapping("/kuntalainen/venepaikka/jatka-varausta/{reservationId}")
     @ResponseBody
@@ -50,7 +43,7 @@ class BoatSpaceRenewController(
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(userId, reservationId)
 
         val headers = org.springframework.http.HttpHeaders()
-        headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/jatka/${renewalReservation.id}"))
+        headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/jatka/${renewalReservation.id}?oldReservationId=$reservationId"))
 
         return ResponseEntity(headers, HttpStatus.FOUND)
     }
@@ -63,12 +56,13 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ): ResponseEntity<String> {
+        val t = request.getAuthenticatedUser()?.id
         val userId = request.getAuthenticatedUser()?.id ?: throw UnauthorizedException()
 
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservationId)
 
         val headers = org.springframework.http.HttpHeaders()
-        headers.location = URI(getServiceUrl("/virkailija/venepaikka/jatka/${renewalReservation.id}/lasku"))
+        headers.location = URI(getServiceUrl("/virkailija/venepaikka/jatka/${renewalReservation.id}/lasku?oldReservationId=$reservationId"))
 
         return ResponseEntity(headers, HttpStatus.FOUND)
     }
@@ -109,10 +103,18 @@ class BoatSpaceRenewController(
     @PostMapping("/virkailija/venepaikka/jatka/{renewedReservationId}/lasku")
     fun sendInvoiceAndTerminateOldReservation(
         @PathVariable renewedReservationId: Int,
-        reservationId: Int
+        @RequestParam oldReservationId: Int?,
+        request: HttpServletRequest,
     ): ResponseEntity<String> {
-        boatSpaceRenewalService.activateRenewalAndSendInvoice(renewedReservationId)
-
+        if (oldReservationId == null) {
+            return ResponseEntity.badRequest().body("Old reservation id is required")
+        }
+        try {
+            boatSpaceRenewalService.activateRenewalAndSendInvoice(renewedReservationId, oldReservationId)
+        } catch (e: Exception) {
+            val errorPage = boatSpaceRenewForm.invoiceErrorPage()
+            return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
+        }
         return ResponseEntity
             .status(HttpStatus.FOUND)
             .header("Location", "/virkailija/venepaikat/varaukset")
@@ -156,57 +158,12 @@ class BoatSpaceRenewController(
     @ResponseBody
     fun invoiceView(
         @PathVariable reservationId: Int,
+        @RequestParam oldReservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        val reservation = reservationService.getReservationWithReserver(reservationId)
-        if (reservation?.reserverId == null) {
-            throw IllegalArgumentException("Reservation not found")
-        }
-
-        val invoiceBatch = invoiceService.createInvoiceBatchParameters(reservationId, reservation.reserverId)
-        val invoice = invoiceBatch?.invoices?.first()
-        val invoiceRow =
-            invoiceBatch
-                ?.invoices
-                ?.first()
-                ?.rows
-                ?.first()
-        val recipient = invoice?.recipient
-        val recipientAddress = recipient?.address
-
-        val recipientName = "${recipient?.firstName} ${recipient?.lastName}"
-
         // TODO: get the actual data
-        val model =
-            SendInvoiceModel(
-                reservationId = reservationId,
-                reserverName = recipientName,
-                reserverSsn = recipient?.ssn ?: "",
-                reserverAddress = "${recipientAddress?.street} ${recipientAddress?.postalCode} ${recipientAddress?.postOffice}",
-                product = reservation.locationName,
-                functionInformation = "?",
-                billingPeriodStart = invoiceRow?.periodStartDate ?: "",
-                billingPeriodEnd = invoiceRow?.periodEndDate ?: "",
-                boatingSeasonStart = LocalDate.of(2025, 5, 1),
-                boatingSeasonEnd = LocalDate.of(2025, 9, 30),
-                invoiceNumber = invoice?.invoiceNumber.toString(),
-                dueDate = LocalDate.of(2025, 12, 31),
-                costCenter = "?",
-                invoiceType = "?",
-                invoiceRows =
-                    listOf(
-                        InvoiceRow(
-                            description = invoiceRow?.description ?: "",
-                            customer = recipientName,
-                            priceWithoutVat = reservation.priceWithoutAlvInEuro.toString(),
-                            vat = reservation.alvPriceInEuro.toString(),
-                            priceWithVat = reservation.priceInEuro.toString(),
-                            organization = "Merellinen ulkoilu",
-                            paymentDate = LocalDate.of(2025, 1, 1)
-                        )
-                    )
-            )
-        val content = sendInvoiceView.render(model)
+        val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(reservationId)
+        val content = boatSpaceRenewForm.renewInvoicePreview(invoiceModel, oldReservationId)
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
     }
@@ -231,10 +188,10 @@ data class RenewalReservationInput(
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
     val weight: Int?,
-    val noRegistrationNumber: Boolean?,
-    val boatRegistrationNumber: String?,
+    override val noRegistrationNumber: Boolean?,
+    override val boatRegistrationNumber: String?,
     val boatName: String?,
-    val otherIdentification: String?,
+    override val otherIdentification: String?,
     val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
     val ownership: OwnershipStatus?,
@@ -249,4 +206,4 @@ data class RenewalReservationInput(
     val agreeToRules: Boolean?,
     val orgPhone: String? = null,
     val orgEmail: String? = null,
-)
+) : BoatRegistrationInput

@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.controllers
 
-import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceInvoiceService
@@ -95,27 +94,8 @@ class InvoiceController(
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
-        handleInvoiceSending(reservation)
-
-        return ResponseEntity
-            .status(HttpStatus.FOUND)
-            .header("Location", "/virkailija/venepaikat/varaukset")
-            .body("")
-    }
-
-    @PostMapping("/virkailija/venepaikka/jatka/{reservationId}/lasku")
-    fun sendInvoiceAndCreateRenewalReservation(
-        @PathVariable reservationId: Int,
-        request: HttpServletRequest,
-    ): ResponseEntity<String> {
-        val newReservation = reservationService.getReservationWithReserver(reservationId)
-        if (newReservation?.reserverId == null) {
-            throw IllegalArgumentException("Reservation not found")
-        }
-        renewBoatSpace(newReservation.id, reservationId)
-
         try {
-            handleInvoiceSending(newReservation)
+            handleInvoiceSending(reservation)
         } catch (e: Exception) {
             val content = sendInvoiceView.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
@@ -125,38 +105,6 @@ class InvoiceController(
             .status(HttpStatus.FOUND)
             .header("Location", "/virkailija/venepaikat/varaukset")
             .body("")
-    }
-
-    private fun renewBoatSpace(
-        newReservationId: Int,
-        oldReservationId: Int
-    ) {
-        val oldReservation =
-            reservationService.getBoatSpaceReservation(oldReservationId)
-                ?: throw IllegalArgumentException("Old reservation not found")
-        reservationService.reserveBoatSpace(
-            oldReservation.reserverId,
-            ReserveBoatSpaceInput(
-                reservationId = newReservationId,
-                boatId = oldReservation.boatId,
-                boatType = oldReservation.boatType,
-                width = oldReservation.boatWidthInM ?: 0.0,
-                length = oldReservation.boatLengthInM ?: 0.0,
-                depth = oldReservation.boatDepthInM ?: 0.0,
-                weight = oldReservation.boatWeightKg,
-                boatRegistrationNumber = oldReservation.boatRegistrationCode ?: "",
-                boatName = oldReservation.boatName ?: "",
-                otherIdentification = oldReservation.boatOtherIdentification ?: "",
-                extraInformation = oldReservation.boatExtraInformation ?: "",
-                ownerShip = oldReservation.boatOwnership!!,
-                email = oldReservation.email,
-                phone = oldReservation.phone,
-            ),
-            ReservationStatus.Payment,
-            oldReservation.validity,
-            oldReservation.startDate,
-            timeProvider.getCurrentDate().minusDays(1)
-        )
     }
 
     private fun handleInvoiceSending(reservation: ReservationWithDependencies) {

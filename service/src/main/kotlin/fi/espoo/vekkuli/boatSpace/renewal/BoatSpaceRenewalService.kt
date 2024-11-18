@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateBoatSpaceReservationService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UnauthorizedException
@@ -13,7 +14,10 @@ import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.views.employee.InvoiceRow
+import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -25,14 +29,14 @@ class BoatSpaceRenewalService(
     private val invoiceService: BoatSpaceInvoiceService,
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
-    private val timeProvider: TimeProvider
+    private val timeProvider: TimeProvider,
+    private val terminateBoatSpaceReservationService: TerminateBoatSpaceReservationService,
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
         reservationId: Int,
     ): ReservationWithDependencies {
         val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId)
-
         val renewalReservation = renewal ?: reservationService.createRenewalReservationForEmployee(reservationId, userId)
         if (renewalReservation == null) throw IllegalStateException("Reservation not found")
         return renewalReservation
@@ -111,57 +115,68 @@ class BoatSpaceRenewalService(
             )
         }
     }
-//    fun renewBoatSpace(
-//        newReservationId: Int,
-//        oldReservationId: Int
-//    ) {
-//        val oldReservation =
-//            reservationService.getBoatSpaceReservation(oldReservationId)
-//                ?: throw IllegalArgumentException("Old reservation not found")
-//        reservationService.reserveBoatSpace(
-//            oldReservation.reserverId,
-//            ReserveBoatSpaceInput(
-//                reservationId = newReservationId,
-//                boatId = oldReservation.boatId,
-//                boatType = oldReservation.boatType,
-//                width = oldReservation.boatWidthInM ?: 0.0,
-//                length = oldReservation.boatLengthInM ?: 0.0,
-//                depth = oldReservation.boatDepthInM ?: 0.0,
-//                weight = oldReservation.boatWeightKg,
-//                boatRegistrationNumber = oldReservation.boatRegistrationCode ?: "",
-//                boatName = oldReservation.boatName ?: "",
-//                otherIdentification = oldReservation.boatOtherIdentification ?: "",
-//                extraInformation = oldReservation.boatExtraInformation ?: "",
-//                ownerShip = oldReservation.boatOwnership!!,
-//                email = oldReservation.email,
-//                phone = oldReservation.phone,
-//            ),
-//            ReservationStatus.Payment,
-//            oldReservation.validity,
-//            oldReservation.startDate,
-//            oldReservation.endDate
-//        )
 
-    fun activateRenewalAndSendInvoice(renewedReservationId: Int) {
+    fun getSendInvoiceModel(reservationId: Int): SendInvoiceModel {
+        val reservation = reservationService.getReservationWithReserver(reservationId)
+        if (reservation?.reserverId == null) {
+            throw IllegalArgumentException("Reservation not found")
+        }
+
+        val invoiceData = invoiceService.createInvoiceData(reservationId, reservation.reserverId)
+        if (invoiceData == null) {
+            throw IllegalArgumentException("Failed to create invoice data")
+        }
+
+        // TODO: get the actual data
+        return SendInvoiceModel(
+            reservationId = reservationId,
+            reserverName = "${invoiceData.firstnames} ${invoiceData.lastname}",
+            reserverSsn = invoiceData.ssn,
+            reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
+            product = reservation.locationName,
+            functionInformation = "?",
+            billingPeriodStart = "",
+            billingPeriodEnd = "",
+            boatingSeasonStart = LocalDate.of(2025, 5, 1),
+            boatingSeasonEnd = LocalDate.of(2025, 9, 30),
+            invoiceNumber = "",
+            dueDate = LocalDate.of(2025, 12, 31),
+            costCenter = "?",
+            invoiceType = "?",
+            invoiceRows =
+                listOf(
+                    InvoiceRow(
+                        description = invoiceData.description,
+                        customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
+                        priceWithoutVat = reservation.priceWithoutVatInEuro.toString(),
+                        vat = reservation.vatPriceInEuro.toString(),
+                        priceWithVat = reservation.priceInEuro.toString(),
+                        organization = "Merellinen ulkoilu",
+                        paymentDate = LocalDate.of(2025, 1, 1)
+                    )
+                )
+        )
+    }
+
+    fun activateRenewalAndSendInvoice(
+        renewedReservationId: Int,
+        oldReservationId: Int
+    ) {
         val newReservation = reservationService.getReservationWithReserver(renewedReservationId)
         if (newReservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
 
-        val invoiceBatch =
-            invoiceService.createInvoiceBatchParameters(renewedReservationId, newReservation.reserverId)
+        val invoiceData =
+            invoiceService.createInvoiceData(renewedReservationId, newReservation.reserverId)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        invoiceService.createAndSendInvoice(invoiceBatch) ?: throw InternalError("Failed to send invoice")
+        invoiceService.createAndSendInvoice(invoiceData, newReservation.reserverId, newReservation.id)
+            ?: throw InternalError("Failed to create invoice")
 
-        activateRenewalReservation(renewedReservationId)
-    }
+        reservationService.setReservationStatusToInvoiced(newReservation.id)
 
-    fun activateRenewalReservation(renewedReservationId: Int) {
-        // set renewed reservation status to invoiced
-        reservationService.setReservationStatusToInvoiced(renewedReservationId)
-
-        // set old reservation end date to yesterday
+        reservationService.markReservationEnded(oldReservationId)
     }
 
     fun getBoatSpaceRenewViewParams(
@@ -174,7 +189,7 @@ class BoatSpaceRenewalService(
             throw UnauthorizedException()
         }
 
-        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        var input = formInput
         val usedBoatId = formInput.boatId ?: renewedReservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)

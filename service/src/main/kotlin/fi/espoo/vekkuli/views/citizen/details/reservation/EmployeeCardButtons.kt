@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
@@ -12,14 +13,13 @@ class EmployeeCardButtons(
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
-        citizen: CitizenWithDetails
+        citizen: CitizenWithDetails,
     ): String {
         // language=HTML
         return """
             <div class="buttons">
-                ${commonButtons.createRenewPlaceButton(reservation)}
+                ${commonButtons.createRenewPlaceButton(reservation, UserType.EMPLOYEE)}
                 ${createInvoicePaidModalButton(reservation, citizen)}
-                ${commonButtons.createSwapPlaceButton(reservation)}
                 ${createTerminateReservationModalButton(reservation)}
             </div>
             """.trimIndent()

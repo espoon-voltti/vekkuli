@@ -13,6 +13,8 @@ import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import fi.espoo.vekkuli.views.common.CommonComponents
+import fi.espoo.vekkuli.views.employee.InvoiceRow
+import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 
 data class BoatSpaceRenewViewParams(
@@ -89,8 +91,8 @@ class BoatSpaceRenewFormView(
             formComponents.field(
                 "boatApplication.price",
                 "price",
-                """ <p>${t("boatApplication.boatSpaceFee")}: ${reservation.priceWithoutAlvInEuro} &euro;</p>
-                <p>${t("boatApplication.boatSpaceFeeAlv")}: ${reservation.alvPriceInEuro} &euro;</p>
+                """ <p>${t("boatApplication.boatSpaceFee")}: ${reservation.priceWithoutVatInEuro} &euro;</p>
+                <p>${t("boatApplication.boatSpaceFeeAlv")}: ${reservation.vatPriceInEuro} &euro;</p>
                 <p>${t("boatApplication.boatSpaceFeeTotal")}: ${reservation.priceInEuro} &euro;</p>""",
             )
 
@@ -311,4 +313,110 @@ class BoatSpaceRenewFormView(
             """.trimIndent()
         )
     }
+
+    fun renewInvoicePreview(
+        model: SendInvoiceModel,
+        oldReservationId: Int?
+    ): String {
+        // language=HTML
+        return """
+            <section class="section">
+            
+            <div class="container">
+            
+                <h2 class="title pb-l" id="invoice-preview-header">Laskuluonnos</h2>
+                
+                <h3 class="subtitle">Varaajan tiedot</h3>
+                ${invoiceLine("Varaaja", model.reserverName)}
+                ${invoiceLine("Varaajan henkilötunnus", model.reserverSsn)}
+                ${invoiceLine("Varaajan osoite", model.reserverAddress)}
+                
+                <hr/>
+                
+                <h3 class="subtitle">Laskun tiedot</h3>
+                ${invoiceLine("Tuote", model.product)}
+                ${invoiceLine("Toimintotieto", model.functionInformation)}
+                ${invoiceLine("Laskutuskausi", "${model.billingPeriodStart} - ${model.billingPeriodEnd}")}
+                ${invoiceLine("Veneilykausi", "${model.boatingSeasonStart} - ${model.boatingSeasonEnd}")}
+                ${invoiceLine("Laskun numero", model.invoiceNumber)}
+                ${invoiceLine("Laskun eräpäivä", model.dueDate.toString())}
+                ${invoiceLine("Kustannuspaikka", model.costCenter)}
+                ${invoiceLine("Laskulaji", model.invoiceType)}
+                ${invoiceLine("Hintaryhmä", "100%")}
+                
+                <hr/>
+                
+                <h3 class="subtitle">Laskurivi</h3>
+                
+                <table class="table">
+                    <thead>
+                        <td>Selite</td>
+                        <td>Asiakas</td>
+                        <td>Hinta ilman alv</td>
+                        <td>Alv 24 %</td>
+                        <td>Verollinen hinta </td>
+                        <td>Organisaatio</td>
+                        <td>Maksupäivä</td>
+                    </thead>
+                    <tbody>
+                        ${invoiceRows(model.invoiceRows)}
+                    </tbody>
+                </table>
+                
+                <div class="field block">
+                    <div class="control">
+                        <button id="cancel"
+                            class="button is-secondary"
+                            type="button">
+                            ${t("cancel")}
+                        </button>
+                        <button id="submit"
+                            class="button is-primary"
+                            type="submit"
+                            hx-post="/virkailija/venepaikka/jatka/${model.reservationId}/lasku"
+                            hx-vals='{"oldReservationId": $oldReservationId}'
+                            hx-target="body">
+                            Lähetä lasku
+                        </button>
+                    </div>
+                </div> 
+            </div>
+            </section>
+
+            """.trimIndent()
+    }
+
+    fun invoiceLine(
+        name: String,
+        value: String
+    ) = """
+        <div class="block">
+            <span class="invoice-line">$name:</span><span>$value</span>
+        </div>
+        """.trimIndent()
+
+    fun invoiceRows(rows: List<InvoiceRow>): String =
+        rows.joinToString { row ->
+            """
+            <tr>
+                <td>${row.description}</td>
+                <td>${row.customer}</td>
+                <td>${row.priceWithoutVat}</td>
+                <td>${row.vat}</td>
+                <td>${row.priceWithVat}</td>
+                <td>${row.organization}</td>
+                <td>${row.paymentDate}</td>
+            </tr>
+            """.trimIndent()
+        }
+
+    fun invoiceErrorPage() =
+        """
+        <section class="section">
+            <div class="container">
+                <h2 class="title pb-l">Laskun luonti epäonnistui</h2>
+                <p>Laskun luonti epäonnistui. Yritä myöhemmin uudelleen.</p>
+            </div>
+        </section>
+        """.trimIndent()
 }

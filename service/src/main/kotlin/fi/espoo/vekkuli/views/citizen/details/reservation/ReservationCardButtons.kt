@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
@@ -18,7 +19,10 @@ class ReservationCardButtons : BaseView() {
             """.trimIndent()
     }
 
-    fun createRenewPlaceButton(reservation: BoatSpaceReservationDetails): String {
+    fun createRenewPlaceButton(
+        reservation: BoatSpaceReservationDetails,
+        userType: UserType
+    ): String {
         if (!reservation.canRenew) {
             return ""
         }
@@ -27,10 +31,10 @@ class ReservationCardButtons : BaseView() {
             <button 
               class="button is-primary"
               id="renew-place-button-${reservation.id}"
-              hx-get="/kuntalainen/venepaikka/jatka-varausta/${reservation.id}"
+              hx-get="/${userType.path}/venepaikka/jatka-varausta/${reservation.id}"
               hx-target="body"
               hx-push-url="true">
-                ${t("boatSpaceReservation.button.renewPlace")}
+                ${t("boatSpaceReservation.$userType.button.renewPlace")}
             </button>
             """.trimIndent()
     }

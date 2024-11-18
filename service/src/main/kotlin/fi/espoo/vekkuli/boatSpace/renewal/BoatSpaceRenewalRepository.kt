@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
@@ -21,7 +20,7 @@ class BoatSpaceRenewalRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description,
                           CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
@@ -37,7 +36,7 @@ class BoatSpaceRenewalRepository(
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
+            query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
         }
 
     fun getRenewalReservationForEmployee(id: UUID): ReservationWithDependencies? =
@@ -46,7 +45,7 @@ class BoatSpaceRenewalRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description,
                           CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
@@ -62,52 +61,6 @@ class BoatSpaceRenewalRepository(
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
-        }
-
-    fun createRenewalRow(
-        reservationId: Int,
-        userType: UserType,
-        userId: UUID
-    ): Int =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    INSERT INTO boat_space_reservation (
-                      created,
-                      reserver_id, 
-                      acting_citizen_id, 
-                      boat_space_id, 
-                      start_date, 
-                      end_date, 
-                      status, 
-                      validity, 
-                      boat_id, 
-                      employee_id,
-                      renewed_from_id
-                    )
-                    (
-                      SELECT :created as created,
-                             reserver_id, 
-                             :actingCitizenId as acting_citizen_id, 
-                             boat_space_id, 
-                             start_date, 
-                             (end_date + INTERVAL '1 year') as end_date, 'Renewal' as status, 
-                             validity, 
-                             boat_id, 
-                             :employeeId as employee_id,
-                             id as renewed_from_id
-                      FROM boat_space_reservation
-                      WHERE id = :reservationId
-                    )
-                    RETURNING id
-                    """.trimIndent()
-                ).bind("created", timeProvider.getCurrentDateTime())
-                .bind("reservationId", reservationId)
-                .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
-                .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
-                .mapTo<Int>()
-                .one()
+            query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
         }
 }
