@@ -79,7 +79,7 @@ class JdbiBoatSpaceReservationRepository(
                            price.price_cents,
                            price.vat_cents,
                            price.net_price_cents,
-                           CONCAT(bs.section, bs.place_number) as place,
+                           CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place,
                            ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM payment p
                     JOIN boat_space_reservation bsr ON p.reservation_id = bsr.id
@@ -763,7 +763,7 @@ class JdbiBoatSpaceReservationRepository(
                 price.price_cents,
                 price.vat_cents,
                 price.net_price_cents,
-                CONCAT(bs.section, bs.place_number) as place
+                CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place
             FROM boat_space_reservation bsr
             JOIN boat b ON b.id = bsr.boat_id
             JOIN reserver r ON bsr.reserver_id =  r.id

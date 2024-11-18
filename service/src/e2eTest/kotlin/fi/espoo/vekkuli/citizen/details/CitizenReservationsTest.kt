@@ -23,7 +23,7 @@ class CitizenReservationsTest : PlaywrightTest() {
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B3")
+            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B003")
 
             // Seed user has 1 active reservations
             assertThat(citizenDetailsPage.reservationListCards).hasCount(1)
@@ -45,7 +45,7 @@ class CitizenReservationsTest : PlaywrightTest() {
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B3")
+            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B003")
 
             // Seed user has 2 expired reservations
             assertThat(citizenDetailsPage.expiredReservationListCards).hasCount(2)

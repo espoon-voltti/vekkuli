@@ -16,8 +16,7 @@ import org.springframework.stereotype.Repository
 
 data class BoatSpaceOption(
     val id: Int,
-    val section: String,
-    val placeNumber: Int,
+    val place: String,
     val widthCm: Int,
     val lengthCm: Int,
     val priceCents: Int,
@@ -148,8 +147,7 @@ class JdbiBoatSpaceRepository(
                 SELECT 
                     location.name as location_name, 
                     boat_space.id,
-                    section, 
-                    place_number,
+                    CONCAT(section, TO_CHAR(place_number, 'FM000')) as place,
                     length_cm, 
                     width_cm, 
                     price.price_cents,
