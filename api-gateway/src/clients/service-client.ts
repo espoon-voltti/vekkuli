@@ -14,7 +14,6 @@ const systemUser: AppSessionUser = {
 
 export type ServiceRequestHeader = 'Authorization' | 'X-Request-ID'
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export type ServiceRequestHeaders = { [H in ServiceRequestHeader]?: string }
 
 export function createServiceRequestHeaders(
