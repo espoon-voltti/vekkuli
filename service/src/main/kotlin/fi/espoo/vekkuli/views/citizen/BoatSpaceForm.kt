@@ -667,7 +667,6 @@ class BoatSpaceForm(
                             $wholeLocationName
                         </h1>
                         <div id="form-inputs">
-                             <input hidden name="citizenId" value="${citizen?.id}" />
                             <div class='form-section'>
                             $citizenContainer  
                             $slipHolder

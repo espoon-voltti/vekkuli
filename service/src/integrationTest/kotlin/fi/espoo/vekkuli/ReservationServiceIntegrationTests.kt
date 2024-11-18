@@ -358,14 +358,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should filter by payment status`() {
         testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, this.citizenIdLeo, 1, 1))
-        testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                this.citizenIdLeo,
-                1,
-                1
-            )
-        )
+
         testUtils.createReservationInInvoiceState(timeProvider, reservationService, invoiceService, citizenIdOlivia, 2, 3)
 
         val unfilteredReservations =

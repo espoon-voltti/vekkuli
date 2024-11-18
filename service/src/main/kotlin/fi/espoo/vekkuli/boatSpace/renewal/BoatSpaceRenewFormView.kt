@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
@@ -15,6 +14,16 @@ import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.stereotype.Service
+
+data class BoatSpaceRenewViewParams(
+    val reservation: ReservationWithDependencies,
+    val boats: List<Boat>,
+    val citizen: CitizenWithDetails? = null,
+    val input: RenewalReservationInput,
+    val reservationTimeInSeconds: Long,
+    val userType: UserType,
+    val municipalities: List<Municipality>,
+)
 
 @Service
 class BoatSpaceRenewFormView(
@@ -29,15 +38,8 @@ class BoatSpaceRenewFormView(
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
-    fun boatSpaceRenewForm(
-        reservation: ReservationWithDependencies,
-        boats: List<Boat>,
-        citizen: CitizenWithDetails?,
-        input: ReservationInput,
-        reservationTimeInSeconds: Long,
-        userType: UserType,
-        municipalities: List<Municipality>,
-    ): String {
+    fun boatSpaceRenewForm(boatSpaceRenewParams: BoatSpaceRenewViewParams): String {
+        val (reservation, boats, citizen, input, reservationTimeInSeconds, userType, municipalities) = boatSpaceRenewParams
         val harborField =
             formComponents.field(
                 "boatApplication.harbor",
@@ -154,84 +156,6 @@ class BoatSpaceRenewFormView(
                     addressField
                 )
             }
-            """.trimIndent()
-
-        val citizenFirstName =
-            formComponents.textInput(
-                "boatApplication.firstName",
-                "firstName",
-                input.firstName,
-                required = true
-            )
-
-        val citizenLastName =
-            formComponents.textInput(
-                "boatApplication.lastName",
-                "lastName",
-                input.lastName,
-                required = true
-            )
-
-        val citizenSsn =
-            formComponents.textInput(
-                "boatApplication.ssn",
-                "ssn",
-                input.ssn,
-                required = true,
-                serverValidate = Pair("/validate/ssn", "validation.uniqueSsn")
-            )
-
-        val address =
-            formComponents.textInput(
-                "boatApplication.address",
-                "address",
-                input.address
-            )
-
-        val postalCode =
-            formComponents.textInput(
-                "boatApplication.postalCode",
-                "postalCode",
-                input.postalCode
-            )
-
-        val municipalityInput =
-            formComponents.select(
-                "boatSpaceReservation.title.municipality",
-                "municipalityCode",
-                input.municipalityCode.toString(),
-                municipalities.map { Pair(it.code.toString(), it.name) },
-                required = true
-            )
-
-        val cityField =
-            formComponents.textInput(
-                "boatSpaceReservation.title.city",
-                "city",
-                input.city
-            )
-
-        val citizenInputFields =
-            """
-            <div>
-                <h3 class="header">
-                    ${t("boatApplication.personalInformation")}
-                </h3> 
-                ${
-                commonComponents.citizenFields(
-                    citizenFirstName,
-                    citizenLastName,
-                    citizenSsn,
-                    municipalityInput,
-                    email,
-                    phone,
-                    address,
-                    postalCode,
-                    cityField,
-                )
-            }
-                
-            </div>
             """.trimIndent()
 
         // language=HTML

@@ -1,13 +1,18 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.common.NotFound
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UnauthorizedException
+import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.controllers.getReservationTimeInSeconds
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.cmToM
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -18,14 +23,22 @@ class BoatSpaceRenewalService(
     private val citizenService: CitizenService,
     private val boatSpaceRenewalRepository: BoatSpaceRenewalRepository,
     private val invoiceService: BoatSpaceInvoiceService,
+    private val boatService: BoatService,
+    private val messageUtil: MessageUtil,
+    private val timeProvider: TimeProvider
 ) {
-    fun createRenewalReservationForCitizen() {
-//        val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId)
-//
-//        val renewalReservation = renewal ?: reservationService.createRenewalReservationForCitizen(reservationId, userId)
+    fun getOrCreateRenewalReservationForEmployee(
+        userId: UUID,
+        reservationId: Int,
+    ): ReservationWithDependencies {
+        val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId)
+
+        val renewalReservation = renewal ?: reservationService.createRenewalReservationForEmployee(reservationId, userId)
+        if (renewalReservation == null) throw IllegalStateException("Reservation not found")
+        return renewalReservation
     }
 
-    fun createRenewalReservation(
+    fun getOrCreateRenewalReservationForCitizen(
         userId: UUID,
         reservationId: Int,
     ): ReservationWithDependencies {
@@ -149,5 +162,62 @@ class BoatSpaceRenewalService(
         reservationService.setReservationStatusToInvoiced(renewedReservationId)
 
         // set old reservation end date to yesterday
+    }
+
+    fun getBoatSpaceRenewViewParams(
+        citizenId: UUID,
+        renewedReservation: ReservationWithDependencies,
+        formInput: RenewalReservationInput,
+    ): BoatSpaceRenewViewParams {
+        val citizen = citizenService.getCitizen(citizenId)
+        if (citizen == null || renewedReservation.reserverId != citizenId) {
+            throw UnauthorizedException()
+        }
+
+        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        val usedBoatId = formInput.boatId ?: renewedReservation.boatId // use boat id from reservation if it exists
+        if (usedBoatId != null && usedBoatId != 0) {
+            val boat = boatService.getBoat(usedBoatId)
+
+            if (boat != null) {
+                input =
+                    input.copy(
+                        boatId = boat.id,
+                        depth = boat.depthCm.cmToM(),
+                        boatName = boat.name,
+                        weight = boat.weightKg,
+                        width = boat.widthCm.cmToM(),
+                        length = boat.lengthCm.cmToM(),
+                        otherIdentification = boat.otherIdentification,
+                        extraInformation = boat.extraInformation,
+                        ownership = boat.ownership,
+                        boatType = boat.type,
+                        boatRegistrationNumber = boat.registrationCode,
+                        noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
+                    )
+            }
+        } else {
+            input = input.copy(boatId = 0)
+        }
+
+        val reserverId = renewedReservation.reserverId
+
+        val boats =
+            reserverId?.let {
+                boatService
+                    .getBoatsForReserver(reserverId)
+                    .map { boat -> boat.updateBoatDisplayName(messageUtil) }
+            } ?: emptyList()
+
+        val municipalities = citizenService.getMunicipalities()
+        return BoatSpaceRenewViewParams(
+            renewedReservation,
+            boats,
+            citizen,
+            input,
+            getReservationTimeInSeconds(renewedReservation.created, timeProvider.getCurrentDateTime()),
+            UserType.CITIZEN,
+            municipalities
+        )
     }
 }

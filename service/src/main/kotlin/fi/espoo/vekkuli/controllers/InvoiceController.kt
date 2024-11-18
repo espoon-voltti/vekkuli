@@ -4,7 +4,6 @@ import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceInvoiceService
-import fi.espoo.vekkuli.service.ReserveBoatSpaceInput
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
