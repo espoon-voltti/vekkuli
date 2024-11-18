@@ -79,7 +79,7 @@ class JdbiBoatSpaceReservationRepository(
                            price.price_cents,
                            price.vat_cents,
                            price.net_price_cents,
-                           CONCAT(bs.section, bs.place_number) as place,
+                           CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place,
                            ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM payment p
                     JOIN boat_space_reservation bsr ON p.reservation_id = bsr.id
@@ -414,7 +414,8 @@ class JdbiBoatSpaceReservationRepository(
                     b.registration_code as boat_registration_code,
                     b.ownership as boat_ownership,
                     location.name as location_name, 
-                    bs.type, CONCAT(bs.section, bs.place_number) as place,
+                    bs.type, bs.place_number, 
+                    CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place,
                     rw.key as warning,
                     bs.section,
                     m.name as municipality_name,
@@ -637,24 +638,6 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().singleOrNull()
         }
 
-    override fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    UPDATE boat_space_reservation
-                    SET status = 'Cancelled', updated = :updatedTimestamp, end_date = :endDate
-                    WHERE id = :id
-                        AND status <> 'Cancelled'
-                    RETURNING *
-                    """.trimIndent()
-                )
-            query.bind("id", reservationId)
-            query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
-            query.bind("endDate", timeProvider.getCurrentDateTime())
-            query.mapTo<BoatSpaceReservation>().one()
-        }
-
     override fun getReservationPeriods(): List<ReservationPeriod> =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -724,6 +707,21 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
+    override fun setReservationAsExpired(reservationId: Int): Unit =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    UPDATE boat_space_reservation
+                    SET updated = :updatedTime, end_date = :endDate
+                    WHERE id = :id
+                    """.trimIndent()
+                ).bind("id", reservationId)
+                .bind("endDate", timeProvider.getCurrentDate().minusDays(1))
+                .bind("updatedTime", timeProvider.getCurrentDateTime())
+                .execute()
+        }
+
     private fun buildSqlSelectForBoatSpaceReservationDetails() =
         """SELECT bsr.id,
                 bsr.start_date,
@@ -734,6 +732,8 @@ class JdbiBoatSpaceReservationRepository(
                 bsr.boat_space_id,
                 bsr.validity,
                 bsr.renewed_from_id,
+                bsr.termination_reason,
+                bsr.termination_comment,
                 p.id as payment_id,
                            p.paid as payment_date,r.id as reserver_id,
                 r.type as reserver_type,
@@ -763,7 +763,7 @@ class JdbiBoatSpaceReservationRepository(
                 price.price_cents,
                 price.vat_cents,
                 price.net_price_cents,
-                CONCAT(bs.section, bs.place_number) as place
+                CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place
             FROM boat_space_reservation bsr
             JOIN boat b ON b.id = bsr.boat_id
             JOIN reserver r ON bsr.reserver_id =  r.id

@@ -146,7 +146,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
-            page.getByText("John Doe").click()
+            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.invoicePaidButton.click()
             val info = "invoice has been paid"

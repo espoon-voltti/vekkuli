@@ -220,7 +220,7 @@ class BoatSpaceSearch(
                         <td>${result.formattedSizes}</td>
                         <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                         <td>${result.priceInEuro} &euro;</td>
-                        <td>${result.section}${result.placeNumber}</td>
+                        <td>${result.place}</td>
                         <td>
                     """.trimIndent()
                 )
@@ -246,7 +246,7 @@ class BoatSpaceSearch(
                             openModal = true; 
                             boatSpace = {
                                 id: ${result.id},
-                                place: '${harbor.location.name} ${result.section}${result.placeNumber}',
+                                place: '${harbor.location.name} ${result.place}',
                                 size: '${result.formattedSizes}',
                                 amenity: '${t("boatSpaces.amenityOption.${result.amenity}")}',
                                 price: '${result.priceInEuro}'

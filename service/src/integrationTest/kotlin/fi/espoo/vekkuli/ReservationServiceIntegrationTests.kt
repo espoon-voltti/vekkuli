@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateBoatSpaceReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,6 +21,8 @@ import kotlin.test.assertContains
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var terminateBoatSpaceReservationService: TerminateBoatSpaceReservationService
     val espooCitizenId = citizenIdOlivia
     val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
 
@@ -324,7 +327,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
 
         assertEquals(3, reservations.size, "reservations are out filtered correctly")
-        assertEquals(listOf(177, 200, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
+        assertEquals(listOf(200, 177, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
     }
 
     @Test
@@ -388,7 +391,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             )
 
         assertEquals(1, reservationsByFirstName.size, "reservations are filtered correctly")
-        assertEquals("Leo Korhonen", reservationsByFirstName.first().name, "correct reservation is returned")
+        assertEquals("Korhonen Leo", reservationsByFirstName.first().name, "correct reservation is returned")
 
         val reservationsByLastName =
             reservationService.getBoatSpaceReservations(
@@ -399,8 +402,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
         assertEquals(2, reservationsByLastName.size, "reservations are filtered correctly")
         val reservationsNames = reservationsByLastName.map { "${it.name}" }
-        assertContains(reservationsNames, "Mikko Virtanen")
-        assertContains(reservationsNames, "Olivia Virtanen")
+        assertContains(reservationsNames, "Virtanen Mikko")
+        assertContains(reservationsNames, "Virtanen Olivia")
     }
 
     @Test
@@ -536,8 +539,8 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should return expired reservations`() {
-        val reservation =
+    fun `should return expired and cancelled reservations`() {
+        val reservationExpired =
             createReservationInConfirmedState(
                 timeProvider,
                 reservationService,
@@ -545,15 +548,55 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 1,
                 1,
             )
+        val reservationTerminated =
+            createReservationInConfirmedState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo,
+                2,
+                2,
+            )
 
         val noExpiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(this.citizenIdLeo)
         assertEquals(0, noExpiredReservations.size)
 
-        terminateService.terminateBoatSpaceReservation(reservation.id, citizenIdLeo)
+        reservationService.markReservationEnded(reservationExpired.id)
+        terminateBoatSpaceReservationService.terminateBoatSpaceReservationAsOwner(
+            reservationTerminated.id,
+            this.citizenIdLeo
+        )
 
         val expiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(this.citizenIdLeo)
-        assertEquals(1, expiredReservations.size)
-        assertEquals(ReservationStatus.Cancelled, expiredReservations.first().status, "Reservation is marked as Cancelled")
-        assertEquals(timeProvider.getCurrentDate(), expiredReservations.first().endDate, "End date is set to now")
+        assertEquals(2, expiredReservations.size)
+        assertEquals(
+            ReservationStatus.Confirmed,
+            expiredReservations.find { it.id == reservationExpired.id }?.status,
+            "Reservation is still in Confirmed state"
+        )
+        assertEquals(
+            timeProvider.getCurrentDate().minusDays(1),
+            expiredReservations
+                .find {
+                    it.id == reservationExpired.id
+                }?.endDate,
+            "End date is set to yesterday"
+        )
+
+        assertEquals(
+            ReservationStatus.Cancelled,
+            expiredReservations
+                .find {
+                    it.id == reservationTerminated.id
+                }?.status,
+            "Reservation is marked as Cancelled"
+        )
+        assertEquals(
+            timeProvider.getCurrentDate(),
+            expiredReservations
+                .find {
+                    it.id == reservationTerminated.id
+                }?.endDate,
+            "End date is set to now"
+        )
     }
 }

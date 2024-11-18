@@ -1,4 +1,5 @@
 package fi.espoo.vekkuli.views.employee
+import fi.espoo.vekkuli.boatSpace.admin.DebugInfoOverlayView
 import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
@@ -11,7 +12,8 @@ class EmployeeLayout(
     private val icons: Icons,
     private val messageUtil: MessageUtil,
     private val commonComponents: CommonComponents,
-    private val localeUtil: LocaleUtil
+    private val localeUtil: LocaleUtil,
+    private val debugOver: DebugInfoOverlayView
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -84,6 +86,7 @@ class EmployeeLayout(
                 </div>
             </div>
             <div id='modal-container'></div>
+            ${debugOver.render(isAuthenticated)}
             </body>
             </html>
             """.trimIndent()

@@ -122,7 +122,7 @@ class BoatReservationService(
         if (reservation == null) return PaymentProcessResult.Failure
 
         if (reservation.renewedFromId != null) {
-            boatSpaceReservationRepo.terminateBoatSpaceReservation(reservation.renewedFromId)
+            boatSpaceReservationRepo.setReservationAsExpired(reservation.renewedFromId)
         }
 
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
@@ -701,6 +701,6 @@ class BoatReservationService(
     }
 
     fun markReservationEnded(reservationId: Int) {
-        boatSpaceReservationRepo.terminateBoatSpaceReservation(reservationId)
+        boatSpaceReservationRepo.setReservationAsExpired(reservationId)
     }
 }

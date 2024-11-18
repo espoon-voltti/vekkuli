@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.views.admin
+package fi.espoo.vekkuli.boatSpace.admin.reporting
 
 import org.springframework.stereotype.Service
 

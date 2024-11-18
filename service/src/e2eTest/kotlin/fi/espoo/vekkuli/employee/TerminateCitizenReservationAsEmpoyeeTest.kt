@@ -1,33 +1,40 @@
-package fi.espoo.vekkuli.citizen.details
+package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.domain.ReservationStatus
+import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
-class TerminateReservationTest : PlaywrightTest() {
+class TerminateCitizenReservationAsEmpoyeeTest : PlaywrightTest() {
     val citizenPageInEnglish = "$baseUrl/kuntalainen/omat-tiedot?lang=en"
 
     @Test
-    fun `citizen can open a terminate reservation modal from a reservation list item and cancel it`() {
+    fun `employee navigates to citizen details page and opens a terminate reservation modal from a reservation list item and cancel it`() {
         try {
+            val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
+            page.navigate(employeePageInEnglish)
+            page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
-            page.navigate(citizenPageInEnglish)
+
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
 
             assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
             assertThat(citizenDetailsPage.expiredReservationList)
-            citizenDetailsPage.terminateReservationButton.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
+            citizenDetailsPage.terminateReservationAsEmployeeButton.click()
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
             assertThat(citizenDetailsPage.terminateReservationModalConfirm).isVisible()
             assertThat(citizenDetailsPage.terminateReservationModalCancel).isVisible()
 
@@ -47,24 +54,32 @@ class TerminateReservationTest : PlaywrightTest() {
     }
 
     @Test
-    fun `citizen can terminate reservation and see it in expired reservations list`() {
+    fun `Employee can terminate reservation with an endDate, reason and comment and see it in expired reservations list`() {
         try {
+            val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
-
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
+            val endDate = timeProvider.getCurrentDate()
+            page.navigate(employeePageInEnglish)
+            page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
-            page.navigate(citizenPageInEnglish)
+
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
 
             // Expired list is not on the page
             assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
             assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
 
-            citizenDetailsPage.terminateReservationButton.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
+            citizenDetailsPage.terminateReservationAsEmployeeButton.click()
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+
+            // Fills the form
+            citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
+            citizenDetailsPage.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.PaymentViolation.toString())
+            citizenDetailsPage.terminateReservationExplanation.fill("Test comment")
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
 
@@ -78,7 +93,7 @@ class TerminateReservationTest : PlaywrightTest() {
                     .setPosition(5.0, 5.0)
             )
 
-            assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).not().isVisible()
             assertThat(citizenDetailsPage.expiredReservationList).not().isVisible()
             assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
 
@@ -92,17 +107,20 @@ class TerminateReservationTest : PlaywrightTest() {
     }
 
     @Test
-    fun `citizen sees an error message if the termination is unsuccessful`() {
+    fun `Employee sees an error message if the termination is unsuccessful`() {
         try {
+            val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
+            page.navigate(employeePageInEnglish)
+            page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
-            page.navigate(citizenPageInEnglish)
 
-            citizenDetailsPage.terminateReservationButton.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+
+            citizenDetailsPage.terminateReservationAsEmployeeButton.click()
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
@@ -113,7 +131,10 @@ class TerminateReservationTest : PlaywrightTest() {
                     .bind("id", 1)
                     .execute()
             }
+            // Required value
+            citizenDetailsPage.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.Other.toString())
             citizenDetailsPage.terminateReservationModalConfirm.click()
+
             assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
             assertThat(citizenDetailsPage.terminateReservationFail).isVisible()
             citizenDetailsPage.terminateReservationFailOkButton.click()

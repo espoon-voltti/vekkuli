@@ -104,7 +104,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.memoNavi.click()
 
-            // Add memo
+            // Add memo, added the waitFor which seemed to fix the flakiness
+            citizenDetails.addNewMemoBtn.waitFor()
             citizenDetails.addNewMemoBtn.click()
             val text = "This is a new memo"
             val memoId = 2

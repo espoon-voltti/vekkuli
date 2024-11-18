@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.views.citizen.details.reservation
+package fi.espoo.vekkuli.boatSpace.terminateReservation.modal
 
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.utils.addTestId
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class TerminateReservationModal : BaseView() {
+class TerminateReservationModalView : BaseView() {
     @Autowired
     private lateinit var modal: Modal
 

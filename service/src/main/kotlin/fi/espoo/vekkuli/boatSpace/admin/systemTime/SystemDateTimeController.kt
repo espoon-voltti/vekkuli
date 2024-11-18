@@ -1,9 +1,8 @@
-package fi.espoo.vekkuli.controllers.admin
+package fi.espoo.vekkuli.boatSpace.admin.systemTime
 
+import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.service.VariableService
 import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.views.admin.Layout
-import fi.espoo.vekkuli.views.admin.SetCurrentSystemTime
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,7 +17,7 @@ class SystemDateTimeController(
     private val variable: VariableService,
     private val adminLayout: Layout,
     private val timeProvider: TimeProvider,
-    private val setCurrentSystemTime: SetCurrentSystemTime
+    private val setCurrentSystemTime: SetCurrentSystemTimeView
 ) {
     @PostMapping("/set-system-date")
     fun setSystemDate(
