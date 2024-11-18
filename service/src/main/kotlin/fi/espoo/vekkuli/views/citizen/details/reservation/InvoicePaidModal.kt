@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.DateInputOptions
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.CitizenWithDetails
@@ -42,7 +43,13 @@ class InvoicePaidModal : BaseView() {
                     hx-swap="outerHTML"
                     >
                     ${formComponents.textInput("citizenDetails.info", "invoicePaidInfo", "")}
-                    ${formComponents.dateInput("citizenDetails.paymentDate", "paymentDate", today)}
+                    ${formComponents.dateInput(
+                    DateInputOptions(
+                        labelKey = "citizenDetails.paymentDate",
+                        id = "paymentDate",
+                        value = today
+                    )
+                )}
                     <input hidden name="reservationId" value="${reservation.id}" />
                     <input hidden name="citizenId" value="${citizen.id}" />
                 </form>

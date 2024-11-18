@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.views.citizen.details.reservation
+package fi.espoo.vekkuli.boatSpace.terminateReservation.modal
 
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.views.components.modal.Modal
 import org.springframework.stereotype.Component
 
 @Component
-class TerminationSuccessModal(
+class TerminationSuccessModalView(
     private val modal: Modal,
     private val icons: Icons
 ) : BaseView() {

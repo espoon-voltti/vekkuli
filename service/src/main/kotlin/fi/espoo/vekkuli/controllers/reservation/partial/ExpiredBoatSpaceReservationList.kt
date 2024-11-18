@@ -48,11 +48,8 @@ class ExpiredBoatSpaceReservationList {
             return ResponseEntity.ok("")
         }
 
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-
         return ResponseEntity.ok(
             partial.render(
-                citizen,
                 reservations
             )
         )

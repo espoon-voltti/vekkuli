@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.utils.centsToEuro
 import fi.espoo.vekkuli.utils.cmToM
 import java.time.LocalDate
@@ -16,6 +17,8 @@ data class BoatSpaceReservationDetails(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val status: ReservationStatus,
+    val terminationReason: ReservationTerminationReason?,
+    val terminationComment: String?,
     val reserverType: ReserverType,
     val reserverId: UUID,
     val name: String,

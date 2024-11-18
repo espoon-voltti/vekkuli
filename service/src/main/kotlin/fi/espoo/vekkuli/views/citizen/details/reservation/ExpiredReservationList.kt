@@ -3,27 +3,16 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.accordion.Accordion
-import fi.espoo.vekkuli.views.employee.SanitizeInput
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class ExpiredReservationList : BaseView() {
-    @Autowired
-    lateinit var icons: Icons
-
-    @Autowired private lateinit var cardHeading: ReservationCardHeading
-
-    @Autowired private lateinit var cardInfo: ReservationCardInformation
-
-    @Autowired private lateinit var accordion: Accordion
-
-    fun render(
-        @SanitizeInput citizen: CitizenWithDetails,
-        @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
-    ): String {
+class ExpiredReservationList(
+    private val cardHeading: ReservationCardHeading,
+    private val cardInfo: ReservationCardInformation,
+    private val accordion: Accordion,
+) : BaseView() {
+    fun render(boatSpaceReservations: List<BoatSpaceReservationDetails>): String {
         val accordionBuilder = accordion.createBuilder()
 
         // language=HTML

@@ -638,24 +638,6 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().singleOrNull()
         }
 
-    override fun terminateBoatSpaceReservation(reservationId: Int): BoatSpaceReservation =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    UPDATE boat_space_reservation
-                    SET status = 'Cancelled', updated = :updatedTimestamp, end_date = :endDate
-                    WHERE id = :id
-                        AND status <> 'Cancelled'
-                    RETURNING *
-                    """.trimIndent()
-                )
-            query.bind("id", reservationId)
-            query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
-            query.bind("endDate", timeProvider.getCurrentDateTime())
-            query.mapTo<BoatSpaceReservation>().one()
-        }
-
     override fun getReservationPeriods(): List<ReservationPeriod> =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -725,6 +707,21 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
+    override fun setReservationAsExpired(reservationId: Int): Unit =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    UPDATE boat_space_reservation
+                    SET updated = :updatedTime, end_date = :endDate
+                    WHERE id = :id
+                    """.trimIndent()
+                ).bind("id", reservationId)
+                .bind("endDate", timeProvider.getCurrentDate().minusDays(1))
+                .bind("updatedTime", timeProvider.getCurrentDateTime())
+                .execute()
+        }
+
     private fun buildSqlSelectForBoatSpaceReservationDetails() =
         """SELECT bsr.id,
                 bsr.start_date,
@@ -735,6 +732,8 @@ class JdbiBoatSpaceReservationRepository(
                 bsr.boat_space_id,
                 bsr.validity,
                 bsr.renewed_from_id,
+                bsr.termination_reason,
+                bsr.termination_comment,
                 p.id as payment_id,
                            p.paid as payment_date,r.id as reserver_id,
                 r.type as reserver_type,

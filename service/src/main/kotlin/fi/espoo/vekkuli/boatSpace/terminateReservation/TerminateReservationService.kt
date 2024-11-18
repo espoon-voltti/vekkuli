@@ -1,37 +1,72 @@
-package fi.espoo.vekkuli.service
+package fi.espoo.vekkuli.boatSpace.terminateReservation
 
+import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
+import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.PermissionService
+import fi.espoo.vekkuli.service.TemplateEmailService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.*
 
 @Service
 class TerminateBoatSpaceReservationService(
-    private val boatSpaceReservationRepository: BoatSpaceReservationRepository,
     private val emailService: TemplateEmailService,
     private val reservationService: BoatReservationService,
     private val emailEnv: EmailEnv,
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
-    private val citizenService: CitizenService
+    private val citizenService: CitizenService,
+    private val terminateReservationRepository: TerminateReservationRepository
 ) {
-    @Transactional
-    fun terminateBoatSpaceReservation(
+    fun terminateBoatSpaceReservationAsOwner(
         reservationId: Int,
         terminatorId: UUID
-    ): Boolean {
+    ) {
         if (!permissionService.canTerminateBoatSpaceReservation(terminatorId, reservationId)) {
             throw Unauthorized()
         }
-        val reservation = boatSpaceReservationRepository.terminateBoatSpaceReservation(reservationId)
-        sendTerminationNotice(reservation, terminatorId)
+        val reservation =
+            terminateReservationRepository.terminateBoatSpaceReservation(
+                reservationId,
+                timeProvider.getCurrentDate(),
+                ReservationTerminationReason.UserRequest,
+                null
+            )
 
-        return true
+        if (reservation == null) {
+            throw BadRequest("Reservation not found")
+        }
+
+        sendTerminationNotice(reservation, terminatorId)
+    }
+
+    fun terminateBoatSpaceReservationAsEmployee(
+        reservationId: Int,
+        terminatorId: UUID,
+        terminationReason: ReservationTerminationReason,
+        endDate: LocalDate,
+        comment: String? = null
+    ) {
+        if (!permissionService.canTerminateBoatSpaceReservationForOtherUser(terminatorId, reservationId)) {
+            throw Unauthorized()
+        }
+        val reservation =
+            terminateReservationRepository.terminateBoatSpaceReservation(
+                reservationId,
+                endDate,
+                terminationReason,
+                comment
+            )
+
+        if (reservation == null) {
+            throw BadRequest("Reservation not found")
+        }
     }
 
     private fun sendTerminationNotice(
@@ -97,3 +132,11 @@ class TerminateBoatSpaceReservationService(
             )
     }
 }
+
+data class TerminateBoatSpaceReservationOptions(
+    val reservationId: Int,
+    val terminatorId: UUID,
+    val reason: ReservationTerminationReason,
+    val endDate: LocalDate,
+    val explanation: String? = "",
+)
