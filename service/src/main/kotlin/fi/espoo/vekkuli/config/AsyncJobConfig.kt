@@ -30,7 +30,7 @@ class AsyncJobConfig {
         )
 
     @Bean
-    fun asyncJobRunnerStarter(asyncJobRunners: List<IAsyncJobRunner<*>>,) =
+    fun asyncJobRunnerStarter(asyncJobRunners: List<IAsyncJobRunner<*>>) =
         ApplicationListener<ApplicationReadyEvent> {
             val logger = KotlinLogging.logger {}
             asyncJobRunners.forEach {

@@ -29,7 +29,7 @@ interface IAsyncJobRunner<T : Any> {
 
     fun plan(jobs: Sequence<JobParams<out T>>)
 
-    fun startBackgroundPolling(pollingInterval: Duration = Duration.ofMinutes(1),)
+    fun startBackgroundPolling(pollingInterval: Duration = Duration.ofMinutes(1))
 
     fun stopBackgroundPolling()
 
@@ -109,12 +109,14 @@ open class AsyncJobRunner<T : Any>(
                 val jobType = AsyncJobType.ofPayload(job.payload)
                 val id = repository.insertJob(job)
                 logger.debug {
-                    "$name planned job $jobType(id=$id, runAt=${job.runAt}, retryCount=${job.retryCount}, retryInterval=${job.retryInterval})"
+                    """
+                    $name planned job $jobType(id=$id, runAt=${job.runAt}, retryCount=${job.retryCount}, retryInterval=${job.retryInterval})
+                    """.trimIndent()
                 }
             }
         }
 
-    override fun startBackgroundPolling(pollingInterval: Duration,) {
+    override fun startBackgroundPolling(pollingInterval: Duration) {
         val newTimer =
             fixedRateTimer("$name.timer", period = pollingInterval.toMillis()) {
                 pools.forEach { it.runPendingJobs(maxCount = 1_000) }
