@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
@@ -31,7 +32,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.reservationDate")}</label>
-                         <p>${reservation.startDate}</p>
+                         <p>${formatAsFullDate(reservation.startDate)}</p>
                      </div>
                  </div>
                  <div class="column">
@@ -45,7 +46,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.contractValidity")}</label>
-                         <p>${reservation.endDate}</p>
+                         <p>${formatAsFullDate(reservation.endDate)}</p>
                      </div>
                  </div>
                  <div class="column">

@@ -40,7 +40,6 @@ class BoatSpaceSearch(
                 "width",
                 null,
                 required = true,
-                parentClasses = "column"
             )
 
         val lengthInput =
@@ -49,7 +48,6 @@ class BoatSpaceSearch(
                 "length",
                 null,
                 required = true,
-                parentClasses = "column"
             )
 
         val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
@@ -153,9 +151,12 @@ class BoatSpaceSearch(
                                 </div>
 
                                 <div class="columns">
-                                    $widthInput
-                                    $lengthInput
-
+                                    <div class='column'>
+                                        $widthInput
+                                    </div>
+                                    <div class='column'>
+                                        $lengthInput
+                                    </div>
                                 </div>
 
                                 <div class="block" x-show="boatSpaceType !== 'Trailer'">

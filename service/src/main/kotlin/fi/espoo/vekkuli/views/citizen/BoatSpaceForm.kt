@@ -1079,9 +1079,8 @@ class BoatSpaceForm(
                                     </div>
                                 </div>
                             </div>
-                        
-                        
                         </div >
+                        
                         <div class="field block">
                             <div class="control">
                                 <button id="cancel"
@@ -1096,7 +1095,7 @@ class BoatSpaceForm(
                                     ${t("boatApplication.$userType.continueToPaymentButton")}
                                 </button>
                             </div>
-                        </div> 
+                        </div>             
                     </form>
                     
                     <script>
