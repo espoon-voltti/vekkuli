@@ -44,6 +44,9 @@ $activeColor: #D9E4F4;
   $menu-label-letter-spacing: 0,
   $dropdown-menu-min-width: 100%,
   $column-gap: $spacing-small,
+  $subtitle-size: 20px,
+  $subtitle-weight: 600,
+  $subtitle-line-height: 24px,
 );
 
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
@@ -352,6 +355,17 @@ body > .columns {
   .info-content {
     flex: 20;
     margin-left: $spacing-medium;
+  }
+}
+.search-results-table {
+  th, td {
+    width: 25%;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    font-size: 12px;
   }
 }
 

@@ -40,7 +40,7 @@ class BoatSpaceSearch(
                 "width",
                 null,
                 required = true,
-                compact = true
+                parentClasses = "column"
             )
 
         val lengthInput =
@@ -49,7 +49,7 @@ class BoatSpaceSearch(
                 "length",
                 null,
                 required = true,
-                compact = true
+                parentClasses = "column"
             )
 
         val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
@@ -152,7 +152,7 @@ class BoatSpaceSearch(
                                     $boatTypeSelect
                                 </div>
 
-                                <div class="block">
+                                <div class="columns">
                                     $widthInput
                                     $lengthInput
 
@@ -194,13 +194,16 @@ class BoatSpaceSearch(
         isEmployee: Boolean = false
     ): String {
         val rowsBuilder = StringBuilder()
-
+        // language=HTML
         harbors.forEach { harbor ->
             rowsBuilder.append(
                 """
                 <div class="block" x-data="{ showAll: false }">
-                    <h2 class="label harbor-header">${harbor.location.name}</h2>
-                    <table class="table is-striped is-hoverable is-fullwidth">
+                    <div class='mb-m'>
+                        <h3 class="subtitle harbor-header mb-s">${harbor.location.name}</h3>
+                        <p class="body">${harbor.location.address}</p>
+                    </div>
+                    <table class="table search-results-table is-striped is-hoverable is-fullwidth">
                         <thead>
                             <tr>
                                 <th>${t("boatSpaces.size")}</th>
@@ -242,7 +245,7 @@ class BoatSpaceSearch(
                 } else {
                     rowsBuilder.append(
                         """
-                        <a class="button is-secondary reserve-button" @click="
+                        <a class="button is-primary reserve-button" @click="
                             openModal = true; 
                             boatSpace = {
                                 id: ${result.id},
@@ -278,7 +281,7 @@ class BoatSpaceSearch(
 
         // language=HTML
         val searchResultHeader =
-            """<h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>$spaceCount</span></h3> """
+            """<h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>($spaceCount)</span></h3> """
 
         // language=HTML
         val template =

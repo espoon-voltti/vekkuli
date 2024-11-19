@@ -82,12 +82,13 @@ class FormComponents {
         required: Boolean? = false,
         attributes: String = "",
         step: Double? = 0.01,
-        compact: Boolean = false
+        compact: Boolean = false,
+        parentClasses: String = ""
     ): String {
         val errorContainer = renderErrorContainer(id, null, null)
         //language=HTML
         return """
-            <div class="field">
+            <div class="field $parentClasses">
                 <div class="control">
                     <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
                     <input

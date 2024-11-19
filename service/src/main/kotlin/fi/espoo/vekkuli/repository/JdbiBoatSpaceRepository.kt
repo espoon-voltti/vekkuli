@@ -21,6 +21,7 @@ data class BoatSpaceOption(
     val lengthCm: Int,
     val priceCents: Int,
     val locationName: String,
+    val locationAddress: String,
     val amenity: BoatSpaceAmenity,
     val formattedSizes: String = "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',')
 ) {
@@ -146,6 +147,7 @@ class JdbiBoatSpaceRepository(
                 """
                 SELECT 
                     location.name as location_name, 
+                    location.address as location_address,
                     boat_space.id,
                     CONCAT(section, TO_CHAR(place_number, 'FM000')) as place,
                     length_cm, 
@@ -189,7 +191,7 @@ class JdbiBoatSpaceRepository(
                                 Location(
                                     id = spaces.first().id,
                                     name = locationName,
-                                    address = ""
+                                    address = spaces.first().locationAddress
                                 ),
                             boatSpaces = spaces
                         )
