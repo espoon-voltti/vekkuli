@@ -179,10 +179,11 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         val reservationOfLeo =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
-                timeProvider,
-                citizenIdLeo,
-                2,
-                2)
+                    timeProvider,
+                    citizenIdLeo,
+                    2,
+                    2
+                )
             )
 
         val originalOliviaReservation = reservationService.getBoatSpaceReservation(reservationOfOlivia.id)

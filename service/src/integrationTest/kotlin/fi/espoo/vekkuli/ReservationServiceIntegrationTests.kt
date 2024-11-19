@@ -575,17 +575,22 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     fun `should return expired and cancelled reservations`() {
         val reservationExpired =
             testUtils.createReservationInConfirmedState(
-                CreateReservationParams(timeProvider,
-                this.citizenIdLeo,
-                1,
-                1,
-            ))
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    1,
+                    1,
+                )
+            )
+
         val reservationTerminated =
             testUtils.createReservationInConfirmedState(
-                CreateReservationParams( timeProvider,
-                this.citizenIdLeo,
-                2,
-                2)
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    2,
+                    2
+                )
             )
 
         val noExpiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(this.citizenIdLeo)
