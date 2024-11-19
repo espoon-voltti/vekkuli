@@ -198,7 +198,7 @@ class BoatSpaceSearch(
         harbors.forEach { harbor ->
             rowsBuilder.append(
                 """
-                <div class="block" x-data="{ showAll: false }">
+                <div class="block" x-data="{ show: 5 }">
                     <h2 class="label harbor-header">${harbor.location.name}</h2>
                     <table class="table is-striped is-hoverable is-fullwidth">
                         <thead>
@@ -216,7 +216,7 @@ class BoatSpaceSearch(
             harbor.boatSpaces.forEachIndexed { index, result ->
                 rowsBuilder.append(
                     """
-                    <tr ${if (index > 3) ":class=\"showAll ? '' : 'is-hidden'\"" else ""}>
+                    <tr :class="${index + 1} <= show  ? '' : 'is-hidden' ">
                         <td>${result.formattedSizes}</td>
                         <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                         <td>${result.priceInEuro} &euro;</td>
@@ -262,16 +262,22 @@ class BoatSpaceSearch(
 
             rowsBuilder.append("</tbody></table>")
 
-            if (harbor.boatSpaces.size > 3) {
-                rowsBuilder.append(
-                    """
-                    <div>
-                        <a @click="showAll = !showAll" 
-                           x-text="showAll ? '${t("showLess")}' : '${t("showMore")}'"></a>
-                    </div>
-                    """.trimIndent()
-                )
-            }
+            rowsBuilder.append(
+                """
+                <div>
+                    <a x-show="show <= ${harbor.boatSpaces.size}" 
+                        @click="show = Math.min(show + 5, ${harbor.boatSpaces.size})"
+                        x-text="`${t("showMore")} (${"$"}{${harbor.boatSpaces.size} - show})`" >
+                        
+                    </a>
+                </div>
+                <div>
+                    <a x-show="show > 5" @click="show = Math.max(show - 5, 5)">
+                       ${t("showLess")}
+                    </a>
+                </div>
+                """.trimIndent()
+            )
 
             rowsBuilder.append("</div>")
         }
