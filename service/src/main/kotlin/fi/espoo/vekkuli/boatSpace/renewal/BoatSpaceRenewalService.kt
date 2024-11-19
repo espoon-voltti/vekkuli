@@ -179,7 +179,7 @@ class BoatSpaceRenewalService(
         reservationService.markReservationEnded(oldReservationId)
     }
 
-    fun getBoatSpaceRenewViewParams(
+    fun buildBoatSpaceRenewalViewParams(
         citizenId: UUID,
         renewedReservation: ReservationWithDependencies,
         formInput: RenewalReservationInput,
@@ -189,7 +189,7 @@ class BoatSpaceRenewalService(
             throw UnauthorizedException()
         }
 
-        var input = formInput
+        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
         val usedBoatId = formInput.boatId ?: renewedReservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)

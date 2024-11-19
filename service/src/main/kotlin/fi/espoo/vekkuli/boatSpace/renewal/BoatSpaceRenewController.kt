@@ -139,7 +139,7 @@ class BoatSpaceRenewController(
             return ResponseEntity(headers, HttpStatus.FOUND)
         }
         val htmlParams =
-            boatSpaceRenewalService.getBoatSpaceRenewViewParams(citizenId, renewedReservation, formInput)
+            boatSpaceRenewalService.buildBoatSpaceRenewalViewParams(citizenId, renewedReservation, formInput)
 
         val page =
             layout.render(

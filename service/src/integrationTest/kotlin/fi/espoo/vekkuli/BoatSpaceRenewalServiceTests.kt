@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.CitizenService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,6 +25,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
     }
+
+    @Autowired
+    private lateinit var citizenService: CitizenService
 
     @Autowired
     lateinit var reservationService: BoatReservationService
@@ -137,7 +141,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should get boat space renew view params`() {
+    fun `should prefill renew application with customer information`() {
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -166,14 +170,58 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                 noRegistrationNumber = false,
                 renewedReservationId = 4
             )
+
+        val citizen = citizenService.getCitizen(citizenIdLeo)
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
 
-        val viewParams = boatSpaceRenewalService.getBoatSpaceRenewViewParams(citizenIdLeo, renewedReservation, renewalInput)
+        val viewParams = boatSpaceRenewalService.buildBoatSpaceRenewalViewParams(citizenIdLeo, renewedReservation, renewalInput)
 
-        assertNotNull(viewParams, "View params should be generated")
         assertEquals(citizenIdLeo, viewParams.citizen?.id, "Citizen ID should match")
-        assertEquals(renewalInput.email, viewParams.input.email, "Email should have been updated")
+        assertEquals(citizen?.email, viewParams.input.email, "Email should have been updated")
+    }
+
+    @Test
+    fun `should prefill renew application with boat information`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                )
+            )
+        val renewalInput =
+            RenewalReservationInput(
+                boatId = 0,
+                boatType = BoatType.Sailboat,
+                width = 3.0,
+                length = 4.0,
+                depth = 1.0,
+                weight = 100,
+                boatRegistrationNumber = "12345",
+                boatName = "TestBoat",
+                otherIdentification = "OtherID",
+                extraInformation = "ExtraInfo",
+                ownership = OwnershipStatus.Owner,
+                email = "citizen@example.com",
+                phone = "1234567890",
+                agreeToRules = true,
+                certifyInformation = true,
+                noRegistrationNumber = false,
+                renewedReservationId = 4
+            )
+
+        val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
+
+        val viewParams = boatSpaceRenewalService.buildBoatSpaceRenewalViewParams(citizenIdLeo, renewedReservation, renewalInput)
+
         assertEquals(renewalInput.boatName, viewParams.input.boatName, "Email should have been updated")
-        assertEquals(reservation.startDate, viewParams.reservation.startDate, "Start date should match")
+        assertEquals(renewalInput.boatId, viewParams.input.boatId, "Email should have been updated")
+        assertEquals(renewalInput.boatType, viewParams.input.boatType, "Email should have been updated")
+        assertEquals(renewalInput.extraInformation, viewParams.input.extraInformation, "Email should have been updated")
+        assertEquals(renewalInput.weight, viewParams.input.weight, "Email should have been updated")
+        assertEquals(renewalInput.width, viewParams.input.width, "Email should have been updated")
+        assertEquals(renewalInput.length, viewParams.input.length, "Email should have been updated")
+        assertEquals(renewalInput.depth, viewParams.input.depth, "Email should have been updated")
     }
 }
