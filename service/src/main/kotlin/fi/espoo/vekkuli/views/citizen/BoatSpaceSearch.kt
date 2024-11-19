@@ -30,7 +30,7 @@ class BoatSpaceSearch(
             formComponents.select(
                 "boatApplication.boatType",
                 "boatType",
-                boatTypes.first { it == BoatType.OutboardMotor.name },
+                BoatType.OutboardMotor.name,
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
             )
 
