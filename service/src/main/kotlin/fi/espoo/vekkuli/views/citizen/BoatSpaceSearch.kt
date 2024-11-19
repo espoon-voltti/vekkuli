@@ -30,13 +30,13 @@ class BoatSpaceSearch(
             formComponents.select(
                 "boatApplication.boatType",
                 "boatType",
-                boatTypes.first(),
+                boatTypes.first { it == BoatType.OutboardMotor.name },
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
             )
 
         val widthInput =
             formComponents.decimalInput(
-                "boatApplication.boatWidthInMeters",
+                "boatSpaces.widthHeader",
                 "width",
                 null,
                 required = true,
@@ -45,7 +45,7 @@ class BoatSpaceSearch(
 
         val lengthInput =
             formComponents.decimalInput(
-                "boatApplication.boatLengthInMeters",
+                "boatSpaces.lengthHeader",
                 "length",
                 null,
                 required = true,
