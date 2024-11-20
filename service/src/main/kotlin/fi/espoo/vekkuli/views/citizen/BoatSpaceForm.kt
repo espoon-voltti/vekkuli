@@ -325,7 +325,7 @@ class BoatSpaceForm(
             formComponents.field(
                 "boatApplication.place",
                 "place",
-                "${reservation.section}${reservation.placeNumber}",
+                "${reservation.place}",
             )
         val boatSpaceTypeField =
             formComponents.field(
@@ -524,7 +524,7 @@ class BoatSpaceForm(
             }
             """
 
-        val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
+        val wholeLocationName = "${reservation.locationName} ${reservation.place}"
         val boatForm =
             boatForm(
                 userType,
@@ -697,7 +697,7 @@ class BoatSpaceForm(
             formComponents.field(
                 "boatApplication.place",
                 "place",
-                "${reservation.section}${reservation.placeNumber}",
+                "${reservation.place}",
             )
         val boatSpaceTypeField =
             formComponents.field(
@@ -974,7 +974,7 @@ class BoatSpaceForm(
             }
             """
 
-        val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
+        val wholeLocationName = "${reservation.locationName} ${reservation.place}"
         val slipHolder =
             slipHolderAndBoatForm(
                 organizations,
@@ -1079,9 +1079,8 @@ class BoatSpaceForm(
                                     </div>
                                 </div>
                             </div>
-                        
-                        
                         </div >
+                        
                         <div class="field block">
                             <div class="control">
                                 <button id="cancel"
@@ -1096,7 +1095,7 @@ class BoatSpaceForm(
                                     ${t("boatApplication.$userType.continueToPaymentButton")}
                                 </button>
                             </div>
-                        </div> 
+                        </div>             
                     </form>
                     
                     <script>

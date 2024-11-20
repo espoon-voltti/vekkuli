@@ -154,6 +154,13 @@ class Icons {
         <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/>
         </svg>
         """.trimIndent()
+    val chevronUp =
+        """
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14.5859 11.2578L8.58594 5.25781L2.58594 11.2578" stroke="#0047B6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        """.trimIndent()
+
     val globe =
         """
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#0047B6">

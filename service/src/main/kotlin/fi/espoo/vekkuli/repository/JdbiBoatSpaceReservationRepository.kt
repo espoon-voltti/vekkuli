@@ -128,7 +128,8 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
                         location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description
+                          bs.description,
+                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
@@ -154,7 +155,8 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
                         location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description
+                          bs.description,
+                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
@@ -180,7 +182,8 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
                         location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description
+                          bs.description,
+                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
@@ -204,7 +207,8 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
                         location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description
+                          bs.description,
+                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     JOIN citizen c ON bsr.reserver_id = c.id 
                     JOIN reserver r ON c.id = r.id
@@ -228,7 +232,8 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
                         location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description
+                          bs.description,
+                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     LEFT JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
@@ -253,7 +258,8 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
                         location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description
+                          bs.description,
+                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     LEFT JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
@@ -274,7 +280,8 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
                         location.name as location_name, price.price_cents, 
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description
+                          bs.description,
+                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     LEFT JOIN reserver r ON bsr.reserver_id = r.id
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
@@ -294,7 +301,8 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     SELECT bsr.*, location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description,
-                        ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                        ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types,
+                        CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
@@ -720,6 +728,11 @@ class JdbiBoatSpaceReservationRepository(
                 .bind("endDate", timeProvider.getCurrentDate().minusDays(1))
                 .bind("updatedTime", timeProvider.getCurrentDateTime())
                 .execute()
+        }
+
+    override fun getHarbors(): List<Location> =
+        jdbi.withHandleUnchecked { handle ->
+            handle.createQuery("SELECT * FROM location").mapTo<Location>().toList()
         }
 
     private fun buildSqlSelectForBoatSpaceReservationDetails() =

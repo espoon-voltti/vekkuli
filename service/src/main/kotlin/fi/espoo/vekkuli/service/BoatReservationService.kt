@@ -703,4 +703,6 @@ class BoatReservationService(
     fun markReservationEnded(reservationId: Int) {
         boatSpaceReservationRepo.setReservationAsExpired(reservationId)
     }
+
+    fun getHarbors(): List<Location> = boatSpaceReservationRepo.getHarbors()
 }
