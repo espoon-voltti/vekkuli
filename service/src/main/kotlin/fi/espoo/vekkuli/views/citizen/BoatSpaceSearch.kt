@@ -267,17 +267,17 @@ class BoatSpaceSearch(
                 <span style="margin-right: 16px">
                     <a x-show="show <= ${harbor.boatSpaces.size}" 
                         @click="show = Math.min(show + 5, ${harbor.boatSpaces.size})">
-                            <span class="icon is-small">
-                                 ${icons.chevronDown}
-                            </span>
+                        <span class="icon is-small">
+                             ${icons.chevronDown}
+                        </span>
                         <span x-text="`${t("showMore")} (${"$"}{${harbor.boatSpaces.size} - show})`"></span>
                     </a>
                 </span>
                 <span>
                     <a x-show="show > 5" @click="show = Math.max(show - 5, 5)">
-                            <span class="icon is-small">
-                                 ${icons.chevronUp}
-                            </span>
+                        <span class="icon is-small">
+                             ${icons.chevronUp}
+                        </span>
                        <span>${t("showLess")}</span>
                     </a>
                 </span>
