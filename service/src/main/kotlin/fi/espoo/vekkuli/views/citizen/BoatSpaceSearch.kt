@@ -242,7 +242,7 @@ class BoatSpaceSearch(
                 } else {
                     rowsBuilder.append(
                         """
-                        <a class="button is-secondary reserve-button" @click="
+                        <button class="button is-primary reserve-button" @click="
                             openModal = true; 
                             boatSpace = {
                                 id: ${result.id},
@@ -252,7 +252,7 @@ class BoatSpaceSearch(
                                 price: '${result.priceInEuro}'
                             };">
                             ${t("boatSpaces.reserve")}
-                        </a>
+                        </button>
                         """.trimIndent()
                     )
                 }
