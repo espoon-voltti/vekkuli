@@ -9,7 +9,6 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.isAuthenticated
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.getLocations
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceService
@@ -85,10 +84,8 @@ class BoatSpaceSearchController {
                 headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/${reservation.id}"))
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
-            val locations =
-                jdbi.inTransactionUnchecked { tx ->
-                    tx.getLocations()
-                }
+            val locations = reservationService.getHarbors()
+
             return ResponseEntity.ok(
                 employeeLayout.render(
                     true,
@@ -108,10 +105,7 @@ class BoatSpaceSearchController {
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
         }
-        val locations =
-            jdbi.inTransactionUnchecked { tx ->
-                tx.getLocations()
-            }
+        val locations = reservationService.getHarbors()
 
         return ResponseEntity.ok(
             layout.render(

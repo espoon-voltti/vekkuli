@@ -730,6 +730,11 @@ class JdbiBoatSpaceReservationRepository(
                 .execute()
         }
 
+    override fun getHarbors(): List<Location> =
+        jdbi.withHandleUnchecked { handle ->
+            handle.createQuery("SELECT * FROM location").mapTo<Location>().toList()
+        }
+
     private fun buildSqlSelectForBoatSpaceReservationDetails() =
         """SELECT bsr.id,
                 bsr.start_date,

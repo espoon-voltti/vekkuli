@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
-import fi.espoo.vekkuli.domain.getLocations
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.employee.BoatSpaceReservationList
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -46,9 +45,7 @@ class BoatSpaceReservationController {
             reservationService.getBoatSpaceReservations(params)
 
         val harbors =
-            jdbi.inTransactionUnchecked {
-                it.getLocations()
-            }
+            reservationService.getHarbors()
 
         val authenticatedUser = request.getAuthenticatedUser()
         if (authenticatedUser == null) {

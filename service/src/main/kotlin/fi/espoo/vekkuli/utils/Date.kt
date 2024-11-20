@@ -28,7 +28,7 @@ class StagingTimeProvider(
     override fun getCurrentDateTime(): LocalDateTime {
         val dateTimeVariable = variable.get("current_system_staging_datetime")
         return if (dateTimeVariable != null && isValidDateTime(dateTimeVariable.value)) {
-            LocalDateTime.parse(dateTimeVariable.value)
+            LocalDateTime.of(LocalDateTime.parse(dateTimeVariable.value).toLocalDate(), LocalTime.now())
         } else {
             LocalDateTime.now()
         }

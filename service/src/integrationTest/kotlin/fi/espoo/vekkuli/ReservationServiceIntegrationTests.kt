@@ -599,4 +599,12 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             "End date is set to now"
         )
     }
+
+    @Test
+    fun `should fetch all harbors`() {
+        val harbors = reservationService.getHarbors()
+        assertEquals(7, harbors.size, "Correct number of harbors are fetched")
+        assertEquals("Satamatie 1, Espoo", harbors[0].address, "Correct number of harbors are fetched")
+        assertEquals("Haukilahti", harbors[0].name, "Correct number of harbors are fetched")
+    }
 }
