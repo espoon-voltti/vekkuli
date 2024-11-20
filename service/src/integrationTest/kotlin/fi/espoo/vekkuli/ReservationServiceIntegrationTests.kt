@@ -3,9 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateBoatSpaceReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -15,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.assertContains
 
@@ -642,38 +639,5 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(7, harbors.size, "Correct number of harbors are fetched")
         assertEquals("Satamatie 1, Espoo", harbors[0].address, "Correct number of harbors are fetched")
         assertEquals("Haukilahti", harbors[0].name, "Correct number of harbors are fetched")
-    }
-
-    @Test
-    fun `should be able to renew expiring reservation`() {
-        mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
-        val madeReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    this.citizenIdLeo,
-                    1,
-                    1,
-                    validity = ReservationValidity.Indefinite,
-                    endDate = timeProvider.getCurrentDate().plusMonths(9)
-                )
-            )
-        var reservation =
-            reservationService
-                .getBoatSpaceReservationsForCitizen(this.citizenIdLeo)
-                .firstOrNull {
-                    it.id == madeReservation.id
-                }
-        assertEquals(reservation?.canRenew, false, "Reservation can not be renewed")
-        assertNotNull(reservation?.endDate, "Reservation has end date")
-        val expiringDate = (reservation?.endDate?.minusDays(20) ?: LocalDate.now()).atTime(12, 0, 0)
-        mockTimeProvider(timeProvider, expiringDate)
-        reservation =
-            reservationService
-                .getBoatSpaceReservationsForCitizen(this.citizenIdLeo)
-                .firstOrNull {
-                    it.id == madeReservation.id
-                }
-        assertEquals(reservation?.canRenew, true, "Reservation can be renewed")
     }
 }
