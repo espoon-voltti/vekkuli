@@ -52,7 +52,7 @@ class BoatSpaceRenewFormView(
             formComponents.field(
                 "boatApplication.place",
                 "place",
-                "${reservation.place}",
+                reservation.place,
             )
         val boatSpaceTypeField =
             formComponents.field(
@@ -314,10 +314,7 @@ class BoatSpaceRenewFormView(
         )
     }
 
-    fun renewInvoicePreview(
-        model: SendInvoiceModel,
-        oldReservationId: Int?
-    ): String {
+    fun renewInvoicePreview(model: SendInvoiceModel): String {
         // language=HTML
         return """
             <section class="section">
@@ -374,7 +371,6 @@ class BoatSpaceRenewFormView(
                             class="button is-primary"
                             type="submit"
                             hx-post="/virkailija/venepaikka/jatka/${model.reservationId}/lasku"
-                            hx-vals='{"oldReservationId": $oldReservationId}'
                             hx-target="body">
                             Lähetä lasku
                         </button>

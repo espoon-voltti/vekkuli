@@ -44,11 +44,11 @@ class BoatSpaceRenewalService(
 
     fun getOrCreateRenewalReservationForCitizen(
         userId: UUID,
-        reservationId: Int,
+        oldReservationId: Int,
     ): ReservationWithDependencies {
         val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId)
 
-        val renewalReservation = renewal ?: reservationService.createRenewalReservationForCitizen(reservationId, userId)
+        val renewalReservation = renewal ?: reservationService.createRenewalReservationForCitizen(oldReservationId, userId)
         if (renewalReservation == null) throw IllegalStateException("Reservation not found")
         return renewalReservation
     }
@@ -158,12 +158,9 @@ class BoatSpaceRenewalService(
         )
     }
 
-    fun activateRenewalAndSendInvoice(
-        renewedReservationId: Int,
-        oldReservationId: Int
-    ) {
+    fun activateRenewalAndSendInvoice(renewedReservationId: Int) {
         val newReservation = reservationService.getReservationWithReserver(renewedReservationId)
-        if (newReservation?.reserverId == null) {
+        if (newReservation?.reserverId == null || newReservation.renewedFromId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
 
@@ -176,7 +173,7 @@ class BoatSpaceRenewalService(
 
         reservationService.setReservationStatusToInvoiced(newReservation.id)
 
-        reservationService.markReservationEnded(oldReservationId)
+        reservationService.markReservationEnded(newReservation.renewedFromId)
     }
 
     fun buildBoatSpaceRenewalViewParams(

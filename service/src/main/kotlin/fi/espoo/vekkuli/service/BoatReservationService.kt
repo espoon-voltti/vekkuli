@@ -122,7 +122,7 @@ class BoatReservationService(
         if (reservation == null) return PaymentProcessResult.Failure
 
         if (reservation.renewedFromId != null) {
-            boatSpaceReservationRepo.setReservationAsExpired(reservation.renewedFromId)
+            markReservationEnded(reservation.renewedFromId)
         }
 
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)

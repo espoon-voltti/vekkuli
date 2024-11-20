@@ -27,11 +27,17 @@ class ReservationCardButtons : BaseView() {
             return ""
         }
 
+        val renewUrl =
+            if (userType == UserType.CITIZEN) {
+                "/kuntalainen/venepaikka/jatka/${reservation.id}"
+            } else {
+                "/virkailija/venepaikka/jatka/${reservation.id}/lasku"
+            }
         return """
             <button 
               class="button is-primary"
               id="renew-place-button-${reservation.id}"
-              hx-get="/${userType.path}/venepaikka/jatka-varausta/${reservation.id}"
+              hx-get="$renewUrl"
               hx-target="body"
               hx-push-url="true">
                 ${t("boatSpaceReservation.$userType.button.renewPlace")}

@@ -88,7 +88,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                 agreeToRules = true,
                 certifyInformation = true,
                 noRegistrationNumber = false,
-                renewedReservationId = 4
+                originalReservationId = 4
             )
 
         boatSpaceRenewalService.updateRenewReservation(citizenIdLeo, renewalInput, reservation.id)
@@ -111,7 +111,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
             )
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
 
-        boatSpaceRenewalService.activateRenewalAndSendInvoice(renewalReservation.id, oldReservation.id)
+        boatSpaceRenewalService.activateRenewalAndSendInvoice(renewalReservation.id)
 
         val updatedOldReservation = reservationService.getBoatSpaceReservation(oldReservation.id)
         val updatedRenewalReservation = reservationService.getBoatSpaceReservation(renewalReservation.id)
@@ -173,7 +173,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                 agreeToRules = true,
                 certifyInformation = true,
                 noRegistrationNumber = false,
-                renewedReservationId = 4
+                originalReservationId = 4
             )
 
         val citizen = citizenService.getCitizen(citizenIdLeo)
@@ -213,7 +213,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                 agreeToRules = true,
                 certifyInformation = true,
                 noRegistrationNumber = false,
-                renewedReservationId = 4
+                originalReservationId = 4
             )
 
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)

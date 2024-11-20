@@ -135,6 +135,14 @@ fun HttpServletRequest.ensureCitizenId(): UUID {
     return citizen.id
 }
 
+fun HttpServletRequest.ensureEmployeeId(): UUID {
+    val employee = getAttribute(ATTR_USER) as AuthenticatedUser?
+    if (employee == null || !employee.isEmployee()) {
+        throw Unauthorized("No authenticated user")
+    }
+    return employee.id
+}
+
 private const val ATTR_USER = "vekkuli.user"
 private const val ATTR_JWT = "vekkuli.jwt"
 
