@@ -348,8 +348,10 @@ class JdbiBoatSpaceReservationRepository(
                     ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE r.id = :reserverId AND 
                       bs.type = :spaceType AND
-                        (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
-                        bsr.end_date >= :endDateCut
+                        (
+                            ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut) OR
+                             (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut) 
+                        )
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
@@ -664,7 +666,10 @@ class JdbiBoatSpaceReservationRepository(
                     """
                      ${buildSqlSelectForBoatSpaceReservationDetails()}
                     WHERE r.id = :reserverId AND (
-                        bsr.status = 'Cancelled'
+                        (
+                            bsr.status = 'Cancelled' AND 
+                            bsr.end_date <= :endDateCut
+                        )
                         OR 
                         (
                             (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
