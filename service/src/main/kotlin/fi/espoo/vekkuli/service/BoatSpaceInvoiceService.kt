@@ -32,12 +32,8 @@ class BoatSpaceInvoiceService(
         reservationId: Int
     ): Invoice? {
         val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
-        asyncJobRunner.plan(sequenceOf(JobParams(AsyncJob.SendInvoiceBatch("test"), 3, Duration.ofMinutes(5), Instant.now())))
-//        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(invoiceData)
-//        if (!sendInvoiceSuccess) {
-//            paymentService.updatePayment(createdPayment.id, false, null)
-//            return null
-//        }
+
+        asyncJobRunner.plan(sequenceOf(JobParams(AsyncJob.SendInvoiceBatch(invoiceData), 3, Duration.ofMinutes(5), Instant.now())))
         return createdInvoice
     }
 

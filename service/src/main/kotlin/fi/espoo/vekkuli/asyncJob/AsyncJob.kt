@@ -4,6 +4,7 @@
 
 package fi.espoo.vekkuli.asyncJob
 
+import fi.espoo.vekkuli.service.InvoiceData
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
@@ -23,7 +24,7 @@ data class AsyncJobType<T : Any>(
 
 sealed interface AsyncJob {
     data class SendInvoiceBatch(
-        val invoiceBatch: String
+        val invoiceBatch: InvoiceData
     ) : AsyncJob
 }
 
