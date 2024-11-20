@@ -18,7 +18,6 @@ import java.util.*
 
 @Service
 class BoatSpaceInvoiceService(
-    private val invoiceClient: InvoiceClient,
     private val paymentService: PaymentService,
     private val timeProvider: TimeProvider,
     private val boatReservationService: BoatReservationService,
