@@ -85,7 +85,7 @@ class BoatSpaceForm(
 
         // language=HTML
         val chooseBoatButtons =
-            if (citizen !== null) {
+            if (citizen !== null && boats.isNotEmpty()) {
                 """
             <div id="boatOptions" class="field" x-data="{ initialWidth: localStorage.getItem('width'), 
                                          initialLength: localStorage.getItem('length'), 
