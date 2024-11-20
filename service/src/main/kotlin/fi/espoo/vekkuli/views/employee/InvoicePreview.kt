@@ -35,7 +35,6 @@ data class InvoiceRow(
 @Service
 class InvoicePreview : BaseView() {
     fun render(model: SendInvoiceModel): String {
-        println("")
         // language=HTML
         return """
             <section class="section">
