@@ -199,7 +199,7 @@ class BoatSpaceSearch(
         harbors.forEach { harbor ->
             rowsBuilder.append(
                 """
-                <div class="block" x-data="{ showAll: false }">
+                <div class="block" x-data="{ show: 5 }">
                     <div class='mb-m'>
                         <h3 class="subtitle harbor-header mb-s">${harbor.location.name}</h3>
                         <p class="body">${harbor.location.address}</p>
@@ -220,7 +220,7 @@ class BoatSpaceSearch(
             harbor.boatSpaces.forEachIndexed { index, result ->
                 rowsBuilder.append(
                     """
-                    <tr ${if (index > 3) ":class=\"showAll ? '' : 'is-hidden'\"" else ""}>
+                    <tr :class="${index + 1} <= show  ? '' : 'is-hidden' ">
                         <td>${result.formattedSizes}</td>
                         <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                         <td>${result.priceInEuro} &euro;</td>
@@ -246,7 +246,7 @@ class BoatSpaceSearch(
                 } else {
                     rowsBuilder.append(
                         """
-                        <a class="button is-primary reserve-button" @click="
+                        <button class="button is-primary reserve-button" @click="
                             openModal = true; 
                             boatSpace = {
                                 id: ${result.id},
@@ -256,7 +256,7 @@ class BoatSpaceSearch(
                                 price: '${result.priceInEuro}'
                             };">
                             ${t("boatSpaces.reserve")}
-                        </a>
+                        </button>
                         """.trimIndent()
                     )
                 }
@@ -266,16 +266,27 @@ class BoatSpaceSearch(
 
             rowsBuilder.append("</tbody></table>")
 
-            if (harbor.boatSpaces.size > 3) {
-                rowsBuilder.append(
-                    """
-                    <div>
-                        <a @click="showAll = !showAll" 
-                           x-text="showAll ? '${t("showLess")}' : '${t("showMore")}'"></a>
-                    </div>
-                    """.trimIndent()
-                )
-            }
+            rowsBuilder.append(
+                """
+                <span style="margin-right: 16px">
+                    <a x-show="show < ${harbor.boatSpaces.size}" 
+                        @click="show = Math.min(show + 5, ${harbor.boatSpaces.size})">
+                        <span class="icon is-small">
+                             ${icons.chevronDown}
+                        </span>
+                        <span x-text="`${t("showMore")} (${"$"}{${harbor.boatSpaces.size} - show})`"></span>
+                    </a>
+                </span>
+                <span>
+                    <a x-show="show > 5" @click="show = Math.max(show - 5, 5)">
+                        <span class="icon is-small">
+                             ${icons.chevronUp}
+                        </span>
+                       <span>${t("showLess")}</span>
+                    </a>
+                </span>
+                """.trimIndent()
+            )
 
             rowsBuilder.append("</div>")
         }
