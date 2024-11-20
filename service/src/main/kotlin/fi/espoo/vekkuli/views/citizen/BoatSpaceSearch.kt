@@ -264,18 +264,23 @@ class BoatSpaceSearch(
 
             rowsBuilder.append(
                 """
-                <div>
+                <span>
                     <a x-show="show <= ${harbor.boatSpaces.size}" 
-                        @click="show = Math.min(show + 5, ${harbor.boatSpaces.size})"
-                        x-text="`${t("showMore")} (${"$"}{${harbor.boatSpaces.size} - show})`" >
-                        
+                        @click="show = Math.min(show + 5, ${harbor.boatSpaces.size})">
+                            <span class="icon is-small">
+                                 ${icons.chevronDown}
+                            </span>
+                        <span x-text="`${t("showMore")} (${"$"}{${harbor.boatSpaces.size} - show})`"></span>
                     </a>
-                </div>
-                <div>
+                </span>
+                <span>
                     <a x-show="show > 5" @click="show = Math.max(show - 5, 5)">
-                       ${t("showLess")}
+                            <span class="icon is-small">
+                                 ${icons.chevronUp}
+                            </span>
+                       <span>${t("showLess")}</span>
                     </a>
-                </div>
+                </span>
                 """.trimIndent()
             )
 
