@@ -87,6 +87,9 @@ class BoatSpaceRenewController(
                 .status(HttpStatus.FOUND)
                 .header("Location", url)
                 .body("")
+
+        // TODO: Extract code above
+
         val citizenId = request.ensureCitizenId()
 
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenId, originalReservationId)
@@ -94,8 +97,6 @@ class BoatSpaceRenewController(
             reservationService.getReservationWithReserver(renewedReservation.id) ?: return redirectUrl("/")
             return badRequest("Invalid input")
         }
-
-        // TODO: Extract code above
 
         try {
             boatSpaceRenewalService.updateRenewReservation(citizenId, input, renewedReservation.id)
@@ -107,15 +108,13 @@ class BoatSpaceRenewController(
         return redirectUrl("/kuntalainen/maksut/maksa?id=${renewedReservation.id}&type=${PaymentType.BoatSpaceReservation}")
     }
 
-    @PostMapping("/virkailija/venepaikka/jatka/{originalReservationId}/lasku")
+    @PostMapping("/virkailija/venepaikka/jatka/{renewedReservationId}/lasku")
     fun sendInvoiceAndTerminateOldReservation(
-        @PathVariable originalReservationId: Int,
+        @PathVariable renewedReservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         try {
-            val userId = request.ensureEmployeeId()
-            val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, originalReservationId)
-            boatSpaceRenewalService.activateRenewalAndSendInvoice(renewedReservation.id)
+            boatSpaceRenewalService.activateRenewalAndSendInvoice(renewedReservationId)
         } catch (e: Exception) {
             val errorPage = boatSpaceRenewForm.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
