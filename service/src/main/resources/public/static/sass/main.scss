@@ -18,6 +18,7 @@ $activeColor: #D9E4F4;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
+  $link: $bulma-primary,
   $family-primary: "Lato, sans-serif",
   $family-secondary: "Lato, sans-serif",
   $spacing-shortcuts: ("margin": "m", "padding": "p"),
