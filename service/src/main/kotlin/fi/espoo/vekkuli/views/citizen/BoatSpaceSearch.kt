@@ -264,7 +264,7 @@ class BoatSpaceSearch(
 
             rowsBuilder.append(
                 """
-                <span>
+                <span style="margin-right: 16px">
                     <a x-show="show <= ${harbor.boatSpaces.size}" 
                         @click="show = Math.min(show + 5, ${harbor.boatSpaces.size})">
                             <span class="icon is-small">
