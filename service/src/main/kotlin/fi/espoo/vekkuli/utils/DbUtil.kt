@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.utils
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.statement.SqlLogger
+import org.jdbi.v3.core.statement.StatementContext
 import java.util.*
 
 class DbUtil {
@@ -40,5 +42,12 @@ class DbUtil {
                 "true"
             }
         }
+    }
+}
+
+class SqlDebugLogger : SqlLogger {
+    override fun logBeforeExecution(context: StatementContext) {
+        println("Rendered SQL: ${context.renderedSql}")
+        println("Bindings: ${context.binding}")
     }
 }

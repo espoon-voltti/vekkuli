@@ -14,6 +14,9 @@ class EmployeeCardButtons(
         reservation: BoatSpaceReservationDetails,
         citizen: CitizenWithDetails
     ): String {
+        if (reservation.status == ReservationStatus.Cancelled) {
+            return ""
+        }
         // language=HTML
         return """
             <div class="buttons">
