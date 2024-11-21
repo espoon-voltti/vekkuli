@@ -31,6 +31,7 @@ class BoatSpaceRenewalRepository(
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
                     WHERE bsr.acting_citizen_id = :id AND bsr.status = 'Renewal' 
+                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
@@ -56,6 +57,7 @@ class BoatSpaceRenewalRepository(
                     JOIN location ON location_id = location.id
                     JOIN price ON price_id = price.id
                     WHERE bsr.employee_id = :id AND bsr.status = 'Renewal' 
+                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)

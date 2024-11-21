@@ -16,6 +16,7 @@ import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
+import java.util.*
 
 data class BoatSpaceRenewViewParams(
     val reservation: ReservationWithDependencies,
@@ -195,14 +196,13 @@ class BoatSpaceRenewFormView(
                     noRegistrationNumber = input.noRegistrationNumber ?: false,
                 )
             )
-
         // language=HTML
         return (
             """
             <section class="section">
-                <div class="container" id="container" x-data='{modalOpen: false'> 
+                <div class="container" id="container" x-data='{modalOpen: false}'> 
                     <div class="container">
-                        <button x-on:click="modalOpen = true" class="icon-text">
+                        <button id="go-back" x-on:click="modalOpen = true" class="icon-text">
                             <span class="icon">
                                 <div>${icons.chevronLeft}</div>
                             </span>
@@ -302,7 +302,8 @@ class BoatSpaceRenewFormView(
                                 class="button is-primary"
                                 type="button"
                                 hx-delete="/${userType.path}/venepaikka/jatka/${reservation.id}"
-                                hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
+                                hx-target="body"
+                                hx-on-htmx-after-request="window.location = '${getCitizenPageUrl(userType, citizen?.id)}';">
                                 ${t("confirm")}
                             </button>
                         </div>
@@ -314,7 +315,16 @@ class BoatSpaceRenewFormView(
         )
     }
 
-    fun renewInvoicePreview(model: SendInvoiceModel): String {
+    fun getCitizenPageUrl(
+        userType: UserType,
+        citizenId: UUID?
+    ) = "/${userType.path}/" +
+        if (userType == UserType.CITIZEN) "omat-tiedot" else "kayttaja/$citizenId"
+
+    fun renewInvoicePreview(
+        model: SendInvoiceModel,
+        reserverId: UUID?
+    ): String {
         // language=HTML
         fun invoiceLine(
             name: String,
@@ -339,6 +349,8 @@ class BoatSpaceRenewFormView(
                 </tr>
                 """.trimIndent()
             }
+
+        // language=HTML
         return """
             <section class="section">
             
@@ -387,6 +399,9 @@ class BoatSpaceRenewFormView(
                     <div class="control">
                         <button id="cancel"
                             class="button is-secondary"
+                            hx-delete="/virkailija/venepaikka/jatka/${model.reservationId}/lasku"
+                            hx-target="body"
+                            hx-on-htmx-after-request="window.location = '${getCitizenPageUrl(UserType.EMPLOYEE, reserverId)}';"
                             type="button">
                             ${t("cancel")}
                         </button>

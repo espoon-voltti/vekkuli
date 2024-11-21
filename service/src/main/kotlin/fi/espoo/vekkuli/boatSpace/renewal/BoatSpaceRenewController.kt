@@ -26,7 +26,6 @@ class BoatSpaceRenewController(
     private val boatSpaceRenewForm: BoatSpaceRenewFormView,
     private val layout: Layout,
     private val employeeLayout: EmployeeLayout,
-    private val reservationService: BoatReservationService,
     private val boatSpaceRenewalService: BoatSpaceRenewalService,
 ) {
     @RequestMapping("/kuntalainen/venepaikka/jatka/{originalReservationId}")
@@ -72,7 +71,7 @@ class BoatSpaceRenewController(
 
         val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(renewedReservation.id)
 
-        val content = boatSpaceRenewForm.renewInvoicePreview(invoiceModel)
+        val content = boatSpaceRenewForm.renewInvoicePreview(invoiceModel, renewedReservation.reserverId)
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
     }
@@ -117,6 +116,26 @@ class BoatSpaceRenewController(
             .status(HttpStatus.FOUND)
             .header("Location", "/virkailija/venepaikat/varaukset")
             .body("")
+    }
+
+    @DeleteMapping("/virkailija/venepaikka/jatka/{renewedReservationId}/lasku")
+    fun cancelRenewal(
+        @PathVariable renewedReservationId: Int,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        val employeeId = request.ensureEmployeeId()
+        boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, employeeId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @DeleteMapping("/kuntalainen/venepaikka/jatka/{renewedReservationId}")
+    fun cancelRenewalCitizen(
+        @PathVariable renewedReservationId: Int,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        val citizenId = request.ensureCitizenId()
+        boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, citizenId)
+        return redirectUrl("/kuntalainen/omat-tiedot")
     }
 }
 

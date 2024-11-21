@@ -24,8 +24,13 @@ class CitizenDetailsTest : PlaywrightTest() {
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
-
             val formPage = BoatSpaceFormPage(page)
+            formPage.backButton.click()
+
+            formPage.confirmCancelModalConfirm.click()
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+
+            citizenDetails.renewReservationButton(1).click()
             formPage.certifyInfoCheckbox.check()
             formPage.agreementCheckbox.check()
             formPage.submitButton.click()
