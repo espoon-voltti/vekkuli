@@ -4,11 +4,14 @@ const validation = (function () {
       const form = document.getElementById(formId);
       if (form) {
         setupFormValidation(form);
-        setupSubmitButtonBehavior(form);
       } else {
         console.warn(`Form with id '${formId}' not found.`);
       }
     });
+  }
+
+  function setElementVisibility(element, isVisible) {
+    element.style.visibility = isVisible ? "visible" : "hidden";
   }
 
   function validateField(field) {
@@ -22,11 +25,12 @@ const validation = (function () {
     let isValid = true;
 
     // Hide all error messages initially
-    if (errorMessageElement) errorMessageElement.style.visibility = "hidden";
+    if (errorMessageElement)
+      setElementVisibility(errorMessageElement, false);
     if (patternErrorMessageElement)
-      patternErrorMessageElement.style.visibility = "hidden";
+      setElementVisibility(patternErrorMessageElement, false);
     if (serverErrorMessageElement)
-      serverErrorMessageElement.style.visibility = "hidden";
+      setElementVisibility(serverErrorMessageElement, false);
 
     if (errorMessageElement) {
       if (
@@ -35,10 +39,10 @@ const validation = (function () {
       ) {
         if (field.type === "checkbox") {
           if (!field.checked) {
-            errorMessageElement.style.visibility = "visible";
+            setElementVisibility(errorMessageElement, true);
             return false;
           } else {
-            errorMessageElement.style.visibility = "hidden";
+            setElementVisibility(errorMessageElement, false);
           }
         }
         if (
@@ -46,10 +50,10 @@ const validation = (function () {
           field.value.trim() === "" ||
           field.value === null
         ) {
-          errorMessageElement.style.visibility = "visible";
+          setElementVisibility(errorMessageElement, true);
           return false;
         } else {
-          errorMessageElement.style.visibility = "hidden";
+          setElementVisibility(errorMessageElement, false);
         }
       }
     }
@@ -58,10 +62,10 @@ const validation = (function () {
       if (isValid && field.hasAttribute("data-pattern")) {
         const pattern = new RegExp(field.getAttribute("data-pattern"));
         if (!pattern.test(field.value)) {
-          patternErrorMessageElement.style.visibility = "visible";
+          setElementVisibility(patternErrorMessageElement, true);
           return false;
         } else {
-          patternErrorMessageElement.style.visibility = "hidden";
+          setElementVisibility(patternErrorMessageElement, false);
         }
       }
     }
@@ -89,11 +93,11 @@ const validation = (function () {
       .then((response) => response.json())
       .then((data) => {
         if (data.isValid) {
-          errorMessageElement.style.visibility = "hidden";
+          setElementVisibility(errorMessageElement, false);
           errorMessageElement.innerHTML = data.message || "";
           return true;
         } else {
-          errorMessageElement.style.visibility = "visible";
+          setElementVisibility(errorMessageElement, true);
           errorMessageElement.innerHTML =
             data.message || "This value is invalid.";
           return false;
@@ -101,7 +105,7 @@ const validation = (function () {
       })
       .catch((error) => {
         console.error("Error validating field:", error);
-        errorMessageElement.style.visibility = "visible";
+        setElementVisibility(errorMessageElement, true);
         errorMessageElement.innerText =
           "Validation failed due to server error.";
         return false;
@@ -127,7 +131,7 @@ const validation = (function () {
       }
     });
 
-    form.addEventListener("change", function (event) {
+    form.addEventListener("input", function (event) {
       const field = event.target;
       validateField(field);
     });
