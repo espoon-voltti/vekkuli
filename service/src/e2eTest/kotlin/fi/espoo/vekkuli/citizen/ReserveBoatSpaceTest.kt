@@ -163,6 +163,12 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)
+            // Cancel the payment at first
+            paymentPage.nordeaFailedButton.click()
+            // Then go through the payment
+            paymentPage.nordeaSuccessButton.click()
+            // Now we should be on the confirmation page and can go back to the home page
+            paymentPage.backToHomePageButton.click()
         } catch (e: AssertionError) {
             handleError(e)
         }

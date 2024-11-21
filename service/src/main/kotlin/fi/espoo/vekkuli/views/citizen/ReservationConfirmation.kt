@@ -60,7 +60,7 @@ class ReservationConfirmation(
                             <label>${t("boatSpaceReservation.label.reservationValidity")}</label>
                             <span>${t("boatSpaceReservation.validity.${reservation.validity}")}</span> 
                         </div>
-                        <a class="button is-primary block" href="/kuntalainen/venepaikat">
+                        <a class="button is-primary block" href="/kuntalainen/venepaikat" id="back-to-home-page">
                           ${t("boatSpaceReservation.button.backToHomePage")}</a>
                     </div>
                 </div>

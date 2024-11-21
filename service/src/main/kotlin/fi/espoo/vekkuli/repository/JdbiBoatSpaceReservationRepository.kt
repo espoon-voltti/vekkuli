@@ -789,6 +789,6 @@ class JdbiBoatSpaceReservationRepository(
             JOIN location ON location.id = bs.location_id
             LEFT JOIN price ON price_id = price.id
             JOIN municipality m ON r.municipality_code = m.code
-    LEFT JOIN payment p ON p.reservation_id = bsr.id
+            LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status <> 'Failed'
                     """
 }
