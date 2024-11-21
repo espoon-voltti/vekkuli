@@ -84,11 +84,4 @@ class BoatSpaceReservationController {
         reservationService.acknowledgeWarning(reservationId, boatId, key)
         return ResponseEntity.noContent().build()
     }
-
-    @GetMapping("/varaukset/luo")
-    fun reservationCreatePage(
-        request: HttpServletRequest,
-        @ModelAttribute params: BoatSpaceReservationFilter,
-        model: Model
-    ): String = "boat-space-reservation-create"
 }
