@@ -40,7 +40,7 @@ object BoatSpaceConfig {
         when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(null, null)
             BoatSpaceAmenity.RearBuoy -> Pair(null, spaceWidth - REAR_BUOY_WIDTH_ADJUSTMENT_CM)
-            BoatSpaceAmenity.Beam -> Pair(spaceWidth - BEAM_MIN_WIDTH_ADJUSTMENT_CM, spaceWidth - BEAM_MAX_WIDTH_ADJUSTMENT_CM)
+            BoatSpaceAmenity.Beam -> Pair(null, spaceWidth - BEAM_MAX_WIDTH_ADJUSTMENT_CM)
             BoatSpaceAmenity.WalkBeam ->
                 Pair(
                     spaceWidth - WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM,
