@@ -233,46 +233,58 @@ WHERE id = :jobId
     private fun setStatementTimeout(duration: Duration) =
         jdbi.withHandleUnchecked { it.execute("SET LOCAL statement_timeout = '${duration.toMillis()}ms'") }
 
-//    fun removeCompletedJobs(completedBefore: HelsinkiDateTime): Int =
-//        createUpdate {
-//            sql(
-//                """
-// DELETE FROM async_job
-// WHERE completed_at < ${bind(completedBefore)}
-// """
-//            )
-//        }.execute()
-//
-//    fun Database.Transaction.removeUnclaimedJobs(jobTypes: Collection<AsyncJobType<*>>): Int =
-//        createUpdate {
-//            sql(
-//                """
-// DELETE FROM async_job
-// WHERE completed_at IS NULL
-// AND claimed_at IS NULL
-// AND type = ANY(${bind(jobTypes.map { it.name })})
-//    """
-//            )
-//        }.execute()
-//
-//    fun removeUncompletedJobs(runBefore: HelsinkiDateTime): Int =
-//        createUpdate {
-//            sql(
-//                """
-// DELETE FROM async_job
-// WHERE completed_at IS NULL
-// AND run_at < ${bind(runBefore)}
-// """
-//            )
-//        }.execute()
-//
-//    fun removeOldAsyncJobs(now: HelsinkiDateTime) {
-//        val completedBefore = now.minusMonths(6)
-//        val completedCount = transaction { it.removeCompletedJobs(completedBefore) }
-//        logger.info { "Removed $completedCount async jobs completed before $completedBefore" }
-//
-//        val runBefore = now.minusMonths(6)
-//        val oldCount = transaction { it.removeUncompletedJobs(runBefore = runBefore) }
-//        logger.info("Removed $oldCount async jobs originally planned to be run before $runBefore")
-//    }
+    fun removeCompletedJobs(completedBefore: Instant): Int =
+        jdbi.withHandleUnchecked {
+            it
+                .createUpdate(
+                    """
+ DELETE FROM async_job
+ WHERE completed_at < :completedBefore
+ """
+                ).bind("completedBefore", completedBefore)
+                .execute()
+        }
+
+    // todo: handle removing old jobs using these functions
+    @Suppress("unused")
+    fun removeUnclaimedJobs(jobTypes: Collection<AsyncJobType<*>>): Int =
+        jdbi.withHandleUnchecked {
+            it
+                .createUpdate(
+                    """
+ DELETE FROM async_job
+ WHERE completed_at IS NULL
+ AND claimed_at IS NULL
+ AND type = ANY(:jobTypes)
+    """
+                ).bind("jobTypes", jobTypes.map { it.name }.toTypedArray())
+                .execute()
+        }
+
+    @Suppress("unused")
+    fun removeUncompletedJobs(runBefore: Instant): Int =
+        jdbi.withHandleUnchecked {
+            it
+                .createUpdate(
+                    """
+ DELETE FROM async_job
+ WHERE completed_at IS NULL
+ AND run_at < :runBefore
+ """
+                ).bind("runBefore", runBefore)
+                .execute()
+        }
+
+    @Suppress("unused")
+    fun removeOldAsyncJobs(now: Instant) {
+        jdbi.withHandleUnchecked {
+            val completedBefore = now - Duration.ofDays(180)
+            val completedCount = removeCompletedJobs(completedBefore)
+            logger.info { "Removed $completedCount async jobs completed before $completedBefore" }
+
+            val runBefore = now - Duration.ofDays(180)
+            val oldCount = removeUncompletedJobs(runBefore = runBefore)
+            logger.info("Removed $oldCount async jobs originally planned to be run before $runBefore")
+        }
+    }
 }
