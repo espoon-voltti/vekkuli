@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.kotlin.any
@@ -24,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 
 @ExtendWith(SpringExtension::class)
@@ -49,7 +51,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     lateinit var invoiceClient: InvoiceClient
 
     @Test
-    fun `should fetch existing renewal reservation for employee`() {
+    fun `should create a renewal reservation if not exist or fetch if already created`() {
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -59,7 +61,8 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                 )
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
-        assertNotNull(createdRenewal, "Renewal reservation should be created")
+        assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
+        assertEquals(reservation.id, createdRenewal.renewedFromId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -68,7 +71,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should update renewal reservation`() {
+    fun `should update renew reservation details based on input`() {
         val reservation =
             testUtils.createReservationInRenewState(
                 CreateReservationParams(
@@ -104,11 +107,14 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
         assertEquals(renewalInput.boatId, updatedReservation?.boatId, "Boat ID should be updated")
         assertEquals(renewalInput.email, updatedReservation?.email, "User email should be updated")
+        assertEquals(renewalInput.phone, updatedReservation?.phone, "User phone should be updated")
+
+        // Should be in payment state after sending the renewal request, will redirect to payment page
         assertEquals(ReservationStatus.Payment, updatedReservation?.status, "Status should be set to Payment")
     }
 
     @Test
-    fun `should activate renewal and send invoice`() {
+    fun `should send invoice, set renewal to invoice state and set old reservation as expired`() {
         val oldReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -151,11 +157,10 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                 )
             )
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
-        try {
+        assertThrows<RuntimeException> {
             boatSpaceRenewalService.activateRenewalAndSendInvoice(renewalReservation.id)
-        } catch (e: RuntimeException) {
-            // expected
         }
+
         assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
         assertEquals(ReservationStatus.Confirmed, oldReservation.status, "Old reservation should be rolled back")
         assertEquals(
