@@ -3,7 +3,9 @@ package fi.espoo.vekkuli.boatSpace.renewal
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.controllers.*
+import fi.espoo.vekkuli.controllers.Utils.Companion.badRequest
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
+import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.views.citizen.Layout
@@ -67,7 +69,9 @@ class BoatSpaceRenewController(
     ): ResponseEntity<String> {
         val userId = request.ensureEmployeeId()
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, originalReservationId)
+
         val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(renewedReservation.id)
+
         val content = boatSpaceRenewForm.renewInvoicePreview(invoiceModel)
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
@@ -80,24 +84,13 @@ class BoatSpaceRenewController(
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        fun badRequest(body: String): ResponseEntity<String> = ResponseEntity.badRequest().body(body)
-
-        fun redirectUrl(url: String): ResponseEntity<String> =
-            ResponseEntity
-                .status(HttpStatus.FOUND)
-                .header("Location", url)
-                .body("")
-
-        // TODO: Extract code above
-
         val citizenId = request.ensureCitizenId()
 
-        val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenId, originalReservationId)
         if (bindingResult.hasErrors()) {
-            reservationService.getReservationWithReserver(renewedReservation.id) ?: return redirectUrl("/")
             return badRequest("Invalid input")
         }
 
+        val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenId, originalReservationId)
         try {
             boatSpaceRenewalService.updateRenewReservation(citizenId, input, renewedReservation.id)
         } catch (e: Exception) {
@@ -116,6 +109,7 @@ class BoatSpaceRenewController(
         try {
             boatSpaceRenewalService.activateRenewalAndSendInvoice(renewedReservationId)
         } catch (e: Exception) {
+            // TODO: should we respond with error page or redirect to some other page?
             val errorPage = boatSpaceRenewForm.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
         }

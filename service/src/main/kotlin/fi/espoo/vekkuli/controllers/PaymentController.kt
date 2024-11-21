@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
+import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrlThymeleaf
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.service.*
@@ -47,8 +47,8 @@ class PaymentController(
         request: HttpServletRequest,
     ): String {
         val locale = LocaleContextHolder.getLocale()
-        val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
-        val reservation = reservationService.getBoatSpaceReservation(id) ?: return redirectUrl("/")
+        val citizen = getCitizen(request, citizenService) ?: return redirectUrlThymeleaf("/")
+        val reservation = reservationService.getBoatSpaceReservation(id) ?: return redirectUrlThymeleaf("/")
 
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
         val amount = reservation.priceCents
@@ -112,9 +112,11 @@ class PaymentController(
             reservationService.handlePaymentResult(params, true)
 
         when (result) {
-            is PaymentProcessResult.Success -> return redirectUrl("/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus")
-            is PaymentProcessResult.Failure -> return redirectUrl("/")
-            is PaymentProcessResult.HandledAlready -> return redirectUrl("/")
+            is PaymentProcessResult.Success -> return redirectUrlThymeleaf(
+                "/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus"
+            )
+            is PaymentProcessResult.Failure -> return redirectUrlThymeleaf("/")
+            is PaymentProcessResult.HandledAlready -> return redirectUrlThymeleaf("/")
         }
     }
 
@@ -123,12 +125,12 @@ class PaymentController(
         @RequestParam params: Map<String, String>,
     ): String {
         return when (val result = reservationService.handlePaymentResult(params, false)) {
-            is PaymentProcessResult.Failure -> return redirectUrl("/")
-            is PaymentProcessResult.Success -> return redirectUrl(
+            is PaymentProcessResult.Failure -> return redirectUrlThymeleaf("/")
+            is PaymentProcessResult.Success -> return redirectUrlThymeleaf(
                 "/kuntalainen/maksut/maksa?id=${result.reservation.id}&type=BoatSpaceReservation&cancelled=true"
             )
             is PaymentProcessResult.HandledAlready ->
-                redirectUrl(
+                redirectUrlThymeleaf(
                     "/kuntalainen/maksut/maksa?id=${result.reservation.id}&type=BoatSpaceReservation&cancelled=true"
                 )
         }

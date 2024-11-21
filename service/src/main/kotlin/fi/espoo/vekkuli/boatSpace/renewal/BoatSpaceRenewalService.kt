@@ -17,6 +17,7 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.*
 
@@ -158,6 +159,7 @@ class BoatSpaceRenewalService(
         )
     }
 
+    @Transactional
     fun activateRenewalAndSendInvoice(renewedReservationId: Int) {
         val newReservation = reservationService.getReservationWithReserver(renewedReservationId)
         if (newReservation?.reserverId == null || newReservation.renewedFromId == null) {
@@ -168,12 +170,13 @@ class BoatSpaceRenewalService(
             invoiceService.createInvoiceData(renewedReservationId, newReservation.reserverId)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        invoiceService.createAndSendInvoice(invoiceData, newReservation.reserverId, newReservation.id)
-            ?: throw InternalError("Failed to create invoice")
-
         reservationService.setReservationStatusToInvoiced(newReservation.id)
 
         reservationService.markReservationEnded(newReservation.renewedFromId)
+
+        // Sending is last as if sending to external service fails, we don't leave the system in an inconsistent state when it rollbacks
+        invoiceService.createAndSendInvoice(invoiceData, newReservation.reserverId, newReservation.id)
+            ?: throw InternalError("Failed to send invoice")
     }
 
     fun buildBoatSpaceRenewalViewParams(

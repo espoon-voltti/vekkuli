@@ -316,6 +316,29 @@ class BoatSpaceRenewFormView(
 
     fun renewInvoicePreview(model: SendInvoiceModel): String {
         // language=HTML
+        fun invoiceLine(
+            name: String,
+            value: String
+        ) = """
+            <div class="block">
+                <span class="invoice-line">$name:</span><span>$value</span>
+            </div>
+            """.trimIndent()
+
+        fun invoiceRows(rows: List<InvoiceRow>): String =
+            rows.joinToString { row ->
+                """
+                <tr>
+                    <td>${row.description}</td>
+                    <td>${row.customer}</td>
+                    <td>${row.priceWithoutVat}</td>
+                    <td>${row.vat}</td>
+                    <td>${row.priceWithVat}</td>
+                    <td>${row.organization}</td>
+                    <td>${row.paymentDate}</td>
+                </tr>
+                """.trimIndent()
+            }
         return """
             <section class="section">
             
@@ -381,30 +404,6 @@ class BoatSpaceRenewFormView(
 
             """.trimIndent()
     }
-
-    fun invoiceLine(
-        name: String,
-        value: String
-    ) = """
-        <div class="block">
-            <span class="invoice-line">$name:</span><span>$value</span>
-        </div>
-        """.trimIndent()
-
-    fun invoiceRows(rows: List<InvoiceRow>): String =
-        rows.joinToString { row ->
-            """
-            <tr>
-                <td>${row.description}</td>
-                <td>${row.customer}</td>
-                <td>${row.priceWithoutVat}</td>
-                <td>${row.vat}</td>
-                <td>${row.priceWithVat}</td>
-                <td>${row.organization}</td>
-                <td>${row.paymentDate}</td>
-            </tr>
-            """.trimIndent()
-        }
 
     fun invoiceErrorPage() =
         """

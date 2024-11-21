@@ -64,10 +64,10 @@ data class CreateReservationParams(
 
 @Service
 class TestUtils(
-    private val reservationService: BoatReservationService
+    private val reservationService: BoatReservationService,
 ) {
-    fun createReservationInConfirmedState(params: CreateReservationParams): BoatSpaceReservation {
-        val madeReservation =
+    fun createReservationInConfirmedState(params: CreateReservationParams): BoatSpaceReservationDetails {
+        var madeReservation =
             reservationService.insertBoatSpaceReservation(
                 params.reserverId,
                 params.citizenId,
@@ -75,22 +75,23 @@ class TestUtils(
                 startDate = params.startDate,
                 endDate = params.endDate,
             )
-        reservationService.updateBoatInBoatSpaceReservation(
-            madeReservation.id,
-            params.boatId,
-            params.reserverId,
-            params.status,
-            params.validity,
-            startDate = params.startDate,
-            endDate = params.endDate,
-        )
+        madeReservation =
+            reservationService.updateBoatInBoatSpaceReservation(
+                madeReservation.id,
+                params.boatId,
+                params.reserverId,
+                params.status,
+                params.validity,
+                startDate = params.startDate,
+                endDate = params.endDate,
+            )
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(params.citizenId, "1", 1, 24.0, "1")
             )
         reservationService.handleReservationPaymentResult(payment.id, true)
-        return madeReservation
+        return reservationService.getBoatSpaceReservation(madeReservation.id) ?: throw IllegalStateException("Reservation not found")
     }
 
     fun createReservationInRenewState(params: CreateReservationParams): BoatSpaceReservation =

@@ -8,14 +8,18 @@ import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.InvoiceClient
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
@@ -29,6 +33,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
+        Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenReturn(true)
     }
 
     @Autowired
@@ -39,6 +44,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var boatSpaceRenewalService: BoatSpaceRenewalService
+
+    @MockBean
+    lateinit var invoiceClient: InvoiceClient
 
     @Test
     fun `should fetch existing renewal reservation for employee`() {
@@ -124,6 +132,36 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusDays(1),
             updatedOldReservation?.endDate,
             "Old reservation should be marked as ended"
+        )
+    }
+
+    @Test
+    fun `should rollback if sending invoice fails`() {
+        Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenThrow(RuntimeException("Invoice sending failed"))
+
+        val originalEndDate = LocalDate.of(2025, 1, 31)
+        val oldReservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                    startDate = LocalDate.of(2024, 4, 1),
+                    endDate = originalEndDate,
+                )
+            )
+        val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
+        try {
+            boatSpaceRenewalService.activateRenewalAndSendInvoice(renewalReservation.id)
+        } catch (e: RuntimeException) {
+            // expected
+        }
+        assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
+        assertEquals(ReservationStatus.Confirmed, oldReservation.status, "Old reservation should be rolled back")
+        assertEquals(
+            originalEndDate,
+            oldReservation.endDate,
+            "Old reservation should not be marked as ended"
         )
     }
 
