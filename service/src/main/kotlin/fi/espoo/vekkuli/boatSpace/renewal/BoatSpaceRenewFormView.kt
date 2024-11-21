@@ -115,8 +115,6 @@ class BoatSpaceRenewFormView(
             
             """.trimIndent()
 
-        // language=HTML
-
         val email =
             formComponents.textInput(
                 "boatApplication.email",
@@ -214,7 +212,7 @@ class BoatSpaceRenewFormView(
                     <form
                         id="form"
                         class="column"
-                        action="/${userType.path}/venepaikka/jatka/${reservation.id}"
+                        action="/${userType.path}/venepaikka/jatka/${reservation.renewedFromId}"
                         method="post"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>

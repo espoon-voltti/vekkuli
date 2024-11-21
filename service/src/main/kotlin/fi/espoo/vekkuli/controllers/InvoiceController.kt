@@ -32,11 +32,6 @@ class InvoiceController(
     fun invoiceView(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
-    ): ResponseEntity<String> = renderInvoicePage(reservationId, request)
-
-    private fun renderInvoicePage(
-        reservationId: Int,
-        request: HttpServletRequest,
     ): ResponseEntity<String> {
         val reservation = reservationService.getReservationWithReserver(reservationId)
         if (reservation?.reserverId == null) {

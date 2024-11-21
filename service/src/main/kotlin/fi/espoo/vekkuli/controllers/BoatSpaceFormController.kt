@@ -10,7 +10,7 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrlThymeleaf
+import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
@@ -276,16 +276,18 @@ class BoatSpaceFormController(
         @PathVariable reservationId: Int,
         model: Model,
         request: HttpServletRequest,
-    ): String {
-        val citizen = getCitizen(request, citizenService) ?: return redirectUrlThymeleaf("/")
+    ): ResponseEntity<String> {
+        val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
         val reservation = reservationService.getBoatSpaceReservation(reservationId)
-        if (reservation == null) return redirectUrlThymeleaf("/")
+        if (reservation == null) return redirectUrl("/")
 
-        return layout.render(
-            true,
-            citizen.fullName,
-            request.requestURI,
-            reservationConfirmation.render(reservation)
+        return ResponseEntity.ok(
+            layout.render(
+                true,
+                citizen.fullName,
+                request.requestURI,
+                reservationConfirmation.render(reservation)
+            )
         )
     }
 

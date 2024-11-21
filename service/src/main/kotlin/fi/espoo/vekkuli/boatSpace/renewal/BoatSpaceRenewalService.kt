@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
-import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateBoatSpaceReservationService
+import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UnauthorizedException
@@ -31,13 +31,13 @@ class BoatSpaceRenewalService(
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
     private val timeProvider: TimeProvider,
-    private val terminateBoatSpaceReservationService: TerminateBoatSpaceReservationService,
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
         reservationId: Int,
     ): ReservationWithDependencies {
-        val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId)
+        val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId)
+
         val renewalReservation = renewal ?: reservationService.createRenewalReservationForEmployee(reservationId, userId)
         if (renewalReservation == null) throw IllegalStateException("Reservation not found")
         return renewalReservation
@@ -45,14 +45,26 @@ class BoatSpaceRenewalService(
 
     fun getOrCreateRenewalReservationForCitizen(
         userId: UUID,
-        oldReservationId: Int,
+        reservationId: Int,
     ): ReservationWithDependencies {
-        val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId)
+        val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, reservationId)
 
-        val renewalReservation = renewal ?: reservationService.createRenewalReservationForCitizen(oldReservationId, userId)
+        val renewalReservation = renewal ?: reservationService.createRenewalReservationForCitizen(reservationId, userId)
         if (renewalReservation == null) throw IllegalStateException("Reservation not created")
         return renewalReservation
     }
+
+    fun getRenewalReservationForCitizen(
+        userId: UUID,
+        reservationId: Int,
+    ): ReservationWithDependencies =
+        boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, reservationId) ?: throw BadRequest("Reservation not found")
+
+    fun getRenewalReservationForEmployee(
+        userId: UUID,
+        reservationId: Int,
+    ): ReservationWithDependencies =
+        boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId) ?: throw BadRequest("Reservation not found")
 
     fun cancelRenewalReservation(
         renewalReservationId: Int,
@@ -167,22 +179,25 @@ class BoatSpaceRenewalService(
     }
 
     @Transactional
-    fun activateRenewalAndSendInvoice(renewedReservationId: Int) {
-        val newReservation = reservationService.getReservationWithReserver(renewedReservationId)
-        if (newReservation?.reserverId == null || newReservation.renewedFromId == null) {
+    fun activateRenewalAndSendInvoice(
+        renewedReservationId: Int,
+        reserverId: UUID?,
+        renewedFromId: Int?
+    ) {
+        if (reserverId == null || renewedFromId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
 
         val invoiceData =
-            invoiceService.createInvoiceData(renewedReservationId, newReservation.reserverId)
+            invoiceService.createInvoiceData(renewedReservationId, reserverId)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        reservationService.setReservationStatusToInvoiced(newReservation.id)
+        reservationService.setReservationStatusToInvoiced(renewedReservationId)
 
-        reservationService.markReservationEnded(newReservation.renewedFromId)
+        reservationService.markReservationEnded(renewedFromId)
 
         // Sending is last as if sending to external service fails, we don't leave the system in an inconsistent state when it rollbacks
-        invoiceService.createAndSendInvoice(invoiceData, newReservation.reserverId, newReservation.id)
+        invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
             ?: throw InternalError("Failed to send invoice")
     }
 

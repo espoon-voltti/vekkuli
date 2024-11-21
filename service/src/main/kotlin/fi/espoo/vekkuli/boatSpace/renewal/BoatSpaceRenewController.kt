@@ -7,7 +7,6 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.badRequest
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
@@ -89,24 +88,30 @@ class BoatSpaceRenewController(
             return badRequest("Invalid input")
         }
 
-        val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenId, originalReservationId)
         try {
+            val renewedReservation = boatSpaceRenewalService.getRenewalReservationForCitizen(citizenId, originalReservationId)
             boatSpaceRenewalService.updateRenewReservation(citizenId, input, renewedReservation.id)
+
+            // redirect to payments page with reservation id and slip type
+            return redirectUrl("/kuntalainen/maksut/maksa?id=${renewedReservation.id}&type=${PaymentType.BoatSpaceReservation}")
         } catch (e: Exception) {
             return badRequest(e.message ?: "Failed to renew boat space")
         }
-
-        // redirect to payments page with reservation id and slip type
-        return redirectUrl("/kuntalainen/maksut/maksa?id=${renewedReservation.id}&type=${PaymentType.BoatSpaceReservation}")
     }
 
-    @PostMapping("/virkailija/venepaikka/jatka/{renewedReservationId}/lasku")
+    @PostMapping("/virkailija/venepaikka/jatka/{originalReservationId}/lasku")
     fun sendInvoiceAndTerminateOldReservation(
-        @PathVariable renewedReservationId: Int,
+        @PathVariable originalReservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        val employeeId = request.ensureEmployeeId()
         try {
-            boatSpaceRenewalService.activateRenewalAndSendInvoice(renewedReservationId)
+            val renewedReservation = boatSpaceRenewalService.getRenewalReservationForEmployee(employeeId, originalReservationId)
+            boatSpaceRenewalService.activateRenewalAndSendInvoice(
+                renewedReservation.id,
+                renewedReservation.reserverId,
+                renewedReservation.renewedFromId
+            )
         } catch (e: Exception) {
             // TODO: should we respond with error page or redirect to some other page?
             val errorPage = boatSpaceRenewForm.invoiceErrorPage()

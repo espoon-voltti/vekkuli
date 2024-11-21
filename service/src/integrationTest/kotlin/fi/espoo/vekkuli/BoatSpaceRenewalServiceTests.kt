@@ -10,7 +10,6 @@ import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.service.InvoiceClient
 import fi.espoo.vekkuli.utils.mockTimeProvider
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -51,7 +50,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     lateinit var invoiceClient: InvoiceClient
 
     @Test
-    fun `should create a renewal reservation if not exist or fetch if already created`() {
+    fun `should create a renewal reservation for employee if not exist or fetch if already created`() {
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -67,6 +66,88 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
+        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+    }
+
+    @Test
+    fun `should create a renewal reservation for citizen if not exist or fetch if already created`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                )
+            )
+        var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
+        assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
+        assertEquals(reservation.id, createdRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
+
+        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
+        assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
+        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+    }
+
+    @Test
+    fun `should create a renewal reservation for employee if no renewal reservation exists`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                )
+            )
+        val secondReservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    2,
+                )
+            )
+        val firstRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertNotNull(firstRenewal.id, "Renewal reservation ID is not the same as original")
+
+        val secondRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, secondReservation.id)
+        assertNotNull(secondRenewal.id, "Renewal reservation ID is not the same as original")
+        assertEquals(secondReservation.id, secondRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(ReservationStatus.Renewal, secondRenewal.status, "Status should be renewal")
+
+        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertEquals(firstRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
+        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+    }
+
+    @Test
+    fun `should create a renewal reservation for citizen if no renewal reservation exists`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                )
+            )
+        val secondReservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    2,
+                )
+            )
+        val firstRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
+        assertNotNull(firstRenewal.id, "Renewal reservation ID is not the same as original")
+
+        val secondRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdOlivia, secondReservation.id)
+        assertNotNull(secondRenewal.id, "Renewal reservation ID is not the same as original")
+        assertEquals(secondReservation.id, secondRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(ReservationStatus.Renewal, secondRenewal.status, "Status should be renewal")
+
+        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
+        assertEquals(firstRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
         assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
     }
 
@@ -125,7 +206,11 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
             )
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
 
-        boatSpaceRenewalService.activateRenewalAndSendInvoice(renewalReservation.id)
+        boatSpaceRenewalService.activateRenewalAndSendInvoice(
+            renewalReservation.id,
+            renewalReservation.reserverId,
+            renewalReservation.renewedFromId
+        )
 
         val updatedOldReservation = reservationService.getBoatSpaceReservation(oldReservation.id)
         val updatedRenewalReservation = reservationService.getBoatSpaceReservation(renewalReservation.id)
@@ -158,7 +243,11 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
             )
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
         assertThrows<RuntimeException> {
-            boatSpaceRenewalService.activateRenewalAndSendInvoice(renewalReservation.id)
+            boatSpaceRenewalService.activateRenewalAndSendInvoice(
+                renewalReservation.id,
+                renewalReservation.reserverId,
+                renewalReservation.renewedFromId
+            )
         }
 
         assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
@@ -263,19 +352,20 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
         val viewParams = boatSpaceRenewalService.buildBoatSpaceRenewalViewParams(citizenIdLeo, renewedReservation, renewalInput)
 
-        assertEquals(renewalInput.boatName, viewParams.input.boatName, "Email should have been updated")
-        assertEquals(renewalInput.boatId, viewParams.input.boatId, "Email should have been updated")
-        assertEquals(renewalInput.boatType, viewParams.input.boatType, "Email should have been updated")
-        assertEquals(renewalInput.extraInformation, viewParams.input.extraInformation, "Email should have been updated")
-        assertEquals(renewalInput.weight, viewParams.input.weight, "Email should have been updated")
-        assertEquals(renewalInput.width, viewParams.input.width, "Email should have been updated")
-        assertEquals(renewalInput.length, viewParams.input.length, "Email should have been updated")
-        assertEquals(renewalInput.depth, viewParams.input.depth, "Email should have been updated")
+        assertEquals(renewalInput.boatName, viewParams.input.boatName, "Boat name should have been updated")
+        assertEquals(renewalInput.boatId, viewParams.input.boatId, "Boat ID should have been updated")
+        assertEquals(renewalInput.boatType, viewParams.input.boatType, "Boat type should have been updated")
+        assertEquals(renewalInput.extraInformation, viewParams.input.extraInformation, "Extra information should have been updated")
+        assertEquals(renewalInput.weight, viewParams.input.weight, "Weight should have been updated")
+        assertEquals(renewalInput.width, viewParams.input.width, "Width should have been updated")
+        assertEquals(renewalInput.length, viewParams.input.length, "Length should have been updated")
+        assertEquals(renewalInput.depth, viewParams.input.depth, "Depth should have been updated")
     }
 
     @Test
     fun `should be able to renew expiring reservation`() {
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
+        val endDateWithinMonthOfRenewWindow = LocalDate.of(2025, 1, 31)
         val madeReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -284,7 +374,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     1,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    endDate = timeProvider.getCurrentDate().plusMonths(9)
+                    endDate = endDateWithinMonthOfRenewWindow
                 )
             )
         var reservation =
@@ -294,9 +384,10 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     it.id == madeReservation.id
                 }
         assertEquals(reservation?.canRenew, false, "Reservation can not be renewed")
-        Assertions.assertNotNull(reservation?.endDate, "Reservation has end date")
-        val expiringDate = (reservation?.endDate?.minusDays(20) ?: LocalDate.now()).atTime(12, 0, 0)
-        mockTimeProvider(timeProvider, expiringDate)
+        assertNotNull(reservation?.endDate, "Reservation has end date")
+
+        val reservationExpiringAndSeasonOpenTime = LocalDateTime.of(2025, 1, 8, 12, 0, 0)
+        mockTimeProvider(timeProvider, reservationExpiringAndSeasonOpenTime)
         reservation =
             reservationService
                 .getBoatSpaceReservationsForCitizen(this.citizenIdLeo)
