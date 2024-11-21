@@ -284,6 +284,10 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         page.getByText("Kirjaudu").click()
         val formPage = BoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
+
+        assertThat(reservationPage.widthFilterInput).hasValue("3")
+        assertThat(reservationPage.lengthFilterInput).hasValue("6")
+
         formPage.fillFormAndSubmit()
     }
 
