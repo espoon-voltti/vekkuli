@@ -122,6 +122,10 @@ const validation = (function () {
 
       fields.forEach(function (field) {
         if (!validateField(field)) {
+          if(isValid) {
+            field.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+            field.focus();
+          }
           isValid = false;
         }
       });
@@ -135,32 +139,6 @@ const validation = (function () {
       const field = event.target;
       validateField(field);
     });
-  }
-
-  function setupSubmitButtonBehavior(form) {
-    const submitButton = form.querySelector(
-      'button[type="submit"], input[type="submit"]',
-    );
-
-    if (submitButton) {
-      submitButton.addEventListener("click", function (event) {
-        let isValid = true;
-
-        const fields = form.querySelectorAll(
-          "[data-required], [data-pattern], [data-validate-url]",
-        );
-
-        fields.forEach(function (field) {
-          if (!validateField(field)) {
-            isValid = false;
-          }
-        });
-
-        if (!isValid) {
-          event.preventDefault(); // Prevent the form submission
-        }
-      });
-    }
   }
 
   return {
