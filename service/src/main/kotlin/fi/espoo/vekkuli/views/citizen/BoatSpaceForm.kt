@@ -625,7 +625,7 @@ class BoatSpaceForm(
                                     </div>
                                 </div>
                             </div>
-                        
+                      
                         
                         </div >
                         <div class="field block">
@@ -1080,7 +1080,10 @@ class BoatSpaceForm(
                                 </div>
                             </div>
                         </div >
-                        
+                         <div class="warning columns is-half-width" id="validation-warning" style="display:none;" >
+                            ${icons.warningExclamation(false)}
+                            <p>${t("boatApplication.validationWarning")}</p>
+                        </div>
                         <div class="field block">
                             <div class="control">
                                 <button id="cancel"

@@ -834,3 +834,11 @@ ul {
 .debug-info__content {
   pointer-events: auto;
 }
+
+form .columns {
+  margin-inline-start: 0;
+}
+
+.columns.is-half-width {
+  width: 50%;
+}

@@ -133,6 +133,10 @@ const validation = (function () {
     });
   }
 
+  function setVisible(element, value) {
+    element.style.display = value ? "" : "none";
+  }
+
   function setupSubmitButtonBehavior(form) {
     const submitButton = form.querySelector(
       'button[type="submit"], input[type="submit"]',
@@ -140,6 +144,7 @@ const validation = (function () {
 
     if (submitButton) {
       submitButton.addEventListener("click", function (event) {
+        setVisible(document.getElementById("validation-warning"), false);
         let isValid = true;
 
         const fields = form.querySelectorAll(
@@ -153,6 +158,7 @@ const validation = (function () {
         });
 
         if (!isValid) {
+          setVisible(document.getElementById("validation-warning"), true);
           event.preventDefault(); // Prevent the form submission
         }
       });
