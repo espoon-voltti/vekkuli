@@ -11,7 +11,7 @@ class BoatSpaceSizeLimitsTest {
     @CsvSource(
         "Buoy, 200, 300, null, null, null, null",
         "RearBuoy, 200, 600, null, 150, null, 300",
-        "Beam, 200, 300, 100, 160, null, 430",
+        "Beam, 200, 300, null, 160, null, 430",
         "WalkBeam, 200, 300, 100, 125, 150, 430"
     )
     fun `given boat space size, should get correct limits for a boat size`(
