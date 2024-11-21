@@ -1101,7 +1101,7 @@ class BoatSpaceForm(
                     <script>
                         validation.init({forms: ['form']})
                         window.addEventListener('load', function() {
-                            if (!document.getElementById("width").value && !document.getElementById("length")) {
+                            if (!document.getElementById("width").value && !document.getElementById("length").value) {
                                 const type = localStorage.getItem('type');
                                 if (type) {
                                     document.getElementById("boatType").value = type;
