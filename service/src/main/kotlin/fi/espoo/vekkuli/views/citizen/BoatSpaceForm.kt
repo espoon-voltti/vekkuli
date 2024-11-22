@@ -138,6 +138,8 @@ class BoatSpaceForm(
                 hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
                 hx-include="#length"
                 hx-target="#boat-size-warning"
+                min="0.1"
+                max="100"
                 """.trimIndent()
             )
 
@@ -152,6 +154,8 @@ class BoatSpaceForm(
                 hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
                 hx-include="#width"
                 hx-target="#boat-size-warning"
+                min="0.1"
+                max="100"
                 """.trimIndent()
             )
 
@@ -161,7 +165,12 @@ class BoatSpaceForm(
                 "depth",
                 input.depth,
                 required = true,
-                step = 0.1
+                step = 0.1,
+                attributes =
+                    """
+                    min="0.1"
+                    max="100"
+                    """.trimIndent()
             )
 
         val weightInput =
@@ -175,6 +184,8 @@ class BoatSpaceForm(
                     hx-trigger="change, load" 
                     hx-get="/venepaikka/varaus/$reservationId/boat-weight-warning" 
                     hx-target="#boat-weight-warning"
+                    min="0.1"
+                    max="100000"
                     """.trimIndent()
             )
 
