@@ -173,7 +173,7 @@ class BoatSpaceForm(
             formComponents.numberInput(
                 "boatApplication.boatWeightInKg",
                 "weight",
-                input.weight?.toDouble(),
+                input.weight,
                 required = true,
                 attributes =
                     """

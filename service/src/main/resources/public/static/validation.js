@@ -109,34 +109,41 @@ const validation = (function () {
     }
   }
 
+  async function validateForm(form) {
+    const fields = form.querySelectorAll(
+      '[data-required], [data-pattern], [data-validate-url]'
+    );
+
+    const validationPromises = Array.from(fields).map(validateField);
+    const validationResults = await Promise.all(validationPromises);
+
+    const isValid = validationResults.every(result => result);
+
+    if (!isValid) {
+      // Find and focus on the first invalid field
+      const firstInvalidField = fields[validationResults.indexOf(false)];
+      firstInvalidField.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      firstInvalidField.focus();
+    }
+
+    return isValid;
+  }
+
   function setupFormValidation(form) {
-    form.addEventListener('submit', async function (event) {
-      event.preventDefault();
+    // Handle submit button clicks
+    form.addEventListener('click', async function (event) {
+      if (event.target.matches('button[type="submit"], input[type="submit"]')) {
+        const isValid = await validateForm(form);
 
-      const fields = form.querySelectorAll(
-        '[data-required], [data-pattern], [data-validate-url]'
-      );
-
-      const validationPromises = Array.from(fields).map(validateField);
-      const validationResults = await Promise.all(validationPromises);
-
-      const isValid = validationResults.every(result => result);
-
-      if (isValid) {
-        // If all validations pass, submit the form
-        form.submit();
-      } else {
-        // Find and focus on the first invalid field
-        const firstInvalidField = fields[validationResults.indexOf(false)];
-        firstInvalidField.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-        firstInvalidField.focus();
+        if (!isValid) {
+          event.preventDefault();
+        }
       }
-    });
+    }, true);
 
-    // Real-time validation on input
     form.addEventListener('input', function (event) {
       const field = event.target;
       if (field.matches('[data-required], [data-pattern], [data-validate-url]')) {

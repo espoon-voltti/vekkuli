@@ -49,11 +49,10 @@ class FormComponents {
     fun numberInput(
         labelKey: String,
         id: String,
-        value: Double?,
+        value: Int?,
         required: Boolean? = false,
         compact: Boolean = false,
         attributes: String = "",
-        step: String? = null,
     ): String =
         textInput(
             labelKey = labelKey,
@@ -64,12 +63,13 @@ class FormComponents {
             type = "number",
             attributes =
                 """
-                ${if (step != null) "step=\"$step\"" else ""}
+                step="1"
                 min="1"
                 max="9999999"
-                @change="${"$"}el.value !== '' && ${"$"}el.min && (
-                    parseFloat(${"$"}el.value) < parseFloat(${'$'}el.min) ? ${"$"}el.value = ${"$"}el.min : ${'$'}el.value
-                    parseFloat(${"$"}el.value) > parseFloat(${'$'}el.max) ? ${"$"}el.value = ${"$"}el.max : ${'$'}el.value
+                @change="${"$"}el.value !== '' && (
+                    parseFloat(${"$"}el.value) < parseFloat(${'$'}el.min) ? ${"$"}el.value = ${"$"}el.min : 
+                    parseFloat(${"$"}el.value) > parseFloat(${'$'}el.max) ? ${"$"}el.value = ${"$"}el.max : 
+                    ${'$'}el.value = Math.round(parseFloat(${'$'}el.value))
                 )"
                 $attributes
                 """.trimIndent()
@@ -84,15 +84,23 @@ class FormComponents {
         step: Double? = 0.01,
         compact: Boolean = false
     ): String =
-        numberInput(
+        textInput(
             labelKey = labelKey,
             id = id,
-            value = value,
+            value = value?.toString(),
             required = required,
             compact = compact,
-            step = step?.toString() ?: "0.01",
+            type = "number",
             attributes =
                 """
+                step="${step?.toString() ?: "0.01"}"
+                min="0"
+                max="9999999"
+                @change="${"$"}el.value !== '' && (
+                    parseFloat(${"$"}el.value) < parseFloat(${'$'}el.min) ? ${"$"}el.value = ${"$"}el.min : 
+                    parseFloat(${"$"}el.value) > parseFloat(${'$'}el.max) ? ${"$"}el.value = ${"$"}el.max : 
+                    ${'$'}el.value
+                )"
                 $attributes
                 """.trimIndent()
         )

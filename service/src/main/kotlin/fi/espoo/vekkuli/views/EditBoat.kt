@@ -32,7 +32,7 @@ class EditBoat {
             formComponents.numberInput(
                 "boatApplication.boatWeightInKg",
                 "weight",
-                boat.weight?.toDouble(),
+                boat.weight,
                 required = true,
             )
 
