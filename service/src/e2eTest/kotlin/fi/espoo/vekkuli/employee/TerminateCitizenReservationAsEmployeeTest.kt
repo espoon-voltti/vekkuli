@@ -5,18 +5,24 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
+import fi.espoo.vekkuli.citizenPageInEnglish
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
-class TerminateCitizenReservationAsEmpoyeeTest : PlaywrightTest() {
-    val citizenPageInEnglish = "$baseUrl/kuntalainen/omat-tiedot?lang=en"
+class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
+    @Autowired
+    lateinit var messageUtil: MessageUtil
 
     @Test
     fun `employee navigates to citizen details page and opens a terminate reservation modal from a reservation list item and cancel it`() {
@@ -59,6 +65,9 @@ class TerminateCitizenReservationAsEmpoyeeTest : PlaywrightTest() {
             val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
             val endDate = timeProvider.getCurrentDate()
+            val terminationComment = "Test comment"
+            val terminationReason = ReservationTerminationReasonOptions.PaymentViolation
+            val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.paymentViolation")
             page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
@@ -78,8 +87,8 @@ class TerminateCitizenReservationAsEmpoyeeTest : PlaywrightTest() {
 
             // Fills the form
             citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
-            citizenDetailsPage.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.PaymentViolation.toString())
-            citizenDetailsPage.terminateReservationExplanation.fill("Test comment")
+            citizenDetailsPage.terminateReservationReason.selectOption(terminationReason.toString())
+            citizenDetailsPage.terminateReservationExplanation.fill(terminationComment)
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
 
@@ -101,6 +110,104 @@ class TerminateCitizenReservationAsEmpoyeeTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.expiredReservationList).isVisible()
             assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
             assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B001")
+
+            assertThat(
+                citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
+            ).containsText(expectedTerminationReason)
+
+            assertThat(
+                citizenDetailsPage.terminationCommentInFirstExpiredReservationListItem
+            ).containsText(terminationComment)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can terminate reservation to end in the future`() {
+        try {
+            val listingPage = ReservationListPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            val weeksAddedToEndTime = 2L
+            val endDate = timeProvider.getCurrentDate().plusWeeks(weeksAddedToEndTime)
+            val expectedTerminationDate = timeProvider.getCurrentDate()
+            val terminationComment = "Test comment"
+            val terminationReason = ReservationTerminationReasonOptions.RuleViolation
+            val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.ruleViolation")
+
+            page.navigate(employeePageInEnglish)
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+
+            // Expired list is not on the page
+            assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
+            assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
+
+            citizenDetailsPage.terminateReservationAsEmployeeButton.click()
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
+
+            // Opens up information from the first reservation of the first user
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+
+            // Fills the form
+            citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
+            citizenDetailsPage.terminateReservationReason.selectOption(terminationReason.toString())
+            citizenDetailsPage.terminateReservationExplanation.fill(terminationComment)
+
+            citizenDetailsPage.terminateReservationModalConfirm.click()
+
+            // Shows a success message in modal
+            assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
+
+            // Hides the modal and the expired list is on the page, but not visible
+            citizenDetailsPage.modalWindow.click(
+                Locator
+                    .ClickOptions()
+                    .setPosition(5.0, 5.0)
+            )
+
+            assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).not().isVisible()
+            // Should not be in expired list yet
+            assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
+
+            assertThat(
+                citizenDetailsPage.terminationReasonInFirstReservationListItem
+            ).containsText(expectedTerminationReason)
+
+            assertThat(
+                citizenDetailsPage.terminationCommentInFirstReservationListItem
+            ).containsText(terminationComment)
+
+            // Wait for the reservation to expire
+            mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusWeeks(weeksAddedToEndTime))
+            listingPage.navigateTo()
+            assertThat(listingPage.boatSpace1).not().isVisible()
+
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+            page.navigate(citizenPageInEnglish)
+
+            assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
+            citizenDetailsPage.getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion).click()
+            assertThat(citizenDetailsPage.expiredReservationList).isVisible()
+            assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
+            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B001")
+
+            assertThat(
+                citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
+            ).containsText(expectedTerminationReason)
+
+            assertThat(
+                citizenDetailsPage.terminationCommentInFirstExpiredReservationListItem
+            ).containsText(terminationComment)
+
+            assertThat(
+                citizenDetailsPage.terminationDateInFirstExpiredReservationListItem
+            ).containsText(formatAsFullDate(expectedTerminationDate))
         } catch (e: AssertionError) {
             handleError(e)
         }

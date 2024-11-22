@@ -57,6 +57,8 @@ class BoatSpaceFormPage(
     val orgPhoneNumberInput = page.getByTestId("orgPhone")
     val orgEmailInput = page.getByTestId("orgEmail")
 
+    val backButton = page.getByTestId("go-back")
+
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
         widthInput.fill("3")

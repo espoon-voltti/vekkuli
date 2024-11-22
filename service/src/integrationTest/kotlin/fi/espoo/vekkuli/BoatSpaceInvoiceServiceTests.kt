@@ -39,11 +39,11 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
     @Test
     fun `should create invoice with correct parameters`() {
         val madeReservation =
-            createReservationInInvoiceState(
-                timeProvider,
-                boatReservationService,
-                invoiceService,
-                this.citizenIdLeo
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo
+                )
             )
         val invoiceData =
             boatSpaceInvoiceService.createInvoiceData(
@@ -71,7 +71,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
     @Test
     fun `should send invoice`() {
         val madeReservation =
-            createReservationInPaymentState(
+            testUtils.createReservationInPaymentState(
                 timeProvider,
                 boatReservationService,
                 this.citizenIdLeo

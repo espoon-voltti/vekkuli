@@ -30,6 +30,10 @@ class BoatSpaceInvoiceService(
         citizenId: UUID,
         reservationId: Int
     ): Invoice? {
+        val invoice = paymentService.getInvoiceForReservation(reservationId)
+        if (invoice != null) {
+            return invoice
+        }
         val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
 
         asyncJobRunner.plan(sequenceOf(JobParams(AsyncJob.SendInvoiceBatch(invoiceData), 3, Duration.ofMinutes(5), Instant.now())))

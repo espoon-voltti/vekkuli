@@ -118,18 +118,6 @@ class CitizenDetails(
             )
         }
 
-        val tabs =
-            // language=HTML
-            """
-            <div class="tabs is-boxed container-tabs">
-                <ul>
-                    <li class="is-active"><a>${t("boatSpaceReservation.title.marineActivities")}</a></li>
-                    <li><a>${t("boatSpaceReservation.title.spaceReservations")}</a></li>
-                    <li><a>${t("boatSpaceReservation.title.guidedExercise")}</a></li>
-                </ul>
-            </div>
-            """.trimIndent()
-
         val backUrl =
             if (userType == UserType.EMPLOYEE) {
                 "/virkailija/venepaikat/varaukset"
@@ -145,7 +133,6 @@ class CitizenDetails(
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
                 ${customerInfo()}
-                $tabs
                 ${reservationTabContent(citizen, boatSpaceReservations, boats, userType)}
             </section>
             """.trimIndent()

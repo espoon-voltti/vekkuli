@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
@@ -12,15 +13,36 @@ class CitizenCardButtons(
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
-        citizen: CitizenWithDetails
+        citizen: CitizenWithDetails,
     ): String {
+        if (reservation.status == ReservationStatus.Cancelled) {
+            return ""
+        }
         // language=HTML
         return """
             <div class="buttons">
-                ${commonButtons.createRenewPlaceButton(reservation)}
-                ${commonButtons.createSwapPlaceButton(reservation)}
+                ${createRenewPlaceButton(reservation)}
                 ${createTerminateReservationModalButton(reservation)}
             </div>
+            """.trimIndent()
+    }
+
+    fun createRenewPlaceButton(reservation: BoatSpaceReservationDetails): String {
+        if (!reservation.canRenew) {
+            return ""
+        }
+
+        val renewUrl =
+            "/kuntalainen/venepaikka/jatka/${reservation.id}"
+        return """
+            <button 
+              class="button is-primary"
+              id="renew-place-button-${reservation.id}"
+              hx-get="$renewUrl"
+              hx-target="body"
+              hx-push-url="true">
+                ${t("boatSpaceReservation.${UserType.CITIZEN}.button.renewPlace")}
+            </button>
             """.trimIndent()
     }
 

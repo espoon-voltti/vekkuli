@@ -7,6 +7,16 @@ import fi.espoo.vekkuli.utils.SqlExpr
 import java.time.LocalDate
 import java.util.*
 
+data class UpdateReservationParams(
+    val reservationId: Int,
+    val boatId: Int,
+    val reserverId: UUID,
+    val reservationStatus: ReservationStatus,
+    val validity: ReservationValidity,
+    val startDate: LocalDate,
+    val endDate: LocalDate
+)
+
 interface BoatSpaceReservationRepository {
     fun getBoatSpaceReservationIdForPayment(id: UUID): Int
 
@@ -17,10 +27,6 @@ interface BoatSpaceReservationRepository {
     fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies?
 
     fun getUnfinishedReservationForEmployee(id: UUID): ReservationWithDependencies?
-
-    fun getRenewalReservationForCitizen(id: UUID): ReservationWithDependencies?
-
-    fun getRenewalReservationForEmployee(id: UUID): ReservationWithDependencies?
 
     fun getReservationForRenewal(id: Int): ReservationWithDependencies?
 

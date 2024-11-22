@@ -14,6 +14,8 @@ class ReservationList(
     private val citizenButtons: CitizenCardButtons,
     private val employeeButtons: EmployeeCardButtons,
     private val warningBox: WarningBox,
+    private val reservationTerminationReason: ReservationTerminationReason,
+    private val reservationCardWarningBox: ReservationCardWarningBox
 ) : BaseView() {
     fun render(
         citizen: CitizenWithDetails,
@@ -39,7 +41,8 @@ class ReservationList(
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
                 ${cardInfo.render(reservation)}
-                ${if (reservation.canRenew) warningBox.render(t("reservationWarning.renewInfo")) else ""}
+                ${reservationTerminationReason.render(reservation)}
+                ${reservationCardWarningBox.render(reservation, userType)}
                 ${
                 if (userType == UserType.EMPLOYEE) {
                     employeeButtons.render(reservation, citizen)

@@ -76,7 +76,7 @@ interface InvoiceClient {
 }
 
 @Service
-@Profile("test")
+@Profile("test || local")
 class MockInvoiceClient(
     val timeProvider: TimeProvider
 ) : InvoiceClient {
@@ -86,7 +86,7 @@ class MockInvoiceClient(
 }
 
 @Service
-@Profile("!test")
+@Profile("!(test || local)")
 class EspiInvoiceClient(
     val espiEnv: EspiEnv,
     val timeProvider: TimeProvider
