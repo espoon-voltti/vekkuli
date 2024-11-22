@@ -21,7 +21,6 @@ object BoatSpaceConfig {
     const val BOAT_RESERVATION_ALV_PERCENTAGE = 25.5
 
     const val BEAM_MAX_WIDTH_ADJUSTMENT_CM = 40
-    const val BEAM_MIN_WIDTH_ADJUSTMENT_CM = 100
 
     const val WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM = 75
     const val WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM = 100
@@ -40,7 +39,7 @@ object BoatSpaceConfig {
         when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(null, null)
             BoatSpaceAmenity.RearBuoy -> Pair(null, spaceWidth - REAR_BUOY_WIDTH_ADJUSTMENT_CM)
-            BoatSpaceAmenity.Beam -> Pair(spaceWidth - BEAM_MIN_WIDTH_ADJUSTMENT_CM, spaceWidth - BEAM_MAX_WIDTH_ADJUSTMENT_CM)
+            BoatSpaceAmenity.Beam -> Pair(null, spaceWidth - BEAM_MAX_WIDTH_ADJUSTMENT_CM)
             BoatSpaceAmenity.WalkBeam ->
                 Pair(
                     spaceWidth - WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM,
@@ -59,7 +58,7 @@ object BoatSpaceConfig {
         return when (amenity) {
             BoatSpaceAmenity.Buoy -> Pair(0, Int.MAX_VALUE)
             BoatSpaceAmenity.RearBuoy -> Pair(boatWidth + REAR_BUOY_WIDTH_ADJUSTMENT_CM, Int.MAX_VALUE)
-            BoatSpaceAmenity.Beam -> Pair(boatWidth + BEAM_MAX_WIDTH_ADJUSTMENT_CM, boatWidth + BEAM_MIN_WIDTH_ADJUSTMENT_CM)
+            BoatSpaceAmenity.Beam -> Pair(boatWidth + BEAM_MAX_WIDTH_ADJUSTMENT_CM, Int.MAX_VALUE)
             BoatSpaceAmenity.WalkBeam ->
                 Pair(
                     boatWidth + WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM,

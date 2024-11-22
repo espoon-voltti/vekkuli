@@ -163,6 +163,12 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)
+            // Cancel the payment at first
+            paymentPage.nordeaFailedButton.click()
+            // Then go through the payment
+            paymentPage.nordeaSuccessButton.click()
+            // Now we should be on the confirmation page and can go back to the home page
+            paymentPage.backToHomePageButton.click()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -278,6 +284,10 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         page.getByText("Kirjaudu").click()
         val formPage = BoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
+
+        assertThat(reservationPage.widthFilterInput).hasValue("3")
+        assertThat(reservationPage.lengthFilterInput).hasValue("6")
+
         formPage.fillFormAndSubmit()
     }
 
