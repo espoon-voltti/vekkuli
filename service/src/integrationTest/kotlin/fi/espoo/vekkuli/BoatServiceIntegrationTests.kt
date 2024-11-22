@@ -80,12 +80,13 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should not delete a boat that is linked to a reservation`() {
         val newBoat = insertNewBoat()
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdLeo,
-            1,
-            newBoat.id
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                1,
+                newBoat.id
+            )
         )
         val boatDeleted = boatService.deleteBoat(newBoat.id)
         val boat = boatService.getBoat(newBoat.id)
@@ -96,12 +97,13 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should delete a boat that is linked to an expired reservation`() {
         val newBoat = insertNewBoat()
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdLeo,
-            1,
-            newBoat.id
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                1,
+                newBoat.id
+            )
         )
         // go forth a year, the previous reservation has now expired
         mockTimeProvider(

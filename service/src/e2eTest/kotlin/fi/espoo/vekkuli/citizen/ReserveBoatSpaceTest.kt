@@ -317,7 +317,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         assertThat(formPage.widthInput).hasValue("3.0")
         assertThat(formPage.lengthInput).hasValue("6.0")
         assertThat(formPage.depthInput).hasValue("1.5")
-        assertThat(formPage.weightInput).hasValue("2000")
+        assertThat(formPage.weightInput).hasValue("2000.0")
         assertThat(formPage.boatNameInput).hasValue("My Boat")
         assertThat(formPage.otherIdentification).hasValue("ID12345")
         assertThat(formPage.emailInput).hasValue("test@example.com")

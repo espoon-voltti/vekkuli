@@ -150,5 +150,21 @@ class CitizenDetailsPage(
     val terminateReservationReason = terminateReservationAsEmployeeForm.getByTestId("terminationReason")
     val terminateReservationExplanation = terminateReservationAsEmployeeForm.getByTestId("termination-explanation")
 
+    val terminationReasonInFirstReservationListItem =
+        getByDataTestId("reservation-card-termination-reason", reservationListCards.first())
+    val terminationCommentInFirstReservationListItem =
+        getByDataTestId("reservation-card-termination-explanation", reservationListCards.first())
+
+    val terminationDateInFirstReservationListItem =
+        getByDataTestId("reservation-list-card-terminated-date", reservationListCards.first())
+
+    val terminationReasonInFirstExpiredReservationListItem =
+        getByDataTestId("reservation-card-termination-reason", expiredReservationListCards.first())
+    val terminationCommentInFirstExpiredReservationListItem =
+        getByDataTestId("reservation-card-termination-explanation", expiredReservationListCards.first())
+
+    val terminationDateInFirstExpiredReservationListItem =
+        getByDataTestId("reservation-list-card-terminated-date", expiredReservationListCards.first())
+
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 }

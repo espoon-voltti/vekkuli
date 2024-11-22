@@ -4,15 +4,23 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.utils.formatAsFullDate
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 class TerminateReservationTest : PlaywrightTest() {
     val citizenPageInEnglish = "$baseUrl/kuntalainen/omat-tiedot?lang=en"
+
+    @Autowired
+    lateinit var messageUtil: MessageUtil
 
     @Test
     fun `citizen can open a terminate reservation modal from a reservation list item and cancel it`() {
@@ -49,7 +57,10 @@ class TerminateReservationTest : PlaywrightTest() {
     @Test
     fun `citizen can terminate reservation and see it in expired reservations list`() {
         try {
+            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 1, 10, 0, 0))
             val citizenDetailsPage = CitizenDetailsPage(page)
+            val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.userRequest")
+            val expectedTerminationDate = timeProvider.getCurrentDate()
 
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
@@ -86,6 +97,18 @@ class TerminateReservationTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.expiredReservationList).isVisible()
             assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
             assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B001")
+
+            assertThat(
+                citizenDetailsPage.terminationDateInFirstExpiredReservationListItem
+            ).containsText(formatAsFullDate(expectedTerminationDate))
+
+            assertThat(
+                citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
+            ).containsText(expectedTerminationReason)
+
+            assertThat(
+                citizenDetailsPage.terminationCommentInFirstExpiredReservationListItem
+            ).containsText("-")
         } catch (e: AssertionError) {
             handleError(e)
         }

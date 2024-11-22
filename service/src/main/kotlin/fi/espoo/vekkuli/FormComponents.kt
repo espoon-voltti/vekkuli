@@ -49,7 +49,7 @@ class FormComponents {
     fun numberInput(
         labelKey: String,
         id: String,
-        value: Int?,
+        value: Double?,
         required: Boolean? = false,
         compact: Boolean = false,
         attributes: String = "",
@@ -87,7 +87,7 @@ class FormComponents {
         numberInput(
             labelKey = labelKey,
             id = id,
-            value = value?.toInt(),
+            value = value,
             required = required,
             compact = compact,
             step = step?.toString() ?: "0.01",

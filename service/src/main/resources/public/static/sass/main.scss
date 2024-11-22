@@ -835,3 +835,7 @@ ul {
 .debug-info__content {
   pointer-events: auto;
 }
+
+.is-error-container {
+  border: 1px solid $error;
+}

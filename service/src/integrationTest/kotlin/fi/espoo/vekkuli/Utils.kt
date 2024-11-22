@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
+import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.*
 
@@ -49,167 +50,188 @@ fun deleteAllEmails(jdbi: Jdbi) {
     }
 }
 
-fun createReservationInConfirmedState(
-    timeProvider: TimeProvider,
-    reservationService: BoatReservationService,
-    citizenId: UUID,
-    boatSpaceId: Int,
-    boatId: Int,
-    validity: ReservationValidity = ReservationValidity.FixedTerm,
-    reserverId: UUID = citizenId
-): BoatSpaceReservation {
-    val madeReservation =
-        reservationService.insertBoatSpaceReservation(
-            reserverId,
-            citizenId,
-            boatSpaceId,
-            startDate = timeProvider.getCurrentDate(),
-            endDate = timeProvider.getCurrentDate().plusDays(365),
-        )
-    reservationService.updateBoatInBoatSpaceReservation(
-        madeReservation.id,
-        boatId,
-        reserverId,
-        ReservationStatus.Payment,
-        validity,
-        startDate = timeProvider.getCurrentDate(),
-        endDate = timeProvider.getCurrentDate().plusDays(365),
-    )
-    val payment =
-        reservationService.addPaymentToReservation(
-            madeReservation.id,
-            CreatePaymentParams(citizenId, "1", 1, 24.0, "1")
-        )
-    reservationService.handleReservationPaymentResult(payment.id, true)
-    return madeReservation
-}
+data class CreateReservationParams(
+    val timeProvider: TimeProvider,
+    val citizenId: UUID,
+    val boatSpaceId: Int = 1,
+    val boatId: Int = 1,
+    val validity: ReservationValidity = ReservationValidity.FixedTerm,
+    val reserverId: UUID = citizenId,
+    val status: ReservationStatus = ReservationStatus.Payment,
+    val startDate: LocalDate = timeProvider.getCurrentDate(),
+    val endDate: LocalDate = timeProvider.getCurrentDate().plusDays(365),
+)
 
-fun createReservationInPaymentState(
-    timeProvider: TimeProvider,
-    reservationService: BoatReservationService,
-    reserverId: UUID,
-    citizenId: UUID = reserverId,
-    boatSpaceId: Int = 1,
-    boatId: Int = 1
-): BoatSpaceReservation = createReservationWithBoat(reservationService, reserverId, citizenId, boatSpaceId, timeProvider, boatId)
+@Service
+class TestUtils(
+    private val reservationService: BoatReservationService,
+) {
+    fun createReservationInConfirmedState(params: CreateReservationParams): BoatSpaceReservationDetails {
+        var madeReservation =
+            reservationService.insertBoatSpaceReservation(
+                params.reserverId,
+                params.citizenId,
+                params.boatSpaceId,
+                startDate = params.startDate,
+                endDate = params.endDate,
+            )
+        madeReservation =
+            reservationService.updateBoatInBoatSpaceReservation(
+                madeReservation.id,
+                params.boatId,
+                params.reserverId,
+                params.status,
+                params.validity,
+                startDate = params.startDate,
+                endDate = params.endDate,
+            )
+        val payment =
+            reservationService.addPaymentToReservation(
+                madeReservation.id,
+                CreatePaymentParams(params.citizenId, "1", 1, 24.0, "1")
+            )
+        reservationService.handleReservationPaymentResult(payment.id, true)
+        return reservationService.getBoatSpaceReservation(madeReservation.id) ?: throw IllegalStateException("Reservation not found")
+    }
 
-fun createReservationInPaymentState(
-    timeProvider: TimeProvider,
-    reservationService: BoatReservationService,
-    reserverId: UUID,
-    boatSpaceId: Int = 1,
-    boatId: Int = 1
-): BoatSpaceReservation = createReservationWithBoat(reservationService, reserverId, reserverId, boatSpaceId, timeProvider, boatId)
-
-fun createReservationInInvoiceState(
-    timeProvider: TimeProvider,
-    reservationService: BoatReservationService,
-    invoiceService: BoatSpaceInvoiceService,
-    reserverId: UUID,
-    boatSpaceId: Int = 1,
-    boatId: Int = 1,
-    invoiceNumber: Int = 1,
-): BoatSpaceReservation {
-    val madeReservation =
+    fun createReservationInRenewState(params: CreateReservationParams): BoatSpaceReservation =
         createReservationWithBoat(
             reservationService,
-            reserverId,
-            reserverId,
-            boatSpaceId,
-            timeProvider,
+            params.reserverId,
+            params.citizenId,
+            params.boatSpaceId,
+            params.timeProvider,
+            params.boatId,
+            ReservationStatus.Renewal
+        )
+
+    fun createReservationInPaymentState(
+        timeProvider: TimeProvider,
+        reservationService: BoatReservationService,
+        reserverId: UUID,
+        citizenId: UUID = reserverId,
+        boatSpaceId: Int = 1,
+        boatId: Int = 1
+    ): BoatSpaceReservation = createReservationWithBoat(reservationService, reserverId, citizenId, boatSpaceId, timeProvider, boatId)
+
+    fun createReservationInPaymentState(
+        timeProvider: TimeProvider,
+        reservationService: BoatReservationService,
+        reserverId: UUID,
+        boatSpaceId: Int = 1,
+        boatId: Int = 1
+    ): BoatSpaceReservation = createReservationWithBoat(reservationService, reserverId, reserverId, boatSpaceId, timeProvider, boatId)
+
+    fun createReservationInInvoiceState(
+        timeProvider: TimeProvider,
+        reservationService: BoatReservationService,
+        invoiceService: BoatSpaceInvoiceService,
+        reserverId: UUID,
+        boatSpaceId: Int = 1,
+        boatId: Int = 1,
+        invoiceNumber: Int = 1,
+    ): BoatSpaceReservation {
+        val madeReservation =
+            createReservationWithBoat(
+                reservationService,
+                reserverId,
+                reserverId,
+                boatSpaceId,
+                timeProvider,
+                boatId,
+                ReservationStatus.Invoiced
+            )
+        val invoiceData = invoiceService.createInvoiceData(madeReservation.id, reserverId)
+
+        val invoice =
+            invoiceService.createInvoice(
+                invoiceData!!,
+                reserverId,
+                madeReservation.id
+            )
+        return madeReservation
+    }
+
+    private fun createReservationWithBoat(
+        reservationService: BoatReservationService,
+        reserverId: UUID,
+        citizenId: UUID,
+        boatSpaceId: Int,
+        timeProvider: TimeProvider,
+        boatId: Int,
+        state: ReservationStatus = ReservationStatus.Payment,
+    ): BoatSpaceReservation {
+        val madeReservation =
+            reservationService.insertBoatSpaceReservation(
+                reserverId,
+                citizenId,
+                boatSpaceId,
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate().plusDays(365),
+            )
+        return reservationService.updateBoatInBoatSpaceReservation(
+            madeReservation.id,
             boatId,
-            ReservationStatus.Invoiced
-        )
-    val invoiceData = invoiceService.createInvoiceData(madeReservation.id, reserverId)
-
-    val invoice =
-        invoiceService.createInvoice(
-            invoiceData!!,
             reserverId,
-            madeReservation.id
-        )
-    return madeReservation
-}
-
-private fun createReservationWithBoat(
-    reservationService: BoatReservationService,
-    reserverId: UUID,
-    citizenId: UUID,
-    boatSpaceId: Int,
-    timeProvider: TimeProvider,
-    boatId: Int,
-    state: ReservationStatus = ReservationStatus.Payment,
-): BoatSpaceReservation {
-    val madeReservation =
-        reservationService.insertBoatSpaceReservation(
-            reserverId,
-            citizenId,
-            boatSpaceId,
+            state,
+            ReservationValidity.FixedTerm,
             startDate = timeProvider.getCurrentDate(),
-            endDate = timeProvider.getCurrentDate().plusDays(365),
+            endDate = timeProvider.getCurrentDate().plusDays(365)
         )
-    return reservationService.updateBoatInBoatSpaceReservation(
-        madeReservation.id,
-        boatId,
-        reserverId,
-        state,
-        ReservationValidity.FixedTerm,
-        startDate = timeProvider.getCurrentDate(),
-        endDate = timeProvider.getCurrentDate().plusDays(365)
-    )
-}
+    }
 
-fun createReservationInInfoState(
-    timeProvider: TimeProvider,
-    reservationService: BoatReservationService,
-    citizenId: UUID,
-    boatSpaceId: Int = 1,
-): BoatSpaceReservation {
-    val madeReservation =
-        reservationService.insertBoatSpaceReservation(
-            citizenId,
-            citizenId,
-            boatSpaceId,
-            startDate = timeProvider.getCurrentDate(),
-            endDate = timeProvider.getCurrentDate().plusDays(365),
-        )
-    return madeReservation
-}
+    fun createReservationInInfoState(
+        timeProvider: TimeProvider,
+        reservationService: BoatReservationService,
+        citizenId: UUID,
+        boatSpaceId: Int = 1,
+    ): BoatSpaceReservation {
+        val madeReservation =
+            reservationService.insertBoatSpaceReservation(
+                citizenId,
+                citizenId,
+                boatSpaceId,
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate().plusDays(365),
+            )
+        return madeReservation
+    }
 
-fun createInvoiceWithTestParameters(
-    citizenService: CitizenService,
-    invoiceService: BoatSpaceInvoiceService,
-    timeProvider: TimeProvider,
-    citizenId: UUID,
-): Invoice {
-    val citizen = citizenService.getCitizen(citizenId)!!
+    fun createInvoiceWithTestParameters(
+        citizenService: CitizenService,
+        invoiceService: BoatSpaceInvoiceService,
+        timeProvider: TimeProvider,
+        citizenId: UUID,
+    ): Invoice {
+        val citizen = citizenService.getCitizen(citizenId)!!
+        val (invoice, payment) =
+            invoiceService.createInvoice(
+                InvoiceData(
+                    invoiceNumber = 1L,
+                    dueDate = timeProvider.getCurrentDate().plusDays(14),
+                    ssn =
+                        citizen.nationalId,
+                    firstnames = citizen.firstName,
+                    lastname = citizen.lastName,
+                    street = citizen.streetAddress,
+                    post = citizen.postOffice,
+                    postalCode = citizen.postalCode,
+                    mobilePhone = citizen.phone,
+                    email = citizen.email,
+                    priceCents = 100,
+                    vat = 24,
+                    startDate = LocalDate.of(2021, 1, 1),
+                    endDate = LocalDate.of(2021, 12, 31),
+                    description = "",
+                    orgId = "",
+                    registerNumber = "",
+                    contactPerson = "",
+                    language = "FI",
+                ),
+                citizenId,
+                1
+            )
 
-    val (invoice, payment) =
-        invoiceService.createInvoice(
-            InvoiceData(
-                invoiceNumber = 1L,
-                dueDate = timeProvider.getCurrentDate().plusDays(14),
-                ssn = citizen.nationalId,
-                firstnames = citizen.firstName,
-                lastname = citizen.lastName,
-                street = citizen.streetAddress,
-                post = citizen.postOffice,
-                postalCode = citizen.postalCode,
-                mobilePhone = citizen.phone,
-                email = citizen.email,
-                priceCents = 100,
-                vat = 24,
-                startDate = LocalDate.of(2021, 1, 1),
-                endDate = LocalDate.of(2021, 12, 31),
-                description = "",
-                orgId = "",
-                registerNumber = "",
-                contactPerson = "",
-                language = "FI",
-            ),
-            citizenId,
-            1
-        )
-
-    return invoice
+        return invoice
+    }
 }

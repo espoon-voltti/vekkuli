@@ -29,7 +29,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `send single email on confirmation`() {
         val madeReservation =
-            createReservationInPaymentState(
+            testUtils.createReservationInPaymentState(
                 timeProvider,
                 reservationService,
                 this.citizenIdLeo
@@ -65,7 +65,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `send organization email on confirmation`() {
         val madeReservation =
-            createReservationInPaymentState(
+            testUtils.createReservationInPaymentState(
                 timeProvider,
                 reservationService,
                 organizationId,
@@ -105,7 +105,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should send correct template email on invoice`() {
         val madeReservation =
-            createReservationInInfoState(
+            testUtils.createReservationInInfoState(
                 timeProvider,
                 reservationService,
                 this.citizenIdLeo
@@ -160,7 +160,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should send single email on confirmation`() {
         val madeReservation =
-            createReservationInPaymentState(
+            testUtils.createReservationInPaymentState(
                 timeProvider,
                 reservationService,
                 this.citizenIdLeo,
@@ -191,7 +191,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should send multiple emails on confirmation`() {
         val madeReservation =
-            createReservationInPaymentState(
+            testUtils.createReservationInPaymentState(
                 timeProvider,
                 reservationService,
                 organizationId,
@@ -222,7 +222,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should send email on invoice`() {
         val madeReservation =
-            createReservationInInfoState(
+            testUtils.createReservationInInfoState(
                 timeProvider,
                 reservationService,
                 this.citizenIdLeo

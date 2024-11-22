@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceInvoiceService
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.InvoiceRow
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import java.time.LocalDate
+import java.util.*
 
 @Controller
 class InvoiceController(
@@ -22,6 +25,7 @@ class InvoiceController(
     private val sendInvoiceView: InvoicePreview,
     private val reservationService: BoatReservationService,
     private val invoiceService: BoatSpaceInvoiceService,
+    private val timeProvider: TimeProvider,
 ) {
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     @ResponseBody
@@ -30,9 +34,10 @@ class InvoiceController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val reservation = reservationService.getReservationWithReserver(reservationId)
-        if (reservation == null || reservation.reserverId == null) {
+        if (reservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
+
         val invoiceData = invoiceService.createInvoiceData(reservationId, reservation.reserverId)
         if (invoiceData == null) {
             throw IllegalArgumentException("Failed to create invoice data")
@@ -80,25 +85,37 @@ class InvoiceController(
     ): ResponseEntity<String> {
         // send the invoice, update reservation status
         val reservation = reservationService.getReservationWithReserver(reservationId)
+
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
-        val invoiceData =
-            invoiceService.createInvoiceData(reservationId, reservation.reserverId)
-                ?: throw InternalError("Failed to create invoice batch")
-
-        val invoice = invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservationId)
-
-        if (invoice == null) {
+        try {
+            handleInvoiceSending(reservation)
+        } catch (e: Exception) {
             val content = sendInvoiceView.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
         }
-
-        reservationService.setReservationStatusToInvoiced(reservationId)
 
         return ResponseEntity
             .status(HttpStatus.FOUND)
             .header("Location", "/virkailija/venepaikat/varaukset")
             .body("")
+    }
+
+    private fun handleInvoiceSending(reservation: ReservationWithDependencies) {
+        if (reservation.reserverId == null) {
+            throw IllegalArgumentException("Reservation not found")
+        }
+        val invoiceData =
+            invoiceService.createInvoiceData(reservation.id, reservation.reserverId)
+                ?: throw InternalError("Failed to create invoice batch")
+
+        val invoice = invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservation.id)
+
+        if (invoice == null) {
+            throw InternalError("Failed to create invoice")
+        }
+
+        reservationService.setReservationStatusToInvoiced(reservation.id)
     }
 }
