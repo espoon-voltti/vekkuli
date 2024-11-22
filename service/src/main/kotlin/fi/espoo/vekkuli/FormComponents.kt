@@ -291,7 +291,7 @@ class FormComponents {
         return """
             <div id="$id-error-container">
                 <span id="$id-error" class="help is-danger"
-                style="visibility: hidden">
+                style="display: none">
                 ${t("validation.required")}
                 </span>
             </div>
@@ -309,7 +309,7 @@ class FormComponents {
         return """
             <div id="$id-error-container">
                 <span id="$id-pattern-error" class="help is-danger"
-                style="visibility: hidden">
+                style="display: none">
                 ${t(pattern.second)}
                 </span>
             </div>
@@ -327,7 +327,7 @@ class FormComponents {
         return """
             <div id="$id-server-error-container">
                 <span id="$id-server-error" class="help is-danger" 
-                    style="visibility: hidden">
+                    style="display: none">
                     ${t(serverValidate.second)} 
                 </span>
             </div>

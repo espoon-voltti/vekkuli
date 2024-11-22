@@ -1,6 +1,6 @@
 const validation = (function () {
   function init(config) {
-    config.forms.forEach(function (formId) {
+    config.forms.forEach(formId => {
       const form = document.getElementById(formId);
       if (form) {
         setupFormValidation(form);
@@ -10,138 +10,140 @@ const validation = (function () {
     });
   }
 
-  function setElementVisibility(element, isVisible) {
-    element.style.visibility = isVisible ? "visible" : "hidden";
+  function updateGlobalErrorMessage(form) {
+    const globalErrorMessage = form.querySelector('.form-validation-message');
+    const errorElements = form.querySelectorAll('[id$="-error"]');
+
+    const hasVisibleErrors = Array.from(errorElements).some(el =>
+      el.getAttribute('aria-hidden') === 'false'
+    );
+
+    if (globalErrorMessage) {
+      globalErrorMessage.style.display = hasVisibleErrors ? 'unset' : 'none';
+    }
   }
 
-  function validateField(field) {
-    const errorMessageElement = document.getElementById(`${field.id}-error`);
-    const patternErrorMessageElement = document.getElementById(
-      `${field.id}-pattern-error`,
-    );
-    const serverErrorMessageElement = document.getElementById(
-      `${field.id}-server-error`,
-    );
-    let isValid = true;
-
-    // Hide all error messages initially
-    if (errorMessageElement)
-      setElementVisibility(errorMessageElement, false);
-    if (patternErrorMessageElement)
-      setElementVisibility(patternErrorMessageElement, false);
-    if (serverErrorMessageElement)
-      setElementVisibility(serverErrorMessageElement, false);
-
-    if (errorMessageElement) {
-      if (
-        field.hasAttribute("data-required") &&
-        !field.hasAttribute("disabled")
-      ) {
-        if (field.type === "checkbox") {
-          if (!field.checked) {
-            setElementVisibility(errorMessageElement, true);
-            return false;
-          } else {
-            setElementVisibility(errorMessageElement, false);
-          }
-        }
-        if (
-          (field.tagName === "SELECT" && field.value === "") ||
-          field.value.trim() === "" ||
-          field.value === null
-        ) {
-          setElementVisibility(errorMessageElement, true);
-          return false;
-        } else {
-          setElementVisibility(errorMessageElement, false);
-        }
-      }
-    }
-
-    if (patternErrorMessageElement) {
-      if (isValid && field.hasAttribute("data-pattern")) {
-        const pattern = new RegExp(field.getAttribute("data-pattern"));
-        if (!pattern.test(field.value)) {
-          setElementVisibility(patternErrorMessageElement, true);
-          return false;
-        } else {
-          setElementVisibility(patternErrorMessageElement, false);
-        }
-      }
-    }
-
-    if (field.hasAttribute("data-validate-url")) {
-      return validateFieldWithServer(field);
-    }
-
-    return isValid;
+  function showError(element, show) {
+    if (!element) return;
+    element.setAttribute('aria-hidden', show ? 'false' : 'true');
+    element.style.display = show ? 'unset' : 'none';
   }
 
-  function validateFieldWithServer(field) {
-    const validationUrl = field.getAttribute("data-validate-url");
-    const errorMessageElement = document.getElementById(
-      `${field.id}-server-error`,
-    );
+  async function validateField(field) {
+    const errorElements = {
+      required: document.getElementById(`${field.id}-error`),
+      pattern: document.getElementById(`${field.id}-pattern-error`),
+      server: document.getElementById(`${field.id}-server-error`)
+    };
 
-    return fetch(validationUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ value: field.value }), // Send the field value to the server
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.isValid) {
-          setElementVisibility(errorMessageElement, false);
-          errorMessageElement.innerHTML = data.message || "";
-          return true;
-        } else {
-          setElementVisibility(errorMessageElement, true);
-          errorMessageElement.innerHTML =
-            data.message || "This value is invalid.";
-          return false;
-        }
-      })
-      .catch((error) => {
-        console.error("Error validating field:", error);
-        setElementVisibility(errorMessageElement, true);
-        errorMessageElement.innerText =
-          "Validation failed due to server error.";
+    // Reset all error states
+    Object.values(errorElements).forEach(el => showError(el, false));
+
+    // Required validation
+    if (errorElements.required) {
+      const isRequired = field.hasAttribute('data-required') && !field.hasAttribute('disabled');
+      const isEmpty = field.type === 'checkbox' ? !field.checked :
+        field.value.trim() === '' || field.value === null;
+
+      if (isRequired && isEmpty) {
+        showError(errorElements.required, true);
+        updateGlobalErrorMessage(field.closest('form'));
         return false;
+      }
+    }
+
+    // Pattern validation
+    if (errorElements.pattern && field.hasAttribute('data-pattern')) {
+      const pattern = new RegExp(field.getAttribute('data-pattern'));
+      if (!pattern.test(field.value)) {
+        showError(errorElements.pattern, true);
+        updateGlobalErrorMessage(field.closest('form'));
+        return false;
+      }
+    }
+
+    // Server-side validation
+    if (field.hasAttribute('data-validate-url')) {
+      try {
+        const isServerValid = await validateFieldWithServer(field, errorElements.server);
+        updateGlobalErrorMessage(field.closest('form'));
+        return isServerValid;
+      } catch (error) {
+        console.error('Server validation error:', error);
+        return false;
+      }
+    }
+
+    updateGlobalErrorMessage(field.closest('form'));
+    return true;
+  }
+
+  async function validateFieldWithServer(field, errorElement) {
+    const validationUrl = field.getAttribute('data-validate-url');
+
+    try {
+      const response = await fetch(validationUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: field.value })
       });
+
+      const data = await response.json();
+
+      if (data.isValid) {
+        showError(errorElement, false);
+        return true;
+      } else {
+        if (errorElement) {
+          errorElement.textContent = data.message || 'Invalid value';
+          showError(errorElement, true);
+        }
+        return false;
+      }
+    } catch (error) {
+      if (errorElement) {
+        errorElement.textContent = 'Validation failed';
+        showError(errorElement, true);
+      }
+      throw error;
+    }
   }
 
   function setupFormValidation(form) {
-    form.addEventListener("submit", function (event) {
-      let isValid = true;
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
 
       const fields = form.querySelectorAll(
-        "[data-required], [data-pattern], [data-validate-url]",
+        '[data-required], [data-pattern], [data-validate-url]'
       );
 
-      fields.forEach(function (field) {
-        if (!validateField(field)) {
-          if(isValid) {
-            field.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
-            field.focus();
-          }
-          isValid = false;
-        }
-      });
+      const validationPromises = Array.from(fields).map(validateField);
+      const validationResults = await Promise.all(validationPromises);
 
-      if (!isValid) {
-        event.preventDefault();
+      const isValid = validationResults.every(result => result);
+
+      if (isValid) {
+        // If all validations pass, submit the form
+        form.submit();
+      } else {
+        // Find and focus on the first invalid field
+        const firstInvalidField = fields[validationResults.indexOf(false)];
+        firstInvalidField.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        firstInvalidField.focus();
       }
     });
 
-    form.addEventListener("input", function (event) {
+    // Real-time validation on input
+    form.addEventListener('input', function (event) {
       const field = event.target;
-      validateField(field);
+      if (field.matches('[data-required], [data-pattern], [data-validate-url]')) {
+        validateField(field);
+      }
     });
   }
 
-  return {
-    init: init,
-  };
+  return { init };
 })();
