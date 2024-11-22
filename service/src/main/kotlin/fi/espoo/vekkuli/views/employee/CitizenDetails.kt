@@ -118,18 +118,12 @@ class CitizenDetails(
             )
         }
 
-        val backUrl =
-            if (userType == UserType.EMPLOYEE) {
-                "/virkailija/venepaikat/varaukset"
-            } else {
-                "/"
-            }
         val result =
             // language=HTML
             """
             <section class="section" id="citizen-details">
                 <div class="container block">
-                    ${commonComponents.goBackButton(backUrl)} 
+                    ${commonComponents.goBackButton()} 
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
                 ${customerInfo()}

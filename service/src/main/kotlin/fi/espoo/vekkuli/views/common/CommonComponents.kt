@@ -52,17 +52,17 @@ class CommonComponents(
     }
 
     // language=HTML
-    fun goBackButton(backUrl: String) =
+    fun goBackButton(backUrl: String? = null) =
         """
-                        <button class="icon-text">
-                            <span class="icon">
-                                <div>${icons.chevronLeft}</div>
-                            </span>
-                            <a href=$backUrl>
-                                <span>${t("boatSpaces.goBack")}</span>
-                            </a>
-                        </button>
-                       """
+        <button class="icon-text" onclick="${if (backUrl == null) "history.back()" else "location.href='$backUrl'"}">
+            <span class="icon">
+                <div>${icons.chevronLeft}</div>
+            </span>
+            <a>
+                <span>${t("boatSpaces.goBack")}</span>
+            </a>
+        </button>
+       """
 
     // language=HTML
     fun getCitizenFields(
