@@ -12,8 +12,8 @@ import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.*
 
 @Service
@@ -36,7 +36,16 @@ class BoatSpaceInvoiceService(
         }
         val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
 
-        asyncJobRunner.plan(sequenceOf(JobParams(AsyncJob.SendInvoiceBatch(invoiceData), 3, Duration.ofMinutes(5), Instant.now())))
+        asyncJobRunner.plan(
+            sequenceOf(
+                JobParams(
+                    AsyncJob.SendInvoiceBatch(invoiceData),
+                    3,
+                    Duration.ofMinutes(5),
+                    timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
+                )
+            )
+        )
         return createdInvoice
     }
 

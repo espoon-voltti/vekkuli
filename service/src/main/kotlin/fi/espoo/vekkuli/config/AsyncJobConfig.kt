@@ -5,6 +5,7 @@
 package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.asyncJob.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
@@ -14,7 +15,10 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class AsyncJobConfig {
     @Bean
-    fun asyncJobRunner(repository: IAsyncJobRepository): IAsyncJobRunner<AsyncJob> =
+    fun asyncJobRunner(
+        repository: IAsyncJobRepository,
+        timeProvider: TimeProvider
+    ): IAsyncJobRunner<AsyncJob> =
         AsyncJobRunner(
             AsyncJob::class,
             listOf(
@@ -26,7 +30,8 @@ class AsyncJobConfig {
                     ),
                 )
             ),
-            repository
+            repository,
+            timeProvider
         )
 
     @Bean

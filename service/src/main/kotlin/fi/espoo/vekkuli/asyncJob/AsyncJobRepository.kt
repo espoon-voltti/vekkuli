@@ -4,6 +4,7 @@
 
 package fi.espoo.vekkuli.asyncJob
 
+import fi.espoo.vekkuli.utils.TimeProvider
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -14,13 +15,15 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneOffset
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
 
 @Repository
 class AsyncJobRepository(
-    val jdbi: Jdbi
+    private val jdbi: Jdbi,
+    private val timeProvider: TimeProvider
 ) : IAsyncJobRepository {
     @Transactional
     override fun insertJob(jobParams: JobParams<out Any>): UUID =
@@ -199,7 +202,7 @@ WHERE id = :jobId
         val toMillis =
             Duration
                 .between(
-                    Instant.now(),
+                    timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC),
                     permit.availableAt
                 ).toMillis()
         if (toMillis > 0) {
@@ -207,8 +210,8 @@ WHERE id = :jobId
                 toMillis
             )
         }
-        return claimJob(Instant.now(), pool.registration.jobTypes())?.also {
-            updatePermit(pool.id, Instant.now().plus(pool.throttleInterval))
+        return claimJob(timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC), pool.registration.jobTypes())?.also {
+            updatePermit(pool.id, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC).plus(pool.throttleInterval))
         }
     }
 
@@ -218,9 +221,9 @@ WHERE id = :jobId
         job: ClaimedJobRef<out T>
     ): Boolean {
         setLockTimeout(Duration.ofSeconds(5))
-        return startJob(job, Instant.now())?.let { msg ->
+        return startJob(job, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC))?.let { msg ->
             pool.registration.handlerFor(job.jobType).run(msg)
-            completeJob(job, Instant.now())
+            completeJob(job, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC))
             true
         } ?: false
     }
