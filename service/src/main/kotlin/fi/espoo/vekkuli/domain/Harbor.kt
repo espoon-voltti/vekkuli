@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.repository.BoatSpaceOption
+import fi.espoo.vekkuli.domain.BoatSpaceOption
 
 data class Harbor(
     val location: Location,

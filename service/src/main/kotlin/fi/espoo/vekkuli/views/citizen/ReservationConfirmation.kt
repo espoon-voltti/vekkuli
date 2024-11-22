@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.citizen
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import org.springframework.stereotype.Service
 
@@ -12,6 +13,22 @@ class ReservationConfirmation(
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(reservation: BoatSpaceReservationDetails): String {
+        val widthAndLength =
+            if (reservation.amenity != BoatSpaceAmenity.Buoy) {
+                """
+                <div>
+                    <label> ${t("boatSpaceReservation.label.placeWidth")}</label>
+                    <span>${reservation.boatSpaceWidthInM}</span>
+                </div>
+                <div>
+                    <label>${t("boatSpaceReservation.label.placeLength")}</label>
+                    <span>${reservation.boatSpaceLengthInM}</span>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         // language=HTML
         return """
             <section class="section">
@@ -28,14 +45,7 @@ class ReservationConfirmation(
                                 <label>${t("boatSpaceReservation.label.placeName")} </label>
                                 <span>${reservation.locationName} ${reservation.place}</span>
                             </div>
-                            <div>
-                                <label> ${t("boatSpaceReservation.label.placeWidth")}</label>
-                                <span>${reservation.boatSpaceWidthInM}</span>
-                            </div>
-                            <div>
-                                <label>${t("boatSpaceReservation.label.placeLength")}</label>
-                                <span>${reservation.boatSpaceLengthInM}</span>
-                            </div>
+                           $widthAndLength
                             <div>
                                 <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
                                 <span>${t("boatSpaces.amenityOption." + reservation.amenity)}</span>
