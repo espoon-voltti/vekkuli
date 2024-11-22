@@ -702,6 +702,7 @@ class JdbiBoatSpaceReservationRepository(
                 bsr.renewed_from_id,
                 bsr.termination_reason,
                 bsr.termination_comment,
+                bsr.termination_timestamp,
                 p.id as payment_id,
                            p.paid as payment_date,r.id as reserver_id,
                 r.type as reserver_type,

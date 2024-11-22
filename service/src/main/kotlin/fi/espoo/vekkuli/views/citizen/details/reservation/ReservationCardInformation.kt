@@ -46,7 +46,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.contractValidity")}</label>
-                         <p>${formatAsFullDate(reservation.endDate)}</p>
+                         <p>${formatAsFullDate(reservation.endDate)}${renderTerminatedDate(reservation)}</p>
                      </div>
                  </div>
                  <div class="column">
@@ -76,4 +76,13 @@ class ReservationCardInformation : BaseView() {
              </div>
             """.trimIndent()
     }
+
+    private fun renderTerminatedDate(reservation: BoatSpaceReservationDetails): String =
+        if (reservation.terminationTimestamp != null) {
+            """</br><span ${addTestId("reservation-list-card-terminated-date")}>${t(
+                "boatSpaceReservation.terminated"
+            )} ${formatAsFullDate(reservation.terminationTimestamp.toLocalDate())}</span>""".trimIndent()
+        } else {
+            ""
+        }
 }
