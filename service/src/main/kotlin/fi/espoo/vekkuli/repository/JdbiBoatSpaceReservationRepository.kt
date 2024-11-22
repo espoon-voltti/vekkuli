@@ -42,45 +42,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.id,
-                           bsr.start_date,
-                           bsr.end_date,
-                           bsr.created,
-                           bsr.updated,
-                           bsr.status,
-                           bsr.boat_space_id,
-                           bsr.validity,
-                           bsr.renewed_from_id,
-                           r.id as reserver_id,
-                           r.name,
-                           r.type as reserver_type,
-                           r.email, 
-                           r.phone,
-                           r.street_address,
-                           r.postal_code,
-                           r.municipality_code,
-                           m.name as municipality_name,
-                           b.registration_code as boat_registration_code,
-                           b.ownership as boat_ownership,
-                           b.id as boat_id,
-                           b.name as boat_name,
-                           b.width_cm as boat_width_cm,
-                           b.length_cm as boat_length_cm,
-                           b.weight_kg as boat_weight_kg,
-                           b.depth_cm as boat_depth_cm,
-                           b.type as boat_type,
-                           b.other_identification as boat_other_identification,
-                           b.extra_information as boat_extra_information,
-                           location.name as location_name, 
-                           bs.type,
-                           bs.length_cm as boat_space_length_cm,
-                           bs.width_cm as boat_space_width_cm,
-                           bs.amenity,
-                           price.price_cents,
-                           price.vat_cents,
-                           price.net_price_cents,
-                           CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place,
-                           ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                    ${buildSqlSelectPartForBoatSpaceReservationDetails()},
+                    ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM payment p
                     JOIN boat_space_reservation bsr ON p.reservation_id = bsr.id
                     JOIN boat b ON b.id = bsr.boat_id
@@ -295,7 +258,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    ${buildSqlSelectForBoatSpaceReservationDetails()}
+                    ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
                     WHERE r.id = :reserverId AND 
                       bs.type = :spaceType AND
                         (
@@ -333,7 +296,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    ${buildSqlSelectForBoatSpaceReservationDetails()}
+                    ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
                     WHERE bsr.id = :reservationId
                     """.trimIndent()
                 )
@@ -614,7 +577,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                     ${buildSqlSelectForBoatSpaceReservationDetails()}
+                     ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
                     WHERE r.id = :reserverId AND (
                         (
                             bsr.status = 'Cancelled' AND 
@@ -656,7 +619,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    ${buildSqlSelectForBoatSpaceReservationDetails()}
+                    ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
                     WHERE bsr.status = 'Confirmed' AND validity = :validity
                         AND end_date < :endDateCut AND end_date > :currentTime
                     """.trimIndent()
@@ -690,55 +653,63 @@ class JdbiBoatSpaceReservationRepository(
             handle.createQuery("SELECT * FROM location").mapTo<Location>().toList()
         }
 
-    private fun buildSqlSelectForBoatSpaceReservationDetails() =
-        """SELECT bsr.id,
-                bsr.start_date,
-                bsr.end_date,
-                bsr.created,
-                bsr.updated,
-                bsr.status,
-                bsr.boat_space_id,
-                bsr.validity,
-                bsr.renewed_from_id,
-                bsr.termination_reason,
-                bsr.termination_comment,
-                p.id as payment_id,
-                           p.paid as payment_date,r.id as reserver_id,
-                r.type as reserver_type,
-                r.name,
-                r.email, 
-                r.phone,
-                r.street_address,
-                r.postal_code,
-                r.municipality_code,
-                m.name as municipality_name,
-                b.registration_code as boat_registration_code,
-                b.ownership as boat_ownership,
-                b.id as boat_id,
-                b.name as boat_name,
-                b.width_cm as boat_width_cm,
-                b.length_cm as boat_length_cm,
-                b.weight_kg as boat_weight_kg,
-                b.depth_cm as boat_depth_cm,
-                b.type as boat_type,
-                b.other_identification as boat_other_identification,
-                b.extra_information as boat_extra_information,
-                location.name as location_name, 
-                bs.type,
-                bs.length_cm as boat_space_length_cm,
-                bs.width_cm as boat_space_width_cm,
-                bs.amenity,
-                price.price_cents,
-                price.vat_cents,
-                price.net_price_cents,
-                CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place
-            FROM boat_space_reservation bsr
-            JOIN boat b ON b.id = bsr.boat_id
-            JOIN reserver r ON bsr.reserver_id =  r.id
-            JOIN boat_space bs ON bsr.boat_space_id = bs.id
-            JOIN location ON location.id = bs.location_id
-            LEFT JOIN price ON price_id = price.id
-            JOIN municipality m ON r.municipality_code = m.code
-            LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status <> 'Failed'
-                    """
+    private fun buildSqlSelectPartForBoatSpaceReservationDetails() =
+        """
+        SELECT bsr.id,
+        bsr.start_date,
+        bsr.end_date,
+        bsr.created,
+        bsr.updated,
+        bsr.status,
+        bsr.boat_space_id,
+        bsr.validity,
+        bsr.renewed_from_id,
+        bsr.termination_reason,
+        bsr.termination_comment,
+        bsr.termination_timestamp,
+        p.id as payment_id,
+        p.paid as payment_date,
+        r.id as reserver_id,
+        r.type as reserver_type,
+        r.name,
+        r.email, 
+        r.phone,
+        r.street_address,
+        r.postal_code,
+        r.municipality_code,
+        m.name as municipality_name,
+        b.registration_code as boat_registration_code,
+        b.ownership as boat_ownership,
+        b.id as boat_id,
+        b.name as boat_name,
+        b.width_cm as boat_width_cm,
+        b.length_cm as boat_length_cm,
+        b.weight_kg as boat_weight_kg,
+        b.depth_cm as boat_depth_cm,
+        b.type as boat_type,
+        b.other_identification as boat_other_identification,
+        b.extra_information as boat_extra_information,
+        location.name as location_name, 
+        bs.type,
+        bs.length_cm as boat_space_length_cm,
+        bs.width_cm as boat_space_width_cm,
+        bs.amenity,
+        price.price_cents,
+        price.vat_cents,
+        price.net_price_cents,
+        CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place
+        """.trimIndent()
+
+    private fun buildSqlSelectFromJoinPartForBoatSpaceReservationDetails() =
+        """
+        ${buildSqlSelectPartForBoatSpaceReservationDetails()}
+        FROM boat_space_reservation bsr
+        JOIN boat b ON b.id = bsr.boat_id
+        JOIN reserver r ON bsr.reserver_id =  r.id
+        JOIN boat_space bs ON bsr.boat_space_id = bs.id
+        JOIN location ON location.id = bs.location_id
+        LEFT JOIN price ON price_id = price.id
+        JOIN municipality m ON r.municipality_code = m.code
+        LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status <> 'Failed'
+        """.trimIndent()
 }

@@ -26,17 +26,18 @@ class TerminateReservationRepository(
                     UPDATE boat_space_reservation
                     SET 
                         status = 'Cancelled', 
-                        updated = :updatedTimestamp, 
+                        updated = :nowTimestamp, 
                         end_date = :endDate,
                         termination_reason = :terminationReason,
-                        termination_comment = :terminationComment
+                        termination_comment = :terminationComment,
+                        termination_timestamp = :nowTimestamp
                     WHERE id = :id
                         AND status <> 'Cancelled'
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("id", reservationId)
-            query.bind("updatedTimestamp", timeProvider.getCurrentDateTime())
+            query.bind("nowTimestamp", timeProvider.getCurrentDateTime())
             query.bind("endDate", endDate)
             query.bind("terminationReason", terminationReason)
             query.bind("terminationComment", terminationComment)

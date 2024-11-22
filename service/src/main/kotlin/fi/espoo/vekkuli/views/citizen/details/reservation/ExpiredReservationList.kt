@@ -11,6 +11,7 @@ class ExpiredReservationList(
     private val cardHeading: ReservationCardHeading,
     private val cardInfo: ReservationCardInformation,
     private val accordion: Accordion,
+    private val reservationTerminationReason: ReservationTerminationReason
 ) : BaseView() {
     fun render(boatSpaceReservations: List<BoatSpaceReservationDetails>): String {
         val accordionBuilder = accordion.createBuilder()
@@ -24,6 +25,7 @@ class ExpiredReservationList(
                 <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
                     ${cardHeading.render(reservation)}
                     ${cardInfo.render(reservation)}
+                    ${reservationTerminationReason.render(reservation)}
                 </div>
                 """.trimIndent()
             }}

@@ -19,6 +19,7 @@ data class BoatSpaceReservationDetails(
     val status: ReservationStatus,
     val terminationReason: ReservationTerminationReason?,
     val terminationComment: String?,
+    val terminationTimestamp: LocalDateTime?,
     val reserverType: ReserverType,
     val reserverId: UUID,
     val name: String,
