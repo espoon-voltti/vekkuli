@@ -7,6 +7,7 @@ package fi.espoo.vekkuli.config
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
+import fi.espoo.vekkuli.common.Unauthorized
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpFilter
 import jakarta.servlet.http.HttpServletRequest
@@ -125,6 +126,22 @@ class JwtTokenDecoder(
 }
 
 fun HttpServletRequest.getAuthenticatedUser(): AuthenticatedUser? = getAttribute(ATTR_USER) as AuthenticatedUser?
+
+fun HttpServletRequest.ensureCitizenId(): UUID {
+    val citizen = getAttribute(ATTR_USER) as AuthenticatedUser?
+    if (citizen == null || !citizen.isCitizen()) {
+        throw Unauthorized("No authenticated user")
+    }
+    return citizen.id
+}
+
+fun HttpServletRequest.ensureEmployeeId(): UUID {
+    val employee = getAttribute(ATTR_USER) as AuthenticatedUser?
+    if (employee == null || !employee.isEmployee()) {
+        throw Unauthorized("No authenticated user")
+    }
+    return employee.id
+}
 
 private const val ATTR_USER = "vekkuli.user"
 private const val ATTR_JWT = "vekkuli.jwt"

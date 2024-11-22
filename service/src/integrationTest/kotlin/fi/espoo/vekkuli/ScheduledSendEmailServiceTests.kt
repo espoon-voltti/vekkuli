@@ -44,21 +44,23 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
                 Recipient(this.citizenIdMikko, "test4@email.com"),
             )
         val madeReservation =
-            createReservationInConfirmedState(
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    1,
+                    1,
+                    ReservationValidity.FixedTerm
+                )
+            )
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
                 timeProvider,
-                reservationService,
-                this.citizenIdLeo,
-                1,
-                1,
+                this.citizenIdOlivia,
+                2,
+                3,
                 ReservationValidity.FixedTerm
             )
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdOlivia,
-            2,
-            3,
-            ReservationValidity.FixedTerm
         )
 
         // mock time to be 20 days before the end date
@@ -66,13 +68,14 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
             timeProvider,
             madeReservation.endDate.minusDays(20).atStartOfDay()
         )
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdMikko,
-            3,
-            2,
-            ReservationValidity.FixedTerm
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdMikko,
+                3,
+                2,
+                ReservationValidity.FixedTerm
+            )
         )
 
         scheduledSendEmailService.sendReservationExpiryReminderEmails()
@@ -108,21 +111,23 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
                 Recipient(this.citizenIdMikko, "test4@email.com"),
             )
         val madeReservation =
-            createReservationInConfirmedState(
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    1,
+                    1,
+                    ReservationValidity.Indefinite
+                )
+            )
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
                 timeProvider,
-                reservationService,
-                this.citizenIdLeo,
-                1,
-                1,
+                this.citizenIdOlivia,
+                2,
+                3,
                 ReservationValidity.Indefinite
             )
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdOlivia,
-            2,
-            3,
-            ReservationValidity.Indefinite
         )
 
         // mock time to be 20 days before the end date
@@ -130,13 +135,14 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
             timeProvider,
             madeReservation.endDate.minusDays(20).atStartOfDay()
         )
-        createReservationInConfirmedState(
-            timeProvider,
-            reservationService,
-            this.citizenIdMikko,
-            3,
-            2,
-            ReservationValidity.Indefinite
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdMikko,
+                3,
+                2,
+                ReservationValidity.Indefinite
+            )
         )
 
         scheduledSendEmailService.sendReservationRenewReminderEmails()

@@ -6,16 +6,16 @@ import java.util.*
 
 data class UpdateOrganizationParams(
     val id: UUID,
-    val businessId: String?,
-    val name: String?,
-    val phone: String?,
-    val email: String?,
-    val streetAddress: String?,
-    val streetAddressSv: String?,
-    val postalCode: String?,
-    val postOffice: String?,
-    val postOfficeSv: String?,
-    val municipalityCode: Int?
+    val businessId: String? = null,
+    val name: String? = null,
+    val phone: String? = null,
+    val email: String? = null,
+    val streetAddress: String? = null,
+    val streetAddressSv: String? = null,
+    val postalCode: String? = null,
+    val postOffice: String? = null,
+    val postOfficeSv: String? = null,
+    val municipalityCode: Int? = null
 )
 
 interface OrganizationRepository {

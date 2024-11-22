@@ -4,9 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
-import fi.espoo.vekkuli.pages.BoatSpaceFormPage
-import fi.espoo.vekkuli.pages.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.PaymentPage
+import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -23,12 +21,16 @@ class CitizenDetailsTest : PlaywrightTest() {
             page.getByText("Kirjaudu").click()
 
             page.navigate(citizenPageInEnglish)
-
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
-
             val formPage = BoatSpaceFormPage(page)
+            formPage.backButton.click()
+
+            formPage.confirmCancelModalConfirm.click()
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+
+            citizenDetails.renewReservationButton(1).click()
             formPage.certifyInfoCheckbox.check()
             formPage.agreementCheckbox.check()
             formPage.submitButton.click()
@@ -36,6 +38,10 @@ class CitizenDetailsTest : PlaywrightTest() {
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)
+            paymentPage.nordeaSuccessButton.click()
+
+            page.navigate(citizenPageInEnglish)
+            assertThat(citizenDetails.renewReservationButton(1)).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }

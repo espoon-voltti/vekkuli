@@ -174,56 +174,6 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getRenewalReservationForCitizen(id: UUID): ReservationWithDependencies? =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description,
-                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
-                    FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
-                    WHERE bsr.acting_citizen_id = :id AND bsr.status = 'Renewal' 
-                    """.trimIndent()
-                )
-            query.bind("id", id)
-            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
-        }
-
-    override fun getRenewalReservationForEmployee(id: UUID): ReservationWithDependencies? =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description,
-                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
-                    FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
-                    WHERE bsr.employee_id = :id AND bsr.status = 'Renewal' 
-                    """.trimIndent()
-                )
-            query.bind("id", id)
-            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
-        }
-
     override fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -278,7 +228,7 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, 
+                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,  
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                           bs.description,
                           CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
@@ -617,7 +567,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET status = :reservationStatus, updated = :updatedTime
                     WHERE id = :reservationId
-                        AND status = 'Payment'
+                        AND (status = 'Payment' OR status = 'Renewal')
                         AND created > :currentTime - make_interval(secs => :paymentTimeout)
                     RETURNING *
                     """.trimIndent()

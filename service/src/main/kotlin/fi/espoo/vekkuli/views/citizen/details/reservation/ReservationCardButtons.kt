@@ -17,21 +17,4 @@ class ReservationCardButtons : BaseView() {
             </button>
             """.trimIndent()
     }
-
-    fun createRenewPlaceButton(reservation: BoatSpaceReservationDetails): String {
-        if (!reservation.canRenew) {
-            return ""
-        }
-
-        return """
-            <button 
-              class="button is-primary"
-              id="renew-place-button-${reservation.id}"
-              hx-get="/kuntalainen/venepaikka/jatka-varausta/${reservation.id}"
-              hx-target="body"
-              hx-push-url="true">
-                ${t("boatSpaceReservation.button.renewPlace")}
-            </button>
-            """.trimIndent()
-    }
 }
