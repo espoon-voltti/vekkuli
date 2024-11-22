@@ -69,8 +69,10 @@ class BoatSpaceRenewController(
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, originalReservationId)
 
         val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(renewedReservation.id)
-
-        val content = boatSpaceRenewForm.renewInvoicePreview(invoiceModel, renewedReservation.reserverId)
+        if (renewedReservation.reserverId == null || renewedReservation.renewedFromId == null) {
+            return badRequest("Invalid renewal reservation")
+        }
+        val content = boatSpaceRenewForm.renewInvoicePreview(invoiceModel, renewedReservation.reserverId, renewedReservation.renewedFromId)
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
     }
@@ -110,7 +112,7 @@ class BoatSpaceRenewController(
             boatSpaceRenewalService.activateRenewalAndSendInvoice(
                 renewedReservation.id,
                 renewedReservation.reserverId,
-                renewedReservation.renewedFromId
+                renewedReservation.renewedFromId,
             )
         } catch (e: Exception) {
             // TODO: should we respond with error page or redirect to some other page?

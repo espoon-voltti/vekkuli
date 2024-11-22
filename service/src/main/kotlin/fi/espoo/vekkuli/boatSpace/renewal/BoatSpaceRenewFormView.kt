@@ -321,7 +321,8 @@ class BoatSpaceRenewFormView(
 
     fun renewInvoicePreview(
         model: SendInvoiceModel,
-        reserverId: UUID?
+        reserverId: UUID,
+        originalReservationId: Int
     ): String {
         // language=HTML
         fun invoiceLine(
@@ -406,7 +407,7 @@ class BoatSpaceRenewFormView(
                         <button id="submit"
                             class="button is-primary"
                             type="submit"
-                            hx-post="/virkailija/venepaikka/jatka/${model.reservationId}/lasku"
+                            hx-post="/virkailija/venepaikka/jatka/$originalReservationId/lasku"
                             hx-target="body">
                             Lähetä lasku
                         </button>
