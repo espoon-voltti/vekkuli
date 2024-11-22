@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
 import fi.espoo.vekkuli.utils.SqlExpr
@@ -56,12 +55,6 @@ interface BoatSpaceReservationRepository {
     ): List<BoatSpaceReservationItem>
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace?
-
-    fun createRenewalRow(
-        reservationId: Int,
-        userType: UserType,
-        userId: UUID
-    ): Int
 
     fun insertBoatSpaceReservation(
         reserverId: UUID,

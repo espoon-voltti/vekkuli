@@ -55,7 +55,7 @@ val testDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"
 
 fun formatAsShortDate(date: LocalDate): String = date.format(shortDateFormat)
 
-fun formatAsFullDate(date: LocalDate): String = date.format(fullDateFormat)
+fun formatAsFullDate(date: LocalDate?): String = if (date == null) "-" else date.format(fullDateFormat)
 
 fun formatAsShortYearDate(date: LocalDate?): String = if (date == null) "-" else date.format(shortYearDateFormat)
 

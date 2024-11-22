@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.service.InvoiceClient
+import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -36,6 +37,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
         deleteAllReservations(jdbi)
         Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenReturn(true)
     }
+
+    @Autowired
+    private lateinit var paymentService: PaymentService
 
     @Autowired
     private lateinit var citizenService: CitizenService
@@ -196,12 +200,16 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should send invoice, set renewal to invoice state and set old reservation as expired`() {
+        mockTimeProvider(timeProvider, startOfRenewPeriod)
         val oldReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
@@ -214,6 +222,11 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
         val updatedOldReservation = reservationService.getBoatSpaceReservation(oldReservation.id)
         val updatedRenewalReservation = reservationService.getBoatSpaceReservation(renewalReservation.id)
+        val invoice = paymentService.getInvoiceForReservation(renewalReservation.id)
+        assertNotNull(invoice, "Invoice should exist")
+
+        val payment = paymentService.getPayment(invoice!!.paymentId)
+        assertNotNull(payment, "Payment should exist")
 
         assertNotNull(updatedRenewalReservation, "Renewal reservation should exist")
         assertEquals(ReservationStatus.Invoiced, updatedRenewalReservation?.status, "Renewal reservation should be invoiced")

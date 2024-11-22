@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
 import fi.espoo.vekkuli.utils.SqlExpr
@@ -356,52 +355,6 @@ class JdbiBoatSpaceReservationRepository(
                 )
             }
     }
-
-    override fun createRenewalRow(
-        reservationId: Int,
-        userType: UserType,
-        userId: UUID
-    ): Int =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    INSERT INTO boat_space_reservation (
-                      created,
-                      reserver_id, 
-                      acting_citizen_id, 
-                      boat_space_id, 
-                      start_date, 
-                      end_date, 
-                      status, 
-                      validity, 
-                      boat_id, 
-                      employee_id,
-                      renewed_from_id
-                    )
-                    (
-                      SELECT :created as created,
-                             reserver_id, 
-                             :actingCitizenId as acting_citizen_id, 
-                             boat_space_id, 
-                             start_date, 
-                             (end_date + INTERVAL '1 year') as end_date, 'Renewal' as status, 
-                             validity, 
-                             boat_id, 
-                             :employeeId as employee_id,
-                             id as renewed_from_id
-                      FROM boat_space_reservation
-                      WHERE id = :reservationId
-                    )
-                    RETURNING id
-                    """.trimIndent()
-                ).bind("created", timeProvider.getCurrentDateTime())
-                .bind("reservationId", reservationId)
-                .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
-                .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
-                .mapTo<Int>()
-                .one()
-        }
 
     override fun insertBoatSpaceReservation(
         reserverId: UUID,
