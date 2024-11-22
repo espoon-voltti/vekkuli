@@ -1,5 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.asyncJob.AsyncJob
+import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
+import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
@@ -18,7 +21,9 @@ import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Duration
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.*
 
 @Service
@@ -31,6 +36,7 @@ class BoatSpaceRenewalService(
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
     private val timeProvider: TimeProvider,
+    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
@@ -196,9 +202,16 @@ class BoatSpaceRenewalService(
 
         reservationService.markReservationEnded(renewedFromId)
 
-        // Sending is last as if sending to external service fails, we don't leave the system in an inconsistent state when it rollbacks
-        invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
-            ?: throw InternalError("Failed to send invoice")
+        asyncJobRunner.plan(
+            sequenceOf(
+                JobParams(
+                    AsyncJob.SendInvoiceBatch(invoiceData),
+                    3,
+                    Duration.ofMinutes(5),
+                    timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
+                )
+            )
+        )
     }
 
     fun buildBoatSpaceRenewalViewParams(
