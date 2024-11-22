@@ -112,6 +112,9 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             formPage.lengthInput.blur()
             assertThat(formPage.lengthError).isVisible()
 
+            formPage.widthInput.fill("-1")
+            formPage.widthInput.blur()
+            assertThat(formPage.widthInput).hasValue("1")
             // warning for boat size
             formPage.widthInput.fill("10")
             formPage.widthInput.blur()
