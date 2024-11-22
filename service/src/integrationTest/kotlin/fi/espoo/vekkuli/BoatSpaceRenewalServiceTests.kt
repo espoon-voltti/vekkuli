@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.asyncJob.AsyncJob
+import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
 import fi.espoo.vekkuli.domain.BoatType
@@ -13,7 +15,10 @@ import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
+import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -44,6 +49,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
     @MockBean
     lateinit var invoiceClient: InvoiceClient
+
+    @MockBean
+    lateinit var asyncJobRunner: IAsyncJobRunner<AsyncJob>
 
     @Test
     fun `should create a renewal reservation for employee if not exist or fetch if already created`() {
@@ -222,38 +230,38 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
         )
     }
 
-//    @Test
-//    fun `should rollback if sending invoice fails`() {
-//        Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenThrow(RuntimeException("Invoice sending failed"))
-//
-//        val originalEndDate = LocalDate.of(2025, 1, 31)
-//        val oldReservation =
-//            testUtils.createReservationInConfirmedState(
-//                CreateReservationParams(
-//                    timeProvider,
-//                    citizenIdLeo,
-//                    1,
-//                    startDate = LocalDate.of(2024, 4, 1),
-//                    endDate = originalEndDate,
-//                )
-//            )
-//        val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
-//        assertThrows<RuntimeException> {
-//            boatSpaceRenewalService.activateRenewalAndSendInvoice(
-//                renewalReservation.id,
-//                renewalReservation.reserverId,
-//                renewalReservation.renewedFromId
-//            )
-//        }
-//
-//        assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
-//        assertEquals(ReservationStatus.Confirmed, oldReservation.status, "Old reservation should be rolled back")
-//        assertEquals(
-//            originalEndDate,
-//            oldReservation.endDate,
-//            "Old reservation should not be marked as ended"
-//        )
-//    }
+    @Test
+    fun `should rollback if sending invoice fails`() {
+        Mockito.`when`(asyncJobRunner.plan(any())).thenThrow(RuntimeException("Invoice sending failed"))
+
+        val originalEndDate = LocalDate.of(2025, 1, 31)
+        val oldReservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                    startDate = LocalDate.of(2024, 4, 1),
+                    endDate = originalEndDate,
+                )
+            )
+        val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
+        assertThrows<RuntimeException> {
+            boatSpaceRenewalService.activateRenewalAndSendInvoice(
+                renewalReservation.id,
+                renewalReservation.reserverId,
+                renewalReservation.renewedFromId
+            )
+        }
+
+        assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
+        assertEquals(ReservationStatus.Confirmed, oldReservation.status, "Old reservation should be rolled back")
+        assertEquals(
+            originalEndDate,
+            oldReservation.endDate,
+            "Old reservation should not be marked as ended"
+        )
+    }
 
     @Test
     fun `should generate invoice model for reservation`() {
