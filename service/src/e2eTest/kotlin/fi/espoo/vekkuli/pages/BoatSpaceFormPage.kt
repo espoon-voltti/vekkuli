@@ -29,7 +29,7 @@ class BoatSpaceFormPage(
     val certifyInfoError = page.getByTestId("certifyInformation-error")
     val agreementCheckbox = page.getByTestId("agreeToRules")
     val agreementError = page.getByTestId("agreeToRules-error")
-    val submitButton = page.getByTestId("submit")
+    val submitButton = page.getByTestId("submit-button")
     val cancelButton = page.getByTestId("cancel")
     val confirmCancelModal = page.getByTestId("confirm-cancel-modal")
     val ownerRadioButton = page.getByTestId("ownership-Owner")

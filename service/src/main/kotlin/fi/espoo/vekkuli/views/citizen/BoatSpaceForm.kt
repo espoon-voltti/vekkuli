@@ -1102,7 +1102,7 @@ class BoatSpaceForm(
                                     x-on:click="modalOpen = true">
                                     ${t("boatApplication.cancelReservation")}
                                 </button>
-                                <button id="submit"
+                                <button id="submit-button"
                                     class="button is-primary"
                                     type="submit">
                                     ${t("boatApplication.$userType.continueToPaymentButton")}
