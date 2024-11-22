@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.Harbor
-import fi.espoo.vekkuli.domain.Location
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.utils.*
@@ -13,21 +10,6 @@ import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.jdbi.v3.core.statement.Query
 import org.springframework.stereotype.Repository
-
-data class BoatSpaceOption(
-    val id: Int,
-    val place: String,
-    val widthCm: Int,
-    val lengthCm: Int,
-    val priceCents: Int,
-    val locationName: String,
-    val locationAddress: String,
-    val amenity: BoatSpaceAmenity,
-    val formattedSizes: String = "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',')
-) {
-    val priceInEuro: Double
-        get() = priceCents / 100.0
-}
 
 fun amenityFilter(
     amenity: BoatSpaceAmenity,

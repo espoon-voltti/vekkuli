@@ -9,14 +9,15 @@ enum class ReservationValidity {
 
 data class BoatSpaceOption(
     val id: Int,
-    val section: String,
-    val placeNumber: Int,
+    val place: String,
     val widthCm: Int,
     val lengthCm: Int,
     val priceCents: Int,
     val locationName: String,
+    val locationAddress: String,
     val amenity: BoatSpaceAmenity,
-    val formattedSizes: String = "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',')
+    val formattedSizes: String =
+        if (amenity != BoatSpaceAmenity.Buoy) "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',') else ""
 ) {
     val priceInEuro: Double
         get() = priceCents / 100.0
