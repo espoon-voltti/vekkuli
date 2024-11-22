@@ -99,6 +99,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             assertThat(formPage.certifyInfoError).isVisible()
             assertThat(formPage.agreementError).isVisible()
 
+            assertThat(formPage.validationWarning).isVisible()
+
             // Fill in the boat information
             formPage.boatTypeSelect.selectOption("Sailboat")
 
@@ -158,6 +160,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             formPage.certifyInfoCheckbox.check()
             formPage.agreementCheckbox.check()
+
+            assertThat(formPage.validationWarning).isHidden()
             formPage.submitButton.click()
 
             // assert that payment title is shown

@@ -25,6 +25,7 @@ class BoatSpaceFormPage(
     val emailError = page.getByTestId("email-error")
     val phoneInput = page.getByTestId("phone")
     val phoneError = page.getByTestId("phone-error")
+    val validationWarning = page.getByTestId("validation-warning")
     val certifyInfoCheckbox = page.getByTestId("certifyInformation")
     val certifyInfoError = page.getByTestId("certifyInformation-error")
     val agreementCheckbox = page.getByTestId("agreeToRules")
