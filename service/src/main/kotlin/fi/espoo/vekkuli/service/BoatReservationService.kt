@@ -254,7 +254,8 @@ class BoatReservationService(
         }
     }
 
-    fun getReservationWithReserver(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithReserver(id)
+    fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
+        boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(id)
 
     fun getReservationWithDependencies(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithDependencies(id)
 
@@ -694,12 +695,12 @@ class BoatReservationService(
         }
     }
 
-    fun getContactDetailsForReservation(reservationId: Int): List<Recipient> {
-        val reservation = boatSpaceReservationRepo.getReservationWithReserver(reservationId)
-        if (reservation?.reserverId == null || reservation.email == null) {
-            return listOf()
+    fun getEmailRecipientForReservation(reservationId: Int): Recipient? {
+        val recipient = boatSpaceReservationRepo.getReservationReserverEmail(reservationId)
+        if (recipient?.id == null || recipient.email == null) {
+            return null
         }
-        return listOf<Recipient>(Recipient(reservation.reserverId, reservation.email))
+        return recipient
     }
 
     fun markReservationEnded(reservationId: Int) {

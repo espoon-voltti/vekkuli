@@ -20,7 +20,8 @@ class FormComponents {
         attributes: String = "",
         labelAttributes: String = "",
         compact: Boolean = false,
-        serverValidate: Pair<String, String>? = null
+        serverValidate: Pair<String, String>? = null,
+        name: String = id
     ): String {
         //language=HTML
         val errorContainer = renderErrorContainer(id, pattern, serverValidate)
@@ -37,7 +38,7 @@ class FormComponents {
                         ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
                         type="text"
                         id="$id"
-                        name="$id"
+                        name="$name"
                         ${if (value != null) "value=\"$value\"" else ""}
                         $attributes />
                    $errorContainer
@@ -249,6 +250,13 @@ class FormComponents {
     fun textArea(options: TextAreaOptions): String {
         //language=HTML
         val errorContainer = renderErrorContainer(options.id, null, options.serverValidate)
+        val classes = mutableListOf<String>()
+        if (options.compact) {
+            classes.add("compact")
+        }
+        if (options.resizable) {
+            classes.add("resizable")
+        }
 
         //language=HTML
         return """
@@ -262,7 +270,7 @@ class FormComponents {
                         ${t(options.labelKey)}
                     </label>
                     <textarea
-                        class="textarea ${if (options.compact) "compact" else ""}${if (options.compact) "compact" else ""}"
+                        class="textarea${classes.joinToString { " " + it }}"
                         ${if (options.required == true) "data-required" else ""}
                         ${if (options.serverValidate != null) "data-validate-url=\"${options.serverValidate.first}\"" else ""}
                         ${if (options.rows != null) "rows=\"${options.rows}\"" else ""}
@@ -358,5 +366,6 @@ data class TextAreaOptions(
     val labelAttributes: String = "",
     val rows: Int? = null,
     val compact: Boolean = false,
-    val serverValidate: Pair<String, String>? = null
+    val serverValidate: Pair<String, String>? = null,
+    val resizable: Boolean = false
 )

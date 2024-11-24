@@ -30,7 +30,9 @@ interface BoatSpaceReservationRepository {
 
     fun getReservationForRenewal(id: Int): ReservationWithDependencies?
 
-    fun getReservationWithReserver(id: Int): ReservationWithDependencies?
+    fun getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(id: Int): ReservationWithDependencies?
+
+    fun getReservationReserverEmail(reservationId: Int): Recipient?
 
     fun getReservationWithDependencies(id: Int): ReservationWithDependencies?
 
