@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.asyncJob.AsyncJob
+import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
 import fi.espoo.vekkuli.domain.BoatType
@@ -35,7 +37,6 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
-        Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenReturn(true)
         mockTimeProvider(timeProvider, startOfRenewPeriod)
     }
 
@@ -53,6 +54,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
     @MockBean
     lateinit var invoiceClient: InvoiceClient
+
+    @MockBean
+    lateinit var asyncJobRunner: IAsyncJobRunner<AsyncJob>
 
     @Test
     fun `should create a renewal reservation for employee if not exist or fetch if already created`() {
@@ -262,7 +266,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should rollback if sending invoice fails`() {
-        Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenThrow(RuntimeException("Invoice sending failed"))
+        Mockito.`when`(asyncJobRunner.plan(any())).thenThrow(RuntimeException("Invoice sending failed"))
 
         val oldReservation =
             testUtils.createReservationInConfirmedState(

@@ -1,14 +1,14 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.asyncJob.AsyncJob
+import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -29,12 +29,11 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
     lateinit var invoiceService: BoatSpaceInvoiceService
 
     @MockBean
-    lateinit var invoiceClientMock: InvoiceClient
+    lateinit var asyncJobRunner: IAsyncJobRunner<AsyncJob>
 
     @BeforeEach
     override fun resetDatabase() {
         deleteAllInvoices(jdbi)
-        whenever(invoiceClientMock.sendBatchInvoice(any())).thenReturn(true)
     }
 
     @Test
@@ -46,22 +45,21 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                     this.citizenIdLeo
                 )
             )
-        val invoiceBatchParameters =
+        val invoiceData =
             boatSpaceInvoiceService.createInvoiceData(
                 madeReservation.id,
                 this.citizenIdLeo
             )
-        assertNotNull(invoiceBatchParameters, "Invoice is created")
-        assertEquals(26719, invoiceBatchParameters?.priceCents, "Price is correct")
+        assertNotNull(invoiceData, "Invoice is created")
+        assertEquals(26719, invoiceData?.priceCents, "Price is correct")
         val invoice =
             boatSpaceInvoiceService.createAndSendInvoice(
-                invoiceBatchParameters!!,
+                invoiceData!!,
                 this.citizenIdLeo,
                 madeReservation.id
             )
-        verify(invoiceClientMock).sendBatchInvoice(
-            eq(invoiceBatchParameters)
-        )
+
+        verify(asyncJobRunner).plan(any())
         assertNotNull(invoice, "Invoice is sent")
         assertEquals(
             this.citizenIdLeo,

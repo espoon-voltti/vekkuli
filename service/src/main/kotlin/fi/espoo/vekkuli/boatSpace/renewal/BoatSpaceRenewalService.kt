@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.asyncJob.AsyncJob
+import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
@@ -32,6 +34,7 @@ class BoatSpaceRenewalService(
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
     private val timeProvider: TimeProvider,
+    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
 ) {
     fun getOrCreateRenewalReservationForEmployee(
@@ -205,7 +208,6 @@ class BoatSpaceRenewalService(
 
         reservationService.markReservationEnded(renewedFromId)
 
-        // Sending is last as if sending to external service fails, we don't leave the system in an inconsistent state when it rollbacks
         invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
             ?: throw InternalError("Failed to send invoice")
     }

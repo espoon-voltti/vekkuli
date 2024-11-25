@@ -1,5 +1,8 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.asyncJob.AsyncJob
+import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
+import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
@@ -7,17 +10,21 @@ import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.Duration
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.*
 
 @Service
 class BoatSpaceInvoiceService(
-    private val invoiceClient: InvoiceClient,
     private val paymentService: PaymentService,
     private val timeProvider: TimeProvider,
     private val boatReservationService: BoatReservationService,
-    private val citizenService: CitizenService
+    private val citizenService: CitizenService,
+    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>
 ) {
+    @Transactional
     fun createAndSendInvoice(
         invoiceData: InvoiceData,
         citizenId: UUID,
@@ -28,11 +35,17 @@ class BoatSpaceInvoiceService(
             return invoice
         }
         val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
-        val sendInvoiceSuccess = invoiceClient.sendBatchInvoice(invoiceData)
-        if (!sendInvoiceSuccess) {
-            paymentService.updatePayment(createdPayment.id, false, null)
-            return null
-        }
+
+        asyncJobRunner.plan(
+            sequenceOf(
+                JobParams(
+                    AsyncJob.SendInvoiceBatch(invoiceData),
+                    300,
+                    Duration.ofMinutes(15),
+                    timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
+                )
+            )
+        )
         return createdInvoice
     }
 

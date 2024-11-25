@@ -72,7 +72,7 @@ private data class InvoiceBatch(
 )
 
 interface InvoiceClient {
-    fun sendBatchInvoice(invoiceData: InvoiceData): Boolean
+    fun sendBatchInvoice(invoiceData: InvoiceData)
 }
 
 @Service
@@ -80,9 +80,8 @@ interface InvoiceClient {
 class MockInvoiceClient(
     val timeProvider: TimeProvider
 ) : InvoiceClient {
-    override fun sendBatchInvoice(invoiceData: InvoiceData): Boolean {
-        println("sending invoice ${invoiceData.invoiceNumber}")
-        return true
+    override fun sendBatchInvoice(invoiceData: InvoiceData) {
+        println("sending invoice $invoiceData")
     }
 }
 
@@ -92,7 +91,8 @@ class EspiInvoiceClient(
     val espiEnv: EspiEnv,
     val timeProvider: TimeProvider
 ) : InvoiceClient {
-    override fun sendBatchInvoice(invoiceData: InvoiceData): Boolean {
+    override fun sendBatchInvoice(invoiceData: InvoiceData) {
+        println("Sending invoice $invoiceData")
         val json =
             Json {
                 encodeDefaults = false
@@ -108,7 +108,9 @@ class EspiInvoiceClient(
         val invoiceBatch = createInvoiceBatch(invoiceData, timeProvider)
         val encodedBody = json.encodeToString(invoiceBatch)
         val response = runBlocking { VekkuliHttpClient.makePostRequest(url, encodedBody, headers) }
-        return response?.status == HttpStatusCode.OK
+        if (response?.status == HttpStatusCode.OK) {
+            throw RuntimeException("Failed to send invoice")
+        }
     }
 }
 
