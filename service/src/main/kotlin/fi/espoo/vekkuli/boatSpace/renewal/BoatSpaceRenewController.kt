@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.controllers.*
@@ -66,15 +67,27 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val userId = request.ensureEmployeeId()
-        val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, originalReservationId)
+        try {
+            val renewedReservation =
+                boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, originalReservationId)
 
-        val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(renewedReservation.id)
-        if (renewedReservation.reserverId == null || renewedReservation.renewedFromId == null) {
-            return badRequest("Invalid renewal reservation")
+            val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(renewedReservation.id)
+            if (renewedReservation.reserverId == null || renewedReservation.renewedFromId == null) {
+                return badRequest("Invalid renewal reservation")
+            }
+            val content =
+                boatSpaceRenewForm.renewInvoicePreview(
+                    invoiceModel,
+                    renewedReservation.reserverId,
+                    renewedReservation.renewedFromId
+                )
+            val page = employeeLayout.render(true, request.requestURI, content)
+            return ResponseEntity.ok(page)
+        } catch (e: Conflict) {
+            return redirectUrl("/virkailija/venepaikat/varaukset")
+        } catch (e: Exception) {
+            return badRequest("Unable to renew reservation")
         }
-        val content = boatSpaceRenewForm.renewInvoicePreview(invoiceModel, renewedReservation.reserverId, renewedReservation.renewedFromId)
-        val page = employeeLayout.render(true, request.requestURI, content)
-        return ResponseEntity.ok(page)
     }
 
     @PostMapping("/kuntalainen/venepaikka/jatka/{originalReservationId}")
@@ -114,15 +127,12 @@ class BoatSpaceRenewController(
                 renewedReservation.reserverId,
                 renewedReservation.renewedFromId,
             )
+            return redirectUrl("/virkailija/kayttaja/${renewedReservation.reserverId}")
         } catch (e: Exception) {
             // TODO: should we respond with error page or redirect to some other page?
             val errorPage = boatSpaceRenewForm.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
         }
-        return ResponseEntity
-            .status(HttpStatus.FOUND)
-            .header("Location", "/virkailija/venepaikat/varaukset")
-            .body("")
     }
 
     @DeleteMapping("/virkailija/venepaikka/jatka/{renewedReservationId}/lasku")

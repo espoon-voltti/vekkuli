@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NO
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.repository.filter.SortDirection
@@ -292,22 +291,6 @@ class BoatReservationService(
             startDate,
             endDate
         )
-
-    fun createRenewalReservationForEmployee(
-        reservationId: Int,
-        userId: UUID
-    ): ReservationWithDependencies? {
-        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.EMPLOYEE, userId)
-        return getReservationWithReserver(newId)
-    }
-
-    fun createRenewalReservationForCitizen(
-        reservationId: Int,
-        userId: UUID
-    ): ReservationWithDependencies? {
-        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.CITIZEN, userId)
-        return getReservationWithReserver(newId)
-    }
 
     @Transactional
     fun reserveBoatSpace(
@@ -602,6 +585,14 @@ class BoatReservationService(
                 validity
             )
         )
+    }
+
+    fun canRenewAReservation(
+        oldValidity: ReservationValidity,
+        oldEndDate: LocalDate,
+    ): ReservationResult {
+        val periods = getReservationPeriods()
+        return canRenewAReservation(periods, oldValidity, oldEndDate)
     }
 
     fun canRenewAReservation(

@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
-import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.employee.SanitizeInput
@@ -70,7 +69,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.paid")}</label>
-                         <p id="paidFieldInfo">${formatAsShortYearDate(reservation.paymentDate)}</p> 
+                         <p id="paidFieldInfo">${formatAsFullDate(reservation.paymentDate)}</p> 
                      </div>
                  </div>
              </div>

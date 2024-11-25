@@ -423,8 +423,8 @@ class BoatSpaceRenewFormView(
         """
         <section class="section">
             <div class="container">
-                <h2 class="title pb-l">Laskun luonti epäonnistui</h2>
-                <p>Laskun luonti epäonnistui. Yritä myöhemmin uudelleen.</p>
+                <h2 class="title pb-l">${t("boatSpaceRenewal.title.errorPage")}</h2>
+                <p>${t("boatSpaceRenewal.errorPage")}</p>
             </div>
         </section>
         """.trimIndent()
