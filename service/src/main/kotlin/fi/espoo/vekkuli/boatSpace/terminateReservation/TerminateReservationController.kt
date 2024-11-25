@@ -14,7 +14,7 @@ import java.time.LocalDate
 @Controller
 @RequestMapping("/boat-space/terminate-reservation")
 class TerminateReservationController(
-    private val terminateService: TerminateBoatSpaceReservationService,
+    private val terminateService: TerminateReservationService,
     private val terminationSuccessModalView: TerminationSuccessModalView,
     private val terminationFailModalView: TerminationFailModalView,
     private val timeProvider: TimeProvider
@@ -45,7 +45,9 @@ class TerminateReservationController(
         @RequestParam("reservationId") reservationId: Int,
         @RequestParam("terminationReason") reason: ReservationTerminationReason,
         @RequestParam("endDate") endDate: LocalDate?,
-        @RequestParam("explanation") explanation: String?
+        @RequestParam("explanation") explanation: String?,
+        @RequestParam("messageTitle") messageTitle: String,
+        @RequestParam("messageContent") messageContent: String,
     ): ResponseEntity<String> {
         try {
             val user = request.getAuthenticatedUser() ?: throw Unauthorized()
@@ -55,7 +57,9 @@ class TerminateReservationController(
                 user.id,
                 reason,
                 endDate ?: timeProvider.getCurrentDate(),
-                explanation
+                explanation,
+                messageTitle,
+                messageContent
             )
 
             return ResponseEntity.ok(

@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.service.TemplateEmailService
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -23,6 +24,9 @@ import org.springframework.test.context.ActiveProfiles
 class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
     @Autowired
     lateinit var messageUtil: MessageUtil
+
+    @Autowired
+    lateinit var templateEmailService: TemplateEmailService
 
     @Test
     fun `employee navigates to citizen details page and opens a terminate reservation modal from a reservation list item and cancel it`() {
@@ -60,7 +64,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
-    fun `Employee can terminate reservation with an endDate, reason and comment and see it in expired reservations list`() {
+    fun `Employee can terminate reservation with an endDate, reason, comment and message and see it in expired reservations list`() {
         try {
             val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -68,6 +72,10 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val terminationComment = "Test comment"
             val terminationReason = ReservationTerminationReasonOptions.PaymentViolation
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.paymentViolation")
+            val defaultEmailTemplate = templateEmailService.getTemplate("marine_employee_reservation_termination_custom_message")
+            val defaultMessageTitle = defaultEmailTemplate?.subject
+            val defaultMessageContent = defaultEmailTemplate?.body
+
             page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
@@ -89,6 +97,15 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
             citizenDetailsPage.terminateReservationReason.selectOption(terminationReason.toString())
             citizenDetailsPage.terminateReservationExplanation.fill(terminationComment)
+
+            // Make sure that there is text in the title
+            assert(!defaultMessageTitle.isNullOrEmpty())
+            assertThat(citizenDetailsPage.terminateReservationMessageTitle).hasValue(defaultMessageTitle)
+
+            // Make sure that there is text in the content
+            assert(!defaultMessageContent.isNullOrEmpty())
+            // Default message content contains values replaced (harbor, place) from the data. Would need to somehow replace these values in the test.
+            assertThat(citizenDetailsPage.terminateReservationMessageContent).containsText(defaultMessageContent?.substring(0, 10))
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
 
@@ -118,6 +135,11 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(
                 citizenDetailsPage.terminationCommentInFirstExpiredReservationListItem
             ).containsText(terminationComment)
+
+            citizenDetailsPage.messagesNavi.click()
+
+            // Check that the message is sent
+            assertThat(citizenDetailsPage.messages.first()).containsText(defaultMessageTitle)
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -133,6 +155,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val expectedTerminationDate = timeProvider.getCurrentDate()
             val terminationComment = "Test comment"
             val terminationReason = ReservationTerminationReasonOptions.RuleViolation
+
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.ruleViolation")
 
             page.navigate(employeePageInEnglish)

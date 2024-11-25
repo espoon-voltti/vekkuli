@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
-import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateBoatSpaceReservationService
+import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
@@ -32,10 +32,13 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     }
 
     @Autowired
+    private lateinit var messageService: MessageService
+
+    @Autowired
     lateinit var reservationService: BoatReservationService
 
     @Autowired
-    lateinit var terminateService: TerminateBoatSpaceReservationService
+    lateinit var terminateService: TerminateReservationService
 
     @Autowired
     lateinit var citizenService: CitizenService
@@ -159,12 +162,15 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should be able to terminate reservation as an employee with a reason, end date and comment`() {
+    fun `should be able to terminate reservation as an employee with a reason, end date and comment and a message`() {
         // Two different scenarios - with different end dates, reasons and comments
         val employeeTerminatorId = userId
         val oliviaEndDate = timeProvider.getCurrentDate().plusWeeks(2)
         val oliviaTerminationReason = ReservationTerminationReason.RuleViolation
         val oliviaTerminationComment = "Olivia's comment"
+        val oliviaMessageTitle = "Olivia's message title"
+        val oliviaMessageContent = "Olivia's message content"
+
         val reservationOfOlivia =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -194,18 +200,23 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
             employeeTerminatorId,
             oliviaTerminationReason,
             oliviaEndDate,
-            oliviaTerminationComment
+            oliviaTerminationComment,
+            oliviaMessageTitle,
+            oliviaMessageContent
         )
 
         terminateService.terminateBoatSpaceReservationAsEmployee(
-            reservationOfLeo.id,
-            employeeTerminatorId,
-            leoTerminationReason,
-            leoEndDate,
+            reservationId = reservationOfLeo.id,
+            terminatorId = employeeTerminatorId,
+            terminationReason = leoTerminationReason,
+            endDate = leoEndDate,
+            messageTitle = oliviaMessageTitle,
+            messageContent = oliviaMessageContent,
         )
 
         val terminatedOliviaReservation = reservationService.getBoatSpaceReservation(reservationOfOlivia.id)
         val terminatedLeoReservation = reservationService.getBoatSpaceReservation(reservationOfLeo.id)
+        val sentMessage = messageRepository.getMessagesSentToUser(citizenIdOlivia).firstOrNull()
 
         assertEquals(ReservationStatus.Confirmed, originalOliviaReservation?.status, "Olivia reservation starts as Confirmed")
         assertNotEquals(
@@ -220,6 +231,9 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         assertEquals(oliviaEndDate, terminatedOliviaReservation?.endDate, "Olivia end date is set to the given date")
         assertEquals(oliviaTerminationReason, terminatedOliviaReservation?.terminationReason, "Olivia termination reason is set")
         assertEquals(oliviaTerminationComment, terminatedOliviaReservation?.terminationComment, "Olivia termination comment is set")
+
+        assertEquals(oliviaMessageTitle, sentMessage?.subject, "Olivia message title is set right")
+        assertEquals(oliviaMessageContent, sentMessage?.body, "Olivia message body is set right")
 
         // Leo's reservation - same as Olivia's but without comment and with a different end date and reason
         assertEquals(ReservationStatus.Confirmed, originalLeoReservation?.status, "Leo reservation starts as Confirmed")
@@ -246,10 +260,12 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         val exception =
             assertThrows(Unauthorized::class.java) {
                 terminateService.terminateBoatSpaceReservationAsEmployee(
-                    reservation.id,
-                    citizenIdLeo,
-                    ReservationTerminationReason.UserRequest,
-                    timeProvider.getCurrentDate()
+                    reservationId = reservation.id,
+                    terminatorId = citizenIdLeo,
+                    terminationReason = ReservationTerminationReason.UserRequest,
+                    endDate = timeProvider.getCurrentDate(),
+                    messageTitle = "",
+                    messageContent = ""
                 )
             }
         assertEquals("Unauthorized", exception.message, "termination throws unauthorized exception")

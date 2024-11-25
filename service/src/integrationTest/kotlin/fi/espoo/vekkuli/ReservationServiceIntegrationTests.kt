@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateBoatSpaceReservationService
+import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,14 +22,14 @@ import kotlin.test.assertContains
 @ActiveProfiles("test")
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
-    private lateinit var terminateBoatSpaceReservationService: TerminateBoatSpaceReservationService
+    private lateinit var terminateReservationService: TerminateReservationService
     val espooCitizenId = citizenIdOlivia
     val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
 
     @Autowired
     lateinit var reservationService: BoatReservationService
 
-    @Autowired lateinit var terminateService: TerminateBoatSpaceReservationService
+    @Autowired lateinit var terminateService: TerminateReservationService
 
     @Autowired lateinit var invoiceService: BoatSpaceInvoiceService
 
@@ -594,7 +594,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(0, noExpiredReservations.size)
 
         reservationService.markReservationEnded(reservationExpired.id)
-        terminateBoatSpaceReservationService.terminateBoatSpaceReservationAsOwner(
+        terminateReservationService.terminateBoatSpaceReservationAsOwner(
             reservationTerminated.id,
             this.citizenIdLeo
         )

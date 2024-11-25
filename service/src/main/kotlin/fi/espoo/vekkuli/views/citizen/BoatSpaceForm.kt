@@ -339,7 +339,11 @@ class BoatSpaceForm(
             formComponents.field(
                 "boatApplication.boatSpaceDimensions",
                 "boatSpaceDimension",
-                "${reservation.widthCm.cmToM()} m x ${reservation.lengthCm.cmToM()} m",
+                if (reservation.amenity != BoatSpaceAmenity.Buoy) {
+                    "${reservation.widthCm.cmToM()} m x ${reservation.lengthCm.cmToM()} m"
+                } else {
+                    ""
+                },
             )
         val amenityField =
             formComponents.field(
