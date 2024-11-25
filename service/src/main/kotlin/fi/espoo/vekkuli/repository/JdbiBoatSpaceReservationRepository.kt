@@ -88,17 +88,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description,
-                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
-                    FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
+                    ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.acting_citizen_id = :id
                         AND bsr.status = 'Info' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
@@ -115,17 +105,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description,
-                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
-                    FROM boat_space_reservation bsr
-                    JOIN citizen c ON bsr.reserver_id = c.id 
-                    JOIN reserver r ON c.id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
+                    ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.employee_id = :id
                         AND bsr.status = 'Info' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
@@ -137,21 +117,12 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
+    override fun getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description,
-                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
-                    FROM boat_space_reservation bsr
-                    LEFT JOIN reserver r ON bsr.reserver_id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
+                    ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.id = :id
                         AND (bsr.status = 'Info' OR bsr.status = 'Payment' OR bsr.status = 'Renewal')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
@@ -163,21 +134,27 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
+    override fun getReservationReserverEmail(reservationId: Int): Recipient? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT r.email, r.id
+                    FROM boat_space_reservation bsr
+                    LEFT JOIN reserver r ON bsr.reserver_id = r.id
+                    WHERE bsr.id = :reservationId
+                    """.trimIndent()
+                )
+            query.bind("reservationId", reservationId)
+            query.mapTo<Recipient>().findOne().orElse(null)
+        }
+
     override fun getReservationWithDependencies(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description,
-                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
-                    FROM boat_space_reservation bsr
-                    LEFT JOIN reserver r ON bsr.reserver_id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
+                    ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.id = :id
                     """.trimIndent()
                 )
@@ -190,16 +167,7 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
-                        location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,  
-                        bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                          bs.description,
-                          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
-                    FROM boat_space_reservation bsr
-                    LEFT JOIN reserver r ON bsr.reserver_id = r.id
-                    JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON location_id = location.id
-                    JOIN price ON price_id = price.id
+                    ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.id = :id
                     """.trimIndent()
                 )
@@ -207,6 +175,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
+    // note - this is widely different from other "ReservationWithDependencies" return types
     override fun getReservationWithoutReserver(id: Int): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -711,5 +680,24 @@ class JdbiBoatSpaceReservationRepository(
         LEFT JOIN price ON price_id = price.id
         JOIN municipality m ON r.municipality_code = m.code
         LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status <> 'Failed'
+        """.trimIndent()
+
+    private fun buildSqlSelectPartForReservationWithDependencies() =
+        """
+        SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
+          location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
+          bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
+          bs.description,
+          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
+        """.trimIndent()
+
+    private fun buildSqlSelectFromJoinForReservationWithDependencies() =
+        """
+        ${buildSqlSelectPartForReservationWithDependencies()}
+        FROM boat_space_reservation bsr
+        LEFT JOIN reserver r ON bsr.reserver_id = r.id
+        JOIN boat_space bs ON bsr.boat_space_id = bs.id
+        JOIN location ON location_id = location.id
+        JOIN price ON price_id = price.id
         """.trimIndent()
 }

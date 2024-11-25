@@ -149,6 +149,8 @@ class CitizenDetailsPage(
     val terminateReservationEndDate = terminateReservationAsEmployeeForm.getByTestId("endDate")
     val terminateReservationReason = terminateReservationAsEmployeeForm.getByTestId("terminationReason")
     val terminateReservationExplanation = terminateReservationAsEmployeeForm.getByTestId("termination-explanation")
+    val terminateReservationMessageTitle = terminateReservationAsEmployeeForm.getByTestId("message-title")
+    val terminateReservationMessageContent = terminateReservationAsEmployeeForm.getByTestId("message-content")
 
     val terminationReasonInFirstReservationListItem =
         getByDataTestId("reservation-card-termination-reason", reservationListCards.first())

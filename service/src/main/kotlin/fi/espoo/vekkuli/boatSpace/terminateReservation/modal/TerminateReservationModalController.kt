@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody
 class TerminateReservationModalController(
     private val terminateReservationModalView: TerminateReservationModalView,
     private val terminateReservationAsEmployeeModalView: TerminateReservationAsEmployeeModalView,
-    private val reservationService: BoatReservationService
+    private val reservationService: BoatReservationService,
+    private val terminateModalService: TerminateModalService
 ) {
     @GetMapping("/{reservationId}")
     @ResponseBody
@@ -42,12 +43,10 @@ class TerminateReservationModalController(
             throw Unauthorized()
         }
 
-        val reservation =
-            reservationService.getBoatSpaceReservation(reservationId)
-                ?: throw IllegalArgumentException("Reservation not found")
+        val viewParams = terminateModalService.getViewVariablesForEmployeeReservationTerminationModal(reservationId)
 
         return ResponseEntity.ok(
-            terminateReservationAsEmployeeModalView.render(reservation)
+            terminateReservationAsEmployeeModalView.render(viewParams)
         )
     }
 }

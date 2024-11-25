@@ -11,6 +11,7 @@ class ModalBuilder {
     private var reloadPageOnPost: Boolean = false
     private var closeModalOnPost: Boolean = false
     private var centerButtons: Boolean = false
+    private var isWide: Boolean = false
     private val buttons: MutableList<ModalButtonParam> = mutableListOf()
 
     fun getModalStateId(): String = modalStateId
@@ -23,6 +24,11 @@ class ModalBuilder {
     fun setContent(content: String) =
         apply {
             this.content = content
+        }
+
+    fun setIsWide(isWide: Boolean) =
+        apply {
+            apply { this.isWide = isWide }
         }
 
     fun addButton(init: ModalButtonBuilder.() -> Unit) =
@@ -64,7 +70,7 @@ class ModalBuilder {
                     class="modal-underlay"
                     @click="$modalStateId = false;"
                 ></div>
-                <div class="modal-content">
+                <div class="modal-content${if (isWide) " is-wide" else ""}">
                     ${if (!title.isNullOrEmpty()) """<h3>$title</h3>""" else ""}
                     $content
                     ${if (buttons.isNotEmpty()) buildButtons(buttons) else ""}

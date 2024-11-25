@@ -4,26 +4,26 @@ import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.service.PermissionService
-import fi.espoo.vekkuli.service.TemplateEmailService
+import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.util.*
 
 @Service
-class TerminateBoatSpaceReservationService(
+class TerminateReservationService(
     private val emailService: TemplateEmailService,
     private val reservationService: BoatReservationService,
     private val emailEnv: EmailEnv,
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
     private val citizenService: CitizenService,
-    private val terminateReservationRepository: TerminateReservationRepository
+    private val terminateReservationRepository: TerminateReservationRepository,
+    private val messageService: MessageService
 ) {
+    @Transactional
     fun terminateBoatSpaceReservationAsOwner(
         reservationId: Int,
         terminatorId: UUID
@@ -46,12 +46,15 @@ class TerminateBoatSpaceReservationService(
         sendTerminationNotice(reservation, terminatorId)
     }
 
+    @Transactional
     fun terminateBoatSpaceReservationAsEmployee(
         reservationId: Int,
         terminatorId: UUID,
         terminationReason: ReservationTerminationReason,
         endDate: LocalDate,
-        comment: String? = null
+        comment: String? = null,
+        messageTitle: String,
+        messageContent: String
     ) {
         if (!permissionService.canTerminateBoatSpaceReservationForOtherUser(terminatorId, reservationId)) {
             throw Unauthorized()
@@ -67,6 +70,8 @@ class TerminateBoatSpaceReservationService(
         if (reservation == null) {
             throw BadRequest("Reservation not found")
         }
+
+        sendCustomTerminationNotice(reservation, terminatorId, messageTitle, messageContent)
     }
 
     private fun sendTerminationNotice(
@@ -76,7 +81,7 @@ class TerminateBoatSpaceReservationService(
         val citizen = citizenService.getCitizen(terminatorId)
         sendTerminationNoticeForReserverAndTerminator(reservation, citizen)
         if (citizen != null) {
-            sendTerminationNoticeForEmployee(reservation, citizen)
+            sendTerminationNoticeToEmployees(reservation, citizen)
         }
     }
 
@@ -85,12 +90,19 @@ class TerminateBoatSpaceReservationService(
         citizen: CitizenWithDetails?
     ) {
         val reservationWithDetails = reservationService.getBoatSpaceReservation(reservation.id) ?: return
-
+        val reserverContact = reservationService.getEmailRecipientForReservation(reservation.id)
         val contactDetails = mutableListOf<Recipient>()
-        contactDetails.addAll(reservationService.getContactDetailsForReservation(reservation.id))
 
-        if (citizen != null && contactDetails.none { it.id == citizen.id }) {
+        if (reserverContact != null) {
+            contactDetails.add(reserverContact)
+        }
+
+        if (citizen != null && reserverContact?.id != citizen.id) {
             contactDetails.add(Recipient(citizen.id, citizen.email))
+        }
+
+        if (contactDetails.isEmpty()) {
+            throw BadRequest("No contact details found for reservation")
         }
 
         emailService
@@ -106,7 +118,7 @@ class TerminateBoatSpaceReservationService(
             )
     }
 
-    private fun sendTerminationNoticeForEmployee(
+    private fun sendTerminationNoticeToEmployees(
         reservation: BoatSpaceReservation,
         citizen: CitizenWithDetails
     ) {
@@ -131,12 +143,23 @@ class TerminateBoatSpaceReservationService(
                 )
             )
     }
-}
 
-data class TerminateBoatSpaceReservationOptions(
-    val reservationId: Int,
-    val terminatorId: UUID,
-    val reason: ReservationTerminationReason,
-    val endDate: LocalDate,
-    val explanation: String? = "",
-)
+    private fun sendCustomTerminationNotice(
+        reservation: BoatSpaceReservation,
+        terminatorId: UUID,
+        subject: String,
+        content: String
+    ) {
+        val reserverRecipient =
+            reservationService.getEmailRecipientForReservation(reservation.id)
+                ?: throw BadRequest("No contact details found for reservation")
+
+        messageService.sendEmails(
+            userId = terminatorId,
+            senderAddress = emailEnv.senderAddress,
+            recipients = listOf(reserverRecipient),
+            subject = subject,
+            body = content
+        )
+    }
+}
