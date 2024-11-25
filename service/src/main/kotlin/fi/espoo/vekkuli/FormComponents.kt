@@ -20,27 +20,28 @@ class FormComponents {
         attributes: String = "",
         labelAttributes: String = "",
         compact: Boolean = false,
-        serverValidate: Pair<String, String>? = null
+        serverValidate: Pair<String, String>? = null,
+        type: String = "text",
+        name: String = id
     ): String {
-        //language=HTML
         val errorContainer = renderErrorContainer(id, pattern, serverValidate)
 
         //language=HTML
         return """
             <div class="field">
                 <div class="control">
-                    <label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes >${t(labelKey)}</label>
+                    <label class="label ${if (required == true) "required" else ""}" for="$id" $labelAttributes>${t(labelKey)}</label>
                     <input
                         class="input ${if (compact) "compact" else ""}"
                         ${if (required == true) "data-required" else ""}
                         ${if (pattern != null) "data-pattern=\"${pattern.first}\"" else ""}
                         ${if (serverValidate != null) "data-validate-url=\"${serverValidate.first}\"" else ""}
-                        type="text"
+                        type="$type"
                         id="$id"
-                        name="$id"
+                        name="$name"
                         ${if (value != null) "value=\"$value\"" else ""}
                         $attributes />
-                   $errorContainer
+                    $errorContainer
                 </div>
             </div>
             """.trimIndent()
@@ -52,28 +53,28 @@ class FormComponents {
         value: Int?,
         required: Boolean? = false,
         compact: Boolean = false,
-        attributes: String = ""
-    ): String {
-        val errorContainer = renderValidationErrorContainer(id)
-        //language=HTML
-        return """
-            <div class="field">
-                <div class="control">
-                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
-                    <input
-                        class="input ${if (compact) "compact" else ""}"
-                        ${if (required == true) "data-required " else ""}
-                        type="number"
-                        id="$id"
-                        name="$id"
-                        ${if (value != null) "value=\"$value\"" else ""}
-                        $attributes
-                        />
-                    $errorContainer 
-                </div>
-            </div>
-            """.trimIndent()
-    }
+        attributes: String = "",
+    ): String =
+        textInput(
+            labelKey = labelKey,
+            id = id,
+            value = value?.toString(),
+            required = required,
+            compact = compact,
+            type = "number",
+            attributes =
+                """
+                step="1"
+                min="1"
+                max="9999999"
+                @change="${"$"}el.value !== '' && (
+                    parseFloat(${"$"}el.value) < parseFloat(${'$'}el.min) ? ${"$"}el.value = ${"$"}el.min : 
+                    parseFloat(${"$"}el.value) > parseFloat(${'$'}el.max) ? ${"$"}el.value = ${"$"}el.max : 
+                    ${'$'}el.value = Math.round(parseFloat(${'$'}el.value))
+                )"
+                $attributes
+                """.trimIndent()
+        )
 
     fun decimalInput(
         labelKey: String,
@@ -83,28 +84,27 @@ class FormComponents {
         attributes: String = "",
         step: Double? = 0.01,
         compact: Boolean = false
-    ): String {
-        val errorContainer = renderErrorContainer(id, null, null)
-        //language=HTML
-        return """
-            <div class="field">
-                <div class="control">
-                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
-                    <input
-                        class="input ${if (compact) "compact" else ""}"
-                        ${if (required == true) "data-required " else ""}
-                        type="number"
-                        step="$step"
-                        id="$id"
-                        name="$id"
-                        ${if (value != null) "value=\"$value\"" else ""}
-                        $attributes
-                        />
-                    $errorContainer 
-                </div>
-            </div>
-            """.trimIndent()
-    }
+    ): String =
+        textInput(
+            labelKey = labelKey,
+            id = id,
+            value = value?.toString(),
+            required = required,
+            compact = compact,
+            type = "number",
+            attributes =
+                """
+                step="${step?.toString() ?: "0.01"}"
+                min="1"
+                max="9999999"
+                @change="${"$"}el.value !== '' && (
+                    parseFloat(${"$"}el.value) < parseFloat(${'$'}el.min) ? ${"$"}el.value = ${"$"}el.min : 
+                    parseFloat(${"$"}el.value) > parseFloat(${'$'}el.max) ? ${"$"}el.value = ${"$"}el.max : 
+                    ${'$'}el.value
+                )"
+                $attributes
+                """.trimIndent()
+        )
 
     fun select(
         labelKey: String,
@@ -249,6 +249,13 @@ class FormComponents {
     fun textArea(options: TextAreaOptions): String {
         //language=HTML
         val errorContainer = renderErrorContainer(options.id, null, options.serverValidate)
+        val classes = mutableListOf<String>()
+        if (options.compact) {
+            classes.add("compact")
+        }
+        if (options.resizable) {
+            classes.add("resizable")
+        }
 
         //language=HTML
         return """
@@ -262,7 +269,7 @@ class FormComponents {
                         ${t(options.labelKey)}
                     </label>
                     <textarea
-                        class="textarea ${if (options.compact) "compact" else ""}${if (options.compact) "compact" else ""}"
+                        class="textarea${classes.joinToString { " " + it }}"
                         ${if (options.required == true) "data-required" else ""}
                         ${if (options.serverValidate != null) "data-validate-url=\"${options.serverValidate.first}\"" else ""}
                         ${if (options.rows != null) "rows=\"${options.rows}\"" else ""}
@@ -291,7 +298,7 @@ class FormComponents {
         return """
             <div id="$id-error-container">
                 <span id="$id-error" class="help is-danger"
-                style="visibility: hidden">
+                style="display: none">
                 ${t("validation.required")}
                 </span>
             </div>
@@ -309,7 +316,7 @@ class FormComponents {
         return """
             <div id="$id-error-container">
                 <span id="$id-pattern-error" class="help is-danger"
-                style="visibility: hidden">
+                style="display: none">
                 ${t(pattern.second)}
                 </span>
             </div>
@@ -327,7 +334,7 @@ class FormComponents {
         return """
             <div id="$id-server-error-container">
                 <span id="$id-server-error" class="help is-danger" 
-                    style="visibility: hidden">
+                    style="display: none">
                     ${t(serverValidate.second)} 
                 </span>
             </div>
@@ -358,5 +365,6 @@ data class TextAreaOptions(
     val labelAttributes: String = "",
     val rows: Int? = null,
     val compact: Boolean = false,
-    val serverValidate: Pair<String, String>? = null
+    val serverValidate: Pair<String, String>? = null,
+    val resizable: Boolean = false
 )

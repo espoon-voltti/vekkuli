@@ -6,7 +6,7 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.*
-import fi.espoo.vekkuli.utils.formatAsShortYearDate
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -156,7 +156,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
 
             citizenDetailsPage.invoiceModalConfirm.click()
-            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsShortYearDate(testDate))
+            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
 
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText(info)).isVisible()

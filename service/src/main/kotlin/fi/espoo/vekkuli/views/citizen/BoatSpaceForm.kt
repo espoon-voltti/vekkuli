@@ -543,7 +543,7 @@ class BoatSpaceForm(
                     </div>
                     <input id="citizenId" name="citizenId" x-model.fill="citizenId" data-required hidden />
                     <div id="citizenId-error-container">
-                        <span id="citizenId-error" class="help is-danger" style="visibility: hidden" x-show="citizenId == ''">
+                        <span id="citizenId-error" class="help is-danger" style="display: none" x-show="citizenId == ''">
                             ${t("validation.required")}
                         </span>
                     </div>
@@ -670,7 +670,7 @@ class BoatSpaceForm(
                             ${t("boatApplication.title.reservation")} 
                             $wholeLocationName
                         </h1>
-                        <div id="form-inputs">
+                        <div id="form-inputs" class="block">
                             <div class='form-section'>
                             $citizenContainer  
                             $slipHolder
@@ -692,7 +692,7 @@ class BoatSpaceForm(
                                         <span >${t("boatApplication.certifyInfoCheckbox")}</span>
                                     </label>
                                     <div id="certify-error-container">
-                                        <span id="certifyInformation-error" class="help is-danger" style="visibility: hidden">
+                                        <span id="certifyInformation-error" class="help is-danger" style="display: none">
                                         ${t("validation.certifyInformation")}</span>
                                     </div>
                                 </div>
@@ -707,13 +707,16 @@ class BoatSpaceForm(
                                         <span> ${markDownService.render(t("boatApplication.agreementCheckbox"))} </span>
                                     </label>
                                     <div id="agree-error-container">
-                                        <span id="agreeToRules-error" class="help is-danger" style="visibility: hidden">
+                                        <span id="agreeToRules-error" class="help is-danger" style="display: none">
                                         ${t("validation.agreeToRules")}</span>
                                     </div>
                                 </div>
                             </div>
+                            <div class="warning block form-validation-message" id="validation-warning" style="display: none">
+                                <span class="icon">${icons.warningExclamation(false)}</span>
+                                <span class="p-l">${t("boatApplication.validationWarning")}</span>
+                            </div> 
                         </div >
-                        
                         <div class="field block">
                             <div class="control">
                                 <button id="cancel"
@@ -722,7 +725,7 @@ class BoatSpaceForm(
                                     x-on:click="modalOpen = true">
                                     ${t("boatApplication.cancelReservation")}
                                 </button>
-                                <button id="submit"
+                                <button id="submit-button"
                                     class="button is-primary"
                                     type="submit">
                                     ${t("boatApplication.$userType.continueToPaymentButton")}
@@ -868,7 +871,7 @@ class BoatSpaceForm(
                         name="orgBusinessId" />
                    
                     <div id="orgBusinessId-error-container">
-                        <span id="orgBusinessId-error" class="help is-danger" style="visibility: hidden">
+                        <span id="orgBusinessId-error" class="help is-danger" style="display: none">
                             ${t("validation.required")}
                         </span>
                     </div>
@@ -923,7 +926,7 @@ class BoatSpaceForm(
                          $municipalityInput
                     </div>
                 </div>
-                <div id="orgBusinessId-server-error" class="block" style="visibility: hidden"></div>
+                <div id="orgBusinessId-server-error" class="block" style="display: none"></div>
                 <div class='columns'>
                     <div class='column is-one-quarter'>
                         $phoneInput

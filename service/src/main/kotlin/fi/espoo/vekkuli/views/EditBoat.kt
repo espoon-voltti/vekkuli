@@ -169,7 +169,7 @@ class EditBoat {
                             hx-swap="outerHTML"
                     >${formComponents.t("cancel")}</button>
                     <button
-                            id="submit"
+                            id="submit-button"
                             class="button is-primary"
                             type="submit"
                     >${formComponents.t("citizenDetails.saveChanges")}</button>

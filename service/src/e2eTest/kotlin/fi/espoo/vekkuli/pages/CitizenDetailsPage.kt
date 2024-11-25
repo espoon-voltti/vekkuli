@@ -84,7 +84,7 @@ class CitizenDetailsPage(
     val otherIdentifier: Locator = page.getByTestId("otherIdentifier")
     val extraInformation: Locator = page.getByTestId("extraInformation")
 
-    val submitButton: Locator = page.getByTestId("submit")
+    val submitButton: Locator = page.getByTestId("submit-button")
     val cancelButton: Locator = page.getByTestId("cancel")
 
     val memoNavi: Locator = page.getByTestId("memos-tab-navi")
@@ -149,6 +149,8 @@ class CitizenDetailsPage(
     val terminateReservationEndDate = terminateReservationAsEmployeeForm.getByTestId("endDate")
     val terminateReservationReason = terminateReservationAsEmployeeForm.getByTestId("terminationReason")
     val terminateReservationExplanation = terminateReservationAsEmployeeForm.getByTestId("termination-explanation")
+    val terminateReservationMessageTitle = terminateReservationAsEmployeeForm.getByTestId("message-title")
+    val terminateReservationMessageContent = terminateReservationAsEmployeeForm.getByTestId("message-content")
 
     val terminationReasonInFirstReservationListItem =
         getByDataTestId("reservation-card-termination-reason", reservationListCards.first())

@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.common.BadRequest
+import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UnauthorizedException
@@ -36,27 +37,32 @@ class BoatSpaceRenewalService(
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
     private val timeProvider: TimeProvider,
-    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>
+    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>,
+    private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
-        reservationId: Int,
+        originalReservationId: Int,
     ): ReservationWithDependencies {
-        val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId)
+        val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, originalReservationId)
+        if (renewal != null) return renewal
 
-        val renewalReservation = renewal ?: reservationService.createRenewalReservationForEmployee(reservationId, userId)
-        if (renewalReservation == null) throw IllegalStateException("Reservation not found")
+        val renewalReservation =
+            createRenewalReservation(originalReservationId, userId, UserType.EMPLOYEE)
+                ?: throw IllegalStateException("Reservation not found")
         return renewalReservation
     }
 
     fun getOrCreateRenewalReservationForCitizen(
         userId: UUID,
-        reservationId: Int,
+        originalReservationId: Int,
     ): ReservationWithDependencies {
-        val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, reservationId)
+        val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, originalReservationId)
+        if (renewal != null) return renewal
 
-        val renewalReservation = renewal ?: reservationService.createRenewalReservationForCitizen(reservationId, userId)
-        if (renewalReservation == null) throw IllegalStateException("Reservation not created")
+        val renewalReservation =
+            createRenewalReservation(originalReservationId, userId, UserType.CITIZEN)
+                ?: throw IllegalStateException("Reservation not found")
         return renewalReservation
     }
 
@@ -64,13 +70,16 @@ class BoatSpaceRenewalService(
         userId: UUID,
         reservationId: Int,
     ): ReservationWithDependencies =
-        boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, reservationId) ?: throw BadRequest("Reservation not found")
+        boatSpaceRenewalRepository
+            .getRenewalReservationForCitizen(userId, reservationId)
+            ?: throw BadRequest("Reservation not found")
 
     fun getRenewalReservationForEmployee(
         userId: UUID,
         reservationId: Int,
     ): ReservationWithDependencies =
-        boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId) ?: throw BadRequest("Reservation not found")
+        boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId)
+            ?: throw BadRequest("Reservation not found")
 
     fun cancelRenewalReservation(
         renewalReservationId: Int,
@@ -269,5 +278,20 @@ class BoatSpaceRenewalService(
             UserType.CITIZEN,
             municipalities
         )
+    }
+
+    fun createRenewalReservation(
+        originalReservationId: Int,
+        userId: UUID,
+        userType: UserType
+    ): ReservationWithDependencies? {
+        val reservation =
+            boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
+                ?: throw BadRequest("Reservation to renew not found")
+        if (!reservationService.canRenewAReservation(reservation.validity, reservation.endDate).success) {
+            throw Conflict("Reservation cannot be renewed")
+        }
+        val newId = boatSpaceRenewalRepository.createRenewalRow(originalReservationId, userType, userId)
+        return boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(newId)
     }
 }

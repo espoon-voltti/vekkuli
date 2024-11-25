@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NO
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.repository.filter.SortDirection
@@ -254,7 +253,8 @@ class BoatReservationService(
         }
     }
 
-    fun getReservationWithReserver(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithReserver(id)
+    fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
+        boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(id)
 
     fun getReservationWithDependencies(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithDependencies(id)
 
@@ -291,22 +291,6 @@ class BoatReservationService(
             startDate,
             endDate
         )
-
-    fun createRenewalReservationForEmployee(
-        reservationId: Int,
-        userId: UUID
-    ): ReservationWithDependencies? {
-        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.EMPLOYEE, userId)
-        return getReservationWithReserver(newId)
-    }
-
-    fun createRenewalReservationForCitizen(
-        reservationId: Int,
-        userId: UUID
-    ): ReservationWithDependencies? {
-        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.CITIZEN, userId)
-        return getReservationWithReserver(newId)
-    }
 
     @Transactional
     fun reserveBoatSpace(
@@ -604,6 +588,14 @@ class BoatReservationService(
     }
 
     fun canRenewAReservation(
+        oldValidity: ReservationValidity,
+        oldEndDate: LocalDate,
+    ): ReservationResult {
+        val periods = getReservationPeriods()
+        return canRenewAReservation(periods, oldValidity, oldEndDate)
+    }
+
+    fun canRenewAReservation(
         periods: List<ReservationPeriod>,
         oldValidity: ReservationValidity,
         oldEndDate: LocalDate,
@@ -694,12 +686,12 @@ class BoatReservationService(
         }
     }
 
-    fun getContactDetailsForReservation(reservationId: Int): List<Recipient> {
-        val reservation = boatSpaceReservationRepo.getReservationWithReserver(reservationId)
-        if (reservation?.reserverId == null || reservation.email == null) {
-            return listOf()
+    fun getEmailRecipientForReservation(reservationId: Int): Recipient? {
+        val recipient = boatSpaceReservationRepo.getReservationReserverEmail(reservationId)
+        if (recipient?.id == null || recipient.email == null) {
+            return null
         }
-        return listOf<Recipient>(Recipient(reservation.reserverId, reservation.email))
+        return recipient
     }
 
     fun markReservationEnded(reservationId: Int) {
