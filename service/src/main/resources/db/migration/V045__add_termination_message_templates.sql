@@ -1,5 +1,6 @@
-INSERT INTO variable (id, value) VALUES ('employee_reservation_termination_subject', 'Ilmoitus sopimuksen irtisanomisesta');
-INSERT INTO variable (id, value) VALUES ('employee_reservation_termination_template', e'Hyvä asiakas,
+INSERT INTO email_template (id, subject, body)
+VALUES
+    ('marine_employee_reservation_termination_custom_message', 'Ilmoitus sopimuksen irtisanomisesta', e'Hyvä asiakas,
 
 Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
 

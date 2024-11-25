@@ -567,7 +567,21 @@ VALUES
     ('reservation_termination_notice_to_employee', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.'),
     ('boat_reservation_expiry_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nSinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}'),
     ('boat_reservation_renew_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nVoit uusia venepaikkasi uusimalla sen omilta sivuiltasi.\n\nJos et uusi venepaikkaasi, sinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}'),
-    ('marine_reservation_termination_employee_notice', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.')
+    ('marine_reservation_termination_employee_notice', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.'),
+    ('marine_employee_reservation_termination_custom_message', 'Ilmoitus sopimuksen irtisanomisesta', e'Hyvä asiakas,
+
+    Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
+
+    Irtisanominen astuu voimaan *xx.xx.xxxx*.
+    Irtisanomisen syy: *xxxxxx*
+
+    Pyydämme teitä ystävällisesti siirtämään veneenne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
+
+    Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
+
+    Terveisin
+    Merellinen ulkoilu
+    {{employeeEmail}}')
 ON CONFLICT (id) DO NOTHING;
 
 
@@ -3019,20 +3033,5 @@ VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'C
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)
-VALUES ('current_system_staging_datetime', '2024-04-01T00:00:00'),
-('employee_reservation_termination_subject', 'Ilmoitus sopimuksen irtisanomisesta'),
-('employee_reservation_termination_template', e'Hyvä asiakas,
-
-Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
-
-Irtisanominen astuu voimaan *xx.xx.xxxx*.
-Irtisanomisen syy: *xxxxxx*
-
-Pyydämme teitä ystävällisesti siirtämään veneenne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
-
-Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
-
-Terveisin
-Merellinen ulkoilu
-{{employeeEmail}}');
+VALUES ('current_system_staging_datetime', '2024-04-01T00:00:00');
 

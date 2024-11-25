@@ -89,7 +89,9 @@ class TemplateEmailService(
         )
     }
 
-    private fun replaceTags(
+    fun getTemplate(templateId: String): EmailTemplate? = templateRepo.getTemplate(templateId)
+
+    fun replaceTags(
         body: String,
         variables: Map<String, Any>
     ): String {
