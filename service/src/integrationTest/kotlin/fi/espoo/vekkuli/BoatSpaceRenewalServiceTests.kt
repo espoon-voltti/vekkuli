@@ -36,6 +36,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
         Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenReturn(true)
+        mockTimeProvider(timeProvider, startOfRenewPeriod)
     }
 
     @Autowired
@@ -61,6 +62,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -81,6 +85,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
@@ -101,6 +108,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val secondReservation =
@@ -109,6 +119,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdOlivia,
                     2,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val firstRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -132,6 +145,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val secondReservation =
@@ -140,6 +156,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdOlivia,
                     2,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val firstRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
@@ -163,6 +182,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
 
@@ -200,7 +222,6 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should send invoice, set renewal to invoice state and set old reservation as expired`() {
-        mockTimeProvider(timeProvider, startOfRenewPeriod)
         val oldReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -243,7 +264,6 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     fun `should rollback if sending invoice fails`() {
         Mockito.`when`(invoiceClient.sendBatchInvoice(any())).thenThrow(RuntimeException("Invoice sending failed"))
 
-        val originalEndDate = LocalDate.of(2025, 1, 31)
         val oldReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -251,7 +271,8 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     startDate = LocalDate.of(2024, 4, 1),
-                    endDate = originalEndDate,
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate(),
+                    validity = ReservationValidity.Indefinite,
                 )
             )
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
@@ -266,7 +287,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
         assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
         assertEquals(ReservationStatus.Confirmed, oldReservation.status, "Old reservation should be rolled back")
         assertEquals(
-            originalEndDate,
+            startOfRenewPeriod.plusDays(1).toLocalDate(),
             oldReservation.endDate,
             "Old reservation should not be marked as ended"
         )
@@ -280,6 +301,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
                 )
             )
 
@@ -298,6 +320,8 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate(),
+                    validity = ReservationValidity.Indefinite
                 )
             )
         val renewalInput =
@@ -338,6 +362,8 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate(),
+                    validity = ReservationValidity.Indefinite
                 )
             )
         val renewalInput =
@@ -378,7 +404,7 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring reservation`() {
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
-        val endDateWithinMonthOfRenewWindow = LocalDate.of(2025, 1, 31)
+
         val madeReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(

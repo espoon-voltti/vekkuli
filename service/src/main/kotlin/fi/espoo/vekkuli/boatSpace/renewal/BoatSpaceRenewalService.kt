@@ -279,6 +279,6 @@ class BoatSpaceRenewalService(
             throw Conflict("Reservation cannot be renewed")
         }
         val newId = boatSpaceRenewalRepository.createRenewalRow(originalReservationId, userType, userId)
-        return boatSpaceReservationRepo.getReservationWithReserver(newId)
+        return boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(newId)
     }
 }

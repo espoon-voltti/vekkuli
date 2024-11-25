@@ -51,7 +51,9 @@ fun deleteAllEmails(jdbi: Jdbi) {
     }
 }
 
-val startOfRenewPeriod = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
+val startOfRenewPeriod: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
+
+val endDateWithinMonthOfRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
 
 data class CreateReservationParams(
     val timeProvider: TimeProvider,
