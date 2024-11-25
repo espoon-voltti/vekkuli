@@ -3019,4 +3019,20 @@ VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'C
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)
-VALUES ('current_system_staging_datetime', '2024-04-01T00:00:00');
+VALUES ('current_system_staging_datetime', '2024-04-01T00:00:00'),
+('employee_reservation_termination_subject', 'Ilmoitus sopimuksen irtisanomisesta'),
+('employee_reservation_termination_template', e'Hyvä asiakas,
+
+Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
+
+Irtisanominen astuu voimaan *xx.xx.xxxx*.
+Irtisanomisen syy: *xxxxxx*
+
+Pyydämme teitä ystävällisesti siirtämään veneenne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
+
+Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
+
+Terveisin
+Merellinen ulkoilu
+{{employeeEmail}}');
+

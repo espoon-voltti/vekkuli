@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.service.VariableService
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -23,6 +24,9 @@ import org.springframework.test.context.ActiveProfiles
 class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
     @Autowired
     lateinit var messageUtil: MessageUtil
+
+    @Autowired
+    lateinit var variableService: VariableService
 
     @Test
     fun `employee navigates to citizen details page and opens a terminate reservation modal from a reservation list item and cancel it`() {
@@ -60,7 +64,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
-    fun `Employee can terminate reservation with an endDate, reason and comment and see it in expired reservations list`() {
+    fun `Employee can terminate reservation with an endDate, reason, comment and message and see it in expired reservations list`() {
         try {
             val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -68,6 +72,8 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val terminationComment = "Test comment"
             val terminationReason = ReservationTerminationReasonOptions.PaymentViolation
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.paymentViolation")
+            val defaultMessageTitle = variableService.get("employee_reservation_termination_subject")?.value
+            val defaultMessageContent = variableService.get("employee_reservation_termination_template")?.value
             page.navigate(employeePageInEnglish)
             page.getByTestId("employeeLoginButton").click()
             page.getByText("Kirjaudu").click()
@@ -89,6 +95,15 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
             citizenDetailsPage.terminateReservationReason.selectOption(terminationReason.toString())
             citizenDetailsPage.terminateReservationExplanation.fill(terminationComment)
+
+            // Make sure that there is text in the title
+            assert(!defaultMessageTitle.isNullOrEmpty())
+            assertThat(citizenDetailsPage.terminateReservationMessageTitle).hasValue(defaultMessageTitle)
+
+            // Make sure that there is text in the content
+            assert(!defaultMessageContent.isNullOrEmpty())
+            // Default message content contains values replaced (harbor, place) from the data. Would need to somehow replace these values in the test.
+            assertThat(citizenDetailsPage.terminateReservationMessageContent).containsText(defaultMessageContent?.substring(0, 10))
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
 
@@ -118,13 +133,19 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(
                 citizenDetailsPage.terminationCommentInFirstExpiredReservationListItem
             ).containsText(terminationComment)
+
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.messagesNavi.click()
+
+            // Check that the message is sent
+            assertThat(citizenDetails.messages.first()).containsText(defaultMessageTitle)
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    fun `Employee can terminate reservation to end in the future`() {
+    fun `Employee can terminate reservation to end in the future and send a message for the termination`() {
         try {
             val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
