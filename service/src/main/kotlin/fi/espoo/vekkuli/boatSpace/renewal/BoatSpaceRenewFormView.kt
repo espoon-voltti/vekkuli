@@ -408,6 +408,7 @@ class BoatSpaceRenewFormView(
                             class="button is-primary"
                             type="submit"
                             hx-post="/virkailija/venepaikka/jatka/$originalReservationId/lasku"
+                            hx-disabled-elt="this"
                             hx-target="body">
                             Lähetä lasku
                         </button>

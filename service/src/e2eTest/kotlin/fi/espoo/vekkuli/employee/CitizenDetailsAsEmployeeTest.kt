@@ -182,6 +182,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.extraInformation.fill("Extra info")
 
             citizenDetails.submitButton.click()
+            assertThat(citizenDetails.submitButton).isDisabled()
             assertThat(citizenDetails.nameText(3)).hasText("New Boat Name")
             assertThat(citizenDetails.weightText(3)).hasText("2000")
             assertThat(citizenDetails.typeText(3)).hasText("Sailboat")
@@ -214,6 +215,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             assertThat(page.getByTestId("boat-3")).isVisible()
             page.getByTestId("delete-boat-3").click()
             page.getByTestId("delete-modal-confirm-3").click()
+            assertThat(page.getByTestId("delete-modal-confirm-3")).isDisabled()
             assertThat(page.getByTestId("boat-3")).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
@@ -241,7 +243,9 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             invoiceDetails.cancelButton.click()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
+            page.pause()
             invoiceDetails.sendButton.click()
+            assertThat(invoiceDetails.sendButton).isDisabled()
             assertThat(citizenDetails.invoicePaidButton).isVisible()
             assertThat(citizenDetails.renewReservationButton(1)).isHidden()
         } catch (e: AssertionError) {

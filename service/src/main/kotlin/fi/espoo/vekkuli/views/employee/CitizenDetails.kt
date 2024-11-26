@@ -256,16 +256,17 @@ class CitizenDetails(
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
+                                            <button class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
                                                 ${t("cancel")}
-                                            </a>
-                                            <a class="button is-danger" 
+                                            </button>
+                                            <button class="button is-danger" 
+                                                hx-disabled-elt="this"
                                                 id="delete-modal-confirm-$boatId" 
                                                 hx-delete="${getDeleteUrl(boatId)}"
                                                 hx-select="#citizen-details"
                                                 hx-target="#citizen-details">
                                                 ${t("boatSpaceReservation.button.confirmDeletion")}
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
