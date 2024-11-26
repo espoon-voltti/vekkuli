@@ -243,7 +243,6 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             invoiceDetails.cancelButton.click()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
-            page.pause()
             invoiceDetails.sendButton.click()
             assertThat(invoiceDetails.sendButton).isDisabled()
             assertThat(citizenDetails.invoicePaidButton).isVisible()

@@ -34,6 +34,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             formPage.certifyInfoCheckbox.check()
             formPage.agreementCheckbox.check()
             formPage.submitButton.click()
+            assertThat(formPage.submitButton).isDisabled()
 
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
@@ -101,6 +102,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.citizenEmailInput.fill(citizenEmail)
             citizenDetails.citizenPhoneInput.fill(citizenPhone)
             citizenDetails.citizenEditSubmitButton.click()
+            assertThat(citizenDetails.citizenEditSubmitButton).isDisabled()
 
             // assert that the values are updated
             assertThat(citizenDetails.citizenPhoneField).hasText(citizenPhone)
@@ -153,6 +155,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             // delete the boat
             page.getByTestId("delete-boat-3").click()
             page.getByTestId("delete-modal-confirm-3").click()
+            assertThat(page.getByTestId("delete-modal-confirm-3")).isDisabled()
             assertThat(page.getByTestId("boat-3")).isHidden()
         } catch (e: AssertionError) {
             handleError(e)

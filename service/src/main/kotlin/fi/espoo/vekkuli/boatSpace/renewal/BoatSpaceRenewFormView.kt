@@ -212,8 +212,9 @@ class BoatSpaceRenewFormView(
                     <form
                         id="form"
                         class="column"
-                        action="/${userType.path}/venepaikka/jatka/${reservation.renewedFromId}"
-                        method="post"
+                        hx-post="/${userType.path}/venepaikka/jatka/${reservation.renewedFromId}"
+                        hx-target="body"
+                        hx-disabled-elt="button[type='submit']"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>
                             ${t("boatApplication.title.reservation")} 
