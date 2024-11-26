@@ -664,6 +664,7 @@ class BoatSpaceForm(
                         id="form"
                         class="column"
                         hx-post="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                        hx-target="body"
                         hx-disabled-elt="button[type='submit']"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>
