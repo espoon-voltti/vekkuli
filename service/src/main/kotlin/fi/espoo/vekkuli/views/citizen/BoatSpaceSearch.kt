@@ -103,8 +103,10 @@ class BoatSpaceSearch(
                 </div>
                 """.trimIndent()
             }}
-                                                                    </div>
+                </div>
             """.trimIndent()
+
+        val winterLocations = listOf(3, 4, 6)
 
         // language=HTML
         val locationsCheckboxes =
@@ -112,8 +114,9 @@ class BoatSpaceSearch(
             <label class="label">${t("boatSpaces.harborHeader")}</label>
             <div class="field columns is-multiline is-mobile">
                 ${locations.joinToString("\n") { location ->
+                val visibility = if (!(location.id in winterLocations)) "x-show=\"boatSpaceType != 'Winter'\"" else ""
                 """
-                <div class="column is-half pb-none">
+                <div class="column is-half pb-none" $visibility>
                     <label class="checkbox">
                         <input name="harbor" id="${location.name.decapitalize()}-checkbox" value="${location.id}" type="checkbox"/>
                         <span>${location.name}</span>
