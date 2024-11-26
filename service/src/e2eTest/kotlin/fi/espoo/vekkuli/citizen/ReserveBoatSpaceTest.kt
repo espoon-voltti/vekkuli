@@ -205,6 +205,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             formPage.organizationRadioButton.click()
             formPage.orgNameInput.fill("My Organization")
             formPage.orgBusinessIdInput.fill("1234567-8")
+            formPage.orgMunicipalitySelect.selectOption("Espoo")
             formPage.orgPhoneNumberInput.fill("123456789")
             formPage.orgEmailInput.fill("foo@bar.com")
 
