@@ -115,6 +115,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             val memoId = 2
             citizenDetails.newMemoContent.fill(text)
             citizenDetails.newMemoSaveBtn.click()
+            assertThat(citizenDetails.newMemoSaveBtn).isDisabled()
             assertThat(citizenDetails.userMemo(memoId)).containsText(text)
 
             // Edit memo
@@ -122,6 +123,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.userMemo(memoId).getByTestId("edit-memo-button").click()
             citizenDetails.userMemo(memoId).getByTestId("edit-memo-content").fill(newText)
             citizenDetails.userMemo(memoId).getByTestId("save-edit-button").click()
+            assertThat(citizenDetails.userMemo(memoId).getByTestId("save-edit-button")).isDisabled()
+
             assertThat(citizenDetails.userMemo(memoId).locator(".memo-content")).containsText(newText)
 
             // Delete memo

@@ -515,6 +515,7 @@ class CitizenDetails(
                     </span>
                 </a>
                 <a id="delete-memo-button"
+                   hx-disable-elt="this"
                    hx-delete="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                    hx-trigger="click"
                    hx-target="#tab-content"
@@ -555,7 +556,9 @@ class CitizenDetails(
                 """
                 <form hx-patch="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                       hx-target="#memo-${memo.id}"
-                      hx-swap="outerHTML">
+                      hx-swap="outerHTML"
+                      hx-disabled-elt="button[type='submit']"
+                      >
                     <div class="control memo-edit-area">
                         <textarea id="edit-memo-content" 
                                   class="textarea" 
@@ -609,7 +612,9 @@ class CitizenDetails(
                 <div id="new-memo" class="block">
                     <form hx-post="${getTabUrl("$citizenId/muistiinpanot")}"
                         hx-target="#tab-content"
-                        hx-swap="outerHTML">
+                        hx-swap="outerHTML"
+                        hx-disabled-elt="button[type='submit']"
+                        >
                         <div class="memo-edit-area">
                             <div class="control">
                                 <textarea id="new-memo-content" 
