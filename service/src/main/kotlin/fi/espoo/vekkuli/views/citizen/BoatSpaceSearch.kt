@@ -34,23 +34,60 @@ class BoatSpaceSearch(
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
             )
 
-        val widthInput =
+        val boatWidthInput =
             formComponents.decimalInput(
-                "boatSpaces.widthHeader",
+                "boatSpaces.boatWidthHeader",
                 "width",
                 null,
                 required = true,
             )
 
-        val lengthInput =
+        val boatLengthInput =
             formComponents.decimalInput(
-                "boatSpaces.lengthHeader",
+                "boatSpaces.boatLengthHeader",
                 "length",
                 null,
                 required = true,
             )
 
-        val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
+        val spaceWidthInput =
+            formComponents.decimalInput(
+                "boatSpaces.spaceWidthHeader",
+                "width",
+                null,
+                required = true,
+            )
+
+        val spaceLengthInput =
+            formComponents.decimalInput(
+                "boatSpaces.spaceLengthHeader",
+                "length",
+                null,
+                required = true,
+            )
+
+        val storageType =
+            // language=HTML
+            """
+             <div class="block" x-show="boatSpaceType === 'Storage'">
+                <div class="field">
+                    <label class="label">${t("boatSpaces.storageTypeHeader")}</label>
+                    <div class="control columns">
+                        <label class="radio column">
+                            <input checked x-model="storageType" type="radio" id="storageType-trailer" name="storageType" value="Trailer"/>
+                            ${t("boatSpaces.storageType.Trailer")}
+                        </label>
+                        <label class="radio column">
+                            <input x-model="storageType" type="radio" id="storageType-buck" name="storageType" value="Buck"/>
+                            ${t("boatSpaces.storageType.Buck")}
+                        </label>
+            
+                    </div>
+                </div>
+            </div>            
+            """.trimIndent()
+
+        val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" && it.name != "Trailer" && it.name != "Buck" }
         // language=HTML
         val amenitiesCheckboxes =
             """
@@ -99,6 +136,33 @@ class BoatSpaceSearch(
             </div>
             """.trimIndent()
 
+        val typeSelect =
+            """
+             <div class="block">
+                <div class="field">
+                    <label class="label">Haettava paikka</label>
+                    <div class="control">
+                        <label class="radio">
+                            <input checked x-model="boatSpaceType" type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"/>
+                            ${t("boatSpaces.typeSlipOption")}
+                        </label>
+                        <label class="radio">
+                            <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"/>
+                            ${t("boatSpaces.typeTrailerOption")}
+                        </label>
+                        <label class="radio">
+                            <input x-model="boatSpaceType" type="radio" id="boatSpaceType-winter" name="boatSpaceType" value="Winter"/>
+                            ${t("boatSpaces.typeWinterOption")}
+                        </label>
+                         <label class="radio">
+                            <input x-model="boatSpaceType" type="radio" id="boatSpaceType-storage" name="boatSpaceType" value="Storage"/>
+                            ${t("boatSpaces.typeStorageOption")}
+                        </label>
+                    </div>
+                </div>
+            </div>            
+            """.trimIndent()
+
         val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/partial/vapaat-paikat"
         // language=HTML
         return """
@@ -111,7 +175,7 @@ class BoatSpaceSearch(
                     </div>
                     ${if (!isEmployee) infoBox else ""}
                     <div class="columns">
-                        <div class="column is-two-fifths" x-data="{boatSpaceType: 'Slip'}">
+                        <div class="column is-two-fifths" x-data="{boatSpaceType: 'Slip', storageType: 'Trailer'}">
                             <form id="form"
                                   method="get"
                                   action="$url"
@@ -126,44 +190,37 @@ class BoatSpaceSearch(
 
                                 <h2 class="subtitle" id="search-page-header">${t("boatApplication.boatPlaceSearchTitle")}</h2>
 
-                                <div class="block">
-                                    <div class="field">
-                                        <label class="label">Haettava paikka</label>
-                                        <div class="control">
-                                            <label class="radio">
-                                                <input checked x-model="boatSpaceType" type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"/>
-                                                ${t("boatSpaces.typeSlipOption")}
-                                            </label>
-                                            <label class="radio">
-                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"/>
-                                                ${t("boatSpaces.typeTrailerOption")}
-                                            </label>
-                                             <label class="radio">
-                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-storage" name="boatSpaceType" value="Storage"/>
-                                                ${t("boatSpaces.typeStorageOption")}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                               $typeSelect
+                               
+                               $storageType
 
                                 <div class="block">
                                     $boatTypeSelect
                                 </div>
 
-                                <div class="columns">
+                                <div class="columns" x-show="boatSpaceType === 'Slip' || boatSpaceType === 'Trailer'">
                                     <div class='column'>
-                                        $widthInput
+                                        $boatWidthInput
                                     </div>
                                     <div class='column'>
-                                        $lengthInput
+                                        $boatLengthInput
+                                    </div>
+                                </div>
+                                
+                                <div class="columns" x-show="boatSpaceType != 'Slip' && boatSpaceType != 'Trailer'">
+                                    <div class='column'>
+                                        $spaceWidthInput
+                                    </div>
+                                    <div class='column'>
+                                        $spaceLengthInput
                                     </div>
                                 </div>
 
-                                <div class="block" x-show="boatSpaceType !== 'Trailer'">
+                                <div class="block" x-show="boatSpaceType === 'Slip'">
                                     $amenitiesCheckboxes
                                 </div>
 
-                                <div class="block">
+                                <div class="block" x-show="boatSpaceType != 'Storage'">
                                     $locationsCheckboxes
                                 </div>
 

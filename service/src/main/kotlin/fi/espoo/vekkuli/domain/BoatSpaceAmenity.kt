@@ -5,5 +5,7 @@ enum class BoatSpaceAmenity {
     Buoy,
     RearBuoy,
     Beam,
-    WalkBeam
+    WalkBeam,
+    Trailer,
+    Buck,
 }
