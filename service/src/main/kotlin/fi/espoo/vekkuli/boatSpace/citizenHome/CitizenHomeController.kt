@@ -14,6 +14,7 @@ class CitizenHomeController(
     private val layout: Layout,
     private val homeView: HomeView,
     private val citizenService: CitizenService,
+    private val citizenHomeService: CitizenHomeService
 ) {
     @GetMapping("/")
     @ResponseBody
@@ -24,6 +25,11 @@ class CitizenHomeController(
         val user = getCitizen(request, citizenService)
         val isAuthenticatedCitizen = user != null
 
-        return layout.render(isAuthenticatedCitizen, user?.fullName, request.requestURI, homeView.render())
+        return layout.render(
+            isAuthenticatedCitizen,
+            user?.fullName,
+            request.requestURI,
+            homeView.render(citizenHomeService.getHomeViewParameters())
+        )
     }
 }

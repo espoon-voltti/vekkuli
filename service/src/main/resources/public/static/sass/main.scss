@@ -78,6 +78,11 @@ html, body {
 .container {
   background: $white;
   padding: $spacing-large;
+
+  &.is-highlight
+  {
+    background-color: $light-blue;
+  }
 }
 
 .section {
