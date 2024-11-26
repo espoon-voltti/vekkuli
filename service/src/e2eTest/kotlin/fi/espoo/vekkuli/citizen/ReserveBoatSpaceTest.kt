@@ -166,6 +166,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             assertThat(formPage.validationWarning).isHidden()
             formPage.submitButton.click()
+            assertThat(formPage.submitButton).isDisabled()
 
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)

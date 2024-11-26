@@ -121,7 +121,7 @@ class BoatSpaceForm(
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
                 attributes =
                     """
-                    hx-trigger="change, load" 
+                    hx-trigger="change, intersect" 
                     hx-get="/venepaikka/varaus/$reservationId/boat-type-warning" 
                     hx-target="#boat-type-warning"
                     """.trimIndent()
@@ -134,7 +134,7 @@ class BoatSpaceForm(
                 input.width,
                 required = true,
                 """
-                hx-trigger="change, load" 
+                hx-trigger="change, intersect" 
                 hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
                 hx-include="#length"
                 hx-target="#boat-size-warning"
@@ -148,7 +148,7 @@ class BoatSpaceForm(
                 input.length,
                 required = true,
                 """
-                hx-trigger="change, load" 
+                hx-trigger="change, intersect" 
                 hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
                 hx-include="#width"
                 hx-target="#boat-size-warning"
@@ -172,7 +172,7 @@ class BoatSpaceForm(
                 required = true,
                 attributes =
                     """
-                    hx-trigger="change, load" 
+                    hx-trigger="change, intersect" 
                     hx-get="/venepaikka/varaus/$reservationId/boat-weight-warning" 
                     hx-target="#boat-weight-warning"
                     """.trimIndent()
@@ -327,7 +327,7 @@ class BoatSpaceForm(
             formComponents.field(
                 "boatApplication.place",
                 "place",
-                "${reservation.place}",
+                reservation.place,
             )
         val boatSpaceTypeField =
             formComponents.field(
@@ -663,8 +663,8 @@ class BoatSpaceForm(
                     <form
                         id="form"
                         class="column"
-                        action="/${userType.path}/venepaikka/varaus/${reservation.id}"
-                        method="post"
+                        hx-post="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                        hx-disabled-elt="button[type='submit']"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>
                             ${t("boatApplication.title.reservation")} 
