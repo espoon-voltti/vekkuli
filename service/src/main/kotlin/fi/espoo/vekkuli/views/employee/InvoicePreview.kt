@@ -90,6 +90,7 @@ class InvoicePreview : BaseView() {
                             class="button is-primary"
                             type="submit"
                             hx-post="/virkailija/venepaikka/varaus/${model.reservationId}/lasku"
+                            hx-disabled-elt="this"
                             hx-target="body">
                             Lähetä lasku
                         </button>
