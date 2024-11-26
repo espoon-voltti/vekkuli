@@ -79,6 +79,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.citizenEmailInput.fill(citizenEmail)
             citizenDetails.citizenPhoneInput.fill(citizenPhone)
             citizenDetails.citizenEditSubmitButton.click()
+            assertThat(citizenDetails.citizenEditSubmitButton).isDisabled()
 
             // assert that the values are updated
             assertThat(citizenDetails.citizenFirstNameField).hasText(citizenFirstName)
