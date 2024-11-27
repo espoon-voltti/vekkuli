@@ -12,9 +12,11 @@ class EmployeeHome(
     fun render(): String =
         """
         <div class="centered is-gap-4">
-            <div class="columns is-centered icon is-extra-large">${icons.boat}</div>
-             <p class='columns is-centered is-primary-color subtitle-main'>${t("home.login")}</p>
-             <div class='columns is-centered'>
+            <div class="is-centered icon is-extra-large">${icons.boat}</div>
+             <div class='is-centered'>
+                <p class='is-primary-color subtitle-main'>${t("home.login")}</p>
+             </div>
+             <div class='is-centered'>
              <button class="button is-primary" hx-get="/auth/saml/login"
                     hx-target="body">${t("auth.login")}</button>
                     </div>
