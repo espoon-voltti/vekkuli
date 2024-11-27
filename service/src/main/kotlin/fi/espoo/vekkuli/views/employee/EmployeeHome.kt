@@ -11,9 +11,9 @@ class EmployeeHome(
 ) : BaseView() {
     fun render(): String =
         """
-        <div class="centered is-gap-2">
+        <div class="centered is-gap-4">
             <div class="columns is-centered icon is-extra-large">${icons.boat}</div>
-             <p class='columns is-centered'>${t("home.login")}</p>
+             <p class='columns is-centered is-primary-color subtitle-main'>${t("home.login")}</p>
              <div class='columns is-centered'>
              <button class="button is-primary" hx-get="/auth/saml/login"
                     hx-target="body">${t("auth.login")}</button>
