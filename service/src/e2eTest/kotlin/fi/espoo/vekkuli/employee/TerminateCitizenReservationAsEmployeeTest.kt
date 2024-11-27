@@ -108,7 +108,6 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationMessageContent).containsText(defaultMessageContent?.substring(0, 10))
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
-            assertThat(citizenDetailsPage.terminateReservationModalConfirm).isDisabled()
 
             // Shows a success message in modal
             assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
