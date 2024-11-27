@@ -49,10 +49,10 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationModalCancel).isVisible()
 
             assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B001")
+            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B 001")
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
             assertThat(citizenDetailsPage.terminateReservationFormSize).hasText("2.5 x 4.5 m")
             assertThat(citizenDetailsPage.terminateReservationFormAmenity).hasText("Beam")
 
@@ -91,7 +91,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
 
             // Fills the form
             citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
@@ -126,7 +126,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion).click()
             assertThat(citizenDetailsPage.expiredReservationList).isVisible()
             assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B001")
+            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B 001")
 
             assertThat(
                 citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
@@ -173,7 +173,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
 
             // Fills the form
             citizenDetailsPage.terminateReservationEndDate.fill(formatAsTestDate(endDate))
@@ -218,7 +218,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion).click()
             assertThat(citizenDetailsPage.expiredReservationList).isVisible()
             assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B001")
+            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B 001")
 
             assertThat(
                 citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
@@ -253,7 +253,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).isVisible()
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
             jdbi.inTransactionUnchecked { tx ->
                 tx
                     .createUpdate("UPDATE boat_space_reservation SET status = :status WHERE id = :id")

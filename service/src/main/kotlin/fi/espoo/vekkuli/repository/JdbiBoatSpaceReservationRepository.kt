@@ -183,7 +183,7 @@ class JdbiBoatSpaceReservationRepository(
                     SELECT bsr.*, location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents,
                         bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description,
                         ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types,
-                        CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place
+                        CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place
                     FROM boat_space_reservation bsr
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location_id = location.id
@@ -306,7 +306,7 @@ class JdbiBoatSpaceReservationRepository(
                     b.ownership as boat_ownership,
                     location.name as location_name, 
                     bs.type, bs.place_number, 
-                    CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place,
+                    CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                     rw.key as warning,
                     bs.section,
                     m.name as municipality_name,
@@ -619,7 +619,7 @@ class JdbiBoatSpaceReservationRepository(
         price.price_cents,
         price.vat_cents,
         price.net_price_cents,
-        CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place
+        CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place
         """.trimIndent()
 
     private fun buildSqlSelectFromJoinPartForBoatSpaceReservationDetails() =
@@ -641,7 +641,7 @@ class JdbiBoatSpaceReservationRepository(
           location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
           bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
           bs.description,
-          CONCAT(section, TO_CHAR(place_number, 'FM000')) as place
+          CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place
         """.trimIndent()
 
     private fun buildSqlSelectFromJoinForReservationWithDependencies() =
