@@ -1,57 +1,26 @@
-package fi.espoo.vekkuli.controllers
+package fi.espoo.vekkuli.boatSpace.employeeHome
 
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.views.citizen.Home
-import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeHome
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ResponseBody
 
 @Controller
-class HomeController {
-    @Autowired
-    lateinit var layout: Layout
-
-    @Autowired
-    lateinit var home: Home
-
-    @Autowired
-    lateinit var employeeLayout: EmployeeLayout
-
-    @Autowired
-    lateinit var employeeHome: EmployeeHome
-
-    @Autowired
-    lateinit var citizenService: CitizenService
-
-    @Autowired
-    lateinit var jdbi: Jdbi
-
-    @GetMapping("/")
-    @ResponseBody
-    fun citizenHome(
-        request: HttpServletRequest,
-        model: Model
-    ): String {
-        val user = getCitizen(request, citizenService)
-        val isAuthenticatedCitizen = user != null
-
-        return layout.render(isAuthenticatedCitizen, user?.fullName, request.requestURI, home.render())
-    }
-
+class EmployeeHomeController(
+    private val employeeLayout: EmployeeLayout,
+    private val employeeHome: EmployeeHome,
+    private val jdbi: Jdbi,
+) {
     @GetMapping("/virkailija")
     @ResponseBody
-    fun employeeHome(
+    fun homePage(
         request: HttpServletRequest,
         model: Model
     ): String {
