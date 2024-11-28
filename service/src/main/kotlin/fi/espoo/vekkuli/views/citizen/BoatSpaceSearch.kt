@@ -3,10 +3,7 @@ package fi.espoo.vekkuli.views.citizen
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.Harbor
-import fi.espoo.vekkuli.domain.Location
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
@@ -23,6 +20,7 @@ class BoatSpaceSearch(
 
     fun render(
         locations: List<Location>,
+        winterLocations: List<Int>,
         isEmployee: Boolean = false
     ): String {
         val boatTypes = BoatType.entries.map { it.name }
@@ -71,7 +69,7 @@ class BoatSpaceSearch(
                 "boatSpaces.storageTypeHeader",
                 "storageType",
                 "Slip",
-                listOf("Trailer", "Buck").map { it to t("boatSpaces.amenityOption.$it") },
+                storageTypeAmenities.map { it.name to t("boatSpaces.amenityOption.$it") },
                 mapOf("x-model" to "storageType")
             )
 
@@ -83,13 +81,12 @@ class BoatSpaceSearch(
             </div>            
             """.trimIndent()
 
-        val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" && it.name != "Trailer" && it.name != "Buck" }
         // language=HTML
         val amenitiesCheckboxes =
             """
             <label class="label">${t("boatSpaces.amenityHeader")}</label>
                 <div class="field columns is-multiline is-mobile">
-                ${amenities.joinToString("\n") { option ->
+                ${slipAmenities.joinToString("\n") { option ->
                 """
                 <div class="column is-half pb-none">
                     <label class="checkbox">
@@ -101,8 +98,6 @@ class BoatSpaceSearch(
             }}
                 </div>
             """.trimIndent()
-
-        val winterLocations = listOf(3, 4, 6)
 
         // language=HTML
         val locationsCheckboxes =

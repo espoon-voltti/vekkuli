@@ -9,3 +9,7 @@ enum class BoatSpaceAmenity {
     Trailer,
     Buck,
 }
+
+val slipAmenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" && it.name != "Trailer" && it.name != "Buck" }
+
+val storageTypeAmenities = listOf(BoatSpaceAmenity.Trailer, BoatSpaceAmenity.Buck)

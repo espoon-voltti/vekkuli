@@ -32,6 +32,8 @@ object BoatSpaceConfig {
 
     const val BOAT_WEIGHT_THRESHOLD_KG = 15000
 
+    val winterStorageLocations = listOf(3, 4, 6)
+
     fun getWidthLimitsForBoat(
         spaceWidth: Int,
         amenity: BoatSpaceAmenity
