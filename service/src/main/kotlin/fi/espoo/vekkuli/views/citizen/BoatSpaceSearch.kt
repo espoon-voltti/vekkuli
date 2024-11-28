@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.citizen
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
+import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.Icons
@@ -130,12 +131,19 @@ class BoatSpaceSearch(
             </div>
             """.trimIndent()
 
+        val usedTypes =
+            if (isStagingOrProduction()) {
+                listOf("Slip", "Trailer")
+            } else {
+                listOf("Slip", "Trailer", "Winter", "Storage")
+            }
+
         val spaceTypeSelection =
             formComponents.radioButtons(
                 "boatSpaces.typeHeader",
                 "boatSpaceType",
                 "Slip",
-                listOf("Slip", "Trailer", "Winter", "Storage").map { it to t("boatSpaces.typeOption.$it") },
+                usedTypes.map { it to t("boatSpaces.typeOption.$it") },
                 mapOf("x-model" to "boatSpaceType")
             )
 
