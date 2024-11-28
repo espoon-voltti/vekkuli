@@ -37,6 +37,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
@@ -193,8 +194,8 @@ class BoatSpaceFormController(
     @GetMapping("/venepaikka/varaus/{reservationId}/boat-size-warning")
     fun boatSizeWarning(
         @PathVariable reservationId: Int,
-        @RequestParam width: Double?,
-        @RequestParam length: Double?,
+        @RequestParam width: BigDecimal?,
+        @RequestParam length: BigDecimal?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val reservation = reservationService.getReservationWithoutCitizen(reservationId)
@@ -300,8 +301,8 @@ class BoatSpaceFormController(
         @RequestParam isOrganization: Boolean?,
         @RequestParam organizationId: UUID?,
         @RequestParam citizenId: UUID?,
-        @RequestParam width: Double?,
-        @RequestParam length: Double?,
+        @RequestParam width: BigDecimal?,
+        @RequestParam length: BigDecimal?,
         @RequestParam type: BoatType?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
@@ -493,9 +494,9 @@ class BoatSpaceFormController(
                     reservationId = reservationId,
                     boatId = input.boatId,
                     boatType = input.boatType!!,
-                    width = input.width ?: 0.0,
-                    length = input.length ?: 0.0,
-                    depth = input.depth ?: 0.0,
+                    width = input.width ?: BigDecimal.ZERO,
+                    length = input.length ?: BigDecimal.ZERO,
+                    depth = input.depth ?: BigDecimal.ZERO,
                     weight = input.weight,
                     boatRegistrationNumber = input.boatRegistrationNumber ?: "",
                     boatName = input.boatName ?: "",
@@ -528,9 +529,9 @@ class BoatSpaceFormController(
                         reservationId = reservationId,
                         boatId = input.boatId,
                         boatType = input.boatType!!,
-                        width = input.width ?: 0.0,
-                        length = input.length ?: 0.0,
-                        depth = input.depth ?: 0.0,
+                        width = input.width ?: BigDecimal.ZERO,
+                        length = input.length ?: BigDecimal.ZERO,
+                        depth = input.depth ?: BigDecimal.ZERO,
                         weight = input.weight,
                         boatRegistrationNumber = input.boatRegistrationNumber ?: "",
                         boatName = input.boatName ?: "",
@@ -594,8 +595,8 @@ class BoatSpaceFormController(
         @PathVariable usertype: String,
         @PathVariable spaceId: Int,
         @RequestParam boatType: BoatType?,
-        @RequestParam width: Double?,
-        @RequestParam length: Double?,
+        @RequestParam width: BigDecimal?,
+        @RequestParam length: BigDecimal?,
         request: HttpServletRequest,
         model: Model,
     ): ResponseEntity<String> {
@@ -756,13 +757,13 @@ data class ReservationInput(
     val boatType: BoatType?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val width: Double?,
+    val width: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val length: Double?,
+    val length: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val depth: Double?,
+    val depth: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
     val weight: Int?,

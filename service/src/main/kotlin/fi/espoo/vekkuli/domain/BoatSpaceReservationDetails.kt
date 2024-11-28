@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.domain
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.utils.centsToEuro
 import fi.espoo.vekkuli.utils.cmToM
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -56,15 +57,9 @@ data class BoatSpaceReservationDetails(
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
 ) {
-    val boatLengthInM: Double
-        get() = boatLengthCm.cmToM()
-    val boatWidthInM: Double
-        get() = boatWidthCm.cmToM()
-    val boatDepthInM: Double
-        get() = boatDepthCm.cmToM()
-    val boatSpaceLengthInM: Double
+    val boatSpaceLengthInM: BigDecimal
         get() = boatSpaceLengthCm.cmToM()
-    val boatSpaceWidthInM: Double
+    val boatSpaceWidthInM: BigDecimal
         get() = boatSpaceWidthCm.cmToM()
     val priceInEuro: Double
         get() = priceCents.centsToEuro()
@@ -72,8 +67,4 @@ data class BoatSpaceReservationDetails(
         get() = vatCents.centsToEuro()
     val priceWithoutVatInEuro: Double
         get() = netPriceCents.centsToEuro()
-
-    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
-
-    fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }

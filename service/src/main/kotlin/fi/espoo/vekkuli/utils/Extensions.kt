@@ -1,15 +1,15 @@
 package fi.espoo.vekkuli.utils
 
-fun Int.cmToM(): Double = this / 100.0
+import java.math.BigDecimal
+import java.math.RoundingMode
 
-fun Double.mToCm(): Int = (this * 100F).toInt()
+fun Int.cmToM(): BigDecimal =
+    BigDecimal(this / 100.0)
+        .setScale(1, RoundingMode.HALF_UP)
 
-fun Float?.mToCm(): Int? = if (this == null) null else (this * 100F).toInt()
+fun BigDecimal.mToCm(): Int =
+    (this * BigDecimal(100))
+        .setScale(0, RoundingMode.HALF_UP)
+        .toInt()
 
-fun Int.centsToEuro(): Double {
-    return this / 100.0
-}
-
-fun Double.euroToCents(): Int {
-    return (this * 100).toInt()
-}
+fun Int.centsToEuro(): Double = this / 100.0

@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -311,9 +312,9 @@ class CitizenUserController {
         val id: Int,
         val name: String,
         val type: BoatType,
-        val width: Double?,
-        val length: Double?,
-        val depth: Double?,
+        val width: BigDecimal?,
+        val length: BigDecimal?,
+        val depth: BigDecimal?,
         val weight: Int?,
         val registrationNumber: String,
         val otherIdentifier: String,
