@@ -120,6 +120,7 @@ class EditBoat {
                   hx-target="#citizen-details"
                   hx-select="#citizen-details"
                   hx-swap="outerHTML"
+                  hx-disabled-elt="button[type='submit']"
             >
                 <input type="hidden" name="id" value="${boat.id}" />
                 <div class="columns is-vcentered">

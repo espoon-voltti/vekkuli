@@ -131,7 +131,7 @@ class JdbiBoatSpaceRepository(
                     location.name as location_name, 
                     location.address as location_address,
                     boat_space.id,
-                    CONCAT(section, TO_CHAR(place_number, 'FM000')) as place,
+                    CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place,
                     length_cm, 
                     width_cm, 
                     price.price_cents,

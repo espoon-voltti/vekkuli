@@ -186,7 +186,7 @@ class BoatSpaceSearch(
                                   hx-get="$url"
                                   hx-target="#boatSpaces"
                                   hx-swap="innerHTML"
-                                  hx-trigger="change, load, input changed delay:300ms, keyup delay:300ms"
+                                  hx-trigger="load, input delay:500ms"
                                   hx-sync="closest #form:replace"
                                   hx-indicator="#loader, .loaded-content"
                                   >
@@ -293,7 +293,7 @@ class BoatSpaceSearch(
                     val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/venepaikka/varaa/${result.id}"
                     rowsBuilder.append(
                         """
-                        <form action="$url" method="get">
+                        <form hx-get="$url" hx-target="body" hx-disabled-elt="button[type='submit']">
                             <input type="hidden" name="boatType" value="${boat.type ?: ""}" />
                             <input type="hidden" name="width" value="${boat.width ?: ""}" />
                             <input type="hidden" name="length" value="${boat.length ?: ""}" />

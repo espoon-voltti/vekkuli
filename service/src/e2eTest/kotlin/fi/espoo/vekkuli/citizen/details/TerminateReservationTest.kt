@@ -40,10 +40,10 @@ class TerminateReservationTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationModalCancel).isVisible()
 
             assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B001")
+            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B 001")
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
             assertThat(citizenDetailsPage.terminateReservationFormSize).hasText("2.5 x 4.5 m")
             assertThat(citizenDetailsPage.terminateReservationFormAmenity).hasText("Beam")
 
@@ -75,9 +75,10 @@ class TerminateReservationTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
+            assertThat(citizenDetailsPage.terminateReservationModalConfirm).isDisabled()
 
             // Shows a success message in modal
             assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
@@ -96,7 +97,7 @@ class TerminateReservationTest : PlaywrightTest() {
             citizenDetailsPage.getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion).click()
             assertThat(citizenDetailsPage.expiredReservationList).isVisible()
             assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B001")
+            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B 001")
 
             assertThat(
                 citizenDetailsPage.terminationDateInFirstExpiredReservationListItem
@@ -128,7 +129,7 @@ class TerminateReservationTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B001")
+            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
             jdbi.inTransactionUnchecked { tx ->
                 tx
                     .createUpdate("UPDATE boat_space_reservation SET status = :status WHERE id = :id")
