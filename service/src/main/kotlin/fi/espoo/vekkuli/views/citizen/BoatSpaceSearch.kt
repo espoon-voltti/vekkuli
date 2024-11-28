@@ -66,24 +66,20 @@ class BoatSpaceSearch(
                 required = true,
             )
 
+        val storageTypeButtons =
+            formComponents.radioButtons(
+                "boatSpaces.storageTypeHeader",
+                "storageType",
+                "Slip",
+                listOf("Trailer", "Buck").map { it to t("boatSpaces.amenityOption.$it") },
+                mapOf("x-model" to "storageType")
+            )
+
         val storageType =
             // language=HTML
             """
              <div class="block" x-show="boatSpaceType === 'Storage'">
-                <div class="field">
-                    <label class="label">${t("boatSpaces.storageTypeHeader")}</label>
-                    <div class="control columns">
-                        <label class="radio column">
-                            <input checked x-model="storageType" type="radio" id="storageType-trailer" name="storageType" value="Trailer"/>
-                            ${t("boatSpaces.storageType.Trailer")}
-                        </label>
-                        <label class="radio column">
-                            <input x-model="storageType" type="radio" id="storageType-buck" name="storageType" value="Buck"/>
-                            ${t("boatSpaces.storageType.Buck")}
-                        </label>
-            
-                    </div>
-                </div>
+                $storageTypeButtons
             </div>            
             """.trimIndent()
 
@@ -139,30 +135,19 @@ class BoatSpaceSearch(
             </div>
             """.trimIndent()
 
+        val spaceTypeSelection =
+            formComponents.radioButtons(
+                "boatSpaces.typeHeader",
+                "boatSpaceType",
+                "Slip",
+                listOf("Slip", "Trailer", "Winter", "Storage").map { it to t("boatSpaces.typeOption.$it") },
+                mapOf("x-model" to "boatSpaceType")
+            )
+
         val typeSelect =
             """
              <div class="block">
-                <div class="field">
-                    <label class="label">Haettava paikka</label>
-                    <div class="control">
-                        <label class="radio">
-                            <input checked x-model="boatSpaceType" type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"/>
-                            ${t("boatSpaces.typeSlipOption")}
-                        </label>
-                        <label class="radio">
-                            <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"/>
-                            ${t("boatSpaces.typeTrailerOption")}
-                        </label>
-                        <label class="radio">
-                            <input x-model="boatSpaceType" type="radio" id="boatSpaceType-winter" name="boatSpaceType" value="Winter"/>
-                            ${t("boatSpaces.typeWinterOption")}
-                        </label>
-                         <label class="radio">
-                            <input x-model="boatSpaceType" type="radio" id="boatSpaceType-storage" name="boatSpaceType" value="Storage"/>
-                            ${t("boatSpaces.typeStorageOption")}
-                        </label>
-                    </div>
-                </div>
+               $spaceTypeSelection
             </div>            
             """.trimIndent()
 
