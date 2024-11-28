@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.math.BigDecimal
 import java.util.*
 
 @ExtendWith(SpringExtension::class)
@@ -116,9 +117,9 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
                 reservationId = madeReservation.id,
                 boatId = 1,
                 boatType = BoatType.OutboardMotor,
-                width = 1.0,
-                length = 1.0,
-                depth = 1.0,
+                width = BigDecimal(1.0),
+                length = BigDecimal(1.0),
+                depth = BigDecimal(1.0),
                 weight = 1,
                 boatRegistrationNumber = "OYK342",
                 boatName = "Boat",
@@ -233,9 +234,9 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
                 reservationId = madeReservation.id,
                 boatId = 1,
                 boatType = BoatType.OutboardMotor,
-                width = 1.0,
-                length = 1.0,
-                depth = 1.0,
+                width = BigDecimal(1.0),
+                length = BigDecimal(1.0),
+                depth = BigDecimal(1.0),
                 weight = 1,
                 boatRegistrationNumber = "1",
                 boatName = "1",
