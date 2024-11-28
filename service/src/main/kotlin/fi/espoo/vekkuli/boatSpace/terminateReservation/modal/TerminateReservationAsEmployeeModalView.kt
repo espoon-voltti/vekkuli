@@ -35,6 +35,7 @@ class TerminateReservationAsEmployeeModalView(
                     hx-post="/boat-space/terminate-reservation/as-employee"
                     hx-swap="innerHTML"
                     hx-target="#modal-container"
+                    hx-disabled-elt="button[type='submit']"
                     xmlns="http://www.w3.org/1999/html">
                     <div class='columns is-multiline form-section pb-none'>
                         <div class="column is-full">

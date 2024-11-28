@@ -181,6 +181,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.terminateReservationExplanation.fill(terminationComment)
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
+            assertThat(citizenDetailsPage.terminateReservationModalConfirm).isDisabled()
 
             // Shows a success message in modal
             assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
