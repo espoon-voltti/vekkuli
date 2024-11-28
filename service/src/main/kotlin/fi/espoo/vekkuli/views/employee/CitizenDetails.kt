@@ -200,7 +200,7 @@ class CitizenDetails(
                                 <div class="block">
                                     <h1 class="label">${t("citizenDetails.label.warningInfo")}</h1>
                                     <div class="control">
-                                        <textarea data-testid="warning-info-input" class="textarea" rows="1"></textarea>
+                                        <textarea data-testid="warning-info-input" class="textarea" rows="1" name="infoText"></textarea>
                                     </div>
                                 </div>
                                 ${warningBox.render(t("reservationWarning.ackInfo"))}

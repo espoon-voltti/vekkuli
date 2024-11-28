@@ -174,7 +174,6 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.showAllBoatsButton.click()
             page.getByTestId("edit-boat-1").click()
             assertThat(page.getByTestId("form")).isVisible()
-            page.pause()
 
             citizenDetails.nameInput.fill("New Boat Name")
             citizenDetails.weightInput.fill("16000")
@@ -206,8 +205,8 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.boatWarningModalInfoInput.fill(infoText)
             citizenDetails.boatWarningModalConfirmButton.click()
 
-//            citizenDetails.memoNavi.click()
-//            assertThat(citizenDetails.userMemo(1)).containsText(infoText)
+            citizenDetails.memoNavi.click()
+            assertThat(citizenDetails.userMemo(2)).containsText(infoText)
         } catch (e: AssertionError) {
             handleError(e)
         }

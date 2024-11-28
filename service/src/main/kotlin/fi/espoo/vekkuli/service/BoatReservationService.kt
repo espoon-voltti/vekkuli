@@ -104,6 +104,7 @@ class BoatReservationService(
     private val emailEnv: EmailEnv,
     private val organizationService: OrganizationService,
     private val timeProvider: TimeProvider,
+    private val memoService: MemoService,
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -493,9 +494,18 @@ class BoatReservationService(
 
     fun acknowledgeWarning(
         reservationId: Int,
+        userId: UUID,
         boatId: Int,
         key: String,
-    ): Unit = reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatId, key)
+        infoText: String,
+    ) {
+        reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatId, key)
+        val reservation = getReservationWithDependencies(reservationId)
+        if (reservation?.reserverId == null) {
+            throw IllegalArgumentException("No reservation or reservation has no reserver")
+        }
+        memoService.insertMemo(reservation.reserverId, userId, ReservationType.Marine, infoText)
+    }
 
     fun markInvoicePaid(
         reservationId: Int,
