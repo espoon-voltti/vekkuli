@@ -25,7 +25,7 @@ $activeColor: #D9E4F4;
   $spacing-horizontal: "h",
   $spacing-vertical: "v",
   $spacing-values: ("none": 0, "s": $spacing-small, "m": $spacing-medium,
-          "l": $spacing-large, "xl": $spacing-xl),
+          "l": $spacing-large, "xl": $spacing-xl, "auto": auto),
   $icon-text-spacing: $spacing-small,
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,

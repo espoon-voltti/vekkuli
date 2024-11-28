@@ -286,6 +286,23 @@ class CitizenDetails(
             }
         }
 
+        fun editBoatButton(boat: CitizenUserController.BoatUpdateForm): String {
+            // language=HTML
+            return """
+                <div class="column is-narrow ml-auto">
+                    <a class="edit-link s-link"
+                       hx-get="${getEditUrl(boat.id)}"
+                       hx-target="#boat-${boat.id}"
+                       hx-swap="innerHTML">
+                        <span class="icon ml-s">
+                            ${icons.edit}
+                        </span>
+                        <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
+                    </a>
+                </div>
+                """.trimIndent()
+        }
+
         // language=HTML
         fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
             boats
@@ -296,22 +313,13 @@ class CitizenDetails(
                             <div class="column is-narrow">
                                 <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
                             </div>
-                            <span class="memo-edit-buttons column columns">
-                                <div class="column is-narrow">
-                                    <a class="edit-link s-link"
-                                       hx-get="${getEditUrl(boat.id)}"
-                                       hx-target="#boat-${boat.id}"
-                                       hx-swap="innerHTML">
-                                        <span class="icon ml-s">
-                                            ${icons.edit}
-                                        </span>
-                                        <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
-                                    </a>
-                                </div>
+                            <div class="memo-edit-buttons column columns">
                                 ${deleteButton(boat.reservationId != null, boat.id)}
                                 
                                 ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
-                                </span>
+                                
+                                ${editBoatButton(boat)}
+                            </div>
                         </div>
                         <div class="columns">
                             <div class="column">
