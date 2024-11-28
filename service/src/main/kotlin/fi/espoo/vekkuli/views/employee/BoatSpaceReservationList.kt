@@ -163,7 +163,7 @@ class BoatSpaceReservationList {
                         ${if (result.hasWarning("BoatWidth") || result.hasWarning("BoatLength")) icons.warningExclamation(false) else ""}
                     </td>
                     <td>${result.section}</td>
-                    <td>${t("boatSpaces.type${result.type}Option")}</td>
+                    <td>${t("boatSpaces.typeOption.${result.type}")}</td>
                     <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>

@@ -169,7 +169,7 @@ class FormComponents {
         val opts =
             options.joinToString("\n") { (key, value) ->
                 """<label class="radio" for="$key">
-                     <input type="radio" id="$id" name="$id" value="$key" ${if (key == value) "checked" else ""} ${staticAttributesForOptions.map {
+                     <input type="radio" id="$id-$value" name="$id" value="$key" ${if (key == value) "checked" else ""} ${staticAttributesForOptions.map {
                     "${it.key}=${ HtmlUtils.htmlEscape(it.value, "UTF-8")}"
                 }.joinToString(
                     " "
