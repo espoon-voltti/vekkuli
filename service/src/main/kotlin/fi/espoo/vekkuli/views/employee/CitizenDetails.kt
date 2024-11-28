@@ -159,7 +159,7 @@ class CitizenDetails(
                         <span class="icon ml-s">
                             <span>${icons.warningExclamation(false)}</span>
                         </span>
-                        <span>Kuittaa tiedot tarkistetuiksi</span>
+                        <span data-testid='acknowledge-warnings'>${t("citizenDetails.button.acknowledgeWarnings")}</span>
                     </a>
                 </div>
                 """
@@ -198,9 +198,9 @@ class CitizenDetails(
                                     </div>
                                 </div>
                                 <div class="block">
-                                    <h1 class="label">Lisätietoa kuittauksesta</h1>
+                                    <h1 class="label">${t("citizenDetails.label.warningInfo")}</h1>
                                     <div class="control">
-                                        <textarea class="textarea" rows="1"></textarea>
+                                        <textarea data-testid="warning-info-input" class="textarea" rows="1"></textarea>
                                     </div>
                                 </div>
                                 ${warningBox.render(t("reservationWarning.ackInfo"))}

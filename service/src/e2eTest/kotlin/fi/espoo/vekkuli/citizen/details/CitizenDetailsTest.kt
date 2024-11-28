@@ -4,6 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
+import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
@@ -154,6 +155,59 @@ class CitizenDetailsTest : PlaywrightTest() {
             page.getByTestId("delete-boat-3").click()
             page.getByTestId("delete-modal-confirm-3").click()
             assertThat(page.getByTestId("boat-3")).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `should add warning when citizen edits boat to be too heavy`() {
+        try {
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            page.navigate(citizenPageInEnglish)
+
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            citizenDetails.showAllBoatsButton.click()
+            page.getByTestId("edit-boat-1").click()
+            assertThat(page.getByTestId("form")).isVisible()
+            page.pause()
+
+            citizenDetails.nameInput.fill("New Boat Name")
+            citizenDetails.weightInput.fill("16000")
+            citizenDetails.typeSelect.selectOption("Sailboat")
+            citizenDetails.depthInput.fill("1.5")
+            citizenDetails.widthInput.fill("2")
+            citizenDetails.registrationNumberInput.fill("ABC123")
+            citizenDetails.length.fill("5")
+            citizenDetails.ownership.selectOption("Owner")
+            citizenDetails.otherIdentifier.fill("ID12345")
+            citizenDetails.extraInformation.fill("Extra info")
+            citizenDetails.submitButton.click()
+
+            page.navigate(employeePageInEnglish)
+            page.getByTestId("employeeLoginButton").click()
+            page.getByText("Kirjaudu").click()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+
+            assertThat(listingPage.warningIcon).isVisible()
+
+            listingPage.boatSpace1.click()
+
+            citizenDetails.acknowledgeWarningButton(1).click()
+            assertThat(citizenDetails.boatWarningModalWeightInput).isVisible()
+            citizenDetails.boatWarningModalWeightInput.click()
+            val infoText = "Test info"
+            citizenDetails.boatWarningModalInfoInput.fill(infoText)
+            citizenDetails.boatWarningModalConfirmButton.click()
+
+//            citizenDetails.memoNavi.click()
+//            assertThat(citizenDetails.userMemo(1)).containsText(infoText)
         } catch (e: AssertionError) {
             handleError(e)
         }
