@@ -256,17 +256,16 @@ class CitizenDetails(
                                     <div class="has-text-centered is-1">
                                         <p class='mb-m'>${t("boatSpaceReservation.text.deleteBoatConfirmation")}</p>
                                         <div class="buttons is-centered">
-                                            <button type="button" class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
+                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
                                                 ${t("cancel")}
-                                            </button>
-                                            <button type="button" class="button is-danger" 
-                                                hx-disabled-elt="this"
+                                            </a>
+                                            <a class="button is-danger" 
                                                 id="delete-modal-confirm-$boatId" 
                                                 hx-delete="${getDeleteUrl(boatId)}"
                                                 hx-select="#citizen-details"
                                                 hx-target="#citizen-details">
                                                 ${t("boatSpaceReservation.button.confirmDeletion")}
-                                            </button>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -516,7 +515,6 @@ class CitizenDetails(
                     </span>
                 </a>
                 <a id="delete-memo-button"
-                   hx-disable-elt="this"
                    hx-delete="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                    hx-trigger="click"
                    hx-target="#tab-content"
@@ -557,9 +555,7 @@ class CitizenDetails(
                 """
                 <form hx-patch="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                       hx-target="#memo-${memo.id}"
-                      hx-swap="outerHTML"
-                      hx-disabled-elt="button[type='submit']"
-                      >
+                      hx-swap="outerHTML">
                     <div class="control memo-edit-area">
                         <textarea id="edit-memo-content" 
                                   class="textarea" 
@@ -613,9 +609,7 @@ class CitizenDetails(
                 <div id="new-memo" class="block">
                     <form hx-post="${getTabUrl("$citizenId/muistiinpanot")}"
                         hx-target="#tab-content"
-                        hx-swap="outerHTML"
-                        hx-disabled-elt="button[type='submit']"
-                        >
+                        hx-swap="outerHTML">
                         <div class="memo-edit-area">
                             <div class="control">
                                 <textarea id="new-memo-content" 

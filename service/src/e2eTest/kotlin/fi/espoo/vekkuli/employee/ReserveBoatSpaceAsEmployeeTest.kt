@@ -104,7 +104,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
         formPage.submitButton.click()
-        assertThat(formPage.submitButton).isDisabled()
     }
 
     @Test
@@ -138,14 +137,12 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             assertThat(reservationPage.harborHeaders).hasCount(2)
 
             reservationPage.firstReserveButton.click()
-            assertThat(reservationPage.firstReserveButton).isDisabled()
 
             fillAndTestAndSubmitForm(reservationPage)
 
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
-            assertThat(invoicePreviewPage.sendButton).isDisabled()
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
@@ -159,7 +156,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
 
             citizenDetailsPage.invoiceModalConfirm.click()
-            assertThat(citizenDetailsPage.invoiceModalConfirm).isDisabled()
             assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
 
             citizenDetailsPage.memoNavi.click()
@@ -299,7 +295,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.agreementCheckbox.check()
 
         formPage.submitButton.click()
-        assertThat(formPage.submitButton).isDisabled()
     }
 
     @Test

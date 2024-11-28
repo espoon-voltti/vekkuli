@@ -41,7 +41,6 @@ class InvoicePaidModal : BaseView() {
                     hx-target="#citizen-details"
                     hx-select="#citizen-details"
                     hx-swap="outerHTML"
-                    hx-disabled-elt="button[type='submit']"
                     >
                     ${formComponents.textInput("citizenDetails.info", "invoicePaidInfo", "")}
                     ${formComponents.dateInput(

@@ -193,7 +193,6 @@ class EditCitizen {
                   hx-target="#citizen-details"
                   hx-select="#citizen-details"
                   hx-swap="outerHTML"
-                  hx-disabled-elt="button[type='submit']"
             >
                 <input type="hidden" name="id" value="${citizen.id}" />
                 ${formComponents.formHeader("boatSpaceReservation.title.customerInformation")}

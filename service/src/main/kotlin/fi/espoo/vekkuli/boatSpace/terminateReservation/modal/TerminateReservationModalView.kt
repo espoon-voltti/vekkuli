@@ -26,7 +26,6 @@ class TerminateReservationModalView : BaseView() {
                     hx-post="/boat-space/terminate-reservation"
                     hx-swap="innerHTML"
                     hx-target="#modal-container"
-                    hx-disabled-elt="button[type='submit']"
                     >
                     <div class='columns is-multiline'>
                    
