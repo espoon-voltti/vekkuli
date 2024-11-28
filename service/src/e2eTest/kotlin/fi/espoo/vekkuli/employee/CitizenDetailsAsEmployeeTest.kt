@@ -79,6 +79,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.citizenEmailInput.fill(citizenEmail)
             citizenDetails.citizenPhoneInput.fill(citizenPhone)
             citizenDetails.citizenEditSubmitButton.click()
+            assertThat(citizenDetails.citizenEditSubmitButton).isDisabled()
 
             // assert that the values are updated
             assertThat(citizenDetails.citizenFirstNameField).hasText(citizenFirstName)
@@ -114,6 +115,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             val memoId = 2
             citizenDetails.newMemoContent.fill(text)
             citizenDetails.newMemoSaveBtn.click()
+            assertThat(citizenDetails.newMemoSaveBtn).isDisabled()
             assertThat(citizenDetails.userMemo(memoId)).containsText(text)
 
             // Edit memo
@@ -121,6 +123,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.userMemo(memoId).getByTestId("edit-memo-button").click()
             citizenDetails.userMemo(memoId).getByTestId("edit-memo-content").fill(newText)
             citizenDetails.userMemo(memoId).getByTestId("save-edit-button").click()
+            assertThat(citizenDetails.userMemo(memoId).getByTestId("save-edit-button")).isDisabled()
+
             assertThat(citizenDetails.userMemo(memoId).locator(".memo-content")).containsText(newText)
 
             // Delete memo
@@ -178,6 +182,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.extraInformation.fill("Extra info")
 
             citizenDetails.submitButton.click()
+            assertThat(citizenDetails.submitButton).isDisabled()
             assertThat(citizenDetails.nameText(3)).hasText("New Boat Name")
             assertThat(citizenDetails.weightText(3)).hasText("2000")
             assertThat(citizenDetails.typeText(3)).hasText("Sailboat")
@@ -210,6 +215,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             assertThat(page.getByTestId("boat-3")).isVisible()
             page.getByTestId("delete-boat-3").click()
             page.getByTestId("delete-modal-confirm-3").click()
+            assertThat(page.getByTestId("delete-modal-confirm-3")).isDisabled()
             assertThat(page.getByTestId("boat-3")).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
@@ -238,6 +244,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
             invoiceDetails.sendButton.click()
+            assertThat(invoiceDetails.sendButton).isDisabled()
             assertThat(citizenDetails.invoicePaidButton).isVisible()
             assertThat(citizenDetails.renewReservationButton(1)).isHidden()
         } catch (e: AssertionError) {

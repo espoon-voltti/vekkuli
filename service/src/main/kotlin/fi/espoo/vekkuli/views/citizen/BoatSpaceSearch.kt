@@ -233,7 +233,7 @@ class BoatSpaceSearch(
                     val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/venepaikka/varaa/${result.id}"
                     rowsBuilder.append(
                         """
-                        <form action="$url" method="get">
+                        <form hx-get="$url" hx-target="body" hx-disabled-elt="button[type='submit']">
                             <input type="hidden" name="boatType" value="${boat.type ?: ""}" />
                             <input type="hidden" name="width" value="${boat.width ?: ""}" />
                             <input type="hidden" name="length" value="${boat.length ?: ""}" />
