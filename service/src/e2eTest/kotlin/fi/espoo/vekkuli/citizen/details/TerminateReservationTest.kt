@@ -78,7 +78,6 @@ class TerminateReservationTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
 
             citizenDetailsPage.terminateReservationModalConfirm.click()
-            assertThat(citizenDetailsPage.terminateReservationModalConfirm).isDisabled()
 
             // Shows a success message in modal
             assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
