@@ -853,3 +853,11 @@ ul {
 .is-error-container {
   border: 1px solid $error;
 }
+
+.is-icon-link {
+  display: flex;
+  align-items: center;
+  & > .icon {
+    margin-right: $spacing-small;
+  }
+}

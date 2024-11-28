@@ -86,12 +86,12 @@ class CitizenDetails(
                         </div>
                         <div class="column">
                             <div>
-                                <a class="is-link" 
+                                <a class="is-link is-icon-link" 
                                     id="edit-customer"
                                     hx-get="$editUrl"
                                     hx-target="#citizen-information"
                                     hx-swap="innerHTML">
-                                    <span class="icon ml-s">
+                                    <span class="icon">
                                         ${icons.edit}
                                     </span>
                                     <span>${t("boatSpaceReservation.button.editCustomerDetails")}</span>
@@ -290,11 +290,11 @@ class CitizenDetails(
             // language=HTML
             return """
                 <div class="column is-narrow ml-auto">
-                    <a class="edit-link s-link"
+                    <a class="is-icon-link is-link"
                        hx-get="${getEditUrl(boat.id)}"
                        hx-target="#boat-${boat.id}"
                        hx-swap="innerHTML">
-                        <span class="icon ml-s">
+                        <span class="icon">
                             ${icons.edit}
                         </span>
                         <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
