@@ -2,8 +2,8 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.EmployeeHomePage
 import fi.espoo.vekkuli.pages.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -16,9 +16,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun listingReservations() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -35,9 +34,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editCitizen() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -97,9 +95,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMemos() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -135,9 +132,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMessages() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -153,9 +149,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editBoat() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -197,9 +192,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun deleteBoat() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -220,9 +214,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     fun `employee can renew a boat space reservation`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()

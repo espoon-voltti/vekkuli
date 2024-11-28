@@ -14,11 +14,11 @@ class EmployeeHome(
         <div class="centered is-gap-4">
             <div class="is-centered icon is-extra-large">${icons.boat}</div>
              <div class='is-centered'>
-                <p class='is-primary-color subtitle-main'>${t("home.login")}</p>
+                <h1 class='is-primary-color is-title-secondary m-none'>${t("employeeLoginPage.title")}</h1>
              </div>
              <div class='is-centered'>
-             <button class="button is-primary" hx-get="/auth/saml/login"
-                    hx-target="body">${t("auth.login")}</button>
+             <button class="button is-primary" id="employee-login-button" hx-get="/auth/saml/login"
+                    hx-target="body">${t("employeeLoginPage.button.login")}</button>
                     </div>
         </div>
         """.trimIndent()
