@@ -150,6 +150,11 @@ const validation = (function () {
         validateField(field);
       }
     });
+
+    form.addEventListener('submit', function (event) {
+      const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+      submitButton.setAttribute('disabled', 'disabled');
+    });
   }
 
   return { init };
