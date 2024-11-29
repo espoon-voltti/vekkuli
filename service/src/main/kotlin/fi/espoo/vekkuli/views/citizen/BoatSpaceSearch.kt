@@ -224,6 +224,9 @@ class BoatSpaceSearch(
                                     localStorage.setItem('length', document.getElementById('length').value);
                                 });
                             </script>
+                            <div class="mt-xl">
+                               <img src="/static/images/map-of-locations.png" alt="${t("citizenFrontPage.image.harbors.altText")}" />
+                            </div>
                         </div>
                         <div class="column">
                             <div id="boatSpaces" class="block loaded-content">
