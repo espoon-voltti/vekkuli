@@ -275,7 +275,7 @@ class BoatSpaceReservationList {
                                         ${sortButton("HOME_TOWN", t("boatSpaceReservation.title.homeTown"))}
                                     </th>
                                     <th><span class="reservation-table-header">
-                                        ${t("boatSpaceReservation.title.payment")}
+                                        ${t("boatSpaceReservation.title.paymentState")}
                                     </span></th>
                                     <th class="nowrap">
                                         ${sortButton("START_DATE", t("boatSpaceReservation.title.startDate"))}
