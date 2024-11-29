@@ -289,7 +289,6 @@ class BoatSpaceRenewFormView(
                         <div class="modal-underlay" @click="modalOpen = false"></div>
                         <div class="modal-content">
                             <p class="block has-text-left">${t("boatSpaceApplication.cancelConfirmation")}</p>
-                            <p class="block has-text-left" ${t("boatSpaceApplication.cancelConfirmation2")}</p>
                             <button id="confirm-cancel-modal-cancel"
                                 class="button"
                                 x-on:click="modalOpen = false"
