@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.getAppUser
+import fi.espoo.vekkuli.config.BoatSpaceConfig.winterStorageLocations
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
@@ -90,7 +91,7 @@ class BoatSpaceSearchController {
                 employeeLayout.render(
                     true,
                     request.requestURI,
-                    boatSpaceSearch.render(locations, true)
+                    boatSpaceSearch.render(locations, winterStorageLocations, true)
                 )
             )
         }
@@ -112,7 +113,7 @@ class BoatSpaceSearchController {
                 isAuthenticated(userType, request),
                 citizen?.fullName,
                 request.requestURI,
-                boatSpaceSearch.render(locations)
+                boatSpaceSearch.render(locations, winterStorageLocations)
             )
         )
     }

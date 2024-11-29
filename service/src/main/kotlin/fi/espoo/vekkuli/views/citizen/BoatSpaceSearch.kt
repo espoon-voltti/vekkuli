@@ -3,10 +3,8 @@ package fi.espoo.vekkuli.views.citizen
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.Harbor
-import fi.espoo.vekkuli.domain.Location
+import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
@@ -23,6 +21,7 @@ class BoatSpaceSearch(
 
     fun render(
         locations: List<Location>,
+        winterLocations: List<Int>,
         isEmployee: Boolean = false
     ): String {
         val boatTypes = BoatType.entries.map { it.name }
@@ -34,29 +33,61 @@ class BoatSpaceSearch(
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
             )
 
-        val widthInput =
+        val boatWidthInput =
             formComponents.decimalInput(
-                "boatSpaces.widthHeader",
+                "boatSpaces.boatWidthHeader",
                 "width",
                 null,
                 required = true,
             )
 
-        val lengthInput =
+        val boatLengthInput =
             formComponents.decimalInput(
-                "boatSpaces.lengthHeader",
+                "boatSpaces.boatLengthHeader",
                 "length",
                 null,
                 required = true,
             )
 
-        val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
+        val spaceWidthInput =
+            formComponents.decimalInput(
+                "boatSpaces.spaceWidthHeader",
+                "spaceWidth",
+                null,
+                required = true,
+            )
+
+        val spaceLengthInput =
+            formComponents.decimalInput(
+                "boatSpaces.spaceLengthHeader",
+                "spaceLength",
+                null,
+                required = true,
+            )
+
+        val storageTypeButtons =
+            formComponents.radioButtons(
+                "boatSpaces.storageTypeHeader",
+                "storageType",
+                "Slip",
+                storageTypeAmenities.map { it.name to t("boatSpaces.amenityOption.$it") },
+                mapOf("x-model" to "storageType")
+            )
+
+        val storageType =
+            // language=HTML
+            """
+             <div class="block" x-show="boatSpaceType === 'Storage'">
+                $storageTypeButtons
+            </div>            
+            """.trimIndent()
+
         // language=HTML
         val amenitiesCheckboxes =
             """
             <label class="label">${t("boatSpaces.amenityHeader")}</label>
                 <div class="field columns is-multiline is-mobile">
-                ${amenities.joinToString("\n") { option ->
+                ${slipAmenities.joinToString("\n") { option ->
                 """
                 <div class="column is-half pb-none">
                     <label class="checkbox">
@@ -66,7 +97,7 @@ class BoatSpaceSearch(
                 </div>
                 """.trimIndent()
             }}
-                                                                    </div>
+                </div>
             """.trimIndent()
 
         // language=HTML
@@ -75,8 +106,9 @@ class BoatSpaceSearch(
             <label class="label">${t("boatSpaces.harborHeader")}</label>
             <div class="field columns is-multiline is-mobile">
                 ${locations.joinToString("\n") { location ->
+                val visibility = if (!(location.id in winterLocations)) "x-show=\"boatSpaceType != 'Winter'\"" else ""
                 """
-                <div class="column is-half pb-none">
+                <div class="column is-half pb-none" $visibility>
                     <label class="checkbox">
                         <input name="harbor" id="${location.name.decapitalize()}-checkbox" value="${location.id}" type="checkbox"/>
                         <span>${location.name}</span>
@@ -99,6 +131,29 @@ class BoatSpaceSearch(
             </div>
             """.trimIndent()
 
+        val usedTypes =
+            if (isStagingOrProduction()) {
+                listOf("Slip", "Trailer")
+            } else {
+                listOf("Slip", "Trailer", "Winter", "Storage")
+            }
+
+        val spaceTypeSelection =
+            formComponents.radioButtons(
+                "boatSpaces.typeHeader",
+                "boatSpaceType",
+                "Slip",
+                usedTypes.map { it to t("boatSpaces.typeOption.$it") },
+                mapOf("x-model" to "boatSpaceType")
+            )
+
+        val typeSelect =
+            """
+             <div class="block">
+               $spaceTypeSelection
+            </div>            
+            """.trimIndent()
+
         val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/partial/vapaat-paikat"
         // language=HTML
         return """
@@ -111,7 +166,7 @@ class BoatSpaceSearch(
                     </div>
                     ${if (!isEmployee) infoBox else ""}
                     <div class="columns">
-                        <div class="column is-two-fifths" x-data="{boatSpaceType: 'Slip'}">
+                        <div class="column is-two-fifths" x-data="{boatSpaceType: 'Slip', storageType: 'Trailer'}">
                             <form id="form"
                                   method="get"
                                   action="$url"
@@ -126,44 +181,37 @@ class BoatSpaceSearch(
 
                                 <h2 class="subtitle" id="search-page-header">${t("boatApplication.boatPlaceSearchTitle")}</h2>
 
-                                <div class="block">
-                                    <div class="field">
-                                        <label class="label">Haettava paikka</label>
-                                        <div class="control">
-                                            <label class="radio">
-                                                <input checked x-model="boatSpaceType" type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"/>
-                                                ${t("boatSpaces.typeSlipOption")}
-                                            </label>
-                                            <label class="radio">
-                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"/>
-                                                ${t("boatSpaces.typeTrailerOption")}
-                                            </label>
-                                             <label class="radio">
-                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-storage" name="boatSpaceType" value="Storage"/>
-                                                ${t("boatSpaces.typeStorageOption")}
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                               $typeSelect
+                               
+                               $storageType
 
                                 <div class="block">
                                     $boatTypeSelect
                                 </div>
 
-                                <div class="columns">
+                                <div class="columns" x-show="boatSpaceType === 'Slip' || boatSpaceType === 'Trailer'">
                                     <div class='column'>
-                                        $widthInput
+                                        $boatWidthInput
                                     </div>
                                     <div class='column'>
-                                        $lengthInput
+                                        $boatLengthInput
+                                    </div>
+                                </div>
+                                
+                                <div class="columns" x-show="boatSpaceType != 'Slip' && boatSpaceType != 'Trailer'">
+                                    <div class='column'>
+                                        $spaceWidthInput
+                                    </div>
+                                    <div class='column'>
+                                        $spaceLengthInput
                                     </div>
                                 </div>
 
-                                <div class="block" x-show="boatSpaceType !== 'Trailer'">
+                                <div class="block" x-show="boatSpaceType === 'Slip'">
                                     $amenitiesCheckboxes
                                 </div>
 
-                                <div class="block">
+                                <div class="block" x-show="boatSpaceType != 'Storage'">
                                     $locationsCheckboxes
                                 </div>
 
