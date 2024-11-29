@@ -143,6 +143,13 @@ class BoatSpaceReservationList {
             </div>
             """.trimIndent()
 
+        fun getWarningIcon(hasWarnings: Boolean) =
+            if (hasWarnings) {
+                "<div data-testid='warning-icon'>${icons.warningExclamation(false)}</div>"
+            } else {
+                ""
+            }
+
         // language=HTML
         val reservationRows =
             reservations.joinToString("\n") { result ->
@@ -157,10 +164,10 @@ class BoatSpaceReservationList {
                     hx-push-url="true"
                     hx-target=".section"
                     hx-select=".section">
+                    <td>${getWarningIcon(result.hasAnyWarnings())}</td>
                     <td>${result.locationName}</td>
                     <td>
                         <span>${result.place}</span>
-                        ${if (result.hasWarning("BoatWidth") || result.hasWarning("BoatLength")) icons.warningExclamation(false) else ""}
                     </td>
                     <td>${result.section}</td>
                     <td>${t("boatSpaces.typeOption.${result.type}")}</td>
@@ -169,20 +176,7 @@ class BoatSpaceReservationList {
                     <td>$paymentDateFormatted</td>
                     <td>$startDateFormatted</td>
                     <td>$endDateFormatted</td>
-                    <td class="has-text-centered">
-                        <div class="is-flex is-align-items-center is-justify-content-center">
-                            <p>${t("boatApplication.$userType.ownershipOption.${result.boatOwnership}")}</p>
-                            ${if (result.hasWarning(
-                        "BoatFutureOwner"
-                    ) ||
-                    result.hasWarning("BoatCoOwner")
-                ) {
-                    icons.warningExclamation(false)
-                } else {
-                    ""
-                }}
-                        </div>
-                    </td>
+                   
                 </tr>
                 """.trimIndent()
             }
@@ -263,6 +257,7 @@ class BoatSpaceReservationList {
                             <table class="table is-hoverable">
                                 <thead>
                                 <tr class="table-borderless">
+                                    <th></th>
                                     <th class="nowrap">
                                         ${sortButton("PLACE", t("boatSpaceReservation.title.harbor"))}
                                     </th>

@@ -449,6 +449,28 @@ class CitizenUserController {
 
         val updatedBoats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
+        val reservationForBoat = boatSpaceReservations.find { it.boatId == boatId }
+
+        if (reservationForBoat != null) {
+            val boatSpace =
+                reservationService.getBoatSpaceRelatedToReservation(reservationForBoat.id)
+                    ?: throw IllegalArgumentException("Reservation not found")
+
+            reservationService.addReservationWarnings(
+                reservationForBoat.id,
+                boatId,
+                reservationForBoat.boatSpaceWidthCm,
+                reservationForBoat.boatSpaceLengthCm,
+                reservationForBoat.amenity,
+                updatedBoat.widthCm,
+                updatedBoat.lengthCm,
+                updatedBoat.ownership,
+                updatedBoat.weightKg,
+                updatedBoat.type,
+                boatSpace.excludedBoatTypes ?: listOf()
+            )
+        }
+
         return citizenDetails.citizenPage(
             citizen,
             boatSpaceReservations,

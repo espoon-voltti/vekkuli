@@ -86,12 +86,12 @@ class CitizenDetails(
                         </div>
                         <div class="column">
                             <div>
-                                <a class="is-link" 
+                                <a class="is-link is-icon-link" 
                                     id="edit-customer"
                                     hx-get="$editUrl"
                                     hx-target="#citizen-information"
                                     hx-swap="innerHTML">
-                                    <span class="icon ml-s">
+                                    <span class="icon">
                                         ${icons.edit}
                                     </span>
                                     <span>${t("boatSpaceReservation.button.editCustomerDetails")}</span>
@@ -155,11 +155,11 @@ class CitizenDetails(
                 // language=HTML
                 return """
                 <div class="column">
-                    <a class="is-link" x-on:click="modalOpen = true">
+                    <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
                         <span class="icon ml-s">
-                            <span>${icons.warningExclamation(false)}</span>
+                            ${icons.warningExclamation(false)}
                         </span>
-                        <span>Kuittaa tiedot tarkistetuiksi</span>
+                        <span data-testid='acknowledge-warnings'>${t("citizenDetails.button.acknowledgeWarnings")}</span>
                     </a>
                 </div>
                 """
@@ -198,9 +198,9 @@ class CitizenDetails(
                                     </div>
                                 </div>
                                 <div class="block">
-                                    <h1 class="label">Lisätietoa kuittauksesta</h1>
+                                    <h1 class="label">${t("citizenDetails.label.warningInfo")}</h1>
                                     <div class="control">
-                                        <textarea class="textarea" rows="1"></textarea>
+                                        <textarea data-testid="warning-info-input" class="textarea" rows="1" name="infoText"></textarea>
                                     </div>
                                 </div>
                                 ${warningBox.render(t("reservationWarning.ackInfo"))}
@@ -286,6 +286,23 @@ class CitizenDetails(
             }
         }
 
+        fun editBoatButton(boat: CitizenUserController.BoatUpdateForm): String {
+            // language=HTML
+            return """
+                <div class="column is-narrow ml-auto">
+                    <a class="is-icon-link is-link"
+                       hx-get="${getEditUrl(boat.id)}"
+                       hx-target="#boat-${boat.id}"
+                       hx-swap="innerHTML">
+                        <span class="icon">
+                            ${icons.edit}
+                        </span>
+                        <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
+                    </a>
+                </div>
+                """.trimIndent()
+        }
+
         // language=HTML
         fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
             boats
@@ -296,22 +313,13 @@ class CitizenDetails(
                             <div class="column is-narrow">
                                 <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
                             </div>
-                            <span class="memo-edit-buttons column columns">
-                                <div class="column is-narrow">
-                                    <a class="edit-link s-link"
-                                       hx-get="${getEditUrl(boat.id)}"
-                                       hx-target="#boat-${boat.id}"
-                                       hx-swap="innerHTML">
-                                        <span class="icon ml-s">
-                                            ${icons.edit}
-                                        </span>
-                                        <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
-                                    </a>
-                                </div>
+                            <div class="memo-edit-buttons column columns">
                                 ${deleteButton(boat.reservationId != null, boat.id)}
                                 
                                 ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
-                                </span>
+                                
+                                ${editBoatButton(boat)}
+                            </div>
                         </div>
                         <div class="columns">
                             <div class="column">
