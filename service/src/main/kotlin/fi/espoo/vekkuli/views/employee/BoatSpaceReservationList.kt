@@ -291,8 +291,8 @@ class BoatSpaceReservationList {
                                     <th></th>
                                     <th>$sectionFilter</th>
                                     <th></th>
-                                    <th></th>
                                     <th>$nameSearchInput</th>
+                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
