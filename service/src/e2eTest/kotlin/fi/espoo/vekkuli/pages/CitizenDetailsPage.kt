@@ -4,8 +4,8 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 
 class CitizenDetailsPage(
-    private val page: Page
-) {
+    page: Page
+) : BasePage(page) {
     val citizenDetailsSection = page.getByTestId("citizen-details")
 
     private fun getBoatText(
@@ -32,14 +32,6 @@ class CitizenDetailsPage(
     fun otherIdentifierText(i: Int): Locator = getBoatText("otherIdentifier", i)
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
-
-    fun getByDataTestId(
-        testId: String,
-        locator: Locator? = null
-    ): Locator {
-        val test = "[data-testid=\"$testId\"]"
-        return locator?.locator(test) ?: page.locator(test)
-    }
 
     // Citizen information
     val editButton = page.getByTestId("edit-customer")
@@ -167,6 +159,11 @@ class CitizenDetailsPage(
 
     val terminationDateInFirstExpiredReservationListItem =
         getByDataTestId("reservation-list-card-terminated-date", expiredReservationListCards.first())
+    val boatWarningModalWeightInput = page.locator("input[value='BoatWeight']")
+    val boatWarningModalInfoInput = getByDataTestId("warning-info-input")
+    val boatWarningModalConfirmButton = page.getByTestId("ack-modal-confirm")
+
+    fun acknowledgeWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("boat-$id"))
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 }

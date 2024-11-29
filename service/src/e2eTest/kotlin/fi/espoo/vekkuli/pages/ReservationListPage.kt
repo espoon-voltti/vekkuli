@@ -4,8 +4,8 @@ import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 
 class ReservationListPage(
-    private val page: Page
-) {
+    page: Page
+) : BasePage(page) {
     fun navigateTo() {
         page.navigate("$baseUrl/virkailija/venepaikat/varaukset")
     }
@@ -14,4 +14,5 @@ class ReservationListPage(
     val boatSpace1 = page.locator("#boat-space-1").first()
     val boatSpace2 = page.locator("#boat-space-2").first()
     val createReservation = page.locator("#create-reservation")
+    val warningIcon = getByDataTestId("warning-icon", boatSpace1)
 }
