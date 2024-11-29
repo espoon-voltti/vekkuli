@@ -21,6 +21,7 @@ import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
 
@@ -105,9 +106,9 @@ class BoatSpaceRenewalService(
                 reservationId = reservationId,
                 boatId = input.boatId,
                 boatType = input.boatType!!,
-                width = input.width ?: 0.0,
-                length = input.length ?: 0.0,
-                depth = input.depth ?: 0.0,
+                width = input.width ?: BigDecimal.ZERO,
+                length = input.length ?: BigDecimal.ZERO,
+                depth = input.depth ?: BigDecimal.ZERO,
                 weight = input.weight,
                 boatRegistrationNumber = input.boatRegistrationNumber ?: "",
                 boatName = input.boatName ?: "",

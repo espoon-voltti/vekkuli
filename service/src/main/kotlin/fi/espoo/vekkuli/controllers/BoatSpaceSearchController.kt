@@ -30,11 +30,12 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
+import java.math.BigDecimal
 import java.net.URI
 
 data class BoatFilter(
-    val width: Double?,
-    val length: Double?,
+    val width: BigDecimal?,
+    val length: BigDecimal?,
     val type: BoatType?
 )
 
@@ -123,8 +124,8 @@ class BoatSpaceSearchController {
     fun searchResultPartial(
         @PathVariable usertype: String,
         @RequestParam(required = false) boatType: BoatType?,
-        @RequestParam @Min(0) width: Double?,
-        @RequestParam @Min(0) length: Double?,
+        @RequestParam @Min(0) width: BigDecimal?,
+        @RequestParam @Min(0) length: BigDecimal?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
         @RequestParam boatSpaceType: BoatSpaceType?,
         @RequestParam harbor: List<String>?,

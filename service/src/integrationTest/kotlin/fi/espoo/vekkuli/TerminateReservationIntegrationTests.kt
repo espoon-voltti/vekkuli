@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.math.BigDecimal
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -69,9 +70,9 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
                 newReservation.id,
                 boatId = 0,
                 boatType = BoatType.Sailboat,
-                width = 3.5,
-                length = 6.5,
-                depth = 3.0,
+                width = BigDecimal(3.5),
+                length = BigDecimal(6.5),
+                depth = BigDecimal(3.0),
                 weight = 180,
                 boatRegistrationNumber = "JFK293",
                 boatName = "Boat",

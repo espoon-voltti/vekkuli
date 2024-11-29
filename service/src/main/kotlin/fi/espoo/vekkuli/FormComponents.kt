@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.MessageUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.util.HtmlUtils
+import java.math.BigDecimal
 
 @Component
 class FormComponents {
@@ -80,7 +81,7 @@ class FormComponents {
     fun decimalInput(
         labelKey: String,
         id: String,
-        value: Double?,
+        value: BigDecimal?,
         required: Boolean? = false,
         attributes: String = "",
         step: Double? = 0.01,

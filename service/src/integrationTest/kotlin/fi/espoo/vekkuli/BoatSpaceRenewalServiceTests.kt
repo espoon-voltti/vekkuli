@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertNotEquals
@@ -196,9 +197,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
             RenewalReservationInput(
                 boatId = 2,
                 boatType = BoatType.Sailboat,
-                width = 3.0,
-                length = 4.0,
-                depth = 1.0,
+                width = BigDecimal(3.0),
+                length = BigDecimal(4.0),
+                depth = BigDecimal(1.0),
                 weight = 100,
                 boatRegistrationNumber = "12345",
                 boatName = "TestBoat",
@@ -332,9 +333,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
             RenewalReservationInput(
                 boatId = 0,
                 boatType = BoatType.Sailboat,
-                width = 3.0,
-                length = 4.0,
-                depth = 1.0,
+                width = BigDecimal(3.0),
+                length = BigDecimal(4.0),
+                depth = BigDecimal(1.0),
                 weight = 100,
                 boatRegistrationNumber = "12345",
                 boatName = "TestBoat",
@@ -374,9 +375,9 @@ class BoatSpaceRenewalServiceTests : IntegrationTestBase() {
             RenewalReservationInput(
                 boatId = 0,
                 boatType = BoatType.Sailboat,
-                width = 3.0,
-                length = 4.0,
-                depth = 1.0,
+                width = BigDecimal(3.0),
+                length = BigDecimal(4.0),
+                depth = BigDecimal(1.0),
                 weight = 100,
                 boatRegistrationNumber = "12345",
                 boatName = "TestBoat",

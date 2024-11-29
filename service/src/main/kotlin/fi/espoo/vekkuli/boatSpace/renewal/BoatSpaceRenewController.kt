@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 import java.net.URI
 
 @Controller
@@ -165,13 +166,13 @@ data class RenewalReservationInput(
     val boatType: BoatType?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val width: Double?,
+    val width: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val length: Double?,
+    val length: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val depth: Double?,
+    val depth: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
     val weight: Int?,

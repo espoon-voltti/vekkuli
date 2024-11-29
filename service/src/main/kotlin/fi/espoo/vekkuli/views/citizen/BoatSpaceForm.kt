@@ -11,15 +11,16 @@ import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.util.*
 
 data class BoatFormInput(
     val id: Int,
     val boatName: String,
     val boatType: BoatType,
-    val width: Double?,
-    val length: Double?,
-    val depth: Double?,
+    val width: BigDecimal?,
+    val length: BigDecimal?,
+    val depth: BigDecimal?,
     val weight: Int?,
     val boatRegistrationNumber: String,
     val otherIdentification: String,
