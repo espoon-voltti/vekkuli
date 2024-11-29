@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
 import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
@@ -105,6 +106,7 @@ class BoatReservationService(
     private val organizationService: OrganizationService,
     private val timeProvider: TimeProvider,
     private val memoService: MemoService,
+    private val permissionService: PermissionService,
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -261,12 +263,15 @@ class BoatReservationService(
 
     fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithoutReserver(id)
 
-    fun getReservationForRenewal(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForRenewal(id)
-
     fun removeBoatSpaceReservation(
         id: Int,
         citizenId: UUID,
-    ): Unit = boatSpaceReservationRepo.removeBoatSpaceReservation(id, citizenId)
+    ) {
+        if (!permissionService.canDeleteBoatSpaceReservation(citizenId, id)) {
+            throw Unauthorized()
+        }
+        boatSpaceReservationRepo.removeBoatSpaceReservation(id)
+    }
 
     fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails? =
         boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)

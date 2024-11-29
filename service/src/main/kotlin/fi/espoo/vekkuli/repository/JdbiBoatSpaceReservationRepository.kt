@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservat
 import fi.espoo.vekkuli.utils.SqlExpr
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
@@ -201,21 +202,24 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun removeBoatSpaceReservation(
-        id: Int,
-        reserverId: UUID,
-    ): Unit =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createUpdate(
+    override fun removeBoatSpaceReservation(id: Int): Unit =
+        jdbi.inTransactionUnchecked { tx ->
+            tx
+                .createUpdate(
+                    """
+                    DELETE FROM payment
+                    WHERE reservation_id = :id
+                    """.trimIndent()
+                ).bind("id", id)
+                .execute()
+            tx
+                .createUpdate(
                     """
                     DELETE FROM boat_space_reservation
-                    WHERE id = :id AND reserver_id = :reserverId
+                    WHERE id = :id
                     """.trimIndent()
-                )
-            query.bind("id", id)
-            query.bind("reserverId", reserverId)
-            query.execute()
+                ).bind("id", id)
+                .execute()
         }
 
     override fun getBoatSpaceReservationsForCitizen(

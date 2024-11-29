@@ -759,7 +759,6 @@ class BoatSpaceForm(
                         <div class="modal-underlay" @click="modalOpen = false"></div>
                         <div class="modal-content">
                             <p class="block has-text-left">${t("boatSpaceApplication.cancelConfirmation")}</p>
-                            <p class="block has-text-left" ${t("boatSpaceApplication.cancelConfirmation2")}</p>
                             <button id="confirm-cancel-modal-cancel"
                                 class="button"
                                 x-on:click="modalOpen = false"
@@ -770,7 +769,7 @@ class BoatSpaceForm(
                                 class="button is-primary"
                                 type="button"
                                 hx-delete="/${userType.path}/venepaikka/varaus/${reservation.id}"
-                                hx-on-htmx-after-request="window.location = '/kuntalainen/venepaikat';">
+                                hx-on-htmx-after-request="${if (userType == UserType.CITIZEN) "window.location = '/kuntalainen/venepaikat';" else "history.back()"}">
                                 ${t("confirm")}
                             </button>
                         </div>

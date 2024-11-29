@@ -37,10 +37,7 @@ interface BoatSpaceReservationRepository {
 
     fun getReservationWithoutReserver(id: Int): ReservationWithDependencies?
 
-    fun removeBoatSpaceReservation(
-        id: Int,
-        reserverId: UUID,
-    ): Unit
+    fun removeBoatSpaceReservation(id: Int): Unit
 
     fun getBoatSpaceReservationsForCitizen(
         reserverId: UUID,

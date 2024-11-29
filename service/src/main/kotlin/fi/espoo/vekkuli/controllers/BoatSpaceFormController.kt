@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.AppUser
+import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
@@ -165,14 +166,23 @@ class BoatSpaceFormController(
         return ResponseEntity.ok(page)
     }
 
-    @DeleteMapping("/$USERTYPE/venepaikka/varaus/{reservationId}")
-    fun removeBoatSpaceReservation(
-        @PathVariable usertype: String,
+    @DeleteMapping("/kuntalainen/venepaikka/varaus/{reservationId}")
+    fun removeBoatSpaceReservationAsCitizen(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<Void> {
-        val citizen = getCitizen(request, citizenService) ?: return ResponseEntity.noContent().build()
+        val citizen = getCitizen(request, citizenService) ?: throw Unauthorized()
         reservationService.removeBoatSpaceReservation(reservationId, citizen.id)
+        return ResponseEntity.noContent().build()
+    }
+
+    @DeleteMapping("/virkailija/venepaikka/varaus/{reservationId}")
+    fun removeBoatSpaceReservationAsEmployee(
+        @PathVariable reservationId: Int,
+        request: HttpServletRequest,
+    ): ResponseEntity<Void> {
+        val user = request.getAuthenticatedUser() ?: throw Unauthorized()
+        reservationService.removeBoatSpaceReservation(reservationId, user.id)
         return ResponseEntity.noContent().build()
     }
 
