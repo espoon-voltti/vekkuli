@@ -93,7 +93,9 @@ class BoatSpaceReservationList {
                 ""
             }}>
                 <span>${t("boatSpaceReservation.showReservationsWithWarnings")}</span>
+               
             </label>
+             <span class="ml-s">${icons.warningExclamation(false)}</span>
             """.trimIndent()
 
         val nameSearchInput =
@@ -169,14 +171,12 @@ class BoatSpaceReservationList {
                     <td>
                         <span>${result.place}</span>
                     </td>
-                    <td>${result.section}</td>
                     <td>${t("boatSpaces.typeOption.${result.type}")}</td>
                     <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
                     <td>$startDateFormatted</td>
                     <td>$endDateFormatted</td>
-                   
                 </tr>
                 """.trimIndent()
             }
@@ -249,7 +249,7 @@ class BoatSpaceReservationList {
                                 $paymentFilters
                             </div>
                         </div>
-                        <div class="block">
+                        <div class="block columns is-vcentered">
                             $warningFilterCheckbox
                         </div>
 
@@ -264,7 +264,7 @@ class BoatSpaceReservationList {
                                     <th class="nowrap">
                                         ${sortButton("PLACE", t("boatSpaceReservation.title.place"))}
                                     </th>
-                                    <th>${t("boatSpaceReservation.title.pier")}</th>
+
                                     <th class="nowrap">
                                         ${sortButton("PLACE_TYPE", t("boatSpaceReservation.title.type"))}
                                     </th>
@@ -283,9 +283,7 @@ class BoatSpaceReservationList {
                                     <th class="nowrap">
                                         ${sortButton("END_DATE", t("boatSpaceReservation.title.endDate"))}
                                     </th>
-                                    <th class="nowrap"><span class="reservation-table-header">
-                                        ${t("boatSpaceReservation.title.ownership")}
-                                    </span></th>
+
                                 </tr>
                                 
                                 <tr>
@@ -293,8 +291,8 @@ class BoatSpaceReservationList {
                                     <th></th>
                                     <th>$sectionFilter</th>
                                     <th></th>
-                                    <th>$nameSearchInput</th>
                                     <th></th>
+                                    <th>$nameSearchInput</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
