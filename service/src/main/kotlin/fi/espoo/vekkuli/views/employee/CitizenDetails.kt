@@ -155,9 +155,9 @@ class CitizenDetails(
                 // language=HTML
                 return """
                 <div class="column">
-                    <a class="is-link" x-on:click="modalOpen = true">
+                    <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
                         <span class="icon ml-s">
-                            <span>${icons.warningExclamation(false)}</span>
+                            ${icons.warningExclamation(false)}
                         </span>
                         <span data-testid='acknowledge-warnings'>${t("citizenDetails.button.acknowledgeWarnings")}</span>
                     </a>
