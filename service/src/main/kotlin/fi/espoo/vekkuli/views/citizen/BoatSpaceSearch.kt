@@ -119,14 +119,15 @@ class BoatSpaceSearch(
             </div>
             """.trimIndent()
 
-        val infoText = markDownService.render(t("boatSpaces.infoText"))
-
         val infoBox =
             """
-            <div class="reservation-info column is-two-thirds">
-                <!-- Comment: fragments/icons :: info -->
-                <div class="info-content">
-                    $infoText
+            <div class="mb-xl">
+                <div class="container is-highlight">
+                    <h2 class="has-text-weight-semibold">${t("boatSpaces.infoText.title")}</h2>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.newReservations")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.trailerReservations")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.winter")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.storage")}</h3>
                 </div>
             </div>
             """.trimIndent()
