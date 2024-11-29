@@ -32,6 +32,8 @@ object BoatSpaceConfig {
 
     const val BOAT_WEIGHT_THRESHOLD_KG = 15000
 
+    val winterStorageLocations = listOf(3, 4, 6)
+
     fun getWidthLimitsForBoat(
         spaceWidth: Int,
         amenity: BoatSpaceAmenity
@@ -45,7 +47,7 @@ object BoatSpaceConfig {
                     spaceWidth - WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM,
                     spaceWidth - WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM
                 )
-            BoatSpaceAmenity.None -> Pair(null, null)
+            else -> Pair(null, null)
         }
 
     fun getWidthLimitsForBoatSpace(
@@ -64,7 +66,7 @@ object BoatSpaceConfig {
                     boatWidth + WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM,
                     boatWidth + WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM
                 )
-            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
+            else -> Pair(0, Int.MAX_VALUE)
         }
     }
 
@@ -87,7 +89,7 @@ object BoatSpaceConfig {
                 spaceLength - WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM,
                 spaceLength + WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM
             )
-        BoatSpaceAmenity.None -> Pair(null, null)
+        else -> Pair(null, null)
     }
 
     fun getLengthLimitsForBoatSpace(
@@ -106,7 +108,7 @@ object BoatSpaceConfig {
                     boatLength - WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM,
                     boatLength + WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM
                 )
-            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
+            else -> Pair(0, Int.MAX_VALUE)
         }
     }
 

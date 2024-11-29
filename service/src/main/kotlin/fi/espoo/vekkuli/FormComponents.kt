@@ -3,6 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.config.MessageUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.web.util.HtmlUtils
 import java.math.BigDecimal
 
 @Component
@@ -163,24 +164,27 @@ class FormComponents {
         id: String,
         value: String?,
         options: List<Pair<String, String>>,
-        required: Boolean? = false,
+        staticAttributesForOptions: Map<String, String> = emptyMap()
     ): String {
         //language=HTML
         val opts =
             options.joinToString("\n") { (key, value) ->
-                """<input type="radio" id="$id" name="$id" value="$key" ${if (key == value) "checked" else ""}>
-                <label for="$key">$value</label>"""
+                """<label class="radio" for="$key">
+                     <input type="radio" id="$id-$value" name="$id" value="$key" ${if (key == value) "checked" else ""} ${staticAttributesForOptions.map {
+                    "${it.key}=${ HtmlUtils.htmlEscape(it.value, "UTF-8")}"
+                }.joinToString(
+                    " "
+                )}>
+                $value
+                </label>"""
             }
-        val errorContainer = renderValidationErrorContainer(id)
+
         //language=HTML
         return """
             <div class="field">
+               <label class="label" for="$id">${t(labelKey)}</label>
                 <div class="control">
-                    <label class="label ${if (required == true) "required" else ""}" for="$id">${t(labelKey)}</label>
-                    <div class="select">
-                        $opts
-                    </div>
-                    $errorContainer 
+                  $opts
                 </div>
             </div>
             """.trimIndent()

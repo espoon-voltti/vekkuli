@@ -212,11 +212,8 @@ class BoatSpaceRenewFormView(
                     <form
                         id="form"
                         class="column"
-                        hx-post="/${userType.path}/venepaikka/jatka/${reservation.renewedFromId}"
-                        hx-target=".section"
-                        hx-select=".section"
-                        hx-disinherit="hx-select hx-target"
-                        hx-disabled-elt="button[type='submit']"
+                        action="/${userType.path}/venepaikka/jatka/${reservation.renewedFromId}"
+                        method="post"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>
                             ${t("boatApplication.title.reservation")} 
@@ -411,7 +408,6 @@ class BoatSpaceRenewFormView(
                             class="button is-primary"
                             type="submit"
                             hx-post="/virkailija/venepaikka/jatka/$originalReservationId/lasku"
-                            hx-disabled-elt="this"
                             hx-target="body">
                             Lähetä lasku
                         </button>

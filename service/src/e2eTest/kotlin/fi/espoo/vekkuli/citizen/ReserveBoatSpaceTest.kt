@@ -166,7 +166,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             assertThat(formPage.validationWarning).isHidden()
             formPage.submitButton.click()
-            assertThat(formPage.submitButton).isDisabled()
 
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
@@ -205,7 +204,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             formPage.organizationRadioButton.click()
             formPage.orgNameInput.fill("My Organization")
             formPage.orgBusinessIdInput.fill("1234567-8")
-            formPage.orgMunicipalitySelect.selectOption("Espoo")
             formPage.orgPhoneNumberInput.fill("123456789")
             formPage.orgEmailInput.fill("foo@bar.com")
 
