@@ -115,4 +115,16 @@ class JdbiPaymentRepository(
                 .mapTo<Payment>()
                 .firstOrNull()
         }
+
+    override fun deletePaymentInCreatedStatusForReservation(reservationId: Int) {
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    DELETE FROM payment WHERE reservation_id = :reservationId AND status = 'Created'
+                    """.trimIndent()
+                ).bind("reservationId", reservationId)
+                .execute()
+        }
+    }
 }
