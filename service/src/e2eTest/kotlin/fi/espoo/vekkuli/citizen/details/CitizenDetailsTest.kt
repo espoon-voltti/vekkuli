@@ -4,7 +4,6 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
-import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
@@ -187,9 +186,8 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.extraInformation.fill("Extra info")
             citizenDetails.submitButton.click()
 
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHomePage = EmployeeHomePage(page)
+            employeeHomePage.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()

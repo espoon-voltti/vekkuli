@@ -8,8 +8,8 @@ import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationRea
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.EmployeeHomePage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.service.TemplateEmailService
 import fi.espoo.vekkuli.utils.formatAsFullDate
@@ -34,9 +34,8 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             listingPage.navigateTo()
             listingPage.boatSpace1.click()
@@ -76,9 +75,8 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val defaultMessageTitle = defaultEmailTemplate?.subject
             val defaultMessageContent = defaultEmailTemplate?.body
 
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             listingPage.navigateTo()
             listingPage.boatSpace1.click()
@@ -158,9 +156,8 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.ruleViolation")
 
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             listingPage.navigateTo()
             listingPage.boatSpace1.click()
@@ -242,9 +239,8 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             val listingPage = ReservationListPage(page)
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             listingPage.navigateTo()
             listingPage.boatSpace1.click()
