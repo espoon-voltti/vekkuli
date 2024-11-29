@@ -153,7 +153,9 @@ const validation = (function () {
 
     form.addEventListener('submit', function (event) {
       const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
-      submitButton.setAttribute('disabled', 'disabled');
+      if(submitButton) {
+        submitButton.setAttribute('disabled', 'disabled');
+      }
     });
   }
 
