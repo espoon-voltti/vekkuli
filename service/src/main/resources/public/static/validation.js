@@ -155,6 +155,7 @@ const validation = (function () {
       const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
       if(submitButton) {
         submitButton.setAttribute('disabled', 'disabled');
+        submitButton.classList.add('is-loading');
       }
     });
   }
