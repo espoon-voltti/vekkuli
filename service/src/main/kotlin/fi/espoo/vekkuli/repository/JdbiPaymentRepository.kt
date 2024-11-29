@@ -116,7 +116,7 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    override fun deletePaymentInCreateStatusForReservation(reservationId: Int) {
+    override fun deletePaymentInCreatedStatusForReservation(reservationId: Int) {
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(

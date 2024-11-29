@@ -15,8 +15,8 @@ class PaymentService(
 ) {
     fun getPayment(stamp: UUID): Payment? = paymentRepo.getPayment(stamp)
 
-    fun deletePaymentInCreateStatusForReservation(reservationId: Int) {
-        paymentRepo.deletePaymentInCreateStatusForReservation(reservationId)
+    fun deletePaymentInCreatedStatusForReservation(reservationId: Int) {
+        paymentRepo.deletePaymentInCreatedStatusForReservation(reservationId)
     }
 
     fun updatePayment(
