@@ -17,8 +17,7 @@ class EmployeeHome(
                 <h1 class='is-primary-color is-title-secondary m-none'>${t("employeeLoginPage.title")}</h1>
              </div>
              <div class='is-centered'>
-             <button class="button is-primary" id="employee-login-button" hx-get="/auth/saml/login"
-                    hx-target="body">${t("employeeLoginPage.button.login")}</button>
+             <a class="button is-primary" id="employee-login-button" href="/auth/saml/login">${t("employeeLoginPage.button.login")}</a>
                     </div>
         </div>
         """.trimIndent()
