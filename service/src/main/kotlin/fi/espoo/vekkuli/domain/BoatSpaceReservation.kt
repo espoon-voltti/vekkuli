@@ -75,11 +75,11 @@ data class ReservationWithDependencies(
     val validity: ReservationValidity? = ReservationValidity.Indefinite,
     val renewedFromId: Int? = null,
 ) {
-    val priceInEuro: Double
+    val priceInEuro: String
         get() = priceCents.centsToEuro()
-    val vatPriceInEuro: Double
+    val vatPriceInEuro: String
         get() = vatCents.centsToEuro()
-    val priceWithoutVatInEuro: Double
+    val priceWithoutVatInEuro: String
         get() = netPriceCents.centsToEuro()
 }
 

@@ -12,4 +12,8 @@ fun BigDecimal.mToCm(): Int =
         .setScale(0, RoundingMode.HALF_UP)
         .toInt()
 
-fun Int.centsToEuro(): Double = this / 100.0
+fun Int.centsToEuro(): String =
+    BigDecimal(this)
+        .divide(BigDecimal(100), 2, RoundingMode.HALF_UP) // The "2" here ensures two decimal places
+        .toString()
+        .replace(".", ",")

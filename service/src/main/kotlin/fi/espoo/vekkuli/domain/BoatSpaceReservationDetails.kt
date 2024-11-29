@@ -61,10 +61,10 @@ data class BoatSpaceReservationDetails(
         get() = boatSpaceLengthCm.cmToM()
     val boatSpaceWidthInM: BigDecimal
         get() = boatSpaceWidthCm.cmToM()
-    val priceInEuro: Double
+    val priceInEuro: String
         get() = priceCents.centsToEuro()
-    val vatPriceInEuro: Double
+    val vatPriceInEuro: String
         get() = vatCents.centsToEuro()
-    val priceWithoutVatInEuro: Double
+    val priceWithoutVatInEuro: String
         get() = netPriceCents.centsToEuro()
 }
