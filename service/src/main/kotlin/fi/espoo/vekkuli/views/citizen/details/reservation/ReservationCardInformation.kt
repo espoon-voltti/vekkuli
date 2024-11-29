@@ -17,6 +17,11 @@ class ReservationCardInformation : BaseView() {
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
     ): String {
+        val reservationValidityText =
+            t(
+                "boatSpaceReservation.validity.${reservation.validity}",
+                listOf(formatAsFullDate(reservation.endDate))
+            ) + renderTerminatedDate(reservation)
         // language=HTML
         return """
             <div class="columns">
@@ -45,7 +50,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>
-                         <p>${formatAsFullDate(reservation.endDate)}${renderTerminatedDate(reservation)}</p>
+                         <p>$reservationValidityText</p>
                      </div>
                  </div>
                  <div class="column">

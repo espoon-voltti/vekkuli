@@ -3026,10 +3026,10 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
 /* System current date for tests 2024-04-01 */
 INSERT INTO boat_space_reservation (reserver_id, boat_space_id, start_date, end_date,  status, boat_id, validity)
 VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'Confirmed', 1, 'Indefinite'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2024-02-01', '2025-01-31', 'Confirmed', 2, 'FixedTerm'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2024-01-31', 'Invoiced', 2, 'FixedTerm'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2023-01-31', 'Confirmed', 2, 'FixedTerm'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2022-01-31', 'Payment', 2, 'FixedTerm');
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2024-02-01', '2024-12-31', 'Confirmed', 2, 'FixedTerm'),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2023-12-31', 'Invoiced', 2, 'FixedTerm'),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm'),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm');
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)
