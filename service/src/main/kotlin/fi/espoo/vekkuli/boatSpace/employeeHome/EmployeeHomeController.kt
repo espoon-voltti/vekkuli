@@ -29,7 +29,7 @@ class EmployeeHomeController(
         val authenticatedUser = request.getAuthenticatedUser()
         val isAuthenticatedEmployee = authenticatedUser?.type == "user"
         if (isAuthenticatedEmployee) {
-            return redirectUrl("/virkailija/venepaikat")
+            return redirectUrl("/virkailija/venepaikat/varaukset")
         }
         val user =
             authenticatedUser?.let {
