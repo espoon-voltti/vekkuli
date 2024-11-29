@@ -119,6 +119,8 @@ class BoatSpaceSearchController {
         )
     }
 
+    fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
+
     @RequestMapping("/$USERTYPE/partial/vapaat-paikat")
     @ResponseBody
     fun searchResultPartial(
@@ -127,19 +129,21 @@ class BoatSpaceSearchController {
         @RequestParam @Min(0) width: BigDecimal?,
         @RequestParam @Min(0) length: BigDecimal?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
+        @RequestParam storageType: BoatSpaceAmenity?,
         @RequestParam boatSpaceType: BoatSpaceType?,
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest
     ): String {
         val userType = UserType.fromPath(usertype)
+
         val params =
             BoatSpaceFilter(
                 boatType,
                 width?.mToCm(),
                 length?.mToCm(),
-                amenities,
+                if (boatSpaceType != BoatSpaceType.Storage) amenities else getSingleOrEmptyList(storageType),
                 boatSpaceType,
-                harbor?.map { s -> s.toInt() }
+                if (boatSpaceType != BoatSpaceType.Storage) harbor?.map { s -> s.toInt() } else null
             )
         val harbors =
             boatSpaceService.getUnreservedBoatSpaceOptions(
