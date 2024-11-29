@@ -121,12 +121,35 @@ h4 {
   text-align: center;
 }
 
+.is-title-main {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px;
+    text-align: left;
+}
+
+.is-title-secondary {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 32px;
+}
+
+.is-title-tertiary {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+}
+
 .label {
   /* font-family: Work Sans; */
   font-size: 16px;
   font-weight: 600;
   line-height: 24px;
   text-align: left;
+}
+
+.is-primary-color {
+  color: $bulma-primary;
 }
 
 .textarea {
@@ -190,8 +213,8 @@ h4 {
 input[type="radio"] {
   appearance: none;
   background-color: $white;
-  width: 36px;
-  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
   border: 2px solid #ccc;
   border-radius: 50%;
   display: inline-grid;
@@ -492,6 +515,10 @@ body > .columns {
   width: 185px;
   height: 107px;
   margin-right: 16px
+}
+
+.menu-container {
+  max-width: 200px;
 }
 
 .menu {
@@ -852,6 +879,23 @@ ul {
 
 .is-error-container {
   border: 1px solid $error;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+}
+
+.icon.is-extra-large
+{
+  width: auto;
+  height: auto;
+  & svg {
+    width: 120px
+  }
 }
 
 .is-icon-link {

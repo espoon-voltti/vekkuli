@@ -76,7 +76,7 @@ class BoatSpaceRenewFormView(
 
         val reservationTimeField =
             formComponents.field(
-                "boatApplication.reservationTime",
+                "boatSpaceReservation.label.reservationValidity",
                 "reservationTime",
                 if (reservation.validity === ReservationValidity.FixedTerm) {
                     """<p>${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>"""

@@ -1,40 +1,25 @@
 package fi.espoo.vekkuli.views.employee
 
-import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
 
+// language=HTML
 @Service
 class EmployeeHome(
-    private val messageUtil: MessageUtil
-) {
-    fun t(key: String): String = messageUtil.getMessage(key)
-
-    fun render(
-        isAuthenticatedEmployee: Boolean,
-        userName: String
-    ): String {
-        // language=HTML
-        val content =
-            if (isAuthenticatedEmployee) {
-                """
-                <div class="block" th:if="$isAuthenticatedEmployee">
-                  <p>Käyttäjä: <strong th:text="$userName"></strong></p>
-                  <div><a href="/virkailija/venepaikat/varaukset">Venepaikat</a></div>
-                  <br />
-                </div>
-                """.trimIndent()
-            } else {
-                ""
-            }
-
-        return """
-            <section class="section">
-              <div class="container">
-                <h1 class="title">Varaukset</h1>
-                <h2 class="subtitle">Virkailijan kirjautuminen</h2>
-                $content
-              </div>
-            </section>
-            """.trimIndent()
-    }
+    private val icons: Icons
+) : BaseView() {
+    fun render(): String =
+        """
+        <div class="centered is-gap-4">
+            <div class="is-centered icon is-extra-large">${icons.boat}</div>
+             <div class='is-centered'>
+                <h1 class='is-primary-color is-title-secondary m-none'>${t("employeeLoginPage.title")}</h1>
+             </div>
+             <div class='is-centered'>
+             <button class="button is-primary" id="employee-login-button" hx-get="/auth/saml/login"
+                    hx-target="body">${t("employeeLoginPage.button.login")}</button>
+                    </div>
+        </div>
+        """.trimIndent()
 }

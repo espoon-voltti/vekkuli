@@ -44,7 +44,7 @@ class ReservationCardInformation : BaseView() {
                          <p>${reservation.boatSpaceLengthInM}</p>
                      </div>
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.contractValidity")}</label>
+                         <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>
                          <p>${formatAsFullDate(reservation.endDate)}${renderTerminatedDate(reservation)}</p>
                      </div>
                  </div>

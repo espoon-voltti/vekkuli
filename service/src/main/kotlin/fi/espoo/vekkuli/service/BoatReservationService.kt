@@ -198,9 +198,8 @@ class BoatReservationService(
         reservationId: Int,
         params: CreatePaymentParams
     ): Payment {
-        val payment = paymentService.insertPayment(params, reservationId)
-
-        return payment
+        paymentService.deletePaymentInCreatedStatusForReservation(reservationId)
+        return paymentService.insertPayment(params, reservationId)
     }
 
     fun addReservationWarnings(
