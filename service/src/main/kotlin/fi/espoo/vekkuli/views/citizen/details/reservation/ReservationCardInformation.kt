@@ -86,7 +86,7 @@ class ReservationCardInformation : BaseView() {
                     listOf(formatAsFullDate(reservation.endDate))
                 )
             }
-        return "<p>$reservationValidityText</p>".trimIndent()
+        return reservationValidityText
     }
 
     private fun renderWithTerminatedDate(reservation: BoatSpaceReservationDetails): String =
