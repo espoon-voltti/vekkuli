@@ -145,7 +145,7 @@ class BoatSpaceSearch(
                 "boatSpaces.typeHeader",
                 "boatSpaceType",
                 "Slip",
-                usedTypes.map { RadioOption(it, t("boatSpaces.typeOption.$it"), "foo") },
+                usedTypes.map { RadioOption(it, t("boatSpaces.typeOption.$it"), t("boatSpaces.typeOptionLabel.$it")) },
                 mapOf("x-model" to "boatSpaceType")
             )
 
