@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
@@ -304,7 +305,10 @@ class CitizenDetails(
         }
 
         // language=HTML
-        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
+        fun getBoatsList(
+            boats: List<CitizenUserController.BoatUpdateForm>,
+            isEmployee: Boolean
+        ): String =
             boats
                 .mapIndexed { _, boat ->
                     """
@@ -358,7 +362,20 @@ class CitizenDetails(
                                     <p  id="boat-length-text-${boat.id}">${boat.length}</p>
                                 </div>
                                 <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.ownershipStatus")}</label>
+                                    <label class="label">${t("boatSpaceReservation.title.ownershipStatus")} 
+                                        ${if (isEmployee &&
+                        (
+                            boat.hasWarning(
+                                ReservationWarningType.BoatFutureOwner.name
+                            ) ||
+                                boat.hasWarning(ReservationWarningType.BoatCoOwner.name)
+                        )
+                    ) {
+                        """<span class="icon ml-s">${icons.warningExclamation(false)}</span>"""
+                    } else {
+                        ""
+                    }}
+                                    </label>
                                     <p id="boat-ownership-text-${boat.id}">${t(
                         "boatApplication.$userType.ownershipOption.${boat.ownership}"
                     )}</p>
@@ -382,7 +399,7 @@ class CitizenDetails(
                     """.trimIndent()
                 }.joinToString("\n")
 
-        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
+        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)
 
         // language=HTML
         val showAllBoatsCheckbox =
@@ -413,13 +430,13 @@ class CitizenDetails(
                         $reservationList
                        <h3>${t("boatSpaceReservation.title.boats")}</h3>
                        <div class="reservation-list form-section no-bottom-border">
-                           ${getBoatsList(boats.filter { it.reservationId != null })} 
+                           ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)} 
                        </div>
                      
                       <div>
                          $showAllBoatsCheckbox
                           <div class="reservation-list form-section" x-show="showAllBoats">    
-                            ${getBoatsList(boats.filter { it.reservationId == null })} 
+                            ${getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)} 
                            </div>
                       </div>
                       <div 
