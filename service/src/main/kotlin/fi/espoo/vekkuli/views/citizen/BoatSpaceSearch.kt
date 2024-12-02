@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.citizen
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.RadioOption
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
 import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
@@ -70,7 +71,7 @@ class BoatSpaceSearch(
                 "boatSpaces.storageTypeHeader",
                 "storageType",
                 "Slip",
-                storageTypeAmenities.map { it.name to t("boatSpaces.amenityOption.$it") },
+                storageTypeAmenities.map { RadioOption(it.name, t("boatSpaces.amenityOption.$it")) },
                 mapOf("x-model" to "storageType")
             )
 
@@ -144,7 +145,7 @@ class BoatSpaceSearch(
                 "boatSpaces.typeHeader",
                 "boatSpaceType",
                 "Slip",
-                usedTypes.map { it to t("boatSpaces.typeOption.$it") },
+                usedTypes.map { RadioOption(it, t("boatSpaces.typeOption.$it"), "foo") },
                 mapOf("x-model" to "boatSpaceType")
             )
 

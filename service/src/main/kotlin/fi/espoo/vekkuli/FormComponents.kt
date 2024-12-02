@@ -6,6 +6,12 @@ import org.springframework.stereotype.Component
 import org.springframework.web.util.HtmlUtils
 import java.math.BigDecimal
 
+data class RadioOption(
+    val value: String,
+    val label: String,
+    val subLabel: String? = null
+)
+
 @Component
 class FormComponents {
     @Autowired
@@ -162,20 +168,23 @@ class FormComponents {
     fun radioButtons(
         labelKey: String,
         id: String,
-        value: String?,
-        options: List<Pair<String, String>>,
+        defaultValue: String?,
+        options: List<RadioOption>,
         staticAttributesForOptions: Map<String, String> = emptyMap()
     ): String {
         //language=HTML
         val opts =
-            options.joinToString("\n") { (key, value) ->
-                """<label class="radio" for="$key">
-                     <input type="radio" id="$id-$value" name="$id" value="$key" ${if (key == value) "checked" else ""} ${staticAttributesForOptions.map {
+            options.joinToString("\n") { opt ->
+                """<label class="radio" for="${opt.value}">
+                     <input type="radio" id="$id-${opt.value}" name="$id" value="${opt.value}" ${if (opt.value == defaultValue) "checked" else ""} ${staticAttributesForOptions.map {
                     "${it.key}=${ HtmlUtils.htmlEscape(it.value, "UTF-8")}"
                 }.joinToString(
                     " "
                 )}>
-                $value
+                <div class="block">
+                  <p class="body">${opt.label}</p>
+                  ${if (opt.subLabel != null) """<p class="mt-s is-size-6">${opt.subLabel}</p>""" else ""}
+                </div>
                 </label>"""
             }
 
