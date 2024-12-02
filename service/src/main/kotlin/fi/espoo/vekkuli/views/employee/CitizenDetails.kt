@@ -400,47 +400,47 @@ class CitizenDetails(
                             "boatSpaceReservation.title.additionalInfo"
                         )
                     // language=HTML
-                    return """
-                        <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
-                            <div class="columns is-vcentered">
-                                <div class="column is-narrow">
-                                    <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
-                                </div>
-                                <div class="memo-edit-buttons column columns">
-                                    ${deleteButton(boat.reservationId != null, boat.id)}
-                                    ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
-                                    ${editBoatButton(boat)}
-                                </div>
+                    """
+                    <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
+                        <div class="columns is-vcentered">
+                            <div class="column is-narrow">
+                                <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
                             </div>
-                            <div class="columns">
-                                <div class="column">
-                                    $name
-                                    $weight
-                                </div>
-                                <div class="column">
-                                    $boatType   
-                                    $depth
-                                </div>
-                                <div class="column">
-                                    $width
-                                    $registrationNumber
-                                </div>
-                                <div class="column">
-                                    $length
-                                    $ownershipStatus
-                                </div>
+                            <div class="memo-edit-buttons column columns">
+                                ${deleteButton(boat.reservationId != null, boat.id)}
+                                ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
+                                ${editBoatButton(boat)}
                             </div>
-                             <div class="columns">
-                                <div class="column is-one-quarter">
-                                    $otherIdentifier
-                                </div>
-                                <div class="column">
-                                    $additionalInfo
-                                </div>
-                            </div>
-                            ${showBoatWarnings(boat)}
                         </div>
-                        """.trimIndent()
+                        <div class="columns">
+                            <div class="column">
+                                $name
+                                $weight
+                            </div>
+                            <div class="column">
+                                $boatType   
+                                $depth
+                            </div>
+                            <div class="column">
+                                $width
+                                $registrationNumber
+                            </div>
+                            <div class="column">
+                                $length
+                                $ownershipStatus
+                            </div>
+                        </div>
+                         <div class="columns">
+                            <div class="column is-one-quarter">
+                                $otherIdentifier
+                            </div>
+                            <div class="column">
+                                $additionalInfo
+                            </div>
+                        </div>
+                        ${showBoatWarnings(boat)}
+                    </div>
+                    """.trimIndent()
                 }.joinToString("\n")
 
         val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)
