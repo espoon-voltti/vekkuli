@@ -175,17 +175,21 @@ class FormComponents {
         //language=HTML
         val opts =
             options.joinToString("\n") { opt ->
-                """<label class="radio" for="${opt.value}">
-                     <input type="radio" id="$id-${opt.value}" name="$id" value="${opt.value}" ${if (opt.value == defaultValue) "checked" else ""} ${staticAttributesForOptions.map {
-                    "${it.key}=${ HtmlUtils.htmlEscape(it.value, "UTF-8")}"
-                }.joinToString(
-                    " "
-                )}>
-                <div class="block">
-                  <p class="body">${opt.label}</p>
-                  ${if (opt.subLabel != null) """<p class="mt-s is-size-6">${opt.subLabel}</p>""" else ""}
+                """ <label class="radio has-text-top-aligned" for="${opt.value}" xmlns="http://www.w3.org/1999/html">
+                     <input type="radio" id="$id-${opt.value}" name="$id" value="${opt.value}" ${if (opt.value == defaultValue) "checked" else ""} ${
+                    staticAttributesForOptions.map {
+                        "${it.key}=${HtmlUtils.htmlEscape(it.value, "UTF-8")}"
+                    }.joinToString(
+                        " "
+                    )
+                }>
+                <div class='label-text' >
+                    <p class="body">${opt.label}</p>
+                    ${if (opt.subLabel != null) """<p class="mt-s information-text">${opt.subLabel}</p>""" else ""}
                 </div>
-                </label>"""
+                </label>
+                
+                """
             }
 
         //language=HTML
