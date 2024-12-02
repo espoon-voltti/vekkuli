@@ -304,99 +304,143 @@ class CitizenDetails(
                 """.trimIndent()
         }
 
-        // language=HTML
+        fun boatInfoLabel(
+            translationKey: String,
+            showWarning: Boolean
+        ): String {
+            val warning =
+                if (showWarning) {
+                    """<span class="icon ml-s">${icons.warningExclamation(false)}</span>"""
+                } else {
+                    ""
+                }
+            return """
+                    <label class="label">${t(translationKey)}
+                $warning
+                    </label> 
+                """.trimIndent()
+        }
+
+        fun boatInfo(
+            id: String,
+            value: String,
+            translationKey: String,
+            showWarning: Boolean = false
+        ): String =
+            """
+            <div class="field">
+                ${boatInfoLabel(translationKey, showWarning)}
+                <p id="$id">$value</p>
+            </div> 
+            """.trimIndent()
+
         fun getBoatsList(
             boats: List<CitizenUserController.BoatUpdateForm>,
-            isEmployee: Boolean
+            showWarnings: Boolean
         ): String =
             boats
                 .mapIndexed { _, boat ->
-                    """
-                    <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
-                        <div class="columns is-vcentered">
-                            <div class="column is-narrow">
-                                <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
-                            </div>
-                            <div class="memo-edit-buttons column columns">
-                                ${deleteButton(boat.reservationId != null, boat.id)}
-                                
-                                ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
-                                
-                                ${editBoatButton(boat)}
-                            </div>
-                        </div>
-                        <div class="columns">
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatName")}</label>
-                                    <p id="boat-name-text-${boat.id}">${boat.name}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.weight")}</label>
-                                    <p  id="boat-weight-text-${boat.id}">${boat.weight}</p>
-                                </div>
-                            </div>
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatType")}</label>
-                                    <p  id="boat-type-text-${boat.id}">${t("boatApplication.boatTypeOption.${boat.type}")}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.draft")}</label>
-                                    <p id="boat-depth-text-${boat.id}">${boat.depth}</p>
-                                </div>
-                            </div>
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatWidth")}</label>
-                                    <p  id="boat-width-text-${boat.id}">${boat.width}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.registrationNumber")}</label>
-                                    <p  id="boat-registrationNumber-text-${boat.id}">${boat.registrationNumber}</p>
-                                </div>
-                            </div>
-                            <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatLength")}</label>
-                                    <p  id="boat-length-text-${boat.id}">${boat.length}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.ownershipStatus")} 
-                                        ${if (isEmployee &&
-                        (
-                            boat.hasWarning(
-                                ReservationWarningType.BoatFutureOwner.name
-                            ) ||
-                                boat.hasWarning(ReservationWarningType.BoatCoOwner.name)
+                    val name = boatInfo("boat-name-text-${boat.id}", boat.name, "boatSpaceReservation.title.boatName")
+                    val weight =
+                        boatInfo(
+                            "boat-weight-text-${boat.id}",
+                            boat.weight.toString(),
+                            "boatSpaceReservation.title.weight",
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWeight.name)
                         )
-                    ) {
-                        """<span class="icon ml-s">${icons.warningExclamation(false)}</span>"""
-                    } else {
-                        ""
-                    }}
-                                    </label>
-                                    <p id="boat-ownership-text-${boat.id}">${t(
-                        "boatApplication.$userType.ownershipOption.${boat.ownership}"
-                    )}</p>
+                    val boatType =
+                        boatInfo(
+                            "boat-type-text-${boat.id}",
+                            boat.type.name,
+                            "boatSpaceReservation.title.boatType"
+                        )
+
+                    val depth = boatInfo("boat-depth-text-${boat.id}", boat.depth.toString(), "boatSpaceReservation.title.draft",)
+                    val width =
+                        boatInfo(
+                            "boat-width-text-${boat.id}",
+                            boat.width.toString(),
+                            "boatSpaceReservation.title.boatWidth",
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWidth.name)
+                        )
+                    val registrationNumber =
+                        boatInfo(
+                            "boat-registrationNumber-text-${boat.id}",
+                            boat.registrationNumber,
+                            "boatSpaceReservation.title.registrationNumber"
+                        )
+                    val length =
+                        boatInfo(
+                            "boat-length-text-${boat.id}",
+                            boat.length.toString(),
+                            "boatSpaceReservation.title.boatLength",
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatLength.name)
+                        )
+                    val ownershipStatus =
+                        boatInfo(
+                            "boat-ownership-text-${boat.id}",
+                            t("boatApplication.$userType.ownershipOption.${boat.ownership}"),
+                            "boatSpaceReservation.title.ownershipStatus",
+                            showWarnings &&
+                                (
+                                    boat.hasWarning(ReservationWarningType.BoatFutureOwner.name) ||
+                                        boat.hasWarning(ReservationWarningType.BoatCoOwner.name)
+                                )
+                        )
+                    val otherIdentifier =
+                        boatInfo(
+                            "boat-otherIdentifier-text-${boat.id}",
+                            boat.otherIdentifier,
+                            "boatSpaceReservation.title.otherIdentifier"
+                        )
+                    val additionalInfo =
+                        boatInfo(
+                            "boat-extraInformation-text-${boat.id}",
+                            boat.extraInformation.ifEmpty { "-" },
+                            "boatSpaceReservation.title.additionalInfo"
+                        )
+                    // language=HTML
+                    return """
+                        <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
+                            <div class="columns is-vcentered">
+                                <div class="column is-narrow">
+                                    <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
+                                </div>
+                                <div class="memo-edit-buttons column columns">
+                                    ${deleteButton(boat.reservationId != null, boat.id)}
+                                    ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
+                                    ${editBoatButton(boat)}
                                 </div>
                             </div>
-                        </div>
-                         <div class="columns">
-                            <div class="column is-one-quarter">
-                                <label class="label">${t("boatSpaceReservation.title.otherIdentifier")}</label>
-                                <p id="boat-otherIdentifier-text-${boat.id}">${boat.otherIdentifier}</p>
+                            <div class="columns">
+                                <div class="column">
+                                    $name
+                                    $weight
+                                </div>
+                                <div class="column">
+                                    $boatType   
+                                    $depth
+                                </div>
+                                <div class="column">
+                                    $width
+                                    $registrationNumber
+                                </div>
+                                <div class="column">
+                                    $length
+                                    $ownershipStatus
+                                </div>
                             </div>
-                            <div class="column">
-                                <label class="label">${t("boatSpaceReservation.title.additionalInfo")}</label>
-                                <p id="boat-extraInformation-text-${boat.id}">
-                                   ${if (!boat.extraInformation.isNullOrEmpty()) boat.extraInformation else "-"}
-                                </p>
+                             <div class="columns">
+                                <div class="column is-one-quarter">
+                                    $otherIdentifier
+                                </div>
+                                <div class="column">
+                                    $additionalInfo
+                                </div>
                             </div>
+                            ${showBoatWarnings(boat)}
                         </div>
-                        ${showBoatWarnings(boat)}
-                    </div>
-                    """.trimIndent()
+                        """.trimIndent()
                 }.joinToString("\n")
 
         val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)
