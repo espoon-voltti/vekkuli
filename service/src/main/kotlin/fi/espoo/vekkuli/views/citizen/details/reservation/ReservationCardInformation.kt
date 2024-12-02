@@ -17,11 +17,6 @@ class ReservationCardInformation : BaseView() {
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
     ): String {
-        val reservationValidityText =
-            t(
-                "boatSpaceReservation.validity.${reservation.validity}",
-                listOf(formatAsFullDate(reservation.endDate))
-            ) + renderTerminatedDate(reservation)
         // language=HTML
         return """
             <div class="columns">
@@ -50,7 +45,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>
-                         <p>$reservationValidityText</p>
+                         <p>${renderReservationValidity(reservation)}</p>
                      </div>
                  </div>
                  <div class="column">
@@ -81,12 +76,25 @@ class ReservationCardInformation : BaseView() {
             """.trimIndent()
     }
 
-    private fun renderTerminatedDate(reservation: BoatSpaceReservationDetails): String =
-        if (reservation.terminationTimestamp != null) {
-            """</br><span ${addTestId("reservation-list-card-terminated-date")}>${t(
-                "boatSpaceReservation.terminated"
-            )} ${formatAsFullDate(reservation.terminationTimestamp.toLocalDate())}</span>""".trimIndent()
-        } else {
-            ""
-        }
+    private fun renderReservationValidity(reservation: BoatSpaceReservationDetails): String {
+        val reservationValidityText =
+            if (reservation.terminationTimestamp != null) {
+                renderWithTerminatedDate(reservation)
+            } else {
+                t(
+                    "boatSpaceReservation.validity.${reservation.validity}",
+                    listOf(formatAsFullDate(reservation.endDate))
+                )
+            }
+        return "<p>$reservationValidityText</p>".trimIndent()
+    }
+
+    private fun renderWithTerminatedDate(reservation: BoatSpaceReservationDetails): String =
+        """
+        ${formatAsFullDate(reservation.endDate)}
+        </br>
+        <span ${addTestId("reservation-list-card-terminated-date")}>
+        ${t("boatSpaceReservation.terminated")} ${formatAsFullDate(reservation.terminationTimestamp?.toLocalDate())}
+        </span>
+        """.trimIndent()
 }
