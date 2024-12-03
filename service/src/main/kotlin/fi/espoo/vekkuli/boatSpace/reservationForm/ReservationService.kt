@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.*
-import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
@@ -48,7 +47,35 @@ class ReservationService(
         reserveSpaceByCitizen(reservationId, reserverId, input)
     }
 
-    fun createOrUpdateCitizen(input: ReservationInput): CitizenWithDetails? {
+    fun getOrCreateReservationForCitizen(
+        citizenId: UUID,
+        spaceId: Int
+    ): Int {
+        val result = permissionService.canReserveANewSlip(citizenId)
+        if (result is ReservationResult.Failure) {
+            throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
+        }
+
+        val existingReservation = boatReservationService.getUnfinishedReservationForCitizen(citizenId)
+
+        return (
+            if (existingReservation != null) {
+                existingReservation.id
+            } else {
+                val today = timeProvider.getCurrentDate()
+                boatReservationService
+                    .insertBoatSpaceReservation(
+                        citizenId,
+                        citizenId,
+                        spaceId,
+                        today,
+                        getEndDate(result),
+                    ).id
+            }
+        )
+    }
+
+    private fun createOrUpdateCitizen(input: ReservationInput): CitizenWithDetails? {
         if (input.citizenId != null) {
             return citizenService
                 .updateCitizen(
@@ -78,12 +105,13 @@ class ReservationService(
             )
     }
 
-    fun createOrUpdateReserverAndReservationForEmployee(
+    fun updateReserverAndReservationForEmployee(
         reservationId: Int,
-        citizenId: UUID,
         input: ReservationInput
     ) {
-        var reserverId: UUID = citizenId
+        val citizen = createOrUpdateCitizen(input) ?: throw BadRequest("No citizen found.")
+
+        var reserverId: UUID = citizen.id
         if (input.isOrganization == true) {
             reserverId = addOrUpdateOrganization(reserverId, input)
         }
@@ -163,7 +191,13 @@ class ReservationService(
         val reserveSlipResult = permissionService.canReserveANewSlip(reserverId)
 
         if (!reserveSlipResult.success || reserveSlipResult !is ReservationResult.Success) {
-            throw Forbidden("Reservation not allowed")
+            if (reserveSlipResult is ReservationResult.Failure) {
+                throw Forbidden(
+                    "Reservation not allowed",
+                    reserveSlipResult.errorCode.toString()
+                )
+            }
+            throw BadRequest("Reservation can not be made.")
         }
         reserveBoatSpace(reserverId, reservationId, input, reserveSlipResult.data)
     }
@@ -319,35 +353,7 @@ class ReservationService(
         return bodyContent
     }
 
-    fun getOrCreateReservationForCitizen(
-        citizen: CitizenWithDetails,
-        spaceId: Int
-    ): Int {
-        val result = permissionService.canReserveANewSlip(citizen.id)
-        if (result is ReservationResult.Failure) {
-            throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
-        }
-
-        val existingReservation = boatReservationService.getUnfinishedReservationForCitizen(citizen.id)
-
-        return (
-            if (existingReservation != null) {
-                existingReservation.id
-            } else {
-                val today = timeProvider.getCurrentDate()
-                boatReservationService
-                    .insertBoatSpaceReservation(
-                        citizen.id,
-                        citizen.id,
-                        spaceId,
-                        today,
-                        getEndDate(result),
-                    ).id
-            }
-        )
-    }
-
-    fun getOrCreateReservationForEmployee(
+    fun getOrCreateReservationIdForEmployee(
         employeeId: UUID,
         spaceId: Int
     ): Int {

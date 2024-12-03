@@ -13,7 +13,6 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.Layout
@@ -22,7 +21,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
 import jakarta.validation.constraints.*
-import org.jdbi.v3.core.Jdbi
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -39,15 +37,9 @@ class ReservationController(
     private val reservationFormView: ReservationFormView,
     private val employeeLayout: EmployeeLayout,
     private val citizenService: CitizenService,
-    private val boatService: BoatService,
     private val messageUtil: MessageUtil,
-    private val organizationService: OrganizationService,
     private val warnings: Warnings,
-    private val timeProvider: TimeProvider,
-    private val permissionService: PermissionService,
-    private val boatReservationService: BoatReservationService,
     private val layout: Layout,
-    private val jdbi: Jdbi
 ) {
     @RequestMapping("/kuntalainen/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -218,8 +210,17 @@ class ReservationController(
         if (bindingResult.hasErrors()) {
             return badRequest("Invalid input")
         }
-
-        reservationService.createOrUpdateReserverAndReservationForCitizen(reservationId, citizenId, input)
+        try {
+            reservationService.createOrUpdateReserverAndReservationForCitizen(reservationId, citizenId, input)
+        } catch (e: Forbidden) {
+            return ResponseEntity.ok(
+                renderCitizenErrorPage(
+                    getCitizen(request, citizenService),
+                    request,
+                    messageUtil.getMessage("errorCode.split.${e.errorCode}")
+                )
+            )
+        }
         // redirect to payments page with reservation id and slip type
         return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
@@ -240,8 +241,7 @@ class ReservationController(
             }
             return badRequest("Invalid input")
         }
-        val citizen = reservationService.createOrUpdateCitizen(input) ?: return badRequest("No citizen found.")
-        reservationService.createOrUpdateReserverAndReservationForEmployee(reservationId, citizen.id, input)
+        reservationService.updateReserverAndReservationForEmployee(reservationId, input)
 
         return redirectUrl("/virkailija/venepaikka/varaus/$reservationId/lasku")
     }
@@ -326,7 +326,7 @@ class ReservationController(
             return ResponseEntity(HttpStatus.FORBIDDEN)
         }
         try {
-            val reservationId = reservationService.getOrCreateReservationForCitizen(citizen, spaceId)
+            val reservationId = reservationService.getOrCreateReservationForCitizen(citizen.id, spaceId)
             val queryString = createQueryParamsForBoatInformation(boatType, width, length)
 
             val headers = org.springframework.http.HttpHeaders()
@@ -334,7 +334,7 @@ class ReservationController(
             return ResponseEntity(headers, HttpStatus.FOUND)
         } catch (e: Forbidden) {
             return ResponseEntity.ok(
-                renderErrorPage(
+                renderCitizenErrorPage(
                     citizen,
                     request,
                     messageUtil.getMessage("errorCode.split.${e.errorCode}")
@@ -356,7 +356,7 @@ class ReservationController(
         val employeeId = request.ensureEmployeeId()
 
         val reservationId =
-            reservationService.getOrCreateReservationForEmployee(employeeId, spaceId)
+            reservationService.getOrCreateReservationIdForEmployee(employeeId, spaceId)
 
         val queryString = createQueryParamsForBoatInformation(boatType, width, length)
 
@@ -379,7 +379,7 @@ class ReservationController(
         return queryString
     }
 
-    fun renderErrorPage(
+    fun renderCitizenErrorPage(
         citizen: CitizenWithDetails?,
         request: HttpServletRequest,
         error: String
