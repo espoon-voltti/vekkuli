@@ -66,7 +66,7 @@ class BoatSpaceSearch(
 
         val trailerLengthInput =
             formComponents.decimalInput(
-                "boatSpaces.spaceLengthHeader",
+                "boatSpaces.trailerLengthHeader",
                 "length",
                 null,
                 required = true,
@@ -74,7 +74,7 @@ class BoatSpaceSearch(
 
         val trailerWidthInput =
             formComponents.decimalInput(
-                "boatSpaces.spaceWidthHeader",
+                "boatSpaces.trailerWidthHeader",
                 "width",
                 null,
                 required = true,
