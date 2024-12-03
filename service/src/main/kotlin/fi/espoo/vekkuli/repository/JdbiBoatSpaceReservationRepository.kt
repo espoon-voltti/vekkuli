@@ -90,7 +90,7 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.acting_citizen_id = :id
-                        AND bsr.status = 'Info' 
+                        AND bsr.status IN ('Info', 'Payment') 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
