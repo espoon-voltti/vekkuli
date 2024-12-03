@@ -11,10 +11,8 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceService
 import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatSpaceSearch
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -127,23 +125,22 @@ class BoatSpaceSearchController {
         @RequestParam @Min(0) width: BigDecimal?,
         @RequestParam @Min(0) length: BigDecimal?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
+        @RequestParam storageType: BoatSpaceAmenity?,
         @RequestParam boatSpaceType: BoatSpaceType?,
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest
     ): String {
         val userType = UserType.fromPath(usertype)
-        val params =
-            BoatSpaceFilter(
-                boatType,
-                width?.mToCm(),
-                length?.mToCm(),
-                amenities,
-                boatSpaceType,
-                harbor?.map { s -> s.toInt() }
-            )
+
         val harbors =
             boatSpaceService.getUnreservedBoatSpaceOptions(
-                params
+                boatType,
+                width,
+                length,
+                amenities,
+                storageType,
+                boatSpaceType,
+                harbor,
             )
 
         return boatSpaceSearch.renderResults(
