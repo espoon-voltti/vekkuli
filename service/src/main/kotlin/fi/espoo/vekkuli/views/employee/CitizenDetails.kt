@@ -588,8 +588,7 @@ class CitizenDetails(
                 <a id="delete-memo-button"
                    hx-delete="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                    hx-trigger="click"
-                   hx-target="#citizen-details"
-                   hx-select="#citizen-details"
+                   hx-target="#tab-content"
                    hx-swap="outerHTML"
                    hx-confirm="${t("citizenDetails.removeMemoConfirm")}">
                     <span class="icon ml-m">
