@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.common.BadRequest
+import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
@@ -8,7 +9,6 @@ import fi.espoo.vekkuli.controllers.*
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.badRequest
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.controllers.Utils.Companion.getEmployee
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
@@ -33,8 +33,6 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.net.URI
-import java.time.LocalDate
-import java.time.Month
 import java.util.*
 
 @Controller
@@ -256,13 +254,7 @@ class ReservationController(
             }
             return badRequest("Invalid input")
         }
-        val citizen = reservationService.createOrUpdateCitizen(input)
-        if (citizen == null) {
-            return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .header("Location", "/")
-                .build()
-        }
+        val citizen = reservationService.createOrUpdateCitizen(input) ?: return badRequest("No citizen found.")
         reservationService.createOrUpdateReserverAndReservationForEmployee(reservationId, citizen.id, input)
 
         return redirectUrl("/virkailija/venepaikka/varaus/$reservationId/lasku")
@@ -334,9 +326,8 @@ class ReservationController(
     }
 
     // initial reservation in info state
-    @GetMapping("/$USERTYPE/venepaikka/varaa/{spaceId}")
-    fun reserveBoatSpace(
-        @PathVariable usertype: String,
+    @GetMapping("/kuntalainen/venepaikka/varaa/{spaceId}")
+    fun reserveBoatSpaceByCitizen(
         @PathVariable spaceId: Int,
         @RequestParam boatType: BoatType?,
         @RequestParam width: BigDecimal?,
@@ -344,73 +335,62 @@ class ReservationController(
         request: HttpServletRequest,
         model: Model,
     ): ResponseEntity<String> {
-        val userType = UserType.fromPath(usertype)
-        val isEmployee = userType == UserType.EMPLOYEE
         val citizen = getCitizen(request, citizenService)
-        val userId =
-            if (isEmployee) {
-                getEmployee(request, jdbi)?.id
-            } else {
-                citizen?.id
-            }
-        if (userId == null) {
+        if (citizen?.id == null) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
         }
+        try {
+            val reservationId = reservationService.getOrCreateReservationForCitizen(citizen, spaceId)
+            val queryString = createQueryParamsForBoatInformation(boatType, width, length)
 
-        // Show error page if citizen can not reserve slip
-        if (!isEmployee) {
-            if ((citizen == null)) {
-                return ResponseEntity(HttpStatus.FORBIDDEN)
-            }
-            val result = permissionService.canReserveANewSlip(citizen.id)
-            if (result is ReservationResult.Failure) {
-                return ResponseEntity.ok(
-                    renderErrorPage(
-                        citizen,
-                        request,
-                        messageUtil.getMessage("errorCode.split.${result.errorCode}")
-                    )
+            val headers = org.springframework.http.HttpHeaders()
+            headers.location = URI(getServiceUrl("/kuntalainen/venepaikka/varaus/$reservationId?$queryString"))
+            return ResponseEntity(headers, HttpStatus.FOUND)
+        } catch (e: Forbidden) {
+            return ResponseEntity.ok(
+                renderErrorPage(
+                    citizen,
+                    request,
+                    messageUtil.getMessage("errorCode.split.${e.errorCode}")
                 )
-            }
+            )
         }
+    }
 
-        val existingReservation =
-            if (isEmployee) {
-                boatReservationService.getUnfinishedReservationForEmployee(userId)
-            } else {
-                boatReservationService.getUnfinishedReservationForCitizen(userId)
-            }
+    // initial reservation in info state
+    @GetMapping("/virkailija/venepaikka/varaa/{spaceId}")
+    fun reserveBoatSpaceByEmployee(
+        @PathVariable spaceId: Int,
+        @RequestParam boatType: BoatType?,
+        @RequestParam width: BigDecimal?,
+        @RequestParam length: BigDecimal?,
+        request: HttpServletRequest,
+        model: Model,
+    ): ResponseEntity<String> {
+        val employeeId = request.ensureEmployeeId()
 
         val reservationId =
-            if (existingReservation != null) {
-                existingReservation.id
-            } else {
-                val today = timeProvider.getCurrentDate()
-                val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
-                if (isEmployee) {
-                    boatReservationService.insertBoatSpaceReservationAsEmployee(userId, spaceId, today, endOfYear).id
-                } else {
-                    boatReservationService
-                        .insertBoatSpaceReservation(
-                            userId,
-                            citizen?.id,
-                            spaceId,
-                            today,
-                            endOfYear,
-                        ).id
-                }
-            }
+            reservationService.getOrCreateReservationForEmployee(employeeId, spaceId)
 
+        val queryString = createQueryParamsForBoatInformation(boatType, width, length)
+
+        val headers = org.springframework.http.HttpHeaders()
+        headers.location = URI(getServiceUrl("/virkailija/venepaikka/varaus/$reservationId?$queryString"))
+        return ResponseEntity(headers, HttpStatus.FOUND)
+    }
+
+    private fun createQueryParamsForBoatInformation(
+        boatType: BoatType?,
+        width: BigDecimal?,
+        length: BigDecimal?,
+    ): String {
         val queryParams = mutableListOf<String>()
         boatType?.let { queryParams.add("boatType=${it.name}") }
         width?.let { queryParams.add("width=$it") }
         length?.let { queryParams.add("length=$it") }
 
         val queryString = queryParams.joinToString("&")
-
-        val headers = org.springframework.http.HttpHeaders()
-        headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/$reservationId?$queryString"))
-        return ResponseEntity(headers, HttpStatus.FOUND)
+        return queryString
     }
 
     fun renderErrorPage(

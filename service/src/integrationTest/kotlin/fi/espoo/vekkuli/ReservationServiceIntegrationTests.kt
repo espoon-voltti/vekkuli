@@ -23,6 +23,9 @@ import kotlin.test.assertContains
 @ActiveProfiles("test")
 class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
+    private lateinit var permissionService: PermissionService
+
+    @Autowired
     private lateinit var terminateReservationService: TerminateReservationService
     val espooCitizenId = citizenIdOlivia
     val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
@@ -41,7 +44,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `first place should be indefinite for Espoo citizens`() {
-        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        val result = permissionService.canReserveANewSlip(espooCitizenId)
         if (result is ReservationResult.Success) {
             assertEquals(LocalDate.of(2025, 1, 31), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
@@ -76,7 +79,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        val result = permissionService.canReserveANewSlip(espooCitizenId)
         if (result is ReservationResult.Success) {
             assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
             assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
@@ -135,7 +138,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val result = reservationService.canReserveANewSlip(espooCitizenId)
+        val result = permissionService.canReserveANewSlip(espooCitizenId)
         if (result is ReservationResult.Failure) {
             assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
         } else {
@@ -145,7 +148,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `first place should be fixed term for Helsinki citizens`() {
-        val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
+        val result = permissionService.canReserveANewSlip(helsinkiCitizenId)
         if (result is ReservationResult.Success) {
             assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
             assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
@@ -180,7 +183,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val result = reservationService.canReserveANewSlip(helsinkiCitizenId)
+        val result = permissionService.canReserveANewSlip(helsinkiCitizenId)
         if (result is ReservationResult.Failure) {
             assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
         } else {

@@ -17,12 +17,14 @@ import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.validation.constraints.*
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.Month
 import java.util.*
 
 @Service
 class ReservationService(
     private val organizationService: OrganizationService,
-    private val reservationService: BoatReservationService,
+    private val boatReservationService: BoatReservationService,
     private val citizenService: CitizenService,
     private val reservationFormView: ReservationFormView,
     private val boatService: BoatService,
@@ -42,7 +44,7 @@ class ReservationService(
         if (input.isOrganization == true) {
             reserverId = addOrUpdateOrganization(citizenId, input)
         }
-        reserveSpaceForCitizen(reservationId, reserverId, input)
+        reserveSpaceByCitizen(reservationId, reserverId, input)
     }
 
     fun createOrUpdateCitizen(input: ReservationInput): CitizenWithDetails? {
@@ -152,7 +154,7 @@ class ReservationService(
         reserveBoatSpace(reserverId, reservationId, input, data)
     }
 
-    fun reserveSpaceForCitizen(
+    fun reserveSpaceByCitizen(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
@@ -171,7 +173,7 @@ class ReservationService(
         input: ReservationInput,
         reserveSlipResult: ReservationResultSuccess,
     ) {
-        reservationService.reserveBoatSpace(
+        boatReservationService.reserveBoatSpace(
             reserverId,
             ReserveBoatSpaceInput(
                 reservationId = reservationId,
@@ -252,7 +254,7 @@ class ReservationService(
         if (!permissionService.canDeleteBoatSpaceReservation(citizenId, reservationId)) {
             throw Unauthorized()
         }
-        reservationService.removeBoatSpaceReservation(reservationId, citizenId)
+        boatReservationService.removeBoatSpaceReservation(reservationId, citizenId)
     }
 
     private fun createBodyContent(
@@ -314,6 +316,62 @@ class ReservationService(
                 municipalities
             )
         return bodyContent
+    }
+
+    fun getOrCreateReservationForCitizen(
+        citizen: CitizenWithDetails,
+        spaceId: Int
+    ): Int {
+        val result = permissionService.canReserveANewSlip(citizen.id)
+        if (result is ReservationResult.Failure) {
+            throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
+        }
+
+        val existingReservation = boatReservationService.getUnfinishedReservationForCitizen(citizen.id)
+
+        return (
+            if (existingReservation != null) {
+                existingReservation.id
+            } else {
+                val today = timeProvider.getCurrentDate()
+                boatReservationService
+                    .insertBoatSpaceReservation(
+                        citizen.id,
+                        citizen.id,
+                        spaceId,
+                        today,
+                        getEndDate(result),
+                    ).id
+            }
+        )
+    }
+
+    fun getOrCreateReservationForEmployee(
+        employeeId: UUID,
+        spaceId: Int
+    ): Int {
+        val existingReservation =
+            boatReservationService.getUnfinishedReservationForEmployee(employeeId)
+        val reservationId =
+            if (existingReservation != null) {
+                existingReservation.id
+            } else {
+                val today = timeProvider.getCurrentDate()
+                val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
+                boatReservationService.insertBoatSpaceReservationAsEmployee(employeeId, spaceId, today, endOfYear).id
+            }
+        return reservationId
+    }
+
+    private fun getEndDate(result: ReservationResult): LocalDate {
+        val endOfYear = LocalDate.of(timeProvider.getCurrentDate().year, Month.DECEMBER, 31)
+        val endDate =
+            if (result is ReservationResult.Success) {
+                result.data.endDate
+            } else {
+                endOfYear
+            }
+        return endDate
     }
 }
 
