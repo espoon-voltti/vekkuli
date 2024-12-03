@@ -11,10 +11,8 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceService
 import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.citizen.BoatSpaceSearch
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -119,8 +117,6 @@ class BoatSpaceSearchController {
         )
     }
 
-    fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
-
     @RequestMapping("/$USERTYPE/partial/vapaat-paikat")
     @ResponseBody
     fun searchResultPartial(
@@ -136,18 +132,15 @@ class BoatSpaceSearchController {
     ): String {
         val userType = UserType.fromPath(usertype)
 
-        val params =
-            BoatSpaceFilter(
-                boatType,
-                width?.mToCm(),
-                length?.mToCm(),
-                if (boatSpaceType != BoatSpaceType.Storage) amenities else getSingleOrEmptyList(storageType),
-                boatSpaceType,
-                if (boatSpaceType != BoatSpaceType.Storage) harbor?.map { s -> s.toInt() } else null
-            )
         val harbors =
             boatSpaceService.getUnreservedBoatSpaceOptions(
-                params
+                boatType,
+                width,
+                length,
+                amenities,
+                storageType,
+                boatSpaceType,
+                harbor,
             )
 
         return boatSpaceSearch.renderResults(
