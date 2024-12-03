@@ -230,7 +230,7 @@ class BoatSpaceRenewFormView(
                             </div>
                                
                             <div class="block">
-                                <div id="certify-control">
+                                <div id="certify-control" class="field">
                                     <label class="checkbox">
                                         <input
                                             type="checkbox"
@@ -245,7 +245,7 @@ class BoatSpaceRenewFormView(
                                         ${t("validation.certifyInformation")}</span>
                                     </div>
                                 </div>
-                                <div id="agree-control">
+                                <div id="agree-control" class="field">
                                     <label class="checkbox">
                                         <input
                                             type="checkbox"

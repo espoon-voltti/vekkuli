@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.views.citizen
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
-import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.Icons
@@ -52,7 +51,7 @@ class BoatSpaceSearch(
         val spaceWidthInput =
             formComponents.decimalInput(
                 "boatSpaces.spaceWidthHeader",
-                "spaceWidth",
+                "width",
                 null,
                 required = true,
             )
@@ -60,7 +59,23 @@ class BoatSpaceSearch(
         val spaceLengthInput =
             formComponents.decimalInput(
                 "boatSpaces.spaceLengthHeader",
-                "spaceLength",
+                "length",
+                null,
+                required = true,
+            )
+
+        val trailerLengthInput =
+            formComponents.decimalInput(
+                "boatSpaces.trailerLengthHeader",
+                "length",
+                null,
+                required = true,
+            )
+
+        val trailerWidthInput =
+            formComponents.decimalInput(
+                "boatSpaces.trailerWidthHeader",
+                "width",
                 null,
                 required = true,
             )
@@ -132,19 +147,12 @@ class BoatSpaceSearch(
             </div>
             """.trimIndent()
 
-        val usedTypes =
-            if (isStagingOrProduction()) {
-                listOf("Slip", "Trailer")
-            } else {
-                listOf("Slip", "Trailer", "Winter", "Storage")
-            }
-
         val spaceTypeSelection =
             formComponents.radioButtons(
                 "boatSpaces.typeHeader",
                 "boatSpaceType",
                 "Slip",
-                usedTypes.map { it to t("boatSpaces.typeOption.$it") },
+                listOf("Slip", "Trailer", "Winter", "Storage").map { it to t("boatSpaces.typeOption.$it") },
                 mapOf("x-model" to "boatSpaceType")
             )
 
@@ -190,23 +198,38 @@ class BoatSpaceSearch(
                                     $boatTypeSelect
                                 </div>
 
-                                <div class="columns" x-show="boatSpaceType === 'Slip' || boatSpaceType === 'Trailer'">
-                                    <div class='column'>
-                                        $boatWidthInput
+                                <template x-if="boatSpaceType === 'Slip'">
+                                    <div class="columns">
+                                        <div class='column'>
+                                            $boatWidthInput
+                                        </div>
+                                        <div class='column'>
+                                            $boatLengthInput
+                                        </div>
                                     </div>
-                                    <div class='column'>
-                                        $boatLengthInput
-                                    </div>
-                                </div>
+                                </template>
                                 
-                                <div class="columns" x-show="boatSpaceType != 'Slip' && boatSpaceType != 'Trailer'">
-                                    <div class='column'>
-                                        $spaceWidthInput
+                                <template x-if="boatSpaceType === 'Trailer'">
+                                    <div class="columns">
+                                        <div class='column'>
+                                            $trailerWidthInput
+                                        </div>
+                                        <div class='column'>
+                                            $trailerLengthInput
+                                        </div>
                                     </div>
-                                    <div class='column'>
-                                        $spaceLengthInput
+                                </template>
+                                
+                                <template x-if="boatSpaceType != 'Slip' && boatSpaceType != 'Trailer'">
+                                    <div class="columns">
+                                        <div class='column'>
+                                            $spaceWidthInput
+                                        </div>
+                                        <div class='column'>
+                                            $spaceLengthInput
+                                        </div>
                                     </div>
-                                </div>
+                                </template>
 
                                 <div class="block" x-show="boatSpaceType === 'Slip'">
                                     $amenitiesCheckboxes
