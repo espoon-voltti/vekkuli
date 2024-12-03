@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.getAppUser
-import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
@@ -74,18 +73,5 @@ class BoatSpaceReservationController {
                 boatSpaceReservationList.render(harbors, BoatSpaceAmenity.entries.toList(), reservations, params, UserType.EMPLOYEE)
             )
         )
-    }
-
-    @PostMapping("/varaukset/kuittaa-varoitus")
-    fun ackWarning(
-        @RequestParam("reservationId") reservationId: Int,
-        @RequestParam("boatId") boatId: Int,
-        @RequestParam("key") key: String,
-        @RequestParam("infoText") infoText: String,
-        request: HttpServletRequest,
-    ): ResponseEntity<Void> {
-        val userId = request.ensureEmployeeId()
-        reservationService.acknowledgeWarning(reservationId, userId, boatId, key, infoText)
-        return ResponseEntity.noContent().build()
     }
 }
