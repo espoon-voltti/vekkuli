@@ -2,13 +2,13 @@ package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
+import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.controllers.UnauthorizedException
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.controllers.getReservationTimeInSeconds
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
@@ -37,6 +37,7 @@ class BoatSpaceRenewalService(
     private val timeProvider: TimeProvider,
     private val asyncJobRunner: IAsyncJobRunner<AsyncJob>,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
+    private val permissionService: PermissionService,
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
@@ -278,7 +279,7 @@ class BoatSpaceRenewalService(
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
                 ?: throw BadRequest("Reservation to renew not found")
-        if (!reservationService.canRenewAReservation(reservation.validity, reservation.endDate).success) {
+        if (!permissionService.canRenewAReservation(reservation.validity, reservation.endDate).success) {
             throw Conflict("Reservation cannot be renewed")
         }
         val newId = boatSpaceRenewalRepository.createRenewalRow(originalReservationId, userType, userId)

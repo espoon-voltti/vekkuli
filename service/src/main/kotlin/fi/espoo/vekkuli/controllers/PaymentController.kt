@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.PaytrailEnv

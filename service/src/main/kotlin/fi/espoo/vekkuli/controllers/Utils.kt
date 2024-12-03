@@ -1,9 +1,13 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.common.AppUser
+import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.service.CitizenService
 import jakarta.servlet.http.HttpServletRequest
+import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
@@ -74,6 +78,19 @@ class Utils {
             request.getAuthenticatedUser()?.type == "citizen"
         } else {
             request.getAuthenticatedUser()?.type == "user"
+        }
+
+        fun getEmployee(
+            request: HttpServletRequest,
+            jdbi: Jdbi
+        ): AppUser? {
+            val authenticatedUser = request.getAuthenticatedUser() ?: return null
+
+            return authenticatedUser.let {
+                jdbi.inTransactionUnchecked { tx ->
+                    tx.getAppUser(authenticatedUser.id)
+                }
+            }
         }
     }
 }

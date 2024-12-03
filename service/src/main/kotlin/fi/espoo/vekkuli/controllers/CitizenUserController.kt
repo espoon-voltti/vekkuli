@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
