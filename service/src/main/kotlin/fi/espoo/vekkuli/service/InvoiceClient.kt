@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.EspiEnv
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.utils.TimeProvider
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Serializable
-private data class Row(
+data class Row(
     val productGroup: String? = null,
     val productComponent: String? = null,
     val periodStartDate: String,
@@ -32,7 +33,7 @@ private data class Row(
 )
 
 @Serializable
-private data class Invoice(
+data class Invoice(
     val invoiceNumber: Long,
     val useInvoiceNumber: Boolean? = false,
     val date: String? = null,
@@ -43,7 +44,7 @@ private data class Invoice(
 )
 
 @Serializable
-private data class Client(
+data class Client(
     val ssn: String? = null,
     val ytunnus: String? = null,
     val registerNumber: String? = null,
@@ -59,7 +60,7 @@ private data class Client(
 )
 
 @Serializable
-private data class InvoiceBatch(
+data class InvoiceBatch(
     val agreementType: Int,
     val batchDate: String,
     val batchNumber: Long,
@@ -114,7 +115,7 @@ class EspiInvoiceClient(
     }
 }
 
-private fun createInvoiceBatch(
+fun createInvoiceBatch(
     invoiceData: InvoiceData,
     timeProvider: TimeProvider
 ): InvoiceBatch =
@@ -151,13 +152,11 @@ private fun createInvoiceBatch(
                             Row(
                                 // TODO: add correct values for productGroup, productComponent, project
                                 productGroup = "2560001",
-                                productComponent = "T1270",
+                                productComponent = getProductComponent(invoiceData.type),
                                 periodStartDate = invoiceData.startDate.toString(),
                                 periodEndDate = invoiceData.endDate.toString(),
-                                unitCount = 1,
-                                unitPrice = invoiceData.priceCents.toLong(),
+                                unitCount = 100,
                                 amount = invoiceData.priceCents.toLong(),
-                                vatAmount = invoiceData.vat.toLong(),
                                 description = invoiceData.description,
                                 product = "T1270",
                                 account = 329700,
@@ -167,3 +166,11 @@ private fun createInvoiceBatch(
                 )
             ),
     )
+
+fun getProductComponent(boatSpaceType: BoatSpaceType): String =
+    when (boatSpaceType) {
+        BoatSpaceType.Slip -> "T1270"
+        BoatSpaceType.Winter -> "T1271"
+        BoatSpaceType.Storage -> "T1276"
+        BoatSpaceType.Trailer -> "T1270"
+    }

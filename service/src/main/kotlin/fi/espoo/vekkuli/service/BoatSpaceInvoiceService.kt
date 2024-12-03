@@ -4,10 +4,8 @@ import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
-import fi.espoo.vekkuli.domain.CreateInvoiceParams
-import fi.espoo.vekkuli.domain.CreatePaymentParams
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.Invoice
-import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -92,6 +90,7 @@ class BoatSpaceInvoiceService(
 
         // TODO: missing some fields
         return InvoiceData(
+            type = reservation.type,
             dueDate = timeProvider.getCurrentDate().plusDays(21),
             invoiceNumber = 1,
             ssn = reserver.nationalId,
@@ -107,7 +106,6 @@ class BoatSpaceInvoiceService(
             mobilePhone = reserver.phone,
             email = reserver.email,
             priceCents = reservation.priceCents,
-            vat = reservation.vatCents,
             description = "${reservation.locationName} ${reservation.startDate.year}",
             startDate = reservation.startDate,
             endDate = reservation.endDate
@@ -121,7 +119,7 @@ data class InvoiceData(
     val endDate: LocalDate,
     val invoiceNumber: Long,
     val ssn: String,
-    val orgId: String,
+    val orgId: String?,
     val registerNumber: String,
     val lastname: String,
     val firstnames: String,
@@ -133,6 +131,6 @@ data class InvoiceData(
     val mobilePhone: String,
     val email: String,
     val priceCents: Int,
-    val vat: Int,
     val description: String,
+    val type: BoatSpaceType,
 )
