@@ -93,7 +93,9 @@ class BoatSpaceFormPage(
     fun fillFormAsEmployeeWithPrefilledValuesAndSubmit(reserverName: String) {
         val formPage = BoatSpaceFormPage(page)
         formPage.existingCitizenSelector.click()
-        formPage.citizenSearchInput.pressSequentially(reserverName)
+        reserverName.forEach { character ->
+            formPage.citizenSearchInput.press("$character")
+        }
         formPage.citizenSearchOption1.click()
         // Not the best solution, but required because of content replacement
         assertThat(formPage.firstNameInput).not().isEmpty()

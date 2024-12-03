@@ -130,7 +130,6 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         // Check that the reservation is still visible in the listing page with the correct end date
         listingPage.navigateTo()
         assertThat(listingPage.reservationsTableB314Row).isVisible()
-        println(expectedEndDateInReservationsList)
         assertThat(listingPage.reservationsTableB314RowEndDate).hasText(expectedEndDateInReservationsList)
 
         // Check that the boat space is not available for reservation
