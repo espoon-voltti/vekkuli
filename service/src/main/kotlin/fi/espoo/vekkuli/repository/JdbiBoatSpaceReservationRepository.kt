@@ -450,8 +450,6 @@ class JdbiBoatSpaceReservationRepository(
                 warningQuery.bind("reservationId", it.id)
                 val warnings = warningQuery.mapTo<String>().list()
 
-                println(it)
-
                 BoatSpaceReservationDetails(
                     id = it.id,
                     created = it.created,
