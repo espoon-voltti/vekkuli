@@ -183,11 +183,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
 
             // Hides the modal and the expired list is on the page, but not visible
-            citizenDetailsPage.modalWindow.click(
-                Locator
-                    .ClickOptions()
-                    .setPosition(5.0, 5.0)
-            )
+            citizenDetailsPage.hideModalWindow()
 
             assertThat(citizenDetailsPage.terminateReservationAsEmployeeForm).not().isVisible()
             // Should not be in expired list yet

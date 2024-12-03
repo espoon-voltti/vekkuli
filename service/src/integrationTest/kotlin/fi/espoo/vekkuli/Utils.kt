@@ -7,7 +7,6 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 fun deleteAllReservations(jdbi: Jdbi) {
@@ -50,10 +49,6 @@ fun deleteAllEmails(jdbi: Jdbi) {
         handle.execute("DELETE FROM processed_message")
     }
 }
-
-val startOfRenewPeriod: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
-
-val endDateWithinMonthOfRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
 
 data class CreateReservationParams(
     val timeProvider: TimeProvider,

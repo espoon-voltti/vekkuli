@@ -15,4 +15,6 @@ class ReservationListPage(
     val boatSpace2 = page.locator("#boat-space-2").first()
     val createReservation = page.locator("#create-reservation")
     val warningIcon = getByDataTestId("warning-icon", boatSpace1)
+    val reservationsTableB314Row = page.locator("tr:has-text('B 314')")
+    val reservationsTableB314RowEndDate = getByDataTestId("reservation-end-date", reservationsTableB314Row)
 }
