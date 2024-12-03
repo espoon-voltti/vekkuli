@@ -8,30 +8,33 @@ import fi.espoo.vekkuli.controllers.*
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.badRequest
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
+import fi.espoo.vekkuli.controllers.Utils.Companion.getEmployee
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.UpdateCitizenParams
-import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.utils.getLastDayOfYear
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.BoatFormInput
+import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
 import jakarta.validation.constraints.*
+import org.jdbi.v3.core.Jdbi
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.net.URI
+import java.time.LocalDate
+import java.time.Month
 import java.util.*
 
 @Controller
@@ -47,11 +50,12 @@ class ReservationController(
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
     private val boatReservationService: BoatReservationService,
+    private val layout: Layout,
+    private val jdbi: Jdbi
 ) {
     @RequestMapping("/kuntalainen/venepaikka/varaus/{reservationId}")
     @ResponseBody
     fun boatSpaceApplicationFormForCitizen(
-        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         @ModelAttribute formInput: ReservationInput,
         request: HttpServletRequest,
@@ -74,7 +78,6 @@ class ReservationController(
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}")
     @ResponseBody
     fun boatSpaceApplicationFormForEmployee(
-        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         @ModelAttribute formInput: ReservationInput,
         request: HttpServletRequest,
@@ -91,7 +94,7 @@ class ReservationController(
             return badRequest("Unauthorized")
         } catch (e: Exception) {
             // TODO: should we respond with error page or redirect to some other page?
-            val errorPage = reservationFormView.errorPage("error", 1)
+            val errorPage = reservationFormView.errorPage(e.message ?: "Unspecified error", 2)
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
         }
     }
@@ -232,72 +235,19 @@ class ReservationController(
             return badRequest("Invalid input")
         }
 
-        reservationService.createOrUpdateReserverAndReservation(reservationId, citizenId, input)
+        reservationService.createOrUpdateReserverAndReservationForCitizen(reservationId, citizenId, input)
         // redirect to payments page with reservation id and slip type
-        return redirectUrl("/${UserType.CITIZEN.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
+        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
     }
 
     @PostMapping("/virkailija/venepaikka/varaus/{reservationId}")
     fun reserveBoatSpaceForEmployee(
-        @PathVariable usertype: String,
         @PathVariable reservationId: Int,
         @Valid @ModelAttribute("input") input: ReservationInput,
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        val userType = UserType.fromPath(usertype)
-
-        fun badRequest(body: String): ResponseEntity<String> = ResponseEntity.badRequest().body(body)
-
-        fun redirectUrl(url: String): ResponseEntity<String> =
-            ResponseEntity
-                .status(HttpStatus.FOUND)
-                .header("Location", url)
-                .body("")
-
-        val isEmployee = userType == UserType.EMPLOYEE
-        val citizen =
-            if (isEmployee) {
-                request.ensureEmployeeId()
-
-                if (input.citizenId != null) {
-                    citizenService
-                        .updateCitizen(
-                            UpdateCitizenParams(
-                                id = input.citizenId,
-                                email = input.email,
-                                phone = input.phone,
-                                streetAddress = input.address,
-                                streetAddressSv = input.address,
-                                postalCode = input.postalCode,
-                                postOffice = input.postalOffice,
-                                postOfficeSv = input.postalOffice
-                            )
-                        )
-                } else {
-                    citizenService
-                        .insertCitizen(
-                            phone = input.phone ?: "",
-                            email = input.email ?: "",
-                            nationalId = input.ssn ?: "",
-                            firstName = input.firstName ?: "",
-                            lastName = input.lastName ?: "",
-                            address = input.address ?: "",
-                            postalCode = input.postalCode ?: "",
-                            municipalityCode = input.municipalityCode ?: 1,
-                            false,
-                        )
-                }
-            } else {
-                getCitizen(request, citizenService)
-            }
-
-        if (citizen == null) {
-            return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .header("Location", "/")
-                .build()
-        }
+        request.ensureEmployeeId()
 
         if (bindingResult.hasErrors()) {
             val reservation = reservationService.getReservationForApplicationForm(reservationId)
@@ -306,121 +256,16 @@ class ReservationController(
             }
             return badRequest("Invalid input")
         }
-
-        var reserverId: UUID = citizen.id
-
-        if (input.isOrganization == true) {
-            if (input.organizationId == null) {
-                // add new organization
-                val newOrg =
-                    organizationService.insertOrganization(
-                        businessId = input.orgBusinessId ?: "",
-                        name = input.orgName ?: "",
-                        phone = input.orgPhone ?: "",
-                        email = input.orgEmail ?: "",
-                        streetAddress = input.orgAddress ?: "",
-                        streetAddressSv = input.orgAddress ?: "",
-                        postalCode = input.orgPostalCode ?: "",
-                        postOffice = input.orgCity ?: "",
-                        postOfficeSv = input.orgCity ?: "",
-                        municipalityCode = (input.orgMunicipalityCode ?: "1").toInt()
-                    )
-                // add person to organization
-                organizationService.addCitizenToOrganization(newOrg.id, citizen.id)
-                reserverId = newOrg.id
-            } else {
-                // update organization
-                organizationService.updateOrganization(
-                    UpdateOrganizationParams(
-                        id = input.organizationId,
-                        businessId = input.orgBusinessId,
-                        name = input.orgName,
-                        phone = input.orgPhone,
-                        email = input.orgEmail,
-                        streetAddress = input.orgAddress,
-                        streetAddressSv = input.orgAddress,
-                        postalCode = input.orgPostalCode,
-                        postOffice = input.orgCity,
-                        postOfficeSv = input.orgCity,
-                        municipalityCode = input.orgMunicipalityCode.let { it?.toInt() }
-                    )
-                )
-                reserverId = input.organizationId
-            }
+        val citizen = reservationService.createOrUpdateCitizen(input)
+        if (citizen == null) {
+            return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", "/")
+                .build()
         }
+        reservationService.createOrUpdateReserverAndReservationForEmployee(reservationId, citizen.id, input)
 
-        val reservation = reservationService.getReservationForApplicationForm(reservationId)
-        if (reservation == null) {
-            return badRequest("Reservation not found")
-        }
-
-        if (reservation.status == ReservationStatus.Renewal) {
-            boatReservationService.reserveBoatSpace(
-                reserverId,
-                ReserveBoatSpaceInput(
-                    reservationId = reservationId,
-                    boatId = input.boatId,
-                    boatType = input.boatType!!,
-                    width = input.width ?: BigDecimal.ZERO,
-                    length = input.length ?: BigDecimal.ZERO,
-                    depth = input.depth ?: BigDecimal.ZERO,
-                    weight = input.weight,
-                    boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                    boatName = input.boatName ?: "",
-                    otherIdentification = input.otherIdentification ?: "",
-                    extraInformation = input.extraInformation ?: "",
-                    ownerShip = input.ownership!!,
-                    email = input.email!!,
-                    phone = input.phone!!,
-                ),
-                ReservationStatus.Payment,
-                reservation.validity ?: ReservationValidity.FixedTerm,
-                reservation.startDate,
-                reservation.endDate
-            )
-        } else {
-            val reserveSlipResult = permissionService.canReserveANewSlip(reserverId)
-
-            val data =
-                if (reserveSlipResult is ReservationResult.Success) {
-                    reserveSlipResult.data
-                } else {
-                    val now = timeProvider.getCurrentDate()
-                    ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
-                }
-
-            if (isEmployee || reserveSlipResult.success) {
-                boatReservationService.reserveBoatSpace(
-                    reserverId,
-                    ReserveBoatSpaceInput(
-                        reservationId = reservationId,
-                        boatId = input.boatId,
-                        boatType = input.boatType!!,
-                        width = input.width ?: BigDecimal.ZERO,
-                        length = input.length ?: BigDecimal.ZERO,
-                        depth = input.depth ?: BigDecimal.ZERO,
-                        weight = input.weight,
-                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                        boatName = input.boatName ?: "",
-                        otherIdentification = input.otherIdentification ?: "",
-                        extraInformation = input.extraInformation ?: "",
-                        ownerShip = input.ownership!!,
-                        email = input.email!!,
-                        phone = input.phone!!,
-                    ),
-                    ReservationStatus.Payment,
-                    data.reservationValidity,
-                    data.startDate,
-                    data.endDate
-                )
-            }
-        }
-
-        if (isEmployee) {
-            return redirectUrl("/virkailija/venepaikka/varaus/$reservationId/lasku")
-        }
-        // redirect to payments page with reservation id and slip type
-        return redirectUrl("/${userType.path}/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
+        return redirectUrl("/virkailija/venepaikka/varaus/$reservationId/lasku")
     }
 
     @GetMapping("/venepaikka/varaus/{reservationId}/boat-type-warning")
@@ -487,6 +332,98 @@ class ReservationController(
         }
         return ResponseEntity.ok("")
     }
+
+    // initial reservation in info state
+    @GetMapping("/$USERTYPE/venepaikka/varaa/{spaceId}")
+    fun reserveBoatSpace(
+        @PathVariable usertype: String,
+        @PathVariable spaceId: Int,
+        @RequestParam boatType: BoatType?,
+        @RequestParam width: BigDecimal?,
+        @RequestParam length: BigDecimal?,
+        request: HttpServletRequest,
+        model: Model,
+    ): ResponseEntity<String> {
+        val userType = UserType.fromPath(usertype)
+        val isEmployee = userType == UserType.EMPLOYEE
+        val citizen = getCitizen(request, citizenService)
+        val userId =
+            if (isEmployee) {
+                getEmployee(request, jdbi)?.id
+            } else {
+                citizen?.id
+            }
+        if (userId == null) {
+            return ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+
+        // Show error page if citizen can not reserve slip
+        if (!isEmployee) {
+            if ((citizen == null)) {
+                return ResponseEntity(HttpStatus.FORBIDDEN)
+            }
+            val result = permissionService.canReserveANewSlip(citizen.id)
+            if (result is ReservationResult.Failure) {
+                return ResponseEntity.ok(
+                    renderErrorPage(
+                        citizen,
+                        request,
+                        messageUtil.getMessage("errorCode.split.${result.errorCode}")
+                    )
+                )
+            }
+        }
+
+        val existingReservation =
+            if (isEmployee) {
+                boatReservationService.getUnfinishedReservationForEmployee(userId)
+            } else {
+                boatReservationService.getUnfinishedReservationForCitizen(userId)
+            }
+
+        val reservationId =
+            if (existingReservation != null) {
+                existingReservation.id
+            } else {
+                val today = timeProvider.getCurrentDate()
+                val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
+                if (isEmployee) {
+                    boatReservationService.insertBoatSpaceReservationAsEmployee(userId, spaceId, today, endOfYear).id
+                } else {
+                    boatReservationService
+                        .insertBoatSpaceReservation(
+                            userId,
+                            citizen?.id,
+                            spaceId,
+                            today,
+                            endOfYear,
+                        ).id
+                }
+            }
+
+        val queryParams = mutableListOf<String>()
+        boatType?.let { queryParams.add("boatType=${it.name}") }
+        width?.let { queryParams.add("width=$it") }
+        length?.let { queryParams.add("length=$it") }
+
+        val queryString = queryParams.joinToString("&")
+
+        val headers = org.springframework.http.HttpHeaders()
+        headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/$reservationId?$queryString"))
+        return ResponseEntity(headers, HttpStatus.FOUND)
+    }
+
+    fun renderErrorPage(
+        citizen: CitizenWithDetails?,
+        request: HttpServletRequest,
+        error: String
+    ): String =
+        layout.render(
+            true,
+            citizen?.fullName,
+            request.requestURI,
+            reservationFormView.errorPage(error, 2)
+        )
 }
 
 @ValidBoatRegistration

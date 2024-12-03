@@ -2,13 +2,12 @@ package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.common.BadRequest
+import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.*
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
-import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -33,24 +32,65 @@ class ReservationService(
     private val citizenLayout: Layout,
     private val permissionService: PermissionService,
     private val reservationRepository: ReservationRepository,
-    private val boatReservationService: BoatReservationService,
 ) {
-    fun createOrUpdateReserverAndReservation(
+    fun createOrUpdateReserverAndReservationForCitizen(
         reservationId: Int,
         citizenId: UUID,
         input: ReservationInput
     ) {
-        val reserverId: UUID = citizenId
+        var reserverId: UUID = citizenId
         if (input.isOrganization == true) {
-            addOrUpdateOrganization(citizenId, input)
+            reserverId = addOrUpdateOrganization(citizenId, input)
         }
-        reserveSpace(reservationId, reserverId, input)
+        reserveSpaceForCitizen(reservationId, reserverId, input)
+    }
+
+    fun createOrUpdateCitizen(input: ReservationInput): CitizenWithDetails? {
+        if (input.citizenId != null) {
+            return citizenService
+                .updateCitizen(
+                    UpdateCitizenParams(
+                        id = input.citizenId,
+                        email = input.email,
+                        phone = input.phone,
+                        streetAddress = input.address,
+                        streetAddressSv = input.address,
+                        postalCode = input.postalCode,
+                        postOffice = input.postalOffice,
+                        postOfficeSv = input.postalOffice
+                    )
+                )
+        }
+        return citizenService
+            .insertCitizen(
+                phone = input.phone ?: "",
+                email = input.email ?: "",
+                nationalId = input.ssn ?: "",
+                firstName = input.firstName ?: "",
+                lastName = input.lastName ?: "",
+                address = input.address ?: "",
+                postalCode = input.postalCode ?: "",
+                municipalityCode = input.municipalityCode ?: 1,
+                false,
+            )
+    }
+
+    fun createOrUpdateReserverAndReservationForEmployee(
+        reservationId: Int,
+        citizenId: UUID,
+        input: ReservationInput
+    ) {
+        var reserverId: UUID = citizenId
+        if (input.isOrganization == true) {
+            reserverId = addOrUpdateOrganization(reserverId, input)
+        }
+        reserveSpaceForEmployee(reservationId, reserverId, input)
     }
 
     fun addOrUpdateOrganization(
-        citizenId: UUID,
+        reserverId: UUID,
         input: ReservationInput,
-    ): UUID? {
+    ): UUID {
         if (input.organizationId == null) {
             // add new organization
             val newOrg =
@@ -67,7 +107,7 @@ class ReservationService(
                     municipalityCode = (input.orgMunicipalityCode ?: "1").toInt()
                 )
             // add person to organization
-            organizationService.addCitizenToOrganization(newOrg.id, citizenId)
+            organizationService.addCitizenToOrganization(newOrg.id, reserverId)
             return newOrg.id
         } else {
             // update organization
@@ -90,46 +130,70 @@ class ReservationService(
         }
     }
 
-    fun reserveSpace(
+    fun reserveSpaceForEmployee(
+        reservationId: Int,
+        reserverId: UUID,
+        input: ReservationInput,
+    ) {
+        val reservation = getReservationForApplicationForm(reservationId)
+        if (reservation == null) {
+            throw BadRequest("Reservation not found")
+        }
+
+        val reserveSlipResult = permissionService.canReserveANewSlip(reserverId)
+        val data =
+            if (reserveSlipResult is ReservationResult.Success) {
+                reserveSlipResult.data
+            } else {
+                val now = timeProvider.getCurrentDate()
+                // TODO: get validity from input parameter for employee
+                ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm)
+            }
+        reserveBoatSpace(reserverId, reservationId, input, data)
+    }
+
+    fun reserveSpaceForCitizen(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
     ) {
         val reserveSlipResult = permissionService.canReserveANewSlip(reserverId)
 
-        val data =
-            if (reserveSlipResult is ReservationResult.Success) {
-                reserveSlipResult.data
-            } else {
-                val now = timeProvider.getCurrentDate()
-                ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm,)
-            }
-
-        if (reserveSlipResult.success) {
-            boatReservationService.reserveBoatSpace(
-                reserverId,
-                ReserveBoatSpaceInput(
-                    reservationId = reservationId,
-                    boatId = input.boatId,
-                    boatType = input.boatType!!,
-                    width = input.width ?: BigDecimal.ZERO,
-                    length = input.length ?: BigDecimal.ZERO,
-                    depth = input.depth ?: BigDecimal.ZERO,
-                    weight = input.weight,
-                    boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                    boatName = input.boatName ?: "",
-                    otherIdentification = input.otherIdentification ?: "",
-                    extraInformation = input.extraInformation ?: "",
-                    ownerShip = input.ownership!!,
-                    email = input.email!!,
-                    phone = input.phone!!,
-                ),
-                ReservationStatus.Payment,
-                data.reservationValidity,
-                data.startDate,
-                data.endDate
-            )
+        if (!reserveSlipResult.success || reserveSlipResult !is ReservationResult.Success) {
+            throw Forbidden("Reservation not allowed")
         }
+        reserveBoatSpace(reserverId, reservationId, input, reserveSlipResult.data)
+    }
+
+    private fun reserveBoatSpace(
+        reserverId: UUID,
+        reservationId: Int,
+        input: ReservationInput,
+        reserveSlipResult: ReservationResultSuccess,
+    ) {
+        reservationService.reserveBoatSpace(
+            reserverId,
+            ReserveBoatSpaceInput(
+                reservationId = reservationId,
+                boatId = input.boatId,
+                boatType = input.boatType!!,
+                width = input.width ?: BigDecimal.ZERO,
+                length = input.length ?: BigDecimal.ZERO,
+                depth = input.depth ?: BigDecimal.ZERO,
+                weight = input.weight,
+                boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                boatName = input.boatName ?: "",
+                otherIdentification = input.otherIdentification ?: "",
+                extraInformation = input.extraInformation ?: "",
+                ownerShip = input.ownership!!,
+                email = input.email!!,
+                phone = input.phone!!,
+            ),
+            ReservationStatus.Payment,
+            reserveSlipResult.reservationValidity,
+            reserveSlipResult.startDate,
+            reserveSlipResult.endDate
+        )
     }
 
     fun getReservationForApplicationForm(reservationId: Int) = reservationRepository.getReservationForApplicationForm(reservationId)
@@ -149,61 +213,9 @@ class ReservationService(
 
         val citizen = citizenService.getCitizen(citizenId)
 
-        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
-        val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
-        if (usedBoatId != null && usedBoatId != 0) {
-            val boat = boatService.getBoat(usedBoatId)
-
-            if (boat != null) {
-                input =
-                    input.copy(
-                        boatId = boat.id,
-                        depth = boat.depthCm.cmToM(),
-                        boatName = boat.name,
-                        weight = boat.weightKg,
-                        width = boat.widthCm.cmToM(),
-                        length = boat.lengthCm.cmToM(),
-                        otherIdentification = boat.otherIdentification,
-                        extraInformation = boat.extraInformation,
-                        ownership = boat.ownership,
-                        boatType = boat.type,
-                        boatRegistrationNumber = boat.registrationCode,
-                        noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
-                    )
-            }
-        } else {
-            input = input.copy(boatId = 0)
-        }
-
-        val organizations = citizen?.let { organizationService.getCitizenOrganizations(citizen.id) } ?: emptyList()
-
-        val boatReserver = if (input.isOrganization == true) input.organizationId else citizen?.id
-
-        val boats =
-            boatReserver?.let {
-                boatService
-                    .getBoatsForReserver(boatReserver)
-                    .map { boat -> boat.updateBoatDisplayName(messageUtil) }
-            } ?: emptyList()
-
-        val municipalities = citizenService.getMunicipalities()
-        val bodyContent =
-            reservationFormView.boatSpaceForm(
-                reservation,
-                boats,
-                citizen,
-                organizations,
-                input,
-                getReservationTimeInSeconds(
-                    reservation.created,
-                    timeProvider.getCurrentDateTime()
-                ),
-                UserType.CITIZEN,
-                municipalities
-            )
         return (
             citizenLayout.render(
-                bodyContent
+                createBodyContent(formInput, citizen, reservation, UserType.CITIZEN)
             )
         )
     }
@@ -213,70 +225,22 @@ class ReservationService(
         formInput: ReservationInput,
         requestURI: String,
     ): String {
+        val citizen =
+            if (formInput.citizenSelection != "newCitizen" || formInput.citizenId == null) {
+                formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
+            } else {
+                citizenService.getCitizen(formInput.citizenId)
+            }
+
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
                 ?: throw BadRequest("Reservation not found")
-        if (reservation == null) {
-            throw BadRequest("Reservation not found")
-        }
-        val citizen = formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
-        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
-        val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
-        if (usedBoatId != null && usedBoatId != 0) {
-            val boat = boatService.getBoat(usedBoatId)
 
-            if (boat != null) {
-                input =
-                    input.copy(
-                        boatId = boat.id,
-                        depth = boat.depthCm.cmToM(),
-                        boatName = boat.name,
-                        weight = boat.weightKg,
-                        width = boat.widthCm.cmToM(),
-                        length = boat.lengthCm.cmToM(),
-                        otherIdentification = boat.otherIdentification,
-                        extraInformation = boat.extraInformation,
-                        ownership = boat.ownership,
-                        boatType = boat.type,
-                        boatRegistrationNumber = boat.registrationCode,
-                        noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
-                    )
-            }
-        } else {
-            input = input.copy(boatId = 0)
-        }
-
-        val organizations = citizen?.let { organizationService.getCitizenOrganizations(citizen.id) } ?: emptyList()
-
-        val boatReserver = if (input.isOrganization == true) input.organizationId else citizen?.id
-
-        val boats =
-            boatReserver?.let {
-                boatService
-                    .getBoatsForReserver(boatReserver)
-                    .map { boat -> boat.updateBoatDisplayName(messageUtil) }
-            } ?: emptyList()
-
-        val municipalities = citizenService.getMunicipalities()
-        val bodyContent =
-            reservationFormView.boatSpaceForm(
-                reservation,
-                boats,
-                citizen,
-                organizations,
-                input,
-                getReservationTimeInSeconds(
-                    reservation.created,
-                    timeProvider.getCurrentDateTime()
-                ),
-                UserType.EMPLOYEE,
-                municipalities
-            )
         return (
             employeeLayout.render(
                 true,
                 requestURI,
-                bodyContent
+                createBodyContent(formInput, citizen, reservation, UserType.EMPLOYEE)
             )
         )
     }
@@ -289,6 +253,67 @@ class ReservationService(
             throw Unauthorized()
         }
         reservationService.removeBoatSpaceReservation(reservationId, citizenId)
+    }
+
+    private fun createBodyContent(
+        formInput: ReservationInput,
+        citizen: CitizenWithDetails?,
+        reservation: ReservationForApplicationForm,
+        userType: UserType
+    ): String {
+        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
+        if (usedBoatId != null && usedBoatId != 0) {
+            val boat = boatService.getBoat(usedBoatId)
+
+            if (boat != null) {
+                input =
+                    input.copy(
+                        boatId = boat.id,
+                        depth = boat.depthCm.cmToM(),
+                        boatName = boat.name,
+                        weight = boat.weightKg,
+                        width = boat.widthCm.cmToM(),
+                        length = boat.lengthCm.cmToM(),
+                        otherIdentification = boat.otherIdentification,
+                        extraInformation = boat.extraInformation,
+                        ownership = boat.ownership,
+                        boatType = boat.type,
+                        boatRegistrationNumber = boat.registrationCode,
+                        noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
+                    )
+            }
+        } else {
+            input = input.copy(boatId = 0)
+        }
+
+        val organizations = citizen?.let { organizationService.getCitizenOrganizations(citizen.id) } ?: emptyList()
+
+        val boatReserver = if (input.isOrganization == true) input.organizationId else citizen?.id
+
+        val boats =
+            boatReserver?.let {
+                boatService
+                    .getBoatsForReserver(boatReserver)
+                    .map { boat -> boat.updateBoatDisplayName(messageUtil) }
+            } ?: emptyList()
+
+        val municipalities = citizenService.getMunicipalities()
+        val bodyContent =
+            reservationFormView.boatSpaceForm(
+                reservation,
+                boats,
+                citizen,
+                organizations,
+                input,
+                getReservationTimeInSeconds(
+                    reservation.created,
+                    timeProvider.getCurrentDateTime()
+                ),
+                userType,
+                municipalities
+            )
+        return bodyContent
     }
 }
 

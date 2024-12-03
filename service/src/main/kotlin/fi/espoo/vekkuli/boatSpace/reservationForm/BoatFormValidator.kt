@@ -3,10 +3,7 @@ package fi.espoo.vekkuli.boatSpace.reservationForm
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.controllers.Utils.Companion.getEmployee
-import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -22,12 +19,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
-import java.net.URI
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Month
 import kotlin.reflect.KClass
 
 @Controller
@@ -99,98 +92,6 @@ class BoatFormValidator(
         }
         return ResponseEntity.ok(mapOf("isValid" to true, "message" to ""))
     }
-
-    // initial reservation in info state
-    @GetMapping("/$USERTYPE/venepaikka/varaa/{spaceId}")
-    fun reserveBoatSpace(
-        @PathVariable usertype: String,
-        @PathVariable spaceId: Int,
-        @RequestParam boatType: BoatType?,
-        @RequestParam width: BigDecimal?,
-        @RequestParam length: BigDecimal?,
-        request: HttpServletRequest,
-        model: Model,
-    ): ResponseEntity<String> {
-        val userType = UserType.fromPath(usertype)
-        val isEmployee = userType == UserType.EMPLOYEE
-        val citizen = getCitizen(request, citizenService)
-        val userId =
-            if (isEmployee) {
-                getEmployee(request, jdbi)?.id
-            } else {
-                citizen?.id
-            }
-        if (userId == null) {
-            return ResponseEntity(HttpStatus.FORBIDDEN)
-        }
-
-        // Show error page if citizen can not reserve slip
-        if (!isEmployee) {
-            if ((citizen == null)) {
-                return ResponseEntity(HttpStatus.FORBIDDEN)
-            }
-            val result = permissionService.canReserveANewSlip(citizen.id)
-            if (result is ReservationResult.Failure) {
-                return ResponseEntity.ok(
-                    renderErrorPage(
-                        citizen,
-                        request,
-                        messageUtil.getMessage("errorCode.split.${result.errorCode}")
-                    )
-                )
-            }
-        }
-
-        val existingReservation =
-            if (isEmployee) {
-                reservationService.getUnfinishedReservationForEmployee(userId)
-            } else {
-                reservationService.getUnfinishedReservationForCitizen(userId)
-            }
-
-        val reservationId =
-            if (existingReservation != null) {
-                existingReservation.id
-            } else {
-                val today = timeProvider.getCurrentDate()
-                val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
-                if (isEmployee) {
-                    reservationService.insertBoatSpaceReservationAsEmployee(userId, spaceId, today, endOfYear).id
-                } else {
-                    reservationService
-                        .insertBoatSpaceReservation(
-                            userId,
-                            citizen?.id,
-                            spaceId,
-                            today,
-                            endOfYear,
-                        ).id
-                }
-            }
-
-        val queryParams = mutableListOf<String>()
-        boatType?.let { queryParams.add("boatType=${it.name}") }
-        width?.let { queryParams.add("width=$it") }
-        length?.let { queryParams.add("length=$it") }
-
-        val queryString = queryParams.joinToString("&")
-
-        val headers = org.springframework.http.HttpHeaders()
-        headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/$reservationId?$queryString"))
-        return ResponseEntity(headers, HttpStatus.FOUND)
-    }
-
-    fun renderErrorPage(
-        citizen: CitizenWithDetails?,
-        request: HttpServletRequest,
-        error: String
-    ): String =
-        layout.render(
-            true,
-            citizen?.fullName,
-            request.requestURI,
-            boatSpaceForm.errorPage(error, 2)
-        )
 }
 
 fun getReservationTimeInSeconds(

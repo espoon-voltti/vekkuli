@@ -343,7 +343,7 @@ class ReservationFormView(
             formComponents.field(
                 "boatApplication.boatSpaceType",
                 "boatSpaceType",
-                t("boatSpaces.typeOption.${reservation.type}"),
+                t("boatSpaces.typeOption.${reservation.boatSpaceType}"),
             )
         val spaceDimensionField =
             formComponents.field(

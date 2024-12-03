@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.centsToEuro
 import org.jdbi.v3.core.Jdbi
@@ -17,12 +14,12 @@ import java.util.*
 
 data class ReservationForApplicationForm(
     val id: Int,
-    val reserverId: UUID,
-    val boatId: Int,
+    val reserverId: UUID?,
+    val boatId: Int?,
     val lengthCm: Int,
     val widthCm: Int,
     val amenity: BoatSpaceAmenity,
-    val type: String,
+    val boatSpaceType: String,
     val place: String,
     val locationName: String?,
     val validity: ReservationValidity,
@@ -32,8 +29,7 @@ data class ReservationForApplicationForm(
     val vatCents: Int,
     val netPriceCents: Int,
     val created: LocalDateTime,
-    val status: ReservationStatus,
-    val excludedBoatTypes: List<BoatType>? = null,
+    val excludedBoatTypes: List<BoatType>?,
 ) {
     val priceInEuro: String
         get() = priceCents.centsToEuro()
@@ -56,11 +52,11 @@ class ReservationRepository(
                     SELECT 
                         bsr.id, 
                         bsr.reserver_id, 
-                        bs.id as boat_id,
+                        bsr.boat_id,
                         bs.length_cm,
                         bs.width_cm,
                         bs.amenity,
-                        bs.type,
+                        bs.type as boat_space_type,
                         CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                         location.name as location_name,
                         bsr.validity,
@@ -69,14 +65,17 @@ class ReservationRepository(
                         bsr.created,
                         price.price_cents, 
                         price.vat_cents, 
-                        price.net_price_cents
+                        price.net_price_cents,
+                        ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM boat_space_reservation bsr
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
-                    JOIN location ON bsr.location_id = location.id
-                    JOIN price ON bsr.price_id = price.id
+                    JOIN location ON bs.location_id = location.id
+                    JOIN price ON bs.price_id = price.id
+                    LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :id
                       AND bsr.status IN ('Info', 'Payment')
                       AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
+                    GROUP BY bsr.id, bs.id, location.name, price.price_cents, price.vat_cents, price.net_price_cents
                     """.trimIndent()
                 )
             query.bind("id", id)
