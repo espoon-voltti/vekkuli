@@ -52,6 +52,19 @@ const devUsers: CitizenUser[] = [
     municipalityCode: 49,
     postOffice: { fi: 'Espoo', sv: 'Esbo' },
     dataProtection: false
+  },
+  {
+    nationalId: '010106A957V',
+    firstName: 'Mikko',
+    lastName: 'Virtanen',
+    postalCode: '02130',
+    address: {
+      fi: 'Hämeenkyläntie 2B 56',
+      sv: 'Tavastbyvägen 2B 56'
+    },
+    municipalityCode: 49,
+    postOffice: { fi: 'Espoo', sv: 'Esbo' },
+    dataProtection: false
   }
 ]
 
