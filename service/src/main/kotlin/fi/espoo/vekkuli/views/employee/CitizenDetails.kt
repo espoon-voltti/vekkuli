@@ -186,9 +186,11 @@ class CitizenDetails(
                         <div class="modal-underlay" @click="modalOpen = false"></div>
                         <div class="modal-content">
                             <form hx-post="/virkailija/venepaikat/varaukset/kuittaa-varoitus"
-                                  hx-swap="none"
-                                  x-on:htmx:after-request="modalOpen = false">
+                                  hx-swap="outerHTML"
+                                  hx-target="#citizen-details"
+                                 >
                                 <input type="hidden" name="boatId" value="${boat.id}" />
+                                <input type="hidden" name="citizenId" value="${citizen.id}" />
                                 <input type="hidden" name="reservationId" value="${boat.reservationId}" />
                                 <div class="block">
                                     <div class="field">
@@ -586,7 +588,8 @@ class CitizenDetails(
                 <a id="delete-memo-button"
                    hx-delete="${getTabUrl("${memo.reserverId}/muistiinpanot/${memo.id}")}"
                    hx-trigger="click"
-                   hx-target="#tab-content"
+                   hx-target="#citizen-details"
+                   hx-select="#citizen-details"
                    hx-swap="outerHTML"
                    hx-confirm="${t("citizenDetails.removeMemoConfirm")}">
                     <span class="icon ml-m">
