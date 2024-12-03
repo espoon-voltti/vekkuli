@@ -29,7 +29,8 @@ data class Invoice(
     val reference: String,
     val dueDate: LocalDate,
     val citizenId: UUID,
-    val paymentId: UUID
+    val paymentId: UUID,
+    val invoiceNumber: Long
 )
 
 data class CreatePaymentParams(

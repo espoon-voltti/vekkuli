@@ -128,7 +128,7 @@ private fun createInvoiceBatch(
         systemId = "VKK",
         invoices =
             listOf(
-                fi.espoo.vekkuli.service.Invoice(
+                Invoice(
                     // TODO: add correct invoice number
                     invoiceNumber = invoiceData.invoiceNumber,
                     useInvoiceNumber = true,

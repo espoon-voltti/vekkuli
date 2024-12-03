@@ -34,12 +34,13 @@ class BoatSpaceInvoiceService(
         if (invoice != null) {
             return invoice
         }
-        val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
+        val (createdInvoice) = createInvoice(invoiceData, citizenId, reservationId)
+        val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
 
         asyncJobRunner.plan(
             sequenceOf(
                 JobParams(
-                    AsyncJob.SendInvoiceBatch(invoiceData),
+                    AsyncJob.SendInvoiceBatch(invoiceDataWithNumber),
                     300,
                     Duration.ofMinutes(15),
                     timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
@@ -66,7 +67,7 @@ class BoatSpaceInvoiceService(
                 reservationId
             )
         val invoice =
-            paymentService.insertInvoicePayment(
+            paymentService.insertInvoice(
                 CreateInvoiceParams(
                     dueDate = invoiceData.dueDate,
                     reference = invoiceData.invoiceNumber.toString(),
