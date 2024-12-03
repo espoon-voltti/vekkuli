@@ -14,10 +14,8 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
-import fi.espoo.vekkuli.views.citizen.BoatFormInput
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
@@ -145,10 +143,9 @@ class ReservationController(
         }
     }
 
-    @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/boat-form")
+    @GetMapping("/kuntalainen/venepaikka/varaus/{reservationId}/boat-form")
     @ResponseBody
-    fun boatForm(
-        @PathVariable usertype: String,
+    fun boatFormCitizen(
         @PathVariable reservationId: Int,
         @RequestParam boatId: Int?,
         @RequestParam isOrganization: Boolean?,
@@ -159,65 +156,54 @@ class ReservationController(
         @RequestParam type: BoatType?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        val userType = UserType.fromPath(usertype)
-        val isEmployee = userType == UserType.EMPLOYEE
-        val citizen =
-            if (isEmployee) {
-                if (citizenId == null) return ResponseEntity.badRequest().build()
-                citizenService.getCitizen(citizenId)
-            } else {
-                getCitizen(request, citizenService)
-            }
+        val citizen = getCitizen(request, citizenService)
         if (citizen == null) return ResponseEntity.badRequest().build()
-        val reserverId = if (isOrganization == true) organizationId else citizen.id
-        val boats =
-            if (reserverId != null) {
-                boatService
-                    .getBoatsForReserver(reserverId)
-                    .map { boat ->
-                        boat.updateBoatDisplayName(messageUtil)
-                    }
-            } else {
-                emptyList()
-            }
 
-        val boat = if (boatId != null) boats.find { it.id == boatId } else null
-        val input =
-            if (boat !=
-                null
-            ) {
-                BoatFormInput(
-                    id = boat.id,
-                    boatName = boat.name ?: "",
-                    boatType = boat.type,
-                    width = boat.widthCm.cmToM(),
-                    length = boat.lengthCm.cmToM(),
-                    depth = boat.depthCm.cmToM(),
-                    weight = boat.weightKg,
-                    boatRegistrationNumber = boat.registrationCode ?: "",
-                    otherIdentification = boat.otherIdentification ?: "",
-                    extraInformation = boat.extraInformation ?: "",
-                    ownership = boat.ownership,
-                    noRegistrationNumber = boat.registrationCode.isNullOrBlank(),
-                )
-            } else {
-                BoatFormInput(
-                    id = boatId ?: 0,
-                    boatName = "",
-                    boatType = type ?: BoatType.OutboardMotor,
-                    width = width,
-                    length = length,
-                    depth = null,
-                    weight = null,
-                    boatRegistrationNumber = "",
-                    otherIdentification = "",
-                    extraInformation = "",
-                    ownership = OwnershipStatus.Owner,
-                    noRegistrationNumber = false,
-                )
-            }
+        val boatFormParams =
+            reservationService.buildBoatFormParams(
+                reservationId,
+                UserType.CITIZEN,
+                citizen,
+                isOrganization,
+                organizationId,
+                boatId,
+                type,
+                width,
+                length
+            )
 
-        return ResponseEntity.ok(reservationFormView.boatForm(userType, citizen, boats, reservationId, input))
+        return ResponseEntity.ok(reservationFormView.boatForm(boatFormParams))
+    }
+
+    @GetMapping("/virkailija/venepaikka/varaus/{reservationId}/boat-form")
+    @ResponseBody
+    fun boatFormEmployee(
+        @PathVariable reservationId: Int,
+        @RequestParam boatId: Int?,
+        @RequestParam isOrganization: Boolean?,
+        @RequestParam organizationId: UUID?,
+        @RequestParam citizenId: UUID?,
+        @RequestParam width: BigDecimal?,
+        @RequestParam length: BigDecimal?,
+        @RequestParam type: BoatType?,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        if (citizenId == null) return ResponseEntity.badRequest().build()
+
+        val citizen = citizenService.getCitizen(citizenId) ?: return ResponseEntity.badRequest().build()
+        val boatFormParams =
+            reservationService.buildBoatFormParams(
+                reservationId,
+                UserType.EMPLOYEE,
+                citizen,
+                isOrganization,
+                organizationId,
+                boatId,
+                type,
+                width,
+                length
+            )
+        return ResponseEntity.ok(reservationFormView.boatForm(boatFormParams))
     }
 
     @PostMapping("/kuntalainen/venepaikka/varaus/{reservationId}")

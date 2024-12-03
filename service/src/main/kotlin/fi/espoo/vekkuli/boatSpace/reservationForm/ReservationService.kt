@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.*
+import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
@@ -361,6 +362,67 @@ class ReservationService(
                 boatReservationService.insertBoatSpaceReservationAsEmployee(employeeId, spaceId, today, endOfYear).id
             }
         return reservationId
+    }
+
+    fun buildBoatFormParams(
+        reservationId: Int,
+        userType: UserType,
+        citizen: CitizenWithDetails,
+        isOrganization: Boolean?,
+        organizationId: UUID?,
+        boatId: Int?,
+        boatType: BoatType?,
+        boatWidth: BigDecimal?,
+        boatLength: BigDecimal?
+    ): BoatFormParams {
+        val reserverId = if (isOrganization == true) organizationId else citizen.id
+        val boats =
+            if (reserverId != null) {
+                boatService
+                    .getBoatsForReserver(reserverId)
+                    .map { boat ->
+                        boat.updateBoatDisplayName(messageUtil)
+                    }
+            } else {
+                emptyList()
+            }
+
+        val boat = if (boatId != null) boats.find { it.id == boatId } else null
+        val input =
+            if (boat !=
+                null
+            ) {
+                BoatFormInput(
+                    id = boat.id,
+                    boatName = boat.name ?: "",
+                    boatType = boat.type,
+                    width = boat.widthCm.cmToM(),
+                    length = boat.lengthCm.cmToM(),
+                    depth = boat.depthCm.cmToM(),
+                    weight = boat.weightKg,
+                    boatRegistrationNumber = boat.registrationCode ?: "",
+                    otherIdentification = boat.otherIdentification ?: "",
+                    extraInformation = boat.extraInformation ?: "",
+                    ownership = boat.ownership,
+                    noRegistrationNumber = boat.registrationCode.isNullOrBlank(),
+                )
+            } else {
+                BoatFormInput(
+                    id = boatId ?: 0,
+                    boatName = "",
+                    boatType = boatType ?: BoatType.OutboardMotor,
+                    width = boatWidth,
+                    length = boatLength,
+                    depth = null,
+                    weight = null,
+                    boatRegistrationNumber = "",
+                    otherIdentification = "",
+                    extraInformation = "",
+                    ownership = OwnershipStatus.Owner,
+                    noRegistrationNumber = false,
+                )
+            }
+        return BoatFormParams(userType, citizen, boats, reservationId, input)
     }
 
     private fun getEndDate(result: ReservationResult): LocalDate {

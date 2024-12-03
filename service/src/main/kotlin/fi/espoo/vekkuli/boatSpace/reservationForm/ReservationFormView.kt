@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
-import fi.espoo.vekkuli.views.citizen.BoatFormInput
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import fi.espoo.vekkuli.views.common.CommonComponents
@@ -59,6 +58,14 @@ data class BoatFormInput(
     }
 }
 
+data class BoatFormParams(
+    val userType: UserType,
+    val citizen: CitizenWithDetails?,
+    val boats: List<Boat>,
+    val reservationId: Int,
+    val input: BoatFormInput,
+)
+
 @Service
 class ReservationFormView(
     private val markDownService: MarkDownService,
@@ -68,15 +75,11 @@ class ReservationFormView(
     private val stepIndicator: StepIndicator,
     private val commonComponents: CommonComponents,
 ) : BaseView() {
-    fun boatForm(
-        userType: UserType,
-        citizen: CitizenWithDetails?,
-        boats: List<Boat>,
-        reservationId: Int,
-        input: BoatFormInput,
-    ): String {
+    fun boatForm(params: BoatFormParams): String {
+        val (userType, citizen, boats, reservationId, input) = params
         val boatTypes = BoatType.entries.map { it.name }
 
+        // language=HTML
         fun boatRadioButton(boat: Boat) =
             """
             <div class="radio">
@@ -972,7 +975,7 @@ class ReservationFormView(
         """
         <div id="shipHolderAndBoatForm">
            ${slipHolder(organizations, isOrganization, selectedOrganizationId, userType, reservationId, municipalities)}
-           ${boatForm(userType, citizen, boats, reservationId, boatData)}
+           ${boatForm(BoatFormParams(userType, citizen, boats, reservationId, boatData))}
         </div>
         """.trimIndent()
 
