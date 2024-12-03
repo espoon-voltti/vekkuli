@@ -10,7 +10,7 @@ interface TrailerRepository {
 
     fun updateTrailer(trailer: Trailer): Trailer
 
-    fun insertBoat(
+    fun insertTrailer(
         reserverId: UUID,
         registrationCode: String,
         widthCm: Int,

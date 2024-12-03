@@ -57,7 +57,7 @@ class JdbiTrailerRepository(
             trailer
         }
 
-    override fun insertBoat(
+    override fun insertTrailer(
         reserverId: UUID,
         registrationCode: String,
         widthCm: Int,
