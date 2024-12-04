@@ -4,14 +4,13 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Forbidden
-import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
@@ -23,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
 import java.time.LocalDate
-import kotlin.test.assertNotNull
+import kotlin.test.Test
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
