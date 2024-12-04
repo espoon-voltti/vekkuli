@@ -210,7 +210,6 @@ private fun createInvoiceBatchForOrganization(
                             unitCount = 100,
                             amount = invoiceData.priceCents.toLong(),
                             description = invoiceData.description,
-                            product = "T1270",
                             account = 329700,
                             costCenter = "1230329",
                         )
