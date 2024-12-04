@@ -49,7 +49,7 @@ data class Client(
     val ytunnus: String? = null,
     val registerNumber: String? = null,
     val lastname: String,
-    val firstnames: String,
+    val firstnames: String? = null,
     val contactPerson: String? = null,
     val street: String? = null,
     val post: String? = null,
@@ -118,54 +118,109 @@ class EspiInvoiceClient(
 fun createInvoiceBatch(
     invoiceData: InvoiceData,
     timeProvider: TimeProvider
-): InvoiceBatch =
-    InvoiceBatch(
-        // TODO: add correct values for batchNumber
-        agreementType = 256,
-        batchDate = timeProvider.getCurrentDate().toString(),
-        batchNumber = 1,
-        currency = "EUR",
-        sourcePrinted = false,
-        systemId = "VKK",
-        invoices =
-            listOf(
-                Invoice(
-                    // TODO: add correct invoice number
-                    invoiceNumber = invoiceData.invoiceNumber,
-                    useInvoiceNumber = true,
-                    dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
-                    client =
-                        Client(
-                            ssn = invoiceData.ssn,
-                            ytunnus = invoiceData.orgId,
-                            lastname = invoiceData.lastname,
-                            firstnames = invoiceData.firstnames,
-                            street = invoiceData.street,
-                            post = invoiceData.post,
-                            postalCode = invoiceData.postalCode,
-                            language = "fi",
-                            mobilePhone = invoiceData.mobilePhone,
-                            email = invoiceData.email
-                        ),
-                    rows =
-                        listOf(
-                            Row(
-                                // TODO: add correct values for productGroup, productComponent, project
-                                productGroup = "2560001",
-                                productComponent = getProductComponent(invoiceData.type),
-                                periodStartDate = invoiceData.startDate.toString(),
-                                periodEndDate = invoiceData.endDate.toString(),
-                                unitCount = 100,
-                                amount = invoiceData.priceCents.toLong(),
-                                description = invoiceData.description,
-                                product = "T1270",
-                                account = 329700,
-                                costCenter = "1230329",
-                            )
+): InvoiceBatch {
+    if (invoiceData.orgId == null) {
+        return createInvoiceBatchForPerson(timeProvider, invoiceData)
+    } else {
+        return createInvoiceBatchForOrganization(timeProvider, invoiceData)
+    }
+}
+
+private fun createInvoiceBatchForPerson(
+    timeProvider: TimeProvider,
+    invoiceData: InvoiceData
+) = InvoiceBatch(
+    agreementType = 256,
+    batchDate = timeProvider.getCurrentDate().toString(),
+    batchNumber = 1,
+    currency = "EUR",
+    sourcePrinted = false,
+    systemId = "VKK",
+    invoices =
+        listOf(
+            Invoice(
+                // TODO: add correct invoice number
+                invoiceNumber = invoiceData.invoiceNumber,
+                useInvoiceNumber = true,
+                dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
+                client =
+                    Client(
+                        ssn = invoiceData.ssn,
+                        lastname = invoiceData.lastname ?: "",
+                        firstnames = invoiceData.firstnames ?: "",
+                        street = invoiceData.street,
+                        post = invoiceData.post,
+                        postalCode = invoiceData.postalCode,
+                        language = "fi",
+                        mobilePhone = invoiceData.mobilePhone,
+                        email = invoiceData.email
+                    ),
+                rows =
+                    listOf(
+                        Row(
+                            // TODO: add correct values for productGroup, productComponent, project
+                            productGroup = "2560001",
+                            productComponent = getProductComponent(invoiceData.type),
+                            periodStartDate = invoiceData.startDate.toString(),
+                            periodEndDate = invoiceData.endDate.toString(),
+                            unitCount = 100,
+                            amount = invoiceData.priceCents.toLong(),
+                            description = invoiceData.description,
+                            account = 329700,
+                            costCenter = "1230329",
                         )
-                )
-            ),
-    )
+                    )
+            )
+        ),
+)
+
+private fun createInvoiceBatchForOrganization(
+    timeProvider: TimeProvider,
+    invoiceData: InvoiceData
+) = InvoiceBatch(
+    agreementType = 256,
+    batchDate = timeProvider.getCurrentDate().toString(),
+    batchNumber = 1,
+    currency = "EUR",
+    sourcePrinted = false,
+    systemId = "VKK",
+    invoices =
+        listOf(
+            Invoice(
+                // TODO: add correct invoice number
+                invoiceNumber = invoiceData.invoiceNumber,
+                useInvoiceNumber = true,
+                dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
+                client =
+                    Client(
+                        ytunnus = invoiceData.orgId,
+                        lastname = invoiceData.orgName ?: "",
+                        contactPerson = "${invoiceData.firstnames} ${invoiceData.lastname}",
+                        street = invoiceData.street,
+                        post = invoiceData.post,
+                        postalCode = invoiceData.postalCode,
+                        language = "fi",
+                        mobilePhone = invoiceData.mobilePhone,
+                        email = invoiceData.email
+                    ),
+                rows =
+                    listOf(
+                        Row(
+                            productGroup = "2560001",
+                            productComponent = getProductComponent(invoiceData.type),
+                            periodStartDate = invoiceData.startDate.toString(),
+                            periodEndDate = invoiceData.endDate.toString(),
+                            unitCount = 100,
+                            amount = invoiceData.priceCents.toLong(),
+                            description = invoiceData.description,
+                            product = "T1270",
+                            account = 329700,
+                            costCenter = "1230329",
+                        )
+                    )
+            )
+        ),
+)
 
 fun getProductComponent(boatSpaceType: BoatSpaceType): String =
     when (boatSpaceType) {

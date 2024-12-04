@@ -88,17 +88,17 @@ class BoatSpaceInvoiceService(
         }
         val reserver = citizenService.getCitizen(citizenId) ?: return null
 
-        // TODO: missing some fields
         return InvoiceData(
             type = reservation.type,
             dueDate = timeProvider.getCurrentDate().plusDays(21),
+            startDate = reservation.startDate,
+            endDate = reservation.endDate,
             invoiceNumber = 1,
             ssn = reserver.nationalId,
             orgId = "1234567-8",
             registerNumber = "1234567-8",
             lastname = reserver.lastName,
             firstnames = reserver.firstName,
-            contactPerson = reserver.firstName,
             street = reserver.streetAddress,
             post = reserver.postOffice,
             postalCode = reserver.postalCode,
@@ -107,8 +107,6 @@ class BoatSpaceInvoiceService(
             email = reserver.email,
             priceCents = reservation.priceCents,
             description = "${reservation.locationName} ${reservation.startDate.year}",
-            startDate = reservation.startDate,
-            endDate = reservation.endDate
         )
     }
 }
@@ -119,11 +117,10 @@ data class InvoiceData(
     val endDate: LocalDate,
     val invoiceNumber: Long,
     val ssn: String,
-    val orgId: String?,
+    val orgId: String? = null,
     val registerNumber: String,
-    val lastname: String,
-    val firstnames: String,
-    val contactPerson: String?,
+    val lastname: String?,
+    val firstnames: String?,
     val street: String,
     val post: String,
     val postalCode: String,
@@ -133,4 +130,5 @@ data class InvoiceData(
     val priceCents: Int,
     val description: String,
     val type: BoatSpaceType,
+    val orgName: String? = null,
 )
