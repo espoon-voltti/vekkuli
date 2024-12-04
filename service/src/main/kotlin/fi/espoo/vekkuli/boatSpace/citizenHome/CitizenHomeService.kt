@@ -1,10 +1,10 @@
 package fi.espoo.vekkuli.boatSpace.citizenHome
 
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationOperation
 import fi.espoo.vekkuli.domain.ReservationPeriod
-import fi.espoo.vekkuli.service.SeasonalService
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 

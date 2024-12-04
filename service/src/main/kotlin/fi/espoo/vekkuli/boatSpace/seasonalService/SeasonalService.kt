@@ -1,10 +1,13 @@
-package fi.espoo.vekkuli.service
+package fi.espoo.vekkuli.boatSpace.seasonalService
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
+import fi.espoo.vekkuli.service.ReservationResult
+import fi.espoo.vekkuli.service.ReservationResultErrorCode
+import fi.espoo.vekkuli.service.ReservationResultSuccess
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.getLastDayOfNextYearsJanuary
 import fi.espoo.vekkuli.utils.getLastDayOfYear
@@ -16,6 +19,7 @@ import java.util.*
 
 @Service
 class SeasonalService(
+    private val seasonalRepository: SeasonalRepository,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val reserverRepo: ReserverRepository,
     private val timeProvider: TimeProvider,
@@ -43,7 +47,7 @@ class SeasonalService(
         oldValidity: ReservationValidity,
         oldEndDate: LocalDate,
     ): ReservationResult {
-        val periods = boatSpaceReservationRepo.getReservationPeriods()
+        val periods = seasonalRepository.getReservationPeriods()
         return canRenewAReservation(periods, oldValidity, oldEndDate)
     }
 
@@ -116,7 +120,7 @@ class SeasonalService(
         )
     }
 
-    fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
+    fun getReservationPeriods(): List<ReservationPeriod> = seasonalRepository.getReservationPeriods()
 
     fun addPeriodInformationToReservation(
         reserverID: UUID,
@@ -149,7 +153,7 @@ class SeasonalService(
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
         val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
-        val periods = boatSpaceReservationRepo.getReservationPeriods()
+        val periods = seasonalRepository.getReservationPeriods()
 
         if (hasSomePlace && !isEspooCitizen) {
             // Non-Espoo citizens can only have one reservation
