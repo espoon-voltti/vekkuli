@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.boatSpace.reservationForm.components
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
-import fi.espoo.vekkuli.domain.Citizen
+import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
@@ -18,7 +18,7 @@ class CitizenContainerForCitizen(
     // language=HTML
     fun render(
         input: ReservationInput,
-        citizen: Citizen?
+        citizen: CitizenWithDetails?
     ): String {
         val firstNameField = formComponents.field("boatApplication.firstName", "firstName", citizen?.firstName)
         val lastNameField = formComponents.field("boatApplication.lastName", "lastName", citizen?.lastName)
