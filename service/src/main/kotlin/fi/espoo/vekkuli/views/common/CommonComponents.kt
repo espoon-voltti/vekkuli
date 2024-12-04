@@ -207,7 +207,7 @@ class CommonComponents(
                     </div>
                    <div id="boat-weight-warning" ></div>
                    <div id="boat-type-warning" ></div>
-        <div class='columns'>
+        <div class='columns pt-l'>
             $ownership
         </div>
         """.trimIndent()

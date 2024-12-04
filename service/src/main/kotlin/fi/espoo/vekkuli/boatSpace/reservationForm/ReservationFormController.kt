@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.BoatForm
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.CitizensSearchForm
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
@@ -44,6 +45,7 @@ class ReservationFormController(
     private val layout: Layout,
     private val commonComponents: CommonComponents,
     private val boatForm: BoatForm,
+    private val citizensSearchForm: CitizensSearchForm
 ) {
     @RequestMapping("/kuntalainen/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -120,7 +122,7 @@ class ReservationFormController(
         @PathVariable reservationId: Int
     ): String {
         citizenService.getCitizens(nameParameter).let {
-            return reservationFormView.citizensSearchForm(it, reservationId)
+            return citizensSearchForm.render(it, reservationId)
         }
     }
 

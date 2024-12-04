@@ -253,6 +253,7 @@ class SlipHolder(
         // language=HTML
         return """
             <div id="shipHolder">
+            <h3>${t("boatApplication.title.tenant")}</h3>
                 <input type="hidden" name="citizenId" x-bind:value="`${'$'}{citizenId}`"/>
                 <div class="field" id="slipHolder">
                     <div class="radio">

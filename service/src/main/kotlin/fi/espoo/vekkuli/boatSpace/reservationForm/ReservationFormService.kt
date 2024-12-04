@@ -521,7 +521,7 @@ class ReservationFormService(
 
         val municipalities = citizenService.getMunicipalities()
         val bodyContent =
-            reservationFormView.boatSpaceForm(
+            reservationFormView.slipForm(
                 reservation,
                 boats,
                 citizen,

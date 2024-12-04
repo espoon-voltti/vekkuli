@@ -43,8 +43,9 @@ class BoatForm(
         boats: List<Boat>,
         reservationId: Int,
         boatId: Int
-    ) = if (citizen !== null && boats.isNotEmpty()) {
-        """
+    ) = // language=HTML
+        if (citizen !== null && boats.isNotEmpty()) {
+            """
             <div id="boatOptions" class="field" x-data="{ initialWidth: localStorage.getItem('width'), 
                                          initialLength: localStorage.getItem('length'), 
                                          initialType: localStorage.getItem('type') }" >
@@ -65,11 +66,11 @@ class BoatForm(
                 ${boats.joinToString("\n") { boatRadioButton(userType, reservationId, boatId, it) }}
             </div>
             """
-    } else {
-        """
+        } else {
+            """
                 <input type="hidden" name="boatId" value="0">
                 """
-    }
+        }
 
     // language=HTML
     fun ownership(
@@ -117,7 +118,7 @@ class BoatForm(
             """
             <div class="block" x-data="{ noReg: ${input.noRegistrationNumber} }">
                  
-                <div class="columns" >
+                <div class="columns is-vcentered" >
                     <template x-if="!noReg">
                          <div class="column">
                              $registrationNumberInput
@@ -287,11 +288,8 @@ class BoatForm(
 
         // language=HTML
         return """
-            <div class='form-section'>
-                <h3 class="header">${t("boatApplication.title.reserver")}</h3>
-                <div id="boatForm">
+            <div id="boatForm">
               $boatForm
-            </div>
             </div>
             """.trimIndent()
     }
