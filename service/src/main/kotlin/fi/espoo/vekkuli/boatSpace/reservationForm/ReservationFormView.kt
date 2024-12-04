@@ -15,16 +15,6 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.*
 
-data class ReservationFormViewParams(
-    val reservation: ReservationWithDependencies,
-    val boats: List<Boat>,
-    val citizen: CitizenWithDetails? = null,
-    val input: RenewalReservationInput,
-    val reservationTimeInSeconds: Long,
-    val userType: UserType,
-    val municipalities: List<Municipality>,
-)
-
 data class BoatFormInput(
     val id: Int,
     val boatName: String,

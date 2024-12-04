@@ -32,8 +32,8 @@ import java.net.URI
 import java.util.*
 
 @Controller
-class ReservationController(
-    private val reservationService: ReservationService,
+class ReservationFormController(
+    private val reservationService: ReservationFormService,
     private val reservationFormView: ReservationFormView,
     private val employeeLayout: EmployeeLayout,
     private val citizenService: CitizenService,

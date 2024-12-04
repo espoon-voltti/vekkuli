@@ -7,13 +7,11 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.citizen.ReservationConfirmation
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.*
-import org.jdbi.v3.core.Jdbi
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -25,17 +23,13 @@ import kotlin.reflect.KClass
 
 @Controller
 class BoatFormValidator(
-    private val boatSpaceForm: ReservationFormView,
     private val layout: Layout,
-    private val jdbi: Jdbi,
     private val messageUtil: MessageUtil,
     private val reservationService: BoatReservationService,
     private val citizenService: CitizenService,
     private val organizationService: OrganizationService,
     private val reservationConfirmation: ReservationConfirmation,
     private val warnings: Warnings,
-    private val timeProvider: TimeProvider,
-    private val permissionService: PermissionService
 ) {
     // TODO: move this to somewhere else
     @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")

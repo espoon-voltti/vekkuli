@@ -22,7 +22,7 @@ import java.time.Month
 import java.util.*
 
 @Service
-class ReservationService(
+class ReservationFormService(
     private val organizationService: OrganizationService,
     private val boatReservationService: BoatReservationService,
     private val citizenService: CitizenService,
@@ -33,7 +33,7 @@ class ReservationService(
     private val employeeLayout: EmployeeLayout,
     private val citizenLayout: Layout,
     private val permissionService: PermissionService,
-    private val reservationRepository: ReservationRepository,
+    private val reservationRepository: ReservationFormRepository,
     private val boatRepository: BoatRepository,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val reserverRepository: ReserverRepository,

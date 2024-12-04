@@ -40,7 +40,7 @@ data class ReservationForApplicationForm(
 }
 
 @Repository
-class ReservationRepository(
+class ReservationFormRepository(
     private val jdbi: Jdbi,
     private val timeProvider: TimeProvider
 ) {

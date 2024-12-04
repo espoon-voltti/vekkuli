@@ -1,9 +1,8 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationService
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.kotlin.any
@@ -16,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
-import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,7 +23,7 @@ import java.util.*
 class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
     @Autowired lateinit var boatReservationService: BoatReservationService
 
-    @Autowired lateinit var reservationService: ReservationService
+    @Autowired lateinit var reservationService: ReservationFormService
 
     @MockBean lateinit var emailServiceMock: TemplateEmailService
 
@@ -159,7 +157,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 class EmailServiceIntegrationTests : IntegrationTestBase() {
     @Autowired lateinit var boatReservationService: BoatReservationService
 
-    @Autowired lateinit var reservationService: ReservationService
+    @Autowired lateinit var reservationService: ReservationFormService
 
     @MockBean lateinit var messageServiceMock: MessageService
 

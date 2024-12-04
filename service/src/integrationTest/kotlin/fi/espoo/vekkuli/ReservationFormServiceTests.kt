@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationService
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.domain.BoatType
@@ -27,7 +27,7 @@ import kotlin.test.assertNotNull
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class ReservationServiceTests : IntegrationTestBase() {
+class ReservationFormServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var organizationService: OrganizationService
 
@@ -75,7 +75,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     }
 
     @Autowired
-    lateinit var reservationService: ReservationService
+    lateinit var reservationService: ReservationFormService
 
     @Test
     fun `should create a reservation for employee if not exist or fetch if already created`() {

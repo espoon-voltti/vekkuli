@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationService
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.common.BadRequest
@@ -30,7 +30,7 @@ import java.util.*
 class BoatSpaceRenewalService(
     private val organizationService: OrganizationService,
     private val boatReservationService: BoatReservationService,
-    private val reservationService: ReservationService,
+    private val reservationService: ReservationFormService,
     private val citizenService: CitizenService,
     private val boatSpaceRenewalRepository: BoatSpaceRenewalRepository,
     private val invoiceService: BoatSpaceInvoiceService,

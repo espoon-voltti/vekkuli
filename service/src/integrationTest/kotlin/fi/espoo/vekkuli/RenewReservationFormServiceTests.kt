@@ -36,7 +36,7 @@ import kotlin.test.assertNotNull
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class RenewReservationServiceTests : IntegrationTestBase() {
+class RenewReservationFormServiceTests : IntegrationTestBase() {
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)

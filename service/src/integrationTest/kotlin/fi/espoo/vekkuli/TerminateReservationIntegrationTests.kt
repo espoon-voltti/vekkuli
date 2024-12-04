@@ -1,5 +1,5 @@
 package fi.espoo.vekkuli
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationService
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Unauthorized
@@ -39,7 +39,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: BoatReservationService
 
-    @Autowired lateinit var formReservationService: ReservationService
+    @Autowired lateinit var formReservationService: ReservationFormService
 
     @Autowired
     lateinit var terminateService: TerminateReservationService

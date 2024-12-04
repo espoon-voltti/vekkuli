@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationService
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -22,7 +22,7 @@ import kotlin.test.assertContains
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class ReservationServiceIntegrationTests : IntegrationTestBase() {
+class ReservationFormServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     private lateinit var permissionService: PermissionService
 
@@ -34,7 +34,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: BoatReservationService
 
-    @Autowired lateinit var formReservationService: ReservationService
+    @Autowired lateinit var formReservationService: ReservationFormService
 
     @Autowired lateinit var invoiceService: BoatSpaceInvoiceService
 

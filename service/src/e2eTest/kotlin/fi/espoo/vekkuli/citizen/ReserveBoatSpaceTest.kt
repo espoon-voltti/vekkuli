@@ -375,7 +375,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         paymentPage.nordeaFailedButton.click()
         assertThat(paymentPage.paymentErrorMessage).isVisible()
         paymentPage.paymentErrorLink.click()
-        page.pause()
         assertThat(formPage.confirmCancelModal).isVisible()
         formPage.confirmCancelModalConfirm.click()
         assertThat(reservationPage.header).isVisible()
