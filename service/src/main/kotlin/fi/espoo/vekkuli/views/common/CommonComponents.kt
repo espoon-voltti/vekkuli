@@ -1,7 +1,10 @@
 package fi.espoo.vekkuli.views.common
 
+import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.domain.CitizenWithDetails
+import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Component
 
@@ -9,7 +12,8 @@ import org.springframework.stereotype.Component
 class CommonComponents(
     private val messageUtil: MessageUtil,
     private val icons: Icons,
-    private val localeUtil: LocaleUtil
+    private val localeUtil: LocaleUtil,
+    private val formComponents: FormComponents,
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -271,6 +275,54 @@ class CommonComponents(
                     $addressField
                     
                 </div>"""
+        )
+    }
+
+    // language=HTML
+    fun citizenDetails(
+        citizen: CitizenWithDetails,
+        municipalities: List<Municipality>,
+    ): String {
+        val firstNameField =
+            formComponents.field(
+                "boatSpaceReservation.title.firstName",
+                "firstName",
+                citizen.firstName,
+            )
+        val lastNameField = formComponents.field("boatSpaceReservation.title.lastName", "lastName", citizen.lastName)
+        val birthdayField = formComponents.field("boatSpaceReservation.title.birthday", "birthday", citizen.birthday)
+        val addressInput =
+            formComponents.textInput("boatSpaceReservation.title.address", "address", citizen.streetAddress)
+        val postalCodeField =
+            formComponents.textInput("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
+        val cityField =
+            formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.municipalityName)
+        val emailInput = formComponents.textInput("boatApplication.email", "email", citizen.email, true)
+        val phoneInput = formComponents.textInput("boatApplication.phone", "phone", citizen.phone, true)
+        val municipalityInput =
+            formComponents.select(
+                "boatSpaceReservation.title.municipality",
+                "municipalityCode",
+                citizen.municipalityCode.toString(),
+                municipalities.map { Pair(it.code.toString(), it.name) },
+                required = true
+            )
+        return (
+            """
+             ${
+                citizenFields(
+                    firstNameField,
+                    lastNameField,
+                    birthdayField,
+                    municipalityInput,
+                    phoneInput,
+                    emailInput,
+                    addressInput,
+                    postalCodeField,
+                    cityField,
+                )
+            }
+            """.trimIndent()
         )
     }
 }

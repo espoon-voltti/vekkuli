@@ -158,7 +158,7 @@ class CitizenContainerForEmployee(
                     </span>
                 </div>
             </div>
-            ${ if (citizen != null) citizenDetails(citizen, municipalities) else "" }
+            ${ if (citizen != null) commonComponents.citizenDetails(citizen, municipalities) else "" }
         </div>
         """.trimIndent()
 
@@ -220,54 +220,6 @@ class CitizenContainerForEmployee(
         )
     } else {
         citizenSearch(reservationId, citizen, municipalities)
-    }
-
-    // language=HTML
-    fun citizenDetails(
-        citizen: CitizenWithDetails,
-        municipalities: List<Municipality>,
-    ): String {
-        val firstNameField =
-            formComponents.field(
-                "boatSpaceReservation.title.firstName",
-                "firstName",
-                citizen.firstName,
-            )
-        val lastNameField = formComponents.field("boatSpaceReservation.title.lastName", "lastName", citizen.lastName)
-        val birthdayField = formComponents.field("boatSpaceReservation.title.birthday", "birthday", citizen.birthday)
-        val addressInput =
-            formComponents.textInput("boatSpaceReservation.title.address", "address", citizen.streetAddress)
-        val postalCodeField =
-            formComponents.textInput("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
-        val cityField =
-            formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.municipalityName)
-        val emailInput = formComponents.textInput("boatApplication.email", "email", citizen.email, true)
-        val phoneInput = formComponents.textInput("boatApplication.phone", "phone", citizen.phone, true)
-        val municipalityInput =
-            formComponents.select(
-                "boatSpaceReservation.title.municipality",
-                "municipalityCode",
-                citizen.municipalityCode.toString(),
-                municipalities.map { Pair(it.code.toString(), it.name) },
-                required = true
-            )
-        return (
-            """
-             ${
-                commonComponents.citizenFields(
-                    firstNameField,
-                    lastNameField,
-                    birthdayField,
-                    municipalityInput,
-                    phoneInput,
-                    emailInput,
-                    addressInput,
-                    postalCodeField,
-                    cityField,
-                )
-            }
-            """.trimIndent()
-        )
     }
 
     fun render(
