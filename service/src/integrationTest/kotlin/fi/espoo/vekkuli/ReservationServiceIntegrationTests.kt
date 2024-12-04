@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -33,7 +34,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: BoatReservationService
 
-    @Autowired lateinit var terminateService: TerminateReservationService
+    @Autowired lateinit var formReservationService: ReservationService
 
     @Autowired lateinit var invoiceService: BoatSpaceInvoiceService
 
@@ -56,7 +57,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `second place should be fixed term for Espoo citizens`() {
         val madeReservation = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
-        reservationService.reserveBoatSpace(
+        formReservationService.processBoatSpaceReservation(
             espooCitizenId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation.id,
@@ -91,7 +92,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `third place should fail for Espoo citizens`() {
         val madeReservation1 = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
-        reservationService.reserveBoatSpace(
+        formReservationService.processBoatSpaceReservation(
             espooCitizenId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation1.id,
@@ -115,7 +116,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().plusWeeks(1),
         )
         val madeReservation2 = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
-        reservationService.reserveBoatSpace(
+        formReservationService.processBoatSpaceReservation(
             espooCitizenId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation2.id,
@@ -160,7 +161,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should not allow second place for Helsinki citizens`() {
         val madeReservation = testUtils.createReservationInPaymentState(timeProvider, reservationService, helsinkiCitizenId, 1)
-        reservationService.reserveBoatSpace(
+        formReservationService.processBoatSpaceReservation(
             helsinkiCitizenId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation.id,
@@ -258,7 +259,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 1
             )
 
-        reservationService.reserveBoatSpace(
+        formReservationService.processBoatSpaceReservation(
             this.citizenIdLeo,
             ReserveBoatSpaceInput(
                 madeReservation.id,
@@ -448,7 +449,7 @@ class ReservationServiceIntegrationTests : IntegrationTestBase() {
                 3
             )
 
-        reservationService.reserveBoatSpace(
+        formReservationService.processBoatSpaceReservation(
             this.citizenIdLeo,
             ReserveBoatSpaceInput(
                 madeReservation.id,

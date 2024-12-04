@@ -1,11 +1,11 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito.times
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
@@ -23,7 +23,9 @@ import java.util.*
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
-    @Autowired lateinit var reservationService: BoatReservationService
+    @Autowired lateinit var boatReservationService: BoatReservationService
+
+    @Autowired lateinit var reservationService: ReservationService
 
     @MockBean lateinit var emailServiceMock: TemplateEmailService
 
@@ -32,12 +34,12 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             testUtils.createReservationInPaymentState(
                 timeProvider,
-                reservationService,
+                boatReservationService,
                 this.citizenIdLeo
             )
 
         val payment =
-            reservationService.addPaymentToReservation(
+            boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
                     citizenId = this.citizenIdLeo,
@@ -48,7 +50,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        reservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
+        boatReservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
         verify(emailServiceMock).sendEmail(
             eq("varausvahvistus"),
             eq(null),
@@ -68,13 +70,13 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             testUtils.createReservationInPaymentState(
                 timeProvider,
-                reservationService,
+                boatReservationService,
                 organizationId,
                 this.citizenIdLeo
             )
 
         val payment =
-            reservationService.addPaymentToReservation(
+            boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
                     citizenId = this.citizenIdLeo,
@@ -85,7 +87,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        reservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
+        boatReservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
         verify(emailServiceMock).sendBatchEmail(
             eq("reservation_organization_confirmation"),
             eq(null),
@@ -108,31 +110,32 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             testUtils.createReservationInInfoState(
                 timeProvider,
-                reservationService,
+                boatReservationService,
                 this.citizenIdLeo
             )
-        reservationService.reserveBoatSpace(
-            this.citizenIdLeo,
-            ReserveBoatSpaceInput(
-                reservationId = madeReservation.id,
-                boatId = 1,
-                boatType = BoatType.OutboardMotor,
-                width = BigDecimal(1.0),
-                length = BigDecimal(1.0),
-                depth = BigDecimal(1.0),
-                weight = 1,
-                boatRegistrationNumber = "OYK342",
-                boatName = "Boat",
-                otherIdentification = "Other identification",
-                extraInformation = "Extra information",
-                ownerShip = OwnershipStatus.Owner,
-                email = "leo@noreplytest.fi",
-                phone = "123456789"
-            ),
-            ReservationStatus.Invoiced,
-            ReservationValidity.FixedTerm,
-            timeProvider.getCurrentDate(),
-            timeProvider.getCurrentDate()
+        reservationService.processBoatSpaceReservation(
+            reserverId = this.citizenIdLeo,
+            input =
+                ReserveBoatSpaceInput(
+                    reservationId = madeReservation.id,
+                    boatId = 1,
+                    boatType = BoatType.OutboardMotor,
+                    width = BigDecimal(1.0),
+                    length = BigDecimal(1.0),
+                    depth = BigDecimal(1.0),
+                    weight = 1,
+                    boatRegistrationNumber = "OYK342",
+                    boatName = "Boat",
+                    otherIdentification = "Other identification",
+                    extraInformation = "Extra information",
+                    ownerShip = OwnershipStatus.Owner,
+                    email = "leo@noreplytest.fi",
+                    phone = "123456789"
+                ),
+            reservationStatus = ReservationStatus.Invoiced,
+            reservationValidity = ReservationValidity.FixedTerm,
+            startDate = timeProvider.getCurrentDate(),
+            endDate = timeProvider.getCurrentDate()
         )
         verify(emailServiceMock).sendEmail(
             eq("reservation_confirmation_invoice"),
@@ -154,7 +157,9 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class EmailServiceIntegrationTests : IntegrationTestBase() {
-    @Autowired lateinit var reservationService: BoatReservationService
+    @Autowired lateinit var boatReservationService: BoatReservationService
+
+    @Autowired lateinit var reservationService: ReservationService
 
     @MockBean lateinit var messageServiceMock: MessageService
 
@@ -163,12 +168,12 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             testUtils.createReservationInPaymentState(
                 timeProvider,
-                reservationService,
+                boatReservationService,
                 this.citizenIdLeo,
                 this.citizenIdLeo
             )
         val payment =
-            reservationService.addPaymentToReservation(
+            boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
                     citizenId = this.citizenIdLeo,
@@ -179,7 +184,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        reservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
+        boatReservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
         verify(messageServiceMock).sendEmails(
             eq(null),
             any(),
@@ -194,12 +199,12 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             testUtils.createReservationInPaymentState(
                 timeProvider,
-                reservationService,
+                boatReservationService,
                 organizationId,
                 this.citizenIdLeo
             )
         val payment =
-            reservationService.addPaymentToReservation(
+            boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
                     citizenId = this.citizenIdLeo,
@@ -210,7 +215,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        reservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
+        boatReservationService.handlePaymentResult(mapOf("checkout-stamp" to payment.id.toString()), true)
         verify(messageServiceMock).sendEmails(
             eq(null),
             any(),
@@ -225,10 +230,10 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
         val madeReservation =
             testUtils.createReservationInInfoState(
                 timeProvider,
-                reservationService,
+                boatReservationService,
                 this.citizenIdLeo
             )
-        reservationService.reserveBoatSpace(
+        reservationService.processBoatSpaceReservation(
             this.citizenIdLeo,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation.id,
