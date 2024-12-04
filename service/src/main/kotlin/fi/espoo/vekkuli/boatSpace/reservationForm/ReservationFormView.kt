@@ -3,12 +3,11 @@ package fi.espoo.vekkuli.boatSpace.reservationForm
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.BoatForm
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.CitizenContainer
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.ReservationInformation
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.SlipHolder
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
-import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.SessionTimer
@@ -69,7 +68,8 @@ class ReservationFormView(
     private val commonComponents: CommonComponents,
     private val citizenContainer: CitizenContainer,
     private val slipHolder: SlipHolder,
-    private val boatForm: BoatForm
+    private val boatForm: BoatForm,
+    private val reservationInformation: ReservationInformation
 ) : BaseView() {
     // language=HTML
     fun errorPage(
@@ -99,82 +99,6 @@ class ReservationFormView(
         municipalities: List<Municipality>,
         isNewCustomer: Boolean = true
     ): String {
-        val harborField =
-            formComponents.field(
-                "boatApplication.harbor",
-                "harbor",
-                reservation.locationName,
-            )
-        val placeField =
-            formComponents.field(
-                "boatApplication.place",
-                "place",
-                "${reservation.place}",
-            )
-        val boatSpaceTypeField =
-            formComponents.field(
-                "boatApplication.boatSpaceType",
-                "boatSpaceType",
-                t("boatSpaces.typeOption.${reservation.boatSpaceType}"),
-            )
-        val spaceDimensionField =
-            formComponents.field(
-                "boatApplication.boatSpaceDimensions",
-                "boatSpaceDimension",
-                if (reservation.amenity != BoatSpaceAmenity.Buoy) {
-                    "${reservation.widthCm.cmToM()} m x ${reservation.lengthCm.cmToM()} m"
-                } else {
-                    ""
-                },
-            )
-        val amenityField =
-            formComponents.field(
-                "boatApplication.boatSpaceAmenity",
-                "boatSpaceAmenity",
-                t("boatSpaces.amenityOption.${reservation.amenity}"),
-            )
-
-        val reservationTimeField =
-            formComponents.field(
-                "boatSpaceReservation.label.reservationValidity",
-                "reservationTime",
-                if (reservation.validity === ReservationValidity.FixedTerm) {
-                    """<p>${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>"""
-                } else {
-                    (
-                        """
-                    <p>${t("boatApplication.Indefinite")}</p>
-                """
-                    )
-                },
-            )
-        val priceField =
-            formComponents.field(
-                "boatApplication.price",
-                "price",
-                """ <p>${t("boatApplication.boatSpaceFee")}: ${reservation.priceWithoutVatInEuro} &euro;</p>
-                <p>${t("boatApplication.boatSpaceFeeAlv")}: ${reservation.vatPriceInEuro} &euro;</p>
-                <p>${t("boatApplication.boatSpaceFeeTotal")}: ${reservation.priceInEuro} &euro;</p>""",
-            )
-
-        // language=HTML
-        val boatSpaceInformation =
-            """
-                <h3 class="header">${t("boatApplication.boatSpaceInformation")}</h3>
-                ${
-                commonComponents.reservationInformationFields(
-                    harborField,
-                    placeField,
-                    boatSpaceTypeField,
-                    spaceDimensionField,
-                    amenityField,
-                    reservationTimeField,
-                    priceField
-                )
-            }
-            
-            """.trimIndent()
-
         val wholeLocationName = "${reservation.locationName} ${reservation.place}"
 
         // language=HTML
@@ -260,7 +184,7 @@ class ReservationFormView(
                             </div>
                        
                              <div class='form-section'>
-                            $boatSpaceInformation
+                            ${reservationInformation.render(reservation)}
                             </div>
                                
                             <div class="block">
