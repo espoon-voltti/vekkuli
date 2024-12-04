@@ -6,6 +6,12 @@ import org.springframework.stereotype.Component
 import org.springframework.web.util.HtmlUtils
 import java.math.BigDecimal
 
+data class RadioOption(
+    val value: String,
+    val label: String,
+    val subLabel: String? = null
+)
+
 @Component
 class FormComponents {
     @Autowired
@@ -162,21 +168,28 @@ class FormComponents {
     fun radioButtons(
         labelKey: String,
         id: String,
-        value: String?,
-        options: List<Pair<String, String>>,
+        defaultValue: String?,
+        options: List<RadioOption>,
         staticAttributesForOptions: Map<String, String> = emptyMap()
     ): String {
         //language=HTML
         val opts =
-            options.joinToString("\n") { (key, value) ->
-                """<label class="radio" for="$key">
-                     <input type="radio" id="$id-$value" name="$id" value="$key" ${if (key == value) "checked" else ""} ${staticAttributesForOptions.map {
-                    "${it.key}=${ HtmlUtils.htmlEscape(it.value, "UTF-8")}"
-                }.joinToString(
-                    " "
-                )}>
-                $value
-                </label>"""
+            options.joinToString("\n") { opt ->
+                """ <label class="radio has-text-top-aligned" for="${opt.value}" xmlns="http://www.w3.org/1999/html">
+                     <input type="radio" id="$id-${opt.value}" name="$id" value="${opt.value}" ${if (opt.value == defaultValue) "checked" else ""} ${
+                    staticAttributesForOptions.map {
+                        "${it.key}=${HtmlUtils.htmlEscape(it.value, "UTF-8")}"
+                    }.joinToString(
+                        " "
+                    )
+                }>
+                <div class='label-text' >
+                    <p class="body">${opt.label}</p>
+                    ${if (opt.subLabel != null) """<p class="mt-s information-text">${opt.subLabel}</p>""" else ""}
+                </div>
+                </label>
+                
+                """
             }
 
         //language=HTML

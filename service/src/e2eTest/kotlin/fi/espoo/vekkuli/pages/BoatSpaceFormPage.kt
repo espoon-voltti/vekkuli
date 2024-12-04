@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.pages
 
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 
 class BoatSpaceFormPage(
     private val page: Page
@@ -72,6 +73,39 @@ class BoatSpaceFormPage(
         ownerRadioButton.check()
         emailInput.fill("test@example.com")
         phoneInput.fill("123456789")
+        certifyInfoCheckbox.check()
+        agreementCheckbox.check()
+        submitButton.click()
+    }
+
+    fun fillFormWithPrefilledValuesAndSubmit() {
+        boatNameInput.fill("My Boat")
+        depthInput.fill("1.5")
+        weightInput.fill("2000")
+        otherIdentification.fill("ID12345")
+        noRegistrationCheckbox.check()
+        ownerRadioButton.check()
+        certifyInfoCheckbox.check()
+        agreementCheckbox.check()
+        submitButton.click()
+    }
+
+    fun fillFormAsEmployeeWithPrefilledValuesAndSubmit(reserverName: String) {
+        val formPage = BoatSpaceFormPage(page)
+        formPage.existingCitizenSelector.click()
+        reserverName.forEach { character ->
+            formPage.citizenSearchInput.press("$character")
+        }
+        formPage.citizenSearchOption1.click()
+        // Not the best solution, but required because of content replacement
+        assertThat(formPage.firstNameInput).not().isEmpty()
+
+        boatNameInput.fill("My Boat")
+        depthInput.fill("1.5")
+        weightInput.fill("2000")
+        otherIdentification.fill("ID12345")
+        noRegistrationCheckbox.check()
+        ownerRadioButton.check()
         certifyInfoCheckbox.check()
         agreementCheckbox.check()
         submitButton.click()

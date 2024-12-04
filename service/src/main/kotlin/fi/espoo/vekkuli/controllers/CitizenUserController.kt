@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
@@ -647,6 +649,32 @@ class CitizenUserController {
 
         memoService.insertMemo(citizenId, userId, ReservationType.Marine, memoContent)
 
+        return ResponseEntity.ok(
+            citizenDetails.citizenPage(
+                citizen,
+                boatSpaceReservations,
+                boats,
+                UserType.EMPLOYEE
+            )
+        )
+    }
+
+    @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
+    fun ackWarning(
+        @RequestParam("reservationId") reservationId: Int,
+        @RequestParam("boatId") boatId: Int,
+        @RequestParam("key") key: String,
+        @RequestParam("infoText") infoText: String,
+        @RequestParam("citizenId") citizenId: UUID,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        val userId = request.ensureEmployeeId()
+
+        reservationService.acknowledgeWarning(reservationId, userId, boatId, key, infoText)
+
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
+        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         return ResponseEntity.ok(
             citizenDetails.citizenPage(
                 citizen,

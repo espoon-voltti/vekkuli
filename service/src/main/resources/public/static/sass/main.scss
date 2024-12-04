@@ -15,6 +15,7 @@ $spacing-large: 24px;
 $spacing-xl: 32px;
 $block-spacing: $spacing-medium;
 $activeColor: #D9E4F4;
+$checkbox-size: 36px;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
@@ -180,8 +181,8 @@ h4 {
   position: absolute;
   top: 0;
   left: 0;
-  height: 36px;
-  width: 36px;
+  height: $checkbox-size;
+  width: $checkbox-size;
   border-radius: 50%;
   background-color: transparent;
 }
@@ -206,6 +207,18 @@ h4 {
   margin-bottom: $spacing-small;
 }
 
+.radio.has-text-top-aligned {
+    align-items: start;
+  .label-text {
+    margin-top: calc($checkbox-size/(2*2));
+    .information-text {
+      margin-top: calc($checkbox-size/(2*2));
+      font-size: 13px;
+      line-height: 17.5px;
+    }
+  }
+}
+
 .radio > label {
   cursor: pointer;
 }
@@ -213,8 +226,8 @@ h4 {
 input[type="radio"] {
   appearance: none;
   background-color: $white;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: $checkbox-size;
+  min-height: $checkbox-size;
   border: 2px solid #ccc;
   border-radius: 50%;
   display: inline-grid;

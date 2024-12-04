@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.controllers.reservation.partial
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.controllers.UnauthorizedException
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.views.citizen.details.reservation.ExpiredReservationList

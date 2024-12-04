@@ -209,8 +209,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertThat(formPage.citizenSearchContainer).isVisible()
 
         formPage.submitButton.click()
-        // TODO: Add validation for existing citizen search
-//        assertThat(formPage.citizenIdError).isVisible()
+
+        assertThat(formPage.citizenIdError).isVisible()
 
         formPage.citizenSearchInput.pressSequentially("virtane")
         formPage.citizenSearchOption1.click()
