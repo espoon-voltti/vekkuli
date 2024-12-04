@@ -41,7 +41,7 @@ interface BoatSpaceReservationRepository {
 
     fun getBoatSpaceReservationsForCitizen(
         reserverId: UUID,
-        spaceType: BoatSpaceType
+        spaceType: BoatSpaceType?
     ): List<BoatSpaceReservationDetails>
 
     fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails?

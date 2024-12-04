@@ -417,7 +417,7 @@ class JdbiBoatSpaceReservationRepository(
 
     override fun getBoatSpaceReservationsForCitizen(
         reserverId: UUID,
-        spaceType: BoatSpaceType
+        spaceType: BoatSpaceType?
     ): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -425,15 +425,17 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
                     WHERE r.id = :reserverId AND 
-                      bs.type = :spaceType AND
+                      ${if (spaceType != null) "bs.type = :spaceType AND" else ""}
                         (
                             ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut) OR
                              (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut) 
                         )
                     """.trimIndent()
                 )
+            if (spaceType != null) {
+                query.bind("spaceType", spaceType)
+            }
             query.bind("reserverId", reserverId)
-            query.bind("spaceType", spaceType)
             query.bind("endDateCut", timeProvider.getCurrentDate())
 
             // read warnings that are associated with the reservation

@@ -383,12 +383,15 @@ class BoatReservationService(
         )
     }
 
-    fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
+    fun getBoatSpaceReservationsForCitizen(
+        citizenId: UUID,
+        spaceType: BoatSpaceType? = null
+    ): List<BoatSpaceReservationDetails> =
         seasonalService.addPeriodInformationToReservation(
             citizenId,
             boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
                 citizenId,
-                BoatSpaceType.Slip
+                spaceType
             )
         )
 
