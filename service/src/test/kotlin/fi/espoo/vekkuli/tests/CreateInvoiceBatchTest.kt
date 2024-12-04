@@ -46,7 +46,6 @@ class CreateInvoiceBatchTest {
 
         val expected =
             InvoiceBatch(
-                // TODO: add correct values for batchNumber
                 agreementType = 256,
                 batchDate = today.toString(),
                 batchNumber = given.invoiceNumber,
@@ -81,7 +80,6 @@ class CreateInvoiceBatchTest {
                                         unitCount = 100,
                                         amount = given.priceCents.toLong(),
                                         description = given.description,
-                                        product = "T1270",
                                         account = 329700,
                                         costCenter = "1230329",
                                     )
@@ -159,7 +157,6 @@ class CreateInvoiceBatchTest {
                                         unitCount = 100,
                                         amount = given.priceCents.toLong(),
                                         description = given.description,
-                                        product = "T1270",
                                         account = 329700,
                                         costCenter = "1230329",
                                     )
