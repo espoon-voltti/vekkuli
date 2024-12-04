@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
@@ -219,14 +220,14 @@ class TestUtils(
                     mobilePhone = citizen.phone,
                     email = citizen.email,
                     priceCents = 100,
-                    vat = 24,
                     startDate = LocalDate.of(2021, 1, 1),
                     endDate = LocalDate.of(2021, 12, 31),
                     description = "",
                     orgId = "",
                     registerNumber = "",
-                    contactPerson = "",
-                    language = "FI",
+                    language = "fi",
+                    type = BoatSpaceType.Slip,
+                    orgName = null
                 ),
                 citizenId,
                 1
