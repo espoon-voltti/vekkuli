@@ -1,8 +1,7 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.domain.ReserverType
-import fi.espoo.vekkuli.repository.JdbiBoatSpaceReservationRepository
+import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -10,7 +9,7 @@ import java.util.UUID
 class PermissionService(
     private val userService: UserService,
     private val organizationService: OrganizationService,
-    private val boatSpaceReservationRepo: JdbiBoatSpaceReservationRepository
+    private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
 ) {
     fun canTerminateBoatSpaceReservation(
         terminatorId: UUID,
@@ -24,6 +23,7 @@ class PermissionService(
             reservation.reserverType == ReserverType.Organization -> {
                 terminatorId in organizationService.getOrganizationMembers(reservation.reserverId).map { it.id }
             }
+
             else -> false
         }
     }
@@ -50,6 +50,7 @@ class PermissionService(
             reservation.reserverType == ReserverType.Organization -> {
                 deleterId in organizationService.getOrganizationMembers(reservation.reserverId).map { it.id }
             }
+
             else -> false
         }
     }

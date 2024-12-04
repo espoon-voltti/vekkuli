@@ -487,17 +487,6 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().singleOrNull()
         }
 
-    override fun getReservationPeriods(): List<ReservationPeriod> =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    SELECT * FROM reservation_period
-                    """.trimIndent()
-                )
-            query.mapTo<ReservationPeriod>().list()
-        }
-
     override fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =

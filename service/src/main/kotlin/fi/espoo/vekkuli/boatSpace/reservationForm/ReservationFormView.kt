@@ -1,14 +1,15 @@
-package fi.espoo.vekkuli.views.citizen
+package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.controllers.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.formatAsFullDate
+import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
+import fi.espoo.vekkuli.views.citizen.SessionTimer
+import fi.espoo.vekkuli.views.citizen.StepIndicator
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -47,27 +48,28 @@ data class BoatFormInput(
     }
 }
 
+data class BoatFormParams(
+    val userType: UserType,
+    val citizen: CitizenWithDetails?,
+    val boats: List<Boat>,
+    val reservationId: Int,
+    val input: BoatFormInput,
+)
+
 @Service
-class BoatSpaceForm(
+class ReservationFormView(
     private val markDownService: MarkDownService,
     private val icons: Icons,
-    private val messageUtil: MessageUtil,
     private val formComponents: FormComponents,
     private val sessionTimer: SessionTimer,
     private val stepIndicator: StepIndicator,
-    private val commonComponents: CommonComponents
-) {
-    fun t(key: String): String = messageUtil.getMessage(key)
-
-    fun boatForm(
-        userType: UserType,
-        citizen: CitizenWithDetails?,
-        boats: List<Boat>,
-        reservationId: Int,
-        input: BoatFormInput,
-    ): String {
+    private val commonComponents: CommonComponents,
+) : BaseView() {
+    fun boatForm(params: BoatFormParams): String {
+        val (userType, citizen, boats, reservationId, input) = params
         val boatTypes = BoatType.entries.map { it.name }
 
+        // language=HTML
         fun boatRadioButton(boat: Boat) =
             """
             <div class="radio">
@@ -308,7 +310,7 @@ class BoatSpaceForm(
         """.trimIndent()
 
     fun boatSpaceForm(
-        reservation: ReservationWithDependencies,
+        reservation: ReservationForApplicationForm,
         boats: List<Boat>,
         citizen: CitizenWithDetails?,
         organizations: List<Organization>,
@@ -334,7 +336,7 @@ class BoatSpaceForm(
             formComponents.field(
                 "boatApplication.boatSpaceType",
                 "boatSpaceType",
-                t("boatSpaces.typeOption.${reservation.type}"),
+                t("boatSpaces.typeOption.${reservation.boatSpaceType}"),
             )
         val spaceDimensionField =
             formComponents.field(
@@ -788,7 +790,8 @@ class BoatSpaceForm(
     ): String {
         val nameField = formComponents.field("boatApplication.organizationName", "orgName", org.name)
         val businessIdField = formComponents.field("boatApplication.organizationId", "orgBusinessId", org.businessId)
-        val municipalityField = formComponents.field("boatApplication.municipality", "orgMunicipality", org.municipalityName)
+        val municipalityField =
+            formComponents.field("boatApplication.municipality", "orgMunicipality", org.municipalityName)
         val phoneInput = formComponents.textInput("boatApplication.phone", "orgPhone", org.phone, true)
         val emailInput = formComponents.textInput("boatApplication.email", "orgEmail", org.email, true)
 
@@ -962,7 +965,7 @@ class BoatSpaceForm(
         """
         <div id="shipHolderAndBoatForm">
            ${slipHolder(organizations, isOrganization, selectedOrganizationId, userType, reservationId, municipalities)}
-           ${boatForm(userType, citizen, boats, reservationId, boatData)}
+           ${boatForm(BoatFormParams(userType, citizen, boats, reservationId, boatData))}
         </div>
         """.trimIndent()
 

@@ -1,6 +1,9 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.boatSpace.reservationForm.BoatFormInput
+import fi.espoo.vekkuli.boatSpace.reservationForm.BoatFormParams
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormView
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
@@ -8,8 +11,6 @@ import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.Icons
-import fi.espoo.vekkuli.views.citizen.BoatFormInput
-import fi.espoo.vekkuli.views.citizen.BoatSpaceForm
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import fi.espoo.vekkuli.views.common.CommonComponents
@@ -37,7 +38,7 @@ class BoatSpaceRenewFormView(
     private val sessionTimer: SessionTimer,
     private val stepIndicator: StepIndicator,
     private val commonComponents: CommonComponents,
-    private val boatSpaceForm: BoatSpaceForm
+    private val boatSpaceForm: ReservationFormView
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -175,23 +176,25 @@ class BoatSpaceRenewFormView(
         val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
         val boatForm =
             boatSpaceForm.boatForm(
-                userType,
-                citizen,
-                boats,
-                reservation.id,
-                BoatFormInput(
-                    id = input.boatId ?: 0,
-                    boatName = input.boatName ?: "",
-                    boatType = input.boatType ?: BoatType.OutboardMotor,
-                    width = input.width,
-                    length = input.length,
-                    depth = input.depth,
-                    weight = input.weight,
-                    boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                    otherIdentification = input.otherIdentification ?: "",
-                    extraInformation = input.extraInformation ?: "",
-                    ownership = input.ownership ?: OwnershipStatus.Owner,
-                    noRegistrationNumber = input.noRegistrationNumber ?: false,
+                BoatFormParams(
+                    userType,
+                    citizen,
+                    boats,
+                    reservation.id,
+                    BoatFormInput(
+                        id = input.boatId ?: 0,
+                        boatName = input.boatName ?: "",
+                        boatType = input.boatType ?: BoatType.OutboardMotor,
+                        width = input.width,
+                        length = input.length,
+                        depth = input.depth,
+                        weight = input.weight,
+                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                        otherIdentification = input.otherIdentification ?: "",
+                        extraInformation = input.extraInformation ?: "",
+                        ownership = input.ownership ?: OwnershipStatus.Owner,
+                        noRegistrationNumber = input.noRegistrationNumber ?: false,
+                    )
                 )
             )
         // language=HTML

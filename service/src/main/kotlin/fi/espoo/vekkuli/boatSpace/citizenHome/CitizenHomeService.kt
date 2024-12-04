@@ -1,10 +1,10 @@
 package fi.espoo.vekkuli.boatSpace.citizenHome
 
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationOperation
 import fi.espoo.vekkuli.domain.ReservationPeriod
-import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class CitizenHomeService(
     private val messageUtil: MessageUtil,
     private val timeProvider: TimeProvider,
-    private val boatReservationService: BoatReservationService
+    private val seasonalService: SeasonalService,
 ) {
     fun t(
         key: String,
@@ -21,7 +21,7 @@ class CitizenHomeService(
 
     fun getHomeViewParameters(): HomeViewParameters {
         val year = timeProvider.getCurrentDate().year.toString()
-        val periods = boatReservationService.getReservationPeriods()
+        val periods = seasonalService.getReservationPeriods()
         return HomeViewParameters(
             typeSections =
                 listOf(

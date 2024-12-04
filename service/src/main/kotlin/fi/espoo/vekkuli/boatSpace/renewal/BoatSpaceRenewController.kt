@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.BoatRegistrationInput
+import fi.espoo.vekkuli.boatSpace.reservationForm.ValidBoatRegistration
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.ensureEmployeeId
