@@ -46,6 +46,7 @@ data class BoatSpaceReservation(
 data class ReservationWithDependencies(
     val id: Int,
     val boatId: Int?,
+    val trailerId: Int?,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -99,8 +100,8 @@ data class BoatSpaceReservationItem(
     val place: String,
     val section: String,
     val locationName: String,
-    val boatRegistrationCode: String?,
-    val boatOwnership: OwnershipStatus?,
+    val boat: Boat?,
+    val trailer: Trailer?,
     val municipalityCode: Int,
     val municipalityName: String,
     val paymentDate: LocalDate?,
@@ -110,30 +111,6 @@ data class BoatSpaceReservationItem(
 
     fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }
-
-data class BoatSpaceReservationItemWithWarning(
-    val id: Int,
-    val boatSpaceId: Int,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val status: ReservationStatus,
-    val reserverId: UUID,
-    val actingUserId: UUID?,
-    val reserverType: ReserverType,
-    val name: String,
-    val email: String,
-    val phone: String,
-    val type: BoatSpaceType,
-    val place: String,
-    val locationName: String,
-    val boatRegistrationCode: String?,
-    val boatOwnership: OwnershipStatus?,
-    val warning: String?,
-    val section: String,
-    val municipalityCode: Int,
-    val municipalityName: String,
-    val paymentDate: LocalDate?,
-)
 
 enum class BoatSpaceFilterColumn {
     START_DATE,
@@ -165,17 +142,4 @@ data class BoatSpaceReservationFilter(
     fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
 
     fun hasPayment(paymentFilter: PaymentFilter): Boolean = payment.contains(paymentFilter)
-}
-
-fun getSortingSql(sort: BoatSpaceReservationFilter): String {
-    val sortDir = if (!sort.ascending) " DESC" else ""
-    return when (sort.sortBy) {
-        BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date$sortDir"
-        BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date$sortDir"
-        BoatSpaceFilterColumn.PLACE -> "ORDER BY location_name$sortDir, place$sortDir"
-        BoatSpaceFilterColumn.PLACE_TYPE -> "ORDER BY type$sortDir"
-        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name$sortDir"
-        BoatSpaceFilterColumn.HOME_TOWN -> "ORDER BY home_town$sortDir"
-        BoatSpaceFilterColumn.BOAT -> "ORDER BY boat_registration_code$sortDir"
-    }
 }

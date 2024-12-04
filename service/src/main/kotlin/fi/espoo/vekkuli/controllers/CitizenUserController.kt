@@ -295,7 +295,7 @@ class CitizenUserController {
             extraInformation = boat.extraInformation ?: "",
             ownership = boat.ownership,
             warnings = boat.warnings,
-            reservationId = reservations.find { it.boatId == boat.id }?.id
+            reservationId = reservations.find { it.boat?.id == boat.id }?.id
         )
 
     data class CitizenUpdate(
@@ -451,7 +451,7 @@ class CitizenUserController {
 
         val updatedBoats = boatService.getBoatsForReserver(citizenId).map { toUpdateForm(it, boatSpaceReservations) }
 
-        val reservationForBoat = boatSpaceReservations.find { it.boatId == boatId }
+        val reservationForBoat = boatSpaceReservations.find { it.boat?.id == boatId }
 
         if (reservationForBoat != null) {
             val boatSpace =
