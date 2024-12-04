@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import org.junit.jupiter.api.Test
@@ -15,10 +14,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByTestId("031298-988S").click() // Olivia Virtanen
-            page.getByText("Kirjaudu").click()
+            citizenDetailsPage.loginAsOliviaVirtanen()
             page.navigate(citizenPageInEnglish)
 
             // Opens up information from the first reservation of the first user
@@ -37,10 +33,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByTestId("031298-988S").click() // Olivia Virtanen
-            page.getByText("Kirjaudu").click()
+            citizenDetailsPage.loginAsOliviaVirtanen()
             page.navigate(citizenPageInEnglish)
 
             // Opens up information from the first reservation of the first user

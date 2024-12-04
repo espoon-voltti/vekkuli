@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -176,7 +177,7 @@ class BoatSpaceReservationList {
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
                     <td>$startDateFormatted</td>
-                    <td>$endDateFormatted</td>
+                    <td ${addTestId("reservation-end-date")}>$endDateFormatted</td>
                 </tr>
                 """.trimIndent()
             }
