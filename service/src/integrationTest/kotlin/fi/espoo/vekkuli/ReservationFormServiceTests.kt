@@ -35,7 +35,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     private lateinit var boatReservationService: BoatReservationService
 
     @MockBean
-    lateinit var permissionService: PermissionService
+    lateinit var seasonalService: SeasonalService
 
     private lateinit var reservationInput: ReservationInput
 
@@ -90,7 +90,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should create a reservation for citizen if not exist or fetch if already created`() {
         Mockito
-            .`when`(permissionService.canReserveANewSlip(any()))
+            .`when`(seasonalService.canReserveANewSlip(any()))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
@@ -112,7 +112,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should fail if citizen does not have permission to reserve`() {
         Mockito
-            .`when`(permissionService.canReserveANewSlip(citizenIdOlivia))
+            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia))
             .thenReturn(ReservationResult.Failure(ReservationResultErrorCode.NotPossible))
 
         val exception =
@@ -128,7 +128,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         val madeReservation = testUtils.createReservationInInfoState(timeProvider, boatReservationService, citizenIdOlivia)
 
         Mockito
-            .`when`(permissionService.canReserveANewSlip(citizenIdOlivia))
+            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
@@ -159,9 +159,10 @@ class ReservationFormServiceTests : IntegrationTestBase() {
                     orgEmail = "org@example.com",
                 )
             )
-        organizations = organizationService.getCitizenOrganizations(citizenIdOlivia)
+        organizations = organizationService.getCitizenOrganizations(citizenIdLeo)
         assertNotNull(createdOrgId, "Should create organization")
         assertEquals(organizations.size, 1, "Should have one organization")
+        assertEquals(organizations[0].email, "org@example.com", "Should add organization email")
 
         val orgEmail = "new.email@example.com"
         val secondCreatedOrgId =
@@ -173,7 +174,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
                     orgEmail = orgEmail
                 )
             )
-        organizations = organizationService.getCitizenOrganizations(citizenIdOlivia)
+        organizations = organizationService.getCitizenOrganizations(citizenIdLeo)
         assertEquals(organizations.size, 1, "Should have one organization")
         assertEquals(secondCreatedOrgId, createdOrgId, "Should fetch existing organization")
         assertEquals(organizations[0].email, orgEmail, "Should update organization email")

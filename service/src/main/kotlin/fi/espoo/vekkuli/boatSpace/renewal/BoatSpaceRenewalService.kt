@@ -1,7 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
-import fi.espoo.vekkuli.asyncJob.AsyncJob
-import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
@@ -37,9 +35,8 @@ class BoatSpaceRenewalService(
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
     private val timeProvider: TimeProvider,
-    private val asyncJobRunner: IAsyncJobRunner<AsyncJob>,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
-    private val permissionService: PermissionService,
+    private val seasonalService: SeasonalService,
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
@@ -281,7 +278,7 @@ class BoatSpaceRenewalService(
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
                 ?: throw BadRequest("Reservation to renew not found")
-        if (!permissionService.canRenewAReservation(reservation.validity, reservation.endDate).success) {
+        if (!seasonalService.canRenewAReservation(reservation.validity, reservation.endDate).success) {
             throw Conflict("Reservation cannot be renewed")
         }
         val newId = boatSpaceRenewalRepository.createRenewalRow(originalReservationId, userType, userId)

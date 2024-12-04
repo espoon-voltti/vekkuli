@@ -39,6 +39,7 @@ class ReservationFormService(
     private val reserverRepository: ReserverRepository,
     private val emailEnv: EmailEnv,
     private val emailService: TemplateEmailService,
+    private val seasonalService: SeasonalService
 ) {
     fun createOrUpdateReserverAndReservationForCitizen(
         reservationId: Int,
@@ -56,7 +57,7 @@ class ReservationFormService(
         citizenId: UUID,
         spaceId: Int
     ): Int {
-        val result = permissionService.canReserveANewSlip(citizenId)
+        val result = seasonalService.canReserveANewSlip(citizenId)
         if (result is ReservationResult.Failure) {
             throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
         }
@@ -146,7 +147,7 @@ class ReservationFormService(
             throw BadRequest("Reservation not found")
         }
 
-        val reserveSlipResult = permissionService.canReserveANewSlip(reserverId)
+        val reserveSlipResult = seasonalService.canReserveANewSlip(reserverId)
         val data =
             if (reserveSlipResult is ReservationResult.Success) {
                 reserveSlipResult.data
@@ -163,7 +164,7 @@ class ReservationFormService(
         reserverId: UUID,
         input: ReservationInput,
     ) {
-        val reserveSlipResult = permissionService.canReserveANewSlip(reserverId)
+        val reserveSlipResult = seasonalService.canReserveANewSlip(reserverId)
 
         if (!reserveSlipResult.success || reserveSlipResult !is ReservationResult.Success) {
             if (reserveSlipResult is ReservationResult.Failure) {

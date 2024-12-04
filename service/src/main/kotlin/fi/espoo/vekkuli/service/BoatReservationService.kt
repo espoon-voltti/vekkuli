@@ -95,8 +95,6 @@ class BoatReservationService(
     private val paymentService: PaymentService,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val reservationWarningRepo: ReservationWarningRepository,
-    private val reserverRepo: ReserverRepository,
-    private val boatRepository: BoatRepository,
     private val emailService: TemplateEmailService,
     private val messageUtil: MessageUtil,
     private val paytrail: PaytrailInterface,
@@ -105,6 +103,7 @@ class BoatReservationService(
     private val timeProvider: TimeProvider,
     private val memoService: MemoService,
     private val permissionService: PermissionService,
+    private val seasonalService: SeasonalService
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -384,7 +383,7 @@ class BoatReservationService(
     }
 
     fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
-        permissionService.addPeriodInformationToReservation(
+        seasonalService.addPeriodInformationToReservation(
             citizenId,
             boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
                 citizenId,
