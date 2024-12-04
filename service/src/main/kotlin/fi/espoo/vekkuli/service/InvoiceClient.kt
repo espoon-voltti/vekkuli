@@ -126,16 +126,26 @@ fun createInvoiceBatch(
     }
 }
 
+private const val PRODUCT_GROUP = "2560001"
+
+private const val COST_CENTER = "1230329"
+
+private const val ACCOUNT = 329700L
+
+private const val SYSTEM_ID = "VKK"
+
+private const val AGREEMENT_TYPE = 256
+
 private fun createInvoiceBatchForPerson(
     timeProvider: TimeProvider,
     invoiceData: InvoiceData
 ) = InvoiceBatch(
-    agreementType = 256,
+    agreementType = AGREEMENT_TYPE,
     batchDate = timeProvider.getCurrentDate().toString(),
-    batchNumber = 1,
+    batchNumber = invoiceData.invoiceNumber,
     currency = "EUR",
     sourcePrinted = false,
-    systemId = "VKK",
+    systemId = SYSTEM_ID,
     invoices =
         listOf(
             Invoice(
@@ -157,15 +167,15 @@ private fun createInvoiceBatchForPerson(
                 rows =
                     listOf(
                         Row(
-                            productGroup = "2560001",
+                            productGroup = PRODUCT_GROUP,
                             productComponent = getProductComponent(invoiceData.type),
                             periodStartDate = invoiceData.startDate.toString(),
                             periodEndDate = invoiceData.endDate.toString(),
                             unitCount = 100,
                             amount = invoiceData.priceCents.toLong(),
                             description = invoiceData.description,
-                            account = 329700,
-                            costCenter = "1230329",
+                            account = ACCOUNT,
+                            costCenter = COST_CENTER,
                         )
                     )
             )
@@ -176,12 +186,12 @@ private fun createInvoiceBatchForOrganization(
     timeProvider: TimeProvider,
     invoiceData: InvoiceData
 ) = InvoiceBatch(
-    agreementType = 256,
+    agreementType = AGREEMENT_TYPE,
     batchDate = timeProvider.getCurrentDate().toString(),
-    batchNumber = 1,
+    batchNumber = invoiceData.invoiceNumber,
     currency = "EUR",
     sourcePrinted = false,
-    systemId = "VKK",
+    systemId = SYSTEM_ID,
     invoices =
         listOf(
             Invoice(
@@ -203,15 +213,15 @@ private fun createInvoiceBatchForOrganization(
                 rows =
                     listOf(
                         Row(
-                            productGroup = "2560001",
+                            productGroup = PRODUCT_GROUP,
                             productComponent = getProductComponent(invoiceData.type),
                             periodStartDate = invoiceData.startDate.toString(),
                             periodEndDate = invoiceData.endDate.toString(),
                             unitCount = 100,
                             amount = invoiceData.priceCents.toLong(),
                             description = invoiceData.description,
-                            account = 329700,
-                            costCenter = "1230329",
+                            account = ACCOUNT,
+                            costCenter = COST_CENTER,
                         )
                     )
             )
