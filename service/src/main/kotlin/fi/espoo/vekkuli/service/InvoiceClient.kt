@@ -139,7 +139,6 @@ private fun createInvoiceBatchForPerson(
     invoices =
         listOf(
             Invoice(
-                // TODO: add correct invoice number
                 invoiceNumber = invoiceData.invoiceNumber,
                 useInvoiceNumber = true,
                 dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
@@ -158,7 +157,6 @@ private fun createInvoiceBatchForPerson(
                 rows =
                     listOf(
                         Row(
-                            // TODO: add correct values for productGroup, productComponent, project
                             productGroup = "2560001",
                             productComponent = getProductComponent(invoiceData.type),
                             periodStartDate = invoiceData.startDate.toString(),
@@ -187,7 +185,6 @@ private fun createInvoiceBatchForOrganization(
     invoices =
         listOf(
             Invoice(
-                // TODO: add correct invoice number
                 invoiceNumber = invoiceData.invoiceNumber,
                 useInvoiceNumber = true,
                 dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
