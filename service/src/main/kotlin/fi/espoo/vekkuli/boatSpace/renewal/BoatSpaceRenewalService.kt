@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReserveBoatSpaceInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
@@ -119,6 +120,9 @@ class BoatSpaceRenewalService(
                 ownerShip = input.ownership!!,
                 email = input.email!!,
                 phone = input.phone!!,
+                trailerRegistrationNumber = input.trailerRegistrationNumber,
+                trailerLengthInM = input.length,
+                trailerWidthInM = input.width,
             ),
             ReservationStatus.Payment,
             reservation.validity ?: ReservationValidity.FixedTerm,

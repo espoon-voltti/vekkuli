@@ -15,7 +15,6 @@ interface TrailerRepository {
         registrationCode: String,
         widthCm: Int,
         lengthCm: Int,
-        depthCm: Int,
     ): Trailer
 
     fun deleteTrailer(trailerId: Int): Boolean

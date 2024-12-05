@@ -196,4 +196,7 @@ data class RenewalReservationInput(
     val agreeToRules: Boolean?,
     val orgPhone: String? = null,
     val orgEmail: String? = null,
+    val trailerRegistrationNumber: String?,
+    val trailerWidth: Int?,
+    val trailerLength: Int?
 ) : BoatRegistrationInput

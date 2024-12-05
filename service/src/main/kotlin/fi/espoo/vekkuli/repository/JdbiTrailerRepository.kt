@@ -64,7 +64,6 @@ class JdbiTrailerRepository(
         registrationCode: String,
         widthCm: Int,
         lengthCm: Int,
-        depthCm: Int
     ): Trailer =
         jdbi.withHandle<Trailer, Exception> { handle ->
             val id =

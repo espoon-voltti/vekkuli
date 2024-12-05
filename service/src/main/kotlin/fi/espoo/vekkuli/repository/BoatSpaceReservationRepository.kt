@@ -78,6 +78,11 @@ interface BoatSpaceReservationRepository {
         endDate: LocalDate,
     ): BoatSpaceReservation
 
+    fun updateTrailerInBoatSpaceReservation(
+        reservationId: Int,
+        trailerId: Int
+    ): BoatSpaceReservation
+
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation?

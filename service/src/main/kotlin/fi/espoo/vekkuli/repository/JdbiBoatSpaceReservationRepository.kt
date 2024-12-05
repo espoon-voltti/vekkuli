@@ -720,6 +720,29 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().one()
         }
 
+    override fun updateTrailerInBoatSpaceReservation(
+        reservationId: Int,
+        trailerId: Int
+    ): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET trailer_id = :trailerId
+                    WHERE id = :reservationId
+                        AND (status = 'Info' OR status = 'Payment' OR status = 'Renewal')
+                        AND created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("reservationId", reservationId)
+            query.bind("trailerId", trailerId)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+
     override fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
         setReservationStatus(reservationId, ReservationStatus.Invoiced)
 

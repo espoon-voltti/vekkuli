@@ -22,6 +22,26 @@ import java.time.LocalDate
 import java.time.Month
 import java.util.*
 
+data class ReserveBoatSpaceInput(
+    val reservationId: Int,
+    val boatId: Int?,
+    val boatType: BoatType,
+    val boatRegistrationNumber: String?,
+    val width: BigDecimal,
+    val length: BigDecimal,
+    val depth: BigDecimal,
+    val weight: Int?,
+    val boatName: String?,
+    val otherIdentification: String?,
+    val extraInformation: String?,
+    val ownerShip: OwnershipStatus?,
+    val email: String?,
+    val phone: String?,
+    val trailerRegistrationNumber: String?,
+    val trailerWidthInM: BigDecimal?,
+    val trailerLengthInM: BigDecimal?,
+)
+
 @Service
 class ReservationFormService(
     private val organizationService: OrganizationService,
@@ -40,7 +60,8 @@ class ReservationFormService(
     private val reserverRepository: ReserverRepository,
     private val emailEnv: EmailEnv,
     private val emailService: TemplateEmailService,
-    private val seasonalService: SeasonalService
+    private val seasonalService: SeasonalService,
+    private val trailerRepository: TrailerRepository,
 ) {
     fun createOrUpdateReserverAndReservationForCitizen(
         reservationId: Int,
@@ -331,6 +352,8 @@ class ReservationFormService(
 
         val boat = createOrUpdateBoat(reserverId, input)
 
+        createTrailerAndUpdateReservation(reserverId, input)
+
         addReservationWarnings(input.reservationId, boatSpace, boat)
 
         updateReserverContactInfo(reserverId, input)
@@ -347,6 +370,26 @@ class ReservationFormService(
             )
         if (reservationStatus == ReservationStatus.Invoiced) {
             sendReservationConfirmationEmail(input, reserverId, boatSpace, reservation)
+        }
+    }
+
+    private fun createTrailerAndUpdateReservation(
+        reserverId: UUID,
+        input: ReserveBoatSpaceInput
+    ) {
+        if (
+            input.trailerRegistrationNumber?.isEmpty() == false &&
+            input.trailerWidthInM != null &&
+            input.trailerLengthInM != null
+        ) {
+            val trailer =
+                trailerRepository.insertTrailer(
+                    reserverId,
+                    input.trailerRegistrationNumber,
+                    input.trailerWidthInM.mToCm(),
+                    input.trailerLengthInM.mToCm()
+                )
+            boatSpaceReservationRepo.updateTrailerInBoatSpaceReservation(input.reservationId, trailer.id)
         }
     }
 
@@ -468,6 +511,9 @@ class ReservationFormService(
                 ownerShip = input.ownership!!,
                 email = input.email!!,
                 phone = input.phone!!,
+                trailerRegistrationNumber = input.trailerRegistrationNumber,
+                trailerWidthInM = input.trailerWidth,
+                trailerLengthInM = input.trailerLength,
             ),
             ReservationStatus.Payment,
             reserveSlipResult.reservationValidity,
