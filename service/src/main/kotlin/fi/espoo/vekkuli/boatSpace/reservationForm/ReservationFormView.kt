@@ -132,7 +132,7 @@ class ReservationFormView(
 
         val widthInput =
             formComponents.decimalInput(
-                "boatApplication.widthInMeters",
+                "shared.label.widthInMeters",
                 "width",
                 input.width,
                 required = true,
@@ -146,7 +146,7 @@ class ReservationFormView(
 
         val lengthInput =
             formComponents.decimalInput(
-                "boatApplication.lengthInMeters",
+                "shared.label.lengthInMeters",
                 "length",
                 input.length,
                 required = true,

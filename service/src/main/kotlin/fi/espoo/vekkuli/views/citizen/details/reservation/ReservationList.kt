@@ -39,7 +39,7 @@ class ReservationList(
             // language=HTML
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
-                ${cardHeading.render("${t("citizenDetails.boatSpace")}: ${reservation.locationName} ${reservation.place})}")}
+                ${cardHeading.render(reservation)}
                 ${cardInfo.render(reservation)}
                 ${reservationTerminationReason.render(reservation)}
                 ${reservationCardWarningBox.render(reservation, userType)}

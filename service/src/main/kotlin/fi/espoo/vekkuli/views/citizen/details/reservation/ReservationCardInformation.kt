@@ -52,7 +52,7 @@ class ReservationCardInformation : BaseView() {
                          <p ${addTestId("reservation-list-card-location-name")} >${reservation.locationName}</p>
                      </div>
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.width")}</label>
+                         <label class="label">${t("shared.label.widthInMeters")}</label>
                          <p>${reservation.boatSpaceWidthInM}</p>
                      </div>
                      <div class="field">
@@ -66,7 +66,7 @@ class ReservationCardInformation : BaseView() {
                          <p ${addTestId("reservation-list-card-place")}>${reservation.place}</p>
                      </div>
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.length")}</label>
+                         <label class="label">${t("shared.label.lengthInMeters")}</label>
                          <p>${reservation.boatSpaceLengthInM}</p>
                      </div>
                      <div class="field">
@@ -99,7 +99,7 @@ class ReservationCardInformation : BaseView() {
                  </div>
                  
              </div>
-            ${reservation.trailer?.let { trailerCard.render(it)} ?: ""}
+            ${reservation.trailer?.let { trailerCard.render(it, reservation.reserverId)} ?: ""}
 
             """.trimIndent()
     }
