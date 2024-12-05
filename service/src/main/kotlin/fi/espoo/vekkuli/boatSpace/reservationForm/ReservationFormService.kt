@@ -535,7 +535,7 @@ class ReservationFormService(
     ): String {
         if (reservation.boatSpaceType == BoatSpaceType.Winter) {
             return (
-                reservationFormView.storageForm(
+                reservationFormView.winterStorageForm(
                     reservation,
                     boats,
                     citizen,

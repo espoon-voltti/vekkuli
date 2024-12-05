@@ -61,7 +61,7 @@ class ReservationFormView(
     private val reservationInformation: ReservationInformation,
     private val formComponents: FormComponents,
 ) : BaseView() {
-    fun storageForm(
+    fun winterStorageForm(
         reservation: ReservationForApplicationForm,
         boats: List<Boat>,
         citizen: CitizenWithDetails?,
@@ -123,6 +123,22 @@ class ReservationFormView(
             </div>
             """
 
+        fun buildReservationInformationView(reservation: ReservationForApplicationForm): String {
+            val informationFields = reservationInformation.buildReservationInformationFields(reservation)
+            val amenityLocalisation = t("boatSpaces.amenityOption.${reservation.amenity}")
+            val informationFieldsWithDynamicAmenity =
+                informationFields.copy(
+                    amenityField =
+                        formComponents.field(
+                            "boatApplication.title.boatSpaceStorageType",
+                            "boatSpaceStorageType",
+                            t("boatSpaces.storageType.${reservation.amenity}"),
+                            mapOf("x-text" to amenityLocalisation)
+                        )
+                )
+            return reservationInformation.render(reservation, informationFieldsWithDynamicAmenity)
+        }
+
         // language=HTML
         val storageContent =
             """
@@ -169,7 +185,7 @@ class ReservationFormView(
                 $trailerSelector
             </div>
              <div class='form-section'>
-                ${reservationInformation.render(reservation)}
+                ${buildReservationInformationView(reservation)}
             </div>
             """.trimIndent()
 
