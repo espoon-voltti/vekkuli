@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.asyncJob
 
-import fi.espoo.vekkuli.service.InvoiceClient
+import fi.espoo.vekkuli.boatSpace.invoice.InvoiceClient
 import org.springframework.context.ApplicationListener
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.stereotype.Service

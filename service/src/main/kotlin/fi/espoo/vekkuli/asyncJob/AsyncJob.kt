@@ -4,7 +4,7 @@
 
 package fi.espoo.vekkuli.asyncJob
 
-import fi.espoo.vekkuli.service.InvoiceData
+import fi.espoo.vekkuli.boatSpace.invoice.InvoiceData
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID

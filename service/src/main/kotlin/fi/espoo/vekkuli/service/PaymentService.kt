@@ -30,7 +30,7 @@ class PaymentService(
         reservationId: Int
     ): Payment = paymentRepo.insertPayment(params, reservationId)
 
-    fun insertInvoicePayment(params: CreateInvoiceParams): Invoice = paymentRepo.insertInvoicePayment(params)
+    fun insertInvoice(params: CreateInvoiceParams): Invoice = paymentRepo.insertInvoice(params)
 
     fun getInvoice(invoiceId: UUID): Invoice? = paymentRepo.getInvoice(invoiceId)
 
