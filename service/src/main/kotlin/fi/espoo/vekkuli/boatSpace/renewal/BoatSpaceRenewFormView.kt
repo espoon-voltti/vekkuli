@@ -14,6 +14,7 @@ import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import fi.espoo.vekkuli.views.common.CommonComponents
+import fi.espoo.vekkuli.views.common.ReservationInformationParams
 import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
@@ -104,13 +105,15 @@ class BoatSpaceRenewFormView(
                 <h3 class="header">${t("boatApplication.boatSpaceInformation")}</h3>
                 ${
                 commonComponents.reservationInformationFields(
-                    harborField,
-                    placeField,
-                    boatSpaceTypeField,
-                    spaceDimensionField,
-                    amenityField,
-                    reservationTimeField,
-                    priceField
+                    ReservationInformationParams(
+                        harborField,
+                        placeField,
+                        boatSpaceTypeField,
+                        spaceDimensionField,
+                        amenityField,
+                        reservationTimeField,
+                        priceField
+                    )
                 )
             }
             

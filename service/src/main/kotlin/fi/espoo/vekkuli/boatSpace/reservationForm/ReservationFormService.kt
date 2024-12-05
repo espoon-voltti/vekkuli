@@ -520,6 +520,20 @@ class ReservationFormService(
             } ?: emptyList()
 
         val municipalities = citizenService.getMunicipalities()
+
+        if (true) {
+            val bodyContent =
+                reservationFormView.storageForm(
+                    reservation,
+                    boats,
+                    citizen,
+                    organizations,
+                    input,
+                    userType,
+                    municipalities
+                )
+            return bodyContent
+        }
         val bodyContent =
             reservationFormView.slipForm(
                 reservation,
@@ -527,10 +541,6 @@ class ReservationFormService(
                 citizen,
                 organizations,
                 input,
-                getReservationTimeInSeconds(
-                    reservation.created,
-                    timeProvider.getCurrentDateTime()
-                ),
                 userType,
                 municipalities
             )
@@ -633,5 +643,8 @@ data class ReservationInput(
     val orgAddress: String? = null,
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
-    val citizenSelection: String? = "newCitizen"
+    val citizenSelection: String? = "newCitizen",
+    val trailerRegistrationNumber: String?,
+    val trailerWidth: Int?,
+    val trailerLength: Int?
 ) : BoatRegistrationInput

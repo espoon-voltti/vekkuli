@@ -1,41 +1,43 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm.components
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import org.springframework.stereotype.Component
+import java.time.Duration
+import java.time.LocalDateTime
 
 // language=HTML
 @Component
 class BoatSpaceForm(
-    private val boatForm: BoatForm,
-    private val slipHolder: SlipHolder,
     private val stepIndicator: StepIndicator,
     private val sessionTimer: SessionTimer,
-    private val citizenContainer: CitizenContainer,
-    private val reservationInformation: ReservationInformation,
     private val icons: Icons,
-    private val markDownService: MarkDownService
+    private val markDownService: MarkDownService,
+    private val timeProvicer: TimeProvider
 ) : BaseView() {
+    fun getReservationTimeInSeconds(
+        reservationCreated: LocalDateTime,
+        currentDate: LocalDateTime
+    ): Long {
+        val reservationTimePassed = Duration.between(reservationCreated, currentDate).toSeconds()
+        return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
+    }
+
     fun render(
         reservation: ReservationForApplicationForm,
-        boats: List<Boat>,
-        citizen: CitizenWithDetails?,
-        organizations: List<Organization>,
-        input: ReservationInput,
-        reservationTimeInSeconds: Long,
         userType: UserType,
-        municipalities: List<Municipality>,
-        isNewCustomer: Boolean = true,
-        title: String = "",
-        formBody: String = ""
+        titleText: String = "",
+        formContent: String = ""
     ): String {
+        val wholeLocationName = "${reservation.locationName} ${reservation.place}"
         // language=HTML
         return (
             """
@@ -60,16 +62,19 @@ class BoatSpaceForm(
                         </button>
                     </div> 
                     ${stepIndicator.render(2)}
-                    ${sessionTimer.render(reservationTimeInSeconds)}
+                    ${sessionTimer.render(getReservationTimeInSeconds(reservation.created, timeProvicer.getCurrentDateTime()))}
                     <form
                         id="form"
                         class="column"
                         action="/${userType.path}/venepaikka/varaus/${reservation.id}"
                         method="post"
                         novalidate>
-                         $title
+                          <h1 class="title pb-l" id='boat-space-form-header'>
+                            $titleText
+                            $wholeLocationName
+                        </h1>
                         <div id="form-inputs" class="block">
-                           $formBody
+                           $formContent
                                
                             <div class="block">
                                 <div id="certify-control" class="field">

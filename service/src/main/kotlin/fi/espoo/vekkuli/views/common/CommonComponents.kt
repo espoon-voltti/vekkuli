@@ -8,6 +8,16 @@ import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Component
 
+data class ReservationInformationParams(
+    val harborField: String,
+    val placeField: String,
+    val boatSpaceTypeField: String,
+    val spaceDimensionField: String,
+    val amenityField: String,
+    val reservationTimeField: String,
+    val priceField: String,
+)
+
 @Component
 class CommonComponents(
     private val messageUtil: MessageUtil,
@@ -20,7 +30,7 @@ class CommonComponents(
     fun languageSelection(): String {
         val languageCode = localeUtil.getLocaleLanguageCode().uppercase()
         // language=HTML
-        return(
+        return (
             """
             <div class="dropdown is-hoverable" id="language-selection" >
               <div class="dropdown-trigger">
@@ -118,43 +128,40 @@ class CommonComponents(
             """.trimIndent()
     }
 
-    fun reservationInformationFields(
-        harborField: String,
-        placeField: String,
-        boatSpaceTypeField: String,
-        spaceDimensionField: String,
-        amenityField: String,
-        reservationTimeField: String,
-        priceField: String,
-    ) = // language=HTML
+    fun reservationInformationFields(params: ReservationInformationParams): String {
+        val (harborField, placeField, boatSpaceTypeField, spaceDimensionField, amenityField, reservationTimeField, priceField) = params
 
-        """
-        <div class='columns'>
-            <div class='column is-one-quarter'>
-                $harborField
+        // language=HTML
+        return (
+            """
+            <div class='columns'>
+                <div class='column is-one-quarter'>
+                    $harborField
+                </div>
+                <div class='column is-one-quarter'>
+                    $placeField
+                </div>
+                <div class='column is-one-quarter'>
+                    $boatSpaceTypeField
+                </div>
+                <div class='column is-one-quarter'>
+                  $spaceDimensionField
+                </div>
+             </div>
+             <div class='columns'>
+                <div class='column is-one-quarter'>
+                    $amenityField
+                </div>
+                <div class='column is-one-quarter'>
+                    $reservationTimeField
+                </div>
+                <div class='column is-one-quarter' >
+                   $priceField
+                </div>
             </div>
-            <div class='column is-one-quarter'>
-                $placeField
-            </div>
-            <div class='column is-one-quarter'>
-                $boatSpaceTypeField
-            </div>
-            <div class='column is-one-quarter'>
-              $spaceDimensionField
-            </div>
-         </div>
-         <div class='columns'>
-            <div class='column is-one-quarter'>
-                $amenityField
-            </div>
-            <div class='column is-one-quarter'>
-                $reservationTimeField
-            </div>
-            <div class='column is-one-quarter' >
-               $priceField
-            </div>
-        </div>
-        """.trimIndent()
+            """.trimIndent()
+        )
+    }
 
     fun boatInformationFields(
         nameInput: String,

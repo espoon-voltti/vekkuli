@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
+import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.RadioOption
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.*
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
@@ -57,29 +59,137 @@ class ReservationFormView(
     private val boatForm: BoatForm,
     private val boatSpaceForm: BoatSpaceForm,
     private val reservationInformation: ReservationInformation,
+    private val formComponents: FormComponents,
 ) : BaseView() {
+    fun storageForm(
+        reservation: ReservationForApplicationForm,
+        boats: List<Boat>,
+        citizen: CitizenWithDetails?,
+        organizations: List<Organization>,
+        input: ReservationInput,
+        userType: UserType,
+        municipalities: List<Municipality>,
+        isNewCustomer: Boolean = true,
+    ): String {
+        // language=HTML
+        val trailerRegistrationNumber =
+            formComponents.textInput(
+                "boatApplication.title.trailerRegistrationNumber",
+                "trailerRegistrationNumber",
+                input.trailerRegistrationNumber ?: "",
+            )
+        val trailerWidth =
+            formComponents.numberInput(
+                "boatApplication.title.trailerWidth",
+                "trailerWidth",
+                input.trailerWidth,
+            )
+        val trailerLength =
+            formComponents.numberInput(
+                "boatApplication.title.trailerLength",
+                "trailerLength",
+                input.trailerLength,
+            )
+
+        val radioButtons =
+            formComponents.radioButtons(
+                "boatApplication.title.storageMethod",
+                "storageMethod",
+                null,
+                listOf(
+                    RadioOption("buck", t("boatApplication.option.buck")),
+                    RadioOption("trailer", t("boatApplication.option.trailer")),
+                    RadioOption("buckTent", t("boatApplication.option.buckTent"))
+                ),
+                mapOf("x-model" to "storageMethod")
+            )
+
+        val trailerSelector = """<div x-data="{ storageMethod: 'trailer' }">
+            $radioButtons
+            <template x-if="storageMethod == 'trailer'">
+                <div class='columns'>
+                    <div class='column is-one-quarter'>
+                        $trailerRegistrationNumber
+                    </div>
+                     <div class='column is-one-quarter'>
+                        $trailerWidth
+                     </div>
+                     <div class='column is-one-quarter'>
+                        $trailerLength
+                    </div>
+                </div>
+            </template>
+            </div>
+            """
+
+        // language=HTML
+        val storageContent =
+            """
+             <div class='form-section'>
+                ${citizenContainer.render(userType, reservation.id, input, citizen, municipalities)}  
+            </div>
+            
+             <div class='form-section'>
+                ${slipHolder.render(
+                organizations,
+                input.isOrganization ?: false,
+                input.organizationId,
+                userType,
+                reservation.id,
+                municipalities
+            )}
+            </div> 
+            
+            <div class='form-section'>
+                    ${boatForm.render(
+                BoatFormParams(
+                    userType,
+                    citizen,
+                    boats,
+                    reservation.id,
+                    BoatFormInput(
+                        id = input.boatId ?: 0,
+                        boatName = input.boatName ?: "",
+                        boatType = input.boatType ?: BoatType.OutboardMotor,
+                        width = input.width,
+                        length = input.length,
+                        depth = input.depth,
+                        weight = input.weight,
+                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                        otherIdentification = input.otherIdentification ?: "",
+                        extraInformation = input.extraInformation ?: "",
+                        ownership = input.ownership ?: OwnershipStatus.Owner,
+                        noRegistrationNumber = input.noRegistrationNumber ?: false,
+                    )
+                )
+            )}
+            </div>
+            <div class='form-section'>
+                $trailerSelector
+            </div>
+             <div class='form-section'>
+                ${reservationInformation.render(reservation)}
+            </div>
+            """.trimIndent()
+
+        return boatSpaceForm.render(
+            reservation,
+            userType,
+            titleText = t("boatApplication.title.reservation"),
+            formContent = storageContent,
+        )
+    }
+
     fun slipForm(
         reservation: ReservationForApplicationForm,
         boats: List<Boat>,
         citizen: CitizenWithDetails?,
         organizations: List<Organization>,
         input: ReservationInput,
-        reservationTimeInSeconds: Long,
         userType: UserType,
         municipalities: List<Municipality>,
         isNewCustomer: Boolean = true,
     ): String {
-        val wholeLocationName = "${reservation.locationName} ${reservation.place}"
-
-        // language=HTML
-        val header =
-            """
-            <h1 class="title pb-l" id='boat-space-form-header'>
-                            ${t("boatApplication.title.reservation")} 
-                            $wholeLocationName
-                        </h1>
-            """.trimIndent()
-
         // language=HTML
         val slipContent =
             """
@@ -130,16 +240,9 @@ class ReservationFormView(
 
         return boatSpaceForm.render(
             reservation,
-            boats,
-            citizen,
-            organizations,
-            input,
-            reservationTimeInSeconds,
             userType,
-            municipalities,
-            isNewCustomer,
-            title = header,
-            formBody = slipContent,
+            titleText = t("boatApplication.title.reservation"),
+            formContent = slipContent,
         )
     }
 

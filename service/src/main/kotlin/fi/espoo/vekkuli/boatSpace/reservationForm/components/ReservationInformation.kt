@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
+import fi.espoo.vekkuli.views.common.ReservationInformationParams
 import org.springframework.stereotype.Component
 
 // language=HTML
@@ -16,7 +17,7 @@ class ReservationInformation(
     private val commonComponents: CommonComponents,
     private val formComponents: FormComponents
 ) : BaseView() {
-    fun render(reservation: ReservationForApplicationForm): String {
+    fun buildReservationInformationFields(reservation: ReservationForApplicationForm): ReservationInformationParams {
         val harborField =
             formComponents.field(
                 "boatApplication.harbor",
@@ -27,7 +28,7 @@ class ReservationInformation(
             formComponents.field(
                 "boatApplication.place",
                 "place",
-                "${reservation.place}",
+                reservation.place,
             )
         val boatSpaceTypeField =
             formComponents.field(
@@ -74,17 +75,24 @@ class ReservationInformation(
                 <p>${t("boatApplication.boatSpaceFeeAlv")}: ${reservation.vatPriceInEuro} &euro;</p>
                 <p>${t("boatApplication.boatSpaceFeeTotal")}: ${reservation.priceInEuro} &euro;</p>""",
             )
+        return ReservationInformationParams(
+            harborField,
+            placeField,
+            boatSpaceTypeField,
+            spaceDimensionField,
+            amenityField,
+            reservationTimeField,
+            priceField
+        )
+    }
+
+    fun render(
+        reservation: ReservationForApplicationForm,
+        params: ReservationInformationParams = buildReservationInformationFields(reservation)
+    ): String {
         // language=HTML
         val reservationInformationFields =
-            commonComponents.reservationInformationFields(
-                harborField,
-                placeField,
-                boatSpaceTypeField,
-                spaceDimensionField,
-                amenityField,
-                reservationTimeField,
-                priceField
-            )
+            commonComponents.reservationInformationFields(params)
 
         // language=HTML
         return """
