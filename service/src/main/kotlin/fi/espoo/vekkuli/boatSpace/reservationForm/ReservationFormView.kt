@@ -79,13 +79,13 @@ class ReservationFormView(
                 input.trailerRegistrationNumber ?: "",
             )
         val trailerWidth =
-            formComponents.numberInput(
+            formComponents.decimalInput(
                 "boatApplication.title.trailerWidth",
                 "trailerWidth",
                 input.trailerWidth,
             )
         val trailerLength =
-            formComponents.numberInput(
+            formComponents.decimalInput(
                 "boatApplication.title.trailerLength",
                 "trailerLength",
                 input.trailerLength,

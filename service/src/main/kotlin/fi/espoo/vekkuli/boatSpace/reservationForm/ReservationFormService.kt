@@ -657,6 +657,6 @@ data class ReservationInput(
     val orgCity: String? = null,
     val citizenSelection: String? = "newCitizen",
     val trailerRegistrationNumber: String?,
-    val trailerWidth: Int?,
-    val trailerLength: Int?
+    val trailerWidth: BigDecimal?,
+    val trailerLength: BigDecimal?
 ) : BoatRegistrationInput
