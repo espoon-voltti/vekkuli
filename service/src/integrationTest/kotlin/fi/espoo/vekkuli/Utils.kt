@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
+import fi.espoo.vekkuli.boatSpace.invoice.InvoiceData
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.service.*

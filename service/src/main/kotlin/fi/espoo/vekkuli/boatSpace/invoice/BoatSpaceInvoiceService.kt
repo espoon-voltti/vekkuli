@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.service
+package fi.espoo.vekkuli.boatSpace.invoice
 
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
@@ -6,6 +6,9 @@ import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.Invoice
+import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

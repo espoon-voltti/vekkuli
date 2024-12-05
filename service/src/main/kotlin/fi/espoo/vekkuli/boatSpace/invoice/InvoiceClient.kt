@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.service
+package fi.espoo.vekkuli.boatSpace.invoice
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.EspiEnv

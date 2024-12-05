@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.tests
 
+import fi.espoo.vekkuli.boatSpace.invoice.*
 import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.assertj.core.api.Assertions.assertThat

@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
+import fi.espoo.vekkuli.boatSpace.invoice.InvoiceClient
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
 import fi.espoo.vekkuli.domain.BoatType
@@ -10,7 +11,6 @@ import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.service.InvoiceClient
 import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.utils.endDateWithinMonthOfRenewWindow
 import fi.espoo.vekkuli.utils.mockTimeProvider
