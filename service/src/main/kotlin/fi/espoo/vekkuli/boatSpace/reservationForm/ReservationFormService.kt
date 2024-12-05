@@ -521,8 +521,20 @@ class ReservationFormService(
 
         val municipalities = citizenService.getMunicipalities()
 
-        if (true) {
-            val bodyContent =
+        return buildApplicationForm(reservation, boats, citizen, organizations, input, userType, municipalities)
+    }
+
+    private fun buildApplicationForm(
+        reservation: ReservationForApplicationForm,
+        boats: List<Boat>,
+        citizen: CitizenWithDetails?,
+        organizations: List<Organization>,
+        input: ReservationInput,
+        userType: UserType,
+        municipalities: List<Municipality>,
+    ): String {
+        if (reservation.boatSpaceType == BoatSpaceType.Winter) {
+            return (
                 reservationFormView.storageForm(
                     reservation,
                     boats,
@@ -532,9 +544,9 @@ class ReservationFormService(
                     userType,
                     municipalities
                 )
-            return bodyContent
+            )
         }
-        val bodyContent =
+        return (
             reservationFormView.slipForm(
                 reservation,
                 boats,
@@ -544,7 +556,7 @@ class ReservationFormService(
                 userType,
                 municipalities
             )
-        return bodyContent
+        )
     }
 
     private fun getEndDate(result: ReservationResult): LocalDate {

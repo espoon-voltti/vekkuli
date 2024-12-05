@@ -19,7 +19,7 @@ data class ReservationForApplicationForm(
     val lengthCm: Int,
     val widthCm: Int,
     val amenity: BoatSpaceAmenity,
-    val boatSpaceType: String,
+    val boatSpaceType: BoatSpaceType,
     val place: String,
     val locationName: String?,
     val validity: ReservationValidity,

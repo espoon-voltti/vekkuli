@@ -97,11 +97,12 @@ class ReservationFormView(
                 "storageMethod",
                 null,
                 listOf(
-                    RadioOption("buck", t("boatApplication.option.buck")),
                     RadioOption("trailer", t("boatApplication.option.trailer")),
+                    RadioOption("buck", t("boatApplication.option.buck")),
                     RadioOption("buckTent", t("boatApplication.option.buckTent"))
                 ),
-                mapOf("x-model" to "storageMethod")
+                mapOf("x-model" to "storageMethod"),
+                isColumnLayout = true
             )
 
         val trailerSelector = """<div x-data="{ storageMethod: 'trailer' }">
