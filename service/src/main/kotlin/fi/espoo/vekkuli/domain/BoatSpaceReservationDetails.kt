@@ -33,6 +33,7 @@ data class BoatSpaceReservationDetails(
     val type: BoatSpaceType,
     val place: String,
     val locationName: String,
+    val storageType: StorageType?,
     val boat: Boat?,
     val trailer: Trailer?,
     val boatSpaceLengthCm: Int,

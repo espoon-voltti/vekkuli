@@ -50,6 +50,7 @@ data class BoatSpaceReservationDetailsRow(
     val renewedFromId: Int? = null,
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
+    val storageType: StorageType?,
     // Boat
     val boatId: Int?,
     val boatRegistrationCode: String?,
@@ -87,6 +88,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     val type: BoatSpaceType,
     val place: String,
     val locationName: String,
+    val storageType: StorageType?,
     // Boat
     val boatId: Int?,
     val boatRegistrationCode: String?,
@@ -248,6 +250,7 @@ class JdbiBoatSpaceReservationRepository(
                     excludedBoatTypes = getExcludedBoatTypes(handle, dbResult.locationId),
                     boat = loadBoatForReserver(handle, dbResult.boatId),
                     trailer = loadTrailerForReserver(handle, dbResult.trailerId),
+                    storageType = dbResult.storageType
                 )
             } else {
                 null
@@ -487,7 +490,8 @@ class JdbiBoatSpaceReservationRepository(
                     excludedBoatTypes = emptyList(),
                     renewedFromId = it.renewedFromId,
                     paymentDate = it.paymentDate,
-                    paymentId = it.paymentId
+                    paymentId = it.paymentId,
+                    storageType = it.storageType
                 )
             }
         }
@@ -539,6 +543,7 @@ class JdbiBoatSpaceReservationRepository(
                         bsr.status, bsr.created, bsr.updated, bsr.employee_id,
                         bsr.acting_citizen_id, bsr.validity, bsr.renewed_from_id, bsr.termination_reason,
                         bsr.termination_comment, bsr.termination_timestamp,
+                        bsr.storage_type,
                         r.email, r.phone, r.type as reserver_type, r.name,
                         r.municipality_code,
                         location.name as location_name, 
@@ -627,7 +632,8 @@ class JdbiBoatSpaceReservationRepository(
                         reserverType = row.reserverType,
                         municipalityCode = row.municipalityCode,
                         municipalityName = row.municipalityName,
-                        paymentDate = row.paymentDate
+                        paymentDate = row.paymentDate,
+                        storageType = row.storageType,
                     )
                 }
         }
@@ -854,6 +860,7 @@ class JdbiBoatSpaceReservationRepository(
         bsr.termination_reason,
         bsr.termination_comment,
         bsr.termination_timestamp,
+        bsr.storage_type,
         p.id as payment_id,
         p.paid as payment_date,
         r.id as reserver_id,

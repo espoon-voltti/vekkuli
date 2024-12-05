@@ -93,6 +93,7 @@ class CitizenUserController {
         val citizen = getAuthenticatedCitizen(request)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizen.id)
         val boats = boatService.getBoatsForReserver(citizen.id).map { toUpdateForm(it, boatSpaceReservations) }
+        println(boatSpaceReservations)
 
         return citizenLayout.render(
             true,

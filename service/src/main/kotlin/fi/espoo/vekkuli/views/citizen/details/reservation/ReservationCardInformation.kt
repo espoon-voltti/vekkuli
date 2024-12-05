@@ -17,6 +17,25 @@ class ReservationCardInformation : BaseView() {
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
     ): String {
+        val amenity =
+            if (reservation.type == BoatSpaceType.Slip) {
+                t("boatSpaces.amenityOption.${reservation.amenity}")
+            } else {
+                t("boatSpaces.storageType.${reservation.storageType}")
+            }
+
+        val amenityWrapper =
+            if (reservation.type == BoatSpaceType.Slip) {
+                """ 
+                <label class="label">${t("boatSpaceReservation.title.equipment")}</label>
+                <p>${t("boatSpaces.amenityOption.${reservation.amenity}")}</p>
+                """.trimIndent()
+            } else {
+                """
+                <label class="label">${t("boatSpaces.storageTypeHeader")}</label>
+                <p>$amenity</p>
+                """.trimIndent()
+            }
         // language=HTML
         return """
             <div class="columns">
@@ -64,8 +83,7 @@ class ReservationCardInformation : BaseView() {
                  </div>
                  <div class="column">
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.equipment")}</label>
-                         <p>${t("boatSpaces.amenityOption.${reservation.amenity}")}</p>
+                         $amenityWrapper
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.paid")}</label>
