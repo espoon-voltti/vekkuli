@@ -259,6 +259,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             assertThat(formPage.storageTypeSelector).isVisible()
             assertThat(formPage.trailerInformationInputs).isVisible()
             assertThat(formPage.trailerRegistrationNumberError).isVisible()
+            assertThat(formPage.storageTypeTextTrailer).isVisible()
             formPage.storageTypeBuckOption.click()
 
             formPage.certifyInfoCheckbox.check()

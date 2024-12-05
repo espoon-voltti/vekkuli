@@ -155,20 +155,12 @@ class FormComponents {
         labelKey: String,
         id: String,
         value: String?,
-        staticAttributesForText: Map<String, String> = emptyMap()
     ): String {
-        val staticAttributesString =
-            staticAttributesForText
-                .map {
-                    "${it.key}=${HtmlUtils.htmlEscape(it.value, "UTF-8")}"
-                }.joinToString(
-                    " "
-                )
-        //language=HTM
+        //language=HTML
         return """
             <div class='field' >
                 <label class="label">${t(labelKey)}</label>
-                 <p $staticAttributesString id="$id">${if (value.isNullOrEmpty()) '-' else value}</p>
+                 <p id="$id">${if (value.isNullOrEmpty()) '-' else value}</p>
              </div>
             """.trimIndent()
     }
