@@ -133,7 +133,6 @@ class SeasonalService(
             return reservations
         }
         val periods = getReservationPeriods()
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         return reservations.map { reservation ->
             val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate)
             val canSwitchResult = canSwitchAReservation(reservation, periods, isEspooCitizen)

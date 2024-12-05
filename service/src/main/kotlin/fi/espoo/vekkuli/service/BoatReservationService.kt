@@ -104,7 +104,8 @@ class BoatReservationService(
     private val timeProvider: TimeProvider,
     private val memoService: MemoService,
     private val permissionService: PermissionService,
-    private val seasonalService: SeasonalService
+    private val seasonalService: SeasonalService,
+    private val trailerRepository: TrailerRepository
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -383,12 +384,15 @@ class BoatReservationService(
         )
     }
 
-    fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
+    fun getBoatSpaceReservationsForCitizen(
+        citizenId: UUID,
+        spaceType: BoatSpaceType? = null
+    ): List<BoatSpaceReservationDetails> =
         seasonalService.addPeriodInformationToReservation(
             citizenId,
             boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
                 citizenId,
-                BoatSpaceType.Slip
+                spaceType
             )
         )
 
@@ -441,4 +445,6 @@ class BoatReservationService(
     }
 
     fun getHarbors(): List<Location> = boatSpaceReservationRepo.getHarbors()
+
+    fun getTrailer(id: Int): Trailer? = trailerRepository.getTrailer(id)
 }
