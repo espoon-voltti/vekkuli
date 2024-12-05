@@ -77,18 +77,21 @@ class ReservationFormView(
                 "boatApplication.title.trailerRegistrationNumber",
                 "trailerRegistrationNumber",
                 input.trailerRegistrationNumber ?: "",
+                true
             )
         val trailerWidth =
             formComponents.decimalInput(
                 "boatApplication.title.trailerWidth",
                 "trailerWidth",
                 input.trailerWidth,
+                true
             )
         val trailerLength =
             formComponents.decimalInput(
                 "boatApplication.title.trailerLength",
                 "trailerLength",
                 input.trailerLength,
+                true
             )
 
         val radioButtons =
@@ -105,10 +108,10 @@ class ReservationFormView(
                 isColumnLayout = true
             )
 
-        val trailerSelector = """<div x-data="{ storageMethod: 'trailer' }">
+        val storageTypeSelector = """<div data-testid="storage-type-selector" x-data="{ storageMethod: 'trailer' }">
             $radioButtons
             <template x-if="storageMethod == 'trailer'">
-                <div class='columns'>
+                <div data-testid="trailer-information-inputs" class='columns'>
                     <div class='column is-one-quarter'>
                         $trailerRegistrationNumber
                     </div>
@@ -182,7 +185,7 @@ class ReservationFormView(
             )}
             </div>
             <div class='form-section'>
-                $trailerSelector
+                $storageTypeSelector
             </div>
              <div class='form-section'>
                 ${buildReservationInformationView(reservation)}
@@ -192,7 +195,7 @@ class ReservationFormView(
         return boatSpaceForm.render(
             reservation,
             userType,
-            titleText = t("boatApplication.title.reservation"),
+            titleText = t("boatApplication.title.reservation.winter"),
             formContent = storageContent,
         )
     }
@@ -258,7 +261,7 @@ class ReservationFormView(
         return boatSpaceForm.render(
             reservation,
             userType,
-            titleText = t("boatApplication.title.reservation"),
+            titleText = t("boatApplication.title.reservation.slip"),
             formContent = slipContent,
         )
     }

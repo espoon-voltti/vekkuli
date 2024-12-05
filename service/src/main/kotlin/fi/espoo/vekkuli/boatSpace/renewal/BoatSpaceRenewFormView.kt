@@ -222,7 +222,7 @@ class BoatSpaceRenewFormView(
                         method="post"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>
-                            ${t("boatApplication.title.reservation")} 
+                            ${t("boatApplication.title.reservation.renew")} 
                             $wholeLocationName
                         </h1>
                         <div id="form-inputs">

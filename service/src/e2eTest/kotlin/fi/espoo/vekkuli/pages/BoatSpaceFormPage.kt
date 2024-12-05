@@ -4,8 +4,8 @@ import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 
 class BoatSpaceFormPage(
-    private val page: Page
-) {
+    page: Page
+) : BasePage(page) {
     val header = page.getByTestId("boat-space-form-header")
     val boatTypeSelect = page.getByTestId("boatType")
     val widthInput = page.getByTestId("width")
@@ -37,6 +37,10 @@ class BoatSpaceFormPage(
     val ownerRadioButton = page.getByTestId("ownership-Owner")
     val confirmCancelModalCancel = page.getByTestId("confirm-cancel-modal-cancel")
     val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
+    val storageTypeSelector = getByDataTestId("storage-type-selector")
+    val storageTypeBuckOption = page.getByTestId("storageMethod-buck")
+    val trailerInformationInputs = getByDataTestId("trailer-information-inputs")
+    val trailerRegistrationNumberError = page.getByTestId("trailerRegistrationNumber-error")
 
     val firstNameInput = page.getByTestId("firstName")
     val lastNameInput = page.getByTestId("lastName")
