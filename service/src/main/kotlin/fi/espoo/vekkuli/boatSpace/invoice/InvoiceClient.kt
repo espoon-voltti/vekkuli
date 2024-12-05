@@ -93,7 +93,6 @@ class EspiInvoiceClient(
     val timeProvider: TimeProvider
 ) : InvoiceClient {
     override fun sendBatchInvoice(invoiceData: InvoiceData) {
-        println("Sending invoice $invoiceData")
         val json =
             Json {
                 encodeDefaults = false
