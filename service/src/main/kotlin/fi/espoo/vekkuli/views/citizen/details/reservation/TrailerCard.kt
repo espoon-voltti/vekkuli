@@ -23,7 +23,7 @@ class TrailerCard : BaseView() {
                 <div class="column is-narrow">
                     <h4>${t("boatApplication.trailerInformation")}</h4>
                 </div>
-                ${editTrailerButton(trailer.id, reserverId)}
+                
             </div>
             <div id="trailer-${trailer.id}" class="columns">
                <div class="column">
