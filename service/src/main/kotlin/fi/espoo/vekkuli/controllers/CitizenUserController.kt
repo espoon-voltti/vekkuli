@@ -14,6 +14,7 @@ import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.citizen.Layout
+import fi.espoo.vekkuli.views.citizen.details.reservation.TrailerCard
 import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -64,6 +65,9 @@ class CitizenUserController {
 
     @Autowired
     lateinit var editCitizen: EditCitizen
+
+    @Autowired
+    lateinit var trailerCard: TrailerCard
 
     @GetMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
@@ -276,6 +280,21 @@ class CitizenUserController {
             listOf("Owner", "User", "CoOwner", "FutureOwner"),
             UserType.CITIZEN
         )
+    }
+
+    @GetMapping("/kuntalainen/traileri/{trailerId}/muokkaa")
+    @ResponseBody
+    fun trailerEditPage(
+        request: HttpServletRequest,
+        @PathVariable trailerId: Int,
+        model: Model
+    ): String {
+        val citizen = getAuthenticatedCitizen(request)
+        val trailer = reservationService.getTrailer(trailerId)
+        if (trailer == null) {
+            throw IllegalArgumentException("Trailer not found")
+        }
+        return trailerCard.renderEdit(trailer)
     }
 
     fun toUpdateForm(

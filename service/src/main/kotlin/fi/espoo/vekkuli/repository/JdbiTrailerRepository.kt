@@ -3,8 +3,10 @@ package fi.espoo.vekkuli.repository
 import fi.espoo.vekkuli.domain.Trailer
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
+import org.springframework.stereotype.Repository
 import java.util.*
 
+@Repository
 class JdbiTrailerRepository(
     private val jdbi: Jdbi
 ) : TrailerRepository {

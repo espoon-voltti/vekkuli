@@ -48,7 +48,7 @@ class TrailerCard : BaseView() {
             """.trimIndent()
     }
 
-    fun renderEdit(trailer: Trailer): String = ""
+    fun renderEdit(trailer: Trailer): String = "EDIT TRAILER $trailer"
 
     fun getEditUrl(
         trailerId: Int,
