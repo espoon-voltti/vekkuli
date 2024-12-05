@@ -1,20 +1,16 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
-import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.stereotype.Component
 
 @Component
 class ReservationCardHeading : BaseView() {
-    fun render(
-        @SanitizeInput reservation: BoatSpaceReservationDetails,
-    ): String {
+    fun render(heading: String,): String {
         // language=HTML
         return """
             <div class="columns is-vcentered">
                 <div class="column is-narrow">
-                    <h4>${t("citizenDetails.boatSpace")}: ${reservation.locationName} ${reservation.place}</h4>
+                    <h4>$heading</h4>
                 </div>
             </div>
             """.trimIndent()

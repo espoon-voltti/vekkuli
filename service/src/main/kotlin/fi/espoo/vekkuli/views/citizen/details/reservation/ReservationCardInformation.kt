@@ -14,6 +14,12 @@ class ReservationCardInformation : BaseView() {
     @Autowired
     lateinit var icons: Icons
 
+    @Autowired
+    lateinit var cardHeading: ReservationCardHeading
+
+    @Autowired
+    lateinit var trailerCard: TrailerCard
+
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
     ): String {
@@ -91,7 +97,10 @@ class ReservationCardInformation : BaseView() {
                          <p id="paidFieldInfo">${formatAsFullDate(reservation.paymentDate)}</p> 
                      </div>
                  </div>
+                 
              </div>
+            ${reservation.trailer?.let { trailerCard.render(it)} ?: ""}
+
             """.trimIndent()
     }
 

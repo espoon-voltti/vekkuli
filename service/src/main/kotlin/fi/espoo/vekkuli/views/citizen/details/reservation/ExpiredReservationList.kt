@@ -23,7 +23,7 @@ class ExpiredReservationList(
                 ${boatSpaceReservations.joinToString("\n") { reservation ->
                 """
                 <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
-                    ${cardHeading.render(reservation)}
+                    ${cardHeading.render("${t("citizenDetails.boatSpace")}: ${reservation.locationName} ${reservation.place})}")}
                     ${cardInfo.render(reservation)}
                     ${reservationTerminationReason.render(reservation)}
                 </div>
