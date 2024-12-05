@@ -1,13 +1,14 @@
-package fi.espoo.vekkuli.service
+package fi.espoo.vekkuli.boatSpace.invoice
 
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
-import fi.espoo.vekkuli.domain.CreateInvoiceParams
-import fi.espoo.vekkuli.domain.CreatePaymentParams
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.Invoice
-import fi.espoo.vekkuli.domain.Payment
+import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -34,12 +35,13 @@ class BoatSpaceInvoiceService(
         if (invoice != null) {
             return invoice
         }
-        val (createdInvoice, createdPayment) = createInvoice(invoiceData, citizenId, reservationId)
+        val (createdInvoice) = createInvoice(invoiceData, citizenId, reservationId)
+        val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
 
         asyncJobRunner.plan(
             sequenceOf(
                 JobParams(
-                    AsyncJob.SendInvoiceBatch(invoiceData),
+                    AsyncJob.SendInvoiceBatch(invoiceDataWithNumber),
                     300,
                     Duration.ofMinutes(15),
                     timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
@@ -66,7 +68,7 @@ class BoatSpaceInvoiceService(
                 reservationId
             )
         val invoice =
-            paymentService.insertInvoicePayment(
+            paymentService.insertInvoice(
                 CreateInvoiceParams(
                     dueDate = invoiceData.dueDate,
                     reference = invoiceData.invoiceNumber.toString(),
@@ -89,16 +91,17 @@ class BoatSpaceInvoiceService(
         }
         val reserver = citizenService.getCitizen(citizenId) ?: return null
 
-        // TODO: missing some fields
         return InvoiceData(
+            type = reservation.type,
             dueDate = timeProvider.getCurrentDate().plusDays(21),
+            startDate = reservation.startDate,
+            endDate = reservation.endDate,
             invoiceNumber = 1,
             ssn = reserver.nationalId,
             orgId = "1234567-8",
             registerNumber = "1234567-8",
             lastname = reserver.lastName,
             firstnames = reserver.firstName,
-            contactPerson = reserver.firstName,
             street = reserver.streetAddress,
             post = reserver.postOffice,
             postalCode = reserver.postalCode,
@@ -106,10 +109,7 @@ class BoatSpaceInvoiceService(
             mobilePhone = reserver.phone,
             email = reserver.email,
             priceCents = reservation.priceCents,
-            vat = reservation.vatCents,
             description = "${reservation.locationName} ${reservation.startDate.year}",
-            startDate = reservation.startDate,
-            endDate = reservation.endDate
         )
     }
 }
@@ -120,11 +120,10 @@ data class InvoiceData(
     val endDate: LocalDate,
     val invoiceNumber: Long,
     val ssn: String,
-    val orgId: String,
+    val orgId: String? = null,
     val registerNumber: String,
-    val lastname: String,
-    val firstnames: String,
-    val contactPerson: String?,
+    val lastname: String?,
+    val firstnames: String?,
     val street: String,
     val post: String,
     val postalCode: String,
@@ -132,6 +131,7 @@ data class InvoiceData(
     val mobilePhone: String,
     val email: String,
     val priceCents: Int,
-    val vat: Int,
     val description: String,
+    val type: BoatSpaceType,
+    val orgName: String? = null,
 )

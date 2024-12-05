@@ -23,7 +23,7 @@ interface PaymentRepository {
         paidDate: LocalDateTime?
     ): Payment?
 
-    fun insertInvoicePayment(params: CreateInvoiceParams): Invoice
+    fun insertInvoice(params: CreateInvoiceParams): Invoice
 
     fun getInvoice(invoiceId: UUID): Invoice?
 

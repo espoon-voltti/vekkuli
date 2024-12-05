@@ -1,8 +1,7 @@
-package fi.espoo.vekkuli.controllers
+package fi.espoo.vekkuli.boatSpace.invoice
 
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import java.time.LocalDate
-import java.util.*
 
 @Controller
 class InvoiceController(
@@ -51,15 +49,15 @@ class InvoiceController(
                 reserverSsn = invoiceData.ssn,
                 reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
                 product = reservation.locationName,
-                functionInformation = "?",
+                functionInformation = "",
                 billingPeriodStart = "",
                 billingPeriodEnd = "",
                 boatingSeasonStart = LocalDate.of(2025, 5, 1),
                 boatingSeasonEnd = LocalDate.of(2025, 9, 30),
                 invoiceNumber = "",
                 dueDate = LocalDate.of(2025, 12, 31),
-                costCenter = "?",
-                invoiceType = "?",
+                costCenter = "",
+                invoiceType = "",
                 invoiceRows =
                     listOf(
                         InvoiceRow(
