@@ -429,4 +429,6 @@ class BoatReservationService(
     fun getHarbors(): List<Location> = boatSpaceReservationRepo.getHarbors()
 
     fun getTrailer(id: Int): Trailer? = trailerRepository.getTrailer(id)
+
+    fun updateTrailer(trailer: Trailer): Trailer = trailerRepository.updateTrailer(trailer)
 }

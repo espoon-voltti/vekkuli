@@ -99,7 +99,7 @@ class ReservationCardInformation : BaseView() {
                  </div>
                  
              </div>
-            ${reservation.trailer?.let { trailerCard.render(it, reservation.reserverId)} ?: ""}
+            ${reservation.trailer?.let { trailerCard.render(it)} ?: ""}
 
             """.trimIndent()
     }

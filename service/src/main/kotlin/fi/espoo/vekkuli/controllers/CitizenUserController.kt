@@ -1,15 +1,13 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
+import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.BoatService
-import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.service.MemoService
+import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.EditBoat
@@ -33,6 +31,9 @@ import java.util.*
 
 @Controller
 class CitizenUserController {
+    @Autowired
+    private lateinit var permissionService: PermissionService
+
     @Autowired
     private lateinit var editBoat: EditBoat
 
@@ -289,12 +290,41 @@ class CitizenUserController {
         @PathVariable trailerId: Int,
         model: Model
     ): String {
-        val citizen = getAuthenticatedCitizen(request)
         val trailer = reservationService.getTrailer(trailerId)
         if (trailer == null) {
             throw IllegalArgumentException("Trailer not found")
         }
         return trailerCard.renderEdit(trailer)
+    }
+
+    @PatchMapping("/kuntalainen/traileri/{trailerId}/tallenna")
+    @ResponseBody
+    fun trailerSavePage(
+        request: HttpServletRequest,
+        @PathVariable trailerId: Int,
+        @RequestParam trailerRegistrationCode: String,
+        @RequestParam trailerWidth: BigDecimal,
+        @RequestParam trailerLength: BigDecimal,
+        model: Model
+    ): String {
+        val user = request.getAuthenticatedUser() ?: throw Unauthorized()
+        val oldTrailer = reservationService.getTrailer(trailerId)
+        if (oldTrailer == null) {
+            throw IllegalArgumentException("Trailer not found")
+        }
+        if (!permissionService.canEditTrailer(user.id, oldTrailer.reserverId)) {
+            throw UnauthorizedException()
+        }
+        val newTrailer =
+            Trailer(
+                id = trailerId,
+                registrationCode = trailerRegistrationCode,
+                widthCm = trailerWidth.mToCm(),
+                lengthCm = trailerLength.mToCm(),
+                reserverId = oldTrailer.reserverId
+            )
+        reservationService.updateTrailer(newTrailer)
+        return trailerCard.render(newTrailer)
     }
 
     fun toUpdateForm(
