@@ -24,18 +24,19 @@ class ReservationCardInformation : BaseView() {
                 t("boatSpaces.storageType.${reservation.storageType}")
             }
 
-        val amenityWrapper =
+        val amenityLabel =
             if (reservation.type == BoatSpaceType.Slip) {
-                """ 
-                <label class="label">${t("boatSpaceReservation.title.equipment")}</label>
-                <p>${t("boatSpaces.amenityOption.${reservation.amenity}")}</p>
-                """.trimIndent()
+                t("boatSpaceReservation.title.equipment")
             } else {
-                """
-                <label class="label">${t("boatSpaces.storageTypeHeader")}</label>
-                <p>$amenity</p>
-                """.trimIndent()
+                t("boatSpaces.storageTypeHeader")
             }
+
+        val amenityWrapper =
+            """ 
+            <label class="label">$amenityLabel</label>
+            <p>$amenity</p>
+            """.trimIndent()
+
         // language=HTML
         return """
             <div class="columns">
