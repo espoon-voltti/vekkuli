@@ -59,7 +59,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.boatPresent")}</label>
-                         <p>${reservation.boatName ?: ""}</p>
+                         <p>${reservation.boat?.name ?: ""}</p>
                      </div>
                  </div>
                  <div class="column">
