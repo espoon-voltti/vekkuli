@@ -37,9 +37,10 @@ data class ReserveBoatSpaceInput(
     val ownerShip: OwnershipStatus?,
     val email: String?,
     val phone: String?,
-    val trailerRegistrationNumber: String?,
-    val trailerWidthInM: BigDecimal?,
-    val trailerLengthInM: BigDecimal?,
+    val storageType: StorageType? = null,
+    val trailerRegistrationNumber: String? = null,
+    val trailerWidthInM: BigDecimal? = null,
+    val trailerLengthInM: BigDecimal? = null,
 )
 
 @Service
@@ -352,8 +353,9 @@ class ReservationFormService(
 
         val boat = createOrUpdateBoat(reserverId, input)
 
-        createTrailerAndUpdateReservation(reserverId, input)
-
+        if (boatSpace.type == BoatSpaceType.Winter) {
+            updateReservationWithStorageTypeRelatedInformation(input, reserverId)
+        }
         addReservationWarnings(input.reservationId, boatSpace, boat)
 
         updateReserverContactInfo(reserverId, input)
@@ -373,6 +375,24 @@ class ReservationFormService(
         }
     }
 
+    private fun updateReservationWithStorageTypeRelatedInformation(
+        input: ReserveBoatSpaceInput,
+        reserverId: UUID,
+    ) {
+        addStorageType(input.reservationId, input.storageType)
+        if (input.storageType == StorageType.Trailer) {
+            createTrailerAndUpdateReservation(reserverId, input)
+        }
+    }
+
+    private fun addStorageType(
+        reservationId: Int,
+        storageType: StorageType?
+    ) {
+        if (storageType == null) throw IllegalArgumentException("Storage type can not be null.")
+        boatSpaceReservationRepo.updateStorageType(reservationId, storageType)
+    }
+
     private fun createTrailerAndUpdateReservation(
         reserverId: UUID,
         input: ReserveBoatSpaceInput
@@ -390,6 +410,8 @@ class ReservationFormService(
                     input.trailerLengthInM.mToCm()
                 )
             boatSpaceReservationRepo.updateTrailerInBoatSpaceReservation(input.reservationId, trailer.id)
+        } else {
+            throw IllegalArgumentException("Trailer can not be empty.")
         }
     }
 
@@ -511,6 +533,7 @@ class ReservationFormService(
                 ownerShip = input.ownership!!,
                 email = input.email!!,
                 phone = input.phone!!,
+                storageType = input.storageType,
                 trailerRegistrationNumber = input.trailerRegistrationNumber,
                 trailerWidthInM = input.trailerWidth,
                 trailerLengthInM = input.trailerLength,
@@ -702,6 +725,7 @@ data class ReservationInput(
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
     val citizenSelection: String? = "newCitizen",
+    val storageType: StorageType?,
     val trailerRegistrationNumber: String?,
     val trailerWidth: BigDecimal?,
     val trailerLength: BigDecimal?

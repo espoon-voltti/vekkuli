@@ -7,7 +7,10 @@ import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.mToCm
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -38,6 +41,9 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     lateinit var seasonalService: SeasonalService
 
     private lateinit var reservationInput: ReservationInput
+
+    @Autowired
+    private lateinit var trailerRepository: TrailerRepository
 
     @BeforeEach
     override fun resetDatabase() {
@@ -71,9 +77,10 @@ class ReservationFormServiceTests : IntegrationTestBase() {
                 certifyInformation = true,
                 agreeToRules = true,
                 isOrganization = false,
-                trailerRegistrationNumber = "TRAILER123",
-                trailerWidth = BigDecimal("2.0"),
-                trailerLength = BigDecimal("4.0"),
+                trailerRegistrationNumber = null,
+                trailerWidth = null,
+                trailerLength = null,
+                storageType = StorageType.None
             )
     }
 
@@ -128,7 +135,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should create or update a reservation for citizen`() {
-        val madeReservation = testUtils.createReservationInInfoState(timeProvider, boatReservationService, citizenIdOlivia)
+        val madeReservation = testUtils.createReservationInInfoState(citizenIdOlivia)
 
         Mockito
             .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia))
@@ -181,5 +188,41 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         assertEquals(organizations.size, 1, "Should have one organization")
         assertEquals(secondCreatedOrgId, createdOrgId, "Should fetch existing organization")
         assertEquals(organizations[0].email, orgEmail, "Should update organization email")
+    }
+
+    @Test
+    fun `should add trailer and update storage type and trailer of reservation`() {
+        Mockito
+            .`when`(seasonalService.canReserveANewSlip(any()))
+            .thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(30),
+                        ReservationValidity.Indefinite
+                    )
+                )
+            )
+        // Boat space is winter storage
+        val madeReservation = testUtils.createReservationInInfoState(citizenIdOlivia, boatSpaceId = 7)
+        val input =
+            reservationInput.copy(
+                storageType = StorageType.Trailer,
+                trailerRegistrationNumber = "ABC123",
+                trailerLength = BigDecimal(1.0),
+                trailerWidth = BigDecimal(1.0)
+            )
+
+        reservationService.createOrUpdateReserverAndReservationForCitizen(madeReservation.id, citizenIdOlivia, input)
+        val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
+
+        assertEquals(StorageType.Trailer, reservation?.storageType, "Storage type should be Trailer")
+        assertEquals(input.trailerLength?.mToCm(), reservation?.trailer?.lengthCm, "Trailer length should be the same as in the input")
+        assertEquals(input.trailerWidth?.mToCm(), reservation?.trailer?.widthCm, "Trailer width should be the same as in the input")
+        assertEquals(
+            input.trailerRegistrationNumber,
+            reservation?.trailer?.registrationCode,
+            "Trailer registration number should be the same as in the input"
+        )
     }
 }

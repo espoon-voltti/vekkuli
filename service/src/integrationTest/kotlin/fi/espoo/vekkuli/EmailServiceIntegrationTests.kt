@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReserveBoatSpaceInput
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Test
@@ -107,8 +108,6 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
     fun `should send correct template email on invoice`() {
         val madeReservation =
             testUtils.createReservationInInfoState(
-                timeProvider,
-                boatReservationService,
                 this.citizenIdLeo
             )
         reservationService.processBoatSpaceReservation(
@@ -227,8 +226,6 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
     fun `should send email on invoice`() {
         val madeReservation =
             testUtils.createReservationInInfoState(
-                timeProvider,
-                boatReservationService,
                 this.citizenIdLeo
             )
         reservationService.processBoatSpaceReservation(

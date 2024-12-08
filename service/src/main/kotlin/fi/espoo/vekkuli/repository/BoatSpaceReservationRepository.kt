@@ -94,4 +94,9 @@ interface BoatSpaceReservationRepository {
     fun setReservationAsExpired(reservationId: Int)
 
     fun getHarbors(): List<Location>
+
+    fun updateStorageType(
+        reservationId: Int,
+        storageType: StorageType
+    ): BoatSpaceReservation
 }

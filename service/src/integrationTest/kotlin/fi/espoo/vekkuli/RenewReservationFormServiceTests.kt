@@ -5,10 +5,7 @@ import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.invoice.InvoiceClient
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
-import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.service.PaymentService
@@ -391,7 +388,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                 agreeToRules = true,
                 certifyInformation = true,
                 noRegistrationNumber = false,
-                originalReservationId = 4
+                originalReservationId = 4,
+                storageType = StorageType.None
             )
 
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)

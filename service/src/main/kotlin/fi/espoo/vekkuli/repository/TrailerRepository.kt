@@ -17,5 +17,13 @@ interface TrailerRepository {
         lengthCm: Int,
     ): Trailer
 
+    fun insertTrailerAndAddToReservation(
+        reservationId: Int,
+        reserverId: UUID,
+        registrationCode: String,
+        widthCm: Int,
+        lengthCm: Int,
+    ): Trailer
+
     fun deleteTrailer(trailerId: Int): Boolean
 }

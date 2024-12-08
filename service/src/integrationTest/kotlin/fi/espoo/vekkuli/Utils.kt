@@ -68,6 +68,7 @@ data class CreateReservationParams(
 @Service
 class TestUtils(
     private val reservationService: BoatReservationService,
+    private val timeProvider: TimeProvider
 ) {
     fun createReservationInConfirmedState(params: CreateReservationParams): BoatSpaceReservationDetails {
         var madeReservation =
@@ -184,8 +185,6 @@ class TestUtils(
     }
 
     fun createReservationInInfoState(
-        timeProvider: TimeProvider,
-        reservationService: BoatReservationService,
         citizenId: UUID,
         boatSpaceId: Int = 1,
     ): BoatSpaceReservation {
