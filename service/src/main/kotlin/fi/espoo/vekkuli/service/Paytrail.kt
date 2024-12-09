@@ -52,6 +52,8 @@ data class PaytrailPaymentParams(
     val language: String,
     val items: List<PaytrailPurchaseItem>? = null,
     val customer: PaytrailCustomer,
+    val redirectUrls: PaytrailCallbackUrl? = null,
+    val callbackUrls: PaytrailCallbackUrl? = null,
 )
 
 @Serializable
@@ -193,8 +195,8 @@ class Paytrail(
                 currency = CURRENCY,
                 language = params.language,
                 customer = params.customer,
-                redirectUrls = redirectUrls,
-                callbackUrls = callbackUrls,
+                redirectUrls = params.redirectUrls ?: redirectUrls,
+                callbackUrls = params.callbackUrls ?: callbackUrls,
                 callbackDelay = 1,
                 items = params.items,
             )

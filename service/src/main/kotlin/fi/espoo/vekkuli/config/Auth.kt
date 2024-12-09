@@ -67,7 +67,7 @@ class HttpAccessControl : HttpFilter() {
                         return response.sendError(HttpServletResponse.SC_FORBIDDEN, "fi.espoo.vekkuli.common.Forbidden")
                     }
                 }
-                request.requestURI.startsWith("/kuntalainen/") -> {
+                request.requiresAuthenticatedCitizen() -> {
                     if (!authenticatedUser.isCitizen()) {
                         return response.sendError(HttpServletResponse.SC_FORBIDDEN, "fi.espoo.vekkuli.common.Forbidden")
                     }
@@ -98,8 +98,17 @@ class HttpAccessControl : HttpFilter() {
         when {
             unautheticatedRoutes.contains(requestURI) ||
                 requestURI.startsWith("/static") ||
+                requestURI.startsWith("/api/citizen/public") ||
                 requestURI.startsWith("/ext") -> false
             else -> true
+        }
+
+    private fun HttpServletRequest.requiresAuthenticatedCitizen(): Boolean =
+        when {
+            requestURI.startsWith("/api/citizen/public") -> false
+            requestURI.startsWith("/api/citizen/") ||
+                requestURI.startsWith("/kuntalainen/") -> true
+            else -> false
         }
 }
 

@@ -11,6 +11,7 @@ import java.util.*
 data class BoatSpaceReservationDetails(
     val id: Int,
     val created: LocalDateTime,
+    val updated: LocalDateTime,
     val priceCents: Int,
     val vatCents: Int,
     val netPriceCents: Int,
@@ -23,6 +24,7 @@ data class BoatSpaceReservationDetails(
     val terminationTimestamp: LocalDateTime?,
     val reserverType: ReserverType,
     val reserverId: UUID,
+    val actingCitizenId: UUID?,
     val name: String,
     val email: String,
     val phone: String,
@@ -58,3 +60,17 @@ data class BoatSpaceReservationDetails(
     val priceWithoutVatInEuro: String
         get() = formatInt(netPriceCents)
 }
+
+fun BoatSpaceReservationDetails.toBoatSpaceReservation() =
+    BoatSpaceReservation(
+        id = id,
+        boatSpaceId = boatSpaceId,
+        startDate = startDate,
+        endDate = endDate,
+        created = created,
+        updated = updated,
+        status = status,
+        actingCitizenId = actingCitizenId,
+        reserverId = reserverId,
+        validity = validity,
+    )

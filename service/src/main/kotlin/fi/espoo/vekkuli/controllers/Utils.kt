@@ -21,7 +21,7 @@ class Utils {
                 EnvType.Production -> "https://varaukset.espoo.fi"
                 EnvType.Staging -> "https://staging.varaukset.espoo.fi"
                 EnvType.LocalDocker -> "http://api-gateway:3000"
-                EnvType.Local -> "http://localhost:3000"
+                EnvType.Local -> System.getenv("BASE_URL") ?: "http://localhost:3000"
             }
 
         fun getEnv(): EnvType {

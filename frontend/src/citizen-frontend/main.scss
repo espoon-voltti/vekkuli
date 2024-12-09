@@ -1,0 +1,935 @@
+$bulma-primary: #0047B6;
+$light-blue: #D9E4F4;
+$white: #fff;
+$black: #536076;
+$grey: #A9B0BB;
+$light-gray: #F7F7F7;
+$darkGray: #536076;
+$gainsboro: #dddddd;
+$warning: #FF8E31;
+$error: #FF3D3D;
+$spacing-extrasmall: 4px;
+$spacing-small: 8px;
+$spacing-medium: 16px;
+$spacing-large: 24px;
+$spacing-xl: 32px;
+$block-spacing: $spacing-medium;
+$activeColor: #D9E4F4;
+$checkbox-size: 36px;
+$help-min-height: 18px;
+
+@use "bulma/sass" with (
+  $primary: $bulma-primary,
+  $link: $bulma-primary,
+  $family-primary: "Lato, sans-serif",
+  $family-secondary: "Lato, sans-serif",
+  $spacing-shortcuts: ("margin": "m", "padding": "p"),
+  $spacing-horizontal: "h",
+  $spacing-vertical: "v",
+  $spacing-values: ("none": 0, "s": $spacing-small, "m": $spacing-medium,
+          "l": $spacing-large, "xl": $spacing-xl, "auto": auto),
+  $icon-text-spacing: $spacing-small,
+  $icon-dimensions: $spacing-medium,
+  $block-spacing: $block-spacing,
+  $box-radius: 0,
+  $table-row-hover-background-color: $light-blue,
+  $table-head-cell-color: $darkGray,
+  $navbar-item-img-max-height: 107px,
+  $dropdown-content-radius: 0,
+  $dropdown-content-shadow: none,
+  $button-padding-vertical: calc($spacing-small * 2),
+  $button-padding-horizontal: calc($spacing-small * 4),
+  $box-padding: $spacing-xl,
+  $tabs-boxed-link-active-background-color: $white,
+  $tabs-boxed-link-active-border-color: transparent,
+  $tabs-link-color: $black,
+  $tabs-link-active-color: $black,
+  $menu-label-letter-spacing: 0,
+  $dropdown-menu-min-width: 100%,
+  $column-gap: $spacing-small,
+  $subtitle-size: 20px,
+  $subtitle-weight: 600,
+  $subtitle-line-height: 24px,
+);
+
+@import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
+
+// Custom styles
+.input,
+.textarea,
+.select select {
+  padding: $spacing-small $spacing-small;
+}
+
+.is-secondary {
+  background-color: $white;
+  border-color: $bulma-primary;
+  color: $bulma-primary;
+}
+
+.button.is-danger:not(.is-outlined) {
+  color: $white
+}
+
+html, body {
+  height: 100%;
+  background: $light-gray;
+  margin: 0;
+}
+
+.container {
+  background: $white;
+  padding: $spacing-large;
+
+  &.is-highlight
+  {
+    background-color: $light-blue;
+  }
+}
+
+.section {
+  padding-top: $spacing-medium;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  text-align: left;
+  margin-bottom: $spacing-large;
+}
+
+h2 {
+  /* font-family: Lato; */
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+  margin-bottom: $spacing-large;
+}
+
+h3 {
+  /* font-family: Lato; */
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: $spacing-large;
+}
+
+h4 {
+  //font-family: Lato;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: center;
+}
+
+.is-title-main {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  text-align: left;
+}
+
+.is-title-secondary {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+.is-title-tertiary {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.label {
+  /* font-family: Work Sans; */
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  text-align: left;
+}
+
+.is-primary-color {
+  color: $bulma-primary;
+}
+
+.textarea {
+  resize: none;
+
+  &.resizable{
+    resize: vertical;
+  }
+}
+
+.input {
+  border: none;
+  border-bottom: 2px solid $black;
+  border-radius: 0;
+  box-shadow: none;
+  min-width: auto;
+}
+
+.input.compact, .textarea.compact {
+  width: 250px;
+}
+
+.input.auto-width, .textarea.auto-width {
+  width: auto;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: $checkbox-size;
+  width: $checkbox-size;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 10px;
+  left: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.radio {
+  display: flex;
+  gap: $spacing-small;
+  align-items: center;
+  margin-inline-start: 0px !important;
+  margin-bottom: $spacing-small;
+}
+
+.radio.has-text-top-aligned {
+  align-items: start;
+  .label-text {
+    margin-top: calc($checkbox-size/(2*2));
+    .information-text {
+      margin-top: calc($checkbox-size/(2*2));
+      font-size: 13px;
+      line-height: 17.5px;
+    }
+  }
+}
+
+.radio > label {
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  appearance: none;
+  background-color: $white;
+  min-width: $checkbox-size;
+  min-height: $checkbox-size;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  display: inline-grid;
+  place-content: center;
+}
+
+input[type="radio"]::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  transform: scale(0);
+  transform-origin: bottom left;
+  background-color: $white;
+  clip-path: polygon(13% 50%, 34% 66%, 81% 2%, 100% 18%, 39% 100%, 0 71%);
+}
+
+input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="radio"]:checked {
+  background-color: $bulma-primary;
+  border: 2px solid $bulma-primary;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-small;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  accent-color: $bulma-primary;
+  border-radius: 4px;
+}
+
+.checkbox span {
+  flex: 1;
+}
+
+.required::after {
+  content: ' *';
+  margin-left: $spacing-extrasmall;
+}
+
+
+#step-indicator .step {
+  border-radius: 5px;
+  height: $spacing-small;
+  background-color: $grey;
+}
+
+#step-indicator .step.visited {
+  background-color: $bulma-primary;
+}
+
+#step-indicator p {
+  color: $black;
+}
+
+.icon-text {
+  color: $bulma-primary;
+}
+
+.warning, .error {
+  padding: 16px;
+  gap: 64px;
+  border-radius: 4px;
+}
+
+.warning {
+  display: inline-block;
+  border: 1px solid $warning;
+  margin-bottom: 16px
+}
+
+.error {
+  border: 1px solid $error;
+}
+
+
+.field.is-grouped.is-grouped-no-spacing-v {
+  gap: 0;
+  column-gap: 0;
+  row-gap: calc($block-spacing/2);
+}
+
+.select {
+  width: 80%;
+}
+
+.select select {
+  width: 100%;
+}
+
+form .block:not(:last-child),
+form .subtitle:not(:last-child) {
+  margin-bottom: calc($block-spacing*2);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body > .columns {
+  height: 100%;
+}
+
+.modal > .modal-underlay {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.modal > .modal-content, .modal > .modal-wrapper{
+  margin-top: 10vh;
+  width: 80%;
+  max-width: 600px;
+
+  border: solid 1px #999;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.3);
+  background-color: white;
+  padding: 20px 60px;
+
+  &.is-wide {
+    width: 90%;
+    max-width: 800px;
+  }
+}
+
+
+.reservation-info {
+  padding: $spacing-medium;
+  border: 1px solid $bulma-primary;
+  border-radius: 4px;
+  display: flex;
+  margin-bottom: $spacing-large;
+
+
+  .info-icon {
+    flex: 1;
+  }
+
+  .info-content {
+    flex: 1;
+    margin-left: $spacing-medium;
+  }
+}
+
+.ack-info {
+  padding: $spacing-medium;
+  border: 1px solid $warning;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-large;
+
+  .info-icon {
+    flex: 1;
+  }
+
+  .info-content {
+    flex: 20;
+    margin-left: $spacing-medium;
+  }
+}
+.search-results-table {
+  th, td {
+    width: 25%;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+}
+
+.reservation-list {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  th, td {
+    border-bottom: 1px solid $gainsboro ;
+    text-align: left;
+    padding: $spacing-small;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    font-weight: normal;
+  }
+
+  th a {
+    text-decoration: none;
+    color: $darkGray;
+  }
+}
+
+.reservation-list-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-large;
+
+  .add-reservation {
+    display: flex;
+    align-items: center;
+    gap: $spacing-small;
+  }
+
+  .label {
+    color: $bulma-primary;
+  }
+}
+
+.search-input {
+  border: 1px solid #DADDE2;
+}
+
+.reservation-item {
+  cursor: pointer;
+}
+
+.tag-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-small;
+  justify-content: flex-start;
+
+  .icon {
+    stroke: $white;
+  }
+}
+
+.dropdown-content {
+  border: 1px solid #A9B0BB;
+  border-top: 0;
+}
+
+.dropdown-item {
+  color: $bulma-primary;
+  text-transform: initial;
+}
+
+.dropdown-item:hover {
+  background: $white;
+}
+
+.nav-row{
+  background: white;
+  display:flex;
+  padding: $spacing-large $spacing-xl;
+  border-bottom: $spacing-small solid $light-gray;
+  justify-content: space-between;
+}
+
+.nav-row div {
+  align-items: center;
+  gap: $spacing-medium;
+}
+
+.nav-row h1 {
+  align-content: center;
+  margin: 0;
+}
+.nav-row > .columns {
+  margin: 0;
+}
+
+.link.active {
+  background: white;
+  border-bottom: 2px solid $bulma-primary;
+}
+
+.logo{
+  width: 185px;
+  height: 107px;
+  margin-right: 16px
+}
+
+.menu-container {
+  max-width: 200px;
+}
+
+.menu {
+  overflow: auto;
+  height: 100%;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  background: white;
+  padding: 0 $spacing-medium;
+  margin:0;
+}
+
+.menu-label {
+  font-size: 1em;
+  color: $black;
+}
+
+.login-section {
+  margin-top: $spacing-large;
+  padding-top: $spacing-large;
+  border-top: 1px solid $gainsboro;
+  display: flex;
+  gap: $spacing-medium;
+  flex-direction: column;
+}
+
+a.active {
+  background: $activeColor;
+}
+
+.login-link {
+  text-transform: none;
+  font-weight: 600;
+}
+
+.logout-icon {
+  vertical-align: text-bottom;
+}
+
+.payment-form,
+.payment-form button {
+  width: 100%;
+  height: 100%;
+}
+
+.payment-form button {
+  box-shadow: none;
+  border: 0;
+}
+
+#reservation-confirmation-container {
+  min-width: 500px;
+  width: 50%;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-large;
+  padding-bottom: $spacing-xl;
+  margin-bottom: $spacing-xl;
+  border-bottom: solid 1px $grey;
+}
+
+.form-section.no-bottom-border,
+.form-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: $spacing-large;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.reservation-table-header {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.reservation-table-icon {
+  vertical-align: middle;
+}
+
+tr.table-borderless th {
+  border: 0;
+  padding-bottom: 0;
+}
+
+.reservation-card {
+  position: relative;
+  padding-left: $spacing-large;
+}
+
+.reservation-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: -$spacing-xl; // to cover the border
+  width: $spacing-small;
+  background-color: $grey;
+  border-radius: $spacing-small;
+}
+
+.reservation-card:last-child::before {
+  bottom: 0;
+}
+
+.container-tabs {
+  @extend .container;
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 0 !important;
+}
+
+.secondary-tabs.tabs.is-boxed {
+  width: fit-content;
+}
+
+.secondary-tabs.tabs.is-boxed ul {
+  border-bottom: none;
+  background-color: $light-gray;
+}
+
+.tabs.is-boxed ul li a {
+  border-radius: 0;
+  padding: $spacing-small $spacing-large;
+}
+
+.secondary-tabs.tabs.is-boxed ul li.is-active a {
+  margin: $spacing-extrasmall;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+
+}
+
+label.filter-button {
+  color: $bulma-primary;
+  display: inline-block;
+  padding: 7px 12px 7px 12px;
+  outline: 1px solid $bulma-primary;
+  border-radius: 40px;
+  cursor: pointer;
+  gap: 10px;
+  font-size: 15px;
+}
+
+label.filter-button:has(input:checked) {
+  color: $white;
+  background: $bulma-primary;
+  outline: 0;
+}
+
+label.filter-button .icon {
+  display: none;
+  vertical-align: text-bottom;
+  padding-right: 8px;
+}
+
+label.filter-button:has(input:checked) .icon {
+  display: inline-block; /* Show the icon when checked */
+}
+
+.filter-dropdown-menu {
+  min-width: unset;
+  width: 120px;
+  background: white;
+  padding: 4px;
+  border: 1px solid #DADDE2;
+  border-top: 0;
+}
+
+.filter-tag {
+  background-color: $bulma-primary;
+  color: $white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 10px;
+}
+
+.memo {
+
+  .memo-label {
+    background-color: $light-blue;
+    padding: 0 4px 0 4px;
+    border-radius: 3px;
+  }
+
+  .memo-updated-by {
+    color: $black;
+  }
+
+  .memo-content {
+    padding: $spacing-small 0;
+  }
+
+}
+
+.memo-edit-area {
+  max-width: 400px;
+  display: flex;
+}
+
+.memo-content-input {
+  flex: 10;
+}
+
+.memo-edit-buttons {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.message-list {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  thead th {
+    color: $darkGray;
+  }
+
+  th, td {
+    border-bottom: 1px solid $gainsboro;
+    text-align: left;
+    padding: $spacing-small;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    font-weight: normal;
+  }
+
+  th a {
+    text-decoration: none;
+    color: $darkGray;
+  }
+}
+
+.htmx-indicator{
+  opacity:0;
+  transition: opacity 500ms ease-in;
+}
+.htmx-request .htmx-indicator{
+  opacity:1;
+}
+.htmx-request.htmx-indicator{
+  opacity:1;
+}
+
+.htmx-request.loaded-content{
+  display: none;
+}
+#citizen-results-container {
+  margin-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+
+}
+
+#citizen-results {
+  position: absolute;
+  z-index: 100;
+  width: 100%;
+  display: none;
+}
+
+.select select option:hover,
+.select select option:checked{
+  background-color: $light-blue;
+}
+
+.width-is-half {
+  width: 50%;
+}
+.input .search-input {
+  border: 1px solid $light-gray;
+  max-width: 100%;
+}
+
+.control:focus-within #citizen-results {
+  display: block;
+}
+
+
+ul {
+  margin-left: $spacing-small;
+
+  &.has-bullets {
+    list-style: disc;
+  }
+}
+
+.no-bullets
+{
+  list-style: none;
+  margin-left: 0;
+}
+
+.accordion-title
+{
+  background-color: $light-gray;
+  cursor: pointer;
+  text-align: left;
+  padding: 0.9em;
+  margin-bottom: 1.8em;
+}
+
+.icon-transform
+{
+  transition: transform 0.5s ease
+}
+
+.icon-rotate-90
+{
+  transform: rotate(90deg);
+}
+
+.icon-rotate-180 {
+  transform: rotate(180deg);
+}
+
+.icon-rotate-270 {
+  transform: rotate(270deg);
+}
+
+.icon-rotate-360 {
+  transform: rotate(360deg);
+}
+
+.invoice-line
+{
+  display:inline-block;
+  width: 250px
+}
+
+.dropdown-title {
+  align-items: center;
+  display: flex;
+  gap: $spacing-small;
+}
+
+.debug-info {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.debug-info__content {
+  pointer-events: auto;
+}
+
+.is-error-container {
+  border: 1px solid $error;
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
+}
+
+.icon.is-extra-large
+{
+  width: auto;
+  height: auto;
+  & svg {
+    width: 120px
+  }
+}
+
+.is-icon-link {
+  display: flex;
+  align-items: center;
+  & > .icon {
+    margin-right: $spacing-small;
+  }
+
+  &.is-reverse > .icon {
+    margin-left: $spacing-small;
+    margin-right: 0;
+  }
+}
+
+.field .help
+{
+  min-height: $help-min-height;
+}
