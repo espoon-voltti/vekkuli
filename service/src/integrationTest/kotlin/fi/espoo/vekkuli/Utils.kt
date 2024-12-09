@@ -226,7 +226,6 @@ class TestUtils(
                     endDate = LocalDate.of(2021, 12, 31),
                     description = "",
                     orgId = "",
-                    registerNumber = "",
                     language = "fi",
                     type = BoatSpaceType.Slip,
                     orgName = null

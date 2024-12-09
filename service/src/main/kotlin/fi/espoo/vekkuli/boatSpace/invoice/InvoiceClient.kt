@@ -141,7 +141,7 @@ private fun createInvoiceBatchForPerson(
 ) = InvoiceBatch(
     agreementType = AGREEMENT_TYPE,
     batchDate = timeProvider.getCurrentDate().toString(),
-    batchNumber = invoiceData.invoiceNumber,
+    batchNumber = invoiceData.invoiceNumber ?: throw RuntimeException("Invoice number is missing"),
     currency = "EUR",
     sourcePrinted = false,
     systemId = SYSTEM_ID,
@@ -187,7 +187,7 @@ private fun createInvoiceBatchForOrganization(
 ) = InvoiceBatch(
     agreementType = AGREEMENT_TYPE,
     batchDate = timeProvider.getCurrentDate().toString(),
-    batchNumber = invoiceData.invoiceNumber,
+    batchNumber = invoiceData.invoiceNumber ?: throw RuntimeException("Invoice number is missing"),
     currency = "EUR",
     sourcePrinted = false,
     systemId = SYSTEM_ID,
