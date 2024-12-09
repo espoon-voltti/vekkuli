@@ -29,7 +29,6 @@ class CreateInvoiceBatchTest {
                 invoiceNumber = 20021,
                 ssn = "123456-7890",
                 orgId = null,
-                registerNumber = "1234567-8",
                 lastname = "Sukunimi",
                 firstnames = "Etunimi Toinennimi",
                 street = "Katuosoite 123",
@@ -48,14 +47,14 @@ class CreateInvoiceBatchTest {
             InvoiceBatch(
                 agreementType = 256,
                 batchDate = today.toString(),
-                batchNumber = given.invoiceNumber,
+                batchNumber = given.invoiceNumber!!,
                 currency = "EUR",
                 sourcePrinted = false,
                 systemId = "VKK",
                 invoices =
                     listOf(
                         Invoice(
-                            invoiceNumber = given.invoiceNumber,
+                            invoiceNumber = given.invoiceNumber!!,
                             useInvoiceNumber = true,
                             dueDate = given.dueDate.toString(),
                             client =
@@ -107,7 +106,6 @@ class CreateInvoiceBatchTest {
                 ssn = "123456-7890",
                 orgName = "Yhdistys ry",
                 orgId = "1234567-8",
-                registerNumber = "1234567-8",
                 street = "Katuosoite 123",
                 post = "Postitoimipaikka",
                 postalCode = "00100",
@@ -125,14 +123,14 @@ class CreateInvoiceBatchTest {
             InvoiceBatch(
                 agreementType = 256,
                 batchDate = today.toString(),
-                batchNumber = given.invoiceNumber,
+                batchNumber = given.invoiceNumber!!,
                 currency = "EUR",
                 sourcePrinted = false,
                 systemId = "VKK",
                 invoices =
                     listOf(
                         Invoice(
-                            invoiceNumber = given.invoiceNumber,
+                            invoiceNumber = given.invoiceNumber!!,
                             useInvoiceNumber = true,
                             dueDate = given.dueDate.toString(),
                             client =

@@ -170,7 +170,7 @@ class BoatSpaceRenewalService(
         return SendInvoiceModel(
             reservationId = reservationId,
             reserverName = "${invoiceData.firstnames} ${invoiceData.lastname}",
-            reserverSsn = invoiceData.ssn,
+            reserverSsn = invoiceData.ssn ?: "",
             reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
             product = reservation.locationName,
             functionInformation = "?",
