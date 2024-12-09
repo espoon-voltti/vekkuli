@@ -6,12 +6,46 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
+    @Test
+    fun `citizen can edit trailer information`() {
+        try {
+            jdbi.inTransactionUnchecked { handle ->
+                handle
+                    .createUpdate(
+                        "INSERT INTO trailer (id, registration_code, reserver_id, width_cm, length_cm) VALUES (1, 'ABC123', '509edb00-5549-11ef-a1c7-776e76028a49', 200, 300)"
+                    ).execute()
+
+                handle.createUpdate("UPDATE boat_space_reservation SET trailer_id = 1 WHERE id = 6").execute()
+            }
+
+            page.navigate(baseUrl)
+            page.getByTestId("loginButton").click()
+            page.getByTestId("031298-988S").click()
+            page.getByText("Kirjaudu").click()
+
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToPage()
+            citizenDetails.editTrailerButton(1).click()
+            citizenDetails.trailerRegistrationCodeInput.fill("FOO-123")
+            citizenDetails.trailerWidthInput.fill("2.5")
+            citizenDetails.trailerLengthInput.fill("4.0")
+            citizenDetails.trailerEditSubmitButton.click()
+
+            assertThat(citizenDetails.trailerRegistrationCode).hasText("FOO-123")
+            assertThat(citizenDetails.trailerWidth).hasText("2.5")
+            assertThat(citizenDetails.trailerLength).hasText("4.0")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
     @Test
     fun `citizen can renew reservation`() {
         try {

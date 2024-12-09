@@ -21,8 +21,8 @@ class CitizenReservationsTest : PlaywrightTest() {
             assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
             assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B 003")
 
-            // Seed user has 1 active reservations
-            assertThat(citizenDetailsPage.reservationListCards).hasCount(1)
+            // Seed user has 2 active reservations
+            assertThat(citizenDetailsPage.reservationListCards).hasCount(2)
         } catch (e: AssertionError) {
             handleError(e)
         }

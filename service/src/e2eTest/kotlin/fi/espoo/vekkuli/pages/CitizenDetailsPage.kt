@@ -208,4 +208,11 @@ class CitizenDetailsPage(
     val trailerRegistrationCode = getByDataTestId("trailer-registration-code")
     val trailerWidth = getByDataTestId("trailer-width")
     val trailerLength = getByDataTestId("trailer-length")
+
+    fun editTrailerButton(id: Int) = page.getByTestId("edit-trailer-$id")
+
+    val trailerRegistrationCodeInput = page.getByTestId("trailerRegistrationCode")
+    val trailerWidthInput = page.getByTestId("trailerWidth")
+    val trailerLengthInput = page.getByTestId("trailerLength")
+    val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
 }
