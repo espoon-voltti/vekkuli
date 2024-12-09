@@ -98,9 +98,11 @@ class JdbiTrailerRepository(
                     """
                     UPDATE boat_space_reservation
                     SET trailer_id = :trailerId
-                    
+                    WHERE id = :reservationId
                     """.trimIndent()
                 ).bind("trailerId", trailer.id)
+                .bind("reservationId", reservationId)
+                .execute()
 
             trailer
         }

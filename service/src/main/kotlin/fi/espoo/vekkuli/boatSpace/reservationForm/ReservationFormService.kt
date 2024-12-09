@@ -402,14 +402,13 @@ class ReservationFormService(
             input.trailerWidthInM != null &&
             input.trailerLengthInM != null
         ) {
-            val trailer =
-                trailerRepository.insertTrailer(
-                    reserverId,
-                    input.trailerRegistrationNumber,
-                    input.trailerWidthInM.mToCm(),
-                    input.trailerLengthInM.mToCm()
-                )
-            boatSpaceReservationRepo.updateTrailerInBoatSpaceReservation(input.reservationId, trailer.id)
+            trailerRepository.insertTrailerAndAddToReservation(
+                input.reservationId,
+                reserverId,
+                input.trailerRegistrationNumber,
+                input.trailerWidthInM.mToCm(),
+                input.trailerLengthInM.mToCm()
+            )
         } else {
             throw IllegalArgumentException("Trailer can not be empty.")
         }
