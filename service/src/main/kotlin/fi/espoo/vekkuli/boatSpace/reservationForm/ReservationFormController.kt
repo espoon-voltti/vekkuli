@@ -208,6 +208,8 @@ class ReservationFormController(
         val citizenId = request.ensureCitizenId()
 
         if (bindingResult.hasErrors()) {
+            // print all errors
+            println(bindingResult.allErrors)
             return badRequest("Invalid input")
         }
         try {

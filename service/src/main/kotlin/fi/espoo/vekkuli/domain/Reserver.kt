@@ -22,6 +22,7 @@ data class Reserver(
 
 data class ReserverWithDetails(
     val id: UUID,
+    val name: String,
     val type: ReserverType,
     val email: String,
     val phone: String,

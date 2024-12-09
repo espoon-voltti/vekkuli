@@ -46,7 +46,7 @@ class InvoiceController(
             SendInvoiceModel(
                 reservationId = reservationId,
                 reserverName = "${invoiceData.firstnames} ${invoiceData.lastname}",
-                reserverSsn = invoiceData.ssn,
+                reserverSsn = invoiceData.ssn ?: "",
                 reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
                 product = reservation.locationName,
                 functionInformation = "",
@@ -63,9 +63,9 @@ class InvoiceController(
                         InvoiceRow(
                             description = invoiceData.description,
                             customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
-                            priceWithoutVat = reservation.priceWithoutVatInEuro.toString(),
-                            vat = reservation.vatPriceInEuro.toString(),
-                            priceWithVat = reservation.priceInEuro.toString(),
+                            priceWithoutVat = reservation.priceWithoutVatInEuro,
+                            vat = reservation.vatPriceInEuro,
+                            priceWithVat = reservation.priceInEuro,
                             organization = "Merellinen ulkoilu",
                             paymentDate = LocalDate.of(2025, 1, 1)
                         )
