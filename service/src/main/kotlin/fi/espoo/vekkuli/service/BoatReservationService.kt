@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
@@ -14,6 +15,7 @@ import fi.espoo.vekkuli.repository.filter.boatspacereservation.LocationExpr
 import fi.espoo.vekkuli.utils.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -430,5 +432,27 @@ class BoatReservationService(
 
     fun getTrailer(id: Int): Trailer? = trailerRepository.getTrailer(id)
 
-    fun updateTrailer(trailer: Trailer): Trailer = trailerRepository.updateTrailer(trailer)
+    fun updateTrailer(
+        userId: UUID,
+        trailerId: Int,
+        trailerRegistrationCode: String,
+        trailerWidth: BigDecimal,
+        trailerLength: BigDecimal,
+    ): Trailer {
+        val oldTrailer = getTrailer(trailerId) ?: throw IllegalArgumentException("Trailer not found")
+
+        if (!permissionService.canEditTrailer(userId, oldTrailer.reserverId)) {
+            throw UnauthorizedException()
+        }
+        val updatedTrailer =
+            Trailer(
+                id = trailerId,
+                registrationCode = trailerRegistrationCode,
+                widthCm = trailerWidth.mToCm(),
+                lengthCm = trailerLength.mToCm(),
+                reserverId = oldTrailer.reserverId
+            )
+
+        return trailerRepository.updateTrailer(updatedTrailer)
+    }
 }

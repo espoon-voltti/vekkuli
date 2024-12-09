@@ -308,23 +308,8 @@ class CitizenUserController {
         model: Model
     ): String {
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
-        val oldTrailer = reservationService.getTrailer(trailerId)
-        if (oldTrailer == null) {
-            throw IllegalArgumentException("Trailer not found")
-        }
-        if (!permissionService.canEditTrailer(user.id, oldTrailer.reserverId)) {
-            throw UnauthorizedException()
-        }
-        val newTrailer =
-            Trailer(
-                id = trailerId,
-                registrationCode = trailerRegistrationCode,
-                widthCm = trailerWidth.mToCm(),
-                lengthCm = trailerLength.mToCm(),
-                reserverId = oldTrailer.reserverId
-            )
-        reservationService.updateTrailer(newTrailer)
-        return trailerCard.render(newTrailer)
+        val trailer = reservationService.updateTrailer(user.id, trailerId, trailerRegistrationCode, trailerWidth, trailerLength)
+        return trailerCard.render(trailer)
     }
 
     fun toUpdateForm(
