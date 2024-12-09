@@ -15,14 +15,14 @@ class TrailerCard(
     fun render(trailer: Trailer): String {
         // language=HTML
         return """
-            <div id="trailer-${trailer.id}">
+            <div id="trailer-${trailer.id}" class="pb-s">
                 <div class="columns is-vcentered">
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
                     ${editTrailerButton(trailer.id)}
                 </div>
-                <div class="columns">
+                <div class="columns pb-s">
                    <div class="column">
                        <div class="field">
                           <label class="label">${t("citizenDetails.trailer.registrationNumber")}</label>
@@ -77,8 +77,8 @@ class TrailerCard(
                 "trailer-edit-submit"
             )
         // language=HTML
-        return """
-            <div id="trailer-${trailer.id}">
+        return """ 
+            <div id="trailer-${trailer.id}" class="pb-s">
                 <div class="columns is-vcentered">
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>
@@ -86,7 +86,7 @@ class TrailerCard(
 
                 </div>
                 <form hx-target="#trailer-${trailer.id}" hx-patch="/kuntalainen/traileri/${trailer.id}/tallenna">
-                    <div class="columns">
+                    <div class="columns" class="pb-s">
                        <div class="column">
                            <div class="field">
                               $regNum
