@@ -45,7 +45,7 @@ class BoatSpaceInvoiceService(
                 JobParams(
                     AsyncJob.SendInvoiceBatch(invoiceDataWithNumber),
                     300,
-                    Duration.ofMinutes(15),
+                    Duration.ofMinutes(3),
                     timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
                 )
             )
