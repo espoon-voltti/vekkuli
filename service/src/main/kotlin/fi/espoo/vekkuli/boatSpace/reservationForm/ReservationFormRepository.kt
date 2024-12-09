@@ -19,7 +19,7 @@ data class ReservationForApplicationForm(
     val lengthCm: Int,
     val widthCm: Int,
     val amenity: BoatSpaceAmenity,
-    val boatSpaceType: String,
+    val boatSpaceType: BoatSpaceType,
     val place: String,
     val locationName: String?,
     val validity: ReservationValidity,
@@ -30,6 +30,8 @@ data class ReservationForApplicationForm(
     val netPriceCents: Int,
     val created: LocalDateTime,
     val excludedBoatTypes: List<BoatType>?,
+    val section: String,
+    val placeNumber: String,
 ) {
     val priceInEuro: String
         get() = priceCents.centsToEuro()
@@ -56,6 +58,8 @@ class ReservationFormRepository(
                         bs.length_cm,
                         bs.width_cm,
                         bs.amenity,
+                        bs.section, 
+                        bs.place_number,
                         bs.type as boat_space_type,
                         CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                         location.name as location_name,

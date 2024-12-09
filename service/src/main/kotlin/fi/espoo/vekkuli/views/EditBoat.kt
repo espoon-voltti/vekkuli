@@ -54,7 +54,7 @@ class EditBoat {
 
         val widthInput =
             formComponents.decimalInput(
-                "boatApplication.boatWidthInMeters",
+                "shared.label.widthInMeters",
                 "width",
                 boat.width,
                 required = true,
@@ -69,7 +69,7 @@ class EditBoat {
 
         val lengthInput =
             formComponents.decimalInput(
-                "boatApplication.boatLengthInMeters",
+                "shared.label.lengthInMeters",
                 "length",
                 boat.length,
                 required = true,

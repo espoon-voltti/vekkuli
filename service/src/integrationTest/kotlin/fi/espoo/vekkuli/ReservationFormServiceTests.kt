@@ -70,7 +70,10 @@ class ReservationFormServiceTests : IntegrationTestBase() {
                 phone = "+358401234567",
                 certifyInformation = true,
                 agreeToRules = true,
-                isOrganization = false
+                isOrganization = false,
+                trailerRegistrationNumber = "TRAILER123",
+                trailerWidth = BigDecimal("2.0"),
+                trailerLength = BigDecimal("4.0"),
             )
     }
 

@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.employee
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
@@ -123,7 +124,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
             reservationPage.widthFilterInput.fill("3")
             reservationPage.lengthFilterInput.fill("6")
-            reservationPage.boatSpaceTypeSlipRadio.click()
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
             reservationPage.amenityBuoyCheckbox.check()
             reservationPage.amenityRearBuoyCheckbox.check()
             reservationPage.amenityBeamCheckbox.check()

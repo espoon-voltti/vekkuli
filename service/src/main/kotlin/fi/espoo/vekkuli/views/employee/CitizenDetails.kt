@@ -362,7 +362,7 @@ class CitizenDetails(
                         boatInfo(
                             "boat-width-text-${boat.id}",
                             boat.width.toString(),
-                            "boatSpaceReservation.title.boatWidth",
+                            "shared.label.widthInMeters",
                             showWarnings && boat.hasWarning(ReservationWarningType.BoatWidth.name)
                         )
                     val registrationNumber =
@@ -375,7 +375,7 @@ class CitizenDetails(
                         boatInfo(
                             "boat-length-text-${boat.id}",
                             boat.length.toString(),
-                            "boatSpaceReservation.title.boatLength",
+                            "shared.label.lengthInMeters",
                             showWarnings && boat.hasWarning(ReservationWarningType.BoatLength.name)
                         )
                     val ownershipStatus =

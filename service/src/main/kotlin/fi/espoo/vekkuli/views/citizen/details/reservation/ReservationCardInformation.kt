@@ -14,9 +14,35 @@ class ReservationCardInformation : BaseView() {
     @Autowired
     lateinit var icons: Icons
 
+    @Autowired
+    lateinit var cardHeading: ReservationCardHeading
+
+    @Autowired
+    lateinit var trailerCard: TrailerCard
+
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
     ): String {
+        val amenity =
+            if (reservation.type == BoatSpaceType.Slip) {
+                t("boatSpaces.amenityOption.${reservation.amenity}")
+            } else {
+                t("boatSpaces.storageType.${reservation.storageType}")
+            }
+
+        val amenityLabel =
+            if (reservation.type == BoatSpaceType.Slip) {
+                t("boatSpaceReservation.title.equipment")
+            } else {
+                t("boatSpaces.storageTypeHeader")
+            }
+
+        val amenityWrapper =
+            """ 
+            <label class="label">$amenityLabel</label>
+            <p>$amenity</p>
+            """.trimIndent()
+
         // language=HTML
         return """
             <div class="columns">
@@ -26,7 +52,7 @@ class ReservationCardInformation : BaseView() {
                          <p ${addTestId("reservation-list-card-location-name")} >${reservation.locationName}</p>
                      </div>
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.width")}</label>
+                         <label class="label">${t("shared.label.widthInMeters")}</label>
                          <p>${reservation.boatSpaceWidthInM}</p>
                      </div>
                      <div class="field">
@@ -40,7 +66,7 @@ class ReservationCardInformation : BaseView() {
                          <p ${addTestId("reservation-list-card-place")}>${reservation.place}</p>
                      </div>
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.length")}</label>
+                         <label class="label">${t("shared.label.lengthInMeters")}</label>
                          <p>${reservation.boatSpaceLengthInM}</p>
                      </div>
                      <div class="field">
@@ -64,15 +90,17 @@ class ReservationCardInformation : BaseView() {
                  </div>
                  <div class="column">
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.equipment")}</label>
-                         <p>${t("boatSpaces.amenityOption.${reservation.amenity}")}</p>
+                         $amenityWrapper
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.paid")}</label>
                          <p id="paidFieldInfo">${formatAsFullDate(reservation.paymentDate)}</p> 
                      </div>
                  </div>
+                 
              </div>
+            ${reservation.trailer?.let { trailerCard.render(it, reservation.reserverId)} ?: ""}
+
             """.trimIndent()
     }
 

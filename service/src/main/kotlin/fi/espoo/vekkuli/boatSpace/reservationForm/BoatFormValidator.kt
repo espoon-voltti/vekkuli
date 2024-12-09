@@ -88,14 +88,6 @@ class BoatFormValidator(
     }
 }
 
-fun getReservationTimeInSeconds(
-    reservationCreated: LocalDateTime,
-    currentDate: LocalDateTime
-): Long {
-    val reservationTimePassed = Duration.between(reservationCreated, currentDate).toSeconds()
-    return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
-}
-
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 internal class UnauthorizedException : RuntimeException()
 
@@ -136,6 +128,14 @@ class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, Boa
         }
         return isValid
     }
+}
+
+fun getReservationTimeInSeconds(
+    reservationCreated: LocalDateTime,
+    currentDate: LocalDateTime
+): Long {
+    val reservationTimePassed = Duration.between(reservationCreated, currentDate).toSeconds()
+    return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
 }
 
 interface BoatRegistrationInput {
