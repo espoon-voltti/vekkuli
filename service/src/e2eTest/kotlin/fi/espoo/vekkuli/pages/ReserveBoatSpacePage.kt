@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.pages
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.BoatSpaceType
 
 class ReserveBoatSpacePage(
     private val page: Page,
@@ -56,7 +57,8 @@ class ReserveBoatSpacePage(
     val widthFilterInput = page.getByTestId("width")
     val lengthFilterInput = page.getByTestId("length")
 
-    val boatSpaceTypeSlipRadio = page.getByTestId("boatSpaceType-Slip")
+    fun boatSpaceTypeSlipRadio(boatSpaceType: BoatSpaceType = BoatSpaceType.Slip) = page.getByTestId("boatSpaceType-${boatSpaceType.name}")
+
     val boatSpaceTypeTrailerRadio = page.getByTestId("boatSpaceType-Trailer")
     val amenityBuoyCheckbox = page.getByTestId("buoy-checkbox")
     val amenityRearBuoyCheckbox = page.getByTestId("rearBuoy-checkbox")

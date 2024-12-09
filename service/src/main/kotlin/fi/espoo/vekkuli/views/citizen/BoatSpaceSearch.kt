@@ -87,7 +87,8 @@ class BoatSpaceSearch(
                 "storageType",
                 "Slip",
                 storageTypeAmenities.map { RadioOption(it.name, t("boatSpaces.amenityOption.$it")) },
-                mapOf("x-model" to "storageType")
+                mapOf("x-model" to "storageType"),
+                isColumnLayout = true
             )
 
         val storageType =

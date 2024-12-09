@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.BoatForm
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.CitizensSearchForm
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
@@ -16,6 +18,7 @@ import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.Layout
+import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -40,6 +43,9 @@ class ReservationFormController(
     private val messageUtil: MessageUtil,
     private val warnings: Warnings,
     private val layout: Layout,
+    private val commonComponents: CommonComponents,
+    private val boatForm: BoatForm,
+    private val citizensSearchForm: CitizensSearchForm
 ) {
     @RequestMapping("/kuntalainen/venepaikka/varaus/{reservationId}")
     @ResponseBody
@@ -116,7 +122,7 @@ class ReservationFormController(
         @PathVariable reservationId: Int
     ): String {
         citizenService.getCitizens(nameParameter).let {
-            return reservationFormView.citizensSearchForm(it, reservationId)
+            return citizensSearchForm.render(it, reservationId)
         }
     }
 
@@ -129,7 +135,7 @@ class ReservationFormController(
         val citizen = citizenService.getCitizen(citizenIdOption)
 
         return if (citizen != null) {
-            reservationFormView.citizenDetails(citizen, citizenService.getMunicipalities())
+            commonComponents.citizenDetails(citizen, citizenService.getMunicipalities())
         } else {
             ""
         }
@@ -164,7 +170,7 @@ class ReservationFormController(
                 length
             )
 
-        return ResponseEntity.ok(reservationFormView.boatForm(boatFormParams))
+        return ResponseEntity.ok(boatForm.render(boatFormParams))
     }
 
     @GetMapping("/virkailija/venepaikka/varaus/{reservationId}/boat-form")
@@ -195,7 +201,7 @@ class ReservationFormController(
                 width,
                 length
             )
-        return ResponseEntity.ok(reservationFormView.boatForm(boatFormParams))
+        return ResponseEntity.ok(boatForm.render(boatFormParams))
     }
 
     @PostMapping("/kuntalainen/venepaikka/varaus/{reservationId}")

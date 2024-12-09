@@ -520,21 +520,43 @@ class ReservationFormService(
             } ?: emptyList()
 
         val municipalities = citizenService.getMunicipalities()
-        val bodyContent =
-            reservationFormView.boatSpaceForm(
+
+        return buildApplicationForm(reservation, boats, citizen, organizations, input, userType, municipalities)
+    }
+
+    private fun buildApplicationForm(
+        reservation: ReservationForApplicationForm,
+        boats: List<Boat>,
+        citizen: CitizenWithDetails?,
+        organizations: List<Organization>,
+        input: ReservationInput,
+        userType: UserType,
+        municipalities: List<Municipality>,
+    ): String {
+        if (reservation.boatSpaceType == BoatSpaceType.Winter) {
+            return (
+                reservationFormView.winterStorageForm(
+                    reservation,
+                    boats,
+                    citizen,
+                    organizations,
+                    input,
+                    userType,
+                    municipalities
+                )
+            )
+        }
+        return (
+            reservationFormView.slipForm(
                 reservation,
                 boats,
                 citizen,
                 organizations,
                 input,
-                getReservationTimeInSeconds(
-                    reservation.created,
-                    timeProvider.getCurrentDateTime()
-                ),
                 userType,
                 municipalities
             )
-        return bodyContent
+        )
     }
 
     private fun getEndDate(result: ReservationResult): LocalDate {
@@ -633,5 +655,8 @@ data class ReservationInput(
     val orgAddress: String? = null,
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
-    val citizenSelection: String? = "newCitizen"
+    val citizenSelection: String? = "newCitizen",
+    val trailerRegistrationNumber: String?,
+    val trailerWidth: BigDecimal?,
+    val trailerLength: BigDecimal?
 ) : BoatRegistrationInput

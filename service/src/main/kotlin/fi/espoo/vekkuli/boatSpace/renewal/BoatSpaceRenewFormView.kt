@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.boatSpace.renewal
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.reservationForm.BoatFormInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.BoatFormParams
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormView
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.BoatForm
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
@@ -14,6 +14,7 @@ import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import fi.espoo.vekkuli.views.common.CommonComponents
+import fi.espoo.vekkuli.views.common.ReservationInformationParams
 import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
@@ -38,7 +39,7 @@ class BoatSpaceRenewFormView(
     private val sessionTimer: SessionTimer,
     private val stepIndicator: StepIndicator,
     private val commonComponents: CommonComponents,
-    private val boatSpaceForm: ReservationFormView
+    private val boatForm: BoatForm,
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
@@ -104,13 +105,15 @@ class BoatSpaceRenewFormView(
                 <h3 class="header">${t("boatApplication.boatSpaceInformation")}</h3>
                 ${
                 commonComponents.reservationInformationFields(
-                    harborField,
-                    placeField,
-                    boatSpaceTypeField,
-                    spaceDimensionField,
-                    amenityField,
-                    reservationTimeField,
-                    priceField
+                    ReservationInformationParams(
+                        harborField,
+                        placeField,
+                        boatSpaceTypeField,
+                        spaceDimensionField,
+                        amenityField,
+                        reservationTimeField,
+                        priceField
+                    )
                 )
             }
             
@@ -175,7 +178,7 @@ class BoatSpaceRenewFormView(
 
         val wholeLocationName = "${reservation.locationName} ${reservation.section}${reservation.placeNumber}"
         val boatForm =
-            boatSpaceForm.boatForm(
+            boatForm.render(
                 BoatFormParams(
                     userType,
                     citizen,
@@ -219,7 +222,7 @@ class BoatSpaceRenewFormView(
                         method="post"
                         novalidate>
                          <h1 class="title pb-l" id='boat-space-form-header'>
-                            ${t("boatApplication.title.reservation")} 
+                            ${t("boatApplication.title.reservation.renew")} 
                             $wholeLocationName
                         </h1>
                         <div id="form-inputs">
