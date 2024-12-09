@@ -14,7 +14,6 @@ import fi.espoo.vekkuli.repository.filter.boatspacereservation.LocationExpr
 import fi.espoo.vekkuli.utils.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -73,23 +72,6 @@ interface ReservationWarningRepository {
         key: String,
     ): Unit
 }
-
-data class ReserveBoatSpaceInput(
-    val reservationId: Int,
-    val boatId: Int?,
-    val boatType: BoatType,
-    val width: BigDecimal,
-    val length: BigDecimal,
-    val depth: BigDecimal,
-    val weight: Int?,
-    val boatRegistrationNumber: String?,
-    val boatName: String?,
-    val otherIdentification: String?,
-    val extraInformation: String?,
-    val ownerShip: OwnershipStatus?,
-    val email: String?,
-    val phone: String?,
-)
 
 @Service
 class BoatReservationService(

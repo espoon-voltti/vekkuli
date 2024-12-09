@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReserveBoatSpaceInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.domain.*
@@ -24,7 +25,7 @@ import kotlin.test.assertContains
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class ReservationFormServiceIntegrationTests : IntegrationTestBase() {
+class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     private lateinit var seasonalService: SeasonalService
 
@@ -314,8 +315,6 @@ class ReservationFormServiceIntegrationTests : IntegrationTestBase() {
         )
         testUtils.createReservationInPaymentState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
         testUtils.createReservationInInfoState(
-            timeProvider,
-            reservationService,
             this.citizenIdLeo,
             3
         )

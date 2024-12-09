@@ -78,6 +78,11 @@ interface BoatSpaceReservationRepository {
         endDate: LocalDate,
     ): BoatSpaceReservation
 
+    fun updateTrailerInBoatSpaceReservation(
+        reservationId: Int,
+        trailerId: Int
+    ): BoatSpaceReservation
+
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation?
@@ -89,4 +94,9 @@ interface BoatSpaceReservationRepository {
     fun setReservationAsExpired(reservationId: Int)
 
     fun getHarbors(): List<Location>
+
+    fun updateStorageType(
+        reservationId: Int,
+        storageType: StorageType
+    ): BoatSpaceReservation
 }

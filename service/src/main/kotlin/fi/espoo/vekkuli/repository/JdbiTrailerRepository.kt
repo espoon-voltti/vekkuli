@@ -64,7 +64,6 @@ class JdbiTrailerRepository(
         registrationCode: String,
         widthCm: Int,
         lengthCm: Int,
-        depthCm: Int
     ): Trailer =
         jdbi.withHandle<Trailer, Exception> { handle ->
             val id =
@@ -82,6 +81,30 @@ class JdbiTrailerRepository(
                     .mapTo<Int>()
                     .one()
             Trailer(id, registrationCode, reserverId, widthCm, lengthCm)
+        }
+
+    override fun insertTrailerAndAddToReservation(
+        reservationId: Int,
+        reserverId: UUID,
+        registrationCode: String,
+        widthCm: Int,
+        lengthCm: Int,
+    ): Trailer =
+        jdbi.withHandle<Trailer, Exception> { handle ->
+            val trailer = insertTrailer(reserverId, registrationCode, widthCm, lengthCm)
+
+            handle
+                .createUpdate(
+                    """
+                    UPDATE boat_space_reservation
+                    SET trailer_id = :trailerId
+                    WHERE id = :reservationId
+                    """.trimIndent()
+                ).bind("trailerId", trailer.id)
+                .bind("reservationId", reservationId)
+                .execute()
+
+            trailer
         }
 
     override fun deleteTrailer(trailerId: Int): Boolean =

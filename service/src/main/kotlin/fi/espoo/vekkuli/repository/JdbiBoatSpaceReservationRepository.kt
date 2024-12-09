@@ -11,6 +11,7 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
+import org.jdbi.v3.core.statement.Query
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -213,49 +214,56 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("paymentId", id)
-            val dbResult = query.mapTo<BoatSpaceReservationDetailsRow>().findOne().orElse(null)
-            if (dbResult != null) {
-                BoatSpaceReservationDetails(
-                    id = dbResult.id,
-                    created = dbResult.created,
-                    priceCents = dbResult.priceCents,
-                    vatCents = dbResult.vatCents,
-                    netPriceCents = dbResult.netPriceCents,
-                    boatSpaceId = dbResult.boatSpaceId,
-                    startDate = dbResult.startDate,
-                    endDate = dbResult.endDate,
-                    status = dbResult.status,
-                    terminationReason = dbResult.terminationReason,
-                    terminationComment = dbResult.terminationComment,
-                    terminationTimestamp = dbResult.terminationTimestamp,
-                    reserverType = dbResult.reserverType,
-                    reserverId = dbResult.reserverId,
-                    name = dbResult.name,
-                    email = dbResult.email,
-                    phone = dbResult.phone,
-                    streetAddress = dbResult.streetAddress,
-                    postalCode = dbResult.postalCode,
-                    municipalityCode = dbResult.municipalityCode,
-                    municipalityName = dbResult.municipalityName,
-                    type = dbResult.type,
-                    place = dbResult.place,
-                    locationName = dbResult.locationName,
-                    boatSpaceLengthCm = dbResult.boatSpaceLengthCm,
-                    boatSpaceWidthCm = dbResult.boatSpaceWidthCm,
-                    amenity = dbResult.amenity,
-                    validity = dbResult.validity,
-                    renewedFromId = dbResult.renewedFromId,
-                    paymentDate = dbResult.paymentDate,
-                    paymentId = dbResult.paymentId,
-                    excludedBoatTypes = getExcludedBoatTypes(handle, dbResult.locationId),
-                    boat = loadBoatForReserver(handle, dbResult.boatId),
-                    trailer = loadTrailerForReserver(handle, dbResult.trailerId),
-                    storageType = dbResult.storageType
-                )
-            } else {
-                null
-            }
+            buildBoatSpaceReservationDetails(query, handle)
         }
+
+    private fun buildBoatSpaceReservationDetails(
+        query: Query,
+        handle: Handle,
+    ): BoatSpaceReservationDetails? {
+        val dbResult = query.mapTo<BoatSpaceReservationDetailsRow>().findOne().orElse(null)
+        return if (dbResult != null) {
+            BoatSpaceReservationDetails(
+                id = dbResult.id,
+                created = dbResult.created,
+                priceCents = dbResult.priceCents,
+                vatCents = dbResult.vatCents,
+                netPriceCents = dbResult.netPriceCents,
+                boatSpaceId = dbResult.boatSpaceId,
+                startDate = dbResult.startDate,
+                endDate = dbResult.endDate,
+                status = dbResult.status,
+                terminationReason = dbResult.terminationReason,
+                terminationComment = dbResult.terminationComment,
+                terminationTimestamp = dbResult.terminationTimestamp,
+                reserverType = dbResult.reserverType,
+                reserverId = dbResult.reserverId,
+                name = dbResult.name,
+                email = dbResult.email,
+                phone = dbResult.phone,
+                streetAddress = dbResult.streetAddress,
+                postalCode = dbResult.postalCode,
+                municipalityCode = dbResult.municipalityCode,
+                municipalityName = dbResult.municipalityName,
+                type = dbResult.type,
+                place = dbResult.place,
+                locationName = dbResult.locationName,
+                boatSpaceLengthCm = dbResult.boatSpaceLengthCm,
+                boatSpaceWidthCm = dbResult.boatSpaceWidthCm,
+                amenity = dbResult.amenity,
+                validity = dbResult.validity,
+                renewedFromId = dbResult.renewedFromId,
+                paymentDate = dbResult.paymentDate,
+                paymentId = dbResult.paymentId,
+                excludedBoatTypes = getExcludedBoatTypes(handle, dbResult.locationId),
+                boat = loadBoatForReserver(handle, dbResult.boatId),
+                trailer = loadTrailerForReserver(handle, dbResult.trailerId),
+                storageType = dbResult.storageType,
+            )
+        } else {
+            null
+        }
+    }
 
     override fun updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int? =
         jdbi.withHandleUnchecked { handle ->
@@ -506,7 +514,7 @@ class JdbiBoatSpaceReservationRepository(
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)
-            query.mapTo<BoatSpaceReservationDetails>().findOne().orElse(null)
+            buildBoatSpaceReservationDetails(query, handle)
         }
 
     override fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace? =
@@ -717,6 +725,48 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("endDate", endDate)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+
+    override fun updateTrailerInBoatSpaceReservation(
+        reservationId: Int,
+        trailerId: Int
+    ): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET trailer_id = :trailerId
+                    WHERE id = :reservationId
+                        AND (status = 'Info' OR status = 'Payment' OR status = 'Renewal')
+                        AND created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("reservationId", reservationId)
+            query.bind("trailerId", trailerId)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<BoatSpaceReservation>().one()
+        }
+
+    override fun updateStorageType(
+        reservationId: Int,
+        storageType: StorageType
+    ): BoatSpaceReservation =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET storage_type = :storageType
+                    WHERE id = :reservationId
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("reservationId", reservationId)
+            query.bind("storageType", storageType)
             query.mapTo<BoatSpaceReservation>().one()
         }
 

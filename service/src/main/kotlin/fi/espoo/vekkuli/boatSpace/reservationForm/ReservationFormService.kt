@@ -22,6 +22,27 @@ import java.time.LocalDate
 import java.time.Month
 import java.util.*
 
+data class ReserveBoatSpaceInput(
+    val reservationId: Int,
+    val boatId: Int?,
+    val boatType: BoatType,
+    val boatRegistrationNumber: String?,
+    val width: BigDecimal,
+    val length: BigDecimal,
+    val depth: BigDecimal,
+    val weight: Int?,
+    val boatName: String?,
+    val otherIdentification: String?,
+    val extraInformation: String?,
+    val ownerShip: OwnershipStatus?,
+    val email: String?,
+    val phone: String?,
+    val storageType: StorageType? = null,
+    val trailerRegistrationNumber: String? = null,
+    val trailerWidthInM: BigDecimal? = null,
+    val trailerLengthInM: BigDecimal? = null,
+)
+
 @Service
 class ReservationFormService(
     private val organizationService: OrganizationService,
@@ -40,7 +61,8 @@ class ReservationFormService(
     private val reserverRepository: ReserverRepository,
     private val emailEnv: EmailEnv,
     private val emailService: TemplateEmailService,
-    private val seasonalService: SeasonalService
+    private val seasonalService: SeasonalService,
+    private val trailerRepository: TrailerRepository,
 ) {
     fun createOrUpdateReserverAndReservationForCitizen(
         reservationId: Int,
@@ -331,6 +353,9 @@ class ReservationFormService(
 
         val boat = createOrUpdateBoat(reserverId, input)
 
+        if (boatSpace.type == BoatSpaceType.Winter) {
+            updateReservationWithStorageTypeRelatedInformation(input, reserverId)
+        }
         addReservationWarnings(input.reservationId, boatSpace, boat)
 
         updateReserverContactInfo(reserverId, input)
@@ -347,6 +372,45 @@ class ReservationFormService(
             )
         if (reservationStatus == ReservationStatus.Invoiced) {
             sendReservationConfirmationEmail(input, reserverId, boatSpace, reservation)
+        }
+    }
+
+    private fun updateReservationWithStorageTypeRelatedInformation(
+        input: ReserveBoatSpaceInput,
+        reserverId: UUID,
+    ) {
+        addStorageType(input.reservationId, input.storageType)
+        if (input.storageType == StorageType.Trailer) {
+            createTrailerAndUpdateReservation(reserverId, input)
+        }
+    }
+
+    private fun addStorageType(
+        reservationId: Int,
+        storageType: StorageType?
+    ) {
+        if (storageType == null) throw IllegalArgumentException("Storage type can not be null.")
+        boatSpaceReservationRepo.updateStorageType(reservationId, storageType)
+    }
+
+    private fun createTrailerAndUpdateReservation(
+        reserverId: UUID,
+        input: ReserveBoatSpaceInput
+    ) {
+        if (
+            input.trailerRegistrationNumber?.isEmpty() == false &&
+            input.trailerWidthInM != null &&
+            input.trailerLengthInM != null
+        ) {
+            trailerRepository.insertTrailerAndAddToReservation(
+                input.reservationId,
+                reserverId,
+                input.trailerRegistrationNumber,
+                input.trailerWidthInM.mToCm(),
+                input.trailerLengthInM.mToCm()
+            )
+        } else {
+            throw IllegalArgumentException("Trailer can not be empty.")
         }
     }
 
@@ -468,6 +532,10 @@ class ReservationFormService(
                 ownerShip = input.ownership!!,
                 email = input.email!!,
                 phone = input.phone!!,
+                storageType = input.storageType,
+                trailerRegistrationNumber = input.trailerRegistrationNumber,
+                trailerWidthInM = input.trailerWidth,
+                trailerLengthInM = input.trailerLength,
             ),
             ReservationStatus.Payment,
             reserveSlipResult.reservationValidity,
@@ -656,6 +724,7 @@ data class ReservationInput(
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
     val citizenSelection: String? = "newCitizen",
+    val storageType: StorageType?,
     val trailerRegistrationNumber: String?,
     val trailerWidth: BigDecimal?,
     val trailerLength: BigDecimal?
