@@ -127,7 +127,8 @@ class BoatSpaceInvoiceService(
                 endDate = reservation.endDate,
                 invoiceNumber = 1,
                 registerNumber = "1234567-8",
-                lastname = reserver.name, // Organization name
+                // Organization name
+                lastname = reserver.name,
                 firstnames = null,
                 street = reserver.streetAddress,
                 post = reserver.postOffice,
