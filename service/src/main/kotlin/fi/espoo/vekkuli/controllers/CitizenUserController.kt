@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.*
@@ -297,18 +298,25 @@ class CitizenUserController {
         return trailerCard.renderEdit(trailer)
     }
 
-    @PatchMapping("/kuntalainen/traileri/{trailerId}/tallenna")
+    @PatchMapping("/$USERTYPE/traileri/{trailerId}/tallenna")
     @ResponseBody
     fun trailerSavePage(
-        request: HttpServletRequest,
+        @PathVariable usertype: String,
         @PathVariable trailerId: Int,
         @RequestParam trailerRegistrationCode: String,
         @RequestParam trailerWidth: BigDecimal,
         @RequestParam trailerLength: BigDecimal,
-        model: Model
+        request: HttpServletRequest
     ): String {
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
-        val trailer = reservationService.updateTrailer(user.id, trailerId, trailerRegistrationCode, trailerWidth, trailerLength)
+        val trailer =
+            reservationService.updateTrailer(
+                user.id,
+                trailerId,
+                trailerRegistrationCode,
+                trailerWidth,
+                trailerLength
+            )
         return trailerCard.render(trailer)
     }
 
