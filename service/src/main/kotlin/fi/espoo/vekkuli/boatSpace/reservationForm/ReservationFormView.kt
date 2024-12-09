@@ -100,9 +100,9 @@ class ReservationFormView(
                 "storageType",
                 null,
                 listOf(
-                    RadioOption("trailer", t("boatApplication.option.trailer")),
-                    RadioOption("buck", t("boatApplication.option.buck")),
-                    RadioOption("buckTent", t("boatApplication.option.buckTent"))
+                    RadioOption(StorageType.Trailer.name, t("boatApplication.option.trailer")),
+                    RadioOption(StorageType.Buck.name, t("boatApplication.option.buck")),
+                    RadioOption(StorageType.BuckWithTent.name, t("boatApplication.option.buckTent"))
                 ),
                 mapOf("x-model" to "storageType"),
                 isColumnLayout = true
@@ -110,7 +110,7 @@ class ReservationFormView(
 
         val storageTypeSelector = """<div data-testid="storage-type-selector" >
             $radioButtons
-            <template x-if="storageType == 'trailer'">
+            <template x-if="storageType == '${StorageType.Trailer.name}'">
                 <div data-testid="trailer-information-inputs" class='columns'>
                     <div class='column is-one-quarter'>
                         $trailerRegistrationNumber
@@ -131,9 +131,13 @@ class ReservationFormView(
             """
             <div class='field' >
                <label class="label">${t("boatApplication.title.boatSpaceStorageType")}</label>
-                <p x-show="storageType === 'trailer'" id="storage-type-text-trailer">${t("boatSpaces.storageType.Trailer")}</p>
-                <p x-show="storageType === 'buck'" id="storage-type-text-buck">${t("boatSpaces.storageType.Buck")}</p>
-                <p x-show="storageType === 'buckTent'" id="storage-type-text-buckTent">${t("boatSpaces.storageType.BuckWithTent")}</p>
+                <p x-show="storageType === '${StorageType.Trailer}'" id="storage-type-text-trailer">${t(
+                "boatSpaces.storageType.Trailer"
+            )}</p>
+                <p x-show="storageType === '${StorageType.Buck}'" id="storage-type-text-buck">${t("boatSpaces.storageType.Buck")}</p>
+                <p x-show="storageType === '${StorageType.BuckWithTent}'" id="storage-type-text-buckTent">${t(
+                "boatSpaces.storageType.BuckWithTent"
+            )}</p>
             </div>
             """.trimIndent()
 
@@ -188,7 +192,7 @@ class ReservationFormView(
                 )
             )}
             </div>
-            <div class='form-section pb-none' x-data="{ storageType: 'trailer' }">
+            <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}' }">
                 <div class='form-section mb-none'>
                     $storageTypeSelector
                 </div>

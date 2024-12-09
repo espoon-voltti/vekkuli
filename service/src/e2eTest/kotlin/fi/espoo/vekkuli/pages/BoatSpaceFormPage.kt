@@ -38,7 +38,7 @@ class BoatSpaceFormPage(
     val confirmCancelModalCancel = page.getByTestId("confirm-cancel-modal-cancel")
     val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
     val storageTypeSelector = getByDataTestId("storage-type-selector")
-    val storageTypeBuckOption = page.getByTestId("storageType-buck")
+    val storageTypeBuckOption = page.getByTestId("storageType-Buck")
     val trailerInformationInputs = getByDataTestId("trailer-information-inputs")
     val trailerRegistrationNumberError = page.getByTestId("trailerRegistrationNumber-error")
     val storageTypeTextTrailer = page.getByTestId("storage-type-text-trailer")
