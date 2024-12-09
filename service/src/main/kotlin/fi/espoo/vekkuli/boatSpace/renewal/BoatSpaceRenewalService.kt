@@ -1,10 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReserveBoatSpaceInput
+import fi.espoo.vekkuli.boatSpace.reservationForm.*
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
-import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
@@ -264,17 +262,39 @@ class BoatSpaceRenewalService(
                     .map { boat -> boat.updateBoatDisplayName(messageUtil) }
             } ?: emptyList()
 
-        val municipalities = citizenService.getMunicipalities()
+        val renewedReservationForApplicationForm = buildReservationForApplicationForm(renewedReservation)
         return BoatSpaceRenewViewParams(
-            renewedReservation,
+            renewedReservationForApplicationForm,
             boats,
             citizen,
             input,
-            getReservationTimeInSeconds(renewedReservation.created, timeProvider.getCurrentDateTime()),
             UserType.CITIZEN,
-            municipalities
         )
     }
+
+    private fun buildReservationForApplicationForm(reservationWithDependencies: ReservationWithDependencies) =
+        RenewalReservationForApplicationForm(
+            reservationWithDependencies.id,
+            reservationWithDependencies.reserverId,
+            reservationWithDependencies.boatId,
+            reservationWithDependencies.lengthCm,
+            reservationWithDependencies.widthCm,
+            reservationWithDependencies.amenity,
+            reservationWithDependencies.type,
+            reservationWithDependencies.place,
+            reservationWithDependencies.locationName,
+            reservationWithDependencies.validity,
+            reservationWithDependencies.startDate,
+            reservationWithDependencies.endDate,
+            reservationWithDependencies.priceCents,
+            reservationWithDependencies.vatCents,
+            reservationWithDependencies.netPriceCents,
+            reservationWithDependencies.created,
+            reservationWithDependencies.excludedBoatTypes,
+            reservationWithDependencies.section,
+            reservationWithDependencies.placeNumber.toString(),
+            reservationWithDependencies.renewedFromId.toString()
+        )
 
     fun createRenewalReservation(
         originalReservationId: Int,

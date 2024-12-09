@@ -61,6 +61,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
             val formPage = BoatSpaceFormPage(page)
+
             formPage.backButton.click()
 
             formPage.confirmCancelModalConfirm.click()
@@ -70,7 +71,6 @@ class CitizenDetailsTest : PlaywrightTest() {
             formPage.certifyInfoCheckbox.check()
             formPage.agreementCheckbox.check()
             formPage.submitButton.click()
-
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)

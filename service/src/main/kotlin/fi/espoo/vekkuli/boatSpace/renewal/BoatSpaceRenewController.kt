@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
-import fi.espoo.vekkuli.boatSpace.reservationForm.BoatRegistrationInput
+import fi.espoo.vekkuli.boatSpace.reservationForm.BoatRegistrationBaseInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.ValidBoatRegistration
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.config.ensureCitizenId
@@ -49,7 +49,7 @@ class BoatSpaceRenewController(
                     true,
                     renewedReservation.name,
                     request.requestURI,
-                    boatSpaceRenewForm.boatSpaceRenewForm(
+                    boatSpaceRenewForm.boatSpaceRenewFormForCitizen(
                         htmlParams
                     )
                 )
@@ -163,41 +163,41 @@ class BoatSpaceRenewController(
 data class RenewalReservationInput(
     @field:NotNull(message = "{validation.required}")
     private val originalReservationId: Int?,
-    val boatId: Int?,
+    override val boatId: Int?,
     @field:NotNull(message = "{validation.required}")
-    val boatType: BoatType?,
-    @field:NotNull(message = "{validation.required}")
-    @field:Positive(message = "{validation.positiveNumber}")
-    val width: BigDecimal?,
+    override val boatType: BoatType?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val length: BigDecimal?,
+    override val width: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val depth: BigDecimal?,
+    override val length: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val weight: Int?,
+    override val depth: BigDecimal?,
+    @field:NotNull(message = "{validation.required}")
+    @field:Positive(message = "{validation.positiveNumber}")
+    override val weight: Int?,
     override val noRegistrationNumber: Boolean?,
     override val boatRegistrationNumber: String?,
-    val boatName: String?,
+    override val boatName: String?,
     override val otherIdentification: String?,
-    val extraInformation: String?,
+    override val extraInformation: String?,
     @field:NotNull(message = "{validation.required}")
-    val ownership: OwnershipStatus?,
+    override val ownership: OwnershipStatus?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
-    val email: String?,
+    override val email: String?,
     @field:NotBlank(message = "{validation.required}")
-    val phone: String?,
+    override val phone: String?,
     @field:AssertTrue(message = "{validation.certifyInformation}")
-    val certifyInformation: Boolean?,
+    override val certifyInformation: Boolean?,
     @field:AssertTrue(message = "{validation.agreeToRules}")
-    val agreeToRules: Boolean?,
-    val orgPhone: String? = null,
-    val orgEmail: String? = null,
-    val storageType: StorageType = StorageType.None,
-    val trailerRegistrationNumber: String? = null,
-    val trailerWidth: Int? = null,
-    val trailerLength: Int? = null
-) : BoatRegistrationInput
+    override val agreeToRules: Boolean?,
+    override val orgPhone: String? = null,
+    override val orgEmail: String? = null,
+    override val storageType: StorageType = StorageType.None,
+    override val trailerRegistrationNumber: String? = null,
+    override val trailerWidth: BigDecimal? = null,
+    override val trailerLength: BigDecimal? = null
+) : BoatRegistrationBaseInput

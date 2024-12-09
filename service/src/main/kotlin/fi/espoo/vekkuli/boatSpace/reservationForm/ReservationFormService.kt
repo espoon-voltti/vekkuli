@@ -673,28 +673,28 @@ class ReservationFormService(
 data class ReservationInput(
     @field:NotNull(message = "{validation.required}")
     private val reservationId: Int?,
-    val boatId: Int?,
+    override val boatId: Int?,
     @field:NotNull(message = "{validation.required}")
-    val boatType: BoatType?,
-    @field:NotNull(message = "{validation.required}")
-    @field:Positive(message = "{validation.positiveNumber}")
-    val width: BigDecimal?,
+    override val boatType: BoatType?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val length: BigDecimal?,
+    override val width: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val depth: BigDecimal?,
+    override val length: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val weight: Int?,
-    val boatName: String?,
-    val extraInformation: String?,
+    override val depth: BigDecimal?,
+    @field:NotNull(message = "{validation.required}")
+    @field:Positive(message = "{validation.positiveNumber}")
+    override val weight: Int?,
+    override val boatName: String?,
+    override val extraInformation: String?,
     override val noRegistrationNumber: Boolean?,
     override val boatRegistrationNumber: String?,
     override val otherIdentification: String?,
     @field:NotNull(message = "{validation.required}")
-    val ownership: OwnershipStatus?,
+    override val ownership: OwnershipStatus?,
     val firstName: String?,
     val lastName: String?,
     val ssn: String?,
@@ -706,26 +706,26 @@ data class ReservationInput(
     val citizenId: UUID?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
-    val email: String?,
+    override val email: String?,
     @field:NotBlank(message = "{validation.required}")
-    val phone: String?,
+    override val phone: String?,
     @field:AssertTrue(message = "{validation.certifyInformation}")
-    val certifyInformation: Boolean?,
+    override val certifyInformation: Boolean?,
     @field:AssertTrue(message = "{validation.agreeToRules}")
-    val agreeToRules: Boolean?,
+    override val agreeToRules: Boolean?,
     val isOrganization: Boolean?,
     val organizationId: UUID? = null,
     val orgName: String? = null,
     val orgBusinessId: String? = null,
     val orgMunicipalityCode: String? = null,
-    val orgPhone: String? = null,
-    val orgEmail: String? = null,
+    override val orgPhone: String? = null,
+    override val orgEmail: String? = null,
     val orgAddress: String? = null,
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
     val citizenSelection: String? = "newCitizen",
-    val storageType: StorageType?,
-    val trailerRegistrationNumber: String?,
-    val trailerWidth: BigDecimal?,
-    val trailerLength: BigDecimal?
-) : BoatRegistrationInput
+    override val storageType: StorageType?,
+    override val trailerRegistrationNumber: String?,
+    override val trailerWidth: BigDecimal?,
+    override val trailerLength: BigDecimal?
+) : BoatRegistrationBaseInput
