@@ -19,7 +19,9 @@ class CitizenDetailsTest : PlaywrightTest() {
             jdbi.inTransactionUnchecked { handle ->
                 handle
                     .createUpdate(
-                        "INSERT INTO trailer (id, registration_code, reserver_id, width_cm, length_cm) VALUES (1, 'ABC123', '509edb00-5549-11ef-a1c7-776e76028a49', 200, 300)"
+                        """
+                            INSERT INTO trailer (id, registration_code, reserver_id, width_cm, length_cm)
+                            VALUES (1, 'ABC123', '509edb00-5549-11ef-a1c7-776e76028a49', 200, 300)"""
                     ).execute()
 
                 handle.createUpdate("UPDATE boat_space_reservation SET trailer_id = 1 WHERE id = 6").execute()
