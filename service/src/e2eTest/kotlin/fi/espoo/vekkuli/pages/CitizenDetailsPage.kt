@@ -202,4 +202,10 @@ class CitizenDetailsPage(
     fun acknowledgeWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("boat-$id"))
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
+
+    fun trailerInformation(id: Int) = page.getByTestId("trailer-$id")
+
+    val trailerRegistrationCode = getByDataTestId("trailer-registration-code")
+    val trailerWidth = getByDataTestId("trailer-width")
+    val trailerLength = getByDataTestId("trailer-length")
 }

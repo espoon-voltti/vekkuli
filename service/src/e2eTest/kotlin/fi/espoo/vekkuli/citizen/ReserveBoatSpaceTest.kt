@@ -242,7 +242,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             assertThat(formPage.weightError).isHidden()
 
             formPage.boatNameInput.fill("My Boat")
-            formPage.otherIdentification.fill("ID12345")
+            formPage.otherIdentification.fill("Other identification")
             formPage.noRegistrationCheckbox.check()
             assertThat(formPage.boatRegistrationNumberError).isHidden()
 
@@ -257,10 +257,23 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             assertThat(formPage.phoneError).isHidden()
 
             assertThat(formPage.storageTypeSelector).isVisible()
-            assertThat(formPage.trailerInformationInputs).isVisible()
+
             assertThat(formPage.trailerRegistrationNumberError).isVisible()
-            assertThat(formPage.storageTypeTextTrailer).isVisible()
+
             formPage.storageTypeBuckOption.click()
+            assertThat(formPage.trailerInformationInputs).isHidden()
+
+            formPage.storageTypeTrailerOption.click()
+            assertThat(formPage.trailerInformationInputs).isVisible()
+
+            val trailerRegistrationCode = "ID12345"
+            val trailerWidth = "1.5"
+            val trailerLength = "1.5"
+
+            formPage.trailerRegistrationNumberInput.fill(trailerRegistrationCode)
+            formPage.trailerWidthInput.fill(trailerWidth)
+            formPage.trailerLengthInput.fill(trailerLength)
+            assertThat(formPage.storageTypeTextTrailer).isVisible()
 
             formPage.certifyInfoCheckbox.check()
             formPage.agreementCheckbox.check()
@@ -277,6 +290,13 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             paymentPage.nordeaSuccessButton.click()
             // Now we should be on the confirmation page and can go back to the home page
             paymentPage.backToHomePageButton.click()
+
+            val citizenDetailPage = CitizenDetailsPage(page)
+            citizenDetailPage.navigateToPage()
+            assertThat(citizenDetailPage.trailerInformation(1)).isVisible()
+            assertThat(citizenDetailPage.trailerWidth).containsText(trailerWidth)
+            assertThat(citizenDetailPage.trailerLength).containsText(trailerLength)
+            assertThat(citizenDetailPage.trailerRegistrationCode).containsText(trailerRegistrationCode)
         } catch (e: AssertionError) {
             handleError(e)
         }

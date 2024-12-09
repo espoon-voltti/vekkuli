@@ -29,19 +29,19 @@ class TrailerCard : BaseView() {
                <div class="column">
                    <div class="field">
                       <label class="label">${t("citizenDetails.trailer.registrationNumber")}</label>
-                      <p>${trailer.registrationCode}</p>
+                      <p data-testid='trailer-registration-code'>${trailer.registrationCode}</p>
                    </div>
                </div>
                <div class="column">
                    <div class="field">
                       <label class="label">${t("shared.label.widthInMeters")}</label>
-                      <p>${trailer.widthCm.cmToM()}</p>
+                      <p data-testid='trailer-width'>${trailer.widthCm.cmToM()}</p>
                    </div>
                </div>
                <div class="column">
                   <div class="field">
                      <label class="label">${t("shared.label.lengthInMeters")}</label>
-                     <p>${trailer.lengthCm.cmToM()}</p>
+                     <p data-testid='trailer-length'>${trailer.lengthCm.cmToM()}</p>
                   </div>
                </div>
             </div>
