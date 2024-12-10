@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
 import jakarta.validation.constraints.*
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -47,6 +48,8 @@ class ReservationFormController(
     private val boatForm: BoatForm,
     private val citizensSearchForm: CitizensSearchForm
 ) {
+    private val logger = KotlinLogging.logger {}
+
     @RequestMapping("/kuntalainen/venepaikka/varaus/{reservationId}")
     @ResponseBody
     fun boatSpaceApplicationFormForCitizen(
@@ -214,6 +217,7 @@ class ReservationFormController(
         val citizenId = request.ensureCitizenId()
 
         if (bindingResult.hasErrors()) {
+            logger.error { "Backend validation errors: ${bindingResult.allErrors}" }
             return badRequest("Invalid input")
         }
         try {
@@ -241,6 +245,7 @@ class ReservationFormController(
         request.ensureEmployeeId()
 
         if (bindingResult.hasErrors()) {
+            logger.error { "Backend validation errors: ${bindingResult.allErrors}" }
             val reservation = reservationService.getReservationForApplicationForm(reservationId)
             if (reservation == null) {
                 return redirectUrl("/")
