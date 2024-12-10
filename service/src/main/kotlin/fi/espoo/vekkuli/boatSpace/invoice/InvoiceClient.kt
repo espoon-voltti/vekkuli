@@ -111,7 +111,7 @@ class EspiInvoiceClient(
         val invoiceBatch = createInvoiceBatch(invoiceData, timeProvider)
         val encodedBody = json.encodeToString(invoiceBatch)
         val response = runBlocking { VekkuliHttpClient.makePostRequest(url, encodedBody, headers) }
-        if (response?.status == HttpStatusCode.OK) {
+        if (response?.status != HttpStatusCode.OK) {
             logger.error { "Invoice sending failed: ${response.status}" }
             throw RuntimeException("Failed to send invoice")
         }
