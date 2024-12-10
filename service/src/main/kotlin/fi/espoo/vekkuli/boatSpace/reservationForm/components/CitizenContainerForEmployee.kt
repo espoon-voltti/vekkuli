@@ -231,12 +231,9 @@ class CitizenContainerForEmployee(
     ): String =
         // language=HTML
         """
-        <div class='form-section'>
-            <h3 class="header">${t("boatApplication.title.reserver")}</h3>
-            <div>
-                ${customerTypeRadioButtons(userType, reservationId, input)}
-                ${citizenSelection(input, citizen, municipalities, reservationId)}
-            </div>
+        <div>
+            ${customerTypeRadioButtons(userType, reservationId, input)}
+            ${citizenSelection(input, citizen, municipalities, reservationId)}
         </div>
         """.trimIndent()
 }
