@@ -284,18 +284,19 @@ class CitizenUserController {
         )
     }
 
-    @GetMapping("/kuntalainen/traileri/{trailerId}/muokkaa")
+    @GetMapping("/$USERTYPE/traileri/{trailerId}/muokkaa")
     @ResponseBody
     fun trailerEditPage(
-        request: HttpServletRequest,
+        @PathVariable usertype: String,
         @PathVariable trailerId: Int,
-        model: Model
+        request: HttpServletRequest
     ): String {
+        val userType = UserType.fromPath(usertype)
         val trailer = reservationService.getTrailer(trailerId)
         if (trailer == null) {
             throw IllegalArgumentException("Trailer not found")
         }
-        return trailerCard.renderEdit(trailer)
+        return trailerCard.renderEdit(trailer, userType)
     }
 
     @PatchMapping("/$USERTYPE/traileri/{trailerId}/tallenna")
@@ -308,6 +309,7 @@ class CitizenUserController {
         @RequestParam trailerLength: BigDecimal,
         request: HttpServletRequest
     ): String {
+        val userType = UserType.fromPath(usertype)
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         val trailer =
             reservationService.updateTrailer(
@@ -317,7 +319,7 @@ class CitizenUserController {
                 trailerWidth,
                 trailerLength
             )
-        return trailerCard.render(trailer)
+        return trailerCard.render(trailer, userType)
     }
 
     fun toUpdateForm(

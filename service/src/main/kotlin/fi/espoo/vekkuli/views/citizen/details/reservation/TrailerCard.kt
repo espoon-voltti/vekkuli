@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Trailer
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.BaseView
@@ -12,7 +13,10 @@ class TrailerCard(
     private val icons: Icons,
     private val formComponents: FormComponents
 ) : BaseView() {
-    fun render(trailer: Trailer): String {
+    fun render(
+        trailer: Trailer,
+        userType: UserType
+    ): String {
         // language=HTML
         return """
             <div id="trailer-${trailer.id}" class="pb-s">
@@ -20,7 +24,7 @@ class TrailerCard(
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
-                    ${editTrailerButton(trailer.id)}
+                    ${editTrailerButton(trailer.id, userType)}
                 </div>
                 <div class="columns pb-s">
                    <div class="column">
@@ -46,7 +50,10 @@ class TrailerCard(
             """.trimIndent()
     }
 
-    fun renderEdit(trailer: Trailer): String {
+    fun renderEdit(
+        trailer: Trailer,
+        userType: UserType
+    ): String {
         val regNum =
             formComponents.textInput(
                 labelKey = "citizenDetails.trailer.registrationNumber",
@@ -85,7 +92,7 @@ class TrailerCard(
                     </div>
 
                 </div>
-                <form hx-target="#trailer-${trailer.id}" hx-patch="/kuntalainen/traileri/${trailer.id}/tallenna">
+                <form hx-target="#trailer-${trailer.id}" hx-patch="${getSaveUrl(trailer.id, userType)}">
                     <div class="columns" class="pb-s">
                        <div class="column">
                            <div class="field">
@@ -109,14 +116,25 @@ class TrailerCard(
             """.trimIndent()
     }
 
-    private fun getEditUrl(trailerId: Int) = "/kuntalainen/traileri/$trailerId/muokkaa"
+    private fun getEditUrl(
+        trailerId: Int,
+        userType: UserType
+    ) = "/${userType.path}/traileri/$trailerId/muokkaa"
 
-    private fun editTrailerButton(trailerId: Int): String {
+    private fun getSaveUrl(
+        trailerId: Int,
+        userType: UserType
+    ) = "/${userType.path}/traileri/$trailerId/tallenna"
+
+    private fun editTrailerButton(
+        trailerId: Int,
+        userType: UserType
+    ): String {
         // language=HTML
         return """
             <div class="column is-narrow ml-auto">
                 <a class="is-icon-link is-link"
-                   hx-get="${getEditUrl(trailerId)}"
+                   hx-get="${getEditUrl(trailerId, userType)}"
                    hx-target="#trailer-$trailerId"
                    hx-swap="outerHTML">
                     <span class="icon">
