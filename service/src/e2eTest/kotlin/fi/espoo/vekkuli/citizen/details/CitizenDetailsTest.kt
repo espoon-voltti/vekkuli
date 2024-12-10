@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
-import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -16,17 +15,6 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can edit trailer information`() {
         try {
-            jdbi.inTransactionUnchecked { handle ->
-                handle
-                    .createUpdate(
-                        """
-                            INSERT INTO trailer (id, registration_code, reserver_id, width_cm, length_cm)
-                            VALUES (1, 'ABC123', '509edb00-5549-11ef-a1c7-776e76028a49', 200, 300)"""
-                    ).execute()
-
-                handle.createUpdate("UPDATE boat_space_reservation SET trailer_id = 1 WHERE id = 6").execute()
-            }
-
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
             page.getByTestId("031298-988S").click()
@@ -49,12 +37,10 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    fun `citizen can renew reservation`() {
+    fun `citizen can renew slip reservation`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 12, 0, 0))
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
             page.navigate(citizenPageInEnglish)
             val citizenDetails = CitizenDetailsPage(page)
@@ -84,14 +70,52 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    fun `citizen can renew winter storage reservation`() {
+        try {
+            mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 12, 0, 0))
+
+            CitizenHomePage(page).loginAsOliviaVirtanen()
+
+            val renewReservationId = 6
+            page.navigate(citizenPageInEnglish)
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+            citizenDetails.renewReservationButton(renewReservationId).click()
+            val formPage = BoatSpaceFormPage(page)
+
+            assertThat(formPage.header).isVisible()
+            formPage.backButton.click()
+
+            formPage.confirmCancelModalConfirm.click()
+            assertThat(citizenDetails.citizenDetailsSection).isVisible()
+
+            citizenDetails.renewReservationButton(renewReservationId).click()
+            assertThat(formPage.trailerInformationInputs).isVisible()
+            assertThat(formPage.trailerWidthInput).hasValue("2.0")
+            assertThat(formPage.trailerLengthInput).hasValue("3.0")
+            assertThat(formPage.trailerRegistrationNumberInput).hasValue("ABC123")
+            formPage.certifyInfoCheckbox.check()
+            formPage.agreementCheckbox.check()
+            formPage.submitButton.click()
+            // assert that payment title is shown
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentPageTitle).hasCount(1)
+            paymentPage.nordeaSuccessButton.click()
+
+            page.navigate(citizenPageInEnglish)
+            assertThat(citizenDetails.renewReservationButton(renewReservationId)).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `citizen cannot renew reservation if it is not time to renew`() {
         try {
             // Set time over month before the reservation ends. Renewal should not be possible.
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 12, 30, 12, 0, 0))
 
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
             page.navigate(citizenPageInEnglish)
 
@@ -106,9 +130,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can edit their own information`() {
         try {
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
             page.navigate(citizenPageInEnglish)
 
@@ -150,9 +172,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can edit their own boat`() {
         try {
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
             page.navigate(citizenPageInEnglish)
 
@@ -198,9 +218,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `should add warning when citizen edits boat to be too heavy`() {
         try {
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
             page.navigate(citizenPageInEnglish)
 

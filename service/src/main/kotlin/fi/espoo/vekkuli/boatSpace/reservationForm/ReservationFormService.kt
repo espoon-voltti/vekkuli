@@ -160,6 +160,7 @@ class ReservationFormService(
         }
     }
 
+    @Transactional
     fun reserveSpaceForEmployee(
         reservationId: Int,
         reserverId: UUID,
@@ -179,9 +180,17 @@ class ReservationFormService(
                 // TODO: get validity from input parameter for employee
                 ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm)
             }
-        reserveBoatSpace(reserverId, reservationId, input, data)
+        this.processBoatSpaceReservation(
+            reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            ReservationStatus.Payment,
+            data.reservationValidity,
+            data.startDate,
+            data.endDate
+        )
     }
 
+    @Transactional
     fun reserveSpaceByCitizen(
         reservationId: Int,
         reserverId: UUID,
@@ -198,7 +207,14 @@ class ReservationFormService(
             }
             throw BadRequest("Reservation can not be made.")
         }
-        reserveBoatSpace(reserverId, reservationId, input, reserveSlipResult.data)
+        processBoatSpaceReservation(
+            reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            ReservationStatus.Payment,
+            reserveSlipResult.data.reservationValidity,
+            reserveSlipResult.data.startDate,
+            reserveSlipResult.data.endDate
+        )
     }
 
     fun getReservationForApplicationForm(reservationId: Int) = reservationRepository.getReservationForApplicationForm(reservationId)
@@ -337,6 +353,30 @@ class ReservationFormService(
             }
         return BoatFormParams(userType, citizen, boats, reservationId, input)
     }
+
+    fun buildReserveBoatSpaceInput(
+        reservationId: Int,
+        input: BoatRegistrationBaseInput,
+    ) = ReserveBoatSpaceInput(
+        reservationId = reservationId,
+        boatId = input.boatId,
+        boatType = input.boatType!!,
+        width = input.width ?: BigDecimal.ZERO,
+        length = input.length ?: BigDecimal.ZERO,
+        depth = input.depth ?: BigDecimal.ZERO,
+        weight = input.weight,
+        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+        boatName = input.boatName ?: "",
+        otherIdentification = input.otherIdentification ?: "",
+        extraInformation = input.extraInformation ?: "",
+        ownerShip = input.ownership!!,
+        email = input.email!!,
+        phone = input.phone!!,
+        storageType = input.storageType,
+        trailerRegistrationNumber = input.trailerRegistrationNumber,
+        trailerLengthInM = input.length,
+        trailerWidthInM = input.width,
+    )
 
     @Transactional
     fun processBoatSpaceReservation(
@@ -509,41 +549,6 @@ class ReservationFormService(
         )
     }
 
-    fun reserveBoatSpace(
-        reserverId: UUID,
-        reservationId: Int,
-        input: ReservationInput,
-        reserveSlipResult: ReservationResultSuccess,
-    ) {
-        processBoatSpaceReservation(
-            reserverId,
-            ReserveBoatSpaceInput(
-                reservationId = reservationId,
-                boatId = input.boatId,
-                boatType = input.boatType!!,
-                width = input.width ?: BigDecimal.ZERO,
-                length = input.length ?: BigDecimal.ZERO,
-                depth = input.depth ?: BigDecimal.ZERO,
-                weight = input.weight,
-                boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                boatName = input.boatName ?: "",
-                otherIdentification = input.otherIdentification ?: "",
-                extraInformation = input.extraInformation ?: "",
-                ownerShip = input.ownership!!,
-                email = input.email!!,
-                phone = input.phone!!,
-                storageType = input.storageType,
-                trailerRegistrationNumber = input.trailerRegistrationNumber,
-                trailerWidthInM = input.trailerWidth,
-                trailerLengthInM = input.trailerLength,
-            ),
-            ReservationStatus.Payment,
-            reserveSlipResult.reservationValidity,
-            reserveSlipResult.startDate,
-            reserveSlipResult.endDate
-        )
-    }
-
     private fun createBodyContent(
         formInput: ReservationInput,
         citizen: CitizenWithDetails?,
@@ -551,6 +556,7 @@ class ReservationFormService(
         userType: UserType
     ): String {
         var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+
         val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)

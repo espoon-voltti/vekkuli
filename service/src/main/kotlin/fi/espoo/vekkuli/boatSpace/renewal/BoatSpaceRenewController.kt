@@ -23,6 +23,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.net.URI
+import java.util.*
 
 @Controller
 class BoatSpaceRenewController(
@@ -41,17 +42,15 @@ class BoatSpaceRenewController(
     ): ResponseEntity<String> {
         val citizenId = request.ensureCitizenId()
         try {
-            val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenId, originalReservationId)
-            val htmlParams =
-                boatSpaceRenewalService.buildBoatSpaceRenewalViewParams(citizenId, renewedReservation, formInput)
+            val renewedReservation =
+                boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenId, originalReservationId)
+            val boatSpaceRenewForm = boatSpaceRenewalService.buildRenewForm(citizenId, renewedReservation, formInput)
             val page =
                 layout.render(
                     true,
                     renewedReservation.name,
                     request.requestURI,
-                    boatSpaceRenewForm.boatSpaceRenewFormForCitizen(
-                        htmlParams
-                    )
+                    boatSpaceRenewForm
                 )
             return ResponseEntity.ok(page)
         } catch (e: IllegalStateException) {

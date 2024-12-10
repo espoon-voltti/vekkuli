@@ -32,6 +32,7 @@ open class ReservationForApplicationForm(
     val excludedBoatTypes: List<BoatType>?,
     val section: String,
     val placeNumber: String,
+    val storageType: StorageType?,
 ) {
     val priceInEuro: String
         get() = priceCents.centsToEuro()

@@ -33,6 +33,7 @@ class RenewalReservationForApplicationForm(
     excludedBoatTypes: List<BoatType>?,
     section: String,
     placeNumber: String,
+    storageType: StorageType?,
     val renewdFromReservationId: String
 ) : ReservationForApplicationForm(
         id,
@@ -53,7 +54,8 @@ class RenewalReservationForApplicationForm(
         created,
         excludedBoatTypes,
         section,
-        placeNumber
+        placeNumber,
+        storageType
     )
 
 @Repository
@@ -121,7 +123,9 @@ class BoatSpaceRenewalRepository(
                       validity, 
                       boat_id, 
                       employee_id,
-                      renewed_from_id
+                      renewed_from_id,
+                      storage_type,
+                      trailer_id
                     )
                     (
                       SELECT :created as created,
@@ -133,7 +137,9 @@ class BoatSpaceRenewalRepository(
                              validity, 
                              boat_id, 
                              :employeeId as employee_id,
-                             id as renewed_from_id
+                             id as renewed_from_id,
+                             storage_type,
+                             trailer_id
                       FROM boat_space_reservation
                       WHERE id = :reservationId
                     )

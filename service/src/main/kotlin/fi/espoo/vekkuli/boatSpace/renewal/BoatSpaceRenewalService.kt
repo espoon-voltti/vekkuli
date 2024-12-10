@@ -9,19 +9,14 @@ import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.domain.ReservationWithDependencies
-import fi.espoo.vekkuli.domain.ReserverType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
 
@@ -35,9 +30,10 @@ class BoatSpaceRenewalService(
     private val invoiceService: BoatSpaceInvoiceService,
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
-    private val timeProvider: TimeProvider,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val seasonalService: SeasonalService,
+    private val boatSpaceRenewForm: BoatSpaceRenewFormView,
+    private val trailerRepo: TrailerRepository
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
@@ -103,25 +99,7 @@ class BoatSpaceRenewalService(
 
         reservationService.processBoatSpaceReservation(
             reserverId = reservation.reserverId,
-            ReserveBoatSpaceInput(
-                reservationId = reservationId,
-                boatId = input.boatId,
-                boatType = input.boatType!!,
-                width = input.width ?: BigDecimal.ZERO,
-                length = input.length ?: BigDecimal.ZERO,
-                depth = input.depth ?: BigDecimal.ZERO,
-                weight = input.weight,
-                boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                boatName = input.boatName ?: "",
-                otherIdentification = input.otherIdentification ?: "",
-                extraInformation = input.extraInformation ?: "",
-                ownerShip = input.ownership!!,
-                email = input.email!!,
-                phone = input.phone!!,
-                trailerRegistrationNumber = input.trailerRegistrationNumber,
-                trailerLengthInM = input.length,
-                trailerWidthInM = input.width,
-            ),
+            reservationService.buildReserveBoatSpaceInput(reservationId, input),
             ReservationStatus.Payment,
             reservation.validity ?: ReservationValidity.FixedTerm,
             reservation.startDate,
@@ -227,7 +205,23 @@ class BoatSpaceRenewalService(
             throw UnauthorizedException()
         }
 
-        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        var input =
+            formInput.copy(
+                email = citizen?.email,
+                phone = citizen?.phone,
+                storageType =
+                    renewedReservation.storageType ?: StorageType.None,
+            )
+        if (renewedReservation.trailerId != null) {
+            val trailer = trailerRepo.getTrailer(renewedReservation.trailerId) ?: throw BadRequest("Trailer not found")
+            input =
+                input.copy(
+                    trailerLength = trailer?.lengthCm?.cmToM(),
+                    trailerWidth = trailer?.widthCm?.cmToM(),
+                    trailerRegistrationNumber = trailer?.registrationCode,
+                )
+        }
+
         val usedBoatId = formInput.boatId ?: renewedReservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)
@@ -293,7 +287,8 @@ class BoatSpaceRenewalService(
             reservationWithDependencies.excludedBoatTypes,
             reservationWithDependencies.section,
             reservationWithDependencies.placeNumber.toString(),
-            reservationWithDependencies.renewedFromId.toString()
+            reservationWithDependencies.storageType,
+            reservationWithDependencies.renewedFromId.toString(),
         )
 
     fun createRenewalReservation(
@@ -309,5 +304,22 @@ class BoatSpaceRenewalService(
         }
         val newId = boatSpaceRenewalRepository.createRenewalRow(originalReservationId, userType, userId)
         return boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(newId)
+    }
+
+    fun buildRenewForm(
+        citizenId: UUID,
+        renewedReservation: ReservationWithDependencies,
+        formInput: RenewalReservationInput,
+    ): String {
+        val htmlParams =
+            buildBoatSpaceRenewalViewParams(citizenId, renewedReservation, formInput)
+        if (renewedReservation.type == BoatSpaceType.Winter) {
+            return boatSpaceRenewForm.boatSpaceRenewalFormForWinterStorage(
+                htmlParams
+            )
+        }
+        return boatSpaceRenewForm.boatSpaceRenewFormForSlip(
+            htmlParams
+        )
     }
 }
