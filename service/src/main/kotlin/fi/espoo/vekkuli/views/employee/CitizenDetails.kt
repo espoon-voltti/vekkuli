@@ -149,7 +149,7 @@ class CitizenDetails(
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType
     ): String {
-        val reservationList = reservationListBuilder.render(citizen, boatSpaceReservations, userType)
+        val reservationList = reservationListBuilder.render(citizen, boatSpaceReservations, userType, citizen.id)
 
         fun showBoatWarnings(boatHasWarnings: Boolean): String {
             if (boatHasWarnings) {

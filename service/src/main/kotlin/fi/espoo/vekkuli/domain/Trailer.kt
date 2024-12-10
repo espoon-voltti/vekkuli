@@ -8,4 +8,9 @@ data class Trailer(
     val reserverId: UUID,
     val widthCm: Int,
     val lengthCm: Int,
-)
+    val warnings: Set<String> = emptySet(),
+) {
+    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
+
+    fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
+}

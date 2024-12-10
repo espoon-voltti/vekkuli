@@ -467,7 +467,7 @@ class ReservationFormService(
             boat.ownership,
             boat.weightKg,
             boat.type,
-            boatSpace.excludedBoatTypes ?: listOf()
+            boatSpace.excludedBoatTypes ?: listOf(),
         )
     }
 

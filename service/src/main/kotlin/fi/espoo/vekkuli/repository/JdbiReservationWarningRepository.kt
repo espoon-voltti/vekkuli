@@ -13,24 +13,25 @@ class JdbiReservationWarningRepository(
 ) : ReservationWarningRepository {
     override fun addReservationWarnings(
         reservationId: Int,
-        boatId: Int,
+        boatId: Int?,
+        trailerId: Int?,
         keys: List<String>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
             val sql = StringBuilder()
 
-            sql.append("INSERT INTO reservation_warning (reservation_id, boat_id, key) VALUES ")
+            sql.append("INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, key) VALUES ")
             sql.append(
                 keys
                     .mapIndexed { index, _ ->
-                        "(:reservationId, :boatId, :key$index)"
+                        "(:reservationId, :boatId, :trailerId, :key$index)"
                     }.joinToString(", ")
             )
-            sql.append(" ON CONFLICT (reservation_id, boat_id, key) DO NOTHING")
 
             val query = handle.createUpdate(sql.toString())
             query.bind("reservationId", reservationId)
             query.bind("boatId", boatId)
+            query.bind("trailerId", trailerId)
             keys.forEachIndexed { index, key ->
                 query.bind("key$index", key)
             }
@@ -42,43 +43,33 @@ class JdbiReservationWarningRepository(
             handle
                 .createQuery(
                     """
-        SELECT *
-        FROM reservation_warning
-        WHERE reservation_id = :reservationId
-        """
+                        SELECT *
+                        FROM reservation_warning
+                        WHERE reservation_id = :reservationId
+                        """
                 ).bind("reservationId", reservationId)
                 .mapTo<ReservationWarning>()
                 .list()
-        }
-
-    override fun getWarningsForBoat(boatId: Int): List<ReservationWarning> =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-        SELECT *
-        FROM reservation_warning
-        WHERE boat_id = :boatId
-        """
-                ).bind("boatId", boatId)
-                .mapTo<ReservationWarning>()
-                .list()
+                .groupBy { "${it.reservationId}${it.key}${it.boatId}${it.trailerId}" }
+                .map { it.value.first() }
         }
 
     override fun setReservationWarningAcknowledged(
         reservationId: Int,
-        boatId: Int,
+        boatIdOrTrailerId: Int,
         key: String,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(
                     """
-        DELETE from reservation_warning
-        WHERE reservation_id = :reservationId AND boat_id = :boatId AND key = :key
-        """
+                    DELETE from reservation_warning
+                    WHERE reservation_id = :reservationId AND 
+                      (boat_id = :boatIdOrTrailerId OR trailer_id = :boatIdOrTrailerId) AND 
+                      key = :key
+                    """
                 ).bind("reservationId", reservationId)
-                .bind("boatId", boatId,)
+                .bind("boatIdOrTrailerId", boatIdOrTrailerId)
                 .bind("key", key)
                 .execute()
         }
