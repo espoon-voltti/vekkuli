@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
@@ -15,13 +16,11 @@ class ReservationCardInformation : BaseView() {
     lateinit var icons: Icons
 
     @Autowired
-    lateinit var cardHeading: ReservationCardHeading
-
-    @Autowired
     lateinit var trailerCard: TrailerCard
 
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
+        userType: UserType,
     ): String {
         val amenity =
             if (reservation.type == BoatSpaceType.Slip) {
@@ -99,7 +98,7 @@ class ReservationCardInformation : BaseView() {
                  </div>
                  
              </div>
-            ${reservation.trailer?.let { trailerCard.render(it, reservation.reserverId)} ?: ""}
+            ${reservation.trailer?.let { trailerCard.render(it, userType)} ?: ""}
 
             """.trimIndent()
     }

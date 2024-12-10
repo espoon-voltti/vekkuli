@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
@@ -13,7 +14,10 @@ class ExpiredReservationList(
     private val accordion: Accordion,
     private val reservationTerminationReason: ReservationTerminationReason
 ) : BaseView() {
-    fun render(boatSpaceReservations: List<BoatSpaceReservationDetails>): String {
+    fun render(
+        boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        userType: UserType
+    ): String {
         val accordionBuilder = accordion.createBuilder()
 
         // language=HTML
@@ -24,7 +28,7 @@ class ExpiredReservationList(
                 """
                 <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
                     ${cardHeading.render(reservation)}
-                    ${cardInfo.render(reservation)}
+                    ${cardInfo.render(reservation, userType)}
                     ${reservationTerminationReason.render(reservation)}
                 </div>
                 """.trimIndent()

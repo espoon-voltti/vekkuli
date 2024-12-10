@@ -54,4 +54,14 @@ class PermissionService(
             else -> false
         }
     }
+
+    fun canEditTrailer(
+        editorId: UUID,
+        trailerReserverId: UUID
+    ): Boolean =
+        when {
+            userService.isAppUser(editorId) -> true
+            editorId == trailerReserverId -> true
+            else -> false
+        }
 }

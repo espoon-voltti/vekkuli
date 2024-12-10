@@ -20,7 +20,7 @@ class ReservationList(
     fun render(
         citizen: CitizenWithDetails,
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        userType: UserType = UserType.CITIZEN
+        userType: UserType
     ): String {
         // language=HTML
         return """
@@ -40,7 +40,7 @@ class ReservationList(
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
-                ${cardInfo.render(reservation)}
+                ${cardInfo.render(reservation, userType)}
                 ${reservationTerminationReason.render(reservation)}
                 ${reservationCardWarningBox.render(reservation, userType)}
                 ${
