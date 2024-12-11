@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfRenewPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -40,17 +41,17 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can renew slip reservation`() {
         try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 12, 0, 0))
+            mockTimeProvider(timeProvider, startOfRenewPeriod)
             CitizenHomePage(page).loginAsLeoKorhonen()
 
             page.navigate(citizenPageInEnglish)
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
+
             val formPage = BoatSpaceFormPage(page)
-
+            assertThat(formPage.header).isVisible()
             formPage.backButton.click()
-
             formPage.confirmCancelModalConfirm.click()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
 
@@ -58,6 +59,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             formPage.certifyInfoCheckbox.check()
             formPage.agreementCheckbox.check()
             formPage.submitButton.click()
+
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)

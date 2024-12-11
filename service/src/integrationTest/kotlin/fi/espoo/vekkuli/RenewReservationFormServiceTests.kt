@@ -51,7 +51,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     @Autowired
     lateinit var boatSpaceRenewalService: BoatSpaceRenewalService
 
-    @MockBean
+    @Autowired
     lateinit var seasonalService: SeasonalService
 
     @MockBean
@@ -408,7 +408,6 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring reservation`() {
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
-
         val madeReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -426,6 +425,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                 .firstOrNull {
                     it.id == madeReservation.id
                 }
+
         assertEquals(reservation?.canRenew, false, "Reservation can not be renewed")
         assertNotNull(reservation?.endDate, "Reservation has end date")
 
@@ -442,18 +442,6 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should renew winter reservations`() {
-        Mockito
-            .`when`(seasonalService.canRenewAReservation(any(), any()))
-            .thenReturn(
-                ReservationResult.Success(
-                    ReservationResultSuccess(
-                        LocalDate.now(),
-                        LocalDate.now().plusDays(30),
-                        ReservationValidity.Indefinite
-                    )
-                )
-            )
-
         val madeReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
