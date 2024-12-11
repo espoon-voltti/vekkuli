@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.util.*
@@ -93,11 +94,13 @@ class EspiInvoiceClient(
     val timeProvider: TimeProvider
 ) : InvoiceClient {
     override fun sendBatchInvoice(invoiceData: InvoiceData) {
+        val logger = KotlinLogging.logger {}
         val json =
             Json {
                 encodeDefaults = false
             }
         val (apiUrl, apiUsername, apiPassword) = espiEnv
+        logger.info { "Sending invoice to $apiUrl, with username $apiUsername" }
         val url = "$apiUrl/invoice/api/v1/invoice-batches"
         val authHeader = Base64.getEncoder().encodeToString("$apiUsername:$apiPassword".toByteArray())
         val headers =
@@ -108,7 +111,8 @@ class EspiInvoiceClient(
         val invoiceBatch = createInvoiceBatch(invoiceData, timeProvider)
         val encodedBody = json.encodeToString(invoiceBatch)
         val response = runBlocking { VekkuliHttpClient.makePostRequest(url, encodedBody, headers) }
-        if (response?.status == HttpStatusCode.OK) {
+        if (response?.status != HttpStatusCode.OK) {
+            logger.error { "Invoice sending failed: ${response.status}" }
             throw RuntimeException("Failed to send invoice")
         }
     }

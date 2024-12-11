@@ -95,14 +95,14 @@ const validation = (function () {
         return true;
       } else {
         if (errorElement) {
-          errorElement.textContent = data.message || 'Invalid value';
+          errorElement.innerHTML = data.message || 'Invalid value';
           showError(errorElement, true);
         }
         return false;
       }
     } catch (error) {
       if (errorElement) {
-        errorElement.textContent = 'Validation failed';
+        errorElement.innerHTML = 'Validation failed';
         showError(errorElement, true);
       }
       throw error;

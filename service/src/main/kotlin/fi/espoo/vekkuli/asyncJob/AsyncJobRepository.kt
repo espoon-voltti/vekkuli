@@ -206,6 +206,7 @@ WHERE id = :jobId
                     permit.availableAt
                 ).toMillis()
         if (toMillis > 0) {
+            logger.info { "Permit claimed, sleeping for $toMillis ms before running" }
             Thread.sleep(
                 toMillis
             )
