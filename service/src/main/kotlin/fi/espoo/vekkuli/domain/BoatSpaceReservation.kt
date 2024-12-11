@@ -107,7 +107,8 @@ data class BoatSpaceReservationItem(
     val municipalityCode: Int,
     val municipalityName: String,
     val paymentDate: LocalDate?,
-    val warnings: Set<String> = emptySet()
+    val warnings: Set<String> = emptySet(),
+    val validity: ReservationValidity?
 ) {
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 

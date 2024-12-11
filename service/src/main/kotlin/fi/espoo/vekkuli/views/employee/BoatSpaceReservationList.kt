@@ -177,7 +177,9 @@ class BoatSpaceReservationList {
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
                     <td>$startDateFormatted</td>
-                    <td ${addTestId("reservation-end-date")}>$endDateFormatted</td>
+                    <td ${addTestId(
+                    "reservation-end-date"
+                )}>${if (result.validity == ReservationValidity.Indefinite) "" else endDateFormatted}</td>
                 </tr>
                 """.trimIndent()
             }
