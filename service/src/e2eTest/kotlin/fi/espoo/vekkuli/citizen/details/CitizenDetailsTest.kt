@@ -22,15 +22,16 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
-            citizenDetails.editTrailerButton(1).click()
+            val id = 1
+            citizenDetails.editTrailerButton(id).click()
             citizenDetails.trailerRegistrationCodeInput.fill("FOO-123")
             citizenDetails.trailerWidthInput.fill("2.5")
             citizenDetails.trailerLengthInput.fill("4.0")
             citizenDetails.trailerEditSubmitButton.click()
 
-            assertThat(citizenDetails.trailerRegistrationCode).hasText("FOO-123")
-            assertThat(citizenDetails.trailerWidth).hasText("2.5")
-            assertThat(citizenDetails.trailerLength).hasText("4.0")
+            assertThat(citizenDetails.trailerRegistrationCode(id)).hasText("FOO-123")
+            assertThat(citizenDetails.trailerWidth(id)).hasText("2.5")
+            assertThat(citizenDetails.trailerLength(id)).hasText("4.0")
         } catch (e: AssertionError) {
             handleError(e)
         }

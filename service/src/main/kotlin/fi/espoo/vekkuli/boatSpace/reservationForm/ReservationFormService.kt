@@ -64,6 +64,7 @@ class ReservationFormService(
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
 ) {
+    @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
         reservationId: Int,
         citizenId: UUID,
@@ -104,6 +105,7 @@ class ReservationFormService(
         )
     }
 
+    @Transactional
     fun updateReserverAndReservationForEmployee(
         reservationId: Int,
         input: ReservationInput
@@ -180,7 +182,7 @@ class ReservationFormService(
                 // TODO: get validity from input parameter for employee
                 ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm)
             }
-        this.processBoatSpaceReservation(
+        processBoatSpaceReservation(
             reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
             ReservationStatus.Payment,
@@ -374,8 +376,8 @@ class ReservationFormService(
         phone = input.phone!!,
         storageType = input.storageType,
         trailerRegistrationNumber = input.trailerRegistrationNumber,
-        trailerLengthInM = input.length,
-        trailerWidthInM = input.width,
+        trailerLengthInM = input.trailerLength,
+        trailerWidthInM = input.trailerWidth,
     )
 
     @Transactional
