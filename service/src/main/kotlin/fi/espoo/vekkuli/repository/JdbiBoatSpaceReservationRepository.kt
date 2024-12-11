@@ -364,13 +364,13 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
-    override fun getActiveReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
+    override fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
-                    WHERE trailer_id = :trailerId AND (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced')
+                    WHERE trailer_id = :trailerId
                     """.trimIndent()
                 )
             query.bind("trailerId", trailerId)

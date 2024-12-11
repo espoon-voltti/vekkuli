@@ -189,7 +189,7 @@ class BoatReservationService(
         trailerLengthCm: Int,
     ) {
         // find all active reservations that have this trailer
-        val reservations = boatSpaceReservationRepo.getActiveReservationsForTrailer(trailerId)
+        val reservations = boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
 
         reservations.forEach {
             val warnings = mutableListOf<String>()
@@ -208,8 +208,8 @@ class BoatReservationService(
         }
     }
 
-    fun getActiveReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
-        boatSpaceReservationRepo.getActiveReservationsForTrailer(trailerId)
+    fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
 
     fun addReservationWarnings(
         reservationId: Int,

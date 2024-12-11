@@ -742,7 +742,7 @@ class CitizenUserController {
         val userId = request.ensureEmployeeId()
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
-        val reservationsWithTrailer = reservationService.getActiveReservationsForTrailer(trailerId)
+        val reservationsWithTrailer = reservationService.getReservationsForTrailer(trailerId)
         reservationsWithTrailer.forEach {
             reservationService.acknowledgeWarning(it.id, userId, trailerId, key, infoText)
         }

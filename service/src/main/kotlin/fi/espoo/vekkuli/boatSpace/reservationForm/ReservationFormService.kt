@@ -354,9 +354,8 @@ class ReservationFormService(
         val boat = createOrUpdateBoat(reserverId, input)
 
         if (boatSpace.type == BoatSpaceType.Winter) {
-            updateReservationWithStorageTypeRelatedInformation(input, reserverId)
+            updateReservationWithStorageTypeRelatedInformation(input, reserverId, boatSpace, boat)
         }
-        addReservationWarnings(input.reservationId, boatSpace, boat)
 
         updateReserverContactInfo(reserverId, input)
 
@@ -378,11 +377,15 @@ class ReservationFormService(
     private fun updateReservationWithStorageTypeRelatedInformation(
         input: ReserveBoatSpaceInput,
         reserverId: UUID,
+        boatSpace: BoatSpace,
+        boat: Boat
     ) {
         addStorageType(input.reservationId, input.storageType)
         if (input.storageType == StorageType.Trailer) {
-            createTrailerAndUpdateReservation(reserverId, input)
+            val trailer = createTrailerAndUpdateReservation(reserverId, input)
+            boatReservationService.addTrailerWarningsToReservations(trailer.id, trailer.widthCm, trailer.lengthCm)
         }
+        addReservationWarnings(input.reservationId, boatSpace, boat)
     }
 
     private fun addStorageType(
@@ -396,13 +399,13 @@ class ReservationFormService(
     private fun createTrailerAndUpdateReservation(
         reserverId: UUID,
         input: ReserveBoatSpaceInput
-    ) {
+    ): Trailer {
         if (
             input.trailerRegistrationNumber?.isEmpty() == false &&
             input.trailerWidthInM != null &&
             input.trailerLengthInM != null
         ) {
-            trailerRepository.insertTrailerAndAddToReservation(
+            return trailerRepository.insertTrailerAndAddToReservation(
                 input.reservationId,
                 reserverId,
                 input.trailerRegistrationNumber,
