@@ -12,7 +12,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-abstract class ReservationForApplicationForm(
+open class ReservationForApplicationForm(
     val id: Int,
     val reserverId: UUID?,
     val boatId: Int?,
