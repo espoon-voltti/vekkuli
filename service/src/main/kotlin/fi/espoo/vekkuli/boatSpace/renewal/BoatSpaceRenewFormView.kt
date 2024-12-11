@@ -347,7 +347,6 @@ class BoatSpaceRenewFormView(
                     <td>${row.customer}</td>
                     <td>${row.priceWithoutVat}</td>
                     <td>${row.vat}</td>
-                    <td>${row.priceWithVat}</td>
                     <td>${row.organization}</td>
                     <td>${row.paymentDate}</td>
                 </tr>
@@ -395,7 +394,6 @@ class BoatSpaceRenewFormView(
                         <td>Maksupäivä</td>
                     </thead>
                     <tbody>
-                        ${invoiceRows(model.invoiceRows)}
                     </tbody>
                 </table>
                 

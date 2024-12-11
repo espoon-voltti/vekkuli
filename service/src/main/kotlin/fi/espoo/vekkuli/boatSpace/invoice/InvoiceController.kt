@@ -3,18 +3,16 @@ package fi.espoo.vekkuli.boatSpace.invoice
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.centToEuro
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
-import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @Controller
@@ -37,6 +35,7 @@ class InvoiceController(
         }
 
         val invoiceData = invoiceService.createInvoiceData(reservationId, reservation.reserverId)
+
         if (invoiceData == null) {
             throw IllegalArgumentException("Failed to create invoice data")
         }
@@ -58,27 +57,23 @@ class InvoiceController(
                 dueDate = LocalDate.of(2025, 12, 31),
                 costCenter = "",
                 invoiceType = "",
-                invoiceRows =
-                    listOf(
-                        InvoiceRow(
-                            description = invoiceData.description,
-                            customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
-                            priceWithoutVat = reservation.priceWithoutVatInEuro,
-                            vat = reservation.vatPriceInEuro,
-                            priceWithVat = reservation.priceInEuro,
-                            organization = "Merellinen ulkoilu",
-                            paymentDate = LocalDate.of(2025, 1, 1)
-                        )
-                    )
+                priceWithTax = reservation.priceCents.centToEuro(),
+                description = "Venepaikan vuokraus"
             )
         val content = sendInvoiceView.render(model)
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
     }
 
+    data class InvoiceInput(
+        val priceWithTax: BigDecimal,
+        val description: String
+    )
+
     @PostMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     fun sendInvoice(
         @PathVariable reservationId: Int,
+        @ModelAttribute("input") input: InvoiceInput,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         // send the invoice, update reservation status
@@ -88,7 +83,7 @@ class InvoiceController(
             throw IllegalArgumentException("Reservation not found")
         }
         try {
-            handleInvoiceSending(reservation)
+            handleInvoiceSending(reservation, input.priceWithTax, input.description)
         } catch (e: Exception) {
             val content = sendInvoiceView.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
@@ -100,12 +95,17 @@ class InvoiceController(
             .body("")
     }
 
-    private fun handleInvoiceSending(reservation: ReservationWithDependencies) {
+    private fun handleInvoiceSending(
+        reservation: ReservationWithDependencies,
+        priceWithVat: BigDecimal,
+        description: String
+    ) {
         if (reservation.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
+        val priceWithVatInCents = priceWithVat.multiply(BigDecimal(100)).toInt()
         val invoiceData =
-            invoiceService.createInvoiceData(reservation.id, reservation.reserverId)
+            invoiceService.createInvoiceData(reservation.id, reservation.reserverId, priceWithVatInCents, description)
                 ?: throw InternalError("Failed to create invoice batch")
 
         val invoice = invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservation.id)

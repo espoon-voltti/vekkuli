@@ -13,7 +13,11 @@ fun BigDecimal.mToCm(): Int =
         .toInt()
 
 fun Int.centsToEuro(): String =
-    BigDecimal(this)
-        .divide(BigDecimal(100), 2, RoundingMode.HALF_UP) // The "2" here ensures two decimal places
+    this
+        .centToEuro()
         .toString()
         .replace(".", ",")
+
+fun Int.centToEuro(): BigDecimal =
+    BigDecimal(this)
+        .divide(BigDecimal(100), 2, RoundingMode.HALF_UP)

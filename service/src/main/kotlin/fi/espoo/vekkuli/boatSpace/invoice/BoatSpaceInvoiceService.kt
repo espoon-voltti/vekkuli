@@ -85,6 +85,8 @@ class BoatSpaceInvoiceService(
     fun createInvoiceData(
         reservationId: Int,
         reserverId: UUID,
+        priceWithVatInCents: Int? = null,
+        description: String? = null
     ): InvoiceData? {
         val reservation = boatReservationService.getBoatSpaceReservation(reservationId)
         if (reservation == null) {
@@ -94,6 +96,9 @@ class BoatSpaceInvoiceService(
         if (reserver == null) {
             return null
         }
+
+        val price = priceWithVatInCents ?: reservation.priceCents
+        val description = description ?: "${reservation.locationName} ${reservation.startDate.year}"
 
         if (reservation.reserverType == ReserverType.Citizen) {
             val citizen = citizenService.getCitizen(reserverId)
@@ -114,8 +119,8 @@ class BoatSpaceInvoiceService(
                 language = "fi",
                 mobilePhone = citizen.phone,
                 email = citizen.email,
-                priceCents = reservation.priceCents,
-                description = "${reservation.locationName} ${reservation.startDate.year}",
+                priceCents = price,
+                description = description,
             )
         } else {
             return InvoiceData(
@@ -132,8 +137,8 @@ class BoatSpaceInvoiceService(
                 language = "fi",
                 mobilePhone = reserver.phone,
                 email = reserver.email,
-                priceCents = reservation.priceCents,
-                description = "${reservation.locationName} ${reservation.startDate.year}",
+                priceCents = price,
+                description = description,
             )
         }
     }

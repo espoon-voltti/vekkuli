@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.views.employee
 
+import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.LocalDate
 
 data class SendInvoiceModel(
@@ -19,7 +21,8 @@ data class SendInvoiceModel(
     val dueDate: LocalDate,
     val costCenter: String,
     val invoiceType: String,
-    val invoiceRows: List<InvoiceRow>,
+    val priceWithTax: BigDecimal,
+    val description: String
 )
 
 data class InvoiceRow(
@@ -27,15 +30,60 @@ data class InvoiceRow(
     val customer: String,
     val priceWithoutVat: String,
     val vat: String,
-    val priceWithVat: String,
     val organization: String,
     val paymentDate: LocalDate,
 )
 
+// BoatSpaceType.Slip -> "T1270"
+// BoatSpaceType.Winter -> "T1271"
+// BoatSpaceType.Storage -> "T1276"
+// BoatSpaceType.Trailer -> "T1270"
+
 @Service
-class InvoicePreview : BaseView() {
+class InvoicePreview(
+    val formComponents: FormComponents
+) : BaseView() {
     fun render(model: SendInvoiceModel): String {
+        val functionSelect =
+            formComponents.select(
+                "invoice.function",
+                "function",
+                "",
+                listOf(
+                    Pair("T1270", "Venepaikka T1270",),
+                    Pair("T1271", "Talvisäilytys T1271",),
+                    Pair("T1276", "Varastopaikka T1276",),
+                )
+            )
         // language=HTML
+        val dueDate =
+            formComponents.field(
+                "invoice.dueDate",
+                "dueDate",
+                model.dueDate.toString(),
+            )
+        val invoicePeriod =
+            formComponents.field(
+                "invoice.invoicePeriod",
+                "invoicePeriod",
+                "${model.billingPeriodStart} - ${model.billingPeriodEnd}",
+            )
+        val priceWithTax =
+            formComponents.decimalInput(
+                "invoice.priceWithTax",
+                "priceWithTax",
+                model.priceWithTax,
+                compact = true,
+                step = 0.01,
+            )
+        val description =
+            formComponents.textInput(
+                "invoice.description",
+                "description",
+                model.description,
+                compact = true,
+            )
+
         return """
             <section class="section">
             
@@ -49,52 +97,48 @@ class InvoicePreview : BaseView() {
                 
                 <hr/>
                 
-                <h3 class="subtitle">Laskun tiedot</h3>
-                ${invoiceLine("Tuote", model.product)}
-                ${invoiceLine("Toimintotieto", model.functionInformation)}
-                ${invoiceLine("Laskutuskausi", "${model.billingPeriodStart} - ${model.billingPeriodEnd}")}
-                ${invoiceLine("Veneilykausi", "${model.boatingSeasonStart} - ${model.boatingSeasonEnd}")}
-                ${invoiceLine("Laskun numero", model.invoiceNumber)}
-                ${invoiceLine("Laskun eräpäivä", model.dueDate.toString())}
-                ${invoiceLine("Kustannuspaikka", model.costCenter)}
-                ${invoiceLine("Laskulaji", model.invoiceType)}
-                ${invoiceLine("Hintaryhmä", "100%")}
-                
-                <hr/>
-                
-                <h3 class="subtitle">Laskurivi</h3>
-                
-                <table class="table">
-                    <thead>
-                        <td>Selite</td>
-                        <td>Asiakas</td>
-                        <td>Hinta ilman alv</td>
-                        <td>Alv 24 %</td>
-                        <td>Verollinen hinta </td>
-                        <td>Organisaatio</td>
-                        <td>Maksupäivä</td>
-                    </thead>
-                    <tbody>
-                        ${invoiceRows(model.invoiceRows)}
-                    </tbody>
-                </table>
-                
-                <div class="field block">
-                    <div class="control">
-                        <button id="cancel"
-                            class="button is-secondary"
-                            type="button">
-                            ${t("cancel")}
-                        </button>
-                        <button id="submit"
-                            class="button is-primary"
-                            type="submit"
-                            hx-post="/virkailija/venepaikka/varaus/${model.reservationId}/lasku"
-                            hx-target="body">
-                            Lähetä lasku
-                        </button>
+                <form
+                    hx-post="/virkailija/venepaikka/varaus/${model.reservationId}/lasku"
+                    hx-target="body"
+                >
+                    <h3 class="subtitle">Laskun tiedot</h3>
+                    <div class="columns">
+                        <div class="column">
+                            $functionSelect
+                        </div>
+                        
+                        <div class="column">
+                            $dueDate
+                        </div>
+                        
+                        <div class="column">
+                            $invoicePeriod
+                        </div>
+                        <div class="column">
+                            $priceWithTax
+                        </div>
                     </div>
-                </div> 
+                    
+                    $description
+                    
+                    <hr/>
+                    
+                    <div class="field block">
+                        <div class="control">
+                            <button id="cancel"
+                                class="button is-secondary"
+                                type="button">
+                                ${t("cancel")}
+                            </button>
+                            <button id="submit"
+                                class="button is-primary"
+                                type="submit"
+                                >
+                                Lähetä lasku
+                            </button>
+                        </div>
+                    </div> 
+                </form>
             </div>
             </section>
 
@@ -109,21 +153,6 @@ class InvoicePreview : BaseView() {
             <span class="invoice-line">$name:</span><span>$value</span>
         </div>
         """.trimIndent()
-
-    fun invoiceRows(rows: List<InvoiceRow>): String =
-        rows.joinToString { row ->
-            """
-            <tr>
-                <td>${row.description}</td>
-                <td>${row.customer}</td>
-                <td>${row.priceWithoutVat}</td>
-                <td>${row.vat}</td>
-                <td>${row.priceWithVat}</td>
-                <td>${row.organization}</td>
-                <td>${row.paymentDate}</td>
-            </tr>
-            """.trimIndent()
-        }
 
     fun invoiceErrorPage() =
         """

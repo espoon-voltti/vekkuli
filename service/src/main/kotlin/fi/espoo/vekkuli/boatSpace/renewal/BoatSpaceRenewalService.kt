@@ -18,8 +18,8 @@ import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.centToEuro
 import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -182,18 +182,8 @@ class BoatSpaceRenewalService(
             dueDate = LocalDate.of(2025, 12, 31),
             costCenter = "?",
             invoiceType = "?",
-            invoiceRows =
-                listOf(
-                    InvoiceRow(
-                        description = invoiceData.description,
-                        customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
-                        priceWithoutVat = reservation.priceWithoutVatInEuro.toString(),
-                        vat = reservation.vatPriceInEuro.toString(),
-                        priceWithVat = reservation.priceInEuro.toString(),
-                        organization = "Merellinen ulkoilu",
-                        paymentDate = LocalDate.of(2025, 1, 1)
-                    )
-                )
+            priceWithTax = reservation.priceCents.centToEuro(),
+            description = "Venepaikan vuokraus"
         )
     }
 
