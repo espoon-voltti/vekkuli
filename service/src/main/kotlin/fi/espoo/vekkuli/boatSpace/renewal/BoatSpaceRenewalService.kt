@@ -286,7 +286,6 @@ class BoatSpaceRenewalService(
             reservationWithDependencies.created,
             reservationWithDependencies.excludedBoatTypes,
             reservationWithDependencies.section,
-            reservationWithDependencies.placeNumber.toString(),
             reservationWithDependencies.storageType,
             reservationWithDependencies.renewedFromId.toString(),
         )

@@ -2,14 +2,13 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
-import fi.espoo.vekkuli.boatSpace.invoice.InvoiceClient
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.CitizenService
-import fi.espoo.vekkuli.service.PaymentService
+import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.endDateWithinMonthOfRenewWindow
+import fi.espoo.vekkuli.utils.mToCm
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfRenewPeriod
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -53,7 +52,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     lateinit var boatSpaceRenewalService: BoatSpaceRenewalService
 
     @MockBean
-    lateinit var invoiceClient: InvoiceClient
+    lateinit var seasonalService: SeasonalService
 
     @MockBean
     lateinit var asyncJobRunner: IAsyncJobRunner<AsyncJob>
@@ -439,5 +438,86 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     it.id == madeReservation.id
                 }
         assertEquals(reservation?.canRenew, true, "Reservation can be renewed")
+    }
+
+    @Test
+    fun `should renew winter reservations`() {
+        Mockito
+            .`when`(seasonalService.canRenewAReservation(any(), any()))
+            .thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(30),
+                        ReservationValidity.Indefinite
+                    )
+                )
+            )
+
+        val madeReservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    8,
+                    1,
+                    validity = ReservationValidity.Indefinite,
+                    endDate = endDateWithinMonthOfRenewWindow
+                )
+            )
+
+        val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, madeReservation.id)
+        val invalidInput =
+            RenewalReservationInput(
+                boatId = 2,
+                boatType = BoatType.Sailboat,
+                width = BigDecimal(3.0),
+                length = BigDecimal(4.0),
+                depth = BigDecimal(1.0),
+                weight = 100,
+                boatRegistrationNumber = "12345",
+                boatName = "TestBoat",
+                otherIdentification = "OtherID",
+                extraInformation = "ExtraInfo",
+                ownership = OwnershipStatus.Owner,
+                email = "test@email.com",
+                phone = "1234567890",
+                agreeToRules = true,
+                certifyInformation = true,
+                noRegistrationNumber = false,
+                originalReservationId = 4,
+            )
+        val storageException =
+            assertThrows<IllegalArgumentException> {
+                boatSpaceRenewalService.updateRenewReservation(
+                    citizenIdLeo,
+                    invalidInput,
+                    renewalReservation.id
+                )
+            }
+        assertEquals("Storage type has to be given.", storageException.message)
+
+        val trailerExpection =
+            assertThrows<IllegalArgumentException> {
+                boatSpaceRenewalService.updateRenewReservation(
+                    citizenIdLeo,
+                    invalidInput.copy(storageType = StorageType.Trailer),
+                    renewalReservation.id
+                )
+            }
+
+        assertEquals("Trailer information can not be empty.", trailerExpection.message)
+        val validInput =
+            invalidInput.copy(
+                storageType = StorageType.Trailer,
+                trailerRegistrationNumber = "12345",
+                trailerWidth = BigDecimal(3.0),
+                trailerLength = BigDecimal(4.0)
+            )
+        boatSpaceRenewalService.updateRenewReservation(citizenIdLeo, validInput, renewalReservation.id)
+        val updatedReservation = reservationService.getBoatSpaceReservation(renewalReservation.id)
+        assertEquals(validInput.trailerRegistrationNumber, updatedReservation?.trailer?.registrationCode)
+        assertEquals(validInput.trailerWidth?.mToCm(), updatedReservation?.trailer?.widthCm)
+        assertEquals(validInput.trailerLength?.mToCm(), updatedReservation?.trailer?.lengthCm)
     }
 }

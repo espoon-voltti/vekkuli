@@ -421,6 +421,9 @@ class ReservationFormService(
         input: ReserveBoatSpaceInput,
         reserverId: UUID,
     ) {
+        if (input.storageType == null || input.storageType == StorageType.None) {
+            throw IllegalArgumentException("Storage type has to be given.")
+        }
         addStorageType(input.reservationId, input.storageType)
         if (input.storageType == StorageType.Trailer) {
             createTrailerAndUpdateReservation(reserverId, input)
@@ -452,7 +455,7 @@ class ReservationFormService(
                 input.trailerLengthInM.mToCm()
             )
         } else {
-            throw IllegalArgumentException("Trailer can not be empty.")
+            throw IllegalArgumentException("Trailer information can not be empty.")
         }
     }
 

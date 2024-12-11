@@ -32,7 +32,6 @@ class RenewalReservationForApplicationForm(
     created: LocalDateTime,
     excludedBoatTypes: List<BoatType>?,
     section: String,
-    placeNumber: String,
     storageType: StorageType?,
     val renewdFromReservationId: String
 ) : ReservationForApplicationForm(
@@ -54,7 +53,6 @@ class RenewalReservationForApplicationForm(
         created,
         excludedBoatTypes,
         section,
-        placeNumber,
         storageType
     )
 
