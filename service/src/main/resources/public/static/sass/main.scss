@@ -894,6 +894,10 @@ ul {
   border: 1px solid $error;
 }
 
+.has-text-danger {
+    color: $error !important;
+}
+
 .centered {
     display: flex;
     justify-content: center;

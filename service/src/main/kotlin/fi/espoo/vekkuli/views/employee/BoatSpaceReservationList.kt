@@ -159,6 +159,14 @@ class BoatSpaceReservationList {
                 val startDateFormatted = formatAsShortYearDate(result.startDate)
                 val endDateFormatted = formatAsShortYearDate(result.endDate)
                 val paymentDateFormatted = formatAsShortYearDate(result.paymentDate)
+                val endDateText =
+                    if (result.status == ReservationStatus.Cancelled) {
+                        """<span class="has-text-danger">${t("reservations.text.terminated")} $endDateFormatted</span>"""
+                    } else if (result.validity == ReservationValidity.FixedTerm) {
+                        endDateFormatted
+                    } else {
+                        ""
+                    }
                 """
                 <tr class="reservation-item"
                     id="boat-space-${result.boatSpaceId}"
@@ -179,7 +187,7 @@ class BoatSpaceReservationList {
                     <td>$startDateFormatted</td>
                     <td ${addTestId(
                     "reservation-end-date"
-                )}>${if (result.validity == ReservationValidity.Indefinite) "" else endDateFormatted}</td>
+                )}>$endDateText</td>
                 </tr>
                 """.trimIndent()
             }
