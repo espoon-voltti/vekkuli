@@ -198,11 +198,12 @@ class BoatSpaceSearch(
                                
                                $storageType
 
-                                <div class="block">
-                                    $boatTypeSelect
-                                </div>
+                                
 
                                 <template x-if="boatSpaceType === 'Slip'">
+                                    <div class="block">
+                                        $boatTypeSelect
+                                    </div>
                                     <div class="columns">
                                         <div class='column'>
                                             $boatWidthInput
@@ -225,12 +226,19 @@ class BoatSpaceSearch(
                                 </template>
                                 
                                 <template x-if="boatSpaceType != 'Slip' && boatSpaceType != 'Trailer'">
-                                    <div class="columns">
-                                        <div class='column'>
-                                            $spaceWidthInput
+                                    <div class='block'>
+                                        <div class="columns">
+                                            <div class='column'>
+                                                $spaceWidthInput
+                                            </div>
+                                            <div class='column'>
+                                                $spaceLengthInput
+                                            </div>
                                         </div>
+                                        <div class="columns">
                                         <div class='column'>
-                                            $spaceLengthInput
+                                            <p class="mt-s information-text">${t("boatSpaces.text.spaceSizeInfo")}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </template>
