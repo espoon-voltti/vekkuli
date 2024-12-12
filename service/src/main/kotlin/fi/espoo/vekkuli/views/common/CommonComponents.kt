@@ -68,7 +68,7 @@ class CommonComponents(
     // language=HTML
     fun goBackButton(backUrl: String) =
         """
-                        <button class="icon-text">
+                        <button data-testid="go-back" class="icon-text">
                             <span class="icon">
                                 <div>${icons.chevronLeft}</div>
                             </span>

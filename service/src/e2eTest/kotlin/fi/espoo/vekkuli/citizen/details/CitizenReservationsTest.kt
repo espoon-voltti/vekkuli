@@ -4,6 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.CitizenHomePage
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
@@ -14,7 +15,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            citizenDetailsPage.loginAsOliviaVirtanen()
+            CitizenHomePage(page).loginAsOliviaVirtanen()
             page.navigate(citizenPageInEnglish)
 
             // Opens up information from the first reservation of the first user
@@ -33,7 +34,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            citizenDetailsPage.loginAsOliviaVirtanen()
+            CitizenHomePage(page).loginAsOliviaVirtanen()
             page.navigate(citizenPageInEnglish)
 
             // Opens up information from the first reservation of the first user

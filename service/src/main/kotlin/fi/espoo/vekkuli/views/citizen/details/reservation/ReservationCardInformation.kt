@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class ReservationCardInformation : BaseView() {
@@ -21,6 +22,7 @@ class ReservationCardInformation : BaseView() {
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
         userType: UserType,
+        reserverId: UUID,
     ): String {
         val amenity =
             if (reservation.type == BoatSpaceType.Slip) {
@@ -98,7 +100,7 @@ class ReservationCardInformation : BaseView() {
                  </div>
                  
              </div>
-            ${reservation.trailer?.let { trailerCard.render(it, userType)} ?: ""}
+            ${reservation.trailer?.let { trailerCard.render(it, userType, reserverId)} ?: ""}
 
             """.trimIndent()
     }

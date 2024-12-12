@@ -26,7 +26,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
 
         // Create a reservation for B 314 boat space
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod.atTime(10, 0))
-        citizenDetailsPage.loginAsMikkoVirtanen()
+        CitizenHomePage(page).loginAsMikkoVirtanen()
         reserveBoatSpacePage.reserveB314BoatSpaceToASailboat()
 
         citizenDetailsPage.navigateToPage()
@@ -148,7 +148,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         assertThat(reserveBoatSpacePage.reserveTableB314Row).isVisible()
 
         // Check that the user sees the reservation as expired
-        citizenDetailsPage.loginAsMikkoVirtanen()
+        CitizenHomePage(page).loginAsMikkoVirtanen()
         citizenDetailsPage.navigateToPage()
 
         assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)

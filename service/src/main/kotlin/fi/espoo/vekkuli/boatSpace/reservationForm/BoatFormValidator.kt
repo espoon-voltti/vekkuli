@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.math.BigDecimal
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.reflect.KClass
@@ -100,9 +101,9 @@ annotation class ValidBoatRegistration(
     val payload: Array<KClass<out Payload>> = [],
 )
 
-class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, BoatRegistrationInput> {
+class BoatRegistrationValidator : ConstraintValidator<ValidBoatRegistration, BoatRegistrationBaseInput> {
     override fun isValid(
-        value: BoatRegistrationInput,
+        value: BoatRegistrationBaseInput,
         context: ConstraintValidatorContext,
     ): Boolean {
         var isValid = true
@@ -138,8 +139,27 @@ fun getReservationTimeInSeconds(
     return (BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed)
 }
 
-interface BoatRegistrationInput {
+interface BoatRegistrationBaseInput {
+    val boatId: Int?
+    val boatType: BoatType?
+    val width: BigDecimal?
+    val length: BigDecimal?
+    val depth: BigDecimal?
+    val weight: Int?
     val noRegistrationNumber: Boolean?
     val boatRegistrationNumber: String?
     val otherIdentification: String?
+    val boatName: String?
+    val extraInformation: String?
+    val ownership: OwnershipStatus?
+    val email: String?
+    val phone: String?
+    val certifyInformation: Boolean?
+    val agreeToRules: Boolean?
+    val orgPhone: String?
+    val orgEmail: String?
+    val storageType: StorageType?
+    val trailerRegistrationNumber: String?
+    val trailerWidth: BigDecimal?
+    val trailerLength: BigDecimal?
 }

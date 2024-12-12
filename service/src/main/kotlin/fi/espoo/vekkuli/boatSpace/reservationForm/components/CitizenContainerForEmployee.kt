@@ -165,7 +165,7 @@ class CitizenContainerForEmployee(
     fun customerTypeRadioButtons(
         userType: UserType,
         reservationId: Int,
-        input: ReservationInput,
+        citizenSelection: String? = "newCitizen"
     ) = // language=HTML
         """
         <div class="field">
@@ -181,7 +181,7 @@ class CitizenContainerForEmployee(
                         hx-target="#form-inputs"
                         hx-select="#form-inputs"
                         hx-swap="outerHTML"
-                        ${if (input.citizenSelection == "newCitizen") "checked" else ""}
+                        ${if (citizenSelection == "newCitizen") "checked" else ""}
                         
                     />
                     <label for="new-citizen-selector">${t("boatApplication.citizenOptions.newCitizen")}</label>
@@ -197,7 +197,7 @@ class CitizenContainerForEmployee(
                         hx-target="#form-inputs"
                         hx-select="#form-inputs"
                         hx-swap="outerHTML"
-                        ${if (input.citizenSelection == "existingCitizen") "checked" else ""}
+                        ${if (citizenSelection == "existingCitizen") "checked" else ""}
                     />
                     <label for="existing-citizen-selector">${t("boatApplication.citizenOptions.existingCitizen")}</label>
                 </div>
@@ -232,7 +232,7 @@ class CitizenContainerForEmployee(
         // language=HTML
         """
         <div>
-            ${customerTypeRadioButtons(userType, reservationId, input)}
+            ${customerTypeRadioButtons(userType, reservationId, input.citizenSelection)}
             ${citizenSelection(input, citizen, municipalities, reservationId)}
         </div>
         """.trimIndent()

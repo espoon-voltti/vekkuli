@@ -53,7 +53,8 @@ class ExpiredBoatSpaceReservationList {
         return ResponseEntity.ok(
             partial.render(
                 reservations,
-                if (isEmployee) UserType.EMPLOYEE else UserType.CITIZEN
+                if (isEmployee) UserType.EMPLOYEE else UserType.CITIZEN,
+                citizenId
             )
         )
     }

@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.StorageType
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
@@ -17,6 +18,30 @@ class ReservationInformation(
     private val commonComponents: CommonComponents,
     private val formComponents: FormComponents
 ) : BaseView() {
+    fun reservationInformationWithStorageType(reservation: ReservationForApplicationForm): String {
+        // language=HTML
+        val storageTypeInformationField =
+            """
+            <div class='field' >
+               <label class="label">${t("boatApplication.title.boatSpaceStorageType")}</label>
+                <p x-show="storageType === '${StorageType.Trailer}'" id="storage-type-text-trailer">${t(
+                "boatSpaces.storageType.Trailer"
+            )}</p>
+                <p x-show="storageType === '${StorageType.Buck}'" id="storage-type-text-buck">${t("boatSpaces.storageType.Buck")}</p>
+                <p x-show="storageType === '${StorageType.BuckWithTent}'" id="storage-type-text-buckTent">${t(
+                "boatSpaces.storageType.BuckWithTent"
+            )}</p>
+            </div>
+            """.trimIndent()
+
+        val informationFields = buildReservationInformationFields(reservation)
+        val informationFieldsWithDynamicAmenity =
+            informationFields.copy(
+                amenityField = storageTypeInformationField
+            )
+        return render(reservation, informationFieldsWithDynamicAmenity)
+    }
+
     fun buildReservationInformationFields(reservation: ReservationForApplicationForm): ReservationInformationParams {
         val harborField =
             formComponents.field(
@@ -88,7 +113,7 @@ class ReservationInformation(
 
     fun render(
         reservation: ReservationForApplicationForm,
-        params: ReservationInformationParams = buildReservationInformationFields(reservation)
+        params: ReservationInformationParams = buildReservationInformationFields(reservation),
     ): String {
         // language=HTML
         val reservationInformationFields =

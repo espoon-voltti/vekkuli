@@ -64,6 +64,7 @@ class ReservationFormService(
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
 ) {
+    @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
         reservationId: Int,
         citizenId: UUID,
@@ -104,6 +105,7 @@ class ReservationFormService(
         )
     }
 
+    @Transactional
     fun updateReserverAndReservationForEmployee(
         reservationId: Int,
         input: ReservationInput
@@ -160,6 +162,7 @@ class ReservationFormService(
         }
     }
 
+    @Transactional
     fun reserveSpaceForEmployee(
         reservationId: Int,
         reserverId: UUID,
@@ -179,9 +182,17 @@ class ReservationFormService(
                 // TODO: get validity from input parameter for employee
                 ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm)
             }
-        reserveBoatSpace(reserverId, reservationId, input, data)
+        processBoatSpaceReservation(
+            reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            ReservationStatus.Payment,
+            data.reservationValidity,
+            data.startDate,
+            data.endDate
+        )
     }
 
+    @Transactional
     fun reserveSpaceByCitizen(
         reservationId: Int,
         reserverId: UUID,
@@ -198,7 +209,14 @@ class ReservationFormService(
             }
             throw BadRequest("Reservation can not be made.")
         }
-        reserveBoatSpace(reserverId, reservationId, input, reserveSlipResult.data)
+        processBoatSpaceReservation(
+            reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            ReservationStatus.Payment,
+            reserveSlipResult.data.reservationValidity,
+            reserveSlipResult.data.startDate,
+            reserveSlipResult.data.endDate
+        )
     }
 
     fun getReservationForApplicationForm(reservationId: Int) = reservationRepository.getReservationForApplicationForm(reservationId)
@@ -338,6 +356,30 @@ class ReservationFormService(
         return BoatFormParams(userType, citizen, boats, reservationId, input)
     }
 
+    fun buildReserveBoatSpaceInput(
+        reservationId: Int,
+        input: BoatRegistrationBaseInput,
+    ) = ReserveBoatSpaceInput(
+        reservationId = reservationId,
+        boatId = input.boatId,
+        boatType = input.boatType!!,
+        width = input.width ?: BigDecimal.ZERO,
+        length = input.length ?: BigDecimal.ZERO,
+        depth = input.depth ?: BigDecimal.ZERO,
+        weight = input.weight,
+        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+        boatName = input.boatName ?: "",
+        otherIdentification = input.otherIdentification ?: "",
+        extraInformation = input.extraInformation ?: "",
+        ownerShip = input.ownership!!,
+        email = input.email!!,
+        phone = input.phone!!,
+        storageType = input.storageType,
+        trailerRegistrationNumber = input.trailerRegistrationNumber,
+        trailerLengthInM = input.trailerLength,
+        trailerWidthInM = input.trailerWidth,
+    )
+
     @Transactional
     fun processBoatSpaceReservation(
         reserverId: UUID,
@@ -353,10 +395,11 @@ class ReservationFormService(
 
         val boat = createOrUpdateBoat(reserverId, input)
 
+        addReservationWarnings(input.reservationId, boatSpace, boat)
+
         if (boatSpace.type == BoatSpaceType.Winter) {
             updateReservationWithStorageTypeRelatedInformation(input, reserverId)
         }
-        addReservationWarnings(input.reservationId, boatSpace, boat)
 
         updateReserverContactInfo(reserverId, input)
 
@@ -379,9 +422,13 @@ class ReservationFormService(
         input: ReserveBoatSpaceInput,
         reserverId: UUID,
     ) {
+        if (input.storageType == null || input.storageType == StorageType.None) {
+            throw IllegalArgumentException("Storage type has to be given.")
+        }
         addStorageType(input.reservationId, input.storageType)
         if (input.storageType == StorageType.Trailer) {
-            createTrailerAndUpdateReservation(reserverId, input)
+            val trailer = createTrailerAndUpdateReservation(reserverId, input)
+            boatReservationService.addTrailerWarningsToReservations(trailer.id, trailer.widthCm, trailer.lengthCm)
         }
     }
 
@@ -396,13 +443,13 @@ class ReservationFormService(
     private fun createTrailerAndUpdateReservation(
         reserverId: UUID,
         input: ReserveBoatSpaceInput
-    ) {
+    ): Trailer {
         if (
             input.trailerRegistrationNumber?.isEmpty() == false &&
             input.trailerWidthInM != null &&
             input.trailerLengthInM != null
         ) {
-            trailerRepository.insertTrailerAndAddToReservation(
+            return trailerRepository.insertTrailerAndAddToReservation(
                 input.reservationId,
                 reserverId,
                 input.trailerRegistrationNumber,
@@ -410,7 +457,7 @@ class ReservationFormService(
                 input.trailerLengthInM.mToCm()
             )
         } else {
-            throw IllegalArgumentException("Trailer can not be empty.")
+            throw IllegalArgumentException("Trailer information can not be empty.")
         }
     }
 
@@ -467,7 +514,7 @@ class ReservationFormService(
             boat.ownership,
             boat.weightKg,
             boat.type,
-            boatSpace.excludedBoatTypes ?: listOf()
+            boatSpace.excludedBoatTypes ?: listOf(),
         )
     }
 
@@ -509,41 +556,6 @@ class ReservationFormService(
         )
     }
 
-    fun reserveBoatSpace(
-        reserverId: UUID,
-        reservationId: Int,
-        input: ReservationInput,
-        reserveSlipResult: ReservationResultSuccess,
-    ) {
-        processBoatSpaceReservation(
-            reserverId,
-            ReserveBoatSpaceInput(
-                reservationId = reservationId,
-                boatId = input.boatId,
-                boatType = input.boatType!!,
-                width = input.width ?: BigDecimal.ZERO,
-                length = input.length ?: BigDecimal.ZERO,
-                depth = input.depth ?: BigDecimal.ZERO,
-                weight = input.weight,
-                boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                boatName = input.boatName ?: "",
-                otherIdentification = input.otherIdentification ?: "",
-                extraInformation = input.extraInformation ?: "",
-                ownerShip = input.ownership!!,
-                email = input.email!!,
-                phone = input.phone!!,
-                storageType = input.storageType,
-                trailerRegistrationNumber = input.trailerRegistrationNumber,
-                trailerWidthInM = input.trailerWidth,
-                trailerLengthInM = input.trailerLength,
-            ),
-            ReservationStatus.Payment,
-            reserveSlipResult.reservationValidity,
-            reserveSlipResult.startDate,
-            reserveSlipResult.endDate
-        )
-    }
-
     private fun createBodyContent(
         formInput: ReservationInput,
         citizen: CitizenWithDetails?,
@@ -551,6 +563,7 @@ class ReservationFormService(
         userType: UserType
     ): String {
         var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+
         val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)
@@ -673,28 +686,28 @@ class ReservationFormService(
 data class ReservationInput(
     @field:NotNull(message = "{validation.required}")
     private val reservationId: Int?,
-    val boatId: Int?,
+    override val boatId: Int?,
     @field:NotNull(message = "{validation.required}")
-    val boatType: BoatType?,
-    @field:NotNull(message = "{validation.required}")
-    @field:Positive(message = "{validation.positiveNumber}")
-    val width: BigDecimal?,
+    override val boatType: BoatType?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val length: BigDecimal?,
+    override val width: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val depth: BigDecimal?,
+    override val length: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
     @field:Positive(message = "{validation.positiveNumber}")
-    val weight: Int?,
-    val boatName: String?,
-    val extraInformation: String?,
+    override val depth: BigDecimal?,
+    @field:NotNull(message = "{validation.required}")
+    @field:Positive(message = "{validation.positiveNumber}")
+    override val weight: Int?,
+    override val boatName: String?,
+    override val extraInformation: String?,
     override val noRegistrationNumber: Boolean?,
     override val boatRegistrationNumber: String?,
     override val otherIdentification: String?,
     @field:NotNull(message = "{validation.required}")
-    val ownership: OwnershipStatus?,
+    override val ownership: OwnershipStatus?,
     val firstName: String?,
     val lastName: String?,
     val ssn: String?,
@@ -706,26 +719,26 @@ data class ReservationInput(
     val citizenId: UUID?,
     @field:NotBlank(message = "{validation.required}")
     @field:Email(message = "{validation.email}")
-    val email: String?,
+    override val email: String?,
     @field:NotBlank(message = "{validation.required}")
-    val phone: String?,
+    override val phone: String?,
     @field:AssertTrue(message = "{validation.certifyInformation}")
-    val certifyInformation: Boolean?,
+    override val certifyInformation: Boolean?,
     @field:AssertTrue(message = "{validation.agreeToRules}")
-    val agreeToRules: Boolean?,
+    override val agreeToRules: Boolean?,
     val isOrganization: Boolean?,
     val organizationId: UUID? = null,
     val orgName: String? = null,
     val orgBusinessId: String? = null,
     val orgMunicipalityCode: String? = null,
-    val orgPhone: String? = null,
-    val orgEmail: String? = null,
+    override val orgPhone: String? = null,
+    override val orgEmail: String? = null,
     val orgAddress: String? = null,
     val orgPostalCode: String? = null,
     val orgCity: String? = null,
     val citizenSelection: String? = "newCitizen",
-    val storageType: StorageType?,
-    val trailerRegistrationNumber: String?,
-    val trailerWidth: BigDecimal?,
-    val trailerLength: BigDecimal?
-) : BoatRegistrationInput
+    override val storageType: StorageType?,
+    override val trailerRegistrationNumber: String?,
+    override val trailerWidth: BigDecimal?,
+    override val trailerLength: BigDecimal?
+) : BoatRegistrationBaseInput

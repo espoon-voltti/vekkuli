@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.CitizenHomePage
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod
@@ -25,7 +26,7 @@ class TerminateReservationTest : PlaywrightTest() {
     fun `citizen can open a terminate reservation modal from a reservation list item and cancel it`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
-            citizenDetailsPage.loginAsLeoKorhonen()
+            CitizenHomePage(page).loginAsLeoKorhonen()
             citizenDetailsPage.navigateToPage()
 
             assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
@@ -59,7 +60,7 @@ class TerminateReservationTest : PlaywrightTest() {
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.userRequest")
             val expectedTerminationDate = timeProvider.getCurrentDate()
 
-            citizenDetailsPage.loginAsLeoKorhonen()
+            CitizenHomePage(page).loginAsLeoKorhonen()
             citizenDetailsPage.navigateToPage()
 
             // Expired list is not on the page
@@ -110,7 +111,7 @@ class TerminateReservationTest : PlaywrightTest() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
-            citizenDetailsPage.loginAsLeoKorhonen()
+            CitizenHomePage(page).loginAsLeoKorhonen()
             citizenDetailsPage.navigateToPage()
 
             citizenDetailsPage.terminateReservationButton.click()

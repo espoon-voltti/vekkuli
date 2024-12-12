@@ -38,25 +38,6 @@ class CitizenDetailsPage(
         page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
     }
 
-    fun loginAsOliviaVirtanen() {
-        loginAsCitizen("031298-988S")
-    }
-
-    fun loginAsLeoKorhonen() {
-        loginAsCitizen("150499-911U")
-    }
-
-    fun loginAsMikkoVirtanen() {
-        loginAsCitizen("010106A957V")
-    }
-
-    fun loginAsCitizen(ssn: String) {
-        page.navigate(baseUrl)
-        page.getByTestId("loginButton").click()
-        page.getByTestId(ssn).click()
-        page.getByText("Kirjaudu").click()
-    }
-
     fun hideModalWindow() {
         modalWindow.click(
             Locator
@@ -196,18 +177,24 @@ class CitizenDetailsPage(
     val terminationDateInFirstExpiredReservationListItem =
         getByDataTestId("reservation-list-card-terminated-date", expiredReservationListCards.first())
     val boatWarningModalWeightInput = page.locator("input[value='BoatWeight']")
+    val trailerWarningModalLengthInput = page.locator("input[value='TrailerLength']")
+    val trailerWarningModalWidthInput = page.locator("input[value='TrailerWidth']")
     val boatWarningModalInfoInput = getByDataTestId("warning-info-input")
     val boatWarningModalConfirmButton = page.getByTestId("ack-modal-confirm")
 
     fun acknowledgeWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("boat-$id"))
 
+    fun trailerAckWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("trailer-$id"))
+
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 
     fun trailerInformation(id: Int) = page.getByTestId("trailer-$id")
 
-    val trailerRegistrationCode = getByDataTestId("trailer-registration-code")
-    val trailerWidth = getByDataTestId("trailer-width")
-    val trailerLength = getByDataTestId("trailer-length")
+    fun trailerRegistrationCode(id: Int) = getByDataTestId("trailer-registration-code", trailerInformation(id))
+
+    fun trailerWidth(id: Int) = getByDataTestId("trailer-width", trailerInformation(id))
+
+    fun trailerLength(id: Int) = getByDataTestId("trailer-length", trailerInformation(id))
 
     fun editTrailerButton(id: Int) = page.getByTestId("edit-trailer-$id")
 
