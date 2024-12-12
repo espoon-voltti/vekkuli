@@ -193,7 +193,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             reservationPage.navigateTo()
             assertThat(reservationPage.emptyDimensionsWarning).isVisible()
             reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Winter).click()
-            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
             reservationPage.widthFilterInput.fill("1")
             reservationPage.lengthFilterInput.fill("3")
             reservationPage.lengthFilterInput.blur()

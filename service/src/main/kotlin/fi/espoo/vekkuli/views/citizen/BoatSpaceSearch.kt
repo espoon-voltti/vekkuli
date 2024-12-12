@@ -198,20 +198,19 @@ class BoatSpaceSearch(
                                
                                $storageType
 
-                                
-
+                               
                                 <template x-if="boatSpaceType === 'Slip'">
                                     <div class="block">
                                         $boatTypeSelect
-                                    </div>
-                                    <div class="columns">
-                                        <div class='column'>
-                                            $boatWidthInput
+                                        <div class="columns">
+                                            <div class='column'>
+                                                $boatWidthInput
+                                            </div>
+                                            <div class='column'>
+                                                $boatLengthInput
+                                            </div>
                                         </div>
-                                        <div class='column'>
-                                            $boatLengthInput
-                                        </div>
-                                    </div>
+                                    </div >
                                 </template>
                                 
                                 <template x-if="boatSpaceType === 'Trailer'">
