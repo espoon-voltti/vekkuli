@@ -293,10 +293,12 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val citizenDetailPage = CitizenDetailsPage(page)
             citizenDetailPage.navigateToPage()
-            assertThat(citizenDetailPage.trailerInformation(1)).isVisible()
-            assertThat(citizenDetailPage.trailerWidth).containsText(trailerWidth)
-            assertThat(citizenDetailPage.trailerLength).containsText(trailerLength)
-            assertThat(citizenDetailPage.trailerRegistrationCode).containsText(trailerRegistrationCode)
+
+            val id = 2
+            assertThat(citizenDetailPage.trailerInformation(id)).isVisible()
+            assertThat(citizenDetailPage.trailerWidth(id)).containsText(trailerWidth)
+            assertThat(citizenDetailPage.trailerLength(id)).containsText(trailerLength)
+            assertThat(citizenDetailPage.trailerRegistrationCode(id)).containsText(trailerRegistrationCode)
         } catch (e: AssertionError) {
             handleError(e)
         }

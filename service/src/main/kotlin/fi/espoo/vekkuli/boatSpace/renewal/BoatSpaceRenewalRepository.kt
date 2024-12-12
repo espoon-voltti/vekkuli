@@ -1,14 +1,60 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.domain.ReservationWithDependencies
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
+
+class RenewalReservationForApplicationForm(
+    id: Int,
+    reserverId: UUID?,
+    boatId: Int?,
+    lengthCm: Int,
+    widthCm: Int,
+    amenity: BoatSpaceAmenity,
+    boatSpaceType: BoatSpaceType,
+    place: String,
+    locationName: String?,
+    validity: ReservationValidity?,
+    startDate: LocalDate,
+    endDate: LocalDate,
+    priceCents: Int,
+    vatCents: Int,
+    netPriceCents: Int,
+    created: LocalDateTime,
+    excludedBoatTypes: List<BoatType>?,
+    section: String,
+    storageType: StorageType?,
+    val renewdFromReservationId: String
+) : ReservationForApplicationForm(
+        id,
+        reserverId,
+        boatId,
+        lengthCm,
+        widthCm,
+        amenity,
+        boatSpaceType,
+        place,
+        locationName,
+        validity,
+        startDate,
+        endDate,
+        priceCents,
+        vatCents,
+        netPriceCents,
+        created,
+        excludedBoatTypes,
+        section,
+        storageType
+    )
 
 @Repository
 class BoatSpaceRenewalRepository(
@@ -75,7 +121,9 @@ class BoatSpaceRenewalRepository(
                       validity, 
                       boat_id, 
                       employee_id,
-                      renewed_from_id
+                      renewed_from_id,
+                      storage_type,
+                      trailer_id
                     )
                     (
                       SELECT :created as created,
@@ -87,7 +135,9 @@ class BoatSpaceRenewalRepository(
                              validity, 
                              boat_id, 
                              :employeeId as employee_id,
-                             id as renewed_from_id
+                             id as renewed_from_id,
+                             storage_type,
+                             trailer_id
                       FROM boat_space_reservation
                       WHERE id = :reservationId
                     )

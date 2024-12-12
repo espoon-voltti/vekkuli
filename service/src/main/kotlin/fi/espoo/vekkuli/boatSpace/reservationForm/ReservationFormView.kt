@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.RadioOption
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.*
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
@@ -60,6 +59,7 @@ class ReservationFormView(
     private val boatSpaceForm: BoatSpaceForm,
     private val reservationInformation: ReservationInformation,
     private val formComponents: FormComponents,
+    private val storageTypeContainer: StorageTypeContainer
 ) : BaseView() {
     fun winterStorageForm(
         reservation: ReservationForApplicationForm,
@@ -71,85 +71,6 @@ class ReservationFormView(
         municipalities: List<Municipality>,
         isNewCustomer: Boolean = true,
     ): String {
-        // language=HTML
-        val trailerRegistrationNumber =
-            formComponents.textInput(
-                "boatApplication.title.trailerRegistrationNumber",
-                "trailerRegistrationNumber",
-                input.trailerRegistrationNumber ?: "",
-                true
-            )
-        val trailerWidth =
-            formComponents.decimalInput(
-                "boatApplication.title.trailerWidth",
-                "trailerWidth",
-                input.trailerWidth,
-                true
-            )
-        val trailerLength =
-            formComponents.decimalInput(
-                "boatApplication.title.trailerLength",
-                "trailerLength",
-                input.trailerLength,
-                true
-            )
-
-        val radioButtons =
-            formComponents.radioButtons(
-                "boatApplication.title.storageType",
-                "storageType",
-                null,
-                listOf(
-                    RadioOption(StorageType.Trailer.name, t("boatApplication.option.trailer")),
-                    RadioOption(StorageType.Buck.name, t("boatApplication.option.buck")),
-                    RadioOption(StorageType.BuckWithTent.name, t("boatApplication.option.buckTent"))
-                ),
-                mapOf("x-model" to "storageType"),
-                isColumnLayout = true
-            )
-
-        val storageTypeSelector = """<div data-testid="storage-type-selector" >
-            $radioButtons
-            <template x-if="storageType == '${StorageType.Trailer.name}'">
-                <div data-testid="trailer-information-inputs" class='columns'>
-                    <div class='column is-one-quarter'>
-                        $trailerRegistrationNumber
-                    </div>
-                     <div class='column is-one-quarter'>
-                        $trailerWidth
-                     </div>
-                     <div class='column is-one-quarter'>
-                        $trailerLength
-                    </div>
-                </div>
-            </template>
-            </div>
-            """
-
-        // language=HTML
-        val storageTypeField =
-            """
-            <div class='field' >
-               <label class="label">${t("boatApplication.title.boatSpaceStorageType")}</label>
-                <p x-show="storageType === '${StorageType.Trailer}'" id="storage-type-text-trailer">${t(
-                "boatSpaces.storageType.Trailer"
-            )}</p>
-                <p x-show="storageType === '${StorageType.Buck}'" id="storage-type-text-buck">${t("boatSpaces.storageType.Buck")}</p>
-                <p x-show="storageType === '${StorageType.BuckWithTent}'" id="storage-type-text-buckTent">${t(
-                "boatSpaces.storageType.BuckWithTent"
-            )}</p>
-            </div>
-            """.trimIndent()
-
-        fun buildReservationInformationView(reservation: ReservationForApplicationForm): String {
-            val informationFields = reservationInformation.buildReservationInformationFields(reservation)
-            val informationFieldsWithDynamicAmenity =
-                informationFields.copy(
-                    amenityField = storageTypeField
-                )
-            return reservationInformation.render(reservation, informationFieldsWithDynamicAmenity)
-        }
-
         // language=HTML
         val storageContent =
             """
@@ -194,10 +115,16 @@ class ReservationFormView(
             </div>
             <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}' }">
                 <div class='form-section mb-none'>
-                    $storageTypeSelector
+                    ${storageTypeContainer.render(
+                input.trailerRegistrationNumber,
+                input.trailerWidth,
+                input.trailerLength,
+                input.storageType
+            )}
                 </div>
                  <div class='form-section'>
-                    ${buildReservationInformationView(reservation)}
+                                     ${reservationInformation.reservationInformationWithStorageType(reservation)}
+
                 </div>
             </div>
             """.trimIndent()
