@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.accordion.Accordion
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class ExpiredReservationList(
@@ -16,7 +17,8 @@ class ExpiredReservationList(
 ) : BaseView() {
     fun render(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        userType: UserType
+        userType: UserType,
+        reserverId: UUID,
     ): String {
         val accordionBuilder = accordion.createBuilder()
 
@@ -28,7 +30,7 @@ class ExpiredReservationList(
                 """
                 <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
                     ${cardHeading.render(reservation)}
-                    ${cardInfo.render(reservation, userType)}
+                    ${cardInfo.render(reservation, userType, reserverId)}
                     ${reservationTerminationReason.render(reservation)}
                 </div>
                 """.trimIndent()

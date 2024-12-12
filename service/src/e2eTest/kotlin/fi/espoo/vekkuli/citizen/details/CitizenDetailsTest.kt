@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
     @Test
-    fun `citizen can edit trailer information`() {
+    fun `citizen can edit trailer information and it should add warnings when trailer is too large`() {
         try {
             page.navigate(baseUrl)
             page.getByTestId("loginButton").click()
@@ -26,13 +26,36 @@ class CitizenDetailsTest : PlaywrightTest() {
             val id = 1
             citizenDetails.editTrailerButton(id).click()
             citizenDetails.trailerRegistrationCodeInput.fill("FOO-123")
-            citizenDetails.trailerWidthInput.fill("2.5")
-            citizenDetails.trailerLengthInput.fill("4.0")
+            citizenDetails.trailerWidthInput.fill("3")
+            citizenDetails.trailerLengthInput.fill("5")
             citizenDetails.trailerEditSubmitButton.click()
 
             assertThat(citizenDetails.trailerRegistrationCode(id)).hasText("FOO-123")
-            assertThat(citizenDetails.trailerWidth(id)).hasText("2.5")
-            assertThat(citizenDetails.trailerLength(id)).hasText("4.0")
+            assertThat(citizenDetails.trailerWidth(id)).hasText("3.0")
+            assertThat(citizenDetails.trailerLength(id)).hasText("5.0")
+
+            val employeeHomePage = EmployeeHomePage(page)
+            employeeHomePage.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+
+            assertThat(listingPage.warningIcon8).isVisible()
+
+            listingPage.boatSpace8.click()
+
+            citizenDetails.trailerAckWarningButton(1).click()
+
+            assertThat(citizenDetails.trailerWarningModalLengthInput).isVisible()
+            assertThat(citizenDetails.trailerWarningModalWidthInput).isVisible()
+            citizenDetails.trailerWarningModalLengthInput.click()
+
+            val infoText = "Length and width ok"
+            citizenDetails.boatWarningModalInfoInput.fill(infoText)
+            citizenDetails.boatWarningModalConfirmButton.click()
+
+            citizenDetails.memoNavi.click()
+            assertThat(citizenDetails.userMemo(2)).containsText(infoText)
         } catch (e: AssertionError) {
             handleError(e)
         }

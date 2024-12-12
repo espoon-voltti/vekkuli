@@ -177,10 +177,14 @@ class CitizenDetailsPage(
     val terminationDateInFirstExpiredReservationListItem =
         getByDataTestId("reservation-list-card-terminated-date", expiredReservationListCards.first())
     val boatWarningModalWeightInput = page.locator("input[value='BoatWeight']")
+    val trailerWarningModalLengthInput = page.locator("input[value='TrailerLength']")
+    val trailerWarningModalWidthInput = page.locator("input[value='TrailerWidth']")
     val boatWarningModalInfoInput = getByDataTestId("warning-info-input")
     val boatWarningModalConfirmButton = page.getByTestId("ack-modal-confirm")
 
     fun acknowledgeWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("boat-$id"))
+
+    fun trailerAckWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("trailer-$id"))
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
 

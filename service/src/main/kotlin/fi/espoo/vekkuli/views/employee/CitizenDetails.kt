@@ -149,7 +149,7 @@ class CitizenDetails(
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType
     ): String {
-        val reservationList = reservationListBuilder.render(citizen, boatSpaceReservations, userType)
+        val reservationList = reservationListBuilder.render(citizen, boatSpaceReservations, userType, citizen.id)
 
         fun showBoatWarnings(boatHasWarnings: Boolean): String {
             if (boatHasWarnings) {
@@ -194,7 +194,7 @@ class CitizenDetails(
                                 <input type="hidden" name="reservationId" value="${boat.reservationId}" />
                                 <div class="block">
                                     <div class="field">
-                                        <h1 class="label">Valitse kuitattava tieto</h1>
+                                        <h1 class="label">${t("citizenDetails.warnings.ackSelect")}</h1>
                                         <div class="control">
                                             $warningLabels
                                         </div>

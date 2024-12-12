@@ -13,7 +13,9 @@ enum class ReservationWarningType {
     BoatFutureOwner,
     BoatCoOwner,
     BoatWeight,
-    BoatType
+    BoatType,
+    TrailerWidth,
+    TrailerLength,
 }
 
 object BoatSpaceConfig {

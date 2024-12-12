@@ -99,4 +99,6 @@ interface BoatSpaceReservationRepository {
         reservationId: Int,
         storageType: StorageType
     ): BoatSpaceReservation
+
+    fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails>
 }

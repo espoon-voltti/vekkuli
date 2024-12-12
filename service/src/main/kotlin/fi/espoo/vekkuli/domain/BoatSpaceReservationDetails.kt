@@ -40,7 +40,6 @@ data class BoatSpaceReservationDetails(
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
     val validity: ReservationValidity,
-    val warnings: Set<String> = emptySet(),
     val excludedBoatTypes: List<BoatType>?,
     val canSwitch: Boolean = false,
     val canRenew: Boolean = false,

@@ -60,17 +60,16 @@ sealed class PaymentProcessResult {
 interface ReservationWarningRepository {
     fun addReservationWarnings(
         reservationId: Int,
-        boatId: Int,
+        boatId: Int?,
+        trailerId: Int?,
         keys: List<String>,
     ): Unit
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
-    fun getWarningsForBoat(boatId: Int): List<ReservationWarning>
-
     fun setReservationWarningAcknowledged(
         reservationId: Int,
-        boatId: Int,
+        boatIdOrTrailerId: Int,
         key: String,
     ): Unit
 }
@@ -184,6 +183,34 @@ class BoatReservationService(
         return paymentService.insertPayment(params, reservationId)
     }
 
+    fun addTrailerWarningsToReservations(
+        trailerId: Int,
+        trailerWidthCm: Int,
+        trailerLengthCm: Int,
+    ) {
+        // find all active reservations that have this trailer
+        val reservations = boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
+
+        reservations.forEach {
+            val warnings = mutableListOf<String>()
+
+            if (trailerWidthCm > it.boatSpaceWidthCm) {
+                warnings.add(ReservationWarningType.TrailerWidth.name)
+            }
+
+            if (trailerLengthCm > it.boatSpaceLengthCm) {
+                warnings.add(ReservationWarningType.TrailerLength.name)
+            }
+
+            if (warnings.isNotEmpty()) {
+                reservationWarningRepo.addReservationWarnings(it.id, null, trailerId, warnings)
+            }
+        }
+    }
+
+    fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
+
     fun addReservationWarnings(
         reservationId: Int,
         boatId: Int,
@@ -195,7 +222,7 @@ class BoatReservationService(
         boatOwnership: OwnershipStatus?,
         boatWeightKg: Int,
         boatType: BoatType,
-        excludedBoatTypes: List<BoatType>
+        excludedBoatTypes: List<BoatType>,
     ) {
         val warnings = mutableListOf<String>()
 
@@ -234,7 +261,7 @@ class BoatReservationService(
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(reservationId, boatId, warnings)
+            reservationWarningRepo.addReservationWarnings(reservationId, boatId, null, warnings)
         }
     }
 
@@ -392,16 +419,28 @@ class BoatReservationService(
     fun acknowledgeWarning(
         reservationId: Int,
         userId: UUID,
-        boatId: Int,
+        boatOrTrailerId: Int,
         key: String,
         infoText: String,
     ) {
-        reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatId, key)
+        reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatOrTrailerId, key)
         val reservation = getReservationWithDependencies(reservationId)
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("No reservation or reservation has no reserver")
         }
         memoService.insertMemo(reservation.reserverId, userId, ReservationType.Marine, infoText)
+    }
+
+    fun acknowledgeWarningForTrailer(
+        trailerId: Int,
+        userId: UUID,
+        key: String,
+        infoText: String
+    ) {
+        val reservationsWithTrailer = getReservationsForTrailer(trailerId)
+        reservationsWithTrailer.forEach {
+            acknowledgeWarning(it.id, userId, trailerId, key, infoText)
+        }
     }
 
     fun markInvoicePaid(
@@ -453,6 +492,8 @@ class BoatReservationService(
                 reserverId = oldTrailer.reserverId
             )
 
-        return trailerRepository.updateTrailer(updatedTrailer)
+        val result = trailerRepository.updateTrailer(updatedTrailer)
+        addTrailerWarningsToReservations(trailerId, updatedTrailer.widthCm, updatedTrailer.lengthCm)
+        return result
     }
 }
