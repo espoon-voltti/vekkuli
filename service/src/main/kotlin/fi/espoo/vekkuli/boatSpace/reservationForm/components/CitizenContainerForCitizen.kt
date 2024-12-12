@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm.components
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
@@ -17,7 +16,8 @@ class CitizenContainerForCitizen(
 ) : BaseView() {
     // language=HTML
     fun render(
-        input: ReservationInput,
+        email: String?,
+        phone: String?,
         citizen: CitizenWithDetails?
     ): String {
         val firstNameField = formComponents.field("boatApplication.firstName", "firstName", citizen?.firstName)
@@ -36,7 +36,7 @@ class CitizenContainerForCitizen(
             formComponents.textInput(
                 "boatApplication.email",
                 "email",
-                input.email,
+                email,
                 true,
                 pattern = Pair(".+@.+\\..+", "validation.email")
             )
@@ -45,7 +45,7 @@ class CitizenContainerForCitizen(
             formComponents.textInput(
                 "boatApplication.phone",
                 "phone",
-                input.phone,
+                phone,
                 required = true
             )
         return (

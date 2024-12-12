@@ -22,7 +22,7 @@ class CitizenContainer(
     ): String {
         val citizenContainer =
             if (userType == UserType.CITIZEN) {
-                citizenContainerForCitizen.render(input, citizen)
+                citizenContainerForCitizen.render(input.email, input.phone, citizen)
             } else {
                 citizenContainerForEmployee.render(userType, reservationId, input, citizen, municipalities)
             }

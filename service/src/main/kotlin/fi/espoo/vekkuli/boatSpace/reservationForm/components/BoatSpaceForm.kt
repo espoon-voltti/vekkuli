@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.boatSpace.reservationForm.components
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
@@ -13,6 +12,12 @@ import fi.espoo.vekkuli.views.citizen.StepIndicator
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDateTime
+
+data class ReservationUrls(
+    val submitUrl: String,
+    val deleteUrl: String,
+    val urlToReturnTo: String = "/kuntalainen/venepaikat"
+)
 
 // language=HTML
 @Component
@@ -35,9 +40,24 @@ class BoatSpaceForm(
         reservation: ReservationForApplicationForm,
         userType: UserType,
         titleText: String = "",
-        formContent: String = ""
+        formContent: String = "",
+        urls: ReservationUrls =
+            ReservationUrls(
+                submitUrl = "/${userType.path}/venepaikka/varaus/${reservation.id}",
+                deleteUrl = "/${userType.path}/venepaikka/varaus/${reservation.id}"
+            )
     ): String {
         val wholeLocationName = "${reservation.locationName} ${reservation.place}"
+        // language=HTML
+        val goBackButton = """ <div class="container">
+                        <button data-testid='go-back' x-on:click="modalOpen = true" class="icon-text">
+                            <span class="icon">
+                                <div>${icons.chevronLeft}</div>
+                            </span>
+                            <span >${t("boatSpaces.goBack")}</span>
+                        </button>
+                    </div> """
+
         // language=HTML
         return (
             """
@@ -53,20 +73,13 @@ class BoatSpaceForm(
                         this.citizenId = "";
                     };
                 }}'> 
-                    <div class="container">
-                        <button x-on:click="modalOpen = true" class="icon-text">
-                            <span class="icon">
-                                <div>${icons.chevronLeft}</div>
-                            </span>
-                            <span >${t("boatSpaces.goBack")}</span>
-                        </button>
-                    </div> 
+                    $goBackButton
                     ${stepIndicator.render(2)}
                     ${sessionTimer.render(getReservationTimeInSeconds(reservation.created, timeProvicer.getCurrentDateTime()))}
                     <form
                         id="form"
                         class="column"
-                        action="/${userType.path}/venepaikka/varaus/${reservation.id}"
+                        action="${urls.submitUrl}"
                         method="post"
                         novalidate>
                           <h1 class="title pb-l" id='boat-space-form-header'>
@@ -164,8 +177,8 @@ class BoatSpaceForm(
                             <button id="confirm-cancel-modal-confirm"
                                 class="button is-primary"
                                 type="button"
-                                hx-delete="/${userType.path}/venepaikka/varaus/${reservation.id}"
-                                hx-on-htmx-after-request="${if (userType == UserType.CITIZEN) "window.location = '/kuntalainen/venepaikat';" else "history.back()"}">
+                                hx-delete="${urls.deleteUrl}"
+                                hx-on-htmx-after-request="${if (userType == UserType.CITIZEN) "window.location = '${urls.urlToReturnTo}';" else "history.back()"}">
                                 ${t("confirm")}
                             </button>
                         </div>

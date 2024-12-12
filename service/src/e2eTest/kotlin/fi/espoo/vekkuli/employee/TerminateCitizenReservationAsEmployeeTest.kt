@@ -3,12 +3,12 @@ package fi.espoo.vekkuli.employee
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.CitizenHomePage
 import fi.espoo.vekkuli.pages.EmployeeHomePage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.service.TemplateEmailService
@@ -202,9 +202,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             listingPage.navigateTo()
             assertThat(listingPage.boatSpace1).not().isVisible()
 
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsLeoKorhonen()
             page.navigate(citizenPageInEnglish)
 
             assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)

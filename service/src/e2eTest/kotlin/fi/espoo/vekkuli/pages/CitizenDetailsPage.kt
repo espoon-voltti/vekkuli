@@ -38,25 +38,6 @@ class CitizenDetailsPage(
         page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
     }
 
-    fun loginAsOliviaVirtanen() {
-        loginAsCitizen("031298-988S")
-    }
-
-    fun loginAsLeoKorhonen() {
-        loginAsCitizen("150499-911U")
-    }
-
-    fun loginAsMikkoVirtanen() {
-        loginAsCitizen("010106A957V")
-    }
-
-    fun loginAsCitizen(ssn: String) {
-        page.navigate(baseUrl)
-        page.getByTestId("loginButton").click()
-        page.getByTestId(ssn).click()
-        page.getByText("Kirjaudu").click()
-    }
-
     fun hideModalWindow() {
         modalWindow.click(
             Locator
@@ -205,9 +186,11 @@ class CitizenDetailsPage(
 
     fun trailerInformation(id: Int) = page.getByTestId("trailer-$id")
 
-    val trailerRegistrationCode = getByDataTestId("trailer-registration-code")
-    val trailerWidth = getByDataTestId("trailer-width")
-    val trailerLength = getByDataTestId("trailer-length")
+    fun trailerRegistrationCode(id: Int) = getByDataTestId("trailer-registration-code", trailerInformation(id))
+
+    fun trailerWidth(id: Int) = getByDataTestId("trailer-width", trailerInformation(id))
+
+    fun trailerLength(id: Int) = getByDataTestId("trailer-length", trailerInformation(id))
 
     fun editTrailerButton(id: Int) = page.getByTestId("edit-trailer-$id")
 

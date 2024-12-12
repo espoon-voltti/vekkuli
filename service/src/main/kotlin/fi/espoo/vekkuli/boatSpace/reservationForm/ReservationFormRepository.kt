@@ -12,7 +12,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-data class ReservationForApplicationForm(
+open class ReservationForApplicationForm(
     val id: Int,
     val reserverId: UUID?,
     val boatId: Int?,
@@ -22,7 +22,7 @@ data class ReservationForApplicationForm(
     val boatSpaceType: BoatSpaceType,
     val place: String,
     val locationName: String?,
-    val validity: ReservationValidity,
+    val validity: ReservationValidity?,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val priceCents: Int,
@@ -31,7 +31,7 @@ data class ReservationForApplicationForm(
     val created: LocalDateTime,
     val excludedBoatTypes: List<BoatType>?,
     val section: String,
-    val placeNumber: String,
+    val storageType: StorageType?,
 ) {
     val priceInEuro: String
         get() = priceCents.centsToEuro()
