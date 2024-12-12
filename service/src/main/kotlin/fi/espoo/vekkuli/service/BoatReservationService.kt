@@ -431,6 +431,18 @@ class BoatReservationService(
         memoService.insertMemo(reservation.reserverId, userId, ReservationType.Marine, infoText)
     }
 
+    fun acknowledgeWarningForTrailer(
+        trailerId: Int,
+        userId: UUID,
+        key: String,
+        infoText: String
+    ) {
+        val reservationsWithTrailer = getReservationsForTrailer(trailerId)
+        reservationsWithTrailer.forEach {
+            acknowledgeWarning(it.id, userId, trailerId, key, infoText)
+        }
+    }
+
     fun markInvoicePaid(
         reservationId: Int,
         paymentDate: LocalDateTime
