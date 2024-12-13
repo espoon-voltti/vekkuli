@@ -115,6 +115,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     val municipalityCode: Int,
     val municipalityName: String,
     val paymentDate: LocalDate?,
+    val validity: ReservationValidity
 )
 
 @Repository
@@ -654,7 +655,7 @@ class JdbiBoatSpaceReservationRepository(
                         rw.key as warning,
                         bs.section,
                         m.name as municipality_name,
-                        p.created as payment_date,
+                        p.paid as payment_date,
                         b.id AS boat_id,
                         b.registration_code AS boat_registration_code,
                         b.reserver_id AS boat_reserver_id,
@@ -736,6 +737,7 @@ class JdbiBoatSpaceReservationRepository(
                         municipalityName = row.municipalityName,
                         paymentDate = row.paymentDate,
                         storageType = row.storageType,
+                        validity = row.validity
                     )
                 }
         }

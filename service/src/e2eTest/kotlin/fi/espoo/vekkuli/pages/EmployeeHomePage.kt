@@ -7,7 +7,7 @@ class EmployeeHomePage(
     private val page: Page
 ) {
     fun employeeLogin(langCode: String = "en") {
-        page.navigate(employeeHomePage + "?lang=$langCode")
+        page.navigate("$employeeHomePage?lang=$langCode")
         employeeLoginButton.click()
         page.getByText("Kirjaudu").click()
     }

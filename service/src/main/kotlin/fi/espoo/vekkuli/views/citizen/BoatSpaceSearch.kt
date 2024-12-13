@@ -198,19 +198,19 @@ class BoatSpaceSearch(
                                
                                $storageType
 
-                                <div class="block">
-                                    $boatTypeSelect
-                                </div>
-
+                               
                                 <template x-if="boatSpaceType === 'Slip'">
-                                    <div class="columns">
-                                        <div class='column'>
-                                            $boatWidthInput
+                                    <div class="block">
+                                        $boatTypeSelect
+                                        <div class="columns">
+                                            <div class='column'>
+                                                $boatWidthInput
+                                            </div>
+                                            <div class='column'>
+                                                $boatLengthInput
+                                            </div>
                                         </div>
-                                        <div class='column'>
-                                            $boatLengthInput
-                                        </div>
-                                    </div>
+                                    </div >
                                 </template>
                                 
                                 <template x-if="boatSpaceType === 'Trailer'">
@@ -225,12 +225,19 @@ class BoatSpaceSearch(
                                 </template>
                                 
                                 <template x-if="boatSpaceType != 'Slip' && boatSpaceType != 'Trailer'">
-                                    <div class="columns">
-                                        <div class='column'>
-                                            $spaceWidthInput
+                                    <div class='block'>
+                                        <div class="columns">
+                                            <div class='column'>
+                                                $spaceWidthInput
+                                            </div>
+                                            <div class='column'>
+                                                $spaceLengthInput
+                                            </div>
                                         </div>
+                                        <div class="columns">
                                         <div class='column'>
-                                            $spaceLengthInput
+                                            <p class="mt-s information-text">${t("boatSpaces.text.spaceSizeInfo")}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </template>
