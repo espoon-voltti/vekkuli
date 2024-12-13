@@ -132,6 +132,7 @@ class TrailerCard(
         userType: UserType,
         reserverId: UUID,
     ): String {
+        val isEmployee = userType == UserType.EMPLOYEE
         val trailerRegNum =
             trailerValue(
                 "trailer-registration-code",
@@ -144,15 +145,18 @@ class TrailerCard(
                 "trailer-width",
                 "${trailer.widthCm.cmToM()}",
                 "shared.label.widthInMeters",
-                trailer.hasWarning(ReservationWarningType.TrailerWidth.name)
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth.name)
             )
         val trailerLength =
             trailerValue(
                 "trailer-length",
                 "${trailer.lengthCm.cmToM()}",
                 "shared.label.lengthInMeters",
-                trailer.hasWarning(ReservationWarningType.TrailerLength.name)
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength.name)
             )
+
+        val warningText = if (isEmployee) showTrailerWarnings(trailer.hasAnyWarnings()) else ""
+        val warningDialog = if (isEmployee)showWarningsDialog(trailer, reserverId) else ""
         // language=HTML
         return """
             <div id="trailer-${trailer.id}" class="pb-s" x-data="{ modalOpen: false }">
@@ -160,7 +164,7 @@ class TrailerCard(
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
-                    ${showTrailerWarnings(trailer.hasAnyWarnings())}
+                    $warningText
                     ${editTrailerButton(trailer.id, userType, reserverId)}
                 </div>
                 <div class="columns pb-s">
@@ -174,7 +178,7 @@ class TrailerCard(
                       $trailerLength
                    </div>
                 </div>
-                ${showWarningsDialog(trailer, reserverId)}
+                $warningDialog
             </div>
             """.trimIndent()
     }
