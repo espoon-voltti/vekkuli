@@ -140,11 +140,13 @@ class BoatSpaceForm(
                                     ${t("boatApplication.$userType.continueToPaymentButton")}
                                 </button>
                             </div>
+                            <script>
+                                validation.init({forms: ['form']})
+                            </script>
                         </div>             
                     </form>
                     
                     <script>
-                        validation.init({forms: ['form']})
                         window.addEventListener('load', function() {
                             if (!document.getElementById("width").value && !document.getElementById("length").value) {
                                 const type = localStorage.getItem('type');
