@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
+import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.centToEuro
@@ -40,6 +41,7 @@ class InvoiceController(
             throw IllegalArgumentException("Failed to create invoice data")
         }
 
+        val isOrganization = reservation.reserverType == ReserverType.Organization
         // TODO: get the actual data
         val model =
             SendInvoiceModel(
@@ -58,14 +60,17 @@ class InvoiceController(
                 costCenter = "",
                 invoiceType = "",
                 priceWithTax = reservation.priceCents.centToEuro(),
-                description = "Venepaikan vuokraus"
+                description = "Venepaikan vuokraus",
+                contactPerson = "",
+                orgId = invoiceData.orgId ?: "",
             )
         val content =
             invoicePreview.render(
                 model,
                 submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
                 backUrl = "/virkailija/kayttaja/${reservation.reserverId}",
-                deleteUrl = ""
+                deleteUrl = "",
+                isOrganization
             )
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
@@ -91,6 +96,7 @@ class InvoiceController(
         try {
             handleInvoiceSending(reservation, input.priceWithTax, input.description)
         } catch (e: Exception) {
+            throw e
             val content = invoicePreview.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
         }

@@ -178,8 +178,8 @@ class CitizenContainerForEmployee(
                         id="new-citizen-selector"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                         hx-include="#form"
-                        hx-target="#form-inputs"
-                        hx-select="#form-inputs"
+                        hx-target="#form"
+                        hx-select="#form"
                         hx-swap="outerHTML"
                         ${if (citizenSelection == "newCitizen") "checked" else ""}
                         
@@ -194,8 +194,8 @@ class CitizenContainerForEmployee(
                         id="existing-citizen-selector"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                         hx-include="#form"
-                        hx-target="#form-inputs"
-                        hx-select="#form-inputs"
+                        hx-target="#form"
+                        hx-select="#form"
                         hx-swap="outerHTML"
                         ${if (citizenSelection == "existingCitizen") "checked" else ""}
                     />

@@ -159,7 +159,9 @@ class BoatSpaceRenewalService(
             costCenter = "?",
             invoiceType = "?",
             priceWithTax = reservation.priceCents.centToEuro(),
-            description = "Venepaikan vuokraus"
+            description = invoiceData.description,
+            contactPerson = "",
+            orgId = invoiceData.orgId ?: "",
         )
     }
 

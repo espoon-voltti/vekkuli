@@ -84,7 +84,8 @@ class BoatSpaceRenewController(
                     invoiceModel,
                     submitUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku",
                     backUrl = "/virkailija/kayttaja/${renewedReservation.reserverId}",
-                    deleteUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku"
+                    deleteUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku",
+                    invoiceModel.orgId.isNotEmpty()
                 )
             val page = employeeLayout.render(true, request.requestURI, content)
             return ResponseEntity.ok(page)

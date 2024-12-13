@@ -113,7 +113,7 @@ class JdbiReserverRepository(
             handle
                 .createQuery(
                     """
-                    SELECT o.*, r.*, m.name as municipality_name
+                    SELECT o.business_id, r.*, m.name as municipality_name
                     FROM organization o
                     JOIN reserver r ON r.id = o.id
                     JOIN municipality m ON r.municipality_code = m.code

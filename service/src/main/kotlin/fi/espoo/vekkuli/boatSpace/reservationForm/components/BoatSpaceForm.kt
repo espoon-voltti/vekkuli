@@ -140,10 +140,10 @@ class BoatSpaceForm(
                                     ${t("boatApplication.$userType.continueToPaymentButton")}
                                 </button>
                             </div>
-                            <script>
-                                validation.init({forms: ['form']})
-                            </script>
                         </div>             
+                        <script>
+                            validation.init({forms: ['form']})
+                        </script>
                     </form>
                     
                     <script>

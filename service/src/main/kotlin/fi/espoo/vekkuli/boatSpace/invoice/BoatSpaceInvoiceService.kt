@@ -123,6 +123,7 @@ class BoatSpaceInvoiceService(
                 description = description,
             )
         } else {
+            val organization = reserverRepository.getOrganizationById(reserverId)
             return InvoiceData(
                 type = reservation.type,
                 dueDate = timeProvider.getCurrentDate().plusDays(21),
@@ -139,6 +140,7 @@ class BoatSpaceInvoiceService(
                 email = reserver.email,
                 priceCents = price,
                 description = description,
+                orgId = organization?.businessId,
             )
         }
     }

@@ -22,16 +22,9 @@ data class SendInvoiceModel(
     val costCenter: String,
     val invoiceType: String,
     val priceWithTax: BigDecimal,
-    val description: String
-)
-
-data class InvoiceRow(
     val description: String,
-    val customer: String,
-    val priceWithoutVat: String,
-    val vat: String,
-    val organization: String,
-    val paymentDate: LocalDate,
+    val contactPerson: String,
+    val orgId: String
 )
 
 @Service
@@ -42,7 +35,8 @@ class InvoicePreview(
         model: SendInvoiceModel,
         submitUrl: String,
         backUrl: String,
-        deleteUrl: String
+        deleteUrl: String,
+        isOrganization: Boolean
     ): String {
         val functionSelect =
             formComponents.select(
@@ -84,6 +78,24 @@ class InvoicePreview(
                 compact = true,
             )
 
+        val contactPersonInput =
+            formComponents.textInput(
+                "invoice.contactPerson",
+                "contactPerson",
+                model.contactPerson,
+                compact = true
+            )
+
+        val contactPerson =
+            if (isOrganization) {
+                """
+                $contactPersonInput
+                <hr>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         // language=HTML
         return """
             <section class="section">
@@ -92,16 +104,20 @@ class InvoicePreview(
                 <h2 class="title pb-l" id="invoice-preview-header">Laskuluonnos</h2>
                 
                 <h3 class="subtitle">Varaajan tiedot</h3>
-                ${invoiceLine("Varaaja", model.reserverName)}
-                ${invoiceLine("Varaajan henkilötunnus", model.reserverSsn)}
-                ${invoiceLine("Varaajan osoite", model.reserverAddress)}
-                
-                <hr/>
-                
                 <form
                     hx-post="$submitUrl"
                     hx-target="body"
                 >
+                ${invoiceLine("Varaaja", model.reserverName)}
+                ${if (!isOrganization)invoiceLine("Varaajan henkilötunnus", model.reserverSsn) else ""}
+                
+                ${if (isOrganization)invoiceLine("Y-tunnus", model.orgId) else ""}
+                ${invoiceLine("Varaajan osoite", model.reserverAddress)}
+                
+                <hr/>
+                
+                    $contactPerson
+                    
                     <h3 class="subtitle">Laskun tiedot</h3>
                     <div class="columns">
                         <div class="column">
@@ -115,10 +131,13 @@ class InvoicePreview(
                         <div class="column">
                             $invoicePeriod
                         </div>
+                        
                         <div class="column">
                             $priceWithTax
                         </div>
                     </div>
+                    
+                                
                     
                     $description
                     
@@ -135,9 +154,7 @@ class InvoicePreview(
                             ${t("cancel")}
                         </button>
                         <button id="submit"
-                            class="button is-primary"
-                            type="submit"
-                            hx-target="body">
+                            class="button is-primary">
                             Lähetä lasku
                         </button>
                     </div>

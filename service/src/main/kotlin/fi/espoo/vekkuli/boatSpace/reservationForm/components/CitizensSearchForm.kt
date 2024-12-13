@@ -23,8 +23,8 @@ class CitizensSearchForm : BaseView() {
                 hx-get="/virkailija/venepaikka/varaus/$reservationId"  
                 hx-include="#form"
                 hx-trigger="change" 
-                hx-select="#form-inputs"
-                hx-target="#form-inputs" @change="updateFullName">
+                hx-select="#form"
+                hx-target="#form" @change="updateFullName">
             ${
                 citizens.withIndex().joinToString("\n") { (index, citizen) ->
                     """
