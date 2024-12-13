@@ -18,7 +18,7 @@ import java.time.LocalDate
 @Controller
 class InvoiceController(
     private val employeeLayout: EmployeeLayout,
-    private val sendInvoiceView: InvoicePreview,
+    private val invoicePreview: InvoicePreview,
     private val reservationService: BoatReservationService,
     private val invoiceService: BoatSpaceInvoiceService,
     private val timeProvider: TimeProvider,
@@ -60,7 +60,13 @@ class InvoiceController(
                 priceWithTax = reservation.priceCents.centToEuro(),
                 description = "Venepaikan vuokraus"
             )
-        val content = sendInvoiceView.render(model)
+        val content =
+            invoicePreview.render(
+                model,
+                submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
+                backUrl = "/virkailija/kayttaja/${reservation.reserverId}",
+                deleteUrl = ""
+            )
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
     }
@@ -85,7 +91,7 @@ class InvoiceController(
         try {
             handleInvoiceSending(reservation, input.priceWithTax, input.description)
         } catch (e: Exception) {
-            val content = sendInvoiceView.invoiceErrorPage()
+            val content = invoicePreview.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
         }
 

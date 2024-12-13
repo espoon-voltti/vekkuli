@@ -34,16 +34,16 @@ data class InvoiceRow(
     val paymentDate: LocalDate,
 )
 
-// BoatSpaceType.Slip -> "T1270"
-// BoatSpaceType.Winter -> "T1271"
-// BoatSpaceType.Storage -> "T1276"
-// BoatSpaceType.Trailer -> "T1270"
-
 @Service
 class InvoicePreview(
     val formComponents: FormComponents
 ) : BaseView() {
-    fun render(model: SendInvoiceModel): String {
+    fun render(
+        model: SendInvoiceModel,
+        submitUrl: String,
+        backUrl: String,
+        deleteUrl: String
+    ): String {
         val functionSelect =
             formComponents.select(
                 "invoice.function",
@@ -84,6 +84,7 @@ class InvoicePreview(
                 compact = true,
             )
 
+        // language=HTML
         return """
             <section class="section">
             
@@ -98,7 +99,7 @@ class InvoicePreview(
                 <hr/>
                 
                 <form
-                    hx-post="/virkailija/venepaikka/varaus/${model.reservationId}/lasku"
+                    hx-post="$submitUrl"
                     hx-target="body"
                 >
                     <h3 class="subtitle">Laskun tiedot</h3>
@@ -123,21 +124,24 @@ class InvoicePreview(
                     
                     <hr/>
                     
-                    <div class="field block">
-                        <div class="control">
-                            <button id="cancel"
-                                class="button is-secondary"
-                                type="button">
-                                ${t("cancel")}
-                            </button>
-                            <button id="submit"
-                                class="button is-primary"
-                                type="submit"
-                                >
-                                Lähetä lasku
-                            </button>
-                        </div>
-                    </div> 
+                <div class="field block">
+                    <div class="control">
+                        <button id="cancel"
+                            class="button is-secondary"
+                            hx-delete="$deleteUrl"
+                            hx-target="body"
+                            hx-on-htmx-after-request="window.location = '$backUrl';"
+                            type="button">
+                            ${t("cancel")}
+                        </button>
+                        <button id="submit"
+                            class="button is-primary"
+                            type="submit"
+                            hx-target="body">
+                            Lähetä lasku
+                        </button>
+                    </div>
+                </div> 
                 </form>
             </div>
             </section>

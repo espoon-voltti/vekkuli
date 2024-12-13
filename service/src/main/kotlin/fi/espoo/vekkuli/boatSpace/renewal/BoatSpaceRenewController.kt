@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import fi.espoo.vekkuli.views.employee.InvoicePreview
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
@@ -31,6 +32,7 @@ class BoatSpaceRenewController(
     private val layout: Layout,
     private val employeeLayout: EmployeeLayout,
     private val boatSpaceRenewalService: BoatSpaceRenewalService,
+    private val invoicePreview: InvoicePreview,
 ) {
     @RequestMapping("/kuntalainen/venepaikka/jatka/{originalReservationId}")
     @ResponseBody
@@ -78,10 +80,11 @@ class BoatSpaceRenewController(
                 return badRequest("Invalid renewal reservation")
             }
             val content =
-                boatSpaceRenewForm.renewInvoicePreview(
+                invoicePreview.render(
                     invoiceModel,
-                    renewedReservation.reserverId,
-                    renewedReservation.renewedFromId
+                    submitUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku",
+                    backUrl = "/virkailija/kayttaja/${renewedReservation.reserverId}",
+                    deleteUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku"
                 )
             val page = employeeLayout.render(true, request.requestURI, content)
             return ResponseEntity.ok(page)
