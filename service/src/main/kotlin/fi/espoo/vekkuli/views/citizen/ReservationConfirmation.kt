@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.views.citizen
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import org.springframework.stereotype.Service
 
@@ -42,7 +41,7 @@ class ReservationConfirmation(
             )
 
         val amenity =
-            if (reservation.type == BoatSpaceType.Slip || reservation.amenity != BoatSpaceAmenity.None) {
+            if (reservation.amenity != BoatSpaceAmenity.None) {
                 """
                 <div>
                     <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
