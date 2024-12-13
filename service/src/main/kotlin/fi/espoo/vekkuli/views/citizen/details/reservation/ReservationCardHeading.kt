@@ -14,7 +14,7 @@ class ReservationCardHeading : BaseView() {
         return """
             <div class="columns is-vcentered">
                 <div class="column is-narrow">
-                    <h4>${t("citizenDetails.boatSpace")}: ${reservation.locationName} ${reservation.place}</h4>
+                    <h4>${t("citizenDetails.title.boatSpace.${reservation.type}")}: ${reservation.locationName} ${reservation.place}</h4>
                 </div>
             </div>
             """.trimIndent()

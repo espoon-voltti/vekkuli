@@ -112,19 +112,19 @@ class TrailerCard(
                     ${editTrailerButton(trailer.id, userType, reserverId)}
                 </div>
                 <div class="columns pb-s">
-                   <div class="column">
+                   <div class="column is-one-quarter">
                        <div class="field">
                           <label class="label">${t("citizenDetails.trailer.registrationNumber")}</label>
                           <p data-testid='trailer-registration-code'>${trailer.registrationCode}</p>
                        </div>
                    </div>
-                   <div class="column">
+                   <div class="column is-one-quarter">
                        <div class="field">
                           <label class="label">${t("shared.label.widthInMeters")}</label>
                           <p data-testid='trailer-width'>${trailer.widthCm.cmToM()}</p>
                        </div>
                    </div>
-                   <div class="column">
+                   <div class="column is-one-quarter">
                       <div class="field">
                          <label class="label">${t("shared.label.lengthInMeters")}</label>
                          <p data-testid='trailer-length'>${trailer.lengthCm.cmToM()}</p>
@@ -181,17 +181,17 @@ class TrailerCard(
                 </div>
                 <form hx-target="#trailer-${trailer.id}" hx-patch="${getSaveUrl(trailer.id, userType, reserverId)}">
                     <div class="columns" class="pb-s">
-                       <div class="column">
+                       <div class="column is-one-quarter">
                            <div class="field">
                               $regNum
                            </div>
                        </div>
-                       <div class="column">
+                       <div class="column is-one-quarter">
                            <div class="field">
                               $width
                            </div>
                        </div>
-                       <div class="column">
+                       <div class="column is-one-quarter">
                           <div class="field">
                              $length
                           </div>
