@@ -43,7 +43,7 @@ class TrailerCard(
         """
         <div class="field">
             ${trailerValueLabel(translationKey, showWarning)}
-            <p id="$id">$value</p>
+            <p data-testid="$id">$value</p>
         </div> 
         """.trimIndent()
 
