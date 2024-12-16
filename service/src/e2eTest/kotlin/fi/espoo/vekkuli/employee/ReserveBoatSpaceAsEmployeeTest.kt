@@ -140,7 +140,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             fillAndTestAndSubmitForm()
 
             val invoicePreviewPage = InvoicePreviewPage(page)
-            page.pause()
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
