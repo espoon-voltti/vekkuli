@@ -13,7 +13,7 @@ import kotlin.test.Test
 class ExtensionsTest {
     @Test
     fun testCmToM() {
-        fun bd(value: String) = BigDecimal(value).setScale(1, RoundingMode.HALF_UP)
+        fun bd(value: String) = BigDecimal(value).setScale(2, RoundingMode.HALF_UP)
 
         assertEquals(bd("1.00"), 100.cmToM())
         assertEquals(bd("1.50"), 150.cmToM())
@@ -30,14 +30,14 @@ class ExtensionsTest {
 
     @Test
     fun testMToCm() {
-        assertEquals(100, BigDecimal("1.0").mToCm())
-        assertEquals(150, BigDecimal("1.5").mToCm())
-        assertEquals(200, BigDecimal("2.0").mToCm())
-        assertEquals(230, BigDecimal("2.3").mToCm())
-        assertEquals(190, BigDecimal("1.9").mToCm())
-        assertEquals(0, BigDecimal("0").mToCm())
+        assertEquals(100, BigDecimal("1.00").mToCm())
+        assertEquals(150, BigDecimal("1.50").mToCm())
+        assertEquals(200, BigDecimal("2.00").mToCm())
+        assertEquals(230, BigDecimal("2.30").mToCm())
+        assertEquals(190, BigDecimal("1.90").mToCm())
+        assertEquals(0, BigDecimal("0.00").mToCm())
         assertEquals(1, BigDecimal("0.01").mToCm())
-        assertEquals(10, BigDecimal("0.1").mToCm())
+        assertEquals(10, BigDecimal("0.10").mToCm())
         assertEquals(99, BigDecimal("0.99").mToCm())
         assertEquals(101, BigDecimal("1.01").mToCm())
     }
