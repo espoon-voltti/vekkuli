@@ -15,17 +15,17 @@ class ExtensionsTest {
     fun testCmToM() {
         fun bd(value: String) = BigDecimal(value).setScale(1, RoundingMode.HALF_UP)
 
-        assertEquals(bd("1.0"), 100.cmToM())
-        assertEquals(bd("1.5"), 150.cmToM())
-        assertEquals(bd("2.0"), 200.cmToM())
-        assertEquals(bd("2.3"), 230.cmToM())
-        assertEquals(bd("1.9"), 190.cmToM())
-        assertEquals(bd("0.0"), 0.cmToM())
-        assertEquals(bd("0.1"), 10.cmToM())
-        assertEquals(bd("0.9"), 90.cmToM())
+        assertEquals(bd("1.00"), 100.cmToM())
+        assertEquals(bd("1.50"), 150.cmToM())
+        assertEquals(bd("2.00"), 200.cmToM())
+        assertEquals(bd("2.30"), 230.cmToM())
+        assertEquals(bd("1.90"), 190.cmToM())
+        assertEquals(bd("0.00"), 0.cmToM())
+        assertEquals(bd("0.10"), 10.cmToM())
+        assertEquals(bd("0.90"), 90.cmToM())
         assertEquals(bd("0.01"), 1.cmToM())
         assertEquals(bd("0.05"), 5.cmToM())
-        assertEquals(bd("10.0"), 1000.cmToM())
+        assertEquals(bd("10.00"), 1000.cmToM())
     }
 
     @Test
