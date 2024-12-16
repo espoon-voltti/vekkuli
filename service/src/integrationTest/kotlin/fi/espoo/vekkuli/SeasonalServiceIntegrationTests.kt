@@ -62,7 +62,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `first should be indefinite for Espoo citizens reserving a winter space`() {
+    fun `first place should be indefinite for Espoo citizens reserving a winter space`() {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
         val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
@@ -112,7 +112,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `second place should be indefinite for Espoo citizens reserving a winter space`() {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-        val madeReservation = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
+        val madeReservation = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 8)
         formReservationService.processBoatSpaceReservation(
             espooCitizenId,
             ReserveBoatSpaceInput(
@@ -129,7 +129,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 extraInformation = "1",
                 ownerShip = OwnershipStatus.FutureOwner,
                 phone = "",
-                email = ""
+                email = "",
+                storageType = StorageType.Buck
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
