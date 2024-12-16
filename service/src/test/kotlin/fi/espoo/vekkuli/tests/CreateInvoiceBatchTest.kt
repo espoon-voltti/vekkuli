@@ -40,7 +40,8 @@ class CreateInvoiceBatchTest {
                 priceCents = 10000,
                 description = "Kuvaus",
                 type = BoatSpaceType.Slip,
-                orgName = null
+                orgName = null,
+                function = "T1270",
             )
 
         val expected =
@@ -73,7 +74,7 @@ class CreateInvoiceBatchTest {
                                 listOf(
                                     Row(
                                         productGroup = "2560001",
-                                        productComponent = "T1270",
+                                        function = "T1270",
                                         periodStartDate = given.startDate.toString(),
                                         periodEndDate = given.endDate.toString(),
                                         unitCount = 100,
@@ -116,7 +117,8 @@ class CreateInvoiceBatchTest {
                 description = "Kuvaus",
                 type = BoatSpaceType.Slip,
                 firstnames = "Etunimi",
-                lastname = "Sukunimi"
+                lastname = "Sukunimi",
+                function = "T1270",
             )
 
         val expected =
@@ -149,7 +151,7 @@ class CreateInvoiceBatchTest {
                                 listOf(
                                     Row(
                                         productGroup = "2560001",
-                                        productComponent = "T1270",
+                                        function = "T1270",
                                         periodStartDate = given.startDate.toString(),
                                         periodEndDate = given.endDate.toString(),
                                         unitCount = 100,
