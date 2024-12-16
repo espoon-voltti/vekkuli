@@ -52,7 +52,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
             // Opens up information from the first reservation of the first user
             assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
-            assertThat(citizenDetailsPage.terminateReservationFormSize).hasText("2.5 x 4.5 m")
+            assertThat(citizenDetailsPage.terminateReservationFormSize).hasText("2.50 x 4.50 m")
             assertThat(citizenDetailsPage.terminateReservationFormAmenity).hasText("Beam")
 
             citizenDetailsPage.terminateReservationModalCancel.click()
