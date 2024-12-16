@@ -202,8 +202,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             // click send to trigger validation
             val formPage = BoatSpaceFormPage(page)
             formPage.submitButton.click()
-            assertThat(formPage.widthError).isHidden()
-            assertThat(formPage.lengthError).isHidden()
+            assertThat(formPage.widthError).isVisible()
+            assertThat(formPage.lengthError).isVisible()
             assertThat(formPage.depthError).isVisible()
             assertThat(formPage.weightError).isVisible()
             assertThat(formPage.boatRegistrationNumberError).isVisible()
