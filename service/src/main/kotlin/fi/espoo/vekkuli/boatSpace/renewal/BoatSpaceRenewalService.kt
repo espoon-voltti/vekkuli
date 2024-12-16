@@ -298,7 +298,7 @@ class BoatSpaceRenewalService(
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
                 ?: throw BadRequest("Reservation to renew not found")
-        if (!seasonalService.canRenewAReservation(reservation.validity, reservation.endDate).success) {
+        if (!seasonalService.canRenewAReservation(reservation.validity, reservation.endDate, reservation.type).success) {
             throw Conflict("Reservation cannot be renewed")
         }
         val newId = boatSpaceRenewalRepository.createRenewalRow(originalReservationId, userType, userId)

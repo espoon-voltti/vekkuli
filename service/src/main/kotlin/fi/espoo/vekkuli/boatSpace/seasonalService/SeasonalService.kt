@@ -46,15 +46,17 @@ class SeasonalService(
     fun canRenewAReservation(
         oldValidity: ReservationValidity,
         oldEndDate: LocalDate,
+        boatSpaceType: BoatSpaceType
     ): ReservationResult {
         val periods = seasonalRepository.getReservationPeriods()
-        return canRenewAReservation(periods, oldValidity, oldEndDate)
+        return canRenewAReservation(periods, oldValidity, oldEndDate, boatSpaceType)
     }
 
     fun canRenewAReservation(
         periods: List<ReservationPeriod>,
         oldValidity: ReservationValidity,
         oldEndDate: LocalDate,
+        boatSpaceType: BoatSpaceType
     ): ReservationResult {
         if (oldValidity == ReservationValidity.FixedTerm) {
             // Fixed term reservations cannot be renewed
@@ -72,7 +74,7 @@ class SeasonalService(
                 periods,
                 now,
                 true,
-                BoatSpaceType.Slip,
+                boatSpaceType,
                 ReservationOperation.Renew
             )
 
@@ -94,6 +96,7 @@ class SeasonalService(
         reservation: BoatSpaceReservationDetails,
         periods: List<ReservationPeriod>,
         isEspooCitizen: Boolean,
+        boatSpaceType: BoatSpaceType
     ): ReservationResult {
         val now = timeProvider.getCurrentDate()
 
@@ -102,7 +105,7 @@ class SeasonalService(
                 periods,
                 now,
                 isEspooCitizen,
-                BoatSpaceType.Slip,
+                boatSpaceType,
                 ReservationOperation.Change
             )
 
@@ -124,7 +127,7 @@ class SeasonalService(
 
     fun addPeriodInformationToReservation(
         reserverID: UUID,
-        reservations: List<BoatSpaceReservationDetails>
+        reservations: List<BoatSpaceReservationDetails>,
     ): List<BoatSpaceReservationDetails> {
         val reserver = reserverRepo.getReserverById(reserverID) ?: throw java.lang.IllegalArgumentException("Reserver not found")
         val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
@@ -134,8 +137,8 @@ class SeasonalService(
         }
         val periods = getReservationPeriods()
         return reservations.map { reservation ->
-            val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate)
-            val canSwitchResult = canSwitchAReservation(reservation, periods, isEspooCitizen)
+            val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate, reservation.type)
+            val canSwitchResult = canSwitchAReservation(reservation, periods, isEspooCitizen, reservation.type)
             reservation.copy(
                 canRenew = canRenewResult.success,
                 canSwitch = canSwitchResult.success,
@@ -143,12 +146,15 @@ class SeasonalService(
         }
     }
 
-    fun canReserveANewSlip(reserverID: UUID): ReservationResult {
+    fun canReserveANewSlip(
+        reserverID: UUID,
+        boatSpaceType: BoatSpaceType
+    ): ReservationResult {
         val reserver =
             reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
                 ReservationResultErrorCode.NoReserver
             )
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, boatSpaceType)
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
         val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
@@ -171,7 +177,7 @@ class SeasonalService(
                 periods,
                 now,
                 isEspooCitizen,
-                BoatSpaceType.Slip,
+                boatSpaceType,
                 if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
             )
 
