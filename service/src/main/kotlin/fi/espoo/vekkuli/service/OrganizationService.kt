@@ -29,6 +29,8 @@ class OrganizationService(
     fun getOrganizationsByBusinessId(businessId: String): List<Organization> =
         organizationRepository.getOrganizationsByBusinessId(businessId)
 
+    fun getOrganizationById(organizationId: UUID): Organization? = organizationRepository.getOrganizationById(organizationId)
+
     fun insertOrganization(
         businessId: String,
         billingName: String,

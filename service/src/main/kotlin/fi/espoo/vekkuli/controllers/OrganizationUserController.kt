@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.organization.OrganizationDetails
 import jakarta.servlet.http.HttpServletRequest
@@ -13,16 +14,19 @@ import java.util.*
 class OrganizationUserController(
     private val organizationDetails: OrganizationDetails,
     private val employeeLayout: EmployeeLayout,
+    private val organizationService: OrganizationService,
 ) {
     @GetMapping("/virkailija/yhteiso/{organizationId}")
     @ResponseBody
     fun citizenProfile(
         request: HttpServletRequest,
         @PathVariable organizationId: UUID,
-    ): String =
-        employeeLayout.render(
+    ): String {
+        val organization = organizationService.getOrganizationById(organizationId) ?: return "Organization not found"
+        return employeeLayout.render(
             true,
             request.requestURI,
-            organizationDetails.organizationPage(organizationId)
+            organizationDetails.organizationPageForEmployee(organization)
         )
+    }
 }
