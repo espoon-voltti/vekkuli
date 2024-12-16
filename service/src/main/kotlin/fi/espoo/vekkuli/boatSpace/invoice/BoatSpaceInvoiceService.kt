@@ -86,7 +86,8 @@ class BoatSpaceInvoiceService(
         reservationId: Int,
         reserverId: UUID,
         priceWithVatInCents: Int? = null,
-        description: String? = null
+        description: String? = null,
+        function: String? = null
     ): InvoiceData? {
         val reservation = boatReservationService.getBoatSpaceReservation(reservationId)
         if (reservation == null) {
@@ -121,6 +122,7 @@ class BoatSpaceInvoiceService(
                 email = citizen.email,
                 priceCents = price,
                 description = description,
+                function = function ?: "T1270",
             )
         } else {
             val organization = reserverRepository.getOrganizationById(reserverId)
@@ -141,6 +143,7 @@ class BoatSpaceInvoiceService(
                 priceCents = price,
                 description = description,
                 orgId = organization?.businessId,
+                function = function ?: "T1270",
             )
         }
     }
@@ -165,4 +168,5 @@ data class InvoiceData(
     val description: String,
     val type: BoatSpaceType,
     val orgName: String? = null,
+    val function: String? = null
 )

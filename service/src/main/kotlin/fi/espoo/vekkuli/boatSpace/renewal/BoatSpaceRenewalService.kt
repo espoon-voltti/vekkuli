@@ -149,7 +149,6 @@ class BoatSpaceRenewalService(
             reserverSsn = invoiceData.ssn ?: "",
             reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
             product = reservation.locationName,
-            functionInformation = "?",
             billingPeriodStart = "",
             billingPeriodEnd = "",
             boatingSeasonStart = LocalDate.of(2025, 5, 1),
@@ -162,8 +161,17 @@ class BoatSpaceRenewalService(
             description = invoiceData.description,
             contactPerson = "",
             orgId = invoiceData.orgId ?: "",
+            function = getDefaultFunction(reservation.type),
         )
     }
+
+    fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
+        when (boatSpaceType) {
+            BoatSpaceType.Slip -> "T1270"
+            BoatSpaceType.Winter -> "T1271"
+            BoatSpaceType.Storage -> "T1276"
+            BoatSpaceType.Trailer -> "T1270"
+        }
 
     @Transactional
     fun activateRenewalAndSendInvoice(

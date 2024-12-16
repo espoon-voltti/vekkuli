@@ -12,7 +12,6 @@ data class SendInvoiceModel(
     val reserverSsn: String,
     val reserverAddress: String,
     val product: String,
-    val functionInformation: String,
     val billingPeriodStart: String,
     val billingPeriodEnd: String,
     val boatingSeasonStart: LocalDate,
@@ -24,7 +23,8 @@ data class SendInvoiceModel(
     val priceWithTax: BigDecimal,
     val description: String,
     val contactPerson: String,
-    val orgId: String
+    val orgId: String,
+    val function: String
 )
 
 @Service
@@ -42,7 +42,7 @@ class InvoicePreview(
             formComponents.select(
                 "invoice.function",
                 "function",
-                "",
+                model.function,
                 listOf(
                     Pair("T1270", "Venepaikka T1270",),
                     Pair("T1271", "Talvisäilytys T1271",),

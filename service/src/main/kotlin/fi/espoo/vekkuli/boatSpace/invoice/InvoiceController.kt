@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.service.BoatReservationService
@@ -42,14 +43,20 @@ class InvoiceController(
         }
 
         val isOrganization = reservation.reserverType == ReserverType.Organization
+        val reserverName =
+            if (isOrganization) {
+                invoiceData.orgName ?: ""
+            } else {
+                "${invoiceData.firstnames} ${invoiceData.lastname}"
+            }
         val model =
             SendInvoiceModel(
                 reservationId = reservationId,
-                reserverName = "${invoiceData.firstnames} ${invoiceData.lastname}",
+                reserverName = reserverName,
                 reserverSsn = invoiceData.ssn ?: "",
                 reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
                 product = reservation.locationName,
-                functionInformation = "",
+                function = getDefaultFunction(reservation.type),
                 billingPeriodStart = "",
                 billingPeriodEnd = "",
                 boatingSeasonStart = LocalDate.of(2025, 5, 1),
@@ -59,7 +66,9 @@ class InvoiceController(
                 costCenter = "",
                 invoiceType = "",
                 priceWithTax = reservation.priceCents.centToEuro(),
-                description = "Venepaikan vuokraus",
+                description =
+                    "Venepaikka, ${reservation.locationName} ${reservation.place}," +
+                        "${reservation.startDate.year}",
                 contactPerson = "",
                 orgId = invoiceData.orgId ?: "",
             )
@@ -75,9 +84,18 @@ class InvoiceController(
         return ResponseEntity.ok(page)
     }
 
+    fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
+        when (boatSpaceType) {
+            BoatSpaceType.Slip -> "T1270"
+            BoatSpaceType.Winter -> "T1271"
+            BoatSpaceType.Storage -> "T1276"
+            BoatSpaceType.Trailer -> "T1270"
+        }
+
     data class InvoiceInput(
         val priceWithTax: BigDecimal,
-        val description: String
+        val description: String,
+        val function: String
     )
 
     @PostMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
@@ -93,7 +111,7 @@ class InvoiceController(
             throw IllegalArgumentException("Reservation not found")
         }
         try {
-            handleInvoiceSending(reservation, input.priceWithTax, input.description)
+            handleInvoiceSending(reservation, input)
         } catch (e: Exception) {
             val content = invoicePreview.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
@@ -107,15 +125,15 @@ class InvoiceController(
 
     private fun handleInvoiceSending(
         reservation: ReservationWithDependencies,
-        priceWithVat: BigDecimal,
-        description: String
+        input: InvoiceInput
     ) {
         if (reservation.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
+        val priceWithVat = input.priceWithTax
         val priceWithVatInCents = priceWithVat.multiply(BigDecimal(100)).toInt()
         val invoiceData =
-            invoiceService.createInvoiceData(reservation.id, reservation.reserverId, priceWithVatInCents, description)
+            invoiceService.createInvoiceData(reservation.id, reservation.reserverId, priceWithVatInCents, input.description, input.function)
                 ?: throw InternalError("Failed to create invoice batch")
 
         val invoice = invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservation.id)
