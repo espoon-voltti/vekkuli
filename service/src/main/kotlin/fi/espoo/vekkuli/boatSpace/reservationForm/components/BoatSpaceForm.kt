@@ -146,11 +146,13 @@ class BoatSpaceForm(
                     <script>
                         validation.init({forms: ['form']})
                         window.addEventListener('load', function() {
-                            if (!document.getElementById("width").value && !document.getElementById("length").value) {
-                                const type = localStorage.getItem('type');
-                                if (type) {
-                                    document.getElementById("boatType").value = type;
+                            const boatSpaceType = localStorage.getItem('boatSpaceType');
+                            if (boatSpaceType === "Slip" && !document.getElementById("width").value && !document.getElementById("length").value) {
+                                const boatType = localStorage.getItem('boatType');
+                                if (boatType) {
+                                    document.getElementById("boatType").value = boatType;
                                 }
+                         
                                 const width = localStorage.getItem('width');
                                 if (width) {
                                     document.getElementById('width').value = width;

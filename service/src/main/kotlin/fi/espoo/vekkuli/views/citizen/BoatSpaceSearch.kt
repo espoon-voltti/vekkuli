@@ -253,9 +253,11 @@ class BoatSpaceSearch(
                             </form>
                             <script>
                                 document.getElementById('form').addEventListener('change', function(event) {
-                                    localStorage.setItem('type', document.getElementById("boatType").value);
-                                    localStorage.setItem('width', document.getElementById('width').value);
-                                    localStorage.setItem('length', document.getElementById('length').value);
+                                    const data = new FormData(event.currentTarget);
+                                    localStorage.setItem('boatSpaceType', data.get('boatSpaceType'));
+                                    localStorage.setItem('boatType', data.get('boatType'));
+                                    localStorage.setItem('width', data.get('width'));
+                                    localStorage.setItem('length', data.get('length'));
                                 });
                             </script>
                             <div class="mt-xl">
