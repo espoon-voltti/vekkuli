@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Trailer
 import fi.espoo.vekkuli.utils.cmToM
@@ -16,6 +17,36 @@ class TrailerCard(
     private val formComponents: FormComponents,
     private val warningBox: WarningBox,
 ) : BaseView() {
+    fun trailerValueLabel(
+        translationKey: String,
+        showWarning: Boolean
+    ): String {
+        val warning =
+            if (showWarning) {
+                """<span class="icon ml-s">${icons.warningExclamation(false)}</span>"""
+            } else {
+                ""
+            }
+        return """
+                <label class="label">${t(translationKey)}
+            $warning
+                </label> 
+            """.trimIndent()
+    }
+
+    fun trailerValue(
+        id: String,
+        value: String,
+        translationKey: String,
+        showWarning: Boolean = false
+    ): String =
+        """
+        <div class="field">
+            ${trailerValueLabel(translationKey, showWarning)}
+            <p data-testid="$id">$value</p>
+        </div> 
+        """.trimIndent()
+
     fun showTrailerWarnings(trailerHasWarnings: Boolean): String {
         if (trailerHasWarnings) {
             // language=HTML
@@ -101,6 +132,31 @@ class TrailerCard(
         userType: UserType,
         reserverId: UUID,
     ): String {
+        val isEmployee = userType == UserType.EMPLOYEE
+        val trailerRegNum =
+            trailerValue(
+                "trailer-registration-code",
+                trailer.registrationCode ?: "",
+                "citizenDetails.trailer.registrationNumber",
+                false
+            )
+        val trailerWidth =
+            trailerValue(
+                "trailer-width",
+                "${trailer.widthCm.cmToM()}",
+                "shared.label.widthInMeters",
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth.name)
+            )
+        val trailerLength =
+            trailerValue(
+                "trailer-length",
+                "${trailer.lengthCm.cmToM()}",
+                "shared.label.lengthInMeters",
+                isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength.name)
+            )
+
+        val warningText = if (isEmployee) showTrailerWarnings(trailer.hasAnyWarnings()) else ""
+        val warningDialog = if (isEmployee)showWarningsDialog(trailer, reserverId) else ""
         // language=HTML
         return """
             <div id="trailer-${trailer.id}" class="pb-s" x-data="{ modalOpen: false }">
@@ -108,30 +164,21 @@ class TrailerCard(
                     <div class="column is-narrow">
                         <h4>${t("boatApplication.trailerInformation")}</h4>
                     </div>
-                    ${showTrailerWarnings(trailer.hasAnyWarnings())}
+                    $warningText
                     ${editTrailerButton(trailer.id, userType, reserverId)}
                 </div>
                 <div class="columns pb-s">
                    <div class="column is-one-quarter">
-                       <div class="field">
-                          <label class="label">${t("citizenDetails.trailer.registrationNumber")}</label>
-                          <p data-testid='trailer-registration-code'>${trailer.registrationCode}</p>
-                       </div>
+                       $trailerRegNum
                    </div>
                    <div class="column is-one-quarter">
-                       <div class="field">
-                          <label class="label">${t("shared.label.widthInMeters")}</label>
-                          <p data-testid='trailer-width'>${trailer.widthCm.cmToM()}</p>
-                       </div>
+                       $trailerWidth
                    </div>
                    <div class="column is-one-quarter">
-                      <div class="field">
-                         <label class="label">${t("shared.label.lengthInMeters")}</label>
-                         <p data-testid='trailer-length'>${trailer.lengthCm.cmToM()}</p>
-                      </div>
+                      $trailerLength
                    </div>
                 </div>
-                ${showWarningsDialog(trailer, reserverId)}
+                $warningDialog
             </div>
             """.trimIndent()
     }

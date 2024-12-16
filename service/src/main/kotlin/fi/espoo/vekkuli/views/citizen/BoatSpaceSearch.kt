@@ -338,7 +338,13 @@ class BoatSpaceSearch(
                                 id: ${result.id},
                                 place: '${harbor.location.name} ${result.place}',
                                 size: '${result.formattedSizes}',
-                                amenity: '${t("boatSpaces.amenityOption.${result.amenity}")}',
+                                amenity: '${if (result.amenity != BoatSpaceAmenity.None) {
+                            t(
+                                "boatSpaces.amenityOption.${result.amenity}"
+                            )
+                        } else {
+                            ""
+                        }}',
                                 price: '${result.priceInEuro}'
                             };">
                             ${t("boatSpaces.reserve")}
@@ -413,7 +419,7 @@ class BoatSpaceSearch(
                         <p class="block has-text-left">${t("auth.reservingBoatSpace")}</p>
                         <p class="has-text-left" x-text="boatSpace.place"></p>
                         <p class="has-text-left" x-text="boatSpace.size"></p>
-                        <p class="has-text-left" x-text="boatSpace.amenity"></p>
+                        <p x-if="!!boatSpace.amenity" class="has-text-left" x-text="boatSpace.amenity"></p>
                         <p class="has-text-left block" x-text="boatSpace.price + ' &euro;'"></p>
                         <p class="has-text-left block">${t("auth.reservingRequiresAuth")}</p>
                         <button id="auth-modal-cancel" class="button" @click="openModal = false" type="button">
