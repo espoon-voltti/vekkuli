@@ -4,10 +4,7 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Forbidden
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
-import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.mToCm
@@ -18,6 +15,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -100,13 +98,13 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should create a reservation for citizen if not exist or fetch if already created`() {
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(any()))
+            .`when`(seasonalService.canReserveANewSlip(any(), eq(BoatSpaceType.Slip)))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
                         LocalDate.now(),
                         LocalDate.now().plusDays(30),
-                        ReservationValidity.Indefinite
+                        ReservationValidity.Indefinite,
                     )
                 )
             )
@@ -122,7 +120,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should fail if citizen does not have permission to reserve`() {
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia))
+            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia, BoatSpaceType.Winter))
             .thenReturn(ReservationResult.Failure(ReservationResultErrorCode.NotPossible))
 
         val exception =
@@ -138,7 +136,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         val madeReservation = testUtils.createReservationInInfoState(citizenIdOlivia)
 
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia))
+            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia, BoatSpaceType.Slip))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
@@ -193,7 +191,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should add trailer and update storage type and trailer of reservation`() {
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(any()))
+            .`when`(seasonalService.canReserveANewSlip(any(), eq(BoatSpaceType.Winter)))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(

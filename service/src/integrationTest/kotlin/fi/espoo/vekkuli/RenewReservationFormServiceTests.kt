@@ -7,10 +7,7 @@ import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.endDateWithinMonthOfRenewWindow
-import fi.espoo.vekkuli.utils.mToCm
-import fi.espoo.vekkuli.utils.mockTimeProvider
-import fi.espoo.vekkuli.utils.startOfRenewPeriod
+import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,7 +33,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
-        mockTimeProvider(timeProvider, startOfRenewPeriod)
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
     }
 
     @Autowired
@@ -66,8 +63,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -89,8 +86,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
@@ -112,8 +109,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val secondReservation =
@@ -123,8 +120,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdOlivia,
                     2,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val firstRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -149,8 +146,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val secondReservation =
@@ -160,8 +157,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdOlivia,
                     2,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val firstRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
@@ -186,8 +183,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
 
@@ -232,8 +229,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, oldReservation.id)
@@ -274,7 +271,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     citizenIdLeo,
                     1,
                     startDate = LocalDate.of(2024, 4, 1),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate(),
                     validity = ReservationValidity.Indefinite,
                 )
             )
@@ -290,7 +287,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
         assertEquals(ReservationStatus.Confirmed, oldReservation.status, "Old reservation should be rolled back")
         assertEquals(
-            startOfRenewPeriod.plusDays(1).toLocalDate(),
+            startOfSlipRenewPeriod.plusDays(1).toLocalDate(),
             oldReservation.endDate,
             "Old reservation should not be marked as ended"
         )
@@ -323,7 +320,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate(),
                     validity = ReservationValidity.Indefinite
                 )
             )
@@ -365,7 +362,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate(),
                     validity = ReservationValidity.Indefinite
                 )
             )
@@ -416,7 +413,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     1,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    endDate = endDateWithinMonthOfRenewWindow
+                    endDate = endDateWithinMonthOfSlipRenewWindow
                 )
             )
         var reservation =
@@ -442,6 +439,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should renew winter reservations`() {
+        mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
         val madeReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -450,7 +448,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     8,
                     1,
                     validity = ReservationValidity.Indefinite,
-                    endDate = endDateWithinMonthOfRenewWindow
+                    endDate = endDateWithinMonthOfWinterRenewWindow
                 )
             )
 

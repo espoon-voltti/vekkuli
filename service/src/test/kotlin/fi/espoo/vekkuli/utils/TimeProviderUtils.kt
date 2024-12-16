@@ -13,8 +13,10 @@ fun mockTimeProvider(
     Mockito.`when`(timeProvider.getCurrentDate()).thenReturn(date.toLocalDate())
 }
 
-val startOfRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 0)
+val startOfSlipRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 0)
+val startOfWinterSpaceRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 1, 12, 0, 0)
 
-val endDateWithinMonthOfRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
+val endDateWithinMonthOfSlipRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
+val endDateWithinMonthOfWinterRenewWindow: LocalDate = LocalDate.of(2025, 8, 25)
 
 val startOfSlipReservationPeriod: LocalDate = LocalDate.of(2024, 4, 1)
