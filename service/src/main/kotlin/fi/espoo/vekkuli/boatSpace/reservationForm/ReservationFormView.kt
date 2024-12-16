@@ -123,8 +123,7 @@ class ReservationFormView(
             )}
                 </div>
                  <div class='form-section'>
-                                     ${reservationInformation.reservationInformationWithStorageType(reservation)}
-
+                     ${reservationInformation.reservationInformationWithStorageType(reservation)}
                 </div>
             </div>
             """.trimIndent()
