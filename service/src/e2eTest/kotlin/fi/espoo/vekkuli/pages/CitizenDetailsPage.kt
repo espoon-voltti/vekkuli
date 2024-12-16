@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.baseUrl
 class CitizenDetailsPage(
     page: Page
 ) : BasePage(page) {
-    val citizenDetailsSection = page.getByTestId("citizen-details")
+    val citizenDetailsSection = page.getByTestId("reserver-details")
 
     private fun getBoatText(
         prop: String,

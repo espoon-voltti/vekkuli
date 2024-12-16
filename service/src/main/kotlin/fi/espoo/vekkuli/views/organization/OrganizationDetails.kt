@@ -1,23 +1,33 @@
 package fi.espoo.vekkuli.views.organization
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.controllers.CitizenUserController
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.employee.SanitizeInput
+import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
 import fi.espoo.vekkuli.views.organization.components.OrganizationContactDetails
+import fi.espoo.vekkuli.views.organization.components.OrganizationMembersContainer
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class OrganizationDetails(
     var commonComponents: CommonComponents,
     var formComponents: FormComponents,
     var icons: Icons,
-    private val organizationContactDetails: OrganizationContactDetails
+    private val organizationContactDetails: OrganizationContactDetails,
+    private val organizationMembersContainer: OrganizationMembersContainer,
+    private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
 ) : BaseView() {
     fun organizationPageForEmployee(
         @SanitizeInput organization: Organization,
+        @SanitizeInput organizationMembers: List<CitizenWithDetails>,
+        @SanitizeInput organizationReservations: List<BoatSpaceReservationDetails>,
+        @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
     ): String {
         // language=HTML
@@ -27,23 +37,35 @@ class OrganizationDetails(
         val result =
             // language=HTML
             """
-            <section class="section" id="organization-details">
+            <section class="section" id="reserver-details">
                 <div class="container block">
                     ${commonComponents.goBackButton(backUrl)} 
                     <h2 class='mb-none'>${organization.name}</h2>
                 </div>
-                <div class='container'>
+                <div class='container block'>
                     <h3>${t("organizationDetails.title.organizationInformation")}</h3>
                 
                     <div class='form-section'>
                         ${organizationContactDetails.render(organization)}
                    </div>
+                    <div class="form-section">
+                        ${organizationMembersContainer.render(organizationMembers)}
+                    </div>
                </div>
+               ${
+                reserverDetailsReservationsContainer.render(
+                    organization.id,
+                    organizationReservations,
+                    boats,
+                    UserType.EMPLOYEE
+                )
+            }
             </section>
             """.trimIndent()
 
         return result
     }
+}
 
 //    private fun getTabUrl(last: String): String = getServiceUrl("/virkailija/kayttaja/$last")
 //
@@ -51,30 +73,28 @@ class OrganizationDetails(
 //        @SanitizeInput organization: Organization,
 //        @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
 //        @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
-//        userType: UserType
 //    ): String {
-//        val reservationList = reservationListBuilder.render(organization, boatSpaceReservations, userType, organization.id)
+//        val reservationList = reservationListBuilder.render(boatSpaceReservations, UserType.EMPLOYEE, organization.id)
 //
 //        fun showBoatWarnings(boatHasWarnings: Boolean): String {
 //            if (boatHasWarnings) {
 //                // language=HTML
 //                return """
-//                <div class="column">
-//                    <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
-//                        <span class="icon ml-s">
-//                            ${icons.warningExclamation(false)}
-//                        </span>
-//                        <span data-testid='acknowledge-warnings'>${t("organizationDetails.button.acknowledgeWarnings")}</span>
-//                    </a>
-//                </div>
-//                """
+//              <div class="column">
+//                  <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
+//                      <span class="icon ml-s">
+//                          ${icons.warningExclamation(false)}
+//                      </span>
+//                      <span data-testid='acknowledge-warnings'>${t("organizationDetails.button.acknowledgeWarnings")}</span>
+//                  </a>
+//              </div>
+//              """
 //            }
 //            return ""
 //        }
 //
-//        fun showBoatWarnings(boat: organizationUserController.BoatUpdateForm): String {
+//        fun showBoatWarnings(boat: CitizenUserController.BoatUpdateForm): String {
 //            // language=HTML
-//
 //            if (boat.hasAnyWarnings()) {
 //                val warningLabels =
 //                    boat.warnings.joinToString("\n") { warning ->
@@ -91,7 +111,7 @@ class OrganizationDetails(
 //                        <div class="modal-content">
 //                            <form hx-post="/virkailija/venepaikat/varaukset/kuittaa-varoitus"
 //                                  hx-swap="outerHTML"
-//                                  hx-target="#organization-details"
+//                                  hx-target="#reserver-details"
 //                                 >
 //                                <input type="hidden" name="boatId" value="${boat.id}" />
 //                                <input type="hidden" name="organizationId" value="${organization.id}" />
@@ -133,12 +153,7 @@ class OrganizationDetails(
 //            return ""
 //        }
 //
-//        fun getDeleteUrl(boatId: Int): String {
-//            if (userType == UserType.EMPLOYEE) {
-//                return "/virkailija/kayttaja/${organization.id}/vene/$boatId/poista"
-//            }
-//            return "/kuntalainen/vene/$boatId/poista"
-//        }
+//        fun getDeleteUrl(boatId: Int): String = "/virkailija/kayttaja/${organization.id}/vene/$boatId/poista"
 //
 //        fun deleteButton(
 //            hasLinkedReservation: Boolean,
@@ -147,50 +162,45 @@ class OrganizationDetails(
 //            if (!hasLinkedReservation) {
 //                return (
 //                    """
-//                    <div class="column" x-data="{deleteModal: false}">
-//                        <a class="is-link has-text-danger"
-//                            id='delete-boat-$boatId'
-//                           x-on:click="deleteModal = true">
-//                            <span class="icon ml-s">
-//                                ${icons.remove}
-//                            </span>
-//                            <span > ${t("organizationDetails.button.deleteBoat")} </span>
-//                        </a>
-//                        <div class="modal" x-show="deleteModal" style="display:none;">
-//                            <div class="modal-underlay" @click="deleteModal = false"></div>
-//                            <div class="modal-content">
-//                                <div class="container">
-//                                    <div class="has-text-centered is-1">
-//                                        <p class='mb-m'>${t("organizationDetails.text.deleteBoatConfirmation")}</p>
-//                                        <div class="buttons is-centered">
-//                                            <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
-//                                                ${t("cancel")}
-//                                            </a>
-//                                            <a class="button is-danger"
-//                                                id="delete-modal-confirm-$boatId"
-//                                                hx-delete="${getDeleteUrl(boatId)}"
-//                                                hx-select="#organization-details"
-//                                                hx-target="#organization-details">
-//                                                ${t("organizationDetails.button.confirmDeletion")}
-//                                            </a>
-//                                        </div>
-//                                    </div>
-//                                </div>
-//                            </div>
-//                        </div>
-//                    </div>
-//                    """
+//                  <div class="column" x-data="{deleteModal: false}">
+//                      <a class="is-link has-text-danger"
+//                          id='delete-boat-$boatId'
+//                         x-on:click="deleteModal = true">
+//                          <span class="icon ml-s">
+//                              ${icons.remove}
+//                          </span>
+//                          <span > ${t("organizationDetails.button.deleteBoat")} </span>
+//                      </a>
+//                      <div class="modal" x-show="deleteModal" style="display:none;">
+//                          <div class="modal-underlay" @click="deleteModal = false"></div>
+//                          <div class="modal-content">
+//                              <div class="container">
+//                                  <div class="has-text-centered is-1">
+//                                      <p class='mb-m'>${t("organizationDetails.text.deleteBoatConfirmation")}</p>
+//                                      <div class="buttons is-centered">
+//                                          <a class="button is-secondary" id="delete-modal-cancel-$boatId" x-on:click="deleteModal = false">
+//                                              ${t("cancel")}
+//                                          </a>
+//                                          <a class="button is-danger"
+//                                              id="delete-modal-confirm-$boatId"
+//                                              hx-delete="${getDeleteUrl(boatId)}"
+//                                              hx-select="#reserver-details"
+//                                              hx-target="#reserver-details">
+//                                              ${t("organizationDetails.button.confirmDeletion")}
+//                                          </a>
+//                                      </div>
+//                                  </div>
+//                              </div>
+//                          </div>
+//                      </div>
+//                  </div>
+//                  """
 //                )
 //            }
 //            return ""
 //        }
-//
 //        val getEditUrl = { boatId: Int ->
-//            if (userType == UserType.EMPLOYEE) {
-//                "/virkailija/kayttaja/${organization.id}/vene/$boatId/muokkaa"
-//            } else {
-//                "/kuntalainen/vene/$boatId/muokkaa"
-//            }
+//            "/virkailija/yhteiso/${organization.id}/vene/$boatId/muokkaa"
 //        }
 //
 //        fun editBoatButton(boat: CitizenUserController.BoatUpdateForm): String {
@@ -260,7 +270,6 @@ class OrganizationDetails(
 //                            boat.type.name,
 //                            "organizationDetails.title.boatType"
 //                        )
-//
 //                    val depth = boatInfo("boat-depth-text-${boat.id}", boat.depth.toString(), "organizationDetails.title.draft",)
 //                    val width =
 //                        boatInfo(
@@ -285,7 +294,7 @@ class OrganizationDetails(
 //                    val ownershipStatus =
 //                        boatInfo(
 //                            "boat-ownership-text-${boat.id}",
-//                            t("boatApplication.$userType.ownershipOption.${boat.ownership}"),
+//                            t("boatApplication.EMPLOYEE.ownershipOption.${boat.ownership}"),
 //                            "organizationDetails.title.ownershipStatus",
 //                            showWarnings &&
 //                                (
@@ -314,7 +323,7 @@ class OrganizationDetails(
 //                            </div>
 //                            <div class="memo-edit-buttons column columns">
 //                                ${deleteButton(boat.reservationId != null, boat.id)}
-//                                ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
+//                                ${showBoatWarnings(boat.hasAnyWarnings())}
 //                                ${editBoatButton(boat)}
 //                            </div>
 //                        </div>
@@ -348,45 +357,41 @@ class OrganizationDetails(
 //                    </div>
 //                    """.trimIndent()
 //                }.joinToString("\n")
-//
-//        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)
-//
+//        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null }, true)
 //        // language=HTML
 //        val showAllBoatsCheckbox =
 //            if (boatsWithNoReservation.isNotEmpty()) {
 //                """
-//                            <label class="checkbox pb-l">
-//                                <input type="checkbox"
-//                                name="showAllBoats"
-//                                id="showAllBoats"
-//                                x-model="showAllBoats"
-//                                hx-preserve="true"
-//                                x-ref="showAllBoats"
-//                                />
-//                                <span>${t("organizationDetails.checkbox.showAllBoats")}</span>
-//                            </label>
-//                """
+//                          <label class="checkbox pb-l">
+//                              <input type="checkbox"
+//                              name="showAllBoats"
+//                              id="showAllBoats"
+//                              x-model="showAllBoats"
+//                              hx-preserve="true"
+//                              x-ref="showAllBoats"
+//                              />
+//                              <span>${t("organizationDetails.checkbox.showAllBoats")}</span>
+//                          </label>
+//              """
 //            } else {
 //                ""
 //            }
-//
 //        // language=HTML
 //        return """
 //                   <div id="tab-content" class="container block" x-data="{
 //                showAllBoats: document.getElementById('showAllBoats').checked
 //            }">
-//                       ${if (userType == UserType.EMPLOYEE) renderTabNavi(organization.id, SubTab.Reservations) else ""}
+//                       ${renderTabNavi(organization.id, SubTab.Reservations)}
 //                       <h3>${t("organizationDetails.title.splitReservations")}</h3>
 //                        $reservationList
 //                       <h3>${t("organizationDetails.title.boats")}</h3>
 //                       <div class="reservation-list form-section no-bottom-border">
-//                           ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)}
+//                           ${getBoatsList(boats.filter { it.reservationId != null }, true)}
 //                       </div>
-//
-//                      <div>
+//                  <div>
 //                         $showAllBoatsCheckbox
 //                          <div class="reservation-list form-section" x-show="showAllBoats">
-//                            ${getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)}
+//                            ${getBoatsList(boats.filter { it.reservationId == null }, true)}
 //                           </div>
 //                      </div>
 //                      <div
@@ -426,7 +431,6 @@ class OrganizationDetails(
 //                </tr>
 //                """.trimIndent()
 //            }
-//
 //        val messagesHtml =
 //            if (messages.isNotEmpty()) {
 //                // language=HTML
@@ -450,7 +454,6 @@ class OrganizationDetails(
 //            } else {
 //                "<h2>${t("organizationDetails.messages.noMessages")}</h2>"
 //            }
-//
 //        // language=HTML
 //        return """
 //            <div id="tab-content" class="container block">
@@ -469,12 +472,11 @@ class OrganizationDetails(
 //        val createdBy =
 //            if (memo.createdBy !== null) {
 //                """
-//                <span class="memo-label">${memo.createdBy}</span>
-//                """
+//              <span class="memo-label">${memo.createdBy}</span>
+//              """
 //            } else {
 //                ""
 //            }
-//
 //        val buttons =
 //            if (edit) {
 //                ""
@@ -501,7 +503,6 @@ class OrganizationDetails(
 //                </a>
 //                """.trimIndent()
 //            }
-//
 //        val header =
 //            """
 //            <div>
@@ -510,7 +511,6 @@ class OrganizationDetails(
 //                $buttons
 //            </div>
 //            """.trimIndent()
-//
 //        val updated =
 //            if (memo.updatedBy !== null && memo.updatedAt !== null) {
 //                """
@@ -523,7 +523,6 @@ class OrganizationDetails(
 //            } else {
 //                ""
 //            }
-//
 //        val content =
 //            if (edit) {
 //                // language=HTML
@@ -558,12 +557,11 @@ class OrganizationDetails(
 //            } else {
 //                // language=HTML
 //                """
-//                <div class="memo-content">
-//                    ${memo.content}
-//                </div>
-//                """
+//              <div class="memo-content">
+//                  ${memo.content}
+//              </div>
+//              """
 //            }
-//
 //        // language=HTML
 //        return """
 //            <div class="block memo" id="memo-${memo.id}">
@@ -634,7 +632,6 @@ class OrganizationDetails(
 //            memos.joinToString("\n") {
 //                memoContent(it, false)
 //            }
-//
 //        val result =
 //            // language=HTML
 //            """
@@ -644,7 +641,6 @@ class OrganizationDetails(
 //                $memoHtml
 //            <div>
 //            """.trimIndent()
-//
 //        return result
 //    }
 //
@@ -695,4 +691,4 @@ class OrganizationDetails(
 //            </ul>
 //        </div>
 //        """.trimIndent()
-}
+// }

@@ -170,8 +170,8 @@ class EditCitizen {
         val buttons =
             formComponents.buttons(
                 goBackUrl,
-                "#citizen-details",
-                "#citizen-details",
+                "#reserver-details",
+                "#reserver-details",
                 "cancel-boat-edit-form",
                 "submit-boat-edit-form"
             )
@@ -190,8 +190,8 @@ class EditCitizen {
                   method="post" 
                   hx-patch="$submitUrl"
                   novalidate
-                  hx-target="#citizen-details"
-                  hx-select="#citizen-details"
+                  hx-target="#reserver-details"
+                  hx-select="#reserver-details"
                   hx-swap="outerHTML"
             >
                 <input type="hidden" name="id" value="${citizen.id}" />

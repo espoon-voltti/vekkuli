@@ -19,7 +19,7 @@ class EditBoat {
         citizenId: UUID,
         boatTypes: List<String>,
         ownershipOptions: List<String>,
-        userType: UserType,
+        userType: UserType
     ): String {
         val nameInput =
             formComponents.textInput(
@@ -100,14 +100,14 @@ class EditBoat {
 
         val editUrl =
             if (userType == UserType.EMPLOYEE) {
-                "/virkailija/kayttaja/$citizenId/vene/${boat.id}"
+                "$citizenId/vene/${boat.id}"
             } else {
                 "/kuntalainen/vene/${boat.id}"
             }
 
         val cancelUrl =
             if (userType == UserType.EMPLOYEE) {
-                "/virkailija/kayttaja/$citizenId"
+                "$citizenId"
             } else {
                 "/kuntalainen/omat-tiedot"
             }
@@ -117,8 +117,8 @@ class EditBoat {
                   method="post" 
                   hx-patch="$editUrl"
                   novalidate
-                  hx-target="#citizen-details"
-                  hx-select="#citizen-details"
+                  hx-target="#reserver-details"
+                  hx-select="#reserver-details"
                   hx-swap="outerHTML"
             >
                 <input type="hidden" name="id" value="${boat.id}" />
@@ -164,8 +164,8 @@ class EditBoat {
                             class="button"
                             type="button"
                             hx-get="$cancelUrl"
-                            hx-target="#citizen-details"
-                            hx-select="#citizen-details"
+                            hx-target="#reserver-details"
+                            hx-select="#reserver-details"
                             hx-swap="outerHTML"
                     >${formComponents.t("cancel")}</button>
                     <button

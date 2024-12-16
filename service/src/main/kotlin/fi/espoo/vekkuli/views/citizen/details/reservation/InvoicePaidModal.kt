@@ -38,8 +38,8 @@ class InvoicePaidModal : BaseView() {
                 <form
                     id="$formId"
                     hx-post="/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi" 
-                    hx-target="#citizen-details"
-                    hx-select="#citizen-details"
+                    hx-target="#reserver-details"
+                    hx-select="#reserver-details"
                     hx-swap="outerHTML"
                     >
                     ${formComponents.textInput("citizenDetails.info", "invoicePaidInfo", "")}

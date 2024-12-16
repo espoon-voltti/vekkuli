@@ -11,7 +11,7 @@ class OrganizationContactDetails(
     private val formComponents: FormComponents,
     private val icons: Icons
 ) : BaseView() {
-    private fun getOrganizationFields(
+    private fun getOrganizationContactDetailsFields(
         organizationNameValue: String,
         organizationIdValue: String,
         municipalityField: String,
@@ -110,7 +110,7 @@ class OrganizationContactDetails(
                         <!-- $editOrganizationInformation --> 
                     </div>
                     ${
-                getOrganizationFields(
+                getOrganizationContactDetailsFields(
                     organizationNameField,
                     organizationBusinessIdField,
                     municipalityField,

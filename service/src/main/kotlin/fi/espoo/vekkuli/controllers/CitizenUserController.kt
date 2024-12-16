@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.cmToM
@@ -17,6 +18,7 @@ import fi.espoo.vekkuli.views.citizen.details.reservation.TrailerCard
 import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.jdbi.v3.core.Jdbi
@@ -32,6 +34,9 @@ import java.util.*
 
 @Controller
 class CitizenUserController {
+    @Autowired
+    private lateinit var reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer
+
     @Autowired
     private lateinit var permissionService: PermissionService
 
@@ -70,6 +75,9 @@ class CitizenUserController {
 
     @Autowired
     lateinit var trailerCard: TrailerCard
+
+    @Autowired
+    lateinit var reserverRepository: ReserverRepository
 
     @GetMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
@@ -128,10 +136,10 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
-        return citizenDetails.reservationTabContent(citizen, boatSpaceReservations, boats, UserType.EMPLOYEE)
+        return reserverDetailsReservationsContainer.render(reserver.id, boatSpaceReservations, boats, UserType.EMPLOYEE)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/viestit")
@@ -140,9 +148,9 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val messages = citizenService.getMessages(citizenId)
-        return citizenDetails.messageTabContent(citizen, messages)
+        return reserverDetailsReservationsContainer.messageTabContent(reserver.id, messages)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")
@@ -152,7 +160,7 @@ class CitizenUserController {
         @PathVariable citizenId: UUID
     ): String {
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
-        return citizenDetails.memoTabContent(citizenId, memos)
+        return reserverDetailsReservationsContainer.memoTabContent(citizenId, memos)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/muokkaa/{memoId}")
@@ -163,7 +171,7 @@ class CitizenUserController {
         @PathVariable memoId: Int,
     ): String {
         val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
-        return citizenDetails.memoContent(memo, true)
+        return reserverDetailsReservationsContainer.memoContent(memo, true)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/lisaa")
@@ -171,14 +179,14 @@ class CitizenUserController {
     fun boatSpaceMemoNewForm(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
-    ): String = citizenDetails.newMemoContent(citizenId, true)
+    ): String = reserverDetailsReservationsContainer.newMemoContent(citizenId, true)
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/lisaa_peruuta")
     @ResponseBody
     fun boatSpaceMemoNewCancel(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
-    ): String = citizenDetails.newMemoContent(citizenId, false)
+    ): String = reserverDetailsReservationsContainer.newMemoContent(citizenId, false)
 
     @PostMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")
     @ResponseBody
@@ -190,7 +198,7 @@ class CitizenUserController {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         memoService.insertMemo(citizenId, userId, ReservationType.Marine, content)
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
-        return citizenDetails.memoTabContent(citizenId, memos)
+        return reserverDetailsReservationsContainer.memoTabContent(citizenId, memos)
     }
 
     @DeleteMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
@@ -202,7 +210,7 @@ class CitizenUserController {
     ): String {
         memoService.removeMemo(memoId)
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
-        return citizenDetails.memoTabContent(citizenId, memos)
+        return reserverDetailsReservationsContainer.memoTabContent(citizenId, memos)
     }
 
     @PatchMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
@@ -215,7 +223,7 @@ class CitizenUserController {
     ): String {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         val memo = memoService.updateMemo(memoId, userId, content) ?: throw IllegalArgumentException("Memo not found")
-        return citizenDetails.memoContent(memo, false)
+        return reserverDetailsReservationsContainer.memoContent(memo, false)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
@@ -226,7 +234,7 @@ class CitizenUserController {
         @PathVariable memoId: Int,
     ): String {
         val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
-        return citizenDetails.memoContent(memo, false)
+        return reserverDetailsReservationsContainer.memoContent(memo, false)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/maksut")
@@ -235,8 +243,8 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        return citizenDetails.paymentTabContent(citizen)
+        val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
+        return reserverDetailsReservationsContainer.paymentTabContent(reserver.id)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")

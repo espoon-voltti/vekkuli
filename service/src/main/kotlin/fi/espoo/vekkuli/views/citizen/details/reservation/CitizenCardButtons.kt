@@ -11,10 +11,7 @@ class CitizenCardButtons(
     private val modal: Modal,
     private val commonButtons: ReservationCardButtons
 ) : BaseView() {
-    fun render(
-        reservation: BoatSpaceReservationDetails,
-        citizen: CitizenWithDetails,
-    ): String {
+    fun render(reservation: BoatSpaceReservationDetails): String {
         if (reservation.status == ReservationStatus.Cancelled) {
             return ""
         }
