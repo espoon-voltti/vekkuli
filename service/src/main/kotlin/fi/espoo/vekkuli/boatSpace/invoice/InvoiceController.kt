@@ -1,11 +1,14 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
+import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.centToEuro
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
@@ -24,6 +27,7 @@ class InvoiceController(
     private val reservationService: BoatReservationService,
     private val invoiceService: BoatSpaceInvoiceService,
     private val timeProvider: TimeProvider,
+    private val boatSpaceReservationRepo: BoatSpaceReservationRepository
 ) {
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     @ResponseBody
@@ -57,8 +61,8 @@ class InvoiceController(
                 reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
                 product = reservation.locationName,
                 function = getDefaultFunction(reservation.type),
-                billingPeriodStart = "",
-                billingPeriodEnd = "",
+                billingPeriodStart = formatAsFullDate(reservation.startDate),
+                billingPeriodEnd = formatAsFullDate(reservation.endDate),
                 boatingSeasonStart = LocalDate.of(2025, 5, 1),
                 boatingSeasonEnd = LocalDate.of(2025, 9, 30),
                 invoiceNumber = "",
@@ -76,7 +80,7 @@ class InvoiceController(
             invoicePreview.render(
                 model,
                 submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
-                backUrl = "/virkailija/kayttaja/${reservation.reserverId}",
+                backUrl = "/virkailija/venepaikat/varaukset",
                 deleteUrl = "",
                 isOrganization
             )
@@ -143,5 +147,15 @@ class InvoiceController(
         }
 
         reservationService.setReservationStatusToInvoiced(reservation.id)
+    }
+
+    @DeleteMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
+    fun cancelRenewal(
+        @PathVariable reservationId: Int,
+        request: HttpServletRequest,
+    ): ResponseEntity<String> {
+        val employeeId = request.ensureEmployeeId()
+        boatSpaceReservationRepo.removeBoatSpaceReservation(reservationId)
+        return ResponseEntity.noContent().build()
     }
 }

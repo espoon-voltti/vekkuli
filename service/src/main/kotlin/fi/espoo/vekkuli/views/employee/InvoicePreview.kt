@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -49,12 +50,11 @@ class InvoicePreview(
                     Pair("T1276", "Varastopaikka T1276",),
                 )
             )
-        // language=HTML
         val dueDate =
             formComponents.field(
                 "invoice.dueDate",
                 "dueDate",
-                model.dueDate.toString(),
+                formatAsFullDate(model.dueDate)
             )
         val invoicePeriod =
             formComponents.field(
@@ -75,7 +75,6 @@ class InvoicePreview(
                 "invoice.description",
                 "description",
                 model.description,
-                compact = true,
             )
 
         val contactPersonInput =
