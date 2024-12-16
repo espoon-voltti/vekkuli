@@ -894,6 +894,10 @@ ul {
   border: 1px solid $error;
 }
 
+.has-text-danger {
+    color: $error !important;
+}
+
 .centered {
     display: flex;
     justify-content: center;
@@ -917,4 +921,8 @@ ul {
   & > .icon {
     margin-right: $spacing-small;
   }
+}
+
+#boat-space-reservations-employee .container {
+  max-width: none;
 }
