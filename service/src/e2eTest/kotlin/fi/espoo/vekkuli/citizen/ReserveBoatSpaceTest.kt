@@ -443,8 +443,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
         // assert that form is filled with the previous values
         assertThat(formPage.header).isVisible()
-        assertThat(formPage.widthInput).hasValue("3.0")
-        assertThat(formPage.lengthInput).hasValue("6.0")
+        assertThat(formPage.widthInput).hasValue("3.00")
+        assertThat(formPage.lengthInput).hasValue("6.00")
         assertThat(formPage.depthInput).hasValue("1.5")
         assertThat(formPage.weightInput).hasValue("2000")
         assertThat(formPage.boatNameInput).hasValue("My Boat")
