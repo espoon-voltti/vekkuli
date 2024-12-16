@@ -130,6 +130,11 @@ enum class PaymentFilter {
     UNPAID,
 }
 
+enum class ReservationExpiration {
+    Active,
+    Expired,
+}
+
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
     val ascending: Boolean = false,
@@ -139,6 +144,7 @@ data class BoatSpaceReservationFilter(
     val nameSearch: String? = null,
     val warningFilter: Boolean? = null,
     val sectionFilter: List<String> = emptyList(),
+    val expiration: ReservationExpiration = ReservationExpiration.Active,
 ) {
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
 

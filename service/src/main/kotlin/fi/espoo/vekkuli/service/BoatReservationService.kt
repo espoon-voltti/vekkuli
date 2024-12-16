@@ -360,7 +360,11 @@ class BoatReservationService(
             )
         )
 
-        filters.add(EndDateNotPassedExpr(timeProvider.getCurrentDate()))
+        if (params.expiration == ReservationExpiration.Active) {
+            filters.add(EndDateNotPassedExpr(timeProvider.getCurrentDate()))
+        } else {
+            filters.add(EndDatePassedExpr(timeProvider.getCurrentDate()))
+        }
 
         if (params.warningFilter == true) {
             filters.add(HasWarningExpr())
