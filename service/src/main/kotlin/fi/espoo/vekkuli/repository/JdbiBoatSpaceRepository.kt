@@ -30,7 +30,7 @@ fun amenityFilter(
 }
 
 fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
-    if (filter.boatLength != null && filter.boatLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
+    if (filter.boatOrSpaceLength != null && filter.boatOrSpaceLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
         // Boats over 15 meters will only fit in buoys
         return OperatorExpr(
             "amenity",
@@ -42,11 +42,7 @@ fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
     val amenities = if (filter.amenities.isNullOrEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
     return OrExpr(
         amenities.map {
-            if (it == BoatSpaceAmenity.None) {
-                OperatorExpr("amenity", "=", BoatSpaceAmenity.None)
-            } else {
-                amenityFilter(it, filter.boatWidth, filter.boatLength)
-            }
+            amenityFilter(it, filter.boatOrSpaceWidth, filter.boatOrSpaceLength)
         }
     )
 }
@@ -102,7 +98,7 @@ class JdbiBoatSpaceRepository(
 ) : BoatSpaceRepository {
     override fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
         return jdbi.withHandleUnchecked { handle ->
-            if (params.boatWidth == null || params.boatLength == null) return@withHandleUnchecked Pair(emptyList<Harbor>(), 0)
+            if (params.boatOrSpaceWidth == null || params.boatOrSpaceLength == null) return@withHandleUnchecked Pair(emptyList<Harbor>(), 0)
             val amenityFilter = createAmenityFilter(params)
             val locationIds =
                 if (params.locationIds.isNullOrEmpty()) {
