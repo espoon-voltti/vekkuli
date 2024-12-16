@@ -30,14 +30,14 @@ class BoatSpaceInvoiceService(
     @Transactional
     fun createAndSendInvoice(
         invoiceData: InvoiceData,
-        citizenId: UUID,
+        reserverId: UUID,
         reservationId: Int
     ): Invoice? {
         val invoice = paymentService.getInvoiceForReservation(reservationId)
         if (invoice != null) {
             return invoice
         }
-        val (createdInvoice) = createInvoice(invoiceData, citizenId, reservationId)
+        val (createdInvoice) = createInvoice(invoiceData, reserverId, reservationId)
         val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
 
         asyncJobRunner.plan(
@@ -55,13 +55,13 @@ class BoatSpaceInvoiceService(
 
     fun createInvoice(
         invoiceData: InvoiceData,
-        citizenId: UUID,
+        reserverId: UUID,
         reservationId: Int
     ): Pair<Invoice, Payment> {
         val payment =
             paymentService.insertPayment(
                 CreatePaymentParams(
-                    citizenId,
+                    reserverId,
                     invoiceData.invoiceNumber.toString(),
                     invoiceData.priceCents,
                     BOAT_RESERVATION_ALV_PERCENTAGE,
@@ -74,7 +74,7 @@ class BoatSpaceInvoiceService(
                 CreateInvoiceParams(
                     dueDate = invoiceData.dueDate,
                     reference = invoiceData.invoiceNumber.toString(),
-                    citizenId = citizenId,
+                    citizenId = reserverId,
                     reservationId = reservationId,
                     paymentId = payment.id
                 )

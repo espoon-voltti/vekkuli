@@ -34,7 +34,7 @@ data class Invoice(
 )
 
 data class CreatePaymentParams(
-    val citizenId: UUID,
+    val reserverId: UUID,
     val reference: String,
     val totalCents: Int,
     val vatPercentage: Double,

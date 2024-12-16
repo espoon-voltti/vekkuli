@@ -25,8 +25,8 @@ class JdbiPaymentRepository(
                 handle
                     .createQuery(
                         """
-                        INSERT INTO payment (id, citizen_id, reference, total_cents, vat_percentage, product_code, reservation_id)
-                        VALUES (:id, :citizenId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId)
+                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id)
+                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId)
                         RETURNING *
                         """
                     ).bindKotlin(params)
