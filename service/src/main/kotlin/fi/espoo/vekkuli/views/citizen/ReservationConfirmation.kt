@@ -39,6 +39,19 @@ class ReservationConfirmation(
                 "boatSpaceReservation.validity.${reservation.validity}",
                 listOf(formatAsFullDate(reservation.endDate))
             )
+
+        val amenity =
+            if (reservation.amenity != BoatSpaceAmenity.None) {
+                """
+                <div>
+                    <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
+                    <span>${t("boatSpaces.amenityOption." + reservation.amenity)}</span>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         return """
             <section class="section">
                 <div class="box">
@@ -55,10 +68,8 @@ class ReservationConfirmation(
                                 <span>${reservation.locationName} ${reservation.place}</span>
                             </div>
                            $widthAndLength
-                            <div>
-                                <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
-                                <span>${t("boatSpaces.amenityOption." + reservation.amenity)}</span>
-                            </div>
+                           $amenity
+            
                         </div>
                         <div class="block">
                             <label>${t("boatSpaceReservation.label.price")}</label>
