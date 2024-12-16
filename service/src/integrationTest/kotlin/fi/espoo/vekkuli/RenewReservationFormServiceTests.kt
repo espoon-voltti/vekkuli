@@ -312,7 +312,6 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
 
         assertNotNull(invoiceModel, "Invoice model should be generated")
         assertEquals(reservation.id, invoiceModel.reservationId, "Reservation ID should match")
-        assertEquals("Merellinen ulkoilu", invoiceModel.invoiceRows.first().organization, "Organization should match")
     }
 
     @Test

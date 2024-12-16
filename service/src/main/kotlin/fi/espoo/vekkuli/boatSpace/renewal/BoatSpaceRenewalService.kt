@@ -12,8 +12,8 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.centToEuro
 import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -149,7 +149,6 @@ class BoatSpaceRenewalService(
             reserverSsn = invoiceData.ssn ?: "",
             reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
             product = reservation.locationName,
-            functionInformation = "?",
             billingPeriodStart = "",
             billingPeriodEnd = "",
             boatingSeasonStart = LocalDate.of(2025, 5, 1),
@@ -158,20 +157,21 @@ class BoatSpaceRenewalService(
             dueDate = LocalDate.of(2025, 12, 31),
             costCenter = "?",
             invoiceType = "?",
-            invoiceRows =
-                listOf(
-                    InvoiceRow(
-                        description = invoiceData.description,
-                        customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
-                        priceWithoutVat = reservation.priceWithoutVatInEuro.toString(),
-                        vat = reservation.vatPriceInEuro.toString(),
-                        priceWithVat = reservation.priceInEuro.toString(),
-                        organization = "Merellinen ulkoilu",
-                        paymentDate = LocalDate.of(2025, 1, 1)
-                    )
-                )
+            priceWithTax = reservation.priceCents.centToEuro(),
+            description = invoiceData.description,
+            contactPerson = "",
+            orgId = invoiceData.orgId ?: "",
+            function = getDefaultFunction(reservation.type),
         )
     }
+
+    fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
+        when (boatSpaceType) {
+            BoatSpaceType.Slip -> "T1270"
+            BoatSpaceType.Winter -> "T1271"
+            BoatSpaceType.Storage -> "T1276"
+            BoatSpaceType.Trailer -> "T1270"
+        }
 
     @Transactional
     fun activateRenewalAndSendInvoice(

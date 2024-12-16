@@ -85,6 +85,9 @@ class BoatSpaceInvoiceService(
     fun createInvoiceData(
         reservationId: Int,
         reserverId: UUID,
+        priceWithVatInCents: Int? = null,
+        description: String? = null,
+        function: String? = null
     ): InvoiceData? {
         val reservation = boatReservationService.getBoatSpaceReservation(reservationId)
         if (reservation == null) {
@@ -94,6 +97,9 @@ class BoatSpaceInvoiceService(
         if (reserver == null) {
             return null
         }
+
+        val price = priceWithVatInCents ?: reservation.priceCents
+        val description = description ?: "${reservation.locationName} ${reservation.startDate.year}"
 
         if (reservation.reserverType == ReserverType.Citizen) {
             val citizen = citizenService.getCitizen(reserverId)
@@ -114,10 +120,12 @@ class BoatSpaceInvoiceService(
                 language = "fi",
                 mobilePhone = citizen.phone,
                 email = citizen.email,
-                priceCents = reservation.priceCents,
-                description = "${reservation.locationName} ${reservation.startDate.year}",
+                priceCents = price,
+                description = description,
+                function = function ?: "T1270",
             )
         } else {
+            val organization = reserverRepository.getOrganizationById(reserverId)
             return InvoiceData(
                 type = reservation.type,
                 dueDate = timeProvider.getCurrentDate().plusDays(21),
@@ -132,8 +140,10 @@ class BoatSpaceInvoiceService(
                 language = "fi",
                 mobilePhone = reserver.phone,
                 email = reserver.email,
-                priceCents = reservation.priceCents,
-                description = "${reservation.locationName} ${reservation.startDate.year}",
+                priceCents = price,
+                description = description,
+                orgId = organization?.businessId,
+                function = function ?: "T1270",
             )
         }
     }
@@ -158,4 +168,5 @@ data class InvoiceData(
     val description: String,
     val type: BoatSpaceType,
     val orgName: String? = null,
+    val function: String? = null
 )

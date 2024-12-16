@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.boatSpace.invoice
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.EspiEnv
-import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.utils.TimeProvider
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
@@ -17,7 +16,6 @@ import java.util.*
 @Serializable
 data class Row(
     val productGroup: String? = null,
-    val productComponent: String? = null,
     val periodStartDate: String,
     val periodEndDate: String? = null,
     val unitCount: Long? = null,
@@ -30,7 +28,8 @@ data class Row(
     val subCostCenter1: String? = null,
     val subCostCenter2: String? = null,
     val project: String? = null,
-    val product: String? = null
+    val product: String? = null,
+    val function: String? = null
 )
 
 @Serializable
@@ -171,7 +170,6 @@ private fun createInvoiceBatchForPerson(
                     listOf(
                         Row(
                             productGroup = PRODUCT_GROUP,
-                            productComponent = getProductComponent(invoiceData.type),
                             periodStartDate = invoiceData.startDate.toString(),
                             periodEndDate = invoiceData.endDate.toString(),
                             unitCount = 100,
@@ -179,6 +177,7 @@ private fun createInvoiceBatchForPerson(
                             description = invoiceData.description,
                             account = ACCOUNT,
                             costCenter = COST_CENTER,
+                            function = invoiceData.function
                         )
                     )
             )
@@ -217,7 +216,7 @@ private fun createInvoiceBatchForOrganization(
                     listOf(
                         Row(
                             productGroup = PRODUCT_GROUP,
-                            productComponent = getProductComponent(invoiceData.type),
+                            function = invoiceData.function,
                             periodStartDate = invoiceData.startDate.toString(),
                             periodEndDate = invoiceData.endDate.toString(),
                             unitCount = 100,
@@ -230,11 +229,3 @@ private fun createInvoiceBatchForOrganization(
             )
         ),
 )
-
-fun getProductComponent(boatSpaceType: BoatSpaceType): String =
-    when (boatSpaceType) {
-        BoatSpaceType.Slip -> "T1270"
-        BoatSpaceType.Winter -> "T1271"
-        BoatSpaceType.Storage -> "T1276"
-        BoatSpaceType.Trailer -> "T1270"
-    }

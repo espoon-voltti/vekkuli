@@ -25,8 +25,8 @@ class SlipHolder(
                hx-trigger="change"
                hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                hx-include="#form"
-               hx-target="#form-inputs"
-               hx-select="#form-inputs"
+               hx-target="#form"
+               hx-select="#form"
                hx-swap="outerHTML"
                ${if (selectedOrganizationId == org.id) "checked" else ""}
             />
@@ -51,8 +51,8 @@ class SlipHolder(
                         hx-trigger="change"
                         hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                         hx-include="#form"
-                        hx-target="#form-inputs"
-                        hx-select="#form-inputs"
+                        hx-target="#form"
+                        hx-select="#form"
                         hx-swap="outerHTML"
                        ${if (selectedOrganizationId == null) "checked" else ""}
                     />
@@ -264,8 +264,8 @@ class SlipHolder(
                             hx-trigger="change"
                             hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                             hx-include="#form"
-                            hx-target="#form-inputs"
-                            hx-select="#form-inputs"
+                            hx-target="#form"
+                            hx-select="#form"
                             hx-swap="outerHTML"
                            ${if (!isOrganization) "checked" else ""}
                         />
@@ -279,8 +279,8 @@ class SlipHolder(
                             hx-trigger="change"
                             hx-get="/${userType.path}/venepaikka/varaus/$reservationId"
                             hx-include="#form"
-                            hx-target="#form-inputs"
-                            hx-select="#form-inputs"
+                            hx-target="#form"
+                            hx-select="#form"
                             hx-swap="outerHTML"
                            ${if (isOrganization) "checked" else ""}
                         />
