@@ -114,8 +114,13 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             formPage.confirmCancelModalConfirm.click()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
-
             citizenDetails.renewReservationButton(renewReservationId).click()
+            assertThat(formPage.storageTypeTextBuck).isHidden()
+            formPage.storageTypeBuckOption.click()
+            assertThat(formPage.storageTypeTextBuck).isVisible()
+            assertThat(formPage.trailerInformationInputs).isHidden()
+
+            formPage.storageTypeTrailerOption.click()
             assertThat(formPage.trailerInformationInputs).isVisible()
             assertThat(formPage.trailerWidthInput).hasValue("2.00")
             assertThat(formPage.trailerLengthInput).hasValue("3.00")
