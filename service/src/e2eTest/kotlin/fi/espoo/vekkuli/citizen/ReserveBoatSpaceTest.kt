@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -185,6 +186,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
     fun `reserving a winter storage boat space as a citizen`() {
         try {
+            mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
             page.navigate(baseUrlWithEnglishLangParam)
             page.getByTestId("loginButton").click()
             page.getByText("Kirjaudu").click()

@@ -19,4 +19,5 @@ val startOfWinterSpaceRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 1, 
 val endDateWithinMonthOfSlipRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
 val endDateWithinMonthOfWinterRenewWindow: LocalDate = LocalDate.of(2025, 8, 25)
 
-val startOfSlipReservationPeriod: LocalDate = LocalDate.of(2024, 4, 1)
+val startOfSlipReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
+val startOfWinterReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 1, 12, 0, 0)

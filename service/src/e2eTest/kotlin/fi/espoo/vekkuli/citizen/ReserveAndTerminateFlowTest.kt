@@ -25,7 +25,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         val expectedTerminationLocation = "$expectedHarbour $expectedReservationId"
 
         // Create a reservation for B 314 boat space
-        mockTimeProvider(timeProvider, startOfSlipReservationPeriod.atTime(10, 0))
+        mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
         CitizenHomePage(page).loginAsMikkoVirtanen()
         reserveBoatSpacePage.reserveB314BoatSpaceToASailboat()
 
@@ -64,7 +64,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
     @Test
     fun `employee can reserve a boat space and terminate to future and allow others to see it after end date`() {
         // We are at the start of reservation period
-        mockTimeProvider(timeProvider, startOfSlipReservationPeriod.atTime(10, 0))
+        mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
 
         val listingPage = ReservationListPage(page)
         val citizenDetailsPage = CitizenDetailsPage(page)

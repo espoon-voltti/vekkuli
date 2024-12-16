@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.seasonalService
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
 import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -10,7 +12,6 @@ import fi.espoo.vekkuli.service.ReservationResultErrorCode
 import fi.espoo.vekkuli.service.ReservationResultSuccess
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.getLastDayOfNextYearsJanuary
-import fi.espoo.vekkuli.utils.getLastDayOfYear
 import fi.espoo.vekkuli.utils.isMonthDayWithinRange
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -146,28 +147,35 @@ class SeasonalService(
         }
     }
 
-    fun canReserveANewSlip(
+    fun canReserveANewSpace(
         reserverID: UUID,
         boatSpaceType: BoatSpaceType
-    ): ReservationResult {
+    ): ReservationResult =
+        when (boatSpaceType) {
+            BoatSpaceType.Slip -> canReserveANewSlip(reserverID)
+            BoatSpaceType.Winter -> canReserveANewWinterSpace(reserverID)
+            else -> ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+    private fun canReserveANewSlip(reserverID: UUID): ReservationResult {
         val reserver =
             reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
                 ReservationResultErrorCode.NoReserver
             )
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, boatSpaceType)
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
         val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
-        val periods = seasonalRepository.getReservationPeriods()
 
         if (hasSomePlace && !isEspooCitizen) {
             // Non-Espoo citizens can only have one reservation
             return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
+        val periods = seasonalRepository.getReservationPeriods()
 
         if (reservations.size >= 2) {
             // Only two reservations are allowed
-            return return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
+            return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
 
         val now = timeProvider.getCurrentDate()
@@ -177,7 +185,7 @@ class SeasonalService(
                 periods,
                 now,
                 isEspooCitizen,
-                boatSpaceType,
+                BoatSpaceType.Slip,
                 if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
             )
 
@@ -186,22 +194,63 @@ class SeasonalService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val validity =
-            if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+        val validity = if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
         val endDate =
-            if (validity == ReservationValidity.Indefinite) {
-                getLastDayOfNextYearsJanuary(now.year)
-            } else {
-                getLastDayOfYear(
-                    now.year
-                )
-            }
+            getSlipEndDate(now.year, validity)
 
         return ReservationResult.Success(
             ReservationResultSuccess(
                 now,
                 endDate,
                 validity
+            )
+        )
+    }
+
+    private fun canReserveANewWinterSpace(reserverID: UUID): ReservationResult {
+        val reserver =
+            reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
+                ReservationResultErrorCode.NoReserver
+            )
+        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
+
+        if (!isEspooCitizen) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
+        }
+
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Winter)
+        val hasSomePlace = reservations.isNotEmpty()
+
+        val periods = seasonalRepository.getReservationPeriods()
+
+        if (reservations.size >= 2) {
+            // Only two reservations are allowed
+            return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
+        }
+
+        val now = timeProvider.getCurrentDate()
+
+        val hasActivePeriod =
+            hasActiveReservationPeriod(
+                periods,
+                now,
+                isEspooCitizen,
+                BoatSpaceType.Winter,
+                if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
+            )
+
+        if (!hasActivePeriod) {
+            // If no period found, reservation is not possible
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        val endDate = getWinterEndDate(now.year)
+
+        return ReservationResult.Success(
+            ReservationResultSuccess(
+                now,
+                endDate,
+                ReservationValidity.Indefinite
             )
         )
     }

@@ -98,7 +98,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should create a reservation for citizen if not exist or fetch if already created`() {
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(any(), eq(BoatSpaceType.Slip)))
+            .`when`(seasonalService.canReserveANewSpace(any(), eq(BoatSpaceType.Slip)))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
@@ -120,7 +120,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should fail if citizen does not have permission to reserve`() {
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia, BoatSpaceType.Winter))
+            .`when`(seasonalService.canReserveANewSpace(citizenIdOlivia, BoatSpaceType.Winter))
             .thenReturn(ReservationResult.Failure(ReservationResultErrorCode.NotPossible))
 
         val exception =
@@ -136,7 +136,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         val madeReservation = testUtils.createReservationInInfoState(citizenIdOlivia)
 
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(citizenIdOlivia, BoatSpaceType.Slip))
+            .`when`(seasonalService.canReserveANewSpace(citizenIdOlivia, BoatSpaceType.Slip))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
@@ -191,7 +191,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should add trailer and update storage type and trailer of reservation`() {
         Mockito
-            .`when`(seasonalService.canReserveANewSlip(any(), eq(BoatSpaceType.Winter)))
+            .`when`(seasonalService.canReserveANewSpace(any(), eq(BoatSpaceType.Winter)))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(

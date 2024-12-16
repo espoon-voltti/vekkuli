@@ -496,6 +496,7 @@ VALUES
     (true, 'Winter', 'New', 9, 1, 12, 31),
     (true, 'Winter', 'Renew',  8, 1, 8, 31),
     (true, 'Winter', 'Change',  8, 1, 12, 31),
+    (true, 'Winter', 'SecondNew',  9, 1, 12, 31),
     (true, 'Storage', 'New', 9, 1, 31, 7),
     (true, 'Storage', 'Renew',  8, 1, 8, 31),
     (true, 'Storage', 'Change',  8, 1, 7, 31),
@@ -505,8 +506,6 @@ VALUES
     (false, 'Slip', 'Change', 4, 1, 9, 30),
     (false, 'Trailer', 'New', 5, 1, 12, 31),
     (false, 'Trailer', 'Change',  5, 1, 12, 31),
-    (false, 'Winter', 'New', 9, 15, 12, 31),
-    (false, 'Winter', 'Change',  9, 15, 12, 31),
     (false, 'Storage', 'New', 9, 15, 7, 31),
     (false, 'Storage', 'Renew', 9, 1, 9, 15),
     (false, 'Storage', 'Change',  9, 1, 7, 31);
@@ -3034,7 +3033,7 @@ VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'C
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2023-12-31', 'Invoiced', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-01-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer');
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer');
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)

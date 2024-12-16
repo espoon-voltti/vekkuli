@@ -54,7 +54,7 @@ class TerminateReservationTest : PlaywrightTest() {
     @Test
     fun `citizen can terminate reservation and see it in expired reservations list`() {
         try {
-            mockTimeProvider(timeProvider, startOfSlipReservationPeriod.atTime(10, 0))
+            mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.userRequest")
