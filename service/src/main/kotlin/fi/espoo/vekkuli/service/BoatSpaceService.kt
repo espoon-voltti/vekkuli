@@ -7,8 +7,8 @@ import java.math.BigDecimal
 
 data class BoatSpaceFilter(
     val boatType: BoatType? = null,
-    val boatWidth: Int? = null,
-    val boatLength: Int? = null,
+    val boatOrSpaceWidth: Int? = null,
+    val boatOrSpaceLength: Int? = null,
     val amenities: List<BoatSpaceAmenity>? = null,
     val boatSpaceType: BoatSpaceType? = null,
     val locationIds: List<Int>? = null

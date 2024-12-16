@@ -54,7 +54,7 @@ class StorageTypeContainer(
                 isColumnLayout = true
             )
 
-        return """<div data-testid="storage-type-selector" x-data="{ storageType: '${storageType?.name ?: StorageType.Trailer.name}'}">
+        return """<div data-testid="storage-type-selector" >
             $radioButtons
             <template x-if="storageType === '${StorageType.Trailer.name}'">
                 <div data-testid="trailer-information-inputs" class='columns'>
