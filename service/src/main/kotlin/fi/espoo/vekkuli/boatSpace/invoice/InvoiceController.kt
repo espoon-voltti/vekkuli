@@ -42,7 +42,6 @@ class InvoiceController(
         }
 
         val isOrganization = reservation.reserverType == ReserverType.Organization
-        // TODO: get the actual data
         val model =
             SendInvoiceModel(
                 reservationId = reservationId,
@@ -96,7 +95,6 @@ class InvoiceController(
         try {
             handleInvoiceSending(reservation, input.priceWithTax, input.description)
         } catch (e: Exception) {
-            throw e
             val content = invoicePreview.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
         }
