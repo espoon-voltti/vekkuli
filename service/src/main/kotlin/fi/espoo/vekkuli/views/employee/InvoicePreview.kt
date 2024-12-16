@@ -137,8 +137,11 @@ class InvoicePreview(
                     </div>
                     
                                 
-                    
-                    $description
+                    <div class="columns">
+                        <div class="column is-half">
+                            $description
+                        </div>
+                    </div>
                     
                     <hr/>
                     

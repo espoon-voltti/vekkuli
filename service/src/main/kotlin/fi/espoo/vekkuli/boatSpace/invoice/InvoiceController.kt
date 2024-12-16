@@ -71,7 +71,7 @@ class InvoiceController(
                 invoiceType = "",
                 priceWithTax = reservation.priceCents.centToEuro(),
                 description =
-                    "Venepaikka, ${reservation.locationName} ${reservation.place}," +
+                    "Venepaikka, ${reservation.locationName} ${reservation.place}, " +
                         "${reservation.startDate.year}",
                 contactPerson = "",
                 orgId = invoiceData.orgId ?: "",
