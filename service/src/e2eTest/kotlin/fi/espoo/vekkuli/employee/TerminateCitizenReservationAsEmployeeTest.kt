@@ -3,10 +3,11 @@ package fi.espoo.vekkuli.employee
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.CitizenHomePage
 import fi.espoo.vekkuli.pages.EmployeeHomePage

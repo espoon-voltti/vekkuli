@@ -3,19 +3,11 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.utils.centsToEuro
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-
-enum class ReservationStatus {
-    Info,
-    Renewal,
-    Payment,
-    Confirmed,
-    Cancelled,
-    Invoiced
-}
 
 data class BoatSpace(
     val id: Int,
@@ -40,7 +32,8 @@ data class BoatSpaceReservation(
     val status: ReservationStatus,
     val actingUserId: UUID?,
     val reserverId: UUID?,
-    val validity: ReservationValidity
+    val validity: ReservationValidity,
+    val terminationTimestamp: LocalDateTime?,
 )
 
 data class ReservationWithDependencies(

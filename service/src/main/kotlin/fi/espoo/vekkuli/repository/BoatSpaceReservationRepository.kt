@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
 import fi.espoo.vekkuli.utils.SqlExpr
@@ -59,6 +60,7 @@ interface BoatSpaceReservationRepository {
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity,
     ): BoatSpaceReservation
 
     fun insertBoatSpaceReservationAsEmployee(

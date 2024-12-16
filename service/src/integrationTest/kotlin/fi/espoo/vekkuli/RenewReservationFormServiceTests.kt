@@ -4,6 +4,13 @@ import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*

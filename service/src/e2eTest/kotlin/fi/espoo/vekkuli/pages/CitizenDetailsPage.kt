@@ -126,6 +126,11 @@ class CitizenDetailsPage(
             firstBoatSpaceReservationCard
         )
 
+    val validityInFirstBoatSpaceReservationCard =
+        getByDataTestId(
+            "reservation-list-card-validity",
+            firstBoatSpaceReservationCard.first()
+        )
     val terminateReservationButton = getByDataTestId("open-terminate-reservation-modal")
     val terminateReservationModalConfirm = getByDataTestId("terminate-reservation-modal-confirm")
     val terminateReservationModalCancel = getByDataTestId("terminate-reservation-modal-cancel")
@@ -149,6 +154,13 @@ class CitizenDetailsPage(
             "reservation-list-card-place",
             expiredReservationListCards.first()
         )
+
+    val validityInFirstExpiredReservationListItem =
+        getByDataTestId(
+            "reservation-list-card-validity",
+            expiredReservationListCards.first()
+        )
+
     val expiredReservationListLoader = getByDataTestId("expired-reservation-list-loader")
     val expiredReservationListAccordion = getByDataTestId("expired-reservation-list-accordion")
     val modalWindow = getByDataTestId("modal-window")

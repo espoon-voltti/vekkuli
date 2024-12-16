@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.boatSpace.admin.Layout
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
@@ -81,28 +82,29 @@ class ReservationFormService(
         citizenId: UUID,
         spaceId: Int
     ): Int {
+        val existingReservation = boatReservationService.getUnfinishedReservationForCitizen(citizenId)
+        if (existingReservation != null) {
+            return existingReservation.id
+        }
+
         val result = seasonalService.canReserveANewSlip(citizenId)
         if (result is ReservationResult.Failure) {
             throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
         }
 
-        val existingReservation = boatReservationService.getUnfinishedReservationForCitizen(citizenId)
-
-        return (
-            if (existingReservation != null) {
-                existingReservation.id
-            } else {
-                val today = timeProvider.getCurrentDate()
-                boatReservationService
-                    .insertBoatSpaceReservation(
-                        citizenId,
-                        citizenId,
-                        spaceId,
-                        today,
-                        getEndDate(result),
-                    ).id
-            }
-        )
+        if (result is ReservationResult.Success) {
+            val today = timeProvider.getCurrentDate()
+            return boatReservationService
+                .insertBoatSpaceReservation(
+                    citizenId,
+                    citizenId,
+                    spaceId,
+                    today,
+                    getEndDate(result),
+                    result.data.reservationValidity
+                ).id
+        }
+        throw BadRequest("Bad parameters for reservation")
     }
 
     @Transactional

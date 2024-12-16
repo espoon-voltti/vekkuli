@@ -83,12 +83,10 @@ class ReservationInformation(
                 "boatSpaceReservation.label.reservationValidity",
                 "reservationTime",
                 if (reservation.validity === ReservationValidity.FixedTerm) {
-                    """<p>${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>"""
+                    "<p>${t("boatSpace.reservationForm.validity.FixedTerm", listOf(formatAsFullDate(reservation.endDate)))}</p>"
                 } else {
                     (
-                        """
-                    <p>${t("boatApplication.Indefinite")}</p>
-                """
+                    "<p>${t("boatSpace.reservationForm.validity.Indefinite")}</p>"
                     )
                 },
             )

@@ -157,7 +157,7 @@ class BoatSpaceReservationList {
         val reservationRows =
             reservations.joinToString("\n") { result ->
                 val startDateFormatted = formatAsShortYearDate(result.startDate)
-                val endDateFormatted = formatAsShortYearDate(result.endDate)
+                val endDateFormatted = if (result.validity == ReservationValidity.FixedTerm) formatAsShortYearDate(result.endDate) else ""
                 val paymentDateFormatted = formatAsShortYearDate(result.paymentDate)
                 val endDateText =
                     if (result.status == ReservationStatus.Cancelled) {

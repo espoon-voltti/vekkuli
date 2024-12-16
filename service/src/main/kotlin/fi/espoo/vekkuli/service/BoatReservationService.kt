@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Unauthorized
@@ -322,6 +323,7 @@ class BoatReservationService(
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity = ReservationValidity.FixedTerm,
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservation(
             reserverId,
@@ -329,6 +331,7 @@ class BoatReservationService(
             boatSpaceId,
             startDate,
             endDate,
+            validity,
         )
 
     fun insertBoatSpaceReservationAsEmployee(

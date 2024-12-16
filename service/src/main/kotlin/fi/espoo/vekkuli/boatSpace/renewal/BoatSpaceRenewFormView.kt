@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.BoatFormInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.BoatFormParams
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormView
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.*
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*

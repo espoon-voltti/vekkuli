@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
@@ -89,6 +90,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     val type: BoatSpaceType,
     val place: String,
     val locationName: String,
+    val validity: ReservationValidity,
     val storageType: StorageType?,
     // Boat
     val boatId: Int?,
@@ -708,6 +710,7 @@ class JdbiBoatSpaceReservationRepository(
                         place = row.place,
                         section = row.section,
                         locationName = row.locationName,
+                        validity = row.validity,
                         boat =
                             if (row.boatId == null) {
                                 null
@@ -748,13 +751,14 @@ class JdbiBoatSpaceReservationRepository(
         boatSpaceId: Int,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created)
-                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate, :currentDate)
+                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, validity)
+                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate, :currentDate, :validity)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -764,6 +768,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
             query.bind("currentDate", timeProvider.getCurrentDateTime())
+            query.bind("validity", validity)
             query.mapTo<BoatSpaceReservation>().one()
         }
 

@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*

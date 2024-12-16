@@ -23,14 +23,24 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         val expectedHarbour = "Haukilahti"
         val expectedReservationId = "B 314"
         val expectedTerminationLocation = "$expectedHarbour $expectedReservationId"
+        val indefiniteValidityText = messageUtil.getMessage("boatSpaceReservation.validity.Indefinite")
+        val expiredValidityTextEndDate = formatAsFullDate(timeProvider.getCurrentDate())
+        val expiredValidityTextTerminationDate =
+            messageUtil.getMessage(
+                "boatSpaceReservation.terminated",
+                listOf(formatAsFullDate(timeProvider.getCurrentDate()))
+            )
 
         // Create a reservation for B 314 boat space
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod.atTime(10, 0))
         CitizenHomePage(page).loginAsMikkoVirtanen()
         reserveBoatSpacePage.reserveB314BoatSpaceToASailboat()
 
+        // Check that the citizen and boat space is visible in the reservation list
         citizenDetailsPage.navigateToPage()
         assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText(expectedReservationId)
+        assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText(expectedHarbour)
+        assertThat(citizenDetailsPage.validityInFirstBoatSpaceReservationCard).containsText(indefiniteValidityText)
 
         // Check that the boat space is not available for reservation anymore
         reserveBoatSpacePage.revealB314BoatSpace()
@@ -55,6 +65,9 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         citizenDetailsPage.toggleExpiredReservationsAccordion()
         assertThat(citizenDetailsPage.expiredReservationList).isVisible()
         assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText(expectedReservationId)
+
+        assertThat(citizenDetailsPage.validityInFirstExpiredReservationListItem).containsText(expiredValidityTextEndDate)
+        assertThat(citizenDetailsPage.validityInFirstExpiredReservationListItem).containsText(expiredValidityTextTerminationDate)
 
         // Check that the boat space is available for reservation again
         reserveBoatSpacePage.revealB314BoatSpace()
@@ -81,6 +94,13 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         val terminationComment = "Test comment"
         val terminationReason = ReservationTerminationReasonOptions.RuleViolation
         val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.ruleViolation")
+        val indefiniteValidityText = messageUtil.getMessage("boatSpaceReservation.validity.Indefinite")
+        val validityTextEndDate = formatAsFullDate(expectedTerminationDate)
+        val validityTextTerminationDate =
+            messageUtil.getMessage(
+                "boatSpaceReservation.terminated",
+                listOf(formatAsFullDate(expectedTerminationDate))
+            )
 
         // Create a reservation for B 314 boat space
         employeeHome.employeeLogin()
@@ -96,6 +116,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         // Go to the citizen details page
         listingPage.reservationsTableB314Row.click()
         assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText(expectedPlaceId)
+        assertThat(citizenDetailsPage.validityInFirstBoatSpaceReservationCard).containsText(indefiniteValidityText)
 
         // Check that the boat space is not available for reservation anymore
         reserveBoatSpacePage.revealB314BoatSpace()
@@ -123,6 +144,8 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         assertThat(
             citizenDetailsPage.terminationReasonInFirstReservationListItem
         ).containsText(expectedTerminationReason)
+        assertThat(citizenDetailsPage.validityInFirstBoatSpaceReservationCard).containsText(validityTextEndDate)
+        assertThat(citizenDetailsPage.validityInFirstBoatSpaceReservationCard).containsText(validityTextTerminationDate)
         assertThat(
             citizenDetailsPage.terminationDateInFirstReservationListItem
         ).containsText(formatAsFullDate(expectedTerminationDate))
@@ -130,6 +153,8 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         // Check that the reservation is still visible in the listing page with the correct end date
         listingPage.navigateTo()
         assertThat(listingPage.reservationsTableB314Row).isVisible()
+        // The first reservation is indefinite, so the end date is empty
+        assertThat(listingPage.reservationsTableB314RowEndDate).isEmpty()
         assertThat(listingPage.reservationsTableB314RowEndDate).hasText("Terminated $expectedEndDateInReservationsList")
 
         // Check that the boat space is not available for reservation
@@ -156,5 +181,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         assertThat(citizenDetailsPage.expiredReservationList).isVisible()
         assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText(expectedHarbour)
         assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText(expectedPlaceId)
+        assertThat(citizenDetailsPage.validityInFirstExpiredReservationListItem).containsText(validityTextEndDate)
+        assertThat(citizenDetailsPage.validityInFirstExpiredReservationListItem).containsText(validityTextTerminationDate)
     }
 }

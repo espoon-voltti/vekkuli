@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.repository.filter.boatspacereservation
 
-import fi.espoo.vekkuli.domain.ReservationStatus
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.utils.AndExpr
 import fi.espoo.vekkuli.utils.OperatorExpr
 import fi.espoo.vekkuli.utils.OrExpr

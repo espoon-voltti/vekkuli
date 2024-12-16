@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import org.springframework.stereotype.Service

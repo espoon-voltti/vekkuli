@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.utils.centsToEuro
 import fi.espoo.vekkuli.utils.cmToM

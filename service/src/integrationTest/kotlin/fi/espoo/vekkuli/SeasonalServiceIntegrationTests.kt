@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReserveBoatSpaceInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService

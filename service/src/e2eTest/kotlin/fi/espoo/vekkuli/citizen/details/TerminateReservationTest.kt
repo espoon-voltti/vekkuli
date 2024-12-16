@@ -3,8 +3,8 @@ package fi.espoo.vekkuli.citizen.details
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.CitizenHomePage
 import fi.espoo.vekkuli.utils.formatAsFullDate

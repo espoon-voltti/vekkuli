@@ -3,12 +3,17 @@ package fi.espoo.vekkuli.boatSpace.renewal
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.reservationForm.*
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
+import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatus
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.ReservationWithDependencies
+import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*

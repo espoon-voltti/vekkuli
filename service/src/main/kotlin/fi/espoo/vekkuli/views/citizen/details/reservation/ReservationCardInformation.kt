@@ -1,24 +1,20 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.boatSpace.reservationStatus.ReservationStatusService
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.employee.SanitizeInput
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class ReservationCardInformation : BaseView() {
-    @Autowired
-    lateinit var icons: Icons
-
-    @Autowired
-    lateinit var trailerCard: TrailerCard
-
+class ReservationCardInformation(
+    private val statusService: ReservationStatusService,
+    private val trailerCard: TrailerCard
+) : BaseView() {
     fun render(
         @SanitizeInput reservation: BoatSpaceReservationDetails,
         userType: UserType,
@@ -72,7 +68,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>
-                         <p>${renderReservationValidity(reservation)}</p>
+                         <p ${addTestId("reservation-list-card-validity")}>${renderReservationValidity(reservation)}</p>
                      </div>
                  </div>
                  <div class="column">
@@ -98,7 +94,6 @@ class ReservationCardInformation : BaseView() {
                          <p id="paidFieldInfo">${formatAsFullDate(reservation.paymentDate)}</p> 
                      </div>
                  </div>
-                 
              </div>
             ${reservation.trailer?.let { trailerCard.render(it, userType, reserverId)} ?: ""}
 
@@ -107,14 +102,17 @@ class ReservationCardInformation : BaseView() {
 
     private fun renderReservationValidity(reservation: BoatSpaceReservationDetails): String {
         val reservationValidityText =
-            if (reservation.terminationTimestamp != null) {
+            if (statusService.isReservationTerminated(reservation)) {
                 renderWithTerminatedDate(reservation)
-            } else {
+            } else if (statusService.isReservationActive(reservation)) {
                 t(
                     "boatSpaceReservation.validity.${reservation.validity}",
                     listOf(formatAsFullDate(reservation.endDate))
                 )
+            } else {
+                formatAsFullDate(reservation.endDate)
             }
+
         return reservationValidityText
     }
 
@@ -123,7 +121,7 @@ class ReservationCardInformation : BaseView() {
         ${formatAsFullDate(reservation.endDate)}
         </br>
         <span ${addTestId("reservation-list-card-terminated-date")}>
-        ${t("boatSpaceReservation.terminated")} ${formatAsFullDate(reservation.terminationTimestamp?.toLocalDate())}
+        ${t("boatSpaceReservation.terminated", listOf(formatAsFullDate(reservation.terminationTimestamp?.toLocalDate())))}
         </span>
         """.trimIndent()
 }
