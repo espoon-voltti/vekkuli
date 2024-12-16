@@ -66,14 +66,14 @@ class JdbiPaymentRepository(
             handle
                 .createQuery(
                     """
-                    INSERT INTO invoice (id, due_date, reference, reservation_id, citizen_id, payment_id)
-                    VALUES (:id, :dueDate, :reference, :reservationId, :citizenId, :paymentId)
+                    INSERT INTO invoice (id, due_date, reference, reservation_id, reserver_id, payment_id)
+                    VALUES (:id, :dueDate, :reference, :reservationId, :reserverId, :paymentId)
                     RETURNING *
                     """
                 ).bindKotlin(params)
                 .bind("id", id)
                 .bind("reservationId", params.reservationId)
-                .bind("citizenId", params.citizenId)
+                .bind("reserverId", params.reserverId)
                 .bind("paymentId", params.paymentId)
                 .mapTo<Invoice>()
                 .one()

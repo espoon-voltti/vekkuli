@@ -74,7 +74,7 @@ class BoatSpaceInvoiceService(
                 CreateInvoiceParams(
                     dueDate = invoiceData.dueDate,
                     reference = invoiceData.invoiceNumber.toString(),
-                    citizenId = reserverId,
+                    reserverId = reserverId,
                     reservationId = reservationId,
                     paymentId = payment.id
                 )
