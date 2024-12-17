@@ -403,7 +403,7 @@ class BoatReservationService(
             citizenId,
             boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
                 citizenId,
-                spaceType
+                spaceType,
             )
         )
 

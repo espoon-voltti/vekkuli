@@ -6,7 +6,8 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
-import fi.espoo.vekkuli.utils.startOfRenewPeriod
+import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
+import fi.espoo.vekkuli.utils.startOfWinterSpaceRenewPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -64,7 +65,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can renew slip reservation`() {
         try {
-            mockTimeProvider(timeProvider, startOfRenewPeriod)
+            mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
             CitizenHomePage(page).loginAsLeoKorhonen()
 
             page.navigate(citizenPageInEnglish)
@@ -98,7 +99,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     @Test
     fun `citizen can renew winter storage reservation`() {
         try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 12, 0, 0))
+            mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
 
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
