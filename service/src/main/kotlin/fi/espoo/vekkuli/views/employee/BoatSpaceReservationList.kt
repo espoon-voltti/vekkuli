@@ -47,6 +47,23 @@ class BoatSpaceReservationList {
                 """.trimIndent()
             }
 
+        val reservationExpirationFilter =
+            ReservationExpiration.entries.joinToString("\n") { state ->
+                """
+                <label class="filter-button">
+                    <input type="radio" name="expiration" value="${state.name}" class="is-hidden" ${if (params.expiration == state) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("boatSpaces.expirationOption.$state")}</span>
+                </label>
+                """.trimIndent()
+            }
+
         val amenityFilters =
             amenities.joinToString("\n") { amenity ->
                 """
@@ -246,6 +263,13 @@ class BoatSpaceReservationList {
                             <div class="tag-container">
                                 $harborFilters
                             </div>
+                        </div>
+                        
+                        <div class="block">
+                          <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
+                          <div class="tag-container">
+                            $reservationExpirationFilter
+                          </div>
                         </div>
 
                         <div class="block">

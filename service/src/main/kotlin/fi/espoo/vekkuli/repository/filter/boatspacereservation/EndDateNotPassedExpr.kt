@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.utils.OrExpr
 import java.time.LocalDate
 
 private class EndDateNotPassedIfNotCancelledExpr(
-    private val endDate: LocalDate
+    endDate: LocalDate
 ) : AndExpr(
         listOf(
             StatusExpr(ReservationStatus.Cancelled, true),
@@ -20,7 +20,7 @@ private class EndDateNotPassedIfNotCancelledExpr(
     )
 
 private class EndDateNotPassedIfCancelledExpr(
-    private val endDate: LocalDate
+    endDate: LocalDate
 ) : AndExpr(
         listOf(
             StatusExpr(ReservationStatus.Cancelled),
@@ -33,10 +33,22 @@ private class EndDateNotPassedIfCancelledExpr(
     )
 
 class EndDateNotPassedExpr(
-    private val endDate: LocalDate
+    endDate: LocalDate
 ) : OrExpr(
         listOf(
             EndDateNotPassedIfNotCancelledExpr(endDate),
             EndDateNotPassedIfCancelledExpr(endDate)
+        )
+    )
+
+class EndDatePassedExpr(
+    endDate: LocalDate
+) : OrExpr(
+        listOf(
+            OperatorExpr(
+                "bsr.end_date",
+                "<=",
+                endDate
+            )
         )
     )
