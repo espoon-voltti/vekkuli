@@ -13,3 +13,6 @@ enum class BoatSpaceAmenity {
 val slipAmenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" && it.name != "Trailer" && it.name != "Buck" }
 
 val storageTypeAmenities = listOf(BoatSpaceAmenity.Trailer, BoatSpaceAmenity.Buck)
+
+val actualAmenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
+

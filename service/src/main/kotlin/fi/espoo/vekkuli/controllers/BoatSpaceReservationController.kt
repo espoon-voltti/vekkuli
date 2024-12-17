@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
+import fi.espoo.vekkuli.domain.actualAmenities
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.employee.BoatSpaceReservationList
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -70,7 +71,7 @@ class BoatSpaceReservationController {
             layout.render(
                 true,
                 employee.fullName,
-                boatSpaceReservationList.render(harbors, BoatSpaceAmenity.entries.toList(), reservations, params, UserType.EMPLOYEE)
+                boatSpaceReservationList.render(harbors, actualAmenities, reservations, params, UserType.EMPLOYEE)
             )
         )
     }
