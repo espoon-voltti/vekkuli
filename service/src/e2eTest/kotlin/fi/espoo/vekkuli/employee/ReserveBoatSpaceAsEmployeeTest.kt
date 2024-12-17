@@ -291,6 +291,13 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.agreementCheckbox.check()
 
         formPage.submitButton.click()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.header).isVisible()
+        invoicePreviewPage.sendButton.click()
+
+        val reservationListPage = ReservationListPage(page)
+        assertThat(reservationListPage.header).isVisible()
     }
 
     @Test
