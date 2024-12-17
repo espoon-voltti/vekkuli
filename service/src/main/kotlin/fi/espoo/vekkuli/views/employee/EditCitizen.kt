@@ -148,7 +148,6 @@ class EditCitizen {
                 pattern = Pair(".+@.+\\..+", "validation.email")
             )
 
-
         val phoneNumberInput =
             formComponents.textInput(
                 "boatSpaceReservation.title.phoneNumber",

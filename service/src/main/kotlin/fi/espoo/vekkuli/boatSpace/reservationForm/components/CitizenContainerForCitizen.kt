@@ -42,17 +42,18 @@ class CitizenContainerForCitizen(
                 pattern = Pair(".+@.+\\..+", "validation.email")
             )
 
-        val phone = formComponents.textInput(
-            "boatApplication.phone",
-            "phone",
-            phone,
-            required = true,
-            pattern =
-            Pair(
-                PHONE_NUMBER_REGEX,
-                "validation.phoneNumber"
+        val phone =
+            formComponents.textInput(
+                "boatApplication.phone",
+                "phone",
+                phone,
+                required = true,
+                pattern =
+                    Pair(
+                        PHONE_NUMBER_REGEX,
+                        "validation.phoneNumber"
+                    )
             )
-        )
 
         return (
             """     
