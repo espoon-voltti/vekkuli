@@ -134,9 +134,6 @@ class JdbiOrganizationRepository(
     override fun updateOrganization(params: UpdateOrganizationParams) {
         val orgParams = mutableMapOf<String, Any?>()
 
-        if (params.name != null) {
-            orgParams["name"] = params.name
-        }
         if (params.businessId != null) {
             orgParams["business_id"] = params.businessId
         }
@@ -155,6 +152,9 @@ class JdbiOrganizationRepository(
 
         val reserverParams = mutableMapOf<String, Any?>()
 
+        if (params.name != null) {
+            reserverParams["name"] = params.name
+        }
         if (params.phone != null) {
             reserverParams["phone"] = params.phone
         }
