@@ -276,43 +276,46 @@ class BoatSpaceReservationList {
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
                     >
-                        <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
-                        <input type="text" name="ascending" id="sortDirection" value="${params.ascending}" style="visibility: hidden">
-
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
-                            <div class="tag-container">
+                        <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
+                        <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
+                        
+                        
+                        <div class="employee-filter-container">                        
+                            <div class="block">
+                                <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
+                                <div class="tag-container">
                                 $harborFilters
+                                </div>
                             </div>
+                            <div class="block">
+                                <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
+                                <div class="tag-container">
+                                    $reservationExpirationFilter
+                                </div>
+                            </div>
+                            <div class="block">
+                                <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
+                                <div class="tag-container">
+                                    $paymentFilters
+                                </div>
+                            </div>                            
                         </div>
                         
-                        <div class="block">
-                          <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
-                          <div class="tag-container">
-                            $boatSpaceTypeFilters
-                          </div>
-                        </div>
-                        
-                        <div class="block">
-                          <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
-                          <div class="tag-container">
-                            $reservationExpirationFilter
-                          </div>
+                        <div class="employee-filter-container">
+                            <div class="block">
+                              <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
+                              <div class="tag-container">
+                                $boatSpaceTypeFilters
+                              </div>
+                            </div>
+                            <div class="block">
+                                <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                                <div class="tag-container">
+                                    $amenityFilters
+                                </div>
+                            </div>                        
                         </div>
 
-
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
-                            <div class="tag-container">
-                                $amenityFilters
-                            </div>
-                        </div>
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
-                            <div class="tag-container">
-                                $paymentFilters
-                            </div>
-                        </div>
                         <div class="block columns is-vcentered">
                             $warningFilterCheckbox
                         </div>
