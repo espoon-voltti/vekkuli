@@ -207,8 +207,8 @@ class BoatSpaceRenewalService(
 
         var input =
             formInput.copy(
-                email = citizen?.email,
-                phone = citizen?.phone,
+                email = formInput.email ?: citizen?.email,
+                phone = formInput.phone ?: citizen?.phone,
                 storageType =
                     renewedReservation.storageType ?: StorageType.None,
             )

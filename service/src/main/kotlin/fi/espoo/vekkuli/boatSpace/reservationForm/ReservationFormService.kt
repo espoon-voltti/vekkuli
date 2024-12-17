@@ -258,12 +258,7 @@ class ReservationFormService(
         formInput: ReservationInput,
         requestURI: String,
     ): String {
-        val citizen =
-            if (formInput.citizenSelection != "newCitizen" || formInput.citizenId == null) {
-                formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
-            } else {
-                citizenService.getCitizen(formInput.citizenId)
-            }
+        val citizen = formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
 
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
@@ -572,7 +567,8 @@ class ReservationFormService(
         reservation: ReservationForApplicationForm,
         userType: UserType
     ): String {
-        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        // use citizen's email and phone if not given in form input
+        var input = formInput.copy(email = formInput.email ?: citizen?.email, phone = formInput.phone ?: citizen?.phone)
 
         val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
