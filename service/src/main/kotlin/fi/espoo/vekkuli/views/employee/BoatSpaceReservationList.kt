@@ -218,7 +218,7 @@ class BoatSpaceReservationList {
                     <td>
                         <span>${result.place}</span>
                     </td>
-                    <td>${t("boatSpaces.typeOption.${result.type}")}</td>
+                    <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
@@ -330,7 +330,7 @@ class BoatSpaceReservationList {
                                     </th>
 
                                     <th class="nowrap">
-                                        ${sortButton("PLACE_TYPE", t("boatSpaceReservation.title.type"))}
+                                        ${sortButton("PLACE_TYPE", t("employee.boatSpaceReservations.table.title.type"))}
                                     </th>
                                     <th class="nowrap">
                                         ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}
