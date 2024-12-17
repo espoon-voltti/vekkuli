@@ -17,6 +17,7 @@ data class Organization(
     val postalCode: String,
     // Fields for Organization
     val businessId: String,
+    val billingName: String,
     val billingStreetAddress: String,
     val billingPostalCode: String,
     val billingPostOffice: String,

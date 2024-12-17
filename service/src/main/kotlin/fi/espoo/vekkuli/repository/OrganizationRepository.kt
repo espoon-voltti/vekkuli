@@ -7,6 +7,7 @@ import java.util.*
 data class UpdateOrganizationParams(
     val id: UUID,
     val businessId: String? = null,
+    val billingName: String? = null,
     val billingStreetAddress: String? = null,
     val billingPostalCode: String? = null,
     val billingPostOffice: String? = null,
@@ -42,6 +43,7 @@ interface OrganizationRepository {
 
     fun insertOrganization(
         businessId: String,
+        billingName: String,
         billingStreetAddress: String,
         billingPostalCode: String,
         billingPostOffice: String,

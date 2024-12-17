@@ -18,7 +18,7 @@ class JdbiOrganizationRepository(
             handle
                 .createQuery(
                     """
-                    SELECT o.business_id, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
+                    SELECT o.business_id, o.billing_name, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
                     FROM organization_member om
                     JOIN organization o on om.organization_id = o.id
                     JOIN reserver r on om.organization_id = r.id
@@ -82,6 +82,7 @@ class JdbiOrganizationRepository(
 
     override fun insertOrganization(
         businessId: String,
+        billingName: String,
         billingStreetAddress: String,
         billingPostalCode: String,
         billingPostOffice: String,
@@ -118,11 +119,12 @@ class JdbiOrganizationRepository(
             handle
                 .createUpdate(
                     """
-                    INSERT INTO organization (id, business_id, billing_street_address, billing_postal_code, billing_post_office)
+                    INSERT INTO organization (id, business_id, billing_name, billing_street_address, billing_postal_code, billing_post_office)
                     VALUES (:id, :businessId)
                     """.trimIndent()
                 ).bind("id", id)
                 .bind("businessId", businessId)
+                .bind("billingName", billingName)
                 .bind("billingStreetAddress", billingStreetAddress)
                 .bind("billingPostalCode", billingPostalCode)
                 .bind("billingPostOffice", billingPostOffice)
@@ -136,6 +138,9 @@ class JdbiOrganizationRepository(
 
         if (params.businessId != null) {
             orgParams["business_id"] = params.businessId
+        }
+        if (params.billingName != null) {
+            orgParams["billing_name"] = params.billingName
         }
         if (params.billingStreetAddress != null) {
             orgParams["billing_street_address"] = params.billingStreetAddress
@@ -190,7 +195,7 @@ class JdbiOrganizationRepository(
             handle
                 .createQuery(
                     """
-                    SELECT o.business_id, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
+                    SELECT o.business_id, o.billing_name, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
                     FROM organization o
                     JOIN reserver r ON r.id = o.id
                     JOIN municipality m ON r.municipality_code = m.code
@@ -206,7 +211,7 @@ class JdbiOrganizationRepository(
             handle
                 .createQuery(
                     """
-                    SELECT o.business_id, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
+                    SELECT o.business_id, o.billing_name, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
                     FROM organization o
                     JOIN reserver r ON r.id = o.id
                     JOIN municipality m ON r.municipality_code = m.code
