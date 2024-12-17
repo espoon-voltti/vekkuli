@@ -16,6 +16,8 @@ data class BoatSpaceFilter(
 
 interface BoatSpaceRepository {
     fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int>
+
+    fun getBoatSpace(boatSpace: Int): BoatSpace?
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()

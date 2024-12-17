@@ -58,6 +58,7 @@ class ReservationFormService(
     private val reservationRepository: ReservationFormRepository,
     private val boatRepository: BoatRepository,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
+    private val boatSpaceRepository: BoatSpaceRepository,
     private val reserverRepository: ReserverRepository,
     private val emailEnv: EmailEnv,
     private val emailService: TemplateEmailService,
@@ -68,20 +69,24 @@ class ReservationFormService(
     fun createOrUpdateReserverAndReservationForCitizen(
         reservationId: Int,
         citizenId: UUID,
-        input: ReservationInput
+        input: ReservationInput,
     ) {
+        val reservation = getReservationForApplicationForm(reservationId) ?: throw BadRequest("Reservation not found")
         var reserverId: UUID = citizenId
         if (input.isOrganization == true) {
             reserverId = addOrUpdateOrganization(citizenId, input)
         }
-        reserveSpaceByCitizen(reservationId, reserverId, input)
+        reserveSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
     }
 
     fun getOrCreateReservationForCitizen(
         citizenId: UUID,
-        spaceId: Int
+        spaceId: Int,
     ): Int {
-        val result = seasonalService.canReserveANewSlip(citizenId)
+        val boatSpace =
+            boatSpaceRepository.getBoatSpace(spaceId)
+                ?: throw BadRequest("Boat space not found")
+        val result = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
         if (result is ReservationResult.Failure) {
             throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
         }
@@ -173,7 +178,7 @@ class ReservationFormService(
             throw BadRequest("Reservation not found")
         }
 
-        val reserveSlipResult = seasonalService.canReserveANewSlip(reserverId)
+        val reserveSlipResult = seasonalService.canReserveANewSpace(reserverId, reservation.boatSpaceType)
         val data =
             if (reserveSlipResult is ReservationResult.Success) {
                 reserveSlipResult.data
@@ -197,8 +202,9 @@ class ReservationFormService(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
+        boatSpaceType: BoatSpaceType
     ) {
-        val reserveSlipResult = seasonalService.canReserveANewSlip(reserverId)
+        val reserveSlipResult = seasonalService.canReserveANewSpace(reserverId, boatSpaceType)
 
         if (!reserveSlipResult.success || reserveSlipResult !is ReservationResult.Success) {
             if (reserveSlipResult is ReservationResult.Failure) {
