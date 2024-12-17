@@ -37,7 +37,7 @@ class CitizenContainerForEmployee(
         val phone =
             formComponents.textInput(
                 "boatSpaceReservation.title.phoneNumber",
-                "phoneNumber",
+                "phone",
                 input.phone,
                 required = true,
                 pattern =
