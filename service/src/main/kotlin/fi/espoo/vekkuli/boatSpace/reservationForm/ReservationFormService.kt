@@ -14,7 +14,6 @@ import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -232,7 +231,7 @@ class ReservationFormService(
         citizenId: UUID,
         reservationId: Int,
         formInput: ReservationInput,
-        request: HttpServletRequest
+        requestURI: String
     ): String {
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
@@ -248,7 +247,7 @@ class ReservationFormService(
             citizenLayout.render(
                 true,
                 citizen?.fullName,
-                request.requestURI,
+                requestURI,
                 createBodyContent(formInput, citizen, reservation, UserType.CITIZEN)
             )
         )
