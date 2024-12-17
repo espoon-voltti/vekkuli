@@ -125,7 +125,7 @@ class CitizenDetails(
         val result =
             // language=HTML
             """
-            <section class="section" id="citizen-details">
+            <section class="section" id="reserver-details">
                 <div class="container block">
                     ${commonComponents.goBackButton(backUrl)} 
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>

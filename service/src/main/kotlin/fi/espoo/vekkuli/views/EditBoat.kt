@@ -19,7 +19,7 @@ class EditBoat {
         citizenId: UUID,
         boatTypes: List<String>,
         ownershipOptions: List<String>,
-        userType: UserType
+        userType: UserType,
     ): String {
         val nameInput =
             formComponents.textInput(
