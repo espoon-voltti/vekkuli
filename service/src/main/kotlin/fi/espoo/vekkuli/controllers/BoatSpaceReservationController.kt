@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
 import fi.espoo.vekkuli.domain.actualAmenities
 import fi.espoo.vekkuli.service.BoatReservationService
