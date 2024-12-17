@@ -22,6 +22,7 @@ class BoatSpaceReservationList {
 
     fun render(
         harbors: List<Location>,
+        boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
         reservations: List<BoatSpaceReservationItem>,
         params: BoatSpaceReservationFilter,
@@ -43,6 +44,26 @@ class BoatSpaceReservationList {
                         ${icons.check}
                     </span>
                     <span>${harbor.name}</span>
+                </label>
+                """.trimIndent()
+            }
+
+        val boatSpaceTypeFilters =
+            boatSpaceTypes.joinToString("\n") { boatSpaceType ->
+                """
+                <label class="filter-button">
+                    <input type="checkbox" name="boatSpaceType" value="$boatSpaceType" class="is-hidden" ${if (params.hasBoatSpaceType(
+                        boatSpaceType
+                    )
+                ) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("boatSpaces.typeOption.$boatSpaceType")}</span>
                 </label>
                 """.trimIndent()
             }
@@ -266,11 +287,19 @@ class BoatSpaceReservationList {
                         </div>
                         
                         <div class="block">
+                          <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
+                          <div class="tag-container">
+                            $boatSpaceTypeFilters
+                          </div>
+                        </div>
+                        
+                        <div class="block">
                           <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
                           <div class="tag-container">
                             $reservationExpirationFilter
                           </div>
                         </div>
+
 
                         <div class="block">
                             <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
