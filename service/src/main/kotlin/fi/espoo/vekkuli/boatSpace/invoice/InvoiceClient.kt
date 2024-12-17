@@ -128,7 +128,7 @@ fun createInvoiceBatch(
     }
 }
 
-private const val PRODUCT_GROUP = "2560001"
+private const val PRODUCT_GROUP = "25600001"
 
 private const val COST_CENTER = "1230329"
 
