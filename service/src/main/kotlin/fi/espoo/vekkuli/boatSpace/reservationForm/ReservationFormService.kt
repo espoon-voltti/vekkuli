@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
-import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
@@ -13,6 +12,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
+import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.validation.constraints.*
 import org.springframework.stereotype.Service
@@ -230,7 +230,8 @@ class ReservationFormService(
     fun getBoatSpaceFormForCitizen(
         citizenId: UUID,
         reservationId: Int,
-        formInput: ReservationInput
+        formInput: ReservationInput,
+        requestURI: String
     ): String {
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
@@ -244,6 +245,9 @@ class ReservationFormService(
 
         return (
             citizenLayout.render(
+                true,
+                citizen?.fullName,
+                requestURI,
                 createBodyContent(formInput, citizen, reservation, UserType.CITIZEN)
             )
         )
