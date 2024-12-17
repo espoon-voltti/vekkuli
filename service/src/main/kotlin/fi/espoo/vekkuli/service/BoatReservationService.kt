@@ -147,7 +147,7 @@ class BoatReservationService(
                 "varausvahvistus",
                 null,
                 emailEnv.senderAddress,
-                Recipient(payment.citizenId, reservation.email),
+                Recipient(payment.reserverId, reservation.email),
                 mapOf(
                     "name" to " ${reservation.locationName} ${reservation.place}",
                     "width" to reservation.boatSpaceWidthInM,

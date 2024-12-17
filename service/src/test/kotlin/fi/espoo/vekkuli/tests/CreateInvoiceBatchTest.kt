@@ -73,7 +73,7 @@ class CreateInvoiceBatchTest {
                             rows =
                                 listOf(
                                     Row(
-                                        productGroup = "2560001",
+                                        productGroup = "25600001",
                                         function = "T1270",
                                         periodStartDate = given.startDate.toString(),
                                         periodEndDate = given.endDate.toString(),
@@ -150,7 +150,7 @@ class CreateInvoiceBatchTest {
                             rows =
                                 listOf(
                                     Row(
-                                        productGroup = "2560001",
+                                        productGroup = "25600001",
                                         function = "T1270",
                                         periodStartDate = given.startDate.toString(),
                                         periodEndDate = given.endDate.toString(),

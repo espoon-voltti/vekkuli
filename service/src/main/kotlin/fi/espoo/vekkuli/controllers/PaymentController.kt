@@ -64,7 +64,7 @@ class PaymentController(
                 reservationService.addPaymentToReservation(
                     id,
                     CreatePaymentParams(
-                        citizenId = citizen.id,
+                        reserverId = citizen.id,
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
