@@ -15,4 +15,3 @@ val slipAmenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None"
 val storageTypeAmenities = listOf(BoatSpaceAmenity.Trailer, BoatSpaceAmenity.Buck)
 
 val actualAmenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
-
