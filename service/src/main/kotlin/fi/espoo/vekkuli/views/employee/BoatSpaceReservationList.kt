@@ -63,7 +63,7 @@ class BoatSpaceReservationList {
                     <span class="icon is-small">
                         ${icons.check}
                     </span>
-                    <span>${t("boatSpaces.typeOption.$boatSpaceType")}</span>
+                    <span>${t("employee.boatSpaceReservations.types.$boatSpaceType")}</span>
                 </label>
                 """.trimIndent()
             }
