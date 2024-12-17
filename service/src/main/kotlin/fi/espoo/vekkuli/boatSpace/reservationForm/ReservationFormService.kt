@@ -133,9 +133,9 @@ class ReservationFormService(
             val newOrg =
                 organizationService.insertOrganization(
                     businessId = input.orgBusinessId ?: "",
-                    "", // billing street address,
-                    "", // billing postal code,
-                    "", // billing post office,
+                    "",
+                    "",
+                    "",
                     name = input.orgName ?: "",
                     phone = input.orgPhone ?: "",
                     email = input.orgEmail ?: "",
@@ -155,9 +155,9 @@ class ReservationFormService(
                 UpdateOrganizationParams(
                     id = input.organizationId,
                     businessId = input.orgBusinessId,
-                    null, // billing street address,
-                    null, // billing postal code,
-                    null, // billing post office,
+                    null,
+                    null,
+                    null,
                     name = input.orgName,
                     phone = input.orgPhone,
                     email = input.orgEmail,
