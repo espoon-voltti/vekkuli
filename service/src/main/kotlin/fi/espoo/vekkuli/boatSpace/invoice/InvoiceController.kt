@@ -117,7 +117,6 @@ class InvoiceController(
         try {
             handleInvoiceSending(reservation, input)
         } catch (e: Exception) {
-            throw e
             val content = invoicePreview.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, content))
         }
