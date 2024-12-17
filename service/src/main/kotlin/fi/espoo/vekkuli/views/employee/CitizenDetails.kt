@@ -36,6 +36,7 @@ class CitizenDetails(
         @SanitizeInput citizen: CitizenWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
+        @SanitizeInput organizations: List<Organization>,
         userType: UserType,
         @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
     ): String {
@@ -119,6 +120,46 @@ class CitizenDetails(
             )
         }
 
+        val organizationListItems =
+            organizations
+                .map { org ->
+                    """     
+                    <div class="columns">
+                        <div class="column is-one-fifth">
+                            <p>${org.name}</p>
+                        </div>
+                        <div class="column is-one-fifth">
+                            <p>${org.businessId}</p>
+                        </div>
+                    </div>
+                    """
+                }.joinToString("\n")
+
+        // language=HTML
+        val organizationList =
+            if (organizations.isNotEmpty()) {
+                """
+                <div class="container block" id="citizen-organizations">
+                  <div class="columns">
+                    <div class="column is-narrow">
+                      <h3 class="header">${t("boatSpaceReservation.title.organizations")}</h3>
+                    </div>
+                  </div>
+                  <div class="columns">
+                    <div class="column is-one-fifth">
+                       <label class="label">${t("boatApplication.organizationName")}</label>
+                    </div>
+                    <div class="column is-one-fifth">
+                       <label class="label">${t("boatApplication.organizationId")}</label>
+                    </div>
+                  </div>
+                  $organizationListItems
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         val backUrl =
             if (userType == UserType.EMPLOYEE) {
                 "/virkailija/venepaikat/varaukset"
@@ -134,6 +175,7 @@ class CitizenDetails(
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
                 ${customerInfo()}
+                $organizationList
                 ${reservationTabContent(citizen, boatSpaceReservations, boats, userType)}
             </section>
             """.trimIndent()
