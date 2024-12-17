@@ -62,14 +62,14 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = this.citizenIdLeo,
+                    reserverId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
                     productCode = "1",
                 )
             )
-        assertEquals(madeReservation.reserverId, payment.citizenId, "payment is added for correct citizen")
+        assertEquals(madeReservation.reserverId, payment.reserverId, "payment is added for correct citizen")
         assertEquals(madeReservation.id, payment.reservationId, "payment is linked to the reservation")
         assertEquals(null, payment.paid, "payment is not set to paid")
     }

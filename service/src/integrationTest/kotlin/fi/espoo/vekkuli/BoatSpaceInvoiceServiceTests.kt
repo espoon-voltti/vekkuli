@@ -64,7 +64,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
         assertNotNull(invoice, "Invoice is sent")
         assertEquals(
             this.citizenIdLeo,
-            invoice!!.citizenId,
+            invoice!!.reserverId,
             "Invoice is sent to correct citizen"
         )
     }
@@ -84,7 +84,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
             )
         val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!, this.citizenIdLeo, madeReservation.id)
         assertNotNull(invoice, "Invoice is sent")
-        assertEquals(this.citizenIdLeo, invoice!!.citizenId, "Invoice is sent to correct citizen")
+        assertEquals(this.citizenIdLeo, invoice!!.reserverId, "Invoice is sent to correct citizen")
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
         assertNull(reservation?.paymentDate, "Reservation has not been paid yet")
     }
