@@ -15,7 +15,6 @@ class OrganizationControllerService(
     private val boatReservationService: BoatReservationService,
     private val boatService: BoatService,
     private val organizationDetails: OrganizationDetails,
-    private val reservationService: BoatReservationService
 ) {
     fun buildOrganizationPage(organizationId: UUID): String {
         val organization = organizationService.getOrganizationById(organizationId) ?: return "Organization not found"
@@ -57,14 +56,13 @@ class OrganizationControllerService(
             )
         boatService.updateBoat(updatedBoat)
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
-
-        val updatedBoats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
+        val organizationReservations = boatReservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val updatedBoats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, organizationReservations) }
 
         return organizationDetails.organizationPageForEmployee(
             organization,
             organizationMembers,
-            boatSpaceReservations,
+            organizationReservations,
             updatedBoats,
             errors,
         )

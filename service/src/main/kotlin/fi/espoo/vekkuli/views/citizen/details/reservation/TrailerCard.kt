@@ -89,7 +89,7 @@ class TrailerCard(
                               hx-target="#reserver-details"
                              >
                             <input type="hidden" name="trailerId" value="${trailer.id}" />
-                            <input type="hidden" name="citizenId" value="$reserverId" />
+                            <input type="hidden" name="reserverId" value="$reserverId" />
                             <div class="block">
                                 <div class="field">
                                     <h1 class="label">${t("citizenDetails.warnings.ackSelect")}<</h1>

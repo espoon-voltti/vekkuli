@@ -6,22 +6,15 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.repository.JdbiReserverRepository
-import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
-import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
-import fi.espoo.vekkuli.views.organization.OrganizationDetails
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 fun toBoatUpdateForm(
@@ -46,16 +39,11 @@ fun toBoatUpdateForm(
 
 @Controller
 class OrganizationUserController(
-    private val organizationDetails: OrganizationDetails,
     private val employeeLayout: EmployeeLayout,
-    private val organizationService: OrganizationService,
-    private val boatReservationService: BoatReservationService,
     private val boatService: BoatService,
     private val editBoat: EditBoat,
-    private val reserverRepository: JdbiReserverRepository,
-    private val citizenUserController: CitizenUserController,
-    private val reservationService: BoatReservationService,
-    private val organizationControllerService: OrganizationControllerService
+    private val organizationService: OrganizationControllerService,
+    private val citizenUserController: CitizenUserController
 ) {
     @GetMapping("/virkailija/yhteiso/{organizationId}")
     @ResponseBody
@@ -63,7 +51,7 @@ class OrganizationUserController(
         request: HttpServletRequest,
         @PathVariable organizationId: UUID,
     ): String {
-        val page = organizationControllerService.buildOrganizationPage(organizationId)
+        val page = organizationService.buildOrganizationPage(organizationId)
         return employeeLayout.render(
             true,
             request.requestURI,
@@ -116,6 +104,6 @@ class OrganizationUserController(
                 UserType.EMPLOYEE
             )
         }
-        return organizationControllerService.buildOrganizationUpdatedPage(reserverId, boatId, input, errors)
+        return organizationService.buildOrganizationUpdatedPage(reserverId, boatId, input, errors)
     }
 }

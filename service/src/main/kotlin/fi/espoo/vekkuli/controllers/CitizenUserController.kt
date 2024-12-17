@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.ReserverRepository
+import fi.espoo.vekkuli.repository.JdbiReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.cmToM
@@ -19,10 +19,9 @@ import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
+import fi.espoo.vekkuli.views.organization.OrganizationDetails
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.jdbi.v3.core.Jdbi
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -33,52 +32,23 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Controller
-class CitizenUserController {
-    @Autowired
-    private lateinit var reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer
-
-    @Autowired
-    private lateinit var permissionService: PermissionService
-
-    @Autowired
-    private lateinit var editBoat: EditBoat
-
-    @Autowired
-    lateinit var jdbi: Jdbi
-
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    @Autowired
-    lateinit var citizenService: CitizenService
-
-    @Autowired
-    lateinit var memoService: MemoService
-
-    @Autowired
-    lateinit var reservationService: BoatReservationService
-
-    @Autowired
-    lateinit var boatService: BoatService
-
-    @Autowired
-    lateinit var citizenDetails: CitizenDetails
-
-    @Autowired
-    lateinit var employeeLayout: EmployeeLayout
-
-    @Autowired
-    private lateinit var citizenLayout: Layout
-
-    @Autowired
-    lateinit var editCitizen: EditCitizen
-
-    @Autowired
-    lateinit var trailerCard: TrailerCard
-
-    @Autowired
-    lateinit var reserverRepository: ReserverRepository
-
+class CitizenUserController(
+    private val organizationDetails: OrganizationDetails,
+    private val organizationService: OrganizationService,
+    private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
+    private val editBoat: EditBoat,
+    private val messageUtil: MessageUtil,
+    private val citizenService: CitizenService,
+    private val memoService: MemoService,
+    private val reservationService: BoatReservationService,
+    private val boatService: BoatService,
+    private val citizenDetails: CitizenDetails,
+    private val employeeLayout: EmployeeLayout,
+    private val citizenLayout: Layout,
+    private val reserverRepository: JdbiReserverRepository,
+    private val trailerCard: TrailerCard,
+    private val editCitizen: EditCitizen,
+) {
     @GetMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
     fun citizenProfile(
@@ -686,7 +656,7 @@ class CitizenUserController {
         @RequestParam reservationId: Int,
         @RequestParam paymentDate: LocalDate,
         @RequestParam invoicePaidInfo: String,
-        @RequestParam citizenId: UUID,
+        @RequestParam reserverId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<String> {
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
@@ -695,13 +665,13 @@ class CitizenUserController {
             LocalDateTime.of(paymentDate.year, paymentDate.month, paymentDate.dayOfMonth, 0, 0)
         )
 
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
-        val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
+        val citizen = citizenService.getCitizen(reserverId) ?: throw IllegalArgumentException("Citizen not found")
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
         val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
 
-        memoService.insertMemo(citizenId, userId, ReservationType.Marine, memoContent)
+        memoService.insertMemo(reserverId, userId, ReservationType.Marine, memoContent)
 
         return ResponseEntity.ok(
             citizenDetails.citizenPage(
@@ -719,49 +689,63 @@ class CitizenUserController {
         @RequestParam("boatId") boatId: Int,
         @RequestParam("key") key: String,
         @RequestParam("infoText") infoText: String,
-        @RequestParam("citizenId") citizenId: UUID,
+        @RequestParam("reserverId") reserverId: UUID,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val userId = request.ensureEmployeeId()
 
         reservationService.acknowledgeWarning(reservationId, userId, boatId, key, infoText)
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
-        val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        return ResponseEntity.ok(
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                boats,
-                UserType.EMPLOYEE
-            )
-        )
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
+        return reserverPage(boatSpaceReservations, boats, reserverId)
     }
 
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-traileri-varoitus")
     fun ackTrailerWarning(
-        @RequestParam("citizenId") citizenId: UUID,
+        @RequestParam("reserverId") reserverId: UUID,
         @RequestParam("trailerId") trailerId: Int,
         @RequestParam("key") key: String,
         @RequestParam("infoText") infoText: String,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         val userId = request.ensureEmployeeId()
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
         reservationService.acknowledgeWarningForTrailer(trailerId, userId, key, infoText)
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
-        val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
-        return ResponseEntity.ok(
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                boats,
-                UserType.EMPLOYEE
+        return reserverPage(boatSpaceReservations, boats, reserverId)
+    }
+
+    fun reserverPage(
+        boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        boats: List<BoatUpdateForm>,
+        reserverId: UUID,
+    ): ResponseEntity<String> {
+        val citizen = citizenService.getCitizen(reserverId)
+        if (citizen != null) {
+            return ResponseEntity.ok(
+                citizenDetails.citizenPage(
+                    citizen,
+                    boatSpaceReservations,
+                    boats,
+                    UserType.EMPLOYEE
+                )
             )
-        )
+        } else {
+            val organization =
+                organizationService.getOrganizationById(reserverId)
+                    ?: throw IllegalArgumentException("Reserver not found")
+            return ResponseEntity.ok(
+                organizationDetails.organizationPageForEmployee(
+                    organization,
+                    organizationService.getOrganizationMembers(reserverId),
+                    boatSpaceReservations,
+                    boats
+                )
+            )
+        }
     }
 }

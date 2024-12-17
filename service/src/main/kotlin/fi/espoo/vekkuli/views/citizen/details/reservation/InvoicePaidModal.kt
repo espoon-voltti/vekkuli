@@ -3,13 +3,13 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 import fi.espoo.vekkuli.DateInputOptions
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @Component
 class InvoicePaidModal : BaseView() {
@@ -23,7 +23,7 @@ class InvoicePaidModal : BaseView() {
     private lateinit var timeProvider: TimeProvider
 
     fun render(
-        citizen: CitizenWithDetails,
+        reserverId: UUID,
         reservation: BoatSpaceReservationDetails
     ): String {
         val today = timeProvider.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -51,7 +51,7 @@ class InvoicePaidModal : BaseView() {
                     )
                 )}
                     <input hidden name="reservationId" value="${reservation.id}" />
-                    <input hidden name="citizenId" value="${citizen.id}" />
+                    <input hidden name="reserverId" value="$reserverId" />
                 </form>
                 """.trimIndent()
             ).addButton {
