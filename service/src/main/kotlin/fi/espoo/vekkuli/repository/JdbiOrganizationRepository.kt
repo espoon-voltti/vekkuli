@@ -18,7 +18,7 @@ class JdbiOrganizationRepository(
             handle
                 .createQuery(
                     """
-                    SELECT o.business_id, r.*, m.name as municipality_name
+                    SELECT o.business_id, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
                     FROM organization_member om
                     JOIN organization o on om.organization_id = o.id
                     JOIN reserver r on om.organization_id = r.id
@@ -82,6 +82,9 @@ class JdbiOrganizationRepository(
 
     override fun insertOrganization(
         businessId: String,
+        billingStreetAddress: String,
+        billingPostalCode: String,
+        billingPostOffice: String,
         name: String,
         phone: String,
         email: String,
@@ -115,11 +118,14 @@ class JdbiOrganizationRepository(
             handle
                 .createUpdate(
                     """
-                    INSERT INTO organization (id, business_id)
+                    INSERT INTO organization (id, business_id, billing_street_address, billing_postal_code, billing_post_office)
                     VALUES (:id, :businessId)
                     """.trimIndent()
                 ).bind("id", id)
                 .bind("businessId", businessId)
+                .bind("billingStreetAddress", billingStreetAddress)
+                .bind("billingPostalCode", billingPostalCode)
+                .bind("billingPostOffice", billingPostOffice)
                 .execute()
 
             getOrganizationById(id)!!
@@ -133,6 +139,15 @@ class JdbiOrganizationRepository(
         }
         if (params.businessId != null) {
             orgParams["business_id"] = params.businessId
+        }
+        if (params.billingStreetAddress != null) {
+            orgParams["billing_street_address"] = params.billingStreetAddress
+        }
+        if (params.billingPostalCode != null) {
+            orgParams["billing_postal_code"] = params.billingPostalCode
+        }
+        if (params.billingPostOffice != null) {
+            orgParams["billing_post_office"] = params.billingPostOffice
         }
         if (orgParams.isNotEmpty()) {
             jdbi.withHandleUnchecked { updateTable(it, "citizen", params.id, orgParams) }
@@ -175,7 +190,7 @@ class JdbiOrganizationRepository(
             handle
                 .createQuery(
                     """
-                    SELECT o.business_id, r.*, m.name as municipality_name
+                    SELECT o.business_id, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
                     FROM organization o
                     JOIN reserver r ON r.id = o.id
                     JOIN municipality m ON r.municipality_code = m.code
@@ -191,7 +206,7 @@ class JdbiOrganizationRepository(
             handle
                 .createQuery(
                     """
-                    SELECT o.business_id, r.*, m.name as municipality_name
+                    SELECT o.business_id, o.billing_street_address, o.billing_postal_code, o.billing_post_office, r.*, m.name as municipality_name
                     FROM organization o
                     JOIN reserver r ON r.id = o.id
                     JOIN municipality m ON r.municipality_code = m.code
