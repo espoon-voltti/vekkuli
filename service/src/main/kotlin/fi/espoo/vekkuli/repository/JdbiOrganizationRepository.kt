@@ -150,7 +150,7 @@ class JdbiOrganizationRepository(
             orgParams["billing_post_office"] = params.billingPostOffice
         }
         if (orgParams.isNotEmpty()) {
-            jdbi.withHandleUnchecked { updateTable(it, "citizen", params.id, orgParams) }
+            jdbi.withHandleUnchecked { updateTable(it, "organization", params.id, orgParams) }
         }
 
         val reserverParams = mutableMapOf<String, Any?>()
