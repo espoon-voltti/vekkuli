@@ -61,7 +61,7 @@ class ReservationFormController(
         val citizenId = request.ensureCitizenId()
 
         try {
-            val page = reservationService.getBoatSpaceFormForCitizen(citizenId, reservationId, formInput)
+            val page = reservationService.getBoatSpaceFormForCitizen(citizenId, reservationId, formInput, request)
             return ResponseEntity.ok(page)
         } catch (e: BadRequest) {
             val headers = org.springframework.http.HttpHeaders()
