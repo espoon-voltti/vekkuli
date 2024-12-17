@@ -103,7 +103,7 @@ class FormComponents {
             attributes =
                 """
                 step="${step?.toString() ?: "0.01"}"
-                min="1"
+                min="0"
                 max="9999999"
                 @change="${"$"}el.value !== '' && (
                     parseFloat(${"$"}el.value) < parseFloat(${'$'}el.min) ? ${"$"}el.value = ${"$"}el.min : 
