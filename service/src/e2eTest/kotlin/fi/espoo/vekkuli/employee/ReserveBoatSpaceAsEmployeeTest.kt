@@ -352,6 +352,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         listingPage.navigateTo()
         page.waitForCondition { listingPage.reservations.count() == 3 }
         listingPage.searchInput("phoneSearch").fill("04056")
+        listingPage.searchInput("phoneSearch").blur()
         page.waitForCondition { listingPage.reservations.count() == 1 }
     }
 }
