@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.actualAmenities
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.employee.BoatSpaceReservationList
@@ -54,6 +55,8 @@ class BoatSpaceReservationController {
         val harbors =
             reservationService.getHarbors()
 
+        val boatSpaceTypes = BoatSpaceType.entries.toList()
+
         val authenticatedUser = request.getAuthenticatedUser()
         if (authenticatedUser == null) {
             val headers = org.springframework.http.HttpHeaders()
@@ -77,7 +80,7 @@ class BoatSpaceReservationController {
             layout.render(
                 true,
                 employee.fullName,
-                boatSpaceReservationList.render(harbors, actualAmenities, reservations, params, UserType.EMPLOYEE)
+                boatSpaceReservationList.render(harbors, boatSpaceTypes, actualAmenities, reservations, params, UserType.EMPLOYEE)
             )
         )
     }
