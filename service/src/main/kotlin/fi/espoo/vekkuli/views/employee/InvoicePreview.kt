@@ -75,6 +75,7 @@ class InvoicePreview(
                 "invoice.description",
                 "description",
                 model.description,
+                attributes = """maxlength="35"""",
             )
 
         val contactPersonInput =

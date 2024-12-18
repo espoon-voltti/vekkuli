@@ -19,6 +19,7 @@ fun KLogger.audit(
     val data =
         mapOf<String, Any?>(
             "userId" to user.id,
+            "userType" to user.type,
             "meta" to meta
         )
     warn(AUDIT_MARKER, eventCode, StructuredArguments.entries(data))

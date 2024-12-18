@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.BoatSpaceConfig.winterStorageLocations
+import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
@@ -18,6 +19,7 @@ import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.Min
+import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
@@ -60,12 +62,17 @@ class BoatSpaceSearchController {
     @Autowired
     lateinit var layout: Layout
 
+    private val logger = KotlinLogging.logger {}
+
     @RequestMapping("/$USERTYPE/venepaikat")
     @ResponseBody
     fun boatSpaceSearchPage(
         request: HttpServletRequest,
         @PathVariable usertype: String
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "BOAT_SPACE_SEARCH")
+        }
         val userType = UserType.fromPath(usertype)
         if (userType == UserType.EMPLOYEE) {
             val authenticatedUser = request.getAuthenticatedUser() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
@@ -130,6 +137,9 @@ class BoatSpaceSearchController {
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "BOAT_SPACE_SEARCH_RESULTS")
+        }
         val userType = UserType.fromPath(usertype)
 
         val harbors =
