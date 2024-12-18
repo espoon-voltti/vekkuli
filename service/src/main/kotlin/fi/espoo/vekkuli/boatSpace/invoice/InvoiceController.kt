@@ -122,8 +122,6 @@ class InvoiceController(
         // send the invoice, update reservation status
         val reservation = reservationService.getReservationWithReserver(reservationId)
 
-        println("ID $reservationId, RESERVATION $reservation")
-
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
@@ -144,7 +142,6 @@ class InvoiceController(
         reservation: ReservationWithDependencies,
         input: InvoiceInput
     ) {
-        println("INVOICING $reservation, INPUT $input")
         if (reservation.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
