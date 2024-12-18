@@ -88,8 +88,7 @@ class BoatReservationService(
     private val permissionService: PermissionService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val organizationRepository: OrganizationRepository,
-    private val reserverRepository: ReserverRepository,
+    private val organizationService: OrganizationService
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -125,7 +124,7 @@ class BoatReservationService(
         payment: Payment,
     ) {
         if (reservation.reserverType == ReserverType.Organization) {
-            val members = organizationRepository.getOrganizationMembers(reservation.reserverId)
+            val members = organizationService.getOrganizationMembers(reservation.reserverId)
             val organisationMembers = members.map { Recipient(it.id, it.email) }
             val organizationInfo = Recipient(reservation.reserverId, reservation.email)
             emailService
