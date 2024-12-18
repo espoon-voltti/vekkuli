@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
@@ -19,6 +20,7 @@ import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -74,12 +76,17 @@ class CitizenUserController {
     @Autowired
     lateinit var organizationService: OrganizationService
 
+    private val logger = KotlinLogging.logger {}
+
     @GetMapping("/virkailija/kayttaja/{citizenId}")
     @ResponseBody
     fun citizenProfile(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE")
+        }
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
@@ -101,6 +108,9 @@ class CitizenUserController {
     @GetMapping("/kuntalainen/omat-tiedot")
     @ResponseBody
     fun ownProfile(request: HttpServletRequest): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE")
+        }
         val citizen = getAuthenticatedCitizen(request)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizen.id)
         val boats = boatService.getBoatsForReserver(citizen.id).map { toBoatUpdateForm(it, boatSpaceReservations) }
@@ -135,6 +145,9 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_RESERVATIONS")
+        }
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
@@ -147,6 +160,9 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MESSAGES")
+        }
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val messages = citizenService.getMessages(citizenId)
         return citizenDetails.messageTabContent(citizen, messages)
@@ -158,6 +174,9 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS")
+        }
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
     }
@@ -169,6 +188,9 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @PathVariable memoId: Int,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_EDIT")
+        }
         val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
         return citizenDetails.memoContent(memo, true)
     }
@@ -178,14 +200,24 @@ class CitizenUserController {
     fun boatSpaceMemoNewForm(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
-    ): String = citizenDetails.newMemoContent(citizenId, true)
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ADD_NEW_FORM")
+        }
+        return citizenDetails.newMemoContent(citizenId, true)
+    }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/lisaa_peruuta")
     @ResponseBody
     fun boatSpaceMemoNewCancel(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
-    ): String = citizenDetails.newMemoContent(citizenId, false)
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_CANCEL")
+        }
+        return citizenDetails.newMemoContent(citizenId, false)
+    }
 
     @PostMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")
     @ResponseBody
@@ -194,6 +226,9 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @RequestParam content: String,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ADD_NEW")
+        }
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         memoService.insertMemo(citizenId, userId, ReservationType.Marine, content)
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
@@ -207,6 +242,9 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @PathVariable memoId: Int,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_DELETE")
+        }
         memoService.removeMemo(memoId)
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
         return citizenDetails.memoTabContent(citizenId, memos)
@@ -220,6 +258,9 @@ class CitizenUserController {
         @PathVariable memoId: Int,
         @RequestParam content: String,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_UPDATE")
+        }
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         val memo = memoService.updateMemo(memoId, userId, content) ?: throw IllegalArgumentException("Memo not found")
         return citizenDetails.memoContent(memo, false)
@@ -232,6 +273,9 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         @PathVariable memoId: Int,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ITEM")
+        }
         val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
         return citizenDetails.memoContent(memo, false)
     }
@@ -242,6 +286,9 @@ class CitizenUserController {
         request: HttpServletRequest,
         @PathVariable citizenId: UUID
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_PAYMENTS")
+        }
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         return citizenDetails.paymentTabContent(citizen)
     }
@@ -254,6 +301,9 @@ class CitizenUserController {
         @PathVariable boatId: Int,
         model: Model
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_FORM")
+        }
         val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
         return editBoat.editBoatForm(
@@ -275,6 +325,9 @@ class CitizenUserController {
         @PathVariable boatId: Int,
         model: Model
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_FORM")
+        }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
         val boats = boatService.getBoatsForReserver(citizenId)
@@ -299,6 +352,9 @@ class CitizenUserController {
         @PathVariable trailerId: Int,
         request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_TRAILER_FORM")
+        }
         val userType = UserType.fromPath(usertype)
         val trailer = reservationService.getTrailer(trailerId)
         if (trailer == null) {
@@ -318,6 +374,9 @@ class CitizenUserController {
         @RequestParam trailerLength: BigDecimal,
         request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_TRAILER_SAVE")
+        }
         val userType = UserType.fromPath(usertype)
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         val trailer =
@@ -409,6 +468,9 @@ class CitizenUserController {
         input: BoatUpdateForm,
         response: HttpServletResponse
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_SAVE")
+        }
         val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
@@ -468,6 +530,9 @@ class CitizenUserController {
         input: BoatUpdateForm,
         response: HttpServletResponse
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_SAVE")
+        }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
         val boats = boatService.getBoatsForReserver(citizenId)
@@ -549,6 +614,9 @@ class CitizenUserController {
         @PathVariable boatId: Int,
         response: HttpServletResponse
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_DELETE_BOAT")
+        }
         val boats = boatService.getBoatsForReserver(citizenId)
         boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
@@ -581,6 +649,9 @@ class CitizenUserController {
         @PathVariable boatId: Int,
         response: HttpServletResponse
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_TRAILER_SAVE")
+        }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
 
@@ -614,6 +685,9 @@ class CitizenUserController {
         @PathVariable citizenId: UUID,
         model: Model
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_FORM")
+        }
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val municipalities = citizenService.getMunicipalities()
         return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.EMPLOYEE)
@@ -625,6 +699,9 @@ class CitizenUserController {
         request: HttpServletRequest,
         model: Model
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_FORM")
+        }
         val citizen = getAuthenticatedCitizen(request)
         val municipalities = citizenService.getMunicipalities()
         return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.CITIZEN)
@@ -638,6 +715,9 @@ class CitizenUserController {
         input: CitizenUpdate,
         model: Model
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_SAVE")
+        }
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val organizations = organizationService.getCitizenOrganizations(citizenId)
@@ -659,6 +739,9 @@ class CitizenUserController {
         input: UpdateInput,
         model: Model
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_SAVE")
+        }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
@@ -702,6 +785,9 @@ class CitizenUserController {
         @RequestParam citizenId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MARK_PAYMENT_DONE")
+        }
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         reservationService.markInvoicePaid(
             reservationId,
@@ -737,6 +823,9 @@ class CitizenUserController {
         @RequestParam("citizenId") citizenId: UUID,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_ACK_WARNING")
+        }
         val userId = request.ensureEmployeeId()
 
         reservationService.acknowledgeWarning(reservationId, userId, boatId, key, infoText)
@@ -764,6 +853,9 @@ class CitizenUserController {
         @RequestParam("infoText") infoText: String,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_ACK_WARNING")
+        }
         val userId = request.ensureEmployeeId()
         val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 

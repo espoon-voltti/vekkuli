@@ -291,6 +291,13 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.agreementCheckbox.check()
 
         formPage.submitButton.click()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.header).isVisible()
+        invoicePreviewPage.sendButton.click()
+
+        val reservationListPage = ReservationListPage(page)
+        assertThat(reservationListPage.header).isVisible()
     }
 
     @Test
@@ -322,5 +329,17 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.organizationRadioButton.click()
 
         assertThat(page.getByText("Olivian vene")).isHidden()
+    }
+
+    @Test
+    fun `Employee can filter boat spaces`() {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        page.waitForCondition { listingPage.reservations.count() == 3 }
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        page.waitForCondition { listingPage.reservations.count() == 1 }
     }
 }

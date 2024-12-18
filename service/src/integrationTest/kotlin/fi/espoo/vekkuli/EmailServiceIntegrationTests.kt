@@ -41,7 +41,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
             boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = this.citizenIdLeo,
+                    reserverId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
@@ -78,7 +78,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
             boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = this.citizenIdLeo,
+                    reserverId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
@@ -173,7 +173,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
             boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = this.citizenIdLeo,
+                    reserverId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
@@ -204,7 +204,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
             boatReservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = this.citizenIdLeo,
+                    reserverId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,

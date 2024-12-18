@@ -219,7 +219,11 @@ class CitizenContainerForEmployee(
             municipalities
         )
     } else {
-        citizenSearch(reservationId, citizen, municipalities)
+        citizenSearch(
+            reservationId,
+            citizen?.copy(email = input.email ?: citizen.email, phone = input.phone ?: citizen.phone),
+            municipalities
+        )
     }
 
     fun render(

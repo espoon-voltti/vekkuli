@@ -31,6 +31,10 @@ class OrganizationService(
 
     fun insertOrganization(
         businessId: String,
+        billingName: String,
+        billingStreetAddress: String,
+        billingPostalCode: String,
+        billingPostOffice: String,
         name: String,
         phone: String,
         email: String,
@@ -43,6 +47,10 @@ class OrganizationService(
     ): Organization =
         organizationRepository.insertOrganization(
             businessId,
+            billingName,
+            billingStreetAddress,
+            billingPostalCode,
+            billingPostOffice,
             name,
             phone,
             email,

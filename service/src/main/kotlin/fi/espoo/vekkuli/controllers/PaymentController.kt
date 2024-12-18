@@ -4,6 +4,8 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.PaytrailEnv
+import fi.espoo.vekkuli.config.audit
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrlThymeleaf
 import fi.espoo.vekkuli.domain.CreatePaymentParams
@@ -14,6 +16,7 @@ import fi.espoo.vekkuli.utils.formatAsShortDate
 import jakarta.servlet.http.HttpServletRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -39,6 +42,8 @@ class PaymentController(
     private val paytrailEnv: PaytrailEnv,
     private val timeProvider: TimeProvider
 ) {
+    private val logger = KotlinLogging.logger {}
+
     @GetMapping("/maksa")
     suspend fun payment(
         @RequestParam id: Int,
@@ -47,6 +52,9 @@ class PaymentController(
         model: Model,
         request: HttpServletRequest,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "PAYMENT_VIEW")
+        }
         val locale = LocaleContextHolder.getLocale()
         val citizen = getCitizen(request, citizenService) ?: return redirectUrlThymeleaf("/")
         val reservation = reservationService.getBoatSpaceReservation(id) ?: return redirectUrlThymeleaf("/")
@@ -64,7 +72,7 @@ class PaymentController(
                 reservationService.addPaymentToReservation(
                     id,
                     CreatePaymentParams(
-                        citizenId = citizen.id,
+                        reserverId = citizen.id,
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
@@ -108,7 +116,11 @@ class PaymentController(
     @GetMapping("/onnistunut")
     fun success(
         @RequestParam params: Map<String, String>,
+        request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "PAYMENT_SUCCESS_VIEW")
+        }
         val result =
             reservationService.handlePaymentResult(params, true)
 
@@ -124,7 +136,12 @@ class PaymentController(
     @GetMapping("/peruuntunut")
     fun cancel(
         @RequestParam params: Map<String, String>,
+        request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "PAYMENT_CANCEL_VIEW")
+        }
+
         return when (val result = reservationService.handlePaymentResult(params, false)) {
             is PaymentProcessResult.Failure -> return redirectUrlThymeleaf("/")
             is PaymentProcessResult.Success -> return redirectUrlThymeleaf(

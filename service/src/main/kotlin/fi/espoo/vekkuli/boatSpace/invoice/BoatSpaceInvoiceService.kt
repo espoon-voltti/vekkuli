@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.Invoice
+import fi.espoo.vekkuli.repository.OrganizationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
@@ -25,19 +26,20 @@ class BoatSpaceInvoiceService(
     private val boatReservationService: BoatReservationService,
     private val citizenService: CitizenService,
     private val reserverRepository: ReserverRepository,
+    private val organizationRepository: OrganizationRepository,
     private val asyncJobRunner: IAsyncJobRunner<AsyncJob>
 ) {
     @Transactional
     fun createAndSendInvoice(
         invoiceData: InvoiceData,
-        citizenId: UUID,
+        reserverId: UUID,
         reservationId: Int
     ): Invoice? {
         val invoice = paymentService.getInvoiceForReservation(reservationId)
         if (invoice != null) {
             return invoice
         }
-        val (createdInvoice) = createInvoice(invoiceData, citizenId, reservationId)
+        val (createdInvoice) = createInvoice(invoiceData, reserverId, reservationId)
         val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
 
         asyncJobRunner.plan(
@@ -55,13 +57,13 @@ class BoatSpaceInvoiceService(
 
     fun createInvoice(
         invoiceData: InvoiceData,
-        citizenId: UUID,
+        reserverId: UUID,
         reservationId: Int
     ): Pair<Invoice, Payment> {
         val payment =
             paymentService.insertPayment(
                 CreatePaymentParams(
-                    citizenId,
+                    reserverId,
                     invoiceData.invoiceNumber.toString(),
                     invoiceData.priceCents,
                     BOAT_RESERVATION_ALV_PERCENTAGE,
@@ -74,7 +76,7 @@ class BoatSpaceInvoiceService(
                 CreateInvoiceParams(
                     dueDate = invoiceData.dueDate,
                     reference = invoiceData.invoiceNumber.toString(),
-                    citizenId = citizenId,
+                    reserverId = reserverId,
                     reservationId = reservationId,
                     paymentId = payment.id
                 )
@@ -125,7 +127,7 @@ class BoatSpaceInvoiceService(
                 function = function ?: "T1270",
             )
         } else {
-            val organization = reserverRepository.getOrganizationById(reserverId)
+            val organization = organizationRepository.getOrganizationById(reserverId)
             return InvoiceData(
                 type = reservation.type,
                 dueDate = timeProvider.getCurrentDate().plusDays(21),

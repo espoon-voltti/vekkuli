@@ -147,7 +147,7 @@ class BoatReservationService(
                 "varausvahvistus",
                 null,
                 emailEnv.senderAddress,
-                Recipient(payment.citizenId, reservation.email),
+                Recipient(payment.reserverId, reservation.email),
                 mapOf(
                     "name" to " ${reservation.locationName} ${reservation.place}",
                     "width" to reservation.boatSpaceWidthInM,
@@ -376,6 +376,10 @@ class BoatReservationService(
 
         if (params.harbor.isNotEmpty()) {
             filters.add(LocationExpr(params.harbor))
+        }
+
+        if (params.boatSpaceType.isNotEmpty()) {
+            filters.add(BoatSpaceTypeExpr(params.boatSpaceType))
         }
 
         if (params.amenity.isNotEmpty()) {

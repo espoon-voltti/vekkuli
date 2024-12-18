@@ -12,7 +12,7 @@ enum class PaymentStatus {
 
 data class Payment(
     val id: UUID,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: PaymentStatus,
@@ -28,13 +28,13 @@ data class Invoice(
     val id: UUID,
     val reference: String,
     val dueDate: LocalDate,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val paymentId: UUID,
     val invoiceNumber: Long
 )
 
 data class CreatePaymentParams(
-    val citizenId: UUID,
+    val reserverId: UUID,
     val reference: String,
     val totalCents: Int,
     val vatPercentage: Double,
@@ -45,6 +45,6 @@ data class CreateInvoiceParams(
     val dueDate: LocalDate,
     val reference: String,
     val reservationId: Int,
-    val citizenId: UUID,
+    val reserverId: UUID,
     val paymentId: UUID,
 )

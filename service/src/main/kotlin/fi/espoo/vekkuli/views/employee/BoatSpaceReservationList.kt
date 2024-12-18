@@ -22,6 +22,7 @@ class BoatSpaceReservationList {
 
     fun render(
         harbors: List<Location>,
+        boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
         reservations: List<BoatSpaceReservationItem>,
         params: BoatSpaceReservationFilter,
@@ -30,7 +31,7 @@ class BoatSpaceReservationList {
         val harborFilters =
             harbors.joinToString("\n") { harbor ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" data-testid="filter-harbor-${harbor.name}">
                     <input type="checkbox" name="harbor" value="${harbor.id}" class="is-hidden" ${if (params.hasHarbor(
                         harbor.id
                     )
@@ -43,6 +44,26 @@ class BoatSpaceReservationList {
                         ${icons.check}
                     </span>
                     <span>${harbor.name}</span>
+                </label>
+                """.trimIndent()
+            }
+
+        val boatSpaceTypeFilters =
+            boatSpaceTypes.joinToString("\n") { boatSpaceType ->
+                """
+                <label class="filter-button" data-testid="filter-type-$boatSpaceType">
+                    <input type="checkbox" name="boatSpaceType" value="$boatSpaceType" class="is-hidden" ${if (params.hasBoatSpaceType(
+                        boatSpaceType
+                    )
+                ) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("employee.boatSpaceReservations.types.$boatSpaceType")}</span>
                 </label>
                 """.trimIndent()
             }
@@ -67,7 +88,7 @@ class BoatSpaceReservationList {
         val amenityFilters =
             amenities.joinToString("\n") { amenity ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" data-testid="filter-amenity-$amenity">
                     <input type="checkbox" name="amenity" value="${amenity.name}" class="is-hidden" ${if (params.hasAmenity(
                         amenity
                     )
@@ -197,7 +218,7 @@ class BoatSpaceReservationList {
                     <td>
                         <span>${result.place}</span>
                     </td>
-                    <td>${t("boatSpaces.typeOption.${result.type}")}</td>
+                    <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
@@ -255,35 +276,46 @@ class BoatSpaceReservationList {
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
                     >
-                        <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
-                        <input type="text" name="ascending" id="sortDirection" value="${params.ascending}" style="visibility: hidden">
-
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
-                            <div class="tag-container">
+                        <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
+                        <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
+                        
+                        
+                        <div class="employee-filter-container">                        
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
+                                <div class="tag-container">
                                 $harborFilters
+                                </div>
                             </div>
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
+                                <div class="tag-container">
+                                    $reservationExpirationFilter
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
+                                <div class="tag-container">
+                                    $paymentFilters
+                                </div>
+                            </div>                            
                         </div>
                         
-                        <div class="block">
-                          <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
-                          <div class="tag-container">
-                            $reservationExpirationFilter
-                          </div>
+                        <div class="employee-filter-container">
+                            <div class="filter-group">
+                              <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
+                              <div class="tag-container">
+                                $boatSpaceTypeFilters
+                              </div>
+                            </div>
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                                <div class="tag-container">
+                                    $amenityFilters
+                                </div>
+                            </div>                        
                         </div>
 
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
-                            <div class="tag-container">
-                                $amenityFilters
-                            </div>
-                        </div>
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
-                            <div class="tag-container">
-                                $paymentFilters
-                            </div>
-                        </div>
                         <div class="block columns is-vcentered">
                             $warningFilterCheckbox
                         </div>
@@ -301,7 +333,7 @@ class BoatSpaceReservationList {
                                     </th>
 
                                     <th class="nowrap">
-                                        ${sortButton("PLACE_TYPE", t("boatSpaceReservation.title.type"))}
+                                        ${sortButton("PLACE_TYPE", t("employee.boatSpaceReservations.table.title.type"))}
                                     </th>
                                     <th class="nowrap">
                                         ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}

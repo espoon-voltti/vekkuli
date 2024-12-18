@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
-import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
@@ -13,6 +12,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
+import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.validation.constraints.*
 import org.springframework.stereotype.Service
@@ -133,6 +133,10 @@ class ReservationFormService(
             val newOrg =
                 organizationService.insertOrganization(
                     businessId = input.orgBusinessId ?: "",
+                    "",
+                    "",
+                    "",
+                    "",
                     name = input.orgName ?: "",
                     phone = input.orgPhone ?: "",
                     email = input.orgEmail ?: "",
@@ -141,7 +145,7 @@ class ReservationFormService(
                     postalCode = input.orgPostalCode ?: "",
                     postOffice = input.orgCity ?: "",
                     postOfficeSv = input.orgCity ?: "",
-                    municipalityCode = (input.orgMunicipalityCode ?: "1").toInt()
+                    municipalityCode = (input.orgMunicipalityCode ?: "1").toInt(),
                 )
             // add person to organization
             organizationService.addCitizenToOrganization(newOrg.id, reserverId)
@@ -152,6 +156,10 @@ class ReservationFormService(
                 UpdateOrganizationParams(
                     id = input.organizationId,
                     businessId = input.orgBusinessId,
+                    null,
+                    null,
+                    null,
+                    null,
                     name = input.orgName,
                     phone = input.orgPhone,
                     email = input.orgEmail,
@@ -230,7 +238,8 @@ class ReservationFormService(
     fun getBoatSpaceFormForCitizen(
         citizenId: UUID,
         reservationId: Int,
-        formInput: ReservationInput
+        formInput: ReservationInput,
+        requestURI: String
     ): String {
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
@@ -244,6 +253,9 @@ class ReservationFormService(
 
         return (
             citizenLayout.render(
+                true,
+                citizen?.fullName,
+                requestURI,
                 createBodyContent(formInput, citizen, reservation, UserType.CITIZEN)
             )
         )
@@ -254,12 +266,7 @@ class ReservationFormService(
         formInput: ReservationInput,
         requestURI: String,
     ): String {
-        val citizen =
-            if (formInput.citizenSelection != "newCitizen" || formInput.citizenId == null) {
-                formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
-            } else {
-                citizenService.getCitizen(formInput.citizenId)
-            }
+        val citizen = formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
 
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
@@ -568,7 +575,8 @@ class ReservationFormService(
         reservation: ReservationForApplicationForm,
         userType: UserType
     ): String {
-        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        // use citizen's email and phone if not given in form input
+        var input = formInput.copy(email = formInput.email ?: citizen?.email, phone = formInput.phone ?: citizen?.phone)
 
         val usedBoatId = formInput.boatId ?: reservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
