@@ -78,6 +78,30 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should create a renewal reservation for employee on behalf of organization if not exist or fetch if already`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    1,
+                    reserverId = organizationId,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                )
+            )
+        var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
+        assertEquals(reservation.id, createdRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
+
+        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
+        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+    }
+
+    @Test
     fun `should create a renewal reservation for citizen if not exist or fetch if already created`() {
         val reservation =
             testUtils.createReservationInConfirmedState(

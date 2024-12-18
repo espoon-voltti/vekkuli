@@ -152,14 +152,13 @@ class BoatSpaceRenewalRepository(
         }
 
     private fun buildSelectForReservationWithDependencies() =
-        """SELECT bsr.*, c.first_name, c.last_name, r.email, r.phone, 
+        """SELECT bsr.*, r.name,  r.email, r.phone, 
                 location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
                 bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
                   bs.description,
                   CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place
             FROM boat_space_reservation bsr
-            JOIN citizen c ON bsr.reserver_id = c.id 
-            JOIN reserver r ON c.id = r.id
+            JOIN reserver r ON bsr.reserver_id = r.id
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
             JOIN location ON location_id = location.id
             JOIN price ON price_id = price.id"""
