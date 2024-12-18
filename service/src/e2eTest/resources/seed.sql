@@ -555,7 +555,8 @@ VALUES
     ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner', null),
     ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner', null),
     ('D1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon poistettu vene', 120, 400, 20, 180, 'OutboardMotor', 'Delmo 600', '', 'Owner', '2024-04-01T00:00:00'),
-    ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon lohi', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null);
+    ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon lohi', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
+    ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon kuha', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null);
 
 
 INSERT INTO email_template (id, subject, body)
