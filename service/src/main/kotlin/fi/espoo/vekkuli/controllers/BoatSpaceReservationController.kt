@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.common.getAppUser
+import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.BoatSpaceReservationFilter
@@ -9,6 +10,7 @@ import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.employee.BoatSpaceReservationList
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
+import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,6 +36,8 @@ class BoatSpaceReservationController {
     @Autowired
     lateinit var layout: EmployeeLayout
 
+    private val logger = KotlinLogging.logger {}
+
     @GetMapping("/varaukset")
     @ResponseBody
     fun reservationSearchPage(
@@ -41,6 +45,9 @@ class BoatSpaceReservationController {
         @ModelAttribute params: BoatSpaceReservationFilter,
         model: Model
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "EMPLOYEE_RESERVATION_SEARCH")
+        }
         val reservations =
             reservationService.getBoatSpaceReservations(params)
 
