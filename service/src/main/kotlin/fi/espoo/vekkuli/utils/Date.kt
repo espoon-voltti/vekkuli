@@ -120,3 +120,22 @@ object LocalDateSerializer : KSerializer<LocalDate> {
 
     override fun deserialize(decoder: Decoder): LocalDate = LocalDate.parse(decoder.decodeString(), formatter)
 }
+
+fun getNextDate(
+    currentDate: LocalDate,
+    targetMonth: Int,
+    targetDay: Int
+): LocalDate {
+    val currentYear = currentDate.year
+
+    // Create the target date for the current year
+    val targetDateThisYear = LocalDate.of(currentYear, targetMonth, targetDay)
+
+    // Check if the target date is in the future
+    return if (currentDate.isBefore(targetDateThisYear)) {
+        targetDateThisYear
+    } else {
+        // If the target date is in the past, calculate it for the next year
+        LocalDate.of(currentYear + 1, targetMonth, targetDay)
+    }
+}
