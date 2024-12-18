@@ -108,22 +108,6 @@ class JdbiReserverRepository(
             query.mapTo<CitizenWithDetails>().toList()
         }
 
-    override fun getOrganizationById(id: UUID): Organization? =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    SELECT o.business_id, r.*, m.name as municipality_name
-                    FROM organization o
-                    JOIN reserver r ON r.id = o.id
-                    JOIN municipality m ON r.municipality_code = m.code
-                    WHERE o.id = :id
-                    """.trimIndent()
-                ).bind("id", id)
-                .mapTo<Organization>()
-                .firstOrNull()
-        }
-
     override fun updateCitizen(params: UpdateCitizenParams) {
         val citizenParams = mutableMapOf<String, Any?>()
 
