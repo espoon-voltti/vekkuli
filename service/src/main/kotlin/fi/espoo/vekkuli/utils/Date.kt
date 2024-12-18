@@ -15,6 +15,8 @@ import java.time.format.DateTimeFormatter
 abstract class TimeProvider {
     abstract fun getCurrentDateTime(): LocalDateTime
 
+    abstract fun isOverwritten(): Boolean
+
     fun getCurrentDate(): LocalDate = getCurrentDateTime().toLocalDate()
 }
 
@@ -26,17 +28,21 @@ class StagingTimeProvider(
     override fun getCurrentDateTime(): LocalDateTime {
         val dateTimeVariable = variable.get("current_system_staging_datetime")
         return if (dateTimeVariable != null && isValidDateTime(dateTimeVariable.value)) {
-            LocalDateTime.parse(dateTimeVariable.value)
+            LocalDateTime.of(LocalDateTime.parse(dateTimeVariable.value).toLocalDate(), LocalTime.now())
         } else {
             LocalDateTime.now()
         }
     }
+
+    override fun isOverwritten(): Boolean = variable.get("current_system_staging_datetime") != null
 }
 
 @Profile("!local & !staging")
 @Service
 class SystemTimeProvider : TimeProvider() {
     override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now()
+
+    override fun isOverwritten(): Boolean = false
 }
 
 val shortDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyy")
@@ -49,7 +55,7 @@ val testDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"
 
 fun formatAsShortDate(date: LocalDate): String = date.format(shortDateFormat)
 
-fun formatAsFullDate(date: LocalDate): String = date.format(fullDateFormat)
+fun formatAsFullDate(date: LocalDate?): String = if (date == null) "-" else date.format(fullDateFormat)
 
 fun formatAsShortYearDate(date: LocalDate?): String = if (date == null) "-" else date.format(shortYearDateFormat)
 

@@ -23,6 +23,9 @@ abstract class IntegrationTestBase {
     @Autowired
     protected lateinit var jdbi: Jdbi
 
+    @Autowired
+    protected lateinit var testUtils: TestUtils
+
     val citizenIdLeo: UUID = UUID.fromString("f5d377ea-5547-11ef-a1c7-7f2b94cf9afd")
     val citizenIdOlivia: UUID = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
     val citizenIdMikko: UUID = UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34")
@@ -63,15 +66,16 @@ abstract class IntegrationTestBase {
 
     fun insertDevBoatSpace(boatSpace: DevBoatSpace) {
         jdbi.inTransaction<Unit, Exception> { handle ->
-            handle.createUpdate(
-                """
+            handle
+                .createUpdate(
+                    """
                 INSERT INTO boat_space (
                     id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description
                 ) VALUES (
                     :id, :type, :locationId, :priceId, :section, :placeNumber, :amenity, :widthCm, :lengthCm, :description
                 )
                 """
-            ).bindKotlin(boatSpace)
+                ).bindKotlin(boatSpace)
                 .execute()
         }
     }

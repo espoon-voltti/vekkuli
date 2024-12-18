@@ -10,6 +10,8 @@ import java.util.*
 interface PaymentRepository {
     fun getPayment(stamp: UUID): Payment?
 
+    fun deletePaymentInCreatedStatusForReservation(reservationId: Int): Unit
+
     fun insertPayment(
         params: CreatePaymentParams,
         reservationId: Int
@@ -21,7 +23,7 @@ interface PaymentRepository {
         paidDate: LocalDateTime?
     ): Payment?
 
-    fun insertInvoicePayment(params: CreateInvoiceParams): Invoice
+    fun insertInvoice(params: CreateInvoiceParams): Invoice
 
     fun getInvoice(invoiceId: UUID): Invoice?
 

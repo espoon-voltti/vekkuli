@@ -1,12 +1,10 @@
 package fi.espoo.vekkuli.views.citizen
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.RadioOption
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.BoatFilter
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.Harbor
-import fi.espoo.vekkuli.domain.Location
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
@@ -23,6 +21,7 @@ class BoatSpaceSearch(
 
     fun render(
         locations: List<Location>,
+        winterLocations: List<Int>,
         isEmployee: Boolean = false
     ): String {
         val boatTypes = BoatType.entries.map { it.name }
@@ -30,35 +29,82 @@ class BoatSpaceSearch(
             formComponents.select(
                 "boatApplication.boatType",
                 "boatType",
-                boatTypes.first(),
+                BoatType.OutboardMotor.name,
                 boatTypes.map { it to formComponents.t("boatApplication.boatTypeOption.$it") },
             )
 
-        val widthInput =
+        val boatWidthInput =
             formComponents.decimalInput(
-                "boatApplication.boatWidthInMeters",
+                "boatSpaces.boatWidthHeader",
                 "width",
                 null,
                 required = true,
-                compact = true
             )
 
-        val lengthInput =
+        val boatLengthInput =
             formComponents.decimalInput(
-                "boatApplication.boatLengthInMeters",
+                "boatSpaces.boatLengthHeader",
                 "length",
                 null,
                 required = true,
-                compact = true
             )
 
-        val amenities = BoatSpaceAmenity.entries.toList().filter { it.name != "None" }
+        val spaceWidthInput =
+            formComponents.decimalInput(
+                "boatSpaces.spaceWidthHeader",
+                "width",
+                null,
+                required = true,
+            )
+
+        val spaceLengthInput =
+            formComponents.decimalInput(
+                "boatSpaces.spaceLengthHeader",
+                "length",
+                null,
+                required = true,
+            )
+
+        val trailerLengthInput =
+            formComponents.decimalInput(
+                "boatSpaces.trailerLengthHeader",
+                "length",
+                null,
+                required = true,
+            )
+
+        val trailerWidthInput =
+            formComponents.decimalInput(
+                "boatSpaces.trailerWidthHeader",
+                "width",
+                null,
+                required = true,
+            )
+
+        val storageTypeButtons =
+            formComponents.radioButtons(
+                "boatSpaces.storageTypeHeader",
+                "storageType",
+                "Slip",
+                storageTypeAmenities.map { RadioOption(it.name, t("boatSpaces.amenityOption.$it")) },
+                mapOf("x-model" to "storageType"),
+                isColumnLayout = true
+            )
+
+        val storageType =
+            // language=HTML
+            """
+             <div class="block" x-show="boatSpaceType === 'Storage'">
+                $storageTypeButtons
+            </div>            
+            """.trimIndent()
+
         // language=HTML
         val amenitiesCheckboxes =
             """
             <label class="label">${t("boatSpaces.amenityHeader")}</label>
                 <div class="field columns is-multiline is-mobile">
-                ${amenities.joinToString("\n") { option ->
+                ${slipAmenities.joinToString("\n") { option ->
                 """
                 <div class="column is-half pb-none">
                     <label class="checkbox">
@@ -68,7 +114,7 @@ class BoatSpaceSearch(
                 </div>
                 """.trimIndent()
             }}
-                                                                    </div>
+                </div>
             """.trimIndent()
 
         // language=HTML
@@ -77,8 +123,9 @@ class BoatSpaceSearch(
             <label class="label">${t("boatSpaces.harborHeader")}</label>
             <div class="field columns is-multiline is-mobile">
                 ${locations.joinToString("\n") { location ->
+                val visibility = if (!(location.id in winterLocations)) "x-show=\"boatSpaceType != 'Winter'\"" else ""
                 """
-                <div class="column is-half pb-none">
+                <div class="column is-half pb-none" $visibility>
                     <label class="checkbox">
                         <input name="harbor" id="${location.name.decapitalize()}-checkbox" value="${location.id}" type="checkbox"/>
                         <span>${location.name}</span>
@@ -89,16 +136,35 @@ class BoatSpaceSearch(
             </div>
             """.trimIndent()
 
-        val infoText = markDownService.render(t("boatSpaces.infoText"))
-
         val infoBox =
             """
-            <div class="reservation-info column is-two-thirds">
-                <!-- Comment: fragments/icons :: info -->
-                <div class="info-content">
-                    $infoText
+            <div class="mb-xl">
+                <div class="container is-highlight">
+                    <h2 class="has-text-weight-semibold">${t("boatSpaces.infoText.title")}</h2>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.newReservations")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.trailerReservations")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.winter")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.storage")}</h3>
                 </div>
             </div>
+            """.trimIndent()
+
+        val spaceTypeSelection =
+            formComponents.radioButtons(
+                "boatSpaces.typeHeader",
+                "boatSpaceType",
+                "Slip",
+                listOf("Slip", "Trailer", "Winter", "Storage").map {
+                    RadioOption(it, t("boatSpaces.typeOption.$it"), t("boatSpaces.typeOptionLabel.$it"))
+                },
+                mapOf("x-model" to "boatSpaceType")
+            )
+
+        val typeSelect =
+            """
+             <div class="block">
+               $spaceTypeSelection
+            </div>            
             """.trimIndent()
 
         val url = "/${if (isEmployee)"virkailija" else "kuntalainen"}/partial/vapaat-paikat"
@@ -113,7 +179,7 @@ class BoatSpaceSearch(
                     </div>
                     ${if (!isEmployee) infoBox else ""}
                     <div class="columns">
-                        <div class="column is-two-fifths" x-data="{boatSpaceType: 'Slip'}">
+                        <div class="column is-two-fifths" x-data="{boatSpaceType: 'Slip', storageType: 'Trailer'}">
                             <form id="form"
                                   method="get"
                                   action="$url"
@@ -121,59 +187,82 @@ class BoatSpaceSearch(
                                   hx-get="$url"
                                   hx-target="#boatSpaces"
                                   hx-swap="innerHTML"
-                                  hx-trigger="change, load, input changed delay:1000ms"
+                                  hx-trigger="load, input delay:500ms"
                                   hx-sync="closest #form:replace"
                                   hx-indicator="#loader, .loaded-content"
                                   >
 
                                 <h2 class="subtitle" id="search-page-header">${t("boatApplication.boatPlaceSearchTitle")}</h2>
 
-                                <div class="block">
-                                    <div class="field">
-                                        <label class="label">Haettava paikka</label>
-                                        <div class="control">
-                                            <label class="radio">
-                                                <input checked x-model="boatSpaceType" type="radio" id="boatSpaceType-slip" name="boatSpaceType" value="Slip"/>
-                                                ${t("boatSpaces.typeSlipOption")}
-                                            </label>
-                                            <label class="radio">
-                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-trailer" name="boatSpaceType" value="Trailer"/>
-                                                ${t("boatSpaces.typeTrailerOption")}
-                                            </label>
-                                             <label class="radio">
-                                                <input x-model="boatSpaceType" type="radio" id="boatSpaceType-storage" name="boatSpaceType" value="Storage"/>
-                                                ${t("boatSpaces.typeStorageOption")}
-                                            </label>
+                               $typeSelect
+                               
+                               $storageType
+
+                               
+                                <template x-if="boatSpaceType === 'Slip'">
+                                    <div class="block">
+                                        $boatTypeSelect
+                                        <div class="columns">
+                                            <div class='column'>
+                                                $boatWidthInput
+                                            </div>
+                                            <div class='column'>
+                                                $boatLengthInput
+                                            </div>
+                                        </div>
+                                    </div >
+                                </template>
+                                
+                                <template x-if="boatSpaceType === 'Trailer'">
+                                    <div class="columns">
+                                        <div class='column'>
+                                            $trailerWidthInput
+                                        </div>
+                                        <div class='column'>
+                                            $trailerLengthInput
                                         </div>
                                     </div>
-                                </div>
+                                </template>
+                                
+                                <template x-if="boatSpaceType != 'Slip' && boatSpaceType != 'Trailer'">
+                                    <div class='block'>
+                                        <div class="columns">
+                                            <div class='column'>
+                                                $spaceWidthInput
+                                            </div>
+                                            <div class='column'>
+                                                $spaceLengthInput
+                                            </div>
+                                        </div>
+                                        <div class="columns">
+                                        <div class='column'>
+                                            <p class="mt-s information-text">${t("boatSpaces.text.spaceSizeInfo")}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
 
-                                <div class="block">
-                                    $boatTypeSelect
-                                </div>
-
-                                <div class="block">
-                                    $widthInput
-                                    $lengthInput
-
-                                </div>
-
-                                <div class="block" x-show="boatSpaceType !== 'Trailer'">
+                                <div class="block" x-show="boatSpaceType === 'Slip'">
                                     $amenitiesCheckboxes
                                 </div>
 
-                                <div class="block">
+                                <div class="block" x-show="boatSpaceType != 'Storage'">
                                     $locationsCheckboxes
                                 </div>
 
                             </form>
                             <script>
                                 document.getElementById('form').addEventListener('change', function(event) {
-                                    localStorage.setItem('type', document.getElementById("boatType").value);
-                                    localStorage.setItem('width', document.getElementById('width').value);
-                                    localStorage.setItem('length', document.getElementById('length').value);
+                                    const data = new FormData(event.currentTarget);
+                                    localStorage.setItem('boatSpaceType', data.get('boatSpaceType'));
+                                    localStorage.setItem('boatType', data.get('boatType'));
+                                    localStorage.setItem('width', data.get('width'));
+                                    localStorage.setItem('length', data.get('length'));
                                 });
                             </script>
+                            <div class="mt-xl">
+                               <img src="/static/images/map-of-locations.png" alt="${t("citizenFrontPage.image.harbors.altText")}" />
+                            </div>
                         </div>
                         <div class="column">
                             <div id="boatSpaces" class="block loaded-content">
@@ -194,13 +283,16 @@ class BoatSpaceSearch(
         isEmployee: Boolean = false
     ): String {
         val rowsBuilder = StringBuilder()
-
+        // language=HTML
         harbors.forEach { harbor ->
             rowsBuilder.append(
                 """
-                <div class="block" x-data="{ showAll: false }">
-                    <h2 class="label harbor-header">${harbor.location.name}</h2>
-                    <table class="table is-striped is-hoverable is-fullwidth">
+                <div class="block" x-data="{ show: 5 }">
+                    <div class='mb-m'>
+                        <h3 class="subtitle harbor-header mb-s">${harbor.location.name}</h3>
+                        <p class="body">${harbor.location.address}</p>
+                    </div>
+                    <table class="table search-results-table is-striped is-hoverable is-fullwidth">
                         <thead>
                             <tr>
                                 <th>${t("boatSpaces.size")}</th>
@@ -216,11 +308,11 @@ class BoatSpaceSearch(
             harbor.boatSpaces.forEachIndexed { index, result ->
                 rowsBuilder.append(
                     """
-                    <tr ${if (index > 3) ":class=\"showAll ? '' : 'is-hidden'\"" else ""}>
+                    <tr :class="${index + 1} <= show  ? '' : 'is-hidden' ">
                         <td>${result.formattedSizes}</td>
                         <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                         <td>${result.priceInEuro} &euro;</td>
-                        <td>${result.section}${result.placeNumber}</td>
+                        <td>${result.place}</td>
                         <td>
                     """.trimIndent()
                 )
@@ -242,17 +334,23 @@ class BoatSpaceSearch(
                 } else {
                     rowsBuilder.append(
                         """
-                        <a class="button is-secondary reserve-button" @click="
+                        <button class="button is-primary reserve-button" @click="
                             openModal = true; 
                             boatSpace = {
                                 id: ${result.id},
-                                place: '${harbor.location.name} ${result.section}${result.placeNumber}',
+                                place: '${harbor.location.name} ${result.place}',
                                 size: '${result.formattedSizes}',
-                                amenity: '${t("boatSpaces.amenityOption.${result.amenity}")}',
+                                amenity: '${if (result.amenity != BoatSpaceAmenity.None) {
+                            t(
+                                "boatSpaces.amenityOption.${result.amenity}"
+                            )
+                        } else {
+                            ""
+                        }}',
                                 price: '${result.priceInEuro}'
                             };">
                             ${t("boatSpaces.reserve")}
-                        </a>
+                        </button>
                         """.trimIndent()
                     )
                 }
@@ -262,23 +360,34 @@ class BoatSpaceSearch(
 
             rowsBuilder.append("</tbody></table>")
 
-            if (harbor.boatSpaces.size > 3) {
-                rowsBuilder.append(
-                    """
-                    <div>
-                        <a @click="showAll = !showAll" 
-                           x-text="showAll ? '${t("showLess")}' : '${t("showMore")}'"></a>
-                    </div>
-                    """.trimIndent()
-                )
-            }
+            rowsBuilder.append(
+                """
+                <span style="margin-right: 16px">
+                    <a x-show="show < ${harbor.boatSpaces.size}" 
+                        @click="show = Math.min(show + 5, ${harbor.boatSpaces.size})">
+                        <span class="icon is-small">
+                             ${icons.chevronDown}
+                        </span>
+                        <span x-text="`${t("showMore")} (${"$"}{${harbor.boatSpaces.size} - show})`"></span>
+                    </a>
+                </span>
+                <span>
+                    <a x-show="show > 5" @click="show = Math.max(show - 5, 5)">
+                        <span class="icon is-small">
+                             ${icons.chevronUp}
+                        </span>
+                       <span>${t("showLess")}</span>
+                    </a>
+                </span>
+                """.trimIndent()
+            )
 
             rowsBuilder.append("</div>")
         }
 
         // language=HTML
         val searchResultHeader =
-            """<h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>$spaceCount</span></h3> """
+            """<h3><span>${t("boatApplication.freeSpaceCount")}</span> <span>($spaceCount)</span></h3> """
 
         // language=HTML
         val template =
@@ -312,7 +421,7 @@ class BoatSpaceSearch(
                         <p class="block has-text-left">${t("auth.reservingBoatSpace")}</p>
                         <p class="has-text-left" x-text="boatSpace.place"></p>
                         <p class="has-text-left" x-text="boatSpace.size"></p>
-                        <p class="has-text-left" x-text="boatSpace.amenity"></p>
+                        <p x-if="!!boatSpace.amenity" class="has-text-left" x-text="boatSpace.amenity"></p>
                         <p class="has-text-left block" x-text="boatSpace.price + ' &euro;'"></p>
                         <p class="has-text-left block">${t("auth.reservingRequiresAuth")}</p>
                         <button id="auth-modal-cancel" class="button" @click="openModal = false" type="button">

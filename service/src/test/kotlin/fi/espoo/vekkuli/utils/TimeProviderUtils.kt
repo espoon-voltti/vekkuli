@@ -1,0 +1,23 @@
+package fi.espoo.vekkuli.utils
+
+import org.mockito.Mockito
+import java.time.LocalDate
+import java.time.LocalDateTime
+
+fun mockTimeProvider(
+    timeProvider: TimeProvider,
+    date: LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0, 0)
+) {
+    // Mock the methods
+    Mockito.`when`(timeProvider.getCurrentDateTime()).thenReturn(date)
+    Mockito.`when`(timeProvider.getCurrentDate()).thenReturn(date.toLocalDate())
+}
+
+val startOfSlipRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 0)
+val startOfWinterSpaceRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 1, 12, 0, 0)
+
+val endDateWithinMonthOfSlipRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
+val endDateWithinMonthOfWinterRenewWindow: LocalDate = LocalDate.of(2025, 8, 25)
+
+val startOfSlipReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
+val startOfWinterReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 1, 12, 0, 0)

@@ -4,46 +4,54 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.WarningBox
-import fi.espoo.vekkuli.views.components.modal.*
-import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class ReservationList(
-    private val icons: Icons,
     private val cardHeading: ReservationCardHeading,
     private val cardInfo: ReservationCardInformation,
-    private val cardButtons: ReservationCardButtons,
+    private val citizenButtons: CitizenCardButtons,
+    private val employeeButtons: EmployeeCardButtons,
     private val warningBox: WarningBox,
+    private val reservationTerminationReason: ReservationTerminationReason,
+    private val reservationCardWarningBox: ReservationCardWarningBox
 ) : BaseView() {
     fun render(
-        @SanitizeInput citizen: CitizenWithDetails,
-        @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        userType: UserType
+        citizen: CitizenWithDetails,
+        boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        userType: UserType,
+        reserverId: UUID,
     ): String {
         // language=HTML
         return """
             <div class="reservation-list form-section" ${addTestId("reservation-list")}>
-                ${createReservationCards(boatSpaceReservations, citizen, userType)}
+                ${createReservationCards(boatSpaceReservations, citizen, userType, reserverId)}
             </div>
             """.trimIndent()
     }
 
-    fun createReservationCards(
+    private fun createReservationCards(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
         citizen: CitizenWithDetails,
-        userType: UserType
+        userType: UserType,
+        reserverId: UUID
     ): String =
         boatSpaceReservations.joinToString("\n") { reservation ->
             // language=HTML
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
-                ${cardInfo.render(reservation)}
-                ${if (reservation.canRenew) warningBox.render(t("reservationWarning.renewInfo")) else ""}
-                ${cardButtons.render(reservation, citizen, userType)}
+                ${cardInfo.render(reservation, userType, reserverId)}
+                ${reservationTerminationReason.render(reservation)}
+                ${reservationCardWarningBox.render(reservation, userType)}
+                ${
+                if (userType == UserType.EMPLOYEE) {
+                    employeeButtons.render(reservation, citizen)
+                } else {
+                    citizenButtons.render(reservation, citizen)
+                }}
             </div>
             """.trimIndent()
         }

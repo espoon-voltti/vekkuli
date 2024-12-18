@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -51,7 +52,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should create payment and link it to reservation`() {
         val madeReservation =
-            createReservationInPaymentState(
+            testUtils.createReservationInPaymentState(
                 timeProvider,
                 reservationService,
                 this.citizenIdLeo
@@ -61,14 +62,14 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
             reservationService.addPaymentToReservation(
                 madeReservation.id,
                 CreatePaymentParams(
-                    citizenId = this.citizenIdLeo,
+                    reserverId = this.citizenIdLeo,
                     reference = "1",
                     totalCents = 1,
                     vatPercentage = 24.0,
                     productCode = "1",
                 )
             )
-        assertEquals(madeReservation.reserverId, payment.citizenId, "payment is added for correct citizen")
+        assertEquals(madeReservation.reserverId, payment.reserverId, "payment is added for correct citizen")
         assertEquals(madeReservation.id, payment.reservationId, "payment is linked to the reservation")
         assertEquals(null, payment.paid, "payment is not set to paid")
     }
@@ -106,7 +107,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should add invoice`() {
         val invoice =
-            createInvoiceWithTestParameters(citizenService, invoiceService, timeProvider, this.citizenIdLeo)
+            testUtils.createInvoiceWithTestParameters(citizenService, invoiceService, timeProvider, this.citizenIdLeo)
         val fetchedInvoice = paymentService.getInvoice(invoice.id)
         assertEquals(invoice.id, fetchedInvoice?.id, "Fetched invoice ID matches the inserted invoice ID")
         assertEquals(invoice, fetchedInvoice, "Fetched invoice matches the inserted invoice")
@@ -115,7 +116,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should set the reservation as paid and set status to confirmed`() {
         val madeReservation =
-            createReservationInInvoiceState(
+            testUtils.createReservationInInvoiceState(
                 timeProvider,
                 reservationService,
                 invoiceService,

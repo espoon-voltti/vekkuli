@@ -46,6 +46,7 @@ data class BoatSpaceReservation(
 data class ReservationWithDependencies(
     val id: Int,
     val boatId: Int?,
+    val trailerId: Int?,
     val boatSpaceId: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -56,12 +57,14 @@ data class ReservationWithDependencies(
     val reserverId: UUID?,
     val employeeId: UUID?,
     val reserverType: ReserverType?,
+    val storageType: StorageType?,
     val name: String?,
     val email: String?,
     val phone: String?,
     val type: BoatSpaceType,
     val section: String,
     val placeNumber: Int,
+    val place: String,
     val amenity: BoatSpaceAmenity,
     val widthCm: Int,
     val lengthCm: Int,
@@ -74,11 +77,11 @@ data class ReservationWithDependencies(
     val validity: ReservationValidity? = ReservationValidity.Indefinite,
     val renewedFromId: Int? = null,
 ) {
-    val priceInEuro: Double
+    val priceInEuro: String
         get() = priceCents.centsToEuro()
-    val vatPriceInEuro: Double
+    val vatPriceInEuro: String
         get() = vatCents.centsToEuro()
-    val priceWithoutVatInEuro: Double
+    val priceWithoutVatInEuro: String
         get() = netPriceCents.centsToEuro()
 }
 
@@ -98,41 +101,19 @@ data class BoatSpaceReservationItem(
     val place: String,
     val section: String,
     val locationName: String,
-    val boatRegistrationCode: String?,
-    val boatOwnership: OwnershipStatus?,
+    val boat: Boat?,
+    val trailer: Trailer?,
+    val storageType: StorageType?,
     val municipalityCode: Int,
     val municipalityName: String,
     val paymentDate: LocalDate?,
-    val warnings: Set<String> = emptySet()
+    val warnings: Set<String> = emptySet(),
+    val validity: ReservationValidity?
 ) {
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 
     fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }
-
-data class BoatSpaceReservationItemWithWarning(
-    val id: Int,
-    val boatSpaceId: Int,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val status: ReservationStatus,
-    val reserverId: UUID,
-    val actingUserId: UUID?,
-    val reserverType: ReserverType,
-    val name: String,
-    val email: String,
-    val phone: String,
-    val type: BoatSpaceType,
-    val place: String,
-    val locationName: String,
-    val boatRegistrationCode: String?,
-    val boatOwnership: OwnershipStatus?,
-    val warning: String?,
-    val section: String,
-    val municipalityCode: Int,
-    val municipalityName: String,
-    val paymentDate: LocalDate?,
-)
 
 enum class BoatSpaceFilterColumn {
     START_DATE,
@@ -149,6 +130,11 @@ enum class PaymentFilter {
     UNPAID,
 }
 
+enum class ReservationExpiration {
+    Active,
+    Expired,
+}
+
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
     val ascending: Boolean = false,
@@ -158,23 +144,14 @@ data class BoatSpaceReservationFilter(
     val nameSearch: String? = null,
     val warningFilter: Boolean? = null,
     val sectionFilter: List<String> = emptyList(),
+    val expiration: ReservationExpiration = ReservationExpiration.Active,
+    val boatSpaceType: List<BoatSpaceType> = emptyList(),
 ) {
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
+
+    fun hasBoatSpaceType(id: BoatSpaceType): Boolean = boatSpaceType.contains(id)
 
     fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
 
     fun hasPayment(paymentFilter: PaymentFilter): Boolean = payment.contains(paymentFilter)
-}
-
-fun getSortingSql(sort: BoatSpaceReservationFilter): String {
-    val sortDir = if (!sort.ascending) " DESC" else ""
-    return when (sort.sortBy) {
-        BoatSpaceFilterColumn.START_DATE -> "ORDER BY start_date$sortDir"
-        BoatSpaceFilterColumn.END_DATE -> "ORDER BY end_date$sortDir"
-        BoatSpaceFilterColumn.PLACE -> "ORDER BY location_name$sortDir, place$sortDir"
-        BoatSpaceFilterColumn.PLACE_TYPE -> "ORDER BY type$sortDir"
-        BoatSpaceFilterColumn.CUSTOMER -> "ORDER BY full_name$sortDir"
-        BoatSpaceFilterColumn.HOME_TOWN -> "ORDER BY home_town$sortDir"
-        BoatSpaceFilterColumn.BOAT -> "ORDER BY boat_registration_code$sortDir"
-    }
 }

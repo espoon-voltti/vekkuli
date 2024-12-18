@@ -34,7 +34,19 @@ class JdbiReserverRepository(
             handle
                 .createQuery(
                     """
-                    SELECT *, m.name as municipality_name
+                    SELECT 
+                        r.id,
+                        r.name,
+                        r.type,
+                        r.email,
+                        r.phone,
+                        r.municipality_code,
+                        m.name as municipality_name,
+                        r.street_address,
+                        r.street_address_sv,
+                        r.post_office,
+                        r.post_office_sv,
+                        r.postal_code
                     FROM reserver r
                     JOIN municipality m ON r.municipality_code = m.code
                     WHERE r.id = :id
@@ -80,7 +92,7 @@ class JdbiReserverRepository(
         jdbi.withHandleUnchecked { handle ->
             val nameSearchClause =
                 buildNameSearchClause(nameSearch)
-            var query =
+            val query =
                 handle.createQuery(
                     """
                     SELECT c.first_name, c.last_name, c.national_id, r.*, m.name as municipality_name 
@@ -94,22 +106,6 @@ class JdbiReserverRepository(
                 query.bind("nameSearch", nameSearch.trim())
             }
             query.mapTo<CitizenWithDetails>().toList()
-        }
-
-    override fun getOrganizationById(id: UUID): Organization? =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    SELECT o.*, r.*, m.name as municipality_name
-                    FROM organization o
-                    JOIN reserver r ON r.id = o.id
-                    JOIN municipality m ON r.municipality_code = m.code
-                    WHERE o.id = :id
-                    """.trimIndent()
-                ).bind("id", id)
-                .mapTo<Organization>()
-                .firstOrNull()
         }
 
     override fun updateCitizen(params: UpdateCitizenParams) {

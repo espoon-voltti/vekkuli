@@ -15,7 +15,7 @@ abstract class SqlExpr {
     }
 }
 
-class OrExpr(
+open class OrExpr(
     private val items: List<SqlExpr>
 ) : SqlExpr() {
     override fun toSql(): String {
@@ -32,7 +32,7 @@ class OrExpr(
     }
 }
 
-class AndExpr(
+open class AndExpr(
     private val items: List<SqlExpr>
 ) : SqlExpr() {
     override fun toSql(): String {
@@ -73,13 +73,15 @@ open class InExpr<T>(
     private val columnName: String,
     private val data: List<T>,
     private val convert: (v: T) -> Any = { v -> v as Any },
+    private val isNot: Boolean = false,
 ) : SqlExpr() {
     private lateinit var names: List<String>
 
     override fun toSql(): String =
         if (data.isNotEmpty()) {
+            val notPart = if (isNot) "NOT " else ""
             names = data.indices.map { "in_${columnName}_${getNextIndex()}" }
-            "$columnName IN (${names.joinToString(", ") {":$it"}})"
+            "$columnName ${notPart}IN (${names.joinToString(", ") {":$it"}})"
         } else {
             ""
         }

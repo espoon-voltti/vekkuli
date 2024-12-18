@@ -50,14 +50,16 @@ class EditBoat {
                 "depth",
                 boat.depth,
                 required = true,
+                min = 0.1
             )
 
         val widthInput =
             formComponents.decimalInput(
-                "boatApplication.boatWidthInMeters",
+                "shared.label.widthInMeters",
                 "width",
                 boat.width,
                 required = true,
+                min = 0.1
             )
 
         val registrationNumberInput =
@@ -69,10 +71,11 @@ class EditBoat {
 
         val lengthInput =
             formComponents.decimalInput(
-                "boatApplication.boatLengthInMeters",
+                "shared.label.lengthInMeters",
                 "length",
                 boat.length,
                 required = true,
+                min = 0.1
             )
 
         val ownershipSelect =
@@ -169,7 +172,7 @@ class EditBoat {
                             hx-swap="outerHTML"
                     >${formComponents.t("cancel")}</button>
                     <button
-                            id="submit"
+                            id="submit-button"
                             class="button is-primary"
                             type="submit"
                     >${formComponents.t("citizenDetails.saveChanges")}</button>

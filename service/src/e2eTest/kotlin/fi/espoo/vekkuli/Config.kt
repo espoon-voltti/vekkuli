@@ -8,6 +8,6 @@ val runningInDocker = System.getenv("ENVIRONMENT") == "local-docker"
 val baseUrl = if (runningInDocker) "http://api-gateway:3000" else "http://localhost:3000"
 val baseUrlWithEnglishLangParam = "$baseUrl?lang=en"
 val citizenPageInEnglish = "$baseUrl/kuntalainen/omat-tiedot?lang=en"
-val employeePageInEnglish = "$baseUrl/virkailija?lang=en"
+val employeeHomePage = "$baseUrl/virkailija"
 
 const val E2E_DEBUG_LOGGING = false

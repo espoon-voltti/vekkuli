@@ -28,14 +28,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should get citizen by full name`() {
-        val citizens = citizenService.getCitizens("Olivia Virtanen")
-        assertEquals(1, citizens.size, "Should find a citizen")
-        assertEquals(citizenIdOlivia, citizens[0].id, "Citizen is correctly fetched")
-    }
-
-    @Test
-    fun `should get citizen by first name`() {
-        val citizens = citizenService.getCitizens("olivia")
+        val citizens = citizenService.getCitizens("Virtanen Olivia")
         assertEquals(1, citizens.size, "Should find a citizen")
         assertEquals(citizenIdOlivia, citizens[0].id, "Citizen is correctly fetched")
     }

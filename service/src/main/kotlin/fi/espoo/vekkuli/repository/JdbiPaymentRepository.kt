@@ -25,8 +25,8 @@ class JdbiPaymentRepository(
                 handle
                     .createQuery(
                         """
-                        INSERT INTO payment (id, citizen_id, reference, total_cents, vat_percentage, product_code, reservation_id)
-                        VALUES (:id, :citizenId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId)
+                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id)
+                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId)
                         RETURNING *
                         """
                     ).bindKotlin(params)
@@ -60,20 +60,20 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    override fun insertInvoicePayment(params: CreateInvoiceParams): Invoice {
+    override fun insertInvoice(params: CreateInvoiceParams): Invoice {
         val id = UUID.randomUUID()
         return jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
-                    INSERT INTO invoice (id, due_date, reference, reservation_id, citizen_id, payment_id)
-                    VALUES (:id, :dueDate, :reference, :reservationId, :citizenId, :paymentId)
+                    INSERT INTO invoice (id, due_date, reference, reservation_id, reserver_id, payment_id)
+                    VALUES (:id, :dueDate, :reference, :reservationId, :reserverId, :paymentId)
                     RETURNING *
                     """
                 ).bindKotlin(params)
                 .bind("id", id)
                 .bind("reservationId", params.reservationId)
-                .bind("citizenId", params.citizenId)
+                .bind("reserverId", params.reserverId)
                 .bind("paymentId", params.paymentId)
                 .mapTo<Invoice>()
                 .one()
@@ -115,4 +115,16 @@ class JdbiPaymentRepository(
                 .mapTo<Payment>()
                 .firstOrNull()
         }
+
+    override fun deletePaymentInCreatedStatusForReservation(reservationId: Int) {
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    DELETE FROM payment WHERE reservation_id = :reservationId AND status = 'Created'
+                    """.trimIndent()
+                ).bind("reservationId", reservationId)
+                .execute()
+        }
+    }
 }
