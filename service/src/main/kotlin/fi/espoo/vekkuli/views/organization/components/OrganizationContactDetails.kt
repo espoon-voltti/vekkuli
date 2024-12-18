@@ -73,13 +73,13 @@ class OrganizationContactDetails(
         val organizationNameField =
             formComponents.field(
                 "organizationDetails.title.name",
-                "firstNameField",
+                "organizationNameField",
                 organization.name,
             )
         val organizationBusinessIdField =
             formComponents.field(
                 "organizationDetails.title.businessId",
-                "lastNameField",
+                "businessIdField",
                 organization.businessId,
             )
         val municipalityField =
