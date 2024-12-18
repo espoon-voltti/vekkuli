@@ -281,19 +281,19 @@ class BoatSpaceReservationList {
                         
                         
                         <div class="employee-filter-container">                        
-                            <div class="block">
+                            <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
                                 <div class="tag-container">
                                 $harborFilters
                                 </div>
                             </div>
-                            <div class="block">
+                            <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
                                 <div class="tag-container">
                                     $reservationExpirationFilter
                                 </div>
                             </div>
-                            <div class="block">
+                            <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
                                 <div class="tag-container">
                                     $paymentFilters
@@ -302,13 +302,13 @@ class BoatSpaceReservationList {
                         </div>
                         
                         <div class="employee-filter-container">
-                            <div class="block">
+                            <div class="filter-group">
                               <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
                               <div class="tag-container">
                                 $boatSpaceTypeFilters
                               </div>
                             </div>
-                            <div class="block">
+                            <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
                                 <div class="tag-container">
                                     $amenityFilters

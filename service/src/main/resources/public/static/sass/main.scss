@@ -930,5 +930,15 @@ ul {
 
 .employee-filter-container {
   display: flex;
-  column-gap: 80px;
+  row-gap: calc($block-spacing*2);
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  .filter-group {
+    margin-right: 60px;
+  }
+}
+
+.employee-filter-container:not(:last-child) {
+  margin-bottom: calc($block-spacing*2);
 }
