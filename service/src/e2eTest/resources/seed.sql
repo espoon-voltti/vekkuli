@@ -3033,7 +3033,9 @@ VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'C
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2023-12-31', 'Invoiced', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer');
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer'),
+       ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 3, '2024-02-01', '2025-01-31', 'Confirmed', 3, 'Indefinite', null, null);
+
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)
