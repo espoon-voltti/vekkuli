@@ -4,6 +4,8 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.service.CitizenService
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 
 enum class EnvType {
     Production,
@@ -43,7 +45,15 @@ class Utils {
             return "$baseUrl$path"
         }
 
-        fun redirectUrl(path: String): String = "redirect:${getServiceUrl(path)}"
+        fun redirectUrlThymeleaf(path: String): String = "redirect:${getServiceUrl(path)}"
+
+        fun redirectUrl(url: String): ResponseEntity<String> =
+            ResponseEntity
+                .status(HttpStatus.FOUND)
+                .header("Location", url)
+                .body("")
+
+        fun badRequest(body: String): ResponseEntity<String> = ResponseEntity.badRequest().body(body)
 
         fun getCitizen(
             request: HttpServletRequest,

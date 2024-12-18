@@ -15,16 +15,18 @@ $spacing-large: 24px;
 $spacing-xl: 32px;
 $block-spacing: $spacing-medium;
 $activeColor: #D9E4F4;
+$checkbox-size: 36px;
 
 @use "bulma/sass" with (
   $primary: $bulma-primary,
+  $link: $bulma-primary,
   $family-primary: "Lato, sans-serif",
   $family-secondary: "Lato, sans-serif",
   $spacing-shortcuts: ("margin": "m", "padding": "p"),
   $spacing-horizontal: "h",
   $spacing-vertical: "v",
   $spacing-values: ("none": 0, "s": $spacing-small, "m": $spacing-medium,
-          "l": $spacing-large, "xl": $spacing-xl),
+          "l": $spacing-large, "xl": $spacing-xl, "auto": auto),
   $icon-text-spacing: $spacing-small,
   $icon-dimensions: $spacing-medium,
   $block-spacing: $block-spacing,
@@ -44,6 +46,9 @@ $activeColor: #D9E4F4;
   $menu-label-letter-spacing: 0,
   $dropdown-menu-min-width: 100%,
   $column-gap: $spacing-small,
+  $subtitle-size: 20px,
+  $subtitle-weight: 600,
+  $subtitle-line-height: 24px,
 );
 
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
@@ -74,6 +79,11 @@ html, body {
 .container {
   background: $white;
   padding: $spacing-large;
+
+  &.is-highlight
+  {
+    background-color: $light-blue;
+  }
 }
 
 .section {
@@ -112,6 +122,25 @@ h4 {
   text-align: center;
 }
 
+.is-title-main {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px;
+    text-align: left;
+}
+
+.is-title-secondary {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 32px;
+}
+
+.is-title-tertiary {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+}
+
 .label {
   /* font-family: Work Sans; */
   font-size: 16px;
@@ -120,11 +149,18 @@ h4 {
   text-align: left;
 }
 
-.textarea {
-  resize: none;
+.is-primary-color {
+  color: $bulma-primary;
 }
 
-.textarea,
+.textarea {
+  resize: none;
+
+  &.resizable{
+    resize: vertical;
+  }
+}
+
 .input {
   border: none;
   border-bottom: 2px solid $black;
@@ -137,12 +173,16 @@ h4 {
   width: 250px;
 }
 
+.input.auto-width, .textarea.auto-width {
+  width: auto;
+}
+
 .checkmark {
   position: absolute;
   top: 0;
   left: 0;
-  height: 36px;
-  width: 36px;
+  height: $checkbox-size;
+  width: $checkbox-size;
   border-radius: 50%;
   background-color: transparent;
 }
@@ -167,6 +207,18 @@ h4 {
   margin-bottom: $spacing-small;
 }
 
+.radio.has-text-top-aligned {
+    align-items: start;
+  .label-text {
+    margin-top: calc($checkbox-size/(2*2));
+    .information-text {
+      margin-top: calc($checkbox-size/(2*2));
+      font-size: 13px;
+      line-height: 17.5px;
+    }
+  }
+}
+
 .radio > label {
   cursor: pointer;
 }
@@ -174,8 +226,8 @@ h4 {
 input[type="radio"] {
   appearance: none;
   background-color: $white;
-  width: 36px;
-  height: 36px;
+  min-width: $checkbox-size;
+  min-height: $checkbox-size;
   border: 2px solid #ccc;
   border-radius: 50%;
   display: inline-grid;
@@ -209,8 +261,8 @@ input[type="radio"]:checked {
 }
 
 .checkbox input[type="checkbox"] {
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px;
   accent-color: $bulma-primary;
   border-radius: 4px;
 }
@@ -250,6 +302,7 @@ input[type="radio"]:checked {
 }
 
 .warning {
+  display: inline-block;
   border: 1px solid $warning;
   margin-bottom: 16px
 }
@@ -313,6 +366,11 @@ body > .columns {
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.3);
   background-color: white;
   padding: 20px 60px;
+
+  &.is-wide {
+    width: 90%;
+    max-width: 800px;
+  }
 }
 
 
@@ -349,6 +407,17 @@ body > .columns {
   .info-content {
     flex: 20;
     margin-left: $spacing-medium;
+  }
+}
+.search-results-table {
+  th, td {
+    width: 25%;
+    vertical-align: middle;
+  }
+
+  th {
+    text-transform: uppercase;
+    font-size: 12px;
   }
 }
 
@@ -461,6 +530,10 @@ body > .columns {
   margin-right: 16px
 }
 
+.menu-container {
+  max-width: 200px;
+}
+
 .menu {
   overflow: auto;
   height: 100%;
@@ -542,6 +615,7 @@ a.active {
 
 .reservation-table-icon {
   vertical-align: middle;
+  padding-left: 6px;
 }
 
 tr.table-borderless th {
@@ -779,6 +853,18 @@ ul {
   transform: rotate(90deg);
 }
 
+.icon-rotate-180 {
+  transform: rotate(180deg);
+}
+
+.icon-rotate-270 {
+  transform: rotate(270deg);
+}
+
+.icon-rotate-360 {
+  transform: rotate(360deg);
+}
+
 .invoice-line
 {
   display:inline-block;
@@ -789,4 +875,70 @@ ul {
   align-items: center;
   display: flex;
   gap: $spacing-small;
+}
+
+.debug-info {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.debug-info__content {
+  pointer-events: auto;
+}
+
+.is-error-container {
+  border: 1px solid $error;
+}
+
+.has-text-danger {
+    color: $error !important;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+}
+
+.icon.is-extra-large
+{
+  width: auto;
+  height: auto;
+  & svg {
+    width: 120px
+  }
+}
+
+.is-icon-link {
+  display: flex;
+  align-items: center;
+  & > .icon {
+    margin-right: $spacing-small;
+  }
+}
+
+#boat-space-reservations-employee .container {
+  max-width: none;
+}
+
+.employee-filter-container {
+  display: flex;
+  row-gap: calc($block-spacing*2);
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  .filter-group {
+    margin-right: 60px;
+  }
+}
+
+.employee-filter-container:not(:last-child) {
+  margin-bottom: calc($block-spacing*2);
 }

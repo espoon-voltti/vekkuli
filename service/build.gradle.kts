@@ -109,14 +109,14 @@ dependencies {
     testImplementation("com.microsoft.playwright:playwright:1.47.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:2.3.12")
-    implementation("io.ktor:ktor-client-cio:2.3.12") // CIO engine
+    implementation("io.ktor:ktor-client-cio:3.0.2") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:2.3.1") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.1") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
-    implementation("software.amazon.awssdk:ses:2.28.21")
+    implementation("software.amazon.awssdk:ses:2.29.15")
     implementation("software.amazon.awssdk:core:2.28.26")
     implementation("software.amazon.awssdk:regions:2.20.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")

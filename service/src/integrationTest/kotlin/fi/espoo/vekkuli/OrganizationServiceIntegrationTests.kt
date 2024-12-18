@@ -50,6 +50,10 @@ class OrganizationServiceIntegrationTests : IntegrationTestBase() {
         val org =
             organizationService.insertOrganization(
                 "123456-7",
+                "",
+                "",
+                "",
+                "",
                 "Hauska ry",
                 "12345678",
                 "hauska@noreplytest.fi",

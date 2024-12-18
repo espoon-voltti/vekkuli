@@ -2,10 +2,11 @@ package fi.espoo.vekkuli.pages
 
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
+import fi.espoo.vekkuli.baseUrl
 
 class CitizenDetailsPage(
-    private val page: Page
-) {
+    page: Page
+) : BasePage(page) {
     val citizenDetailsSection = page.getByTestId("citizen-details")
 
     private fun getBoatText(
@@ -33,12 +34,20 @@ class CitizenDetailsPage(
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
 
-    fun getByDataTestId(
-        testId: String,
-        locator: Locator? = null
-    ): Locator {
-        val test = "[data-testid=\"$testId\"]"
-        return locator?.locator(test) ?: page.locator(test)
+    fun navigateToPage() {
+        page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
+    }
+
+    fun hideModalWindow() {
+        modalWindow.click(
+            Locator
+                .ClickOptions()
+                .setPosition(5.0, 5.0)
+        )
+    }
+
+    fun toggleExpiredReservationsAccordion() {
+        getByDataTestId("accordion-title", expiredReservationListAccordion).click()
     }
 
     // Citizen information
@@ -84,7 +93,7 @@ class CitizenDetailsPage(
     val otherIdentifier: Locator = page.getByTestId("otherIdentifier")
     val extraInformation: Locator = page.getByTestId("extraInformation")
 
-    val submitButton: Locator = page.getByTestId("submit")
+    val submitButton: Locator = page.getByTestId("submit-button")
     val cancelButton: Locator = page.getByTestId("cancel")
 
     val memoNavi: Locator = page.getByTestId("memos-tab-navi")
@@ -143,6 +152,54 @@ class CitizenDetailsPage(
     val expiredReservationListLoader = getByDataTestId("expired-reservation-list-loader")
     val expiredReservationListAccordion = getByDataTestId("expired-reservation-list-accordion")
     val modalWindow = getByDataTestId("modal-window")
+    val terminateReservationAsEmployeeButton = getByDataTestId("open-terminate-reservation-modal-for-employee")
+    val terminateReservationAsEmployeeForm = getByDataTestId("terminate-reservation-employee-form")
+
+    val terminateReservationEndDate = terminateReservationAsEmployeeForm.getByTestId("endDate")
+    val terminateReservationReason = terminateReservationAsEmployeeForm.getByTestId("terminationReason")
+    val terminateReservationExplanation = terminateReservationAsEmployeeForm.getByTestId("termination-explanation")
+    val terminateReservationMessageTitle = terminateReservationAsEmployeeForm.getByTestId("message-title")
+    val terminateReservationMessageContent = terminateReservationAsEmployeeForm.getByTestId("message-content")
+
+    val terminationReasonInFirstReservationListItem =
+        getByDataTestId("reservation-card-termination-reason", reservationListCards.first())
+    val terminationCommentInFirstReservationListItem =
+        getByDataTestId("reservation-card-termination-explanation", reservationListCards.first())
+
+    val terminationDateInFirstReservationListItem =
+        getByDataTestId("reservation-list-card-terminated-date", reservationListCards.first())
+
+    val terminationReasonInFirstExpiredReservationListItem =
+        getByDataTestId("reservation-card-termination-reason", expiredReservationListCards.first())
+    val terminationCommentInFirstExpiredReservationListItem =
+        getByDataTestId("reservation-card-termination-explanation", expiredReservationListCards.first())
+
+    val terminationDateInFirstExpiredReservationListItem =
+        getByDataTestId("reservation-list-card-terminated-date", expiredReservationListCards.first())
+    val boatWarningModalWeightInput = page.locator("input[value='BoatWeight']")
+    val trailerWarningModalLengthInput = page.locator("input[value='TrailerLength']")
+    val trailerWarningModalWidthInput = page.locator("input[value='TrailerWidth']")
+    val boatWarningModalInfoInput = getByDataTestId("warning-info-input")
+    val boatWarningModalConfirmButton = page.getByTestId("ack-modal-confirm")
+
+    fun acknowledgeWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("boat-$id"))
+
+    fun trailerAckWarningButton(id: Int) = getByDataTestId("acknowledge-warnings", page.getByTestId("trailer-$id"))
 
     fun renewReservationButton(id: Int) = page.getByTestId("renew-place-button-$id")
+
+    fun trailerInformation(id: Int) = page.getByTestId("trailer-$id")
+
+    fun trailerRegistrationCode(id: Int) = getByDataTestId("trailer-registration-code", trailerInformation(id))
+
+    fun trailerWidth(id: Int) = getByDataTestId("trailer-width", trailerInformation(id))
+
+    fun trailerLength(id: Int) = getByDataTestId("trailer-length", trailerInformation(id))
+
+    fun editTrailerButton(id: Int) = page.getByTestId("edit-trailer-$id")
+
+    val trailerRegistrationCodeInput = page.getByTestId("trailerRegistrationCode")
+    val trailerWidthInput = page.getByTestId("trailerWidth")
+    val trailerLengthInput = page.getByTestId("trailerLength")
+    val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
 }

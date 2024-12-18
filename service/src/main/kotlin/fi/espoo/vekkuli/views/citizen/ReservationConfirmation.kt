@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.views.citizen
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import org.springframework.stereotype.Service
 
 @Service
@@ -9,10 +11,47 @@ class ReservationConfirmation(
     private val messageUtil: MessageUtil,
     private val stepIndicator: StepIndicator,
 ) {
-    fun t(key: String): String = messageUtil.getMessage(key)
+    fun t(
+        key: String,
+        params: List<String> = emptyList()
+    ): String = messageUtil.getMessage(key, params)
 
     fun render(reservation: BoatSpaceReservationDetails): String {
+        val widthAndLength =
+            if (reservation.amenity != BoatSpaceAmenity.Buoy) {
+                """
+                <div>
+                    <label> ${t("boatSpaceReservation.label.placeWidth")}</label>
+                    <span>${reservation.boatSpaceWidthInM}</span>
+                </div>
+                <div>
+                    <label>${t("boatSpaceReservation.label.placeLength")}</label>
+                    <span>${reservation.boatSpaceLengthInM}</span>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         // language=HTML
+        val validityText =
+            t(
+                "boatSpaceReservation.validity.${reservation.validity}",
+                listOf(formatAsFullDate(reservation.endDate))
+            )
+
+        val amenity =
+            if (reservation.amenity != BoatSpaceAmenity.None) {
+                """
+                <div>
+                    <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
+                    <span>${t("boatSpaces.amenityOption." + reservation.amenity)}</span>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         return """
             <section class="section">
                 <div class="box">
@@ -28,18 +67,9 @@ class ReservationConfirmation(
                                 <label>${t("boatSpaceReservation.label.placeName")} </label>
                                 <span>${reservation.locationName} ${reservation.place}</span>
                             </div>
-                            <div>
-                                <label> ${t("boatSpaceReservation.label.placeWidth")}</label>
-                                <span>${reservation.boatSpaceWidthInM}</span>
-                            </div>
-                            <div>
-                                <label>${t("boatSpaceReservation.label.placeLength")}</label>
-                                <span>${reservation.boatSpaceLengthInM}</span>
-                            </div>
-                            <div>
-                                <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
-                                <span>${t("boatSpaces.amenityOption." + reservation.amenity)}</span>
-                            </div>
+                           $widthAndLength
+                           $amenity
+            
                         </div>
                         <div class="block">
                             <label>${t("boatSpaceReservation.label.price")}</label>
@@ -58,9 +88,9 @@ class ReservationConfirmation(
                         </div>
                         <div class="block">
                             <label>${t("boatSpaceReservation.label.reservationValidity")}</label>
-                            <span>${t("boatSpaceReservation.validity.${reservation.validity}")}</span> 
+                            <span>$validityText</span> 
                         </div>
-                        <a class="button is-primary block" href="/kuntalainen/venepaikat">
+                        <a class="button is-primary block" href="/kuntalainen/venepaikat" id="back-to-home-page">
                           ${t("boatSpaceReservation.button.backToHomePage")}</a>
                     </div>
                 </div>

@@ -7,4 +7,5 @@ class InvoicePreviewPage(
 ) {
     val header = page.getByTestId("invoice-preview-header")
     val sendButton = page.getByTestId("submit")
+    val cancelButton = page.getByTestId("cancel")
 }

@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.utils.centsToEuro
 import fi.espoo.vekkuli.utils.cmToM
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -16,6 +18,9 @@ data class BoatSpaceReservationDetails(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val status: ReservationStatus,
+    val terminationReason: ReservationTerminationReason?,
+    val terminationComment: String?,
+    val terminationTimestamp: LocalDateTime?,
     val reserverType: ReserverType,
     val reserverId: UUID,
     val name: String,
@@ -28,23 +33,13 @@ data class BoatSpaceReservationDetails(
     val type: BoatSpaceType,
     val place: String,
     val locationName: String,
-    val registrationCode: String?,
-    val boatOwnership: OwnershipStatus?,
-    val boatRegistrationCode: String?,
-    val boatId: Int,
-    val boatName: String?,
-    val boatWidthCm: Int,
-    val boatLengthCm: Int,
-    val boatWeightKg: Int,
-    val boatDepthCm: Int,
-    val boatType: BoatType,
-    val boatOtherIdentification: String?,
-    val boatExtraInformation: String?,
+    val storageType: StorageType?,
+    val boat: Boat?,
+    val trailer: Trailer?,
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
     val amenity: BoatSpaceAmenity,
     val validity: ReservationValidity,
-    val warnings: Set<String> = emptySet(),
     val excludedBoatTypes: List<BoatType>?,
     val canSwitch: Boolean = false,
     val canRenew: Boolean = false,
@@ -52,24 +47,14 @@ data class BoatSpaceReservationDetails(
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
 ) {
-    val boatLengthInM: Double
-        get() = boatLengthCm.cmToM()
-    val boatWidthInM: Double
-        get() = boatWidthCm.cmToM()
-    val boatDepthInM: Double
-        get() = boatDepthCm.cmToM()
-    val boatSpaceLengthInM: Double
+    val boatSpaceLengthInM: BigDecimal
         get() = boatSpaceLengthCm.cmToM()
-    val boatSpaceWidthInM: Double
+    val boatSpaceWidthInM: BigDecimal
         get() = boatSpaceWidthCm.cmToM()
-    val priceInEuro: Double
+    val priceInEuro: String
         get() = priceCents.centsToEuro()
-    val vatPriceInEuro: Double
+    val vatPriceInEuro: String
         get() = vatCents.centsToEuro()
-    val priceWithoutVatInEuro: Double
+    val priceWithoutVatInEuro: String
         get() = netPriceCents.centsToEuro()
-
-    fun hasWarning(warning: String): Boolean = warnings.contains(warning)
-
-    fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
 }

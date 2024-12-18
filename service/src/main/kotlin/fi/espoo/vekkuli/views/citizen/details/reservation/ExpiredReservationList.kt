@@ -1,28 +1,24 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.accordion.Accordion
-import fi.espoo.vekkuli.views.employee.SanitizeInput
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
-class ExpiredReservationList : BaseView() {
-    @Autowired
-    lateinit var icons: Icons
-
-    @Autowired private lateinit var cardHeading: ReservationCardHeading
-
-    @Autowired private lateinit var cardInfo: ReservationCardInformation
-
-    @Autowired private lateinit var accordion: Accordion
-
+class ExpiredReservationList(
+    private val cardHeading: ReservationCardHeading,
+    private val cardInfo: ReservationCardInformation,
+    private val accordion: Accordion,
+    private val reservationTerminationReason: ReservationTerminationReason
+) : BaseView() {
     fun render(
-        @SanitizeInput citizen: CitizenWithDetails,
-        @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        userType: UserType,
+        reserverId: UUID,
     ): String {
         val accordionBuilder = accordion.createBuilder()
 
@@ -34,7 +30,8 @@ class ExpiredReservationList : BaseView() {
                 """
                 <div class="reservation-card" ${addTestId("expired-reservation-list-card")}>
                     ${cardHeading.render(reservation)}
-                    ${cardInfo.render(reservation)}
+                    ${cardInfo.render(reservation, userType, reserverId)}
+                    ${reservationTerminationReason.render(reservation)}
                 </div>
                 """.trimIndent()
             }}

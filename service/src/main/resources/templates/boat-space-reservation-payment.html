@@ -14,7 +14,7 @@
                 <span class="icon">
                 <div th:replace="~{fragments/icons :: chevron-left}"></div>
             </span>
-                <a th:href="|/kuntalainen/venepaikka/varaus/${reservationId}|">
+                <a href="javascript:void(0)" onclick="history.back()">
                     <span th:text="#{boatSpaceReservation.button.backToApplication}">Takaisin</span>
                 </a>
             </button>

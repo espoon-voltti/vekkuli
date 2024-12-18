@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.Harbor
-import fi.espoo.vekkuli.domain.Location
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.utils.*
@@ -13,21 +10,6 @@ import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.jdbi.v3.core.statement.Query
 import org.springframework.stereotype.Repository
-
-data class BoatSpaceOption(
-    val id: Int,
-    val section: String,
-    val placeNumber: Int,
-    val widthCm: Int,
-    val lengthCm: Int,
-    val priceCents: Int,
-    val locationName: String,
-    val amenity: BoatSpaceAmenity,
-    val formattedSizes: String = "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',')
-) {
-    val priceInEuro: Double
-        get() = priceCents / 100.0
-}
 
 fun amenityFilter(
     amenity: BoatSpaceAmenity,
@@ -48,7 +30,7 @@ fun amenityFilter(
 }
 
 fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
-    if (filter.boatLength != null && filter.boatLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
+    if (filter.boatOrSpaceLength != null && filter.boatOrSpaceLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
         // Boats over 15 meters will only fit in buoys
         return OperatorExpr(
             "amenity",
@@ -60,11 +42,7 @@ fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
     val amenities = if (filter.amenities.isNullOrEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
     return OrExpr(
         amenities.map {
-            if (it == BoatSpaceAmenity.None) {
-                OperatorExpr("amenity", "=", BoatSpaceAmenity.None)
-            } else {
-                amenityFilter(it, filter.boatWidth, filter.boatLength)
-            }
+            amenityFilter(it, filter.boatOrSpaceWidth, filter.boatOrSpaceLength)
         }
     )
 }
@@ -120,7 +98,7 @@ class JdbiBoatSpaceRepository(
 ) : BoatSpaceRepository {
     override fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
         return jdbi.withHandleUnchecked { handle ->
-            if (params.boatWidth == null || params.boatLength == null) return@withHandleUnchecked Pair(emptyList<Harbor>(), 0)
+            if (params.boatOrSpaceWidth == null || params.boatOrSpaceLength == null) return@withHandleUnchecked Pair(emptyList<Harbor>(), 0)
             val amenityFilter = createAmenityFilter(params)
             val locationIds =
                 if (params.locationIds.isNullOrEmpty()) {
@@ -147,9 +125,9 @@ class JdbiBoatSpaceRepository(
                 """
                 SELECT 
                     location.name as location_name, 
+                    location.address as location_address,
                     boat_space.id,
-                    section, 
-                    place_number,
+                    CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place,
                     length_cm, 
                     width_cm, 
                     price.price_cents,
@@ -162,15 +140,16 @@ class JdbiBoatSpaceRepository(
                 LEFT JOIN boat_space_reservation
                 ON boat_space.id = boat_space_reservation.boat_space_id
                 AND (
-                    (boat_space_reservation.status = 'Info' AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
-                    (boat_space_reservation.status = 'Payment' AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
-                    (boat_space_reservation.status = 'Confirmed') 
+                    (boat_space_reservation.created <= :currentTime) AND
+                    (boat_space_reservation.status IN ('Info', 'Payment', 'Renewal') AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
+                    (boat_space_reservation.status IN ('Confirmed', 'Invoiced') AND boat_space_reservation.end_date >= :currentTime) OR
+                    (boat_space_reservation.status = 'Cancelled' AND boat_space_reservation.end_date > :currentTime)
                 )
                 WHERE 
                     boat_space_reservation.id IS NULL
                     AND ${combinedFilter.toSql()}
                     
-                ORDER BY width_cm, length_cm 
+                ORDER BY width_cm, length_cm, section, place_number
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
@@ -191,13 +170,35 @@ class JdbiBoatSpaceRepository(
                                 Location(
                                     id = spaces.first().id,
                                     name = locationName,
-                                    address = ""
+                                    address = spaces.first().locationAddress
                                 ),
                             boatSpaces = spaces
                         )
-                    }
+                    }.sortedBy { it.location.name }
 
-            return@withHandleUnchecked Pair(harbors, count)
+            Pair(harbors, count)
         }
     }
+
+    override fun getBoatSpace(boatSpaceId: Int): BoatSpace? =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT 
+                    bs.*,
+                    location.name as location_name, 
+                    ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                FROM boat_space bs
+                JOIN location ON bs.location_id = location.id
+                JOIN price ON bs.price_id = price.id
+                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
+                WHERE bs.id = :boatSpaceId
+                GROUP BY bs.id, location.name
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            query.bind("boatSpaceId", boatSpaceId)
+
+            query.mapTo<BoatSpace>().firstOrNull()
+        }
 }

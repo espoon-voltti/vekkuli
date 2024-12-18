@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
@@ -86,12 +87,12 @@ class CitizenDetails(
                         </div>
                         <div class="column">
                             <div>
-                                <a class="is-link" 
+                                <a class="is-link is-icon-link" 
                                     id="edit-customer"
                                     hx-get="$editUrl"
                                     hx-target="#citizen-information"
                                     hx-swap="innerHTML">
-                                    <span class="icon ml-s">
+                                    <span class="icon">
                                         ${icons.edit}
                                     </span>
                                     <span>${t("boatSpaceReservation.button.editCustomerDetails")}</span>
@@ -118,18 +119,6 @@ class CitizenDetails(
             )
         }
 
-        val tabs =
-            // language=HTML
-            """
-            <div class="tabs is-boxed container-tabs">
-                <ul>
-                    <li class="is-active"><a>${t("boatSpaceReservation.title.marineActivities")}</a></li>
-                    <li><a>${t("boatSpaceReservation.title.spaceReservations")}</a></li>
-                    <li><a>${t("boatSpaceReservation.title.guidedExercise")}</a></li>
-                </ul>
-            </div>
-            """.trimIndent()
-
         val backUrl =
             if (userType == UserType.EMPLOYEE) {
                 "/virkailija/venepaikat/varaukset"
@@ -145,7 +134,6 @@ class CitizenDetails(
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
                 ${customerInfo()}
-                $tabs
                 ${reservationTabContent(citizen, boatSpaceReservations, boats, userType)}
             </section>
             """.trimIndent()
@@ -161,18 +149,18 @@ class CitizenDetails(
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType
     ): String {
-        val reservationList = reservationListBuilder.render(citizen, boatSpaceReservations, userType)
+        val reservationList = reservationListBuilder.render(citizen, boatSpaceReservations, userType, citizen.id)
 
         fun showBoatWarnings(boatHasWarnings: Boolean): String {
             if (boatHasWarnings) {
                 // language=HTML
                 return """
                 <div class="column">
-                    <a class="is-link" x-on:click="modalOpen = true">
+                    <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
                         <span class="icon ml-s">
-                            <span>${icons.warningExclamation(false)}</span>
+                            ${icons.warningExclamation(false)}
                         </span>
-                        <span>Kuittaa tiedot tarkistetuiksi</span>
+                        <span data-testid='acknowledge-warnings'>${t("citizenDetails.button.acknowledgeWarnings")}</span>
                     </a>
                 </div>
                 """
@@ -198,22 +186,24 @@ class CitizenDetails(
                         <div class="modal-underlay" @click="modalOpen = false"></div>
                         <div class="modal-content">
                             <form hx-post="/virkailija/venepaikat/varaukset/kuittaa-varoitus"
-                                  hx-swap="none"
-                                  x-on:htmx:after-request="modalOpen = false">
+                                  hx-swap="outerHTML"
+                                  hx-target="#citizen-details"
+                                 >
                                 <input type="hidden" name="boatId" value="${boat.id}" />
+                                <input type="hidden" name="citizenId" value="${citizen.id}" />
                                 <input type="hidden" name="reservationId" value="${boat.reservationId}" />
                                 <div class="block">
                                     <div class="field">
-                                        <h1 class="label">Valitse kuitattava tieto</h1>
+                                        <h1 class="label">${t("citizenDetails.warnings.ackSelect")}</h1>
                                         <div class="control">
                                             $warningLabels
                                         </div>
                                     </div>
                                 </div>
                                 <div class="block">
-                                    <h1 class="label">Lisätietoa kuittauksesta</h1>
+                                    <h1 class="label">${t("citizenDetails.label.warningInfo")}</h1>
                                     <div class="control">
-                                        <textarea class="textarea" rows="1"></textarea>
+                                        <textarea data-testid="warning-info-input" class="textarea" rows="1" name="infoText"></textarea>
                                     </div>
                                 </div>
                                 ${warningBox.render(t("reservationWarning.ackInfo"))}
@@ -299,87 +289,155 @@ class CitizenDetails(
             }
         }
 
-        // language=HTML
-        fun getBoatsList(boats: List<CitizenUserController.BoatUpdateForm>): String =
+        fun editBoatButton(boat: CitizenUserController.BoatUpdateForm): String {
+            // language=HTML
+            return """
+                <div class="column is-narrow ml-auto">
+                    <a class="is-icon-link is-link"
+                       hx-get="${getEditUrl(boat.id)}"
+                       hx-target="#boat-${boat.id}"
+                       hx-swap="innerHTML">
+                        <span class="icon">
+                            ${icons.edit}
+                        </span>
+                        <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
+                    </a>
+                </div>
+                """.trimIndent()
+        }
+
+        fun boatInfoLabel(
+            translationKey: String,
+            showWarning: Boolean
+        ): String {
+            val warning =
+                if (showWarning) {
+                    """<span class="icon ml-s">${icons.warningExclamation(false)}</span>"""
+                } else {
+                    ""
+                }
+            return """
+                    <label class="label">${t(translationKey)}
+                $warning
+                    </label> 
+                """.trimIndent()
+        }
+
+        fun boatInfo(
+            id: String,
+            value: String,
+            translationKey: String,
+            showWarning: Boolean = false
+        ): String =
+            """
+            <div class="field">
+                ${boatInfoLabel(translationKey, showWarning)}
+                <p id="$id">$value</p>
+            </div> 
+            """.trimIndent()
+
+        fun getBoatsList(
+            boats: List<CitizenUserController.BoatUpdateForm>,
+            showWarnings: Boolean
+        ): String =
             boats
                 .mapIndexed { _, boat ->
+                    val name = boatInfo("boat-name-text-${boat.id}", boat.name, "boatSpaceReservation.title.boatName")
+                    val weight =
+                        boatInfo(
+                            "boat-weight-text-${boat.id}",
+                            boat.weight.toString(),
+                            "boatSpaceReservation.title.weight",
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWeight.name)
+                        )
+                    val boatType =
+                        boatInfo(
+                            "boat-type-text-${boat.id}",
+                            boat.type.name,
+                            "boatSpaceReservation.title.boatType"
+                        )
+
+                    val depth = boatInfo("boat-depth-text-${boat.id}", boat.depth.toString(), "boatSpaceReservation.title.draft",)
+                    val width =
+                        boatInfo(
+                            "boat-width-text-${boat.id}",
+                            boat.width.toString(),
+                            "shared.label.widthInMeters",
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatWidth.name)
+                        )
+                    val registrationNumber =
+                        boatInfo(
+                            "boat-registrationNumber-text-${boat.id}",
+                            boat.registrationNumber,
+                            "boatSpaceReservation.title.registrationNumber"
+                        )
+                    val length =
+                        boatInfo(
+                            "boat-length-text-${boat.id}",
+                            boat.length.toString(),
+                            "shared.label.lengthInMeters",
+                            showWarnings && boat.hasWarning(ReservationWarningType.BoatLength.name)
+                        )
+                    val ownershipStatus =
+                        boatInfo(
+                            "boat-ownership-text-${boat.id}",
+                            t("boatApplication.$userType.ownershipOption.${boat.ownership}"),
+                            "boatSpaceReservation.title.ownershipStatus",
+                            showWarnings &&
+                                (
+                                    boat.hasWarning(ReservationWarningType.BoatFutureOwner.name) ||
+                                        boat.hasWarning(ReservationWarningType.BoatCoOwner.name)
+                                )
+                        )
+                    val otherIdentifier =
+                        boatInfo(
+                            "boat-otherIdentifier-text-${boat.id}",
+                            boat.otherIdentifier,
+                            "boatSpaceReservation.title.otherIdentifier"
+                        )
+                    val additionalInfo =
+                        boatInfo(
+                            "boat-extraInformation-text-${boat.id}",
+                            boat.extraInformation.ifEmpty { "-" },
+                            "boatSpaceReservation.title.additionalInfo"
+                        )
+                    // language=HTML
                     """
                     <div class="reservation-card" id="boat-${boat.id}" x-data="{ modalOpen: false }">
                         <div class="columns is-vcentered">
                             <div class="column is-narrow">
                                 <h4>${t("citizenDetails.boat")} ${boat.name}</h4>
                             </div>
-                            <span class="memo-edit-buttons column columns">
-                                <div class="column is-narrow">
-                                    <a class="edit-link s-link"
-                                       hx-get="${getEditUrl(boat.id)}"
-                                       hx-target="#boat-${boat.id}"
-                                       hx-swap="innerHTML">
-                                        <span class="icon ml-s">
-                                            ${icons.edit}
-                                        </span>
-                                        <span id="edit-boat-${boat.id}"> ${t("boatSpaceReservation.button.editBoatDetails")}</span>
-                                    </a>
-                                </div>
+                            <div class="memo-edit-buttons column columns">
                                 ${deleteButton(boat.reservationId != null, boat.id)}
-                                
                                 ${showBoatWarnings(boat.hasAnyWarnings() && userType == UserType.EMPLOYEE)}
-                                </span>
+                                ${editBoatButton(boat)}
+                            </div>
                         </div>
                         <div class="columns">
                             <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatName")}</label>
-                                    <p id="boat-name-text-${boat.id}">${boat.name}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.weight")}</label>
-                                    <p  id="boat-weight-text-${boat.id}">${boat.weight}</p>
-                                </div>
+                                $name
+                                $weight
                             </div>
                             <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatType")}</label>
-                                    <p  id="boat-type-text-${boat.id}">${t("boatApplication.boatTypeOption.${boat.type}")}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.draft")}</label>
-                                    <p id="boat-depth-text-${boat.id}">${boat.depth}</p>
-                                </div>
+                                $boatType   
+                                $depth
                             </div>
                             <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatWidth")}</label>
-                                    <p  id="boat-width-text-${boat.id}">${boat.width}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.registrationNumber")}</label>
-                                    <p  id="boat-registrationNumber-text-${boat.id}">${boat.registrationNumber}</p>
-                                </div>
+                                $width
+                                $registrationNumber
                             </div>
                             <div class="column">
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.boatLength")}</label>
-                                    <p  id="boat-length-text-${boat.id}">${boat.length}</p>
-                                </div>
-                                <div class="field">
-                                    <label class="label">${t("boatSpaceReservation.title.ownershipStatus")}</label>
-                                    <p id="boat-ownership-text-${boat.id}">${t(
-                        "boatApplication.$userType.ownershipOption.${boat.ownership}"
-                    )}</p>
-                                </div>
+                                $length
+                                $ownershipStatus
                             </div>
                         </div>
                          <div class="columns">
                             <div class="column is-one-quarter">
-                                <label class="label">${t("boatSpaceReservation.title.otherIdentifier")}</label>
-                                <p id="boat-otherIdentifier-text-${boat.id}">${boat.otherIdentifier}</p>
+                                $otherIdentifier
                             </div>
                             <div class="column">
-                                <label class="label">${t("boatSpaceReservation.title.additionalInfo")}</label>
-                                <p id="boat-extraInformation-text-${boat.id}">
-                                   ${if (!boat.extraInformation.isNullOrEmpty()) boat.extraInformation else "-"}
-                                </p>
+                                $additionalInfo
                             </div>
                         </div>
                         ${showBoatWarnings(boat)}
@@ -387,7 +445,7 @@ class CitizenDetails(
                     """.trimIndent()
                 }.joinToString("\n")
 
-        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null })
+        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)
 
         // language=HTML
         val showAllBoatsCheckbox =
@@ -418,13 +476,13 @@ class CitizenDetails(
                         $reservationList
                        <h3>${t("boatSpaceReservation.title.boats")}</h3>
                        <div class="reservation-list form-section no-bottom-border">
-                           ${getBoatsList(boats.filter { it.reservationId != null })} 
+                           ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)} 
                        </div>
                      
                       <div>
                          $showAllBoatsCheckbox
                           <div class="reservation-list form-section" x-show="showAllBoats">    
-                            ${getBoatsList(boats.filter { it.reservationId == null })} 
+                            ${getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)} 
                            </div>
                       </div>
                       <div 
