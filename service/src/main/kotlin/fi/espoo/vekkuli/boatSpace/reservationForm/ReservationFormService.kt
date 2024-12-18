@@ -133,6 +133,10 @@ class ReservationFormService(
             val newOrg =
                 organizationService.insertOrganization(
                     businessId = input.orgBusinessId ?: "",
+                    "",
+                    "",
+                    "",
+                    "",
                     name = input.orgName ?: "",
                     phone = input.orgPhone ?: "",
                     email = input.orgEmail ?: "",
@@ -141,7 +145,7 @@ class ReservationFormService(
                     postalCode = input.orgPostalCode ?: "",
                     postOffice = input.orgCity ?: "",
                     postOfficeSv = input.orgCity ?: "",
-                    municipalityCode = (input.orgMunicipalityCode ?: "1").toInt()
+                    municipalityCode = (input.orgMunicipalityCode ?: "1").toInt(),
                 )
             // add person to organization
             organizationService.addCitizenToOrganization(newOrg.id, reserverId)
@@ -152,6 +156,10 @@ class ReservationFormService(
                 UpdateOrganizationParams(
                     id = input.organizationId,
                     businessId = input.orgBusinessId,
+                    null,
+                    null,
+                    null,
+                    null,
                     name = input.orgName,
                     phone = input.orgPhone,
                     email = input.orgEmail,
