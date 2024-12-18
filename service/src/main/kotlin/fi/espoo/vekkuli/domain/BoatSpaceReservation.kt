@@ -123,6 +123,8 @@ enum class BoatSpaceFilterColumn {
     HOME_TOWN,
     CUSTOMER,
     BOAT,
+    EMAIL,
+    PHONE,
 }
 
 enum class PaymentFilter {

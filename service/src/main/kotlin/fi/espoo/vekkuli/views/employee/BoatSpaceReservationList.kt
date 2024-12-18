@@ -220,6 +220,8 @@ class BoatSpaceReservationList {
                     </td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
+                    <td>${result.phone}</td>
+                    <td>${result.email}</td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
                     <td>$startDateFormatted</td>
@@ -339,6 +341,12 @@ class BoatSpaceReservationList {
                                         ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}
                                     </th>
                                     <th class="nowrap">
+                                        ${sortButton("PHONE", t("boatSpaceReservation.title.phoneNumber"))}
+                                    </th>                                    
+                                    <th class="nowrap">
+                                        ${sortButton("EMAIL", t("employee.boatSpaceReservations.table.title.email"))}
+                                    </th>                                    
+                                    <th class="nowrap">
                                         ${sortButton("HOME_TOWN", t("boatSpaceReservation.title.homeTown"))}
                                     </th>
                                     <th><span class="reservation-table-header">
@@ -359,6 +367,8 @@ class BoatSpaceReservationList {
                                     <th>$sectionFilter</th>
                                     <th></th>
                                     <th>$nameSearchInput</th>
+                                    <th></th>
+                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
