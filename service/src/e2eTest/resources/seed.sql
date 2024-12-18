@@ -532,9 +532,9 @@ VALUES
   ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', '290991-993F', 'Marko', 'Kuusinen')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO organization (id, business_id)
+INSERT INTO organization (id, business_id, billing_name, billing_street_address, billing_postal_code, billing_post_office)
 VALUES
-  ('8b220a43-86a0-4054-96f6-d29a5aba17e7', '1015253-4')
+  ('8b220a43-86a0-4054-96f6-d29a5aba17e7', '1015253-4', 'Espoon Pursiseura laskutus', 'Laskutustie 19', '02130', 'Espoo')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO organization_member (organization_id, member_id)
