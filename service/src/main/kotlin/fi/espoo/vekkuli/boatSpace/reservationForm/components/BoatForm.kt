@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.stereotype.Component
+import kotlin.math.min
 
 // language=HTML
 @Component
@@ -165,12 +166,14 @@ class BoatForm(
                 "width",
                 input.width,
                 required = true,
-                """
-                hx-trigger="change, load" 
-                hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
-                hx-include="#length"
-                hx-target="#boat-size-warning"
-                """.trimIndent()
+                attributes =
+                    """
+                    hx-trigger="change, load" 
+                    hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
+                    hx-include="#length"
+                    hx-target="#boat-size-warning"
+                    """.trimIndent(),
+                min = 0.1
             )
 
         val lengthInput =
@@ -179,12 +182,14 @@ class BoatForm(
                 "length",
                 input.length,
                 required = true,
-                """
-                hx-trigger="change, load" 
-                hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
-                hx-include="#width"
-                hx-target="#boat-size-warning"
-                """.trimIndent()
+                attributes =
+                    """
+                    hx-trigger="change, load" 
+                    hx-get="/venepaikka/varaus/$reservationId/boat-size-warning" 
+                    hx-include="#width"
+                    hx-target="#boat-size-warning"
+                    """.trimIndent(),
+                min = 0.1
             )
 
         val depthInput =
@@ -193,7 +198,8 @@ class BoatForm(
                 "depth",
                 input.depth,
                 required = true,
-                step = 0.1
+                step = 0.1,
+                min = 0.0
             )
 
         val weightInput =

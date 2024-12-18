@@ -91,7 +91,8 @@ class FormComponents {
         required: Boolean? = false,
         attributes: String = "",
         step: Double? = 0.01,
-        compact: Boolean = false
+        compact: Boolean = false,
+        min: Double? = 0.0
     ): String =
         textInput(
             labelKey = labelKey,
@@ -103,7 +104,7 @@ class FormComponents {
             attributes =
                 """
                 step="${step?.toString() ?: "0.01"}"
-                min="0"
+                min="$min"
                 max="9999999"
                 @change="${"$"}el.value !== '' && (
                     parseFloat(${"$"}el.value) < parseFloat(${'$'}el.min) ? ${"$"}el.value = ${"$"}el.min : 

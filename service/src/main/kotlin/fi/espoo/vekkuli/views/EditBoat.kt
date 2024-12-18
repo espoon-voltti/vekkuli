@@ -50,6 +50,7 @@ class EditBoat {
                 "depth",
                 boat.depth,
                 required = true,
+                min = 0.1
             )
 
         val widthInput =
@@ -58,6 +59,7 @@ class EditBoat {
                 "width",
                 boat.width,
                 required = true,
+                min = 0.1
             )
 
         val registrationNumberInput =
@@ -73,6 +75,7 @@ class EditBoat {
                 "length",
                 boat.length,
                 required = true,
+                min = 0.1
             )
 
         val ownershipSelect =

@@ -27,7 +27,7 @@ class StorageTypeContainer(
             )
         val trailerWidthInput =
             formComponents.decimalInput(
-                "boatApplication.title.trailerWidth",
+                labelKey = "boatApplication.title.trailerWidth",
                 "trailerWidth",
                 trailerWidth,
                 true
