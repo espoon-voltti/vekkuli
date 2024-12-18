@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.reservationForm.components
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.CitizenWithDetails
+import fi.espoo.vekkuli.utils.PHONE_NUMBER_REGEX
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
@@ -46,8 +47,14 @@ class CitizenContainerForCitizen(
                 "boatApplication.phone",
                 "phone",
                 phone,
-                required = true
+                required = true,
+                pattern =
+                    Pair(
+                        PHONE_NUMBER_REGEX,
+                        "validation.phoneNumber"
+                    )
             )
+
         return (
             """     
                             ${

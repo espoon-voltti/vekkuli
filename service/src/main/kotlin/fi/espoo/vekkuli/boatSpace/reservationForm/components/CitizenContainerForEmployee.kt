@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
+import fi.espoo.vekkuli.utils.PHONE_NUMBER_REGEX
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
@@ -35,10 +36,15 @@ class CitizenContainerForEmployee(
 
         val phone =
             formComponents.textInput(
-                "boatApplication.phone",
+                "boatSpaceReservation.title.phoneNumber",
                 "phone",
                 input.phone,
-                required = true
+                required = true,
+                pattern =
+                    Pair(
+                        PHONE_NUMBER_REGEX,
+                        "validation.phoneNumber"
+                    )
             )
 
         val citizenFirstName =
