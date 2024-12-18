@@ -330,4 +330,16 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         assertThat(page.getByText("Olivian vene")).isHidden()
     }
+
+    @Test
+    fun `Employee can filter boat spaces`() {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        page.waitForCondition { listingPage.reservations.count() == 3 }
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        page.waitForCondition { listingPage.reservations.count() == 1 }
+    }
 }

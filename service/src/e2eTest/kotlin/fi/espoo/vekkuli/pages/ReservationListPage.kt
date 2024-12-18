@@ -19,4 +19,6 @@ class ReservationListPage(
     val warningIcon8 = getByDataTestId("warning-icon", boatSpace8)
     val reservationsTableB314Row = page.locator("tr:has-text('B 314')")
     val reservationsTableB314RowEndDate = getByDataTestId("reservation-end-date", reservationsTableB314Row)
+    val reservations = page.locator(".reservation-item")
+    val boatSpaceTypeFilter = { typeFilter: String -> getByDataTestId("filter-type-$typeFilter") }
 }

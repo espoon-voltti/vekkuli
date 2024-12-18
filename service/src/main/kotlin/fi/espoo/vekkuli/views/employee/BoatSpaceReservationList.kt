@@ -31,7 +31,7 @@ class BoatSpaceReservationList {
         val harborFilters =
             harbors.joinToString("\n") { harbor ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" data-testid="filter-harbor-${harbor.name}">
                     <input type="checkbox" name="harbor" value="${harbor.id}" class="is-hidden" ${if (params.hasHarbor(
                         harbor.id
                     )
@@ -51,7 +51,7 @@ class BoatSpaceReservationList {
         val boatSpaceTypeFilters =
             boatSpaceTypes.joinToString("\n") { boatSpaceType ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" data-testid="filter-type-$boatSpaceType">
                     <input type="checkbox" name="boatSpaceType" value="$boatSpaceType" class="is-hidden" ${if (params.hasBoatSpaceType(
                         boatSpaceType
                     )
@@ -88,7 +88,7 @@ class BoatSpaceReservationList {
         val amenityFilters =
             amenities.joinToString("\n") { amenity ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" data-testid="filter-amenity-$amenity">
                     <input type="checkbox" name="amenity" value="${amenity.name}" class="is-hidden" ${if (params.hasAmenity(
                         amenity
                     )
