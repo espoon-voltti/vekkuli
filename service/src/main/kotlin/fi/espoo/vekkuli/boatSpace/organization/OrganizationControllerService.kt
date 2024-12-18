@@ -17,7 +17,8 @@ class OrganizationControllerService(
     private val organizationDetails: OrganizationDetails,
 ) {
     fun buildOrganizationPage(organizationId: UUID): String {
-        val organization = organizationService.getOrganizationById(organizationId) ?: return "Organization not found"
+        val organization =
+            organizationService.getOrganizationById(organizationId) ?: throw IllegalArgumentException("Organization not found")
         val organizationMembers = organizationService.getOrganizationMembers(organizationId)
         val organizationReservations = boatReservationService.getBoatSpaceReservationsForCitizen(organizationId)
         val boats =

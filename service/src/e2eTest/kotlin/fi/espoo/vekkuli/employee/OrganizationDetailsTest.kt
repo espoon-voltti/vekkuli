@@ -86,4 +86,82 @@ class OrganizationDetailsTest : PlaywrightTest() {
             handleError(e)
         }
     }
+
+    @Test
+    fun userMemos() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+
+            val organizationDetails = OrganizationDetailsPage(page)
+            organizationDetails.navigateToEspoonPursiseura()
+            assertThat(organizationDetails.organizationDetailsSection).isVisible()
+            organizationDetails.memoNavi.click()
+
+            // Add memo, added the waitFor which seemed to fix the flakiness
+            organizationDetails.addNewMemoBtn.waitFor()
+            organizationDetails.addNewMemoBtn.click()
+            val text = "This is a new memo"
+            val memoId = 2
+            organizationDetails.newMemoContent.fill(text)
+            organizationDetails.newMemoSaveBtn.click()
+            assertThat(organizationDetails.userMemo(memoId)).containsText(text)
+
+            // Edit memo
+            val newText = "Edited memo"
+            organizationDetails.userMemo(memoId).getByTestId("edit-memo-button").click()
+            organizationDetails.userMemo(memoId).getByTestId("edit-memo-content").fill(newText)
+            organizationDetails.userMemo(memoId).getByTestId("save-edit-button").click()
+            assertThat(organizationDetails.userMemo(memoId).locator(".memo-content")).containsText(newText)
+
+            // Delete memo
+            page.onDialog { it.accept() }
+            organizationDetails.userMemo(memoId).getByTestId("delete-memo-button").click()
+            assertThat(organizationDetails.userMemo(memoId)).hasCount(0)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun userMessages() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+            organizationDetails.navigateToEspoonPursiseura()
+            assertThat(organizationDetails.organizationDetailsSection).isVisible()
+            organizationDetails.messagesNavi.click()
+            assertThat(organizationDetails.messages).containsText("Käyttöveden katko")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `employee navigates to organization details page and terminates reservation`() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+            organizationDetails.navigateToEspoonPursiseura()
+
+            assertThat(organizationDetails.firstBoatSpaceReservationCard).isVisible()
+            assertThat(organizationDetails.expiredReservationList)
+            organizationDetails.terminateReservationAsEmployeeButton.click()
+            assertThat(organizationDetails.terminateReservationAsEmployeeForm).isVisible()
+            assertThat(organizationDetails.terminateReservationModalConfirm).isVisible()
+            assertThat(organizationDetails.terminateReservationModalCancel).isVisible()
+
+            assertThat(organizationDetails.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
+            assertThat(organizationDetails.placeInFirstBoatSpaceReservationCard).hasText("B 005")
+
+            // Opens up information from the first reservation of the first user
+            assertThat(organizationDetails.terminateReservationFormLocation).hasText("Haukilahti B 005")
+            assertThat(organizationDetails.terminateReservationFormSize).hasText("2.50 x 4.50 m")
+            assertThat(organizationDetails.terminateReservationFormAmenity).hasText("Beam")
+
+            organizationDetails.terminateReservationModalCancel.click()
+            assertThat(organizationDetails.terminateReservationForm).not().isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
 }
