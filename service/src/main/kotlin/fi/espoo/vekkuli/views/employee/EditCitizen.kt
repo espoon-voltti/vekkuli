@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
+import fi.espoo.vekkuli.utils.PHONE_NUMBER_REGEX
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -155,7 +156,7 @@ class EditCitizen {
                 required = true,
                 pattern =
                     Pair(
-                        "^[(]?[0-9]{3}[)]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}\$",
+                        PHONE_NUMBER_REGEX,
                         "validation.phoneNumber"
                     )
             )

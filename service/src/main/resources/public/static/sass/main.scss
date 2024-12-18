@@ -614,6 +614,7 @@ a.active {
 
 .reservation-table-icon {
   vertical-align: middle;
+  padding-left: 6px;
 }
 
 tr.table-borderless th {
@@ -924,4 +925,19 @@ ul {
 
 #boat-space-reservations-employee .container {
   max-width: none;
+}
+
+.employee-filter-container {
+  display: flex;
+  row-gap: calc($block-spacing*2);
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  .filter-group {
+    margin-right: 60px;
+  }
+}
+
+.employee-filter-container:not(:last-child) {
+  margin-bottom: calc($block-spacing*2);
 }

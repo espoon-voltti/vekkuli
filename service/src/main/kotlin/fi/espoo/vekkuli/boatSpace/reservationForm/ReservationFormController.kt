@@ -57,6 +57,10 @@ class ReservationFormController(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "GET_BOAT_SPACE_APPLICATION_FORM")
+        }
+
         val citizenId = request.ensureCitizenId()
 
         try {
@@ -79,6 +83,9 @@ class ReservationFormController(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "GET_BOAT_SPACE_APPLICATION_FORM")
+        }
         try {
             val page = reservationService.getBoatSpaceFormForEmployee(reservationId, formInput, request.requestURI)
             return ResponseEntity.ok(page)
@@ -100,6 +107,9 @@ class ReservationFormController(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<Void> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "REMOVE_BOAT_SPACE_RESERVATION")
+        }
         val citizenId = request.ensureCitizenId()
         reservationService.removeBoatSpaceReservation(reservationId, citizenId)
         return ResponseEntity.noContent().build()
@@ -110,6 +120,9 @@ class ReservationFormController(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<Void> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "REMOVE_BOAT_SPACE_RESERVATION")
+        }
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         reservationService.removeBoatSpaceReservation(reservationId, user.id)
         return ResponseEntity.noContent().build()
@@ -123,6 +136,9 @@ class ReservationFormController(
         @PathVariable usertype: String,
         @PathVariable reservationId: Int
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "SEARCH_CITIZENS")
+        }
         reserverService.getCitizens(nameParameter).let {
             return citizensSearchForm.render(it, reservationId)
         }
@@ -133,9 +149,12 @@ class ReservationFormController(
     fun searchCitizen(
         @RequestParam citizenIdOption: UUID,
         @PathVariable usertype: String,
+        request: HttpServletRequest
     ): String {
         val citizen = reserverService.getCitizen(citizenIdOption)
-
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "SEARCH_CITIZENS_RESULTS")
+        }
         return if (citizen != null) {
             commonComponents.citizenDetails(citizen, reserverService.getMunicipalities())
         } else {
@@ -156,7 +175,11 @@ class ReservationFormController(
         @RequestParam type: BoatType?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "BOAT_FORM_CITIZEN")
+        }
         val citizen = getCitizen(request, reserverService)
+
         if (citizen == null) return ResponseEntity.badRequest().build()
 
         val boatFormParams =
@@ -188,6 +211,9 @@ class ReservationFormController(
         @RequestParam type: BoatType?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "BOAT_FORM_EMPLOYEE")
+        }
         if (citizenId == null) return ResponseEntity.badRequest().build()
 
         val citizen = reserverService.getCitizen(citizenId) ?: return ResponseEntity.badRequest().build()
@@ -213,6 +239,10 @@ class ReservationFormController(
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "RESERVE_BOAT_SPACE_CITIZEN")
+        }
+
         val citizenId = request.ensureCitizenId()
 
         if (bindingResult.hasErrors()) {
@@ -241,6 +271,9 @@ class ReservationFormController(
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "RESERVE_BOAT_SPACE_EMPLOYEE")
+        }
         request.ensureEmployeeId()
 
         if (bindingResult.hasErrors()) {
@@ -331,6 +364,9 @@ class ReservationFormController(
         request: HttpServletRequest,
         model: Model,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "INITIAL_BOAT_SPACE_RESERVATION")
+        }
         val citizen = getCitizen(request, reserverService)
         if (citizen?.id == null) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
@@ -363,6 +399,9 @@ class ReservationFormController(
         request: HttpServletRequest,
         model: Model,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "INITIAL_BOAT_SPACE_RESERVATION")
+        }
         val employeeId = request.ensureEmployeeId()
 
         val reservationId =

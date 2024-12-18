@@ -379,6 +379,10 @@ class BoatReservationService(
             filters.add(LocationExpr(params.harbor))
         }
 
+        if (params.boatSpaceType.isNotEmpty()) {
+            filters.add(BoatSpaceTypeExpr(params.boatSpaceType))
+        }
+
         if (params.amenity.isNotEmpty()) {
             filters.add(AmenityExpr(params.amenity))
         }

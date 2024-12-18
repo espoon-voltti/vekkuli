@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
+import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
@@ -13,6 +15,7 @@ import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import jakarta.servlet.http.HttpServletRequest
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -29,12 +32,17 @@ class InvoiceController(
     private val timeProvider: TimeProvider,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository
 ) {
+    private val logger = KotlinLogging.logger {}
+
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
     @ResponseBody
     fun invoiceView(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "INVOICE_VIEW")
+        }
         val reservation = reservationService.getReservationWithReserver(reservationId)
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation not found")
@@ -108,6 +116,9 @@ class InvoiceController(
         @ModelAttribute("input") input: InvoiceInput,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "SEND_INVOICE")
+        }
         // send the invoice, update reservation status
         val reservation = reservationService.getReservationWithReserver(reservationId)
 
@@ -157,6 +168,9 @@ class InvoiceController(
         @PathVariable reservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "INVOICE_CANCEL")
+        }
         val employeeId = request.ensureEmployeeId()
         boatSpaceReservationRepo.removeBoatSpaceReservation(reservationId)
         return ResponseEntity.noContent().build()
