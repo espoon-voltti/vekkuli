@@ -193,7 +193,14 @@ class ReservationFormService(
             } else {
                 val now = timeProvider.getCurrentDate()
                 // TODO: get validity from input parameter for employee
-                ReservationResultSuccess(now, getLastDayOfYear(now.year), ReservationValidity.FixedTerm)
+                ReservationResultSuccess(
+                    now,
+                    seasonalService.getBoatSpaceReservationEndDate(
+                        reservation.boatSpaceType,
+                        ReservationValidity.FixedTerm
+                    ),
+                    ReservationValidity.FixedTerm
+                )
             }
         processBoatSpaceReservation(
             reserverId,

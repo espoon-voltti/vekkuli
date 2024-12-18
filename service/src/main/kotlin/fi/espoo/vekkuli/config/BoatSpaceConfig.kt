@@ -2,8 +2,8 @@ package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.utils.getNextDate
 import java.time.LocalDate
-import java.time.Month
 
 data class Dimensions(
     val width: Int?,
@@ -161,25 +161,22 @@ object BoatSpaceConfig {
     const val DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE = 30
 
     fun getSlipEndDate(
-        year: Int,
+        currentDate: LocalDate,
         validity: ReservationValidity
     ) = when (validity) {
-        ReservationValidity.FixedTerm -> LocalDate.of(year, Month.DECEMBER, 31)
-        ReservationValidity.Indefinite -> LocalDate.of(year + 1, Month.JANUARY, 31)
+        ReservationValidity.FixedTerm -> getNextDate(currentDate, 12, 31)
+        ReservationValidity.Indefinite -> getNextDate(currentDate, 1, 31)
     }
 
-    fun getWinterEndDate(year: Int) = LocalDate.of(year + 1, Month.AUGUST, 31)
+    fun getWinterEndDate(now: LocalDate) = getNextDate(now, 8, 31)
 
-    fun getStorageEndDate(
-        year: Int,
-        validity: ReservationValidity
-    ) = LocalDate.of(year + 1, Month.SEPTEMBER, 14)
+    fun getStorageEndDate(now: LocalDate) = getNextDate(now, 8, 31)
 
     fun getTrailerEndDate(
-        year: Int,
+        now: LocalDate,
         validity: ReservationValidity
     ) = when (validity) {
-        ReservationValidity.FixedTerm -> LocalDate.of(year + 1, Month.APRIL, 30)
-        ReservationValidity.Indefinite -> LocalDate.of(year + 1, Month.APRIL, 30)
+        ReservationValidity.FixedTerm -> getNextDate(now, 4, 30)
+        ReservationValidity.Indefinite -> getNextDate(now, 4, 30)
     }
 }

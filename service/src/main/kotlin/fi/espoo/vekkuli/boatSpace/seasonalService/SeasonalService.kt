@@ -2,11 +2,14 @@ package fi.espoo.vekkuli.boatSpace.seasonalService
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getStorageEndDate
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getTrailerEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
 import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
+import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.service.ReservationResultErrorCode
 import fi.espoo.vekkuli.service.ReservationResultSuccess
@@ -24,6 +27,7 @@ class SeasonalService(
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val reserverRepo: ReserverRepository,
     private val timeProvider: TimeProvider,
+    private val boatSpaceRepository: BoatSpaceRepository,
 ) {
     fun hasActiveReservationPeriod(
         allPeriods: List<ReservationPeriod>,
@@ -195,8 +199,7 @@ class SeasonalService(
         }
 
         val validity = if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
-        val endDate =
-            getSlipEndDate(now.year, validity)
+        val endDate = getSlipEndDate(now, validity)
 
         return ReservationResult.Success(
             ReservationResultSuccess(
@@ -205,6 +208,19 @@ class SeasonalService(
                 validity
             )
         )
+    }
+
+    fun getBoatSpaceReservationEndDate(
+        boatSpaceType: BoatSpaceType,
+        reservationValidity: ReservationValidity
+    ): LocalDate {
+        val now = timeProvider.getCurrentDate()
+        return when (boatSpaceType) {
+            BoatSpaceType.Slip -> getSlipEndDate(now, reservationValidity)
+            BoatSpaceType.Winter -> getWinterEndDate(now)
+            BoatSpaceType.Storage -> getStorageEndDate(now)
+            BoatSpaceType.Trailer -> getTrailerEndDate(now, reservationValidity)
+        }
     }
 
     private fun canReserveANewWinterSpace(reserverID: UUID): ReservationResult {
@@ -244,7 +260,7 @@ class SeasonalService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val endDate = getWinterEndDate(now.year)
+        val endDate = getWinterEndDate(now)
 
         return ReservationResult.Success(
             ReservationResultSuccess(
