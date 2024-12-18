@@ -40,7 +40,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     private lateinit var paymentService: PaymentService
 
     @Autowired
-    private lateinit var citizenService: CitizenService
+    private lateinit var reserverService: ReserverService
 
     @Autowired
     lateinit var reservationService: BoatReservationService
@@ -62,6 +62,30 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     timeProvider,
                     citizenIdLeo,
                     1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
+                )
+            )
+        var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
+        assertEquals(reservation.id, createdRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
+
+        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
+        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+    }
+
+    @Test
+    fun `should create a renewal reservation for employee on behalf of organization if not exist or fetch if already`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdOlivia,
+                    1,
+                    reserverId = organizationId,
                     validity = ReservationValidity.Indefinite,
                     startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
                     endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
@@ -344,7 +368,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                 originalReservationId = 4
             )
 
-        val citizen = citizenService.getCitizen(citizenIdLeo)
+        val citizen = reserverService.getCitizen(citizenIdLeo)
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
 
         val viewParams = boatSpaceRenewalService.buildBoatSpaceRenewalViewParams(citizenIdLeo, renewedReservation, renewalInput)

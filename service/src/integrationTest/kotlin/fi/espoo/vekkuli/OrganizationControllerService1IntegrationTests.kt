@@ -14,7 +14,7 @@ import java.util.*
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class OrganizationServiceIntegrationTests : IntegrationTestBase() {
+class OrganizationControllerService1IntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var organizationService: OrganizationService
 

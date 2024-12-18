@@ -27,7 +27,7 @@ class BoatFormValidator(
     private val layout: Layout,
     private val messageUtil: MessageUtil,
     private val reservationService: BoatReservationService,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val organizationService: OrganizationService,
     private val reservationConfirmation: ReservationConfirmation,
     private val warnings: Warnings,
@@ -41,7 +41,7 @@ class BoatFormValidator(
         model: Model,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
-        val citizen = getCitizen(request, citizenService) ?: return redirectUrl("/")
+        val citizen = getCitizen(request, reserverService) ?: return redirectUrl("/")
         val reservation = reservationService.getBoatSpaceReservation(reservationId)
         if (reservation == null) return redirectUrl("/")
 
@@ -60,7 +60,7 @@ class BoatFormValidator(
         @RequestBody request: Map<String, String>
     ): ResponseEntity<Map<String, Any>> {
         val ssn = request["value"]
-        val isValid = ssn?.let { citizenService.getCitizenBySsn(ssn) == null } ?: false
+        val isValid = ssn?.let { reserverService.getCitizenBySsn(ssn) == null } ?: false
 
         return if (isValid) {
             ResponseEntity.ok(mapOf("isValid" to true))

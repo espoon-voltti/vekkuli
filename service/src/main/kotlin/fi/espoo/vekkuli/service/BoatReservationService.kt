@@ -83,12 +83,12 @@ class BoatReservationService(
     private val messageUtil: MessageUtil,
     private val paytrail: PaytrailInterface,
     private val emailEnv: EmailEnv,
-    private val organizationService: OrganizationService,
     private val timeProvider: TimeProvider,
     private val memoService: MemoService,
     private val permissionService: PermissionService,
     private val seasonalService: SeasonalService,
-    private val trailerRepository: TrailerRepository
+    private val trailerRepository: TrailerRepository,
+    private val organizationService: OrganizationService
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -413,7 +413,7 @@ class BoatReservationService(
     ): List<BoatSpaceReservationDetails> =
         seasonalService.addPeriodInformationToReservation(
             citizenId,
-            boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
+            boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(
                 citizenId,
                 spaceType,
             )

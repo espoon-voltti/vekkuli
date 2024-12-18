@@ -9,7 +9,7 @@ import fi.espoo.vekkuli.config.AuthenticatedUser
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.domain.CitizenAdUser
 import fi.espoo.vekkuli.domain.CitizenWithDetails
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -29,7 +29,7 @@ import java.util.UUID
 @RequestMapping("/system")
 class SystemController(
     private val jdbi: Jdbi,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -44,7 +44,7 @@ class SystemController(
     @PostMapping("/citizen-login")
     fun citizenLogin(
         @RequestBody adUser: CitizenAdUser
-    ): CitizenWithDetails = citizenService.upsertCitizenUserFromAd(adUser)
+    ): CitizenWithDetails = reserverService.upsertCitizenUserFromAd(adUser)
 
     @GetMapping("/users/{id}")
     fun getUser(

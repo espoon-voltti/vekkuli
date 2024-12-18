@@ -25,7 +25,7 @@ class BoatSpaceRenewalService(
     private val organizationService: OrganizationService,
     private val boatReservationService: BoatReservationService,
     private val reservationService: ReservationFormService,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val boatSpaceRenewalRepository: BoatSpaceRenewalRepository,
     private val invoiceService: BoatSpaceInvoiceService,
     private val boatService: BoatService,
@@ -121,7 +121,7 @@ class BoatSpaceRenewalService(
                 )
             )
         } else {
-            citizenService.updateCitizen(
+            reserverService.updateCitizen(
                 UpdateCitizenParams(
                     id = reserverId,
                     phone = input.phone,
@@ -200,7 +200,7 @@ class BoatSpaceRenewalService(
         renewedReservation: ReservationWithDependencies,
         formInput: RenewalReservationInput,
     ): BoatSpaceRenewViewParams {
-        val citizen = citizenService.getCitizen(citizenId)
+        val citizen = reserverService.getCitizen(citizenId)
         if (citizen == null || renewedReservation.reserverId != citizenId) {
             throw UnauthorizedException()
         }

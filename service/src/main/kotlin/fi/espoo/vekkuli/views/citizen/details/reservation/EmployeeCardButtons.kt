@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class EmployeeCardButtons(
@@ -13,7 +14,7 @@ class EmployeeCardButtons(
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
-        citizen: CitizenWithDetails,
+        reserverId: UUID
     ): String {
         if (reservation.status == ReservationStatus.Cancelled) {
             return ""
@@ -22,7 +23,7 @@ class EmployeeCardButtons(
         return """
             <div class="buttons">
                 ${createRenewPlaceButton(reservation)}
-                ${createInvoicePaidModalButton(reservation, citizen)}
+                ${createInvoicePaidModalButton(reservation, reserverId)}
                 ${createTerminateReservationModalButton(reservation)}
             </div>
             """.trimIndent()
@@ -57,6 +58,22 @@ class EmployeeCardButtons(
                 .addAttribute("id", "invoice-paid-button")
                 .setText(t("citizenDetails.markInvoicePaid"))
                 .setPath("/reservation/modal/mark-invoice-paid/${reservation.id}/${citizen.id}")
+                .setStyle(ModalButtonStyle.Primary)
+                .build()
+        }
+        return ""
+    }
+
+    fun createInvoicePaidModalButton(
+        reservation: BoatSpaceReservationDetails,
+        reserverId: UUID
+    ): String {
+        if (reservation.status == ReservationStatus.Invoiced) {
+            return modal
+                .createOpenModalBuilder()
+                .addAttribute("id", "invoice-paid-button")
+                .setText(t("citizenDetails.markInvoicePaid"))
+                .setPath("/reservation/modal/mark-invoice-paid/${reservation.id}/$reserverId")
                 .setStyle(ModalButtonStyle.Primary)
                 .build()
         }

@@ -9,8 +9,8 @@ import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.repository.OrganizationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.service.PaymentService
+import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,7 +24,7 @@ class BoatSpaceInvoiceService(
     private val paymentService: PaymentService,
     private val timeProvider: TimeProvider,
     private val boatReservationService: BoatReservationService,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val reserverRepository: ReserverRepository,
     private val organizationRepository: OrganizationRepository,
     private val asyncJobRunner: IAsyncJobRunner<AsyncJob>
@@ -104,7 +104,7 @@ class BoatSpaceInvoiceService(
         val description = description ?: "${reservation.locationName} ${reservation.startDate.year}"
 
         if (reservation.reserverType == ReserverType.Citizen) {
-            val citizen = citizenService.getCitizen(reserverId)
+            val citizen = reserverService.getCitizen(reserverId)
             if (citizen == null) {
                 return null
             }

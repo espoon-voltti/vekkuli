@@ -23,7 +23,6 @@ import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
-import jakarta.validation.constraints.*
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -40,7 +39,7 @@ class ReservationFormController(
     private val reservationService: ReservationFormService,
     private val reservationFormView: ReservationFormView,
     private val employeeLayout: EmployeeLayout,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val messageUtil: MessageUtil,
     private val warnings: Warnings,
     private val layout: Layout,
@@ -140,7 +139,7 @@ class ReservationFormController(
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "SEARCH_CITIZENS")
         }
-        citizenService.getCitizens(nameParameter).let {
+        reserverService.getCitizens(nameParameter).let {
             return citizensSearchForm.render(it, reservationId)
         }
     }
@@ -152,12 +151,12 @@ class ReservationFormController(
         @PathVariable usertype: String,
         request: HttpServletRequest
     ): String {
-        val citizen = citizenService.getCitizen(citizenIdOption)
+        val citizen = reserverService.getCitizen(citizenIdOption)
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "SEARCH_CITIZENS_RESULTS")
         }
         return if (citizen != null) {
-            commonComponents.citizenDetails(citizen, citizenService.getMunicipalities())
+            commonComponents.citizenDetails(citizen, reserverService.getMunicipalities())
         } else {
             ""
         }
@@ -179,7 +178,8 @@ class ReservationFormController(
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "BOAT_FORM_CITIZEN")
         }
-        val citizen = getCitizen(request, citizenService)
+        val citizen = getCitizen(request, reserverService)
+
         if (citizen == null) return ResponseEntity.badRequest().build()
 
         val boatFormParams =
@@ -216,7 +216,7 @@ class ReservationFormController(
         }
         if (citizenId == null) return ResponseEntity.badRequest().build()
 
-        val citizen = citizenService.getCitizen(citizenId) ?: return ResponseEntity.badRequest().build()
+        val citizen = reserverService.getCitizen(citizenId) ?: return ResponseEntity.badRequest().build()
         val boatFormParams =
             reservationService.buildBoatFormParams(
                 reservationId,
@@ -254,7 +254,7 @@ class ReservationFormController(
         } catch (e: Forbidden) {
             return ResponseEntity.ok(
                 renderCitizenErrorPage(
-                    getCitizen(request, citizenService),
+                    getCitizen(request, reserverService),
                     request,
                     messageUtil.getMessage("errorCode.split.${e.errorCode}")
                 )
@@ -367,7 +367,7 @@ class ReservationFormController(
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "INITIAL_BOAT_SPACE_RESERVATION")
         }
-        val citizen = getCitizen(request, citizenService)
+        val citizen = getCitizen(request, reserverService)
         if (citizen?.id == null) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
         }

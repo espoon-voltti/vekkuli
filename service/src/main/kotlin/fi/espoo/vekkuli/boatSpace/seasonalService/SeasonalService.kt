@@ -166,7 +166,7 @@ class SeasonalService(
             reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
                 ReservationResultErrorCode.NoReserver
             )
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
         val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
@@ -234,7 +234,7 @@ class SeasonalService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
         }
 
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Winter)
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverID, BoatSpaceType.Winter)
         val hasSomePlace = reservations.isNotEmpty()
 
         val periods = seasonalRepository.getReservationPeriods()

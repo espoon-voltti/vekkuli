@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.controllers.reservation.modal
 
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.views.citizen.details.reservation.InvoicePaidModal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -20,21 +20,21 @@ class InvoicePaidController {
     private lateinit var reservationService: BoatReservationService
 
     @Autowired
-    private lateinit var citizenService: CitizenService
+    private lateinit var reserverService: ReserverService
 
-    @GetMapping("/reservation/modal/mark-invoice-paid/{reservationId}/{citizenId}")
+    @GetMapping("/reservation/modal/mark-invoice-paid/{reservationId}/{reserverId}")
     @ResponseBody
     fun citizenProfile(
         @PathVariable reservationId: Int,
-        @PathVariable citizenId: UUID,
+        @PathVariable reserverId: UUID,
     ): ResponseEntity<String> {
         val reservation =
             reservationService.getBoatSpaceReservation(reservationId)
                 ?: throw IllegalArgumentException("Reservation not found")
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Reservation not found")
+        val reserver = reserverService.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
 
         return ResponseEntity.ok(
-            invoicePaidModal.render(citizen, reservation)
+            invoicePaidModal.render(reserver.id, reservation)
         )
     }
 }

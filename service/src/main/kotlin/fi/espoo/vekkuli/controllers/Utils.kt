@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.CitizenWithDetails
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -57,7 +57,7 @@ class Utils {
 
         fun getCitizen(
             request: HttpServletRequest,
-            service: CitizenService,
+            service: ReserverService,
         ): CitizenWithDetails? {
             val authenticatedUser = request.getAuthenticatedUser()
             if (authenticatedUser?.isEmployee() == true) {

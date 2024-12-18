@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -18,7 +18,7 @@ class GlobalControllerAdvice
     constructor(
         private val jdbi: Jdbi,
         private val messageUtil: MessageUtil,
-        private val citizenService: CitizenService
+        private val reserverService: ReserverService
     ) {
         @ModelAttribute
         fun addAttributes(
@@ -32,7 +32,7 @@ class GlobalControllerAdvice
             if (authenticatedUser?.type == "citizen") {
                 val user =
                     authenticatedUser.let {
-                        citizenService.getCitizen(authenticatedUser.id)
+                        reserverService.getCitizen(authenticatedUser.id)
                     }
 
                 if (user != null) {

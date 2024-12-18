@@ -3,11 +3,20 @@ package fi.espoo.vekkuli.pages
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
+import java.util.*
 
-class CitizenDetailsPage(
+class OrganizationDetailsPage(
     page: Page
 ) : BasePage(page) {
-    val citizenDetailsSection = page.getByTestId("reserver-details")
+    val organizationDetailsSection = page.getByTestId("reserver-details")
+
+    fun navigateToEspoonPursiseura() {
+        navigateToPage(UUID.fromString("8b220a43-86a0-4054-96f6-d29a5aba17e7"))
+    }
+
+    fun navigateToPage(organizationId: UUID) {
+        page.navigate("$baseUrl/virkailija/yhteiso/$organizationId")
+    }
 
     private fun getBoatText(
         prop: String,

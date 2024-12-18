@@ -19,7 +19,6 @@ class ReservationList(
     private val reservationCardWarningBox: ReservationCardWarningBox
 ) : BaseView() {
     fun render(
-        citizen: CitizenWithDetails,
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
         userType: UserType,
         reserverId: UUID,
@@ -27,14 +26,13 @@ class ReservationList(
         // language=HTML
         return """
             <div class="reservation-list form-section" ${addTestId("reservation-list")}>
-                ${createReservationCards(boatSpaceReservations, citizen, userType, reserverId)}
+                ${createReservationCards(boatSpaceReservations, userType, reserverId)}
             </div>
             """.trimIndent()
     }
 
     private fun createReservationCards(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        citizen: CitizenWithDetails,
         userType: UserType,
         reserverId: UUID
     ): String =
@@ -48,9 +46,9 @@ class ReservationList(
                 ${reservationCardWarningBox.render(reservation, userType)}
                 ${
                 if (userType == UserType.EMPLOYEE) {
-                    employeeButtons.render(reservation, citizen)
+                    employeeButtons.render(reservation, reserverId)
                 } else {
-                    citizenButtons.render(reservation, citizen)
+                    citizenButtons.render(reservation)
                 }}
             </div>
             """.trimIndent()

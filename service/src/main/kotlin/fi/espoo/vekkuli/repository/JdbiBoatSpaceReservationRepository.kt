@@ -533,7 +533,7 @@ class JdbiBoatSpaceReservationRepository(
                 .execute()
         }
 
-    override fun getBoatSpaceReservationsForCitizen(
+    override fun getBoatSpaceReservationsForReserver(
         reserverId: UUID,
         spaceType: BoatSpaceType?
     ): List<BoatSpaceReservationDetails> =

@@ -23,7 +23,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     private lateinit var reservationService: BoatReservationService
 
     @Autowired
-    private lateinit var citizenService: CitizenService
+    private lateinit var reserverService: ReserverService
 
     @Autowired private lateinit var paymentService: PaymentService
 
@@ -107,7 +107,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should add invoice`() {
         val invoice =
-            testUtils.createInvoiceWithTestParameters(citizenService, invoiceService, timeProvider, this.citizenIdLeo)
+            testUtils.createInvoiceWithTestParameters(reserverService, invoiceService, timeProvider, this.citizenIdLeo)
         val fetchedInvoice = paymentService.getInvoice(invoice.id)
         assertEquals(invoice.id, fetchedInvoice?.id, "Fetched invoice ID matches the inserted invoice ID")
         assertEquals(invoice, fetchedInvoice, "Fetched invoice matches the inserted invoice")

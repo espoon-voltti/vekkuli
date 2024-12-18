@@ -86,10 +86,10 @@ class TrailerCard(
                     <div class="modal-content">
                         <form hx-post="/virkailija/venepaikat/varaukset/kuittaa-traileri-varoitus"
                               hx-swap="outerHTML"
-                              hx-target="#citizen-details"
+                              hx-target="#reserver-details"
                              >
                             <input type="hidden" name="trailerId" value="${trailer.id}" />
-                            <input type="hidden" name="citizenId" value="$reserverId" />
+                            <input type="hidden" name="reserverId" value="$reserverId" />
                             <div class="block">
                                 <div class="field">
                                     <h1 class="label">${t("citizenDetails.warnings.ackSelect")}<</h1>
@@ -212,8 +212,8 @@ class TrailerCard(
         val buttons =
             formComponents.buttons(
                 "/kuntalainen/omat-tiedot",
-                "#citizen-details",
-                "#citizen-details",
+                "#reserver-details",
+                "#reserver-details",
                 "trailer-edit-cancel",
                 "trailer-edit-submit"
             )

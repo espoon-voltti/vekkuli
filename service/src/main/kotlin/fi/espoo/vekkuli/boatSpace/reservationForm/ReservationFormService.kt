@@ -47,7 +47,7 @@ data class ReserveBoatSpaceInput(
 class ReservationFormService(
     private val organizationService: OrganizationService,
     private val boatReservationService: BoatReservationService,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val reservationFormView: ReservationFormView,
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
@@ -256,7 +256,7 @@ class ReservationFormService(
             throw UnauthorizedException()
         }
 
-        val citizen = citizenService.getCitizen(citizenId)
+        val citizen = reserverService.getCitizen(citizenId)
 
         return (
             citizenLayout.render(
@@ -273,7 +273,7 @@ class ReservationFormService(
         formInput: ReservationInput,
         requestURI: String,
     ): String {
-        val citizen = formInput.citizenId?.let { citizenService.getCitizen(formInput.citizenId) }
+        val citizen = formInput.citizenId?.let { reserverService.getCitizen(formInput.citizenId) }
 
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
@@ -621,7 +621,7 @@ class ReservationFormService(
                     .map { boat -> boat.updateBoatDisplayName(messageUtil) }
             } ?: emptyList()
 
-        val municipalities = citizenService.getMunicipalities()
+        val municipalities = reserverService.getMunicipalities()
 
         return buildApplicationForm(reservation, boats, citizen, organizations, input, userType, municipalities)
     }
@@ -674,7 +674,7 @@ class ReservationFormService(
 
     private fun createOrUpdateCitizen(input: ReservationInput): CitizenWithDetails? {
         if (input.citizenId != null) {
-            return citizenService
+            return reserverService
                 .updateCitizen(
                     UpdateCitizenParams(
                         id = input.citizenId,
@@ -688,7 +688,7 @@ class ReservationFormService(
                     )
                 )
         }
-        return citizenService
+        return reserverService
             .insertCitizen(
                 phone = input.phone ?: "",
                 email = input.email ?: "",

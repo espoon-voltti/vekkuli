@@ -547,14 +547,17 @@ VALUES
 
 INSERT INTO sent_message (provider_id, created, sent_at, type, status, sender_id, sender_address, recipient_id, recipient_address, subject, body)
 VALUES
-    ('1000', '2024-09-01 13:01:20', '2024-09-01 13:01:21', 'Email', 'Sent', '94833b54-132b-4ab8-b841-60df45809b3e', 'ville@noreplytest.fi', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'leo@gmail.com', 'Käyttöveden katko', 'Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.');
+    ('1000', '2024-09-01 13:01:20', '2024-09-01 13:01:21', 'Email', 'Sent', '94833b54-132b-4ab8-b841-60df45809b3e', 'ville@noreplytest.fi', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'leo@gmail.com', 'Käyttöveden katko', 'Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.'),
+    ('1000', '2024-09-01 13:01:20', '2024-09-01 13:01:21', 'Email', 'Sent', '94833b54-132b-4ab8-b841-60df45809b3e', 'ville@noreplytest.fi', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'eps@noreplytest.fi', 'Käyttöveden katko', 'Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.');
 
 INSERT INTO boat (registration_code, reserver_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership, deleted_at)
 VALUES
     ('A1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon vene', 120, 400, 20, 180, 'OutboardMotor', 'Terhi 400', '', 'Owner', null),
     ('B4321', '509edb00-5549-11ef-a1c7-776e76028a49', 'Olivian vene', 160, 800, 50, 420, 'Sailboat', 'Swan', '', 'Owner', null),
     ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner', null),
-    ('D1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon poistettu vene', 120, 400, 20, 180, 'OutboardMotor', 'Delmo 600', '', 'Owner', '2024-04-01T00:00:00');
+    ('D1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon poistettu vene', 120, 400, 20, 180, 'OutboardMotor', 'Delmo 600', '', 'Owner', '2024-04-01T00:00:00'),
+    ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon lohi', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
+    ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon kuha', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null);
 
 
 INSERT INTO email_template (id, subject, body)
@@ -3033,7 +3036,8 @@ VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'C
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2023-12-31', 'Invoiced', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer');
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer'),
+       ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 3, '2024-02-01', '2025-01-31', 'Confirmed', 5, 'Indefinite', null, null);
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)

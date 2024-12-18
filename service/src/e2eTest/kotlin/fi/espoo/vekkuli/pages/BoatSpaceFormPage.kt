@@ -56,7 +56,7 @@ class BoatSpaceFormPage(
     val postalCodeInput = page.getByTestId("postalCode")
 
     val citizenSearchContainer = page.locator("#customer-search-container")
-    val citizenInformationContainer = page.locator("#citizen-details")
+    val citizenInformationContainer = page.locator("#reserver-details")
     val citizenSearchInput = page.locator("#customer-search")
     val citizenSearchOption1 = page.locator("#option-0")
     val citizenSearchOption2 = page.locator("#option-1")

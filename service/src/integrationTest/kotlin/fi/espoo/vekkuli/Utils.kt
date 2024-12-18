@@ -200,12 +200,12 @@ class TestUtils(
     }
 
     fun createInvoiceWithTestParameters(
-        citizenService: CitizenService,
+        reserverService: ReserverService,
         invoiceService: BoatSpaceInvoiceService,
         timeProvider: TimeProvider,
         citizenId: UUID,
     ): Invoice {
-        val citizen = citizenService.getCitizen(citizenId)!!
+        val citizen = reserverService.getCitizen(citizenId)!!
         val (invoice, payment) =
             invoiceService.createInvoice(
                 InvoiceData(

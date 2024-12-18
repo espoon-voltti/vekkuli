@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.boatSpace.citizenHome
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.views.citizen.Layout
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 class CitizenHomeController(
     private val layout: Layout,
     private val homeView: HomeView,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val citizenHomeService: CitizenHomeService
 ) {
     private val logger = KotlinLogging.logger {}
@@ -30,7 +30,7 @@ class CitizenHomeController(
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "CITIZEN_HOME")
         }
-        val user = getCitizen(request, citizenService)
+        val user = getCitizen(request, reserverService)
         val isAuthenticatedCitizen = user != null
 
         return layout.render(

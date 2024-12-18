@@ -338,7 +338,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
-        page.waitForCondition { listingPage.reservations.count() == 3 }
+        page.waitForCondition { listingPage.reservations.count() == 4 }
         listingPage.boatSpaceTypeFilter("Winter").click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
     }
@@ -350,7 +350,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
-        page.waitForCondition { listingPage.reservations.count() == 3 }
+        page.waitForCondition { listingPage.reservations.count() == 4 }
         listingPage.searchInput("phoneSearch").fill("04056")
         listingPage.searchInput("phoneSearch").blur()
         page.waitForCondition { listingPage.reservations.count() == 1 }

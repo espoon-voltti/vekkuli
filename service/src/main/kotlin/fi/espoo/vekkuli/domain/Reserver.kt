@@ -7,6 +7,12 @@ enum class ReserverType {
     Organization,
 }
 
+fun ReserverType.toPath() =
+    when (this) {
+        ReserverType.Citizen -> "kayttaja"
+        ReserverType.Organization -> "yhteiso"
+    }
+
 data class Reserver(
     val id: UUID,
     val type: ReserverType,

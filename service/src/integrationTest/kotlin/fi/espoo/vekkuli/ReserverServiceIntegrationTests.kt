@@ -15,27 +15,27 @@ import kotlin.test.assertNotNull
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class CitizenServiceIntegrationTests : IntegrationTestBase() {
+class ReserverServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
-    lateinit var citizenService: CitizenService
+    lateinit var reserverService: ReserverService
 
     @Test
     fun `should get correct citizen`() {
-        val citizen = citizenService.getCitizen(this.citizenIdLeo)
+        val citizen = reserverService.getCitizen(this.citizenIdLeo)
         assertNotNull(citizen, "Citizen is not null")
         assertEquals(this.citizenIdLeo, citizen.id, "Citizen is correctly fetched")
     }
 
     @Test
     fun `should get citizen by full name`() {
-        val citizens = citizenService.getCitizens("Virtanen Olivia")
+        val citizens = reserverService.getCitizens("Virtanen Olivia")
         assertEquals(1, citizens.size, "Should find a citizen")
         assertEquals(citizenIdOlivia, citizens[0].id, "Citizen is correctly fetched")
     }
 
     @Test
     fun `should get citizen by last name`() {
-        val citizens = citizenService.getCitizens("Virtanen")
+        val citizens = reserverService.getCitizens("Virtanen")
         assertEquals(2, citizens.size, "Should find two citizens")
         assertNotNull(citizens.first { it.id == citizenIdOlivia }, "Citizen is correctly fetched")
     }
@@ -45,8 +45,8 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
         val updatedPhoneNumber = "123456789"
         val updatedEmail = "new@email.com"
         val updatedCitizen =
-            citizenService.updateCitizen(UpdateCitizenParams(id = this.citizenIdLeo, phone = updatedPhoneNumber, email = updatedEmail))
-        val citizen = citizenService.getCitizen(this.citizenIdLeo)
+            reserverService.updateCitizen(UpdateCitizenParams(id = this.citizenIdLeo, phone = updatedPhoneNumber, email = updatedEmail))
+        val citizen = reserverService.getCitizen(this.citizenIdLeo)
         assertNotNull(updatedCitizen)
         assertEquals(updatedPhoneNumber, citizen?.phone, "Citizen's phone is correctly updated")
         assertEquals(updatedEmail, citizen?.email, "Citizen's email is correctly updated")
@@ -72,7 +72,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 streetAddressSv = "",
             )
         val updatedCitizen =
-            citizenService.updateCitizen(
+            reserverService.updateCitizen(
                 UpdateCitizenParams(
                     id = this.citizenIdLeo,
                     phone = newCitizen.phone,
@@ -88,7 +88,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                     postOfficeSv = newCitizen.postOfficeSv
                 )
             )
-        val citizen = citizenService.getCitizen(this.citizenIdLeo)
+        val citizen = reserverService.getCitizen(this.citizenIdLeo)
         assertNotNull(updatedCitizen)
         assertEquals(newCitizen.municipalityName, citizen?.municipalityName, "Citizen's municipality is correctly updated")
         assertEquals(newCitizen, citizen, "Citizen is correctly updated")
@@ -113,7 +113,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 postOfficeSv = "Esbo",
                 streetAddressSv = "",
             )
-        citizenService.updateCitizen(
+        reserverService.updateCitizen(
             UpdateCitizenParams(
                 id = this.citizenIdLeo,
                 phone = newCitizen1.phone,
@@ -136,7 +136,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 municipalityName = "Helsinki"
             )
         val updatedCitizen2 =
-            citizenService.updateCitizen(
+            reserverService.updateCitizen(
                 UpdateCitizenParams(
                     id = this.citizenIdLeo,
                     phone = newCitizen2.phone,
@@ -153,7 +153,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        val citizen = citizenService.getCitizen(this.citizenIdLeo)
+        val citizen = reserverService.getCitizen(this.citizenIdLeo)
         assertNotNull(updatedCitizen2)
         assertEquals(newCitizen2.municipalityName, citizen?.municipalityName, "Citizen's municipality is correctly updated")
         assertEquals(updatedCitizen2.municipalityName, citizen?.municipalityName, "Updated citizen is correctly returned")
@@ -161,7 +161,7 @@ class CitizenServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should get all valid municipalities`() {
-        val municipalities = citizenService.getMunicipalities()
+        val municipalities = reserverService.getMunicipalities()
         assertTrue(municipalities.isNotEmpty())
         assertEquals("Espoo", municipalities.first { it.code == 49 }.name)
     }

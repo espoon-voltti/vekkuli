@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.badRequest
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
@@ -27,6 +28,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.net.URI
+import java.util.*
 
 @Controller
 class BoatSpaceRenewController(
@@ -35,6 +37,7 @@ class BoatSpaceRenewController(
     private val employeeLayout: EmployeeLayout,
     private val boatSpaceRenewalService: BoatSpaceRenewalService,
     private val invoicePreview: InvoicePreview,
+    private val boatReservationService: BoatReservationService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -87,8 +90,8 @@ class BoatSpaceRenewController(
                 invoicePreview.render(
                     invoiceModel,
                     submitUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku",
-                    backUrl = "/virkailija/kayttaja/${renewedReservation.reserverId}",
-                    deleteUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku",
+                    backUrl = getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId),
+                    deleteUrl = "/virkailija/venepaikka/jatka/${renewedReservation.id}/lasku",
                     invoiceModel.orgId.isNotEmpty()
                 )
             val page = employeeLayout.render(true, request.requestURI, content)
@@ -143,13 +146,23 @@ class BoatSpaceRenewController(
                 renewedReservation.reserverId,
                 renewedReservation.renewedFromId,
             )
-            return redirectUrl("/virkailija/kayttaja/${renewedReservation.reserverId}")
+            return redirectUrl(getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId))
         } catch (e: Exception) {
             // TODO: should we respond with error page or redirect to some other page?
             val errorPage = boatSpaceRenewForm.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
         }
     }
+
+    fun getBackUrl(
+        reserverType: ReserverType?,
+        reserverId: UUID?
+    ): String =
+        if (reserverType == ReserverType.Citizen) {
+            "/virkailija/kayttaja/$reserverId"
+        } else {
+            "/virkailija/yhteiso/$reserverId"
+        }
 
     @DeleteMapping("/virkailija/venepaikka/jatka/{renewedReservationId}/lasku")
     fun cancelRenewal(

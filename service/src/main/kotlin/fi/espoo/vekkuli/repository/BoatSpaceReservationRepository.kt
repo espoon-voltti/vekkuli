@@ -39,7 +39,7 @@ interface BoatSpaceReservationRepository {
 
     fun removeBoatSpaceReservation(id: Int): Unit
 
-    fun getBoatSpaceReservationsForCitizen(
+    fun getBoatSpaceReservationsForReserver(
         reserverId: UUID,
         spaceType: BoatSpaceType?
     ): List<BoatSpaceReservationDetails>
