@@ -112,7 +112,7 @@ class ReserverDetailsReservationsContainer(
             return ""
         }
 
-        fun getDeleteUrl(boatId: Int,): String {
+        fun getDeleteUrl(boatId: Int): String {
             if (userType == UserType.EMPLOYEE) {
                 return "/virkailija/${reserverType.toPath()}/$reserverId/vene/$boatId/poista"
             }
