@@ -30,7 +30,7 @@ fun amenityFilter(
 }
 
 fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
-    if (filter.boatLength != null && filter.boatLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
+    if (filter.boatOrSpaceLength != null && filter.boatOrSpaceLength > BoatSpaceConfig.BOAT_LENGTH_THRESHOLD_CM) {
         // Boats over 15 meters will only fit in buoys
         return OperatorExpr(
             "amenity",
@@ -42,11 +42,7 @@ fun createAmenityFilter(filter: BoatSpaceFilter): SqlExpr {
     val amenities = if (filter.amenities.isNullOrEmpty()) BoatSpaceAmenity.entries.toList() else filter.amenities
     return OrExpr(
         amenities.map {
-            if (it == BoatSpaceAmenity.None) {
-                OperatorExpr("amenity", "=", BoatSpaceAmenity.None)
-            } else {
-                amenityFilter(it, filter.boatWidth, filter.boatLength)
-            }
+            amenityFilter(it, filter.boatOrSpaceWidth, filter.boatOrSpaceLength)
         }
     )
 }
@@ -102,7 +98,7 @@ class JdbiBoatSpaceRepository(
 ) : BoatSpaceRepository {
     override fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int> {
         return jdbi.withHandleUnchecked { handle ->
-            if (params.boatWidth == null || params.boatLength == null) return@withHandleUnchecked Pair(emptyList<Harbor>(), 0)
+            if (params.boatOrSpaceWidth == null || params.boatOrSpaceLength == null) return@withHandleUnchecked Pair(emptyList<Harbor>(), 0)
             val amenityFilter = createAmenityFilter(params)
             val locationIds =
                 if (params.locationIds.isNullOrEmpty()) {
@@ -131,7 +127,7 @@ class JdbiBoatSpaceRepository(
                     location.name as location_name, 
                     location.address as location_address,
                     boat_space.id,
-                    CONCAT(section, TO_CHAR(place_number, 'FM000')) as place,
+                    CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place,
                     length_cm, 
                     width_cm, 
                     price.price_cents,
@@ -144,9 +140,10 @@ class JdbiBoatSpaceRepository(
                 LEFT JOIN boat_space_reservation
                 ON boat_space.id = boat_space_reservation.boat_space_id
                 AND (
-                    (boat_space_reservation.status = 'Info' AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
-                    (boat_space_reservation.status = 'Payment' AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
-                    (boat_space_reservation.status = 'Confirmed') 
+                    (boat_space_reservation.created <= :currentTime) AND
+                    (boat_space_reservation.status IN ('Info', 'Payment', 'Renewal') AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
+                    (boat_space_reservation.status IN ('Confirmed', 'Invoiced') AND boat_space_reservation.end_date >= :currentTime) OR
+                    (boat_space_reservation.status = 'Cancelled' AND boat_space_reservation.end_date > :currentTime)
                 )
                 WHERE 
                     boat_space_reservation.id IS NULL
@@ -182,4 +179,26 @@ class JdbiBoatSpaceRepository(
             Pair(harbors, count)
         }
     }
+
+    override fun getBoatSpace(boatSpaceId: Int): BoatSpace? =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT 
+                    bs.*,
+                    location.name as location_name, 
+                    ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                FROM boat_space bs
+                JOIN location ON bs.location_id = location.id
+                JOIN price ON bs.price_id = price.id
+                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
+                WHERE bs.id = :boatSpaceId
+                GROUP BY bs.id, location.name
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            query.bind("boatSpaceId", boatSpaceId)
+
+            query.mapTo<BoatSpace>().firstOrNull()
+        }
 }

@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import fi.espoo.vekkuli.views.Icons
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +22,7 @@ class BoatSpaceReservationList {
 
     fun render(
         harbors: List<Location>,
+        boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
         reservations: List<BoatSpaceReservationItem>,
         params: BoatSpaceReservationFilter,
@@ -29,7 +31,7 @@ class BoatSpaceReservationList {
         val harborFilters =
             harbors.joinToString("\n") { harbor ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" data-testid="filter-harbor-${harbor.name}">
                     <input type="checkbox" name="harbor" value="${harbor.id}" class="is-hidden" ${if (params.hasHarbor(
                         harbor.id
                     )
@@ -46,10 +48,47 @@ class BoatSpaceReservationList {
                 """.trimIndent()
             }
 
+        val boatSpaceTypeFilters =
+            boatSpaceTypes.joinToString("\n") { boatSpaceType ->
+                """
+                <label class="filter-button" data-testid="filter-type-$boatSpaceType">
+                    <input type="checkbox" name="boatSpaceType" value="$boatSpaceType" class="is-hidden" ${if (params.hasBoatSpaceType(
+                        boatSpaceType
+                    )
+                ) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("employee.boatSpaceReservations.types.$boatSpaceType")}</span>
+                </label>
+                """.trimIndent()
+            }
+
+        val reservationExpirationFilter =
+            ReservationExpiration.entries.joinToString("\n") { state ->
+                """
+                <label class="filter-button">
+                    <input type="radio" name="expiration" value="${state.name}" class="is-hidden" ${if (params.expiration == state) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("boatSpaces.expirationOption.$state")}</span>
+                </label>
+                """.trimIndent()
+            }
+
         val amenityFilters =
             amenities.joinToString("\n") { amenity ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" data-testid="filter-amenity-$amenity">
                     <input type="checkbox" name="amenity" value="${amenity.name}" class="is-hidden" ${if (params.hasAmenity(
                         amenity
                     )
@@ -93,7 +132,9 @@ class BoatSpaceReservationList {
                 ""
             }}>
                 <span>${t("boatSpaceReservation.showReservationsWithWarnings")}</span>
+               
             </label>
+             <span class="ml-s">${icons.warningExclamation(false)}</span>
             """.trimIndent()
 
         val nameSearchInput =
@@ -143,12 +184,27 @@ class BoatSpaceReservationList {
             </div>
             """.trimIndent()
 
+        fun getWarningIcon(hasWarnings: Boolean) =
+            if (hasWarnings) {
+                "<div data-testid='warning-icon'>${icons.warningExclamation(false)}</div>"
+            } else {
+                ""
+            }
+
         // language=HTML
         val reservationRows =
             reservations.joinToString("\n") { result ->
                 val startDateFormatted = formatAsShortYearDate(result.startDate)
                 val endDateFormatted = formatAsShortYearDate(result.endDate)
                 val paymentDateFormatted = formatAsShortYearDate(result.paymentDate)
+                val endDateText =
+                    if (result.status == ReservationStatus.Cancelled) {
+                        """<span class="has-text-danger">${t("reservations.text.terminated")} $endDateFormatted</span>"""
+                    } else if (result.validity == ReservationValidity.FixedTerm) {
+                        endDateFormatted
+                    } else {
+                        ""
+                    }
                 """
                 <tr class="reservation-item"
                     id="boat-space-${result.boatSpaceId}"
@@ -157,32 +213,19 @@ class BoatSpaceReservationList {
                     hx-push-url="true"
                     hx-target=".section"
                     hx-select=".section">
+                    <td>${getWarningIcon(result.hasAnyWarnings())}</td>
                     <td>${result.locationName}</td>
                     <td>
                         <span>${result.place}</span>
-                        ${if (result.hasWarning("BoatWidth") || result.hasWarning("BoatLength")) icons.warningExclamation(false) else ""}
                     </td>
-                    <td>${result.section}</td>
-                    <td>${t("boatSpaces.type${result.type}Option")}</td>
+                    <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
                     <td>$startDateFormatted</td>
-                    <td>$endDateFormatted</td>
-                    <td class="has-text-centered">
-                        <div class="is-flex is-align-items-center is-justify-content-center">
-                            <p>${t("boatApplication.$userType.ownershipOption.${result.boatOwnership}")}</p>
-                            ${if (result.hasWarning(
-                        "BoatFutureOwner"
-                    ) ||
-                    result.hasWarning("BoatCoOwner")
-                ) {
-                    icons.warningExclamation(false)
-                } else {
-                    ""
-                }}
-                        </div>
-                    </td>
+                    <td ${addTestId(
+                    "reservation-end-date"
+                )}>$endDateText</td>
                 </tr>
                 """.trimIndent()
             }
@@ -233,29 +276,47 @@ class BoatSpaceReservationList {
                           hx-push-url="true"
                           hx-indicator="#loader, .loaded-content"
                     >
-                        <input type="text" name="sortBy" id="sortColumn" value="${params.sortBy}" style="visibility: hidden">
-                        <input type="text" name="ascending" id="sortDirection" value="${params.ascending}" style="visibility: hidden">
-
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
-                            <div class="tag-container">
+                        <input type="hidden" name="sortBy" id="sortColumn" value="${params.sortBy}" >
+                        <input type="hidden" name="ascending" id="sortDirection" value="${params.ascending}">
+                        
+                        
+                        <div class="employee-filter-container">                        
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
+                                <div class="tag-container">
                                 $harborFilters
+                                </div>
                             </div>
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
+                                <div class="tag-container">
+                                    $reservationExpirationFilter
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
+                                <div class="tag-container">
+                                    $paymentFilters
+                                </div>
+                            </div>                            
+                        </div>
+                        
+                        <div class="employee-filter-container">
+                            <div class="filter-group">
+                              <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
+                              <div class="tag-container">
+                                $boatSpaceTypeFilters
+                              </div>
+                            </div>
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                                <div class="tag-container">
+                                    $amenityFilters
+                                </div>
+                            </div>                        
                         </div>
 
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
-                            <div class="tag-container">
-                                $amenityFilters
-                            </div>
-                        </div>
-                        <div class="block">
-                            <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
-                            <div class="tag-container">
-                                $paymentFilters
-                            </div>
-                        </div>
-                        <div class="block">
+                        <div class="block columns is-vcentered">
                             $warningFilterCheckbox
                         </div>
 
@@ -263,15 +324,16 @@ class BoatSpaceReservationList {
                             <table class="table is-hoverable">
                                 <thead>
                                 <tr class="table-borderless">
+                                    <th></th>
                                     <th class="nowrap">
                                         ${sortButton("PLACE", t("boatSpaceReservation.title.harbor"))}
                                     </th>
                                     <th class="nowrap">
                                         ${sortButton("PLACE", t("boatSpaceReservation.title.place"))}
                                     </th>
-                                    <th>${t("boatSpaceReservation.title.pier")}</th>
+
                                     <th class="nowrap">
-                                        ${sortButton("PLACE_TYPE", t("boatSpaceReservation.title.type"))}
+                                        ${sortButton("PLACE_TYPE", t("employee.boatSpaceReservations.table.title.type"))}
                                     </th>
                                     <th class="nowrap">
                                         ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}
@@ -280,7 +342,7 @@ class BoatSpaceReservationList {
                                         ${sortButton("HOME_TOWN", t("boatSpaceReservation.title.homeTown"))}
                                     </th>
                                     <th><span class="reservation-table-header">
-                                        ${t("boatSpaceReservation.title.payment")}
+                                        ${t("boatSpaceReservation.title.paymentState")}
                                     </span></th>
                                     <th class="nowrap">
                                         ${sortButton("START_DATE", t("boatSpaceReservation.title.startDate"))}
@@ -288,9 +350,7 @@ class BoatSpaceReservationList {
                                     <th class="nowrap">
                                         ${sortButton("END_DATE", t("boatSpaceReservation.title.endDate"))}
                                     </th>
-                                    <th class="nowrap"><span class="reservation-table-header">
-                                        ${t("boatSpaceReservation.title.ownership")}
-                                    </span></th>
+
                                 </tr>
                                 
                                 <tr>

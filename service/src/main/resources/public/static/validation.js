@@ -1,165 +1,164 @@
 const validation = (function () {
   function init(config) {
-    config.forms.forEach(function (formId) {
+    config.forms.forEach(formId => {
       const form = document.getElementById(formId);
       if (form) {
         setupFormValidation(form);
-        setupSubmitButtonBehavior(form);
       } else {
         console.warn(`Form with id '${formId}' not found.`);
       }
     });
   }
 
-  function validateField(field) {
-    const errorMessageElement = document.getElementById(`${field.id}-error`);
-    const patternErrorMessageElement = document.getElementById(
-      `${field.id}-pattern-error`,
-    );
-    const serverErrorMessageElement = document.getElementById(
-      `${field.id}-server-error`,
-    );
-    let isValid = true;
+  function updateGlobalErrorMessage(form) {
+    const globalErrorMessage = form.querySelector('.form-validation-message');
+    const errorElements = form.querySelectorAll('[id$="-error"]');
 
-    // Hide all error messages initially
-    if (errorMessageElement) errorMessageElement.style.visibility = "hidden";
-    if (patternErrorMessageElement)
-      patternErrorMessageElement.style.visibility = "hidden";
-    if (serverErrorMessageElement)
-      serverErrorMessageElement.style.visibility = "hidden";
+    const hasVisibleErrors = Array.from(errorElements).some(el =>
+      el.getAttribute('aria-hidden') === 'false'
+    );
 
-    if (errorMessageElement) {
-      if (
-        field.hasAttribute("data-required") &&
-        !field.hasAttribute("disabled")
-      ) {
-        if (field.type === "checkbox") {
-          if (!field.checked) {
-            errorMessageElement.style.visibility = "visible";
-            return false;
-          } else {
-            errorMessageElement.style.visibility = "hidden";
-          }
-        }
-        if (
-          (field.tagName === "SELECT" && field.value === "") ||
-          field.value.trim() === "" ||
-          field.value === null
-        ) {
-          errorMessageElement.style.visibility = "visible";
-          return false;
-        } else {
-          errorMessageElement.style.visibility = "hidden";
-        }
+    if (globalErrorMessage) {
+      globalErrorMessage.style.display = hasVisibleErrors ? 'unset' : 'none';
+    }
+  }
+
+  function showError(element, show) {
+    if (!element) return;
+    element.setAttribute('aria-hidden', show ? 'false' : 'true');
+    element.style.display = show ? 'unset' : 'none';
+  }
+
+  async function validateField(field) {
+    const errorElements = {
+      required: document.getElementById(`${field.id}-error`),
+      pattern: document.getElementById(`${field.id}-pattern-error`),
+      server: document.getElementById(`${field.id}-server-error`)
+    };
+
+    // Reset all error states
+    Object.values(errorElements).forEach(el => showError(el, false));
+
+    // Required validation
+    if (errorElements.required) {
+      const isRequired = field.hasAttribute('data-required') && !field.hasAttribute('disabled');
+      const isEmpty = field.type === 'checkbox' ? !field.checked :
+        field.value.trim() === '' || field.value === null;
+
+      if (isRequired && isEmpty) {
+        showError(errorElements.required, true);
+        updateGlobalErrorMessage(field.closest('form'));
+        return false;
       }
     }
 
-    if (patternErrorMessageElement) {
-      if (isValid && field.hasAttribute("data-pattern")) {
-        const pattern = new RegExp(field.getAttribute("data-pattern"));
-        if (!pattern.test(field.value)) {
-          patternErrorMessageElement.style.visibility = "visible";
-          return false;
-        } else {
-          patternErrorMessageElement.style.visibility = "hidden";
-        }
+    // Pattern validation
+    if (errorElements.pattern && field.hasAttribute('data-pattern')) {
+      const pattern = new RegExp(field.getAttribute('data-pattern'));
+      if (!pattern.test(field.value)) {
+        showError(errorElements.pattern, true);
+        updateGlobalErrorMessage(field.closest('form'));
+        return false;
       }
     }
 
-    if (field.hasAttribute("data-validate-url")) {
-      return validateFieldWithServer(field);
+    // Server-side validation
+    if (field.hasAttribute('data-validate-url')) {
+      try {
+        const isServerValid = await validateFieldWithServer(field, errorElements.server);
+        updateGlobalErrorMessage(field.closest('form'));
+        return isServerValid;
+      } catch (error) {
+        console.error('Server validation error:', error);
+        return false;
+      }
+    }
+
+    updateGlobalErrorMessage(field.closest('form'));
+    return true;
+  }
+
+  async function validateFieldWithServer(field, errorElement) {
+    const validationUrl = field.getAttribute('data-validate-url');
+
+    try {
+      const response = await fetch(validationUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: field.value })
+      });
+
+      const data = await response.json();
+
+      if (data.isValid) {
+        showError(errorElement, false);
+        return true;
+      } else {
+        if (errorElement) {
+          errorElement.innerHTML = data.message || 'Invalid value';
+          showError(errorElement, true);
+        }
+        return false;
+      }
+    } catch (error) {
+      if (errorElement) {
+        errorElement.innerHTML = 'Validation failed';
+        showError(errorElement, true);
+      }
+      throw error;
+    }
+  }
+
+  async function validateForm(form) {
+    const fields = form.querySelectorAll(
+      '[data-required], [data-pattern], [data-validate-url]'
+    );
+
+    const validationPromises = Array.from(fields).map(validateField);
+    const validationResults = await Promise.all(validationPromises);
+
+    const isValid = validationResults.every(result => result);
+
+    if (!isValid) {
+      // Find and focus on the first invalid field
+      const firstInvalidField = fields[validationResults.indexOf(false)];
+      firstInvalidField.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      firstInvalidField.focus();
     }
 
     return isValid;
   }
 
-  function validateFieldWithServer(field) {
-    const validationUrl = field.getAttribute("data-validate-url");
-    const errorMessageElement = document.getElementById(
-      `${field.id}-server-error`,
-    );
-
-    return fetch(validationUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ value: field.value }), // Send the field value to the server
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.isValid) {
-          errorMessageElement.style.visibility = "hidden";
-          errorMessageElement.innerHTML = data.message || "";
-          return true;
-        } else {
-          errorMessageElement.style.visibility = "visible";
-          errorMessageElement.innerHTML =
-            data.message || "This value is invalid.";
-          return false;
-        }
-      })
-      .catch((error) => {
-        console.error("Error validating field:", error);
-        errorMessageElement.style.visibility = "visible";
-        errorMessageElement.innerText =
-          "Validation failed due to server error.";
-        return false;
-      });
-  }
-
   function setupFormValidation(form) {
-    form.addEventListener("submit", function (event) {
-      let isValid = true;
+    // Handle submit button clicks
+    form.addEventListener('click', async function (event) {
+      if (event.target.matches('button[type="submit"], input[type="submit"]')) {
+        const isValid = await validateForm(form);
 
-      const fields = form.querySelectorAll(
-        "[data-required], [data-pattern], [data-validate-url]",
-      );
-
-      fields.forEach(function (field) {
-        if (!validateField(field)) {
-          isValid = false;
+        if (!isValid) {
+          event.preventDefault();
         }
-      });
+      }
+    }, true);
 
-      if (!isValid) {
-        event.preventDefault();
+    form.addEventListener('input', function (event) {
+      const field = event.target;
+      if (field.matches('[data-required], [data-pattern], [data-validate-url]')) {
+        validateField(field);
       }
     });
 
-    form.addEventListener("change", function (event) {
-      const field = event.target;
-      validateField(field);
+    form.addEventListener('submit', function (event) {
+      const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+      if(submitButton) {
+        submitButton.setAttribute('disabled', 'disabled');
+        submitButton.classList.add('is-loading');
+      }
     });
   }
 
-  function setupSubmitButtonBehavior(form) {
-    const submitButton = form.querySelector(
-      'button[type="submit"], input[type="submit"]',
-    );
-
-    if (submitButton) {
-      submitButton.addEventListener("click", function (event) {
-        let isValid = true;
-
-        const fields = form.querySelectorAll(
-          "[data-required], [data-pattern], [data-validate-url]",
-        );
-
-        fields.forEach(function (field) {
-          if (!validateField(field)) {
-            isValid = false;
-          }
-        });
-
-        if (!isValid) {
-          event.preventDefault(); // Prevent the form submission
-        }
-      });
-    }
-  }
-
-  return {
-    init: init,
-  };
+  return { init };
 })();

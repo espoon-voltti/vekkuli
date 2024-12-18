@@ -1,7 +1,10 @@
 package fi.espoo.vekkuli.views.employee
 
+import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.LocalDate
 
 data class SendInvoiceModel(
@@ -10,7 +13,6 @@ data class SendInvoiceModel(
     val reserverSsn: String,
     val reserverAddress: String,
     val product: String,
-    val functionInformation: String,
     val billingPeriodStart: String,
     val billingPeriodEnd: String,
     val boatingSeasonStart: LocalDate,
@@ -19,22 +21,81 @@ data class SendInvoiceModel(
     val dueDate: LocalDate,
     val costCenter: String,
     val invoiceType: String,
-    val invoiceRows: List<InvoiceRow>,
-)
-
-data class InvoiceRow(
+    val priceWithTax: BigDecimal,
     val description: String,
-    val customer: String,
-    val priceWithoutVat: String,
-    val vat: String,
-    val priceWithVat: String,
-    val organization: String,
-    val paymentDate: LocalDate,
+    val contactPerson: String,
+    val orgId: String,
+    val function: String
 )
 
 @Service
-class InvoicePreview : BaseView() {
-    fun render(model: SendInvoiceModel): String {
+class InvoicePreview(
+    val formComponents: FormComponents
+) : BaseView() {
+    fun render(
+        model: SendInvoiceModel,
+        submitUrl: String,
+        backUrl: String,
+        deleteUrl: String,
+        isOrganization: Boolean
+    ): String {
+        val functionSelect =
+            formComponents.select(
+                "invoice.function",
+                "function",
+                model.function,
+                listOf(
+                    Pair("T1270", "Venepaikka T1270",),
+                    Pair("T1271", "Talvisäilytys T1271",),
+                    Pair("T1276", "Varastopaikka T1276",),
+                )
+            )
+        val dueDate =
+            formComponents.field(
+                "invoice.dueDate",
+                "dueDate",
+                formatAsFullDate(model.dueDate)
+            )
+        val invoicePeriod =
+            formComponents.field(
+                "invoice.invoicePeriod",
+                "invoicePeriod",
+                "${model.billingPeriodStart} - ${model.billingPeriodEnd}",
+            )
+        val priceWithTax =
+            formComponents.decimalInput(
+                "invoice.priceWithTax",
+                "priceWithTax",
+                model.priceWithTax,
+                compact = true,
+                step = 0.01,
+            )
+        val description =
+            formComponents.textInput(
+                "invoice.description",
+                "description",
+                model.description,
+                attributes = """maxlength="35"""",
+            )
+
+        val contactPersonInput =
+            formComponents.textInput(
+                "invoice.contactPerson",
+                "contactPerson",
+                model.contactPerson,
+                compact = true
+            )
+
+        val contactPerson =
+            if (isOrganization) {
+                """
+                $contactPersonInput
+                <hr>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         // language=HTML
         return """
             <section class="section">
@@ -43,58 +104,65 @@ class InvoicePreview : BaseView() {
                 <h2 class="title pb-l" id="invoice-preview-header">Laskuluonnos</h2>
                 
                 <h3 class="subtitle">Varaajan tiedot</h3>
+                <form
+                    hx-post="$submitUrl"
+                    hx-target="body"
+                >
                 ${invoiceLine("Varaaja", model.reserverName)}
-                ${invoiceLine("Varaajan henkilötunnus", model.reserverSsn)}
+                ${if (!isOrganization)invoiceLine("Varaajan henkilötunnus", model.reserverSsn) else ""}
+                
+                ${if (isOrganization)invoiceLine("Y-tunnus", model.orgId) else ""}
                 ${invoiceLine("Varaajan osoite", model.reserverAddress)}
                 
                 <hr/>
                 
-                <h3 class="subtitle">Laskun tiedot</h3>
-                ${invoiceLine("Tuote", model.product)}
-                ${invoiceLine("Toimintotieto", model.functionInformation)}
-                ${invoiceLine("Laskutuskausi", "${model.billingPeriodStart} - ${model.billingPeriodEnd}")}
-                ${invoiceLine("Veneilykausi", "${model.boatingSeasonStart} - ${model.boatingSeasonEnd}")}
-                ${invoiceLine("Laskun numero", model.invoiceNumber)}
-                ${invoiceLine("Laskun eräpäivä", model.dueDate.toString())}
-                ${invoiceLine("Kustannuspaikka", model.costCenter)}
-                ${invoiceLine("Laskulaji", model.invoiceType)}
-                ${invoiceLine("Hintaryhmä", "100%")}
-                
-                <hr/>
-                
-                <h3 class="subtitle">Laskurivi</h3>
-                
-                <table class="table">
-                    <thead>
-                        <td>Selite</td>
-                        <td>Asiakas</td>
-                        <td>Hinta ilman alv</td>
-                        <td>Alv 24 %</td>
-                        <td>Verollinen hinta </td>
-                        <td>Organisaatio</td>
-                        <td>Maksupäivä</td>
-                    </thead>
-                    <tbody>
-                        ${invoiceRows(model.invoiceRows)}
-                    </tbody>
-                </table>
-                
+                    $contactPerson
+                    
+                    <h3 class="subtitle">Laskun tiedot</h3>
+                    <div class="columns">
+                        <div class="column">
+                            $functionSelect
+                        </div>
+                        
+                        <div class="column">
+                            $dueDate
+                        </div>
+                        
+                        <div class="column">
+                            $invoicePeriod
+                        </div>
+                        
+                        <div class="column">
+                            $priceWithTax
+                        </div>
+                    </div>
+                    
+                                
+                    <div class="columns">
+                        <div class="column is-half">
+                            $description
+                        </div>
+                    </div>
+                    
+                    <hr/>
+                    
                 <div class="field block">
                     <div class="control">
                         <button id="cancel"
                             class="button is-secondary"
+                            hx-delete="$deleteUrl"
+                            hx-target="body"
+                            hx-on-htmx-after-request="window.location = '$backUrl';"
                             type="button">
                             ${t("cancel")}
                         </button>
                         <button id="submit"
-                            class="button is-primary"
-                            type="submit"
-                            hx-post="/virkailija/venepaikka/varaus/${model.reservationId}/lasku"
-                            hx-target="body">
+                            class="button is-primary">
                             Lähetä lasku
                         </button>
                     </div>
                 </div> 
+                </form>
             </div>
             </section>
 
@@ -109,21 +177,6 @@ class InvoicePreview : BaseView() {
             <span class="invoice-line">$name:</span><span>$value</span>
         </div>
         """.trimIndent()
-
-    fun invoiceRows(rows: List<InvoiceRow>): String =
-        rows.joinToString { row ->
-            """
-            <tr>
-                <td>${row.description}</td>
-                <td>${row.customer}</td>
-                <td>${row.priceWithoutVat}</td>
-                <td>${row.vat}</td>
-                <td>${row.priceWithVat}</td>
-                <td>${row.organization}</td>
-                <td>${row.paymentDate}</td>
-            </tr>
-            """.trimIndent()
-        }
 
     fun invoiceErrorPage() =
         """

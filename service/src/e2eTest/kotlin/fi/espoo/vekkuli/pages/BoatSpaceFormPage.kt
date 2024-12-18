@@ -1,10 +1,11 @@
 package fi.espoo.vekkuli.pages
 
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 
 class BoatSpaceFormPage(
-    private val page: Page
-) {
+    page: Page
+) : BasePage(page) {
     val header = page.getByTestId("boat-space-form-header")
     val boatTypeSelect = page.getByTestId("boatType")
     val widthInput = page.getByTestId("width")
@@ -25,16 +26,28 @@ class BoatSpaceFormPage(
     val emailError = page.getByTestId("email-error")
     val phoneInput = page.getByTestId("phone")
     val phoneError = page.getByTestId("phone-error")
+    val validationWarning = page.getByTestId("validation-warning")
     val certifyInfoCheckbox = page.getByTestId("certifyInformation")
     val certifyInfoError = page.getByTestId("certifyInformation-error")
     val agreementCheckbox = page.getByTestId("agreeToRules")
     val agreementError = page.getByTestId("agreeToRules-error")
-    val submitButton = page.getByTestId("submit")
+    val submitButton = page.getByTestId("submit-button")
     val cancelButton = page.getByTestId("cancel")
     val confirmCancelModal = page.getByTestId("confirm-cancel-modal")
     val ownerRadioButton = page.getByTestId("ownership-Owner")
     val confirmCancelModalCancel = page.getByTestId("confirm-cancel-modal-cancel")
     val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
+    val storageTypeSelector = getByDataTestId("storage-type-selector")
+    val storageTypeBuckOption = page.getByTestId("storageType-Buck")
+    val storageTypeTrailerOption = page.getByTestId("storageType-Trailer")
+    val trailerInformationInputs = getByDataTestId("trailer-information-inputs")
+    val trailerRegistrationNumberError = page.getByTestId("trailerRegistrationNumber-error")
+    val trailerRegistrationNumberInput = page.getByTestId("trailerRegistrationNumber")
+    val trailerWidthInput = page.getByTestId("trailerWidth")
+    val trailerLengthInput = page.getByTestId("trailerLength")
+    val storageTypeTextTrailer = page.getByTestId("storage-type-text-trailer")
+    val storageTypeTextBuck = page.getByTestId("storage-type-text-buck")
+    val storageTypeTextBuckTent = page.getByTestId("storage-type-text-buckTent")
 
     val firstNameInput = page.getByTestId("firstName")
     val lastNameInput = page.getByTestId("lastName")
@@ -57,7 +70,7 @@ class BoatSpaceFormPage(
     val orgPhoneNumberInput = page.getByTestId("orgPhone")
     val orgEmailInput = page.getByTestId("orgEmail")
 
-    val backButton = page.getByTestId("go-back")
+    val backButton = getByDataTestId("go-back")
 
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
@@ -71,6 +84,39 @@ class BoatSpaceFormPage(
         ownerRadioButton.check()
         emailInput.fill("test@example.com")
         phoneInput.fill("123456789")
+        certifyInfoCheckbox.check()
+        agreementCheckbox.check()
+        submitButton.click()
+    }
+
+    fun fillFormWithPrefilledValuesAndSubmit() {
+        boatNameInput.fill("My Boat")
+        depthInput.fill("1.5")
+        weightInput.fill("2000")
+        otherIdentification.fill("ID12345")
+        noRegistrationCheckbox.check()
+        ownerRadioButton.check()
+        certifyInfoCheckbox.check()
+        agreementCheckbox.check()
+        submitButton.click()
+    }
+
+    fun fillFormAsEmployeeWithPrefilledValuesAndSubmit(reserverName: String) {
+        val formPage = BoatSpaceFormPage(page)
+        formPage.existingCitizenSelector.click()
+        reserverName.forEach { character ->
+            formPage.citizenSearchInput.press("$character")
+        }
+        formPage.citizenSearchOption1.click()
+        // Not the best solution, but required because of content replacement
+        assertThat(formPage.firstNameInput).not().isEmpty()
+
+        boatNameInput.fill("My Boat")
+        depthInput.fill("1.5")
+        weightInput.fill("2000")
+        otherIdentification.fill("ID12345")
+        noRegistrationCheckbox.check()
+        ownerRadioButton.check()
         certifyInfoCheckbox.check()
         agreementCheckbox.check()
         submitButton.click()

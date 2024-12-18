@@ -12,8 +12,6 @@ interface ReserverRepository {
 
     fun getCitizenByNationalId(nationalId: String): CitizenWithDetails?
 
-    fun getOrganizationById(id: UUID): Organization?
-
     fun insertCitizen(
         nationalId: String,
         firstName: String,

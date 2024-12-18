@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.citizen
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import org.springframework.stereotype.Service
 
 @Service
@@ -10,7 +11,10 @@ class ReservationConfirmation(
     private val messageUtil: MessageUtil,
     private val stepIndicator: StepIndicator,
 ) {
-    fun t(key: String): String = messageUtil.getMessage(key)
+    fun t(
+        key: String,
+        params: List<String> = emptyList()
+    ): String = messageUtil.getMessage(key, params)
 
     fun render(reservation: BoatSpaceReservationDetails): String {
         val widthAndLength =
@@ -30,6 +34,24 @@ class ReservationConfirmation(
             }
 
         // language=HTML
+        val validityText =
+            t(
+                "boatSpaceReservation.validity.${reservation.validity}",
+                listOf(formatAsFullDate(reservation.endDate))
+            )
+
+        val amenity =
+            if (reservation.amenity != BoatSpaceAmenity.None) {
+                """
+                <div>
+                    <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
+                    <span>${t("boatSpaces.amenityOption." + reservation.amenity)}</span>
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         return """
             <section class="section">
                 <div class="box">
@@ -46,10 +68,8 @@ class ReservationConfirmation(
                                 <span>${reservation.locationName} ${reservation.place}</span>
                             </div>
                            $widthAndLength
-                            <div>
-                                <label>${t("boatSpaceReservation.label.placeEquipment")}</label>
-                                <span>${t("boatSpaces.amenityOption." + reservation.amenity)}</span>
-                            </div>
+                           $amenity
+            
                         </div>
                         <div class="block">
                             <label>${t("boatSpaceReservation.label.price")}</label>
@@ -68,7 +88,7 @@ class ReservationConfirmation(
                         </div>
                         <div class="block">
                             <label>${t("boatSpaceReservation.label.reservationValidity")}</label>
-                            <span>${t("boatSpaceReservation.validity.${reservation.validity}")}</span> 
+                            <span>$validityText</span> 
                         </div>
                         <a class="button is-primary block" href="/kuntalainen/venepaikat" id="back-to-home-page">
                           ${t("boatSpaceReservation.button.backToHomePage")}</a>

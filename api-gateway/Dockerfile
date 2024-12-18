@@ -2,9 +2,13 @@ FROM node:20.11-bookworm-slim AS base
 
 WORKDIR /app
 
+# Upgrade to the latest Yarn version
+RUN corepack enable && corepack prepare yarn@stable --activate
+
 FROM base AS builder
 
-COPY ./package.json ./yarn.lock ./
+COPY ./.yarn ./.yarn
+COPY ./package.json ./yarn.lock ./.yarnrc.yml ./
 
 RUN yarn install --immutable
 

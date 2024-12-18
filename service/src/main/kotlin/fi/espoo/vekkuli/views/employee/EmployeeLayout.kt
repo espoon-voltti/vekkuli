@@ -62,8 +62,8 @@ class EmployeeLayout(
                 $head
             </head>
             <body>
-            <div class="columns is-gapless">
-                <div class=" column is-one-fifth">
+            <div id="boat-space-reservations-employee" class="columns is-gapless">
+                <div class="column is-one-fifth menu-container">
                     <div class='menu'>
                         <p class="menu-label">
                             <img src="/static/images/espoo_logo.png" alt="Espoo logo" />

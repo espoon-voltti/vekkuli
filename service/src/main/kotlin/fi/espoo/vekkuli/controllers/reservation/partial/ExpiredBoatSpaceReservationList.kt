@@ -1,7 +1,8 @@
 package fi.espoo.vekkuli.controllers.reservation.partial
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.controllers.UnauthorizedException
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.CitizenService
 import fi.espoo.vekkuli.views.citizen.details.reservation.ExpiredReservationList
@@ -35,7 +36,8 @@ class ExpiredBoatSpaceReservationList {
         @PathVariable citizenId: UUID,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser()
-        val isAuthorized = authenticatedUser?.isEmployee() == true || authenticatedUser?.id == citizenId
+        val isEmployee = authenticatedUser?.isEmployee() == true
+        val isAuthorized = isEmployee || authenticatedUser?.id == citizenId
 
         if (!isAuthorized) {
             throw UnauthorizedException()
@@ -50,7 +52,9 @@ class ExpiredBoatSpaceReservationList {
 
         return ResponseEntity.ok(
             partial.render(
-                reservations
+                reservations,
+                if (isEmployee) UserType.EMPLOYEE else UserType.CITIZEN,
+                citizenId
             )
         )
     }

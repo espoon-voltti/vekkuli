@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.repository
 
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
 import fi.espoo.vekkuli.utils.SqlExpr
@@ -30,20 +29,19 @@ interface BoatSpaceReservationRepository {
 
     fun getReservationForRenewal(id: Int): ReservationWithDependencies?
 
-    fun getReservationWithReserver(id: Int): ReservationWithDependencies?
+    fun getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(id: Int): ReservationWithDependencies?
+
+    fun getReservationReserverEmail(reservationId: Int): Recipient?
 
     fun getReservationWithDependencies(id: Int): ReservationWithDependencies?
 
     fun getReservationWithoutReserver(id: Int): ReservationWithDependencies?
 
-    fun removeBoatSpaceReservation(
-        id: Int,
-        reserverId: UUID,
-    ): Unit
+    fun removeBoatSpaceReservation(id: Int): Unit
 
     fun getBoatSpaceReservationsForCitizen(
         reserverId: UUID,
-        spaceType: BoatSpaceType
+        spaceType: BoatSpaceType?
     ): List<BoatSpaceReservationDetails>
 
     fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails?
@@ -54,12 +52,6 @@ interface BoatSpaceReservationRepository {
     ): List<BoatSpaceReservationItem>
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace?
-
-    fun createRenewalRow(
-        reservationId: Int,
-        userType: UserType,
-        userId: UUID
-    ): Int
 
     fun insertBoatSpaceReservation(
         reserverId: UUID,
@@ -86,11 +78,14 @@ interface BoatSpaceReservationRepository {
         endDate: LocalDate,
     ): BoatSpaceReservation
 
+    fun updateTrailerInBoatSpaceReservation(
+        reservationId: Int,
+        trailerId: Int
+    ): BoatSpaceReservation
+
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation?
-
-    fun getReservationPeriods(): List<ReservationPeriod>
 
     fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
 
@@ -99,4 +94,11 @@ interface BoatSpaceReservationRepository {
     fun setReservationAsExpired(reservationId: Int)
 
     fun getHarbors(): List<Location>
+
+    fun updateStorageType(
+        reservationId: Int,
+        storageType: StorageType
+    ): BoatSpaceReservation
+
+    fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails>
 }

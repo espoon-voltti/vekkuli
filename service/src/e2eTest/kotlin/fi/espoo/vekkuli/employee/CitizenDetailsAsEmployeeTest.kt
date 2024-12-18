@@ -2,8 +2,8 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.employeePageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.EmployeeHomePage
 import fi.espoo.vekkuli.pages.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.ReservationListPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -16,9 +16,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun listingReservations() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -35,9 +34,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editCitizen() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -97,9 +95,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMemos() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -135,9 +132,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMessages() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -153,9 +149,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editBoat() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -169,10 +164,10 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.nameInput.fill("New Boat Name")
             citizenDetails.weightInput.fill("2000")
             citizenDetails.typeSelect.selectOption("Sailboat")
-            citizenDetails.depthInput.fill("1.5")
-            citizenDetails.widthInput.fill("3")
+            citizenDetails.depthInput.fill("1.50")
+            citizenDetails.widthInput.fill("3.00")
             citizenDetails.registrationNumberInput.fill("ABC123")
-            citizenDetails.length.fill("6")
+            citizenDetails.length.fill("6.00")
             citizenDetails.ownership.selectOption("Owner")
             citizenDetails.otherIdentifier.fill("ID12345")
             citizenDetails.extraInformation.fill("Extra info")
@@ -181,11 +176,11 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetails.nameText(3)).hasText("New Boat Name")
             assertThat(citizenDetails.weightText(3)).hasText("2000")
             assertThat(citizenDetails.typeText(3)).hasText("Sailboat")
-            assertThat(citizenDetails.depthText(3)).hasText("1.5")
-            assertThat(citizenDetails.widthText(3)).hasText("3.0")
+            assertThat(citizenDetails.depthText(3)).hasText("1.50")
+            assertThat(citizenDetails.widthText(3)).hasText("3.00")
             assertThat(citizenDetails.registrationNumberText(3)).hasText("ABC123")
 
-            assertThat(citizenDetails.lengthText(3)).hasText("6.0")
+            assertThat(citizenDetails.lengthText(3)).hasText("6.00")
             assertThat(citizenDetails.ownershipText(3)).hasText("Owner")
             assertThat(citizenDetails.otherIdentifierText(3)).hasText("ID12345")
             assertThat(citizenDetails.extraInformationText(3)).hasText("Extra info")
@@ -197,9 +192,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun deleteBoat() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -220,9 +214,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     fun `employee can renew a boat space reservation`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -237,9 +230,8 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             invoiceDetails.cancelButton.click()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
+            assertThat(invoiceDetails.header).isVisible()
             invoiceDetails.sendButton.click()
-            assertThat(listingPage.header).isVisible()
-            listingPage.boatSpace1.click()
             assertThat(citizenDetails.invoicePaidButton).isVisible()
             assertThat(citizenDetails.renewReservationButton(1)).isHidden()
         } catch (e: AssertionError) {

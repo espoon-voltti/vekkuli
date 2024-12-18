@@ -1,6 +1,9 @@
 package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.ReservationValidity
+import java.time.LocalDate
+import java.time.Month
 
 data class Dimensions(
     val width: Int?,
@@ -13,7 +16,9 @@ enum class ReservationWarningType {
     BoatFutureOwner,
     BoatCoOwner,
     BoatWeight,
-    BoatType
+    BoatType,
+    TrailerWidth,
+    TrailerLength,
 }
 
 object BoatSpaceConfig {
@@ -32,6 +37,8 @@ object BoatSpaceConfig {
 
     const val BOAT_WEIGHT_THRESHOLD_KG = 15000
 
+    val winterStorageLocations = listOf(3, 4, 6)
+
     fun getWidthLimitsForBoat(
         spaceWidth: Int,
         amenity: BoatSpaceAmenity
@@ -45,7 +52,9 @@ object BoatSpaceConfig {
                     spaceWidth - WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM,
                     spaceWidth - WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM
                 )
-            BoatSpaceAmenity.None -> Pair(null, null)
+
+            BoatSpaceAmenity.None -> Pair(null, spaceWidth)
+            else -> Pair(null, null)
         }
 
     fun getWidthLimitsForBoatSpace(
@@ -64,7 +73,9 @@ object BoatSpaceConfig {
                     boatWidth + WALK_BEAM_MAX_WIDTH_ADJUSTMENT_CM,
                     boatWidth + WALK_BEAM_MIN_WIDTH_ADJUSTMENT_CM
                 )
-            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
+
+            BoatSpaceAmenity.None -> Pair(boatWidth, Int.MAX_VALUE)
+            else -> Pair(0, Int.MAX_VALUE)
         }
     }
 
@@ -87,7 +98,9 @@ object BoatSpaceConfig {
                 spaceLength - WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM,
                 spaceLength + WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM
             )
-        BoatSpaceAmenity.None -> Pair(null, null)
+
+        BoatSpaceAmenity.None -> Pair(null, spaceLength)
+        else -> Pair(null, null)
     }
 
     fun getLengthLimitsForBoatSpace(
@@ -106,7 +119,9 @@ object BoatSpaceConfig {
                     boatLength - WALK_BEAM_MAX_LENGTH_ADJUSTMENT_CM,
                     boatLength + WALK_BEAM_MIN_LENGTH_ADJUSTMENT_CM
                 )
-            BoatSpaceAmenity.None -> Pair(0, Int.MAX_VALUE)
+
+            BoatSpaceAmenity.None -> Pair(boatLength, Int.MAX_VALUE)
+            else -> Pair(0, Int.MAX_VALUE)
         }
     }
 
@@ -144,4 +159,27 @@ object BoatSpaceConfig {
     }
 
     const val DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE = 30
+
+    fun getSlipEndDate(
+        year: Int,
+        validity: ReservationValidity
+    ) = when (validity) {
+        ReservationValidity.FixedTerm -> LocalDate.of(year, Month.DECEMBER, 31)
+        ReservationValidity.Indefinite -> LocalDate.of(year + 1, Month.JANUARY, 31)
+    }
+
+    fun getWinterEndDate(year: Int) = LocalDate.of(year + 1, Month.AUGUST, 31)
+
+    fun getStorageEndDate(
+        year: Int,
+        validity: ReservationValidity
+    ) = LocalDate.of(year + 1, Month.SEPTEMBER, 14)
+
+    fun getTrailerEndDate(
+        year: Int,
+        validity: ReservationValidity
+    ) = when (validity) {
+        ReservationValidity.FixedTerm -> LocalDate.of(year + 1, Month.APRIL, 30)
+        ReservationValidity.Indefinite -> LocalDate.of(year + 1, Month.APRIL, 30)
+    }
 }

@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.WarningBox
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class ReservationList(
@@ -20,12 +21,13 @@ class ReservationList(
     fun render(
         citizen: CitizenWithDetails,
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
-        userType: UserType = UserType.CITIZEN
+        userType: UserType,
+        reserverId: UUID,
     ): String {
         // language=HTML
         return """
             <div class="reservation-list form-section" ${addTestId("reservation-list")}>
-                ${createReservationCards(boatSpaceReservations, citizen, userType)}
+                ${createReservationCards(boatSpaceReservations, citizen, userType, reserverId)}
             </div>
             """.trimIndent()
     }
@@ -33,14 +35,15 @@ class ReservationList(
     private fun createReservationCards(
         boatSpaceReservations: List<BoatSpaceReservationDetails>,
         citizen: CitizenWithDetails,
-        userType: UserType
+        userType: UserType,
+        reserverId: UUID
     ): String =
         boatSpaceReservations.joinToString("\n") { reservation ->
             // language=HTML
             """
             <div class="reservation-card" ${addTestId("reservation-list-card")}>
                 ${cardHeading.render(reservation)}
-                ${cardInfo.render(reservation)}
+                ${cardInfo.render(reservation, userType, reserverId)}
                 ${reservationTerminationReason.render(reservation)}
                 ${reservationCardWarningBox.render(reservation, userType)}
                 ${

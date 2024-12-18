@@ -496,6 +496,7 @@ VALUES
     (true, 'Winter', 'New', 9, 1, 12, 31),
     (true, 'Winter', 'Renew',  8, 1, 8, 31),
     (true, 'Winter', 'Change',  8, 1, 12, 31),
+    (true, 'Winter', 'SecondNew',  9, 1, 12, 31),
     (true, 'Storage', 'New', 9, 1, 31, 7),
     (true, 'Storage', 'Renew',  8, 1, 8, 31),
     (true, 'Storage', 'Change',  8, 1, 7, 31),
@@ -505,8 +506,6 @@ VALUES
     (false, 'Slip', 'Change', 4, 1, 9, 30),
     (false, 'Trailer', 'New', 5, 1, 12, 31),
     (false, 'Trailer', 'Change',  5, 1, 12, 31),
-    (false, 'Winter', 'New', 9, 15, 12, 31),
-    (false, 'Winter', 'Change',  9, 15, 12, 31),
     (false, 'Storage', 'New', 9, 15, 7, 31),
     (false, 'Storage', 'Renew', 9, 1, 9, 15),
     (false, 'Storage', 'Change',  9, 1, 7, 31);
@@ -567,7 +566,21 @@ VALUES
     ('reservation_termination_notice_to_employee', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.'),
     ('boat_reservation_expiry_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nSinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}'),
     ('boat_reservation_renew_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nVoit uusia venepaikkasi uusimalla sen omilta sivuiltasi.\n\nJos et uusi venepaikkaasi, sinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}'),
-    ('marine_reservation_termination_employee_notice', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.')
+    ('marine_reservation_termination_employee_notice', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.'),
+    ('marine_employee_reservation_termination_custom_message', 'Ilmoitus sopimuksen irtisanomisesta', e'Hyvä asiakas,
+
+    Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
+
+    Irtisanominen astuu voimaan *xx.xx.xxxx*.
+    Irtisanomisen syy: *xxxxxx*
+
+    Pyydämme teitä ystävällisesti siirtämään veneenne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
+
+    Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
+
+    Terveisin
+    Merellinen ulkoilu
+    {{employeeEmail}}')
 ON CONFLICT (id) DO NOTHING;
 
 
@@ -575,32 +588,32 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
     ('1', 'Slip', '1', '2', 'B', '1', 'Beam', '250', '450', 'none'),
     ('2', 'Slip', '1', '2', 'B', '3', 'Beam', '250', '450', 'none'),
     ('3', 'Slip', '1', '2', 'B', '5', 'Beam', '250', '450', 'none'),
-    ('4', 'Slip', '1', '2', 'B', '7', 'Beam', '250', '450', 'none'),
-    ('5', 'Slip', '1', '2', 'B', '9', 'Beam', '250', '450', 'none'),
-    ('6', 'Slip', '1', '2', 'B', '11', 'Beam', '250', '450', 'none'),
-    ('7', 'Slip', '1', '2', 'B', '13', 'Beam', '250', '450', 'none'),
-    ('8', 'Slip', '1', '2', 'B', '15', 'Beam', '250', '450', 'none'),
-    ('9', 'Slip', '1', '2', 'B', '17', 'Beam', '250', '450', 'none'),
-    ('10', 'Slip', '1', '2', 'B', '19', 'Beam', '250', '450', 'none'),
-    ('11', 'Slip', '1', '2', 'B', '21', 'Beam', '275', '550', 'none'),
-    ('12', 'Slip', '1', '2', 'B', '23', 'Beam', '275', '550', 'none'),
-    ('13', 'Slip', '1', '2', 'B', '25', 'Beam', '275', '550', 'none'),
-    ('14', 'Slip', '1', '2', 'B', '27', 'Beam', '275', '550', 'none'),
-    ('15', 'Slip', '1', '2', 'B', '29', 'Beam', '275', '550', 'none'),
-    ('16', 'Slip', '1', '2', 'B', '31', 'Beam', '275', '550', 'none'),
-    ('17', 'Slip', '1', '2', 'B', '33', 'Beam', '275', '550', 'none'),
-    ('18', 'Slip', '1', '2', 'B', '35', 'Beam', '275', '550', 'none'),
-    ('19', 'Slip', '1', '2', 'B', '37', 'Beam', '275', '550', 'none'),
-    ('20', 'Slip', '1', '2', 'B', '39', 'Beam', '275', '550', 'none'),
-    ('21', 'Slip', '1', '2', 'B', '41', 'Beam', '275', '550', 'none'),
-    ('22', 'Slip', '1', '2', 'B', '43', 'Beam', '275', '550', 'none'),
-    ('23', 'Slip', '1', '2', 'B', '45', 'Beam', '275', '550', 'none'),
-    ('24', 'Slip', '1', '2', 'B', '47', 'Beam', '275', '550', 'none'),
-    ('25', 'Slip', '1', '2', 'B', '49', 'Beam', '275', '550', 'none'),
-    ('26', 'Slip', '1', '2', 'B', '51', 'Beam', '275', '550', 'none'),
-    ('27', 'Slip', '1', '2', 'B', '53', 'Beam', '275', '550', 'none'),
-    ('28', 'Slip', '1', '2', 'B', '55', 'Beam', '275', '550', 'none'),
-    ('29', 'Slip', '1', '2', 'B', '57', 'Beam', '275', '550', 'none'),
+    ('4', 'Storage', '1', '2', 'B', '7', 'Trailer', '250', '450', 'none'),
+    ('5', 'Storage', '1', '2', 'B', '9', 'Trailer', '250', '450', 'none'),
+    ('6', 'Storage', '1', '2', 'B', '11', 'Buck', '250', '450', 'none'),
+    ('7', 'Winter', '1', '2', 'B', '13', 'None', '250', '450', 'none'),
+    ('8', 'Winter', '1', '2', 'B', '15', 'None', '250', '450', 'none'),
+    ('9', 'Winter', '1', '2', 'B', '17', 'None', '250', '450', 'none'),
+    ('10', 'Winter', '1', '2', 'B', '19', 'None', '250', '450', 'none'),
+    ('11', 'Winter', '1', '2', 'B', '21', 'None', '275', '550', 'none'),
+    ('12', 'Winter', '1', '2', 'B', '23', 'None', '275', '550', 'none'),
+    ('13', 'Winter', '1', '2', 'B', '25', 'None', '275', '550', 'none'),
+    ('14', 'Winter', '1', '2', 'B', '27', 'None', '275', '550', 'none'),
+    ('15', 'Winter', '1', '2', 'B', '29', 'None', '275', '550', 'none'),
+    ('16', 'Winter', '1', '2', 'B', '31', 'None', '275', '550', 'none'),
+    ('17', 'Winter', '1', '2', 'B', '33', 'None', '275', '550', 'none'),
+    ('18', 'Winter', '1', '2', 'B', '35', 'None', '275', '550', 'none'),
+    ('19', 'Winter', '1', '2', 'B', '37', 'None', '275', '550', 'none'),
+    ('20', 'Winter', '1', '2', 'B', '39', 'None', '275', '550', 'none'),
+    ('21', 'Winter', '1', '2', 'B', '41', 'None', '275', '550', 'none'),
+    ('22', 'Winter', '1', '2', 'B', '43', 'None', '275', '550', 'none'),
+    ('23', 'Winter', '1', '2', 'B', '45', 'None', '275', '550', 'none'),
+    ('24', 'Winter', '1', '2', 'B', '47', 'None', '275', '550', 'none'),
+    ('25', 'Winter', '1', '2', 'B', '49', 'None', '275', '550', 'none'),
+    ('26', 'Winter', '1', '2', 'B', '51', 'None', '275', '550', 'none'),
+    ('27', 'Winter', '1', '2', 'B', '53', 'None', '275', '550', 'none'),
+    ('28', 'Winter', '1', '2', 'B', '55', 'None', '275', '550', 'none'),
+    ('29', 'Winter', '1', '2', 'B', '57', 'None', '275', '550', 'none'),
     ('30', 'Slip', '1', '2', 'B', '59', 'Beam', '275', '550', 'none'),
     ('31', 'Slip', '1', '2', 'B', '61', 'Beam', '275', '550', 'none'),
     ('32', 'Slip', '1', '2', 'B', '63', 'Beam', '275', '550', 'none'),
@@ -2774,34 +2787,34 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
     ('2200', 'Slip', '6', '4', 'J', '67', 'WalkBeam', '380', '1000', 'none'),
     ('2201', 'Slip', '6', '4', 'J', '69', 'WalkBeam', '380', '1000', 'none'),
     ('2202', 'Slip', '6', '4', 'J', '71', 'WalkBeam', '380', '1000', 'none'),
-    ('2203', 'Slip', '6', '3', 'TRAILERI', '1', 'None', '260', '800', 'none'),
-    ('2204', 'Slip', '6', '3', 'TRAILERI', '2', 'None', '260', '800', 'none'),
-    ('2205', 'Slip', '6', '3', 'TRAILERI', '3', 'None', '260', '800', 'none'),
-    ('2206', 'Slip', '6', '3', 'TRAILERI', '4', 'None', '260', '800', 'none'),
-    ('2207', 'Slip', '6', '3', 'TRAILERI', '5', 'None', '260', '800', 'none'),
-    ('2208', 'Slip', '6', '3', 'TRAILERI', '6', 'None', '260', '800', 'none'),
-    ('2209', 'Slip', '6', '3', 'TRAILERI', '7', 'None', '260', '800', 'none'),
-    ('2210', 'Slip', '6', '3', 'TRAILERI', '8', 'None', '260', '800', 'none'),
-    ('2211', 'Slip', '6', '3', 'TRAILERI', '9', 'None', '260', '800', 'none'),
-    ('2212', 'Slip', '6', '3', 'TRAILERI', '10', 'None', '260', '800', 'none'),
-    ('2213', 'Slip', '6', '3', 'TRAILERI', '11', 'None', '260', '800', 'none'),
-    ('2214', 'Slip', '6', '3', 'TRAILERI', '12', 'None', '260', '700', 'none'),
-    ('2215', 'Slip', '6', '3', 'TRAILERI', '13', 'None', '260', '700', 'none'),
-    ('2216', 'Slip', '6', '3', 'TRAILERI', '14', 'None', '260', '700', 'none'),
-    ('2217', 'Slip', '6', '3', 'TRAILERI', '15', 'None', '260', '700', 'none'),
-    ('2218', 'Slip', '6', '3', 'TRAILERI', '16', 'None', '260', '700', 'none'),
-    ('2219', 'Slip', '6', '3', 'TRAILERI', '17', 'None', '260', '700', 'none'),
-    ('2220', 'Slip', '6', '3', 'TRAILERI', '18', 'None', '260', '700', 'none'),
-    ('2221', 'Slip', '6', '3', 'TRAILERI', '19', 'None', '260', '700', 'none'),
-    ('2222', 'Slip', '6', '3', 'TRAILERI', '20', 'None', '260', '700', 'none'),
-    ('2223', 'Slip', '6', '3', 'TRAILERI', '21', 'None', '260', '700', 'none'),
-    ('2224', 'Slip', '6', '3', 'TRAILERI', '22', 'None', '260', '700', 'none'),
-    ('2225', 'Slip', '6', '3', 'TRAILERI', '23', 'None', '260', '700', 'none'),
-    ('2226', 'Slip', '6', '3', 'TRAILERI', '24', 'None', '260', '700', 'none'),
-    ('2227', 'Slip', '6', '3', 'TRAILERI', '25', 'None', '260', '700', 'none'),
-    ('2228', 'Slip', '6', '3', 'TRAILERI', '26', 'None', '260', '700', 'none'),
-    ('2229', 'Slip', '6', '3', 'TRAILERI', '27', 'None', '260', '700', 'none'),
-    ('2230', 'Slip', '6', '3', 'TRAILERI', '28', 'None', '260', '700', 'none'),
+    ('2203', 'Trailer', '6', '3', 'TRAILERI', '1', 'None', '260', '800', 'none'),
+    ('2204', 'Trailer', '6', '3', 'TRAILERI', '2', 'None', '260', '800', 'none'),
+    ('2205', 'Trailer', '6', '3', 'TRAILERI', '3', 'None', '260', '800', 'none'),
+    ('2206', 'Trailer', '6', '3', 'TRAILERI', '4', 'None', '260', '800', 'none'),
+    ('2207', 'Trailer', '6', '3', 'TRAILERI', '5', 'None', '260', '800', 'none'),
+    ('2208', 'Trailer', '6', '3', 'TRAILERI', '6', 'None', '260', '800', 'none'),
+    ('2209', 'Trailer', '6', '3', 'TRAILERI', '7', 'None', '260', '800', 'none'),
+    ('2210', 'Trailer', '6', '3', 'TRAILERI', '8', 'None', '260', '800', 'none'),
+    ('2211', 'Trailer', '6', '3', 'TRAILERI', '9', 'None', '260', '800', 'none'),
+    ('2212', 'Trailer', '6', '3', 'TRAILERI', '10', 'None', '260', '800', 'none'),
+    ('2213', 'Trailer', '6', '3', 'TRAILERI', '11', 'None', '260', '800', 'none'),
+    ('2214', 'Trailer', '6', '3', 'TRAILERI', '12', 'None', '260', '700', 'none'),
+    ('2215', 'Trailer', '6', '3', 'TRAILERI', '13', 'None', '260', '700', 'none'),
+    ('2216', 'Trailer', '6', '3', 'TRAILERI', '14', 'None', '260', '700', 'none'),
+    ('2217', 'Trailer', '6', '3', 'TRAILERI', '15', 'None', '260', '700', 'none'),
+    ('2218', 'Trailer', '6', '3', 'TRAILERI', '16', 'None', '260', '700', 'none'),
+    ('2219', 'Trailer', '6', '3', 'TRAILERI', '17', 'None', '260', '700', 'none'),
+    ('2220', 'Trailer', '6', '3', 'TRAILERI', '18', 'None', '260', '700', 'none'),
+    ('2221', 'Trailer', '6', '3', 'TRAILERI', '19', 'None', '260', '700', 'none'),
+    ('2222', 'Trailer', '6', '3', 'TRAILERI', '20', 'None', '260', '700', 'none'),
+    ('2223', 'Trailer', '6', '3', 'TRAILERI', '21', 'None', '260', '700', 'none'),
+    ('2224', 'Trailer', '6', '3', 'TRAILERI', '22', 'None', '260', '700', 'none'),
+    ('2225', 'Trailer', '6', '3', 'TRAILERI', '23', 'None', '260', '700', 'none'),
+    ('2226', 'Trailer', '6', '3', 'TRAILERI', '24', 'None', '260', '700', 'none'),
+    ('2227', 'Trailer', '6', '3', 'TRAILERI', '25', 'None', '260', '700', 'none'),
+    ('2228', 'Trailer', '6', '3', 'TRAILERI', '26', 'None', '260', '700', 'none'),
+    ('2229', 'Trailer', '6', '3', 'TRAILERI', '27', 'None', '260', '700', 'none'),
+    ('2230', 'Trailer', '6', '3', 'TRAILERI', '28', 'None', '260', '700', 'none'),
     ('2231', 'Slip', '7', '3', 'A', '1', 'Beam', '300', '550', 'none'),
     ('2232', 'Slip', '7', '3', 'A', '2', 'Beam', '310', '500', 'none'),
     ('2233', 'Slip', '7', '3', 'A', '3', 'Beam', '290', '550', 'none'),
@@ -3009,14 +3022,20 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
     ('2435', 'Slip', '7', '4', 'E', '66', 'WalkBeam', '380', '1000', 'none'),
     ('2436', 'Slip', '7', '3', 'E', '68', 'WalkBeam', '320', '1000', 'none');
 
+
+INSERT INTO trailer (registration_code, reserver_id, width_cm, length_cm)
+VALUES ('ABC123', '509edb00-5549-11ef-a1c7-776e76028a49', 200, 300);
+
 /* System current date for tests 2024-04-01 */
-INSERT INTO boat_space_reservation (reserver_id, boat_space_id, start_date, end_date,  status, boat_id, validity)
-VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'Confirmed', 1, 'Indefinite'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2024-02-01', '2025-01-31', 'Confirmed', 2, 'FixedTerm'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2024-01-31', 'Invoiced', 2, 'FixedTerm'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2023-01-31', 'Confirmed', 2, 'FixedTerm'),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2022-01-31', 'Payment', 2, 'FixedTerm');
+INSERT INTO boat_space_reservation (reserver_id, boat_space_id, start_date, end_date,  status, boat_id, validity, trailer_id, storage_type)
+VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'Confirmed', 1, 'Indefinite', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2024-02-01', '2024-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2023-12-31', 'Invoiced', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer');
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)
 VALUES ('current_system_staging_datetime', '2024-04-01T00:00:00');
+

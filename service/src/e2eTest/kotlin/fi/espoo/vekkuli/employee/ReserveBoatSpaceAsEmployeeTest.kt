@@ -2,11 +2,10 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.employeePageInEnglish
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.*
-import fi.espoo.vekkuli.utils.formatAsShortYearDate
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -16,7 +15,8 @@ import java.time.LocalDate
 class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `employee can change the language`() {
-        page.navigate(baseUrl + "/virkailija?lang=fi")
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin("fi")
         assertThat(page.getByText("Varaukset").first()).isVisible()
         val listingPage = ReservationListPage(page)
         page.getByTestId("language-selection").click()
@@ -27,7 +27,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertThat(page.getByText("Reservationer").first()).isVisible()
     }
 
-    private fun fillAndTestAndSubmitForm(reservationPage: ReserveBoatSpacePage) {
+    private fun fillAndTestAndSubmitForm() {
         val formPage = BoatSpaceFormPage(page)
         formPage.submitButton.click()
 
@@ -109,9 +109,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `Employee can reserve a boat space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
         try {
-            page.navigate(employeePageInEnglish)
-            page.getByTestId("employeeLoginButton").click()
-            page.getByText("Kirjaudu").click()
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
@@ -125,7 +124,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
             reservationPage.widthFilterInput.fill("3")
             reservationPage.lengthFilterInput.fill("6")
-            reservationPage.boatSpaceTypeSlipRadio.click()
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
             reservationPage.amenityBuoyCheckbox.check()
             reservationPage.amenityRearBuoyCheckbox.check()
             reservationPage.amenityBeamCheckbox.check()
@@ -138,7 +137,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             reservationPage.firstReserveButton.click()
 
-            fillAndTestAndSubmitForm(reservationPage)
+            fillAndTestAndSubmitForm()
 
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
@@ -156,7 +155,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
 
             citizenDetailsPage.invoiceModalConfirm.click()
-            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsShortYearDate(testDate))
+            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
 
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText(info)).isVisible()
@@ -167,9 +166,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `existing citizens can be searched`() {
-        page.navigate(employeePageInEnglish)
-        page.getByTestId("employeeLoginButton").click()
-        page.getByText("Kirjaudu").click()
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
         listingPage.createReservation.click()
@@ -195,9 +193,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `Employee can reserve a boat space on behalf of an existing citizen`() {
-        page.navigate(employeePageInEnglish)
-        page.getByTestId("employeeLoginButton").click()
-        page.getByText("Kirjaudu").click()
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
         listingPage.createReservation.click()
@@ -213,8 +210,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertThat(formPage.citizenSearchContainer).isVisible()
 
         formPage.submitButton.click()
-        // TODO: Add validation for existing citizen search
-//        assertThat(formPage.citizenIdError).isVisible()
+
+        assertThat(formPage.citizenIdError).isVisible()
 
         formPage.citizenSearchInput.pressSequentially("virtane")
         formPage.citizenSearchOption1.click()
@@ -246,9 +243,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun reservingABoatSpaceAsOrganization() {
-        page.navigate(employeePageInEnglish)
-        page.getByTestId("employeeLoginButton").click()
-        page.getByText("Kirjaudu").click()
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
 
         val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
         reservationPage.navigateTo()
@@ -295,13 +291,19 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.agreementCheckbox.check()
 
         formPage.submitButton.click()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.header).isVisible()
+        invoicePreviewPage.sendButton.click()
+
+        val reservationListPage = ReservationListPage(page)
+        assertThat(reservationListPage.header).isVisible()
     }
 
     @Test
     fun `Employee can reserve on behalf of an existing citizen acting on behalf of an existing organization`() {
-        page.navigate(employeePageInEnglish)
-        page.getByTestId("employeeLoginButton").click()
-        page.getByText("Kirjaudu").click()
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
 
         val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
         reservationPage.navigateTo()
@@ -327,5 +329,17 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.organizationRadioButton.click()
 
         assertThat(page.getByText("Olivian vene")).isHidden()
+    }
+
+    @Test
+    fun `Employee can filter boat spaces`() {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        page.waitForCondition { listingPage.reservations.count() == 3 }
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        page.waitForCondition { listingPage.reservations.count() == 1 }
     }
 }

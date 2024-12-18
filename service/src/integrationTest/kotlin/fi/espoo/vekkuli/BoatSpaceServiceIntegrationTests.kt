@@ -4,7 +4,6 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -15,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.math.BigDecimal
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,9 +27,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should fetch boat spaces if there are no filters`() {
         val boatSpaces =
-            boatSpaceService.getUnreservedBoatSpaceOptions(
-                BoatSpaceFilter()
-            )
+            boatSpaceService.getUnreservedBoatSpaceOptions()
         assertEquals(0, boatSpaces.second, "No boat spaces are fetched")
     }
 
@@ -39,13 +37,12 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val filteredBoatLength = 500
         val boatSpaces =
             boatSpaceService.getUnreservedBoatSpaceOptions(
-                BoatSpaceFilter(
-                    BoatType.Sailboat,
-                    filteredBoatWidth,
-                    filteredBoatLength,
-                    listOf(BoatSpaceAmenity.Beam),
-                    BoatSpaceType.Slip
-                )
+                BoatType.Sailboat,
+                BigDecimal(filteredBoatWidth / 100.0),
+                BigDecimal(filteredBoatLength / 100.0),
+                listOf(BoatSpaceAmenity.Beam),
+                null,
+                BoatSpaceType.Slip
             )
         assertEquals(7, boatSpaces.second, "Correct number of boat spaces are fetched")
 
@@ -72,13 +69,12 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     fun `should return empty list if boat width and length is not given`() {
         val boatSpaces =
             boatSpaceService.getUnreservedBoatSpaceOptions(
-                BoatSpaceFilter(
-                    BoatType.Sailboat,
-                    null,
-                    null,
-                    listOf(BoatSpaceAmenity.Beam),
-                    BoatSpaceType.Slip
-                )
+                BoatType.Sailboat,
+                null,
+                null,
+                listOf(BoatSpaceAmenity.Beam),
+                null,
+                BoatSpaceType.Slip
             )
         assertEquals(boatSpaces.second, 0, "No boat spaces are fetched")
     }

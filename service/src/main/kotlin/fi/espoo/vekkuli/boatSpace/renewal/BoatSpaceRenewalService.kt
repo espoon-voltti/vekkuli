@@ -1,20 +1,19 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
+import fi.espoo.vekkuli.boatSpace.reservationForm.*
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
+import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.controllers.UnauthorizedException
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.controllers.getReservationTimeInSeconds
-import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.domain.ReservationWithDependencies
-import fi.espoo.vekkuli.domain.ReserverType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.centToEuro
 import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.views.employee.InvoiceRow
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,33 +23,41 @@ import java.util.*
 @Service
 class BoatSpaceRenewalService(
     private val organizationService: OrganizationService,
-    private val reservationService: BoatReservationService,
+    private val boatReservationService: BoatReservationService,
+    private val reservationService: ReservationFormService,
     private val citizenService: CitizenService,
     private val boatSpaceRenewalRepository: BoatSpaceRenewalRepository,
     private val invoiceService: BoatSpaceInvoiceService,
     private val boatService: BoatService,
     private val messageUtil: MessageUtil,
-    private val timeProvider: TimeProvider,
+    private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
+    private val seasonalService: SeasonalService,
+    private val boatSpaceRenewForm: BoatSpaceRenewFormView,
+    private val trailerRepo: TrailerRepository
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
-        reservationId: Int,
+        originalReservationId: Int,
     ): ReservationWithDependencies {
-        val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId)
+        val renewal = boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, originalReservationId)
+        if (renewal != null) return renewal
 
-        val renewalReservation = renewal ?: reservationService.createRenewalReservationForEmployee(reservationId, userId)
-        if (renewalReservation == null) throw IllegalStateException("Reservation not found")
+        val renewalReservation =
+            createRenewalReservation(originalReservationId, userId, UserType.EMPLOYEE)
+                ?: throw IllegalStateException("Reservation not found")
         return renewalReservation
     }
 
     fun getOrCreateRenewalReservationForCitizen(
         userId: UUID,
-        reservationId: Int,
+        originalReservationId: Int,
     ): ReservationWithDependencies {
-        val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, reservationId)
+        val renewal = boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, originalReservationId)
+        if (renewal != null) return renewal
 
-        val renewalReservation = renewal ?: reservationService.createRenewalReservationForCitizen(reservationId, userId)
-        if (renewalReservation == null) throw IllegalStateException("Reservation not created")
+        val renewalReservation =
+            createRenewalReservation(originalReservationId, userId, UserType.CITIZEN)
+                ?: throw IllegalStateException("Reservation not found")
         return renewalReservation
     }
 
@@ -58,19 +65,22 @@ class BoatSpaceRenewalService(
         userId: UUID,
         reservationId: Int,
     ): ReservationWithDependencies =
-        boatSpaceRenewalRepository.getRenewalReservationForCitizen(userId, reservationId) ?: throw BadRequest("Reservation not found")
+        boatSpaceRenewalRepository
+            .getRenewalReservationForCitizen(userId, reservationId)
+            ?: throw BadRequest("Reservation not found")
 
     fun getRenewalReservationForEmployee(
         userId: UUID,
         reservationId: Int,
     ): ReservationWithDependencies =
-        boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId) ?: throw BadRequest("Reservation not found")
+        boatSpaceRenewalRepository.getRenewalReservationForEmployee(userId, reservationId)
+            ?: throw BadRequest("Reservation not found")
 
     fun cancelRenewalReservation(
         renewalReservationId: Int,
         citizenId: UUID
     ) {
-        reservationService.removeBoatSpaceReservation(renewalReservationId, citizenId)
+        boatReservationService.removeBoatSpaceReservation(renewalReservationId, citizenId)
     }
 
     fun updateRenewReservation(
@@ -79,7 +89,7 @@ class BoatSpaceRenewalService(
         reservationId: Int
     ) {
         val reservation =
-            reservationService.getReservationWithReserver(reservationId)
+            boatReservationService.getReservationWithReserver(reservationId)
                 ?: throw NotFound("Reservation not found")
 
         if (reservation.reserverId == null) {
@@ -87,24 +97,9 @@ class BoatSpaceRenewalService(
         }
         updateReserver(reservation.reserverType, reservation.reserverId, input)
 
-        reservationService.reserveBoatSpace(
+        reservationService.processBoatSpaceReservation(
             reserverId = reservation.reserverId,
-            ReserveBoatSpaceInput(
-                reservationId = reservationId,
-                boatId = input.boatId,
-                boatType = input.boatType!!,
-                width = input.width ?: 0.0,
-                length = input.length ?: 0.0,
-                depth = input.depth ?: 0.0,
-                weight = input.weight,
-                boatRegistrationNumber = input.boatRegistrationNumber ?: "",
-                boatName = input.boatName ?: "",
-                otherIdentification = input.otherIdentification ?: "",
-                extraInformation = input.extraInformation ?: "",
-                ownerShip = input.ownership!!,
-                email = input.email!!,
-                phone = input.phone!!,
-            ),
+            reservationService.buildReserveBoatSpaceInput(reservationId, input),
             ReservationStatus.Payment,
             reservation.validity ?: ReservationValidity.FixedTerm,
             reservation.startDate,
@@ -137,7 +132,7 @@ class BoatSpaceRenewalService(
     }
 
     fun getSendInvoiceModel(reservationId: Int): SendInvoiceModel {
-        val reservation = reservationService.getReservationWithReserver(reservationId)
+        val reservation = boatReservationService.getReservationWithReserver(reservationId)
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("Reservation or reserver not found")
         }
@@ -151,10 +146,9 @@ class BoatSpaceRenewalService(
         return SendInvoiceModel(
             reservationId = reservationId,
             reserverName = "${invoiceData.firstnames} ${invoiceData.lastname}",
-            reserverSsn = invoiceData.ssn,
+            reserverSsn = invoiceData.ssn ?: "",
             reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
             product = reservation.locationName,
-            functionInformation = "?",
             billingPeriodStart = "",
             billingPeriodEnd = "",
             boatingSeasonStart = LocalDate.of(2025, 5, 1),
@@ -163,20 +157,21 @@ class BoatSpaceRenewalService(
             dueDate = LocalDate.of(2025, 12, 31),
             costCenter = "?",
             invoiceType = "?",
-            invoiceRows =
-                listOf(
-                    InvoiceRow(
-                        description = invoiceData.description,
-                        customer = "${invoiceData.lastname} ${invoiceData.firstnames}",
-                        priceWithoutVat = reservation.priceWithoutVatInEuro.toString(),
-                        vat = reservation.vatPriceInEuro.toString(),
-                        priceWithVat = reservation.priceInEuro.toString(),
-                        organization = "Merellinen ulkoilu",
-                        paymentDate = LocalDate.of(2025, 1, 1)
-                    )
-                )
+            priceWithTax = reservation.priceCents.centToEuro(),
+            description = invoiceData.description,
+            contactPerson = "",
+            orgId = invoiceData.orgId ?: "",
+            function = getDefaultFunction(reservation.type),
         )
     }
+
+    fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
+        when (boatSpaceType) {
+            BoatSpaceType.Slip -> "T1270"
+            BoatSpaceType.Winter -> "T1271"
+            BoatSpaceType.Storage -> "T1276"
+            BoatSpaceType.Trailer -> "T1270"
+        }
 
     @Transactional
     fun activateRenewalAndSendInvoice(
@@ -192,11 +187,10 @@ class BoatSpaceRenewalService(
             invoiceService.createInvoiceData(renewedReservationId, reserverId)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        reservationService.setReservationStatusToInvoiced(renewedReservationId)
+        boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
 
-        reservationService.markReservationEnded(renewedFromId)
+        boatReservationService.markReservationEnded(renewedFromId)
 
-        // Sending is last as if sending to external service fails, we don't leave the system in an inconsistent state when it rollbacks
         invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
             ?: throw InternalError("Failed to send invoice")
     }
@@ -211,7 +205,23 @@ class BoatSpaceRenewalService(
             throw UnauthorizedException()
         }
 
-        var input = formInput.copy(email = citizen?.email, phone = citizen?.phone)
+        var input =
+            formInput.copy(
+                email = formInput.email ?: citizen?.email,
+                phone = formInput.phone ?: citizen?.phone,
+                storageType =
+                    renewedReservation.storageType ?: StorageType.None,
+            )
+        if (renewedReservation.trailerId != null) {
+            val trailer = trailerRepo.getTrailer(renewedReservation.trailerId) ?: throw BadRequest("Trailer not found")
+            input =
+                input.copy(
+                    trailerLength = trailer?.lengthCm?.cmToM(),
+                    trailerWidth = trailer?.widthCm?.cmToM(),
+                    trailerRegistrationNumber = trailer?.registrationCode,
+                )
+        }
+
         val usedBoatId = formInput.boatId ?: renewedReservation.boatId // use boat id from reservation if it exists
         if (usedBoatId != null && usedBoatId != 0) {
             val boat = boatService.getBoat(usedBoatId)
@@ -246,15 +256,69 @@ class BoatSpaceRenewalService(
                     .map { boat -> boat.updateBoatDisplayName(messageUtil) }
             } ?: emptyList()
 
-        val municipalities = citizenService.getMunicipalities()
+        val renewedReservationForApplicationForm = buildReservationForApplicationForm(renewedReservation)
         return BoatSpaceRenewViewParams(
-            renewedReservation,
+            renewedReservationForApplicationForm,
             boats,
             citizen,
             input,
-            getReservationTimeInSeconds(renewedReservation.created, timeProvider.getCurrentDateTime()),
             UserType.CITIZEN,
-            municipalities
+        )
+    }
+
+    private fun buildReservationForApplicationForm(reservationWithDependencies: ReservationWithDependencies) =
+        RenewalReservationForApplicationForm(
+            reservationWithDependencies.id,
+            reservationWithDependencies.reserverId,
+            reservationWithDependencies.boatId,
+            reservationWithDependencies.lengthCm,
+            reservationWithDependencies.widthCm,
+            reservationWithDependencies.amenity,
+            reservationWithDependencies.type,
+            reservationWithDependencies.place,
+            reservationWithDependencies.locationName,
+            reservationWithDependencies.validity,
+            reservationWithDependencies.startDate,
+            reservationWithDependencies.endDate,
+            reservationWithDependencies.priceCents,
+            reservationWithDependencies.vatCents,
+            reservationWithDependencies.netPriceCents,
+            reservationWithDependencies.created,
+            reservationWithDependencies.excludedBoatTypes,
+            reservationWithDependencies.section,
+            reservationWithDependencies.storageType,
+            reservationWithDependencies.renewedFromId.toString(),
+        )
+
+    fun createRenewalReservation(
+        originalReservationId: Int,
+        userId: UUID,
+        userType: UserType
+    ): ReservationWithDependencies? {
+        val reservation =
+            boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
+                ?: throw BadRequest("Reservation to renew not found")
+        if (!seasonalService.canRenewAReservation(reservation.validity, reservation.endDate, reservation.type).success) {
+            throw Conflict("Reservation cannot be renewed")
+        }
+        val newId = boatSpaceRenewalRepository.createRenewalRow(originalReservationId, userType, userId)
+        return boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(newId)
+    }
+
+    fun buildRenewForm(
+        citizenId: UUID,
+        renewedReservation: ReservationWithDependencies,
+        formInput: RenewalReservationInput,
+    ): String {
+        val htmlParams =
+            buildBoatSpaceRenewalViewParams(citizenId, renewedReservation, formInput)
+        if (renewedReservation.type == BoatSpaceType.Winter) {
+            return boatSpaceRenewForm.boatSpaceRenewalFormForWinterStorage(
+                htmlParams
+            )
+        }
+        return boatSpaceRenewForm.boatSpaceRenewFormForSlip(
+            htmlParams
         )
     }
 }

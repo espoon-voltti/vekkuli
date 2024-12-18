@@ -1,12 +1,12 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
+import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.*
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
-import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
-import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.repository.filter.SortDirection
@@ -15,9 +15,9 @@ import fi.espoo.vekkuli.repository.filter.boatspacereservation.LocationExpr
 import fi.espoo.vekkuli.utils.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.MonthDay
 import java.util.*
 
 enum class ReservationResultErrorCode {
@@ -60,51 +60,35 @@ sealed class PaymentProcessResult {
 interface ReservationWarningRepository {
     fun addReservationWarnings(
         reservationId: Int,
-        boatId: Int,
+        boatId: Int?,
+        trailerId: Int?,
         keys: List<String>,
     ): Unit
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
-    fun getWarningsForBoat(boatId: Int): List<ReservationWarning>
-
     fun setReservationWarningAcknowledged(
         reservationId: Int,
-        boatId: Int,
+        boatIdOrTrailerId: Int,
         key: String,
     ): Unit
 }
-
-data class ReserveBoatSpaceInput(
-    val reservationId: Int,
-    val boatId: Int?,
-    val boatType: BoatType,
-    val width: Double,
-    val length: Double,
-    val depth: Double,
-    val weight: Int?,
-    val boatRegistrationNumber: String?,
-    val boatName: String?,
-    val otherIdentification: String?,
-    val extraInformation: String?,
-    val ownerShip: OwnershipStatus?,
-    val email: String?,
-    val phone: String?,
-)
 
 @Service
 class BoatReservationService(
     private val paymentService: PaymentService,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val reservationWarningRepo: ReservationWarningRepository,
-    private val reserverRepo: ReserverRepository,
-    private val boatRepository: BoatRepository,
     private val emailService: TemplateEmailService,
     private val messageUtil: MessageUtil,
     private val paytrail: PaytrailInterface,
     private val emailEnv: EmailEnv,
     private val organizationService: OrganizationService,
     private val timeProvider: TimeProvider,
+    private val memoService: MemoService,
+    private val permissionService: PermissionService,
+    private val seasonalService: SeasonalService,
+    private val trailerRepository: TrailerRepository
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -163,7 +147,7 @@ class BoatReservationService(
                 "varausvahvistus",
                 null,
                 emailEnv.senderAddress,
-                Recipient(payment.citizenId, reservation.email),
+                Recipient(payment.reserverId, reservation.email),
                 mapOf(
                     "name" to " ${reservation.locationName} ${reservation.place}",
                     "width" to reservation.boatSpaceWidthInM,
@@ -195,10 +179,37 @@ class BoatReservationService(
         reservationId: Int,
         params: CreatePaymentParams
     ): Payment {
-        val payment = paymentService.insertPayment(params, reservationId)
-
-        return payment
+        paymentService.deletePaymentInCreatedStatusForReservation(reservationId)
+        return paymentService.insertPayment(params, reservationId)
     }
+
+    fun addTrailerWarningsToReservations(
+        trailerId: Int,
+        trailerWidthCm: Int,
+        trailerLengthCm: Int,
+    ) {
+        // find all active reservations that have this trailer
+        val reservations = boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
+
+        reservations.forEach {
+            val warnings = mutableListOf<String>()
+
+            if (trailerWidthCm > it.boatSpaceWidthCm) {
+                warnings.add(ReservationWarningType.TrailerWidth.name)
+            }
+
+            if (trailerLengthCm > it.boatSpaceLengthCm) {
+                warnings.add(ReservationWarningType.TrailerLength.name)
+            }
+
+            if (warnings.isNotEmpty()) {
+                reservationWarningRepo.addReservationWarnings(it.id, null, trailerId, warnings)
+            }
+        }
+    }
+
+    fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
 
     fun addReservationWarnings(
         reservationId: Int,
@@ -211,7 +222,7 @@ class BoatReservationService(
         boatOwnership: OwnershipStatus?,
         boatWeightKg: Int,
         boatType: BoatType,
-        excludedBoatTypes: List<BoatType>
+        excludedBoatTypes: List<BoatType>,
     ) {
         val warnings = mutableListOf<String>()
 
@@ -250,22 +261,26 @@ class BoatReservationService(
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(reservationId, boatId, warnings)
+            reservationWarningRepo.addReservationWarnings(reservationId, boatId, null, warnings)
         }
     }
 
-    fun getReservationWithReserver(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithReserver(id)
+    fun getReservationWithReserver(id: Int): ReservationWithDependencies? =
+        boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(id)
 
     fun getReservationWithDependencies(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithDependencies(id)
 
     fun getReservationWithoutCitizen(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationWithoutReserver(id)
 
-    fun getReservationForRenewal(id: Int): ReservationWithDependencies? = boatSpaceReservationRepo.getReservationForRenewal(id)
-
     fun removeBoatSpaceReservation(
         id: Int,
         citizenId: UUID,
-    ): Unit = boatSpaceReservationRepo.removeBoatSpaceReservation(id, citizenId)
+    ) {
+        if (!permissionService.canDeleteBoatSpaceReservation(citizenId, id)) {
+            throw Unauthorized()
+        }
+        boatSpaceReservationRepo.removeBoatSpaceReservation(id)
+    }
 
     fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails? =
         boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)
@@ -291,115 +306,6 @@ class BoatReservationService(
             startDate,
             endDate
         )
-
-    fun createRenewalReservationForEmployee(
-        reservationId: Int,
-        userId: UUID
-    ): ReservationWithDependencies? {
-        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.EMPLOYEE, userId)
-        return getReservationWithReserver(newId)
-    }
-
-    fun createRenewalReservationForCitizen(
-        reservationId: Int,
-        userId: UUID
-    ): ReservationWithDependencies? {
-        val newId = boatSpaceReservationRepo.createRenewalRow(reservationId, UserType.CITIZEN, userId)
-        return getReservationWithReserver(newId)
-    }
-
-    @Transactional
-    fun reserveBoatSpace(
-        reserverId: UUID,
-        input: ReserveBoatSpaceInput,
-        reservationStatus: ReservationStatus,
-        reservationValidity: ReservationValidity,
-        startDate: LocalDate,
-        endDate: LocalDate,
-    ) {
-        val boatSpace =
-            getBoatSpaceRelatedToReservation(input.reservationId)
-                ?: throw IllegalArgumentException("Reservation not found")
-        val boat =
-            if (input.boatId == 0 || input.boatId == null) {
-                boatRepository.insertBoat(
-                    reserverId,
-                    input.boatRegistrationNumber ?: "",
-                    input.boatName!!,
-                    input.width.mToCm(),
-                    input.length.mToCm(),
-                    input.depth.mToCm(),
-                    input.weight!!,
-                    input.boatType,
-                    input.otherIdentification ?: "",
-                    input.extraInformation ?: "",
-                    input.ownerShip!!
-                )
-            } else {
-                boatRepository.updateBoat(
-                    Boat(
-                        id = input.boatId,
-                        reserverId = reserverId,
-                        registrationCode = input.boatRegistrationNumber ?: "",
-                        name = input.boatName!!,
-                        widthCm = input.width.mToCm(),
-                        lengthCm = input.length.mToCm(),
-                        depthCm = input.depth.mToCm(),
-                        weightKg = input.weight!!,
-                        type = input.boatType,
-                        otherIdentification = input.otherIdentification ?: "",
-                        extraInformation = input.extraInformation ?: "",
-                        ownership = input.ownerShip!!
-                    )
-                )
-            }
-        addReservationWarnings(
-            input.reservationId,
-            boat.id,
-            boatSpace.widthCm,
-            boatSpace.lengthCm,
-            boatSpace.amenity,
-            boat.widthCm,
-            boat.lengthCm,
-            boat.ownership,
-            boat.weightKg,
-            boat.type,
-            boatSpace.excludedBoatTypes ?: listOf()
-        )
-
-        reserverRepo.updateCitizen(
-            UpdateCitizenParams(id = reserverId, phone = input.phone ?: "", email = input.email ?: "")
-        )
-
-        val reservation =
-            boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
-                input.reservationId,
-                boat.id,
-                reserverId,
-                reservationStatus,
-                reservationValidity,
-                startDate,
-                endDate
-            )
-        if (reservationStatus == ReservationStatus.Invoiced) {
-            emailService.sendEmail(
-                "reservation_confirmation_invoice",
-                null,
-                emailEnv.senderAddress,
-                Recipient(reserverId, input.email!!),
-                mapOf(
-                    "name" to "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}",
-                    "width" to boatSpace.widthCm.cmToM(),
-                    "length" to boatSpace.lengthCm.cmToM(),
-                    "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
-                    "endDate" to reservation.endDate,
-                    // TODO: get due date from invoice
-                    "invoiceDueDate" to
-                        formatAsFullDate(timeProvider.getCurrentDate().plusDays(DomainConstants.INVOICE_PAYMENT_PERIOD.toLong()))
-                )
-            )
-        }
-    }
 
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
         boatSpaceReservationRepo.setReservationStatusToInvoiced(reservationId)
@@ -454,7 +360,11 @@ class BoatReservationService(
             )
         )
 
-        filters.add(EndDateNotPassedExpr(timeProvider.getCurrentDate()))
+        if (params.expiration == ReservationExpiration.Active) {
+            filters.add(EndDateNotPassedExpr(timeProvider.getCurrentDate()))
+        } else {
+            filters.add(EndDatePassedExpr(timeProvider.getCurrentDate()))
+        }
 
         if (params.warningFilter == true) {
             filters.add(HasWarningExpr())
@@ -466,6 +376,10 @@ class BoatReservationService(
 
         if (params.harbor.isNotEmpty()) {
             filters.add(LocationExpr(params.harbor))
+        }
+
+        if (params.boatSpaceType.isNotEmpty()) {
+            filters.add(BoatSpaceTypeExpr(params.boatSpaceType))
         }
 
         if (params.amenity.isNotEmpty()) {
@@ -489,12 +403,15 @@ class BoatReservationService(
         )
     }
 
-    fun getBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
-        addPeriodInformationToReservation(
+    fun getBoatSpaceReservationsForCitizen(
+        citizenId: UUID,
+        spaceType: BoatSpaceType? = null
+    ): List<BoatSpaceReservationDetails> =
+        seasonalService.addPeriodInformationToReservation(
             citizenId,
             boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
                 citizenId,
-                BoatSpaceType.Slip
+                spaceType,
             )
         )
 
@@ -509,9 +426,30 @@ class BoatReservationService(
 
     fun acknowledgeWarning(
         reservationId: Int,
-        boatId: Int,
+        userId: UUID,
+        boatOrTrailerId: Int,
         key: String,
-    ): Unit = reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatId, key)
+        infoText: String,
+    ) {
+        reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatOrTrailerId, key)
+        val reservation = getReservationWithDependencies(reservationId)
+        if (reservation?.reserverId == null) {
+            throw IllegalArgumentException("No reservation or reservation has no reserver")
+        }
+        memoService.insertMemo(reservation.reserverId, userId, ReservationType.Marine, infoText)
+    }
+
+    fun acknowledgeWarningForTrailer(
+        trailerId: Int,
+        userId: UUID,
+        key: String,
+        infoText: String
+    ) {
+        val reservationsWithTrailer = getReservationsForTrailer(trailerId)
+        reservationsWithTrailer.forEach {
+            acknowledgeWarning(it.id, userId, trailerId, key, infoText)
+        }
+    }
 
     fun markInvoicePaid(
         reservationId: Int,
@@ -525,181 +463,12 @@ class BoatReservationService(
         paymentService.updatePayment(reservation.paymentId, true, paymentDate)
     }
 
-    fun getReservationPeriods(): List<ReservationPeriod> = boatSpaceReservationRepo.getReservationPeriods()
-
-    fun hasActiveReservationPeriod(
-        allPeriods: List<ReservationPeriod>,
-        now: LocalDate,
-        isEspooCitizen: Boolean,
-        boatSpaceType: BoatSpaceType?,
-        operation: ReservationOperation
-    ): Boolean {
-        val periods =
-            allPeriods.filter {
-                it.boatSpaceType == boatSpaceType &&
-                    it.operation == operation &&
-                    it.isEspooCitizen == isEspooCitizen
-            }
-        val today = MonthDay.from(now)
-        return periods.any {
-            isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
+    fun getEmailRecipientForReservation(reservationId: Int): Recipient? {
+        val recipient = boatSpaceReservationRepo.getReservationReserverEmail(reservationId)
+        if (recipient?.id == null || recipient.email == null) {
+            return null
         }
-    }
-
-    fun canReserveANewSlip(reserverID: UUID): ReservationResult {
-        val reserver =
-            reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
-                ReservationResultErrorCode.NoReserver
-            )
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
-        val hasSomePlace = reservations.isNotEmpty()
-        val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
-        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
-        val periods = boatSpaceReservationRepo.getReservationPeriods()
-
-        if (hasSomePlace && !isEspooCitizen) {
-            // Non-Espoo citizens can only have one reservation
-            return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
-        }
-
-        if (reservations.size >= 2) {
-            // Only two reservations are allowed
-            return return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
-        }
-
-        val now = timeProvider.getCurrentDate()
-
-        val hasActivePeriod =
-            hasActiveReservationPeriod(
-                periods,
-                now,
-                isEspooCitizen,
-                BoatSpaceType.Slip,
-                if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
-            )
-
-        if (!hasActivePeriod) {
-            // If no period found, reservation is not possible
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        val validity =
-            if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
-        val endDate =
-            if (validity == ReservationValidity.Indefinite) {
-                getLastDayOfNextYearsJanuary(now.year)
-            } else {
-                getLastDayOfYear(
-                    now.year
-                )
-            }
-
-        return ReservationResult.Success(
-            ReservationResultSuccess(
-                now,
-                endDate,
-                validity
-            )
-        )
-    }
-
-    fun canRenewAReservation(
-        periods: List<ReservationPeriod>,
-        oldValidity: ReservationValidity,
-        oldEndDate: LocalDate,
-    ): ReservationResult {
-        if (oldValidity == ReservationValidity.FixedTerm) {
-            // Fixed term reservations cannot be renewed
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        val now = timeProvider.getCurrentDate()
-
-        if (now.isBefore(oldEndDate.minusDays(DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())) || now.isAfter(oldEndDate)) {
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        val hasActivePeriod =
-            hasActiveReservationPeriod(
-                periods,
-                now,
-                true,
-                BoatSpaceType.Slip,
-                ReservationOperation.Renew
-            )
-
-        if (!hasActivePeriod) {
-            // If no period found, reservation is not possible
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        return ReservationResult.Success(
-            ReservationResultSuccess(
-                now,
-                getLastDayOfNextYearsJanuary(now.year),
-                ReservationValidity.Indefinite
-            )
-        )
-    }
-
-    fun canSwitchAReservation(
-        reservation: BoatSpaceReservationDetails,
-        periods: List<ReservationPeriod>,
-        isEspooCitizen: Boolean,
-    ): ReservationResult {
-        val now = timeProvider.getCurrentDate()
-
-        val hasActivePeriod =
-            hasActiveReservationPeriod(
-                periods,
-                now,
-                isEspooCitizen,
-                BoatSpaceType.Slip,
-                ReservationOperation.Change
-            )
-
-        if (!hasActivePeriod) {
-            // If no period found, reservation is not possible
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        return ReservationResult.Success(
-            ReservationResultSuccess(
-                reservation.startDate,
-                reservation.endDate,
-                reservation.validity
-            )
-        )
-    }
-
-    private fun addPeriodInformationToReservation(
-        reserverID: UUID,
-        reservations: List<BoatSpaceReservationDetails>
-    ): List<BoatSpaceReservationDetails> {
-        val reserver = reserverRepo.getReserverById(reserverID) ?: throw java.lang.IllegalArgumentException("Reserver not found")
-        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
-        if (!isEspooCitizen) {
-            // Only Espoo citizens can renew reservations
-            return reservations
-        }
-        val periods = getReservationPeriods()
-        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(reserverID, BoatSpaceType.Slip)
-        return reservations.map { reservation ->
-            val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate)
-            val canSwitchResult = canSwitchAReservation(reservation, periods, isEspooCitizen)
-            reservation.copy(
-                canRenew = canRenewResult.success,
-                canSwitch = canSwitchResult.success,
-            )
-        }
-    }
-
-    fun getContactDetailsForReservation(reservationId: Int): List<Recipient> {
-        val reservation = boatSpaceReservationRepo.getReservationWithReserver(reservationId)
-        if (reservation?.reserverId == null || reservation.email == null) {
-            return listOf()
-        }
-        return listOf<Recipient>(Recipient(reservation.reserverId, reservation.email))
+        return recipient
     }
 
     fun markReservationEnded(reservationId: Int) {
@@ -707,4 +476,32 @@ class BoatReservationService(
     }
 
     fun getHarbors(): List<Location> = boatSpaceReservationRepo.getHarbors()
+
+    fun getTrailer(id: Int): Trailer? = trailerRepository.getTrailer(id)
+
+    fun updateTrailer(
+        userId: UUID,
+        trailerId: Int,
+        trailerRegistrationCode: String,
+        trailerWidth: BigDecimal,
+        trailerLength: BigDecimal,
+    ): Trailer {
+        val oldTrailer = getTrailer(trailerId) ?: throw IllegalArgumentException("Trailer not found")
+
+        if (!permissionService.canEditTrailer(userId, oldTrailer.reserverId)) {
+            throw UnauthorizedException()
+        }
+        val updatedTrailer =
+            Trailer(
+                id = trailerId,
+                registrationCode = trailerRegistrationCode,
+                widthCm = trailerWidth.mToCm(),
+                lengthCm = trailerLength.mToCm(),
+                reserverId = oldTrailer.reserverId
+            )
+
+        val result = trailerRepository.updateTrailer(updatedTrailer)
+        addTrailerWarningsToReservations(trailerId, updatedTrailer.widthCm, updatedTrailer.lengthCm)
+        return result
+    }
 }
