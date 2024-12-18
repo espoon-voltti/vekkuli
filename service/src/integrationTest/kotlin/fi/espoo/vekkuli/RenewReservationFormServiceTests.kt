@@ -40,7 +40,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     private lateinit var paymentService: PaymentService
 
     @Autowired
-    private lateinit var citizenService: CitizenService
+    private lateinit var reserverService: ReserverService
 
     @Autowired
     lateinit var reservationService: BoatReservationService
@@ -87,8 +87,8 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     1,
                     reserverId = organizationId,
                     validity = ReservationValidity.Indefinite,
-                    startDate = startOfRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfRenewPeriod.plusDays(1).toLocalDate()
+                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -368,7 +368,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                 originalReservationId = 4
             )
 
-        val citizen = citizenService.getCitizen(citizenIdLeo)
+        val citizen = reserverService.getCitizen(citizenIdLeo)
         val renewedReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
 
         val viewParams = boatSpaceRenewalService.buildBoatSpaceRenewalViewParams(citizenIdLeo, renewedReservation, renewalInput)

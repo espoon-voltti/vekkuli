@@ -38,7 +38,7 @@ class CitizenUserController(
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
     private val editBoat: EditBoat,
     private val messageUtil: MessageUtil,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val memoService: MemoService,
     private val reservationService: BoatReservationService,
     private val boatService: BoatService,
@@ -55,7 +55,7 @@ class CitizenUserController(
         request: HttpServletRequest,
         @PathVariable citizenId: UUID,
     ): String {
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
@@ -93,7 +93,7 @@ class CitizenUserController(
 
     fun getAuthenticatedCitizen(request: HttpServletRequest): CitizenWithDetails {
         val authenticatedUser = request.getAuthenticatedUser()
-        val citizen = authenticatedUser?.let { citizenService.getCitizen(it.id) }
+        val citizen = authenticatedUser?.let { reserverService.getCitizen(it.id) }
         if (citizen == null) {
             throw UnauthorizedException()
         }
@@ -119,7 +119,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID
     ): String {
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
-        val messages = citizenService.getMessages(citizenId)
+        val messages = reserverService.getMessages(citizenId)
         return reserverDetailsReservationsContainer.messageTabContent(reserver.id, messages)
     }
 
@@ -383,7 +383,7 @@ class CitizenUserController(
         val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
         val errors = validateBoatUpdateInput(input)
 
@@ -517,7 +517,7 @@ class CitizenUserController(
         val boats = boatService.getBoatsForReserver(citizenId)
         boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
@@ -573,8 +573,8 @@ class CitizenUserController(
         @PathVariable citizenId: UUID,
         model: Model
     ): String {
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        val municipalities = citizenService.getMunicipalities()
+        val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val municipalities = reserverService.getMunicipalities()
         return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.EMPLOYEE)
     }
 
@@ -585,7 +585,7 @@ class CitizenUserController(
         model: Model
     ): String {
         val citizen = getAuthenticatedCitizen(request)
-        val municipalities = citizenService.getMunicipalities()
+        val municipalities = reserverService.getMunicipalities()
         return editCitizen.editCitizenForm(citizen, municipalities, emptyMap(), UserType.CITIZEN)
     }
 
@@ -597,7 +597,7 @@ class CitizenUserController(
         input: CitizenUpdate,
         model: Model
     ): String {
-        val citizen = citizenService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
+        val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
 
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
@@ -634,7 +634,7 @@ class CitizenUserController(
     fun updateCitizen(
         input: CitizenUpdate,
         citizenId: UUID
-    ) = citizenService.updateCitizen(
+    ) = reserverService.updateCitizen(
         UpdateCitizenParams(
             id = citizenId,
             firstName = input.firstName,
@@ -664,8 +664,6 @@ class CitizenUserController(
             reservationId,
             LocalDateTime.of(paymentDate.year, paymentDate.month, paymentDate.dayOfMonth, 0, 0)
         )
-
-        val citizen = citizenService.getCitizen(reserverId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
@@ -673,14 +671,7 @@ class CitizenUserController(
 
         memoService.insertMemo(reserverId, userId, ReservationType.Marine, memoContent)
 
-        return ResponseEntity.ok(
-            citizenDetails.citizenPage(
-                citizen,
-                boatSpaceReservations,
-                boats,
-                UserType.EMPLOYEE
-            )
-        )
+        return reserverPage(boatSpaceReservations, boats, reserverId)
     }
 
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
@@ -724,7 +715,7 @@ class CitizenUserController(
         boats: List<BoatUpdateForm>,
         reserverId: UUID,
     ): ResponseEntity<String> {
-        val citizen = citizenService.getCitizen(reserverId)
+        val citizen = reserverService.getCitizen(reserverId)
         if (citizen != null) {
             return ResponseEntity.ok(
                 citizenDetails.citizenPage(

@@ -19,7 +19,7 @@ class TerminateReservationService(
     private val emailEnv: EmailEnv,
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val terminateReservationRepository: TerminateReservationRepository,
     private val messageService: MessageService
 ) {
@@ -78,7 +78,7 @@ class TerminateReservationService(
         reservation: BoatSpaceReservation,
         terminatorId: UUID,
     ) {
-        val citizen = citizenService.getCitizen(terminatorId)
+        val citizen = reserverService.getCitizen(terminatorId)
         sendTerminationNoticeForReserverAndTerminator(reservation, citizen)
         if (citizen != null) {
             sendTerminationNoticeToEmployees(reservation, citizen)

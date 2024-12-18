@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class CitizenService(
+class ReserverService(
     private val reserverRepository: ReserverRepository,
     private val sentMessagesRepository: SentMessageRepository,
 ) {
@@ -54,4 +54,6 @@ class CitizenService(
     fun getMunicipalities(): List<Municipality> = reserverRepository.getMunicipalities()
 
     fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails = reserverRepository.upsertCitizenUserFromAd(adUser)
+
+    fun getReserverById(reserverId: UUID) = reserverRepository.getReserverById(reserverId)
 }

@@ -35,7 +35,7 @@ class PaymentController(
     private val reservationService: BoatReservationService,
     private val paytrail: PaytrailInterface,
     private val messageUtil: MessageUtil,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val paytrailEnv: PaytrailEnv,
     private val timeProvider: TimeProvider
 ) {
@@ -48,7 +48,7 @@ class PaymentController(
         request: HttpServletRequest,
     ): String {
         val locale = LocaleContextHolder.getLocale()
-        val citizen = getCitizen(request, citizenService) ?: return redirectUrlThymeleaf("/")
+        val citizen = getCitizen(request, reserverService) ?: return redirectUrlThymeleaf("/")
         val reservation = reservationService.getBoatSpaceReservation(id) ?: return redirectUrlThymeleaf("/")
 
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())

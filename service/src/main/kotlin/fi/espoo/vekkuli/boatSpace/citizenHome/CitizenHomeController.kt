@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizenHome
 
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.views.citizen.Layout
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Controller
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 class CitizenHomeController(
     private val layout: Layout,
     private val homeView: HomeView,
-    private val citizenService: CitizenService,
+    private val reserverService: ReserverService,
     private val citizenHomeService: CitizenHomeService
 ) {
     @GetMapping("/")
@@ -22,7 +22,7 @@ class CitizenHomeController(
         request: HttpServletRequest,
         model: Model
     ): String {
-        val user = getCitizen(request, citizenService)
+        val user = getCitizen(request, reserverService)
         val isAuthenticatedCitizen = user != null
 
         return layout.render(

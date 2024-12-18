@@ -12,7 +12,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceService
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.views.citizen.BoatSpaceSearch
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
@@ -52,7 +52,7 @@ class BoatSpaceSearchController {
     lateinit var reservationService: BoatReservationService
 
     @Autowired
-    lateinit var citizenService: CitizenService
+    lateinit var reserverService: ReserverService
 
     @Autowired
     lateinit var boatSpaceSearch: BoatSpaceSearch
@@ -94,7 +94,7 @@ class BoatSpaceSearchController {
                 )
             )
         }
-        val citizen = getCitizen(request, citizenService)
+        val citizen = getCitizen(request, reserverService)
         if (citizen != null) {
             val reservation =
                 reservationService.getUnfinishedReservationForCitizen(citizen.id)

@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.CitizenService
+import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.views.citizen.details.reservation.ExpiredReservationList
 import jakarta.servlet.http.HttpServletRequest
 import org.jdbi.v3.core.Jdbi
@@ -24,7 +24,7 @@ class ExpiredBoatSpaceReservationList {
     lateinit var reservationService: BoatReservationService
 
     @Autowired
-    lateinit var citizenService: CitizenService
+    lateinit var reserverService: ReserverService
 
     @Autowired
     lateinit var partial: ExpiredReservationList

@@ -46,7 +46,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
     lateinit var terminateService: TerminateReservationService
 
     @Autowired
-    lateinit var citizenService: CitizenService
+    lateinit var reserverService: ReserverService
 
     @Autowired
     lateinit var messageRepository: SentMessageRepository
@@ -104,7 +104,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should send email notice to person terminating the reservation`() {
-        val citizen = citizenService.getCitizen(this.citizenIdOlivia)
+        val citizen = reserverService.getCitizen(this.citizenIdOlivia)
         val reservation = testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, this.citizenIdOlivia, 1, 1))
 
         // Keep this here to make sure Citizen is present
