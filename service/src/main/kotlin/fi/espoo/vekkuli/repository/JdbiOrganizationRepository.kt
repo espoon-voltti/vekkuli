@@ -120,7 +120,7 @@ class JdbiOrganizationRepository(
                 .createUpdate(
                     """
                     INSERT INTO organization (id, business_id, billing_name, billing_street_address, billing_postal_code, billing_post_office)
-                    VALUES (:id, :businessId)
+                    VALUES (:id, :businessId, :billingName, :billingStreetAddress, :billingPostalCode, :billingPostOffice)
                     """.trimIndent()
                 ).bind("id", id)
                 .bind("businessId", businessId)
