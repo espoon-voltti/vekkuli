@@ -21,4 +21,5 @@ class ReservationListPage(
     val reservationsTableB314RowEndDate = getByDataTestId("reservation-end-date", reservationsTableB314Row)
     val reservations = page.locator(".reservation-item")
     val boatSpaceTypeFilter = { typeFilter: String -> getByDataTestId("filter-type-$typeFilter") }
+    val searchInput = { inputName: String -> getByDataTestId("search-input-$inputName") }
 }

@@ -374,6 +374,10 @@ class BoatReservationService(
             filters.add(NameSearchExpr(params.nameSearch))
         }
 
+        if (!params.phoneSearch.isNullOrBlank()) {
+            filters.add(PhoneSearchExpr(params.phoneSearch))
+        }
+
         if (params.harbor.isNotEmpty()) {
             filters.add(LocationExpr(params.harbor))
         }
