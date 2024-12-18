@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.employee
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.citizenPageInEnglish
-import fi.espoo.vekkuli.employeeHomePage
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfRenewPeriod
@@ -13,19 +12,6 @@ import org.springframework.test.context.ActiveProfiles
 @ActiveProfiles("test")
 class OrganizationDetailsTest : PlaywrightTest() {
     @Test
-    fun `citizen can edit trailer information and it should add warnings when trailer is too large`() {
-        try {
-            EmployeeHomePage(page).employeeLogin()
-
-            val organizationDetailsPage = OrganizationDetailsPage(page)
-            organizationDetailsPage.navigateToEspoonPursiseura()
-            val id = 1
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
-
-    @Test
     fun `employee can renew slip reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfRenewPeriod)
@@ -33,9 +19,10 @@ class OrganizationDetailsTest : PlaywrightTest() {
             EmployeeHomePage(page).employeeLogin()
 
             val organizationDetailsPage = OrganizationDetailsPage(page)
+
             organizationDetailsPage.navigateToEspoonPursiseura()
-            page.pause()
-            assertThat(organizationDetailsPage.citizenDetailsSection).isVisible()
+
+            assertThat(organizationDetailsPage.organizationDetailsSection).isVisible()
 
             val reservationId = 7
             organizationDetailsPage.renewReservationButton(reservationId).click()
@@ -43,19 +30,19 @@ class OrganizationDetailsTest : PlaywrightTest() {
             assertThat(invoiceDetails.header).isVisible()
             invoiceDetails.cancelButton.click()
 
-            assertThat(organizationDetailsPage.citizenDetailsSection).isVisible()
-            organizationDetailsPage.renewReservationButton(1).click()
+            assertThat(organizationDetailsPage.organizationDetailsSection).isVisible()
+            organizationDetailsPage.renewReservationButton(reservationId).click()
             assertThat(invoiceDetails.header).isVisible()
             invoiceDetails.sendButton.click()
             assertThat(organizationDetailsPage.invoicePaidButton).isVisible()
-            assertThat(organizationDetailsPage.renewReservationButton(1)).isHidden()
+            assertThat(organizationDetailsPage.renewReservationButton(reservationId)).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    fun `citizen can edit their own boat`() {
+    fun `employee can edit organizations own boat`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 

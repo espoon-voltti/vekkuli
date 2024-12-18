@@ -237,7 +237,7 @@ class ReserverDetailsReservationsContainer(
                     val boatType =
                         boatInfo(
                             "boat-type-text-${boat.id}",
-                            boat.type.name,
+                            t("boatApplication.boatTypeOption.${boat.type.name}"),
                             "boatSpaceReservation.title.boatType"
                         )
 

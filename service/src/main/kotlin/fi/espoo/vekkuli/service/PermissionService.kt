@@ -43,7 +43,7 @@ class PermissionService(
     ): Boolean {
         val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
         return when {
-            reservation?.status !in setOf(ReservationStatus.Payment, ReservationStatus.Info) -> false
+            reservation?.status !in setOf(ReservationStatus.Payment, ReservationStatus.Info, ReservationStatus.Renewal) -> false
             userService.isAppUser(deleterId) -> true
             reservation?.reserverId == null -> false
             reservation.reserverId == deleterId -> true

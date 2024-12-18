@@ -8,7 +8,7 @@ import java.util.*
 class OrganizationDetailsPage(
     page: Page
 ) : BasePage(page) {
-    val citizenDetailsSection = page.getByTestId("reserver-details")
+    val organizationDetailsSection = page.getByTestId("reserver-details")
 
     fun navigateToEspoonPursiseura() {
         navigateToPage(UUID.fromString("8b220a43-86a0-4054-96f6-d29a5aba17e7"))

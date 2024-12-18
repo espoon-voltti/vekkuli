@@ -88,7 +88,8 @@ class BoatReservationService(
     private val permissionService: PermissionService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val organizationRepository: OrganizationRepository
+    private val organizationRepository: OrganizationRepository,
+    private val reserverRepository: ReserverRepository,
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
