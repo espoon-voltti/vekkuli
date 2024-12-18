@@ -34,6 +34,7 @@ class CitizenDetails(
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType,
+        reserverType: ReserverType,
         @SanitizeInput errors: MutableMap<String, String>? = mutableMapOf(),
     ): String {
         // language=HTML
@@ -131,7 +132,7 @@ class CitizenDetails(
                     <h2>${citizen.firstName + " " + citizen.lastName}</h2>
                 </div>
                 ${customerInfo()}
-                ${reserverDetailsReservationsContainer.render(citizen.id, boatSpaceReservations, boats, userType)}
+                ${reserverDetailsReservationsContainer.render(citizen.id, boatSpaceReservations, boats, userType, reserverType)}
             </section>
             """.trimIndent()
 

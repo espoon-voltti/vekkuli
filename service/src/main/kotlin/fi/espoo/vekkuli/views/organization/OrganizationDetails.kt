@@ -57,7 +57,8 @@ class OrganizationDetails(
                     organization.id,
                     organizationReservations,
                     boats,
-                    UserType.EMPLOYEE
+                    UserType.EMPLOYEE,
+                    ReserverType.Organization,
                 )
             }
             </section>

@@ -406,7 +406,7 @@ class BoatReservationService(
     ): List<BoatSpaceReservationDetails> =
         seasonalService.addPeriodInformationToReservation(
             citizenId,
-            boatSpaceReservationRepo.getBoatSpaceReservationsForCitizen(
+            boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(
                 citizenId,
                 spaceType,
             )

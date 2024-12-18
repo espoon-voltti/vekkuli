@@ -4,9 +4,7 @@ import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.QueuedMessage
-import fi.espoo.vekkuli.domain.ReserverMemoWithDetails
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import fi.espoo.vekkuli.views.BaseView
@@ -31,7 +29,8 @@ class ReserverDetailsReservationsContainer(
         @SanitizeInput reserverId: UUID,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
-        userType: UserType
+        userType: UserType,
+        reserverType: ReserverType,
     ): String {
         val reservationList = reservationListBuilder.render(boatSpaceReservations, userType, reserverId)
 
@@ -113,9 +112,9 @@ class ReserverDetailsReservationsContainer(
             return ""
         }
 
-        fun getDeleteUrl(boatId: Int): String {
+        fun getDeleteUrl(boatId: Int,): String {
             if (userType == UserType.EMPLOYEE) {
-                return "/virkailija/kayttaja/$reserverId/vene/$boatId/poista"
+                return "/virkailija/${reserverType.toPath()}/$reserverId/vene/$boatId/poista"
             }
             return "/kuntalainen/vene/$boatId/poista"
         }
@@ -222,7 +221,7 @@ class ReserverDetailsReservationsContainer(
 
         fun getBoatsList(
             boats: List<CitizenUserController.BoatUpdateForm>,
-            showWarnings: Boolean
+            showWarnings: Boolean,
         ): String =
             boats
                 .mapIndexed { _, boat ->
