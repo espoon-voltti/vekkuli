@@ -142,7 +142,7 @@ class BoatSpaceReservationList {
             inputVal: String?
         ) = """
             <p class="control has-icons-left">
-                <input class="input search-input" type="text" name="$name" 
+                <input class="input search-input" type="text" name="$name" data-testid="search-input-$name" 
                     aria-label="${t("boatSpaces.searchButton")}" value="${inputVal ?: ""}"/>
                 <span class="icon is-small is-left">${icons.search}</span>
             </p>
