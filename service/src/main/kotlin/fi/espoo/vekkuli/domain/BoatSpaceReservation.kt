@@ -144,6 +144,7 @@ data class BoatSpaceReservationFilter(
     val harbor: List<Int> = emptyList(),
     val payment: List<PaymentFilter> = emptyList(),
     val nameSearch: String? = null,
+    val phoneSearch: String? = null,
     val warningFilter: Boolean? = null,
     val sectionFilter: List<String> = emptyList(),
     val expiration: ReservationExpiration = ReservationExpiration.Active,

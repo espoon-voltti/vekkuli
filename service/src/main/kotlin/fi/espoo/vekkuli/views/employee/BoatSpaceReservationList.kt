@@ -137,11 +137,13 @@ class BoatSpaceReservationList {
              <span class="ml-s">${icons.warningExclamation(false)}</span>
             """.trimIndent()
 
-        val nameSearchInput =
-            """
+        fun textSearchInput(
+            name: String,
+            inputVal: String?
+        ) = """
             <p class="control has-icons-left">
-                <input class="input search-input" type="text" name="nameSearch" 
-                    aria-label="${t("boatSpaces.searchButton")}" value="${params.nameSearch ?: ""}"/>
+                <input class="input search-input" type="text" name="$name" 
+                    aria-label="${t("boatSpaces.searchButton")}" value="${inputVal ?: ""}"/>
                 <span class="icon is-small is-left">${icons.search}</span>
             </p>
             """.trimIndent()
@@ -366,8 +368,8 @@ class BoatSpaceReservationList {
                                     <th></th>
                                     <th>$sectionFilter</th>
                                     <th></th>
-                                    <th>$nameSearchInput</th>
-                                    <th></th>
+                                    <th>${textSearchInput("nameSearch", params.nameSearch)}</th>
+                                    <th>${textSearchInput("phoneSearch", params.phoneSearch)}</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
