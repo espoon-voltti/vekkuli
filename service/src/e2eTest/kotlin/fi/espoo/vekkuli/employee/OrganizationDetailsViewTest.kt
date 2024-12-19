@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
-class OrganizationDetailsTest : PlaywrightTest() {
+class OrganizationDetailsViewTest : PlaywrightTest() {
     @Test
     fun `employee can renew slip reservation`() {
         try {

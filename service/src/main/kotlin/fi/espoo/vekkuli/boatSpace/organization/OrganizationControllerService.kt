@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.utils.mToCm
-import fi.espoo.vekkuli.views.organization.OrganizationDetails
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,7 +13,7 @@ class OrganizationControllerService(
     private val organizationService: OrganizationService,
     private val boatReservationService: BoatReservationService,
     private val boatService: BoatService,
-    private val organizationDetails: OrganizationDetails,
+    private val organizationDetailsView: OrganizationDetailsView,
 ) {
     fun buildOrganizationPage(organizationId: UUID): String {
         val organization =
@@ -23,7 +22,7 @@ class OrganizationControllerService(
         val organizationReservations = boatReservationService.getBoatSpaceReservationsForCitizen(organizationId)
         val boats =
             boatService.getBoatsForReserver(organizationId).map { toBoatUpdateForm(it, organizationReservations) }
-        return organizationDetails.organizationPageForEmployee(
+        return organizationDetailsView.organizationPageForEmployee(
             organization,
             organizationMembers,
             organizationReservations,
@@ -60,7 +59,7 @@ class OrganizationControllerService(
         val organizationReservations = boatReservationService.getBoatSpaceReservationsForCitizen(reserverId)
         val updatedBoats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, organizationReservations) }
 
-        return organizationDetails.organizationPageForEmployee(
+        return organizationDetailsView.organizationPageForEmployee(
             organization,
             organizationMembers,
             organizationReservations,

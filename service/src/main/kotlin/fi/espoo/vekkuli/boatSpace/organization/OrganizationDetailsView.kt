@@ -1,6 +1,9 @@
-package fi.espoo.vekkuli.views.organization
+package fi.espoo.vekkuli.boatSpace.organization
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationBillingInformation
+import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetails
+import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationMembersContainer
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
@@ -8,14 +11,10 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
-import fi.espoo.vekkuli.views.organization.components.OrganizationBillingInformation
-import fi.espoo.vekkuli.views.organization.components.OrganizationContactDetails
-import fi.espoo.vekkuli.views.organization.components.OrganizationMembersContainer
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
-class OrganizationDetails(
+class OrganizationDetailsView(
     var commonComponents: CommonComponents,
     var formComponents: FormComponents,
     private val organizationContactDetails: OrganizationContactDetails,

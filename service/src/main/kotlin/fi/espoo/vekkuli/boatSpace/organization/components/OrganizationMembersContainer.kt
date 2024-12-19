@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.views.organization.components
+package fi.espoo.vekkuli.boatSpace.organization.components
 
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.views.BaseView
