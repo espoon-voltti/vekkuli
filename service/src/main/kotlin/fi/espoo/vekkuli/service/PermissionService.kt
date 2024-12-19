@@ -64,4 +64,6 @@ class PermissionService(
             editorId == trailerReserverId -> true
             else -> false
         }
+
+    fun canRemoveUserFromOrganization(userId: UUID): Boolean = userService.isAppUser(userId)
 }

@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.organization
 
 import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetails
 import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetailsEdit
+import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.CitizenUserController.BoatUpdateForm
 import fi.espoo.vekkuli.controllers.UserType
@@ -11,6 +12,7 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
+import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.EditBoat
@@ -52,7 +54,8 @@ class OrganizationUserController(
     private val organizationContactDetails: OrganizationContactDetails,
     private val organizationService: OrganizationService,
     private val reserverService: ReserverService,
-    private val organizationContactDetailsEdit: OrganizationContactDetailsEdit
+    private val organizationContactDetailsEdit: OrganizationContactDetailsEdit,
+    private val permissionService: PermissionService
 ) {
     @GetMapping("/virkailija/yhteiso/{organizationId}")
     @ResponseBody
@@ -127,6 +130,17 @@ class OrganizationUserController(
 
         val municipalities = reserverService.getMunicipalities()
         return organizationContactDetailsEdit.render(organization, municipalities)
+    }
+
+    @DeleteMapping("/virkailija/yhteiso/{organizationId}/poista-henkilo/{citizenId}")
+    @ResponseBody
+    fun removeUserFromOrganization(
+        @PathVariable organizationId: UUID,
+        @PathVariable citizenId: UUID,
+        request: HttpServletRequest
+    ) {
+        request.ensureEmployeeId()
+        organizationService.removeCitizenFromOrganization(organizationId, citizenId)
     }
 
     @PatchMapping("/virkailija/yhteiso/{organizationId}/muokkaa")

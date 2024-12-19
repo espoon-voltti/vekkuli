@@ -52,7 +52,7 @@ class OrganizationDetailsView(
                         ${organizationBillingInformation.render(organization)}
                     </div>
                     <div class="form-section">
-                        ${organizationMembersContainer.render(organizationMembers)}
+                        ${organizationMembersContainer.render(organization.id, organizationMembers)}
                     </div>
                </div>
              
