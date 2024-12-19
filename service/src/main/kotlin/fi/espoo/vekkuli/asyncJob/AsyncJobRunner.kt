@@ -4,13 +4,11 @@
 
 package fi.espoo.vekkuli.asyncJob
 
-import fi.espoo.vekkuli.utils.TimeProvider
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.time.Instant
-import java.time.ZoneOffset
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -45,8 +43,7 @@ interface IAsyncJobRunner<T : Any> {
 open class AsyncJobRunner<T : Any>(
     payloadType: KClass<T>,
     pools: Iterable<Pool<T>>,
-    private val repository: IAsyncJobRepository,
-    private val timeProvider: TimeProvider
+    private val repository: IAsyncJobRepository
 ) : AutoCloseable,
     IAsyncJobRunner<T> {
     data class Pool<T : Any>(
@@ -148,12 +145,11 @@ open class AsyncJobRunner<T : Any>(
     }
 
     override fun waitUntilNoRunningJobs(timeout: Duration) {
-        val start = timeProvider.getCurrentDate().atStartOfDay().toInstant(ZoneOffset.UTC)
-        val now = timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
+        val start = Instant.now()
         do {
             if (!isBusy) return
             TimeUnit.MILLISECONDS.sleep(100)
-        } while (Duration.between(start, now).abs() < timeout)
+        } while (Duration.between(start, Instant.now()).abs() < timeout)
         error { "Timed out while waiting for running jobs to finish" }
     }
 
