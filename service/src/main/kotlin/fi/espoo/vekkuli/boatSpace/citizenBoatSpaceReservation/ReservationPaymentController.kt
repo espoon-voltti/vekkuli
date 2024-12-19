@@ -12,26 +12,34 @@ import java.net.URI
 class ReservationPaymentController(
     private val reservationPaymentService: ReservationPaymentService,
 ) {
-    @GetMapping(ReservationPaymentConfig.successCallbackPath)
-    fun getPaytrailCallbackSuccess(@RequestParam params: Map<String, String>): ResponseEntity<Void> {
+    @GetMapping(ReservationPaymentConfig.SUCCESS_CALLBACK_PATH)
+    fun getPaytrailCallbackSuccess(
+        @RequestParam params: Map<String, String>
+    ): ResponseEntity<Void> {
         reservationPaymentService.handlePaymentSuccess(params)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    @GetMapping(ReservationPaymentConfig.cancelCallbackPath)
-    fun getPaytrailCallbackCancel(@RequestParam params: Map<String, String>): ResponseEntity<Void> {
+    @GetMapping(ReservationPaymentConfig.CANCEL_CALLBACK_PATH)
+    fun getPaytrailCallbackCancel(
+        @RequestParam params: Map<String, String>
+    ): ResponseEntity<Void> {
         reservationPaymentService.handlePaymentCancel(params)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
-    @GetMapping(ReservationPaymentConfig.successRedirectPath)
-    fun getPaytrailRedirectSuccess(@RequestParam params: Map<String, String>): ResponseEntity<Void> {
+    @GetMapping(ReservationPaymentConfig.SUCCESS_REDIRECT_PATH)
+    fun getPaytrailRedirectSuccess(
+        @RequestParam params: Map<String, String>
+    ): ResponseEntity<Void> {
         val result = reservationPaymentService.handlePaymentSuccess(params)
         return makeRedirectResponse(result.redirectUrl)
     }
 
-    @GetMapping(ReservationPaymentConfig.cancelRedirectPath)
-    fun getPaytrailRedirectCancel(@RequestParam params: Map<String, String>): ResponseEntity<Void> {
+    @GetMapping(ReservationPaymentConfig.CANCEL_REDIRECT_PATH)
+    fun getPaytrailRedirectCancel(
+        @RequestParam params: Map<String, String>
+    ): ResponseEntity<Void> {
         val result = reservationPaymentService.handlePaymentCancel(params)
         return makeRedirectResponse(result.redirectUrl)
     }
