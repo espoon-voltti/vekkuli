@@ -164,4 +164,55 @@ class OrganizationDetailsTest : PlaywrightTest() {
             handleError(e)
         }
     }
+
+    @Test
+    fun editOrganization() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+            organizationDetails.navigateToEspoonPursiseura()
+            assertThat(organizationDetails.organizationDetailsSection).isVisible()
+            organizationDetails.editButton.click()
+
+            assertThat(page.getByTestId("edit-organization-form")).isVisible()
+            val organizationName = "New name"
+            val organizationPhone = "0405839281"
+            val organizationEmail = "organization@email.com"
+            val organizationAddress = "New Address"
+            val organizationBusinessId = "1234567-8"
+            val organizationPostalCode = "12345"
+            val organizationPostOffice = "Espoo"
+            val organizationMunicipalityCode = "91"
+            organizationDetails.organizationNameInput.fill("")
+            organizationDetails.organizationBusinessIdInput.fill("")
+            organizationDetails.organizationMunicipalityInput.selectOption(organizationMunicipalityCode)
+            organizationDetails.organizationPhoneInput.fill(organizationPhone)
+            organizationDetails.organizationEmailInput.fill(organizationEmail)
+            organizationDetails.organizationAddressInput.fill(organizationAddress)
+            organizationDetails.organizationPostalCodeInput.fill(organizationPostalCode)
+            organizationDetails.organizationPostOfficeInput.fill(organizationPostOffice)
+            organizationDetails.organizationEditSubmitButton.click()
+
+            // assert that email and phone can not be empty
+            assertThat(organizationDetails.organizationBusinessIdError).isVisible()
+            assertThat(organizationDetails.organizationNameError).isVisible()
+
+            organizationDetails.organizationNameInput.fill(organizationName)
+            organizationDetails.organizationBusinessIdInput.fill(organizationBusinessId)
+            organizationDetails.organizationEditSubmitButton.click()
+
+            // assert that the values are updated
+            assertThat(organizationDetails.organizationFirstNameField).hasText(organizationName)
+            assertThat(organizationDetails.organizationPhoneField).hasText(organizationPhone)
+            assertThat(organizationDetails.organizationEmailField).hasText(organizationEmail)
+            assertThat(
+                organizationDetails.organizationAddressField
+            ).hasText("$organizationAddress, $organizationPostalCode, $organizationPostOffice")
+            assertThat(organizationDetails.organizationBusinessIdField).hasText(organizationBusinessId)
+
+            assertThat(organizationDetails.organizationMunicipalityField).hasText("Helsinki")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
 }

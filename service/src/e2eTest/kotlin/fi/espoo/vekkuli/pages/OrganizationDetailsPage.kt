@@ -43,10 +43,6 @@ class OrganizationDetailsPage(
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
 
-    fun navigateToPage() {
-        page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
-    }
-
     fun hideModalWindow() {
         modalWindow.click(
             Locator
@@ -59,35 +55,28 @@ class OrganizationDetailsPage(
         getByDataTestId("accordion-title", expiredReservationListAccordion).click()
     }
 
-    // Citizen information
+    // organization information
     val editButton = page.getByTestId("edit-customer")
-    val citizenFirstNameInput = page.getByTestId("firstName")
-    val citizenLastNameInput = page.getByTestId("lastName")
-    val citizenNationalIdInput = page.getByTestId("nationalId")
-    val citizenCityInput = page.getByTestId("city")
-    val citizenMunicipalityInput = page.getByTestId("municipalityCode")
-    val citizenEmailInput = page.getByTestId("email")
-    val citizenPhoneInput = page.getByTestId("phoneNumber")
-    val citizenAddressInput = page.getByTestId("address")
-    val citizenPostalCodeInput = page.getByTestId("postalCode")
+    val organizationNameInput = page.getByTestId("organizationName")
+    val organizationBusinessIdInput = page.getByTestId("businessId")
+    val organizationMunicipalityInput = page.getByTestId("municipalityCode")
+    val organizationEmailInput = page.getByTestId("email")
+    val organizationPhoneInput = page.getByTestId("phoneNumber")
+    val organizationAddressInput = page.getByTestId("address")
+    val organizationPostalCodeInput = page.getByTestId("postalCode")
+    val organizationPostOfficeInput = page.getByTestId("postOffice")
 
-    val citizenFirstNameField = page.getByTestId("firstNameField")
-    val citizenLastNameField = page.getByTestId("lastNameField")
-    val citizenNationalIdField = page.getByTestId("nationalIdField")
-    val citizenCityField = page.getByTestId("cityField")
-    val citizenMunicipalityField = page.getByTestId("municipalityCodeField")
-    val citizenEmailField = page.getByTestId("emailField")
-    val citizenPhoneField = page.getByTestId("phoneNumberField")
-    val citizenAddressField = page.getByTestId("addressField")
-    val citizenPostalCodeField = page.getByTestId("postalCodeField")
+    val organizationFirstNameField = page.getByTestId("organizationNameField")
+    val organizationBusinessIdField = page.getByTestId("businessIdField")
+    val organizationMunicipalityField = page.getByTestId("municipalityCodeField")
+    val organizationEmailField = page.getByTestId("emailField")
+    val organizationPhoneField = page.getByTestId("phoneNumberField")
+    val organizationAddressField = page.getByTestId("addressField")
 
-    val citizenEditSubmitButton = page.getByTestId("submit-boat-edit-form")
-    val citizenEmailPatternError = page.getByTestId("email-pattern-error")
-    val citizenEmailError = page.getByTestId("email-error")
-    val citizenPhonePatternError = page.getByTestId("phoneNumber-pattern-error")
-    val citizenPhoneError = page.getByTestId("phoneNumber-error")
-    val citizenNationalIdError = page.getByTestId("nationalId-error")
-    val citizenNationalIdPatternError = page.getByTestId("nationalId-pattern-error")
+    val organizationEditSubmitButton = page.getByTestId("submit-boat-edit-form")
+    val organizationBusinessIdError = page.getByTestId("businessId-error")
+    val organizationNameError = page.getByTestId("organizationName-error")
+    val organizationMunicipalityError = page.getByTestId("municipalityCode-error")
 
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 

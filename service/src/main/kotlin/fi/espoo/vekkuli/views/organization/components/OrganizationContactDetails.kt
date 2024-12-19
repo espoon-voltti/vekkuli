@@ -11,22 +11,40 @@ class OrganizationContactDetails(
     private val formComponents: FormComponents,
     private val icons: Icons
 ) : BaseView() {
-    private fun getOrganizationContactDetailsFields(
+    fun getOrganizationContactDetailsFields(
         organizationNameValue: String,
-        organizationIdValue: String,
+        businessIdValue: String,
         municipalityField: String,
         phoneNumberField: String,
         emailField: String,
         addressField: String,
+        postalCode: String? = null,
+        postOffice: String? = null,
     ): String {
         // language=HTML
+        val addressFields =
+            if (postalCode != null && postOffice != null) {
+                """
+                <div class="field column is-one-eight">
+                    $postalCode
+                </div>
+                <div class="field column is-one-eight">
+                    $postOffice
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
+        // language=HTML
         return """
+            <div>
             <div class="columns">
                 <div class="field column is-one-quarter">
                    $organizationNameValue
                 </div>
                 <div class="field column is-one-quarter">
-                    $organizationIdValue
+                    $businessIdValue
                 </div>
             
                 <div class="field column is-one-quarter">
@@ -44,6 +62,9 @@ class OrganizationContactDetails(
                  <div class="field column is-one-quarter">
                    $addressField
                 </div>
+                
+               $addressFields
+            </div>
             </div>
             """.trimIndent()
     }
@@ -52,13 +73,13 @@ class OrganizationContactDetails(
         val organizationNameField =
             formComponents.field(
                 "organizationDetails.title.name",
-                "firstNameField",
+                "organizationNameField",
                 organization.name,
             )
         val organizationBusinessIdField =
             formComponents.field(
                 "organizationDetails.title.businessId",
-                "lastNameField",
+                "businessIdField",
                 organization.businessId,
             )
         val municipalityField =
@@ -67,24 +88,21 @@ class OrganizationContactDetails(
                 "municipalityCodeField",
                 organization.municipalityName,
             )
-        // TODO: add postal city
         val addressField =
             formComponents.field(
                 "organizationDetails.title.address",
                 "addressField",
-                "${organization.streetAddress}, ${organization.postalCode}, ${organization.municipalityName} "
+                "${organization.streetAddress}, ${organization.postalCode}, ${organization.postOffice} "
             )
 
         val phoneNumberValue =
             formComponents.field("organizationDetails.title.phoneNumber", "phoneNumberField", organization.phone)
         val emailValue = formComponents.field("organizationDetails.title.email", "emailField", organization.email)
 
-        // TODO add organization edti
         val editUrl = "/yhteiso/kayttaja/${organization.id}/muokkaa"
         val editOrganizationInformation =
             """
-            <div class="column">
-                        <div>
+            <div class="column is-narrow">
                             <a class="is-link is-icon-link" 
                                 id="edit-customer"
                                 hx-get="$editUrl"
@@ -95,7 +113,6 @@ class OrganizationContactDetails(
                                 </span>
                                 <span>${t("organizationDetails.button.editOrganizationInformation")}</span>
                             </a>
-                        </div>
                     </div>
             """.trimIndent()
         // language=HTML
@@ -103,11 +120,11 @@ class OrganizationContactDetails(
             """
                 <div class="block" id="organization-information">
                     <div class="columns">
-                        <div class="column is-narrow">
+                        <div class="column">
                             <h4 class="header mb-none">${t("organizationDetails.title.contactInformation")}</h4>
                         </div>
                         
-                        <!-- $editOrganizationInformation --> 
+                        $editOrganizationInformation 
                     </div>
                     ${
                 getOrganizationContactDetailsFields(

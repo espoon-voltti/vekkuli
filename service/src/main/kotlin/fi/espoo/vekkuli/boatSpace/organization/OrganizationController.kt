@@ -6,10 +6,15 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.BoatService
+import fi.espoo.vekkuli.service.OrganizationService
+import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import fi.espoo.vekkuli.views.organization.components.OrganizationContactDetails
+import fi.espoo.vekkuli.views.organization.components.OrganizationContactDetailsEdit
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Controller
@@ -42,8 +47,12 @@ class OrganizationUserController(
     private val employeeLayout: EmployeeLayout,
     private val boatService: BoatService,
     private val editBoat: EditBoat,
-    private val organizationService: OrganizationControllerService,
-    private val citizenUserController: CitizenUserController
+    private val organizationControllerService: OrganizationControllerService,
+    private val citizenUserController: CitizenUserController,
+    private val organizationContactDetails: OrganizationContactDetails,
+    private val organizationService: OrganizationService,
+    private val reserverService: ReserverService,
+    private val organizationContactDetailsEdit: OrganizationContactDetailsEdit
 ) {
     @GetMapping("/virkailija/yhteiso/{organizationId}")
     @ResponseBody
@@ -51,7 +60,7 @@ class OrganizationUserController(
         request: HttpServletRequest,
         @PathVariable organizationId: UUID,
     ): String {
-        val page = organizationService.buildOrganizationPage(organizationId)
+        val page = organizationControllerService.buildOrganizationPage(organizationId)
         return employeeLayout.render(
             true,
             request.requestURI,
@@ -104,6 +113,54 @@ class OrganizationUserController(
                 UserType.EMPLOYEE
             )
         }
-        return organizationService.buildOrganizationUpdatedPage(reserverId, boatId, input, errors)
+        return organizationControllerService.buildOrganizationUpdatedPage(reserverId, boatId, input, errors)
+    }
+
+    @GetMapping("/yhteiso/kayttaja/{organizationId}/muokkaa")
+    @ResponseBody
+    fun editOrganizationInformation(
+        @PathVariable organizationId: UUID
+    ): String {
+        val organization =
+            organizationService.getOrganizationById(organizationId)
+                ?: throw IllegalArgumentException("Organization not found")
+
+        val municipalities = reserverService.getMunicipalities()
+        return organizationContactDetailsEdit.render(organization, municipalities)
+    }
+
+    @PatchMapping("/virkailija/yhteiso/{organizationId}/muokkaa")
+    @ResponseBody
+    fun updateOrganizationInformation(
+        @PathVariable organizationId: UUID,
+        @RequestParam organizationName: String,
+        @RequestParam businessId: String,
+        @RequestParam municipalityCode: Int,
+        @RequestParam phoneNumber: String,
+        @RequestParam email: String,
+        @RequestParam address: String,
+        @RequestParam postOffice: String,
+        @RequestParam postalCode: String,
+        request: HttpServletRequest
+    ): String {
+        organizationService.updateOrganization(
+            UpdateOrganizationParams(
+                id = organizationId,
+                name = organizationName,
+                businessId = businessId,
+                municipalityCode = municipalityCode,
+                phone = phoneNumber,
+                email = email,
+                streetAddress = address,
+                postalCode = postalCode,
+                postOffice = postOffice
+            )
+        )
+        val page = organizationControllerService.buildOrganizationPage(organizationId)
+        return employeeLayout.render(
+            true,
+            request.requestURI,
+            page
+        )
     }
 }
