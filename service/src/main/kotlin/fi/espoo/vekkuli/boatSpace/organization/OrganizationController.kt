@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.boatSpace.organization
 
-import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetails
 import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetailsEdit
+import fi.espoo.vekkuli.config.audit
+import fi.espoo.vekkuli.config.ensureEmployeeId
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.CitizenUserController.BoatUpdateForm
 import fi.espoo.vekkuli.controllers.UserType
@@ -17,6 +19,7 @@ import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -49,11 +52,12 @@ class OrganizationUserController(
     private val editBoat: EditBoat,
     private val organizationControllerService: OrganizationControllerService,
     private val citizenUserController: CitizenUserController,
-    private val organizationContactDetails: OrganizationContactDetails,
     private val organizationService: OrganizationService,
     private val reserverService: ReserverService,
-    private val organizationContactDetailsEdit: OrganizationContactDetailsEdit
+    private val organizationContactDetailsEdit: OrganizationContactDetailsEdit,
 ) {
+    private val logger = KotlinLogging.logger {}
+
     @GetMapping("/virkailija/yhteiso/{organizationId}")
     @ResponseBody
     fun citizenProfile(
@@ -127,6 +131,20 @@ class OrganizationUserController(
 
         val municipalities = reserverService.getMunicipalities()
         return organizationContactDetailsEdit.render(organization, municipalities)
+    }
+
+    @DeleteMapping("/virkailija/yhteiso/{organizationId}/poista-henkilo/{citizenId}")
+    @ResponseBody
+    fun removeUserFromOrganization(
+        @PathVariable organizationId: UUID,
+        @PathVariable citizenId: UUID,
+        request: HttpServletRequest
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "UNLINK_CITIZEN_FROM_ORGANIZATION")
+        }
+        request.ensureEmployeeId()
+        organizationService.removeCitizenFromOrganization(organizationId, citizenId)
     }
 
     @PatchMapping("/virkailija/yhteiso/{organizationId}/muokkaa")

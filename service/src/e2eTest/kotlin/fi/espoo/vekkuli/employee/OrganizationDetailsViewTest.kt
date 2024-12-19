@@ -215,4 +215,19 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             handleError(e)
         }
     }
+
+    @Test
+    fun `can remove a member`() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+            organizationDetails.navigateToEspoonPursiseura()
+            assertThat(organizationDetails.organizationDetailsSection).isVisible()
+            organizationDetails.removeOliviaButton.click()
+            organizationDetails.confirmOliviaRemove.click()
+            assertThat(organizationDetails.removeOliviaButton).not().isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
 }
