@@ -70,7 +70,7 @@ class OrganizationMemberAdd(
 
         // language=HTML
         return """
-            <div >
+            <div id='add-member-search-container'>
                 <div class="field">
                   ${citizenSearch.render("/virkailija/yhteiso/$organizationId/jasenet/hae")}    
                 </div>

@@ -216,7 +216,7 @@ class CitizenContainerForEmployee(
             val citizenCopy = citizen?.copy(email = input.email ?: citizen.email, phone = input.phone ?: citizen.phone)
             return(
                 """
-                ${citizenSearch.render("/venepaikka/varaus/$reservationId/kuntalainen/hae")}
+                ${citizenSearch.render("/virkailija/venepaikka/varaus/$reservationId/kuntalainen/hae")}
                 ${if (citizenCopy != null) commonComponents.citizenDetails(citizenCopy, municipalities) else ""}
                 """.trimIndent()
             )

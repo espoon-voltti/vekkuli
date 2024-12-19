@@ -238,15 +238,19 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             val organizationDetails = OrganizationDetailsPage(page)
             organizationDetails.navigateToEspoonPursiseura()
             assertThat(organizationDetails.organizationDetailsSection).isVisible()
-//            organizationDetails.addCitizenButton.click()
-//            assertThat(organizationDetails.addCitizenForm).isVisible()
-//
-//            organizationDetails.citizenSearchInput.fill("Kalle")
-//            organizationDetails.citizenSearchButton.click()
-//            assertThat(organizationDetails.citizenSearchResults).isVisible()
-//            organizationDetails.addCitizenToOrganizationButton.click()
-//            assertThat(organizationDetails.citizenSearchResults).isHidden()
-//            assertThat(organizationDetails.citizenAddedMessage).isVisible()
+            organizationDetails.addMemberButton.click()
+            assertThat(organizationDetails.addMemberSearchContainer).isVisible()
+
+            assertThat(organizationDetails.citizenSearchContainer).isVisible()
+            organizationDetails.citizenSearchInput.pressSequentially("mikko")
+            assertThat(organizationDetails.citizenSearchOption1).isVisible()
+            organizationDetails.citizenSearchOption1.click()
+
+            assertThat(organizationDetails.citizenNameField).isVisible()
+            assertThat(organizationDetails.citizenPhoneField).isVisible()
+            assertThat(organizationDetails.citizenEmailField).isVisible()
+            organizationDetails.submitOrganizationMemberAdd.click()
+            assertThat(organizationDetails.organizationMemberTableLastRow).containsText("Mikko Virtanen")
         } catch (e: AssertionError) {
             handleError(e)
         }
