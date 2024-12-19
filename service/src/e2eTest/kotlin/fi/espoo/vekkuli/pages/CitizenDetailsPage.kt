@@ -9,6 +9,8 @@ class CitizenDetailsPage(
 ) : BasePage(page) {
     val citizenDetailsSection = page.getByTestId("reserver-details")
 
+    val reservationValidity = getByDataTestId("reservation-validity")
+
     private fun getBoatText(
         prop: String,
         i: Int

@@ -67,7 +67,7 @@ class ReservationCardInformation : BaseView() {
                          <label class="label">${t("shared.label.lengthInMeters")}</label>
                          <p>${formatDecimal(reservation.boatSpaceLengthInM)}</p>
                      </div>
-                     <div class="field">
+                     <div class="field" data-testid="reservation-validity">
                          <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>
                          <p>${renderReservationValidity(reservation)}</p>
                      </div>

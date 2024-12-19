@@ -72,6 +72,9 @@ class BoatSpaceFormPage(
 
     val backButton = getByDataTestId("go-back")
 
+    val reservationValidityIndefiniteRadioButton = getByDataTestId("radio-button-reservationValidity-Indefinite")
+    val reservationValidityFixedTermRadioButton = getByDataTestId("radio-button-reservationValidity-FixedTerm")
+
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
         widthInput.fill("3")

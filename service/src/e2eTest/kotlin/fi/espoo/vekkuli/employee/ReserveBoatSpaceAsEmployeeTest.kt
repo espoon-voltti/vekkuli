@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
+import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
@@ -27,8 +28,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertThat(page.getByText("Reservationer").first()).isVisible()
     }
 
-    private fun fillAndTestAndSubmitForm() {
-        val formPage = BoatSpaceFormPage(page)
+    private fun fillAndTestForm(formPage: BoatSpaceFormPage) {
         formPage.submitButton.click()
 
         assertThat(formPage.widthError).isHidden()
@@ -103,7 +103,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
-        formPage.submitButton.click()
     }
 
     @Test
@@ -137,7 +136,9 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             reservationPage.firstReserveButton.click()
 
-            fillAndTestAndSubmitForm()
+            val formPage = BoatSpaceFormPage(page)
+            fillAndTestForm(formPage)
+            formPage.submitButton.click()
 
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
@@ -147,6 +148,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+            assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
+
             citizenDetailsPage.invoicePaidButton.click()
             val info = "invoice has been paid"
             citizenDetailsPage.invoicePaidInfo.fill(info)
@@ -159,6 +164,48 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText(info)).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a boat space on behalf of a citizen and change the reservation validity type`() {
+        try {
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+
+            listingPage.createReservation.click()
+
+            val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+            reservationPage.widthFilterInput.fill("3")
+            reservationPage.lengthFilterInput.fill("6")
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+            fillAndTestForm(formPage)
+            formPage.reservationValidityFixedTermRadioButton.click()
+            formPage.submitButton.click()
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.sendButton.click()
+
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("Doe John").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+            assertTrue("Until 31.12.2024" in citizenDetailsPage.reservationValidity.first().textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
