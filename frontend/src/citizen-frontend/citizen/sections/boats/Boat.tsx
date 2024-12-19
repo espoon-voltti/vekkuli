@@ -1,12 +1,12 @@
 import { Column, Columns } from 'lib-components/dom'
 import { NumberField } from 'lib-components/form/NumberField'
+import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
 import { EditLink } from 'lib-components/links'
 import React from 'react'
 
 import { useForm, useFormFields } from 'lib-common/form/hooks'
 
-import { SelectField } from '../../../../lib-components/form/SelectField'
 import { useTranslation } from '../../../localization'
 import { Boat } from '../../../shared/types'
 

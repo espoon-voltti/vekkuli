@@ -1,4 +1,5 @@
-import { query } from '../../lib-common/query'
+import { query } from 'lib-common/query'
+
 import { citizenBoats } from '../api-clients/citizen'
 import { createQueryKeys } from '../query'
 

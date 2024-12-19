@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { FieldErrors } from '../../lib-common/form/types'
+import { FieldErrors } from 'lib-common/form/types'
 
 type FieldErrorContainerProps = {
   showError: boolean

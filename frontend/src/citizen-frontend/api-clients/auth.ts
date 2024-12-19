@@ -1,4 +1,5 @@
-import { JsonOf } from '../../lib-common/json'
+import { JsonOf } from 'lib-common/json'
+
 import { client } from '../api-client'
 import { AuthStatus } from '../api-types/auth'
 

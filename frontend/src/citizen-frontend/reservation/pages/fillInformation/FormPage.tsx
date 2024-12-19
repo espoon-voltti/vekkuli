@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { Loader } from 'lib-components/Loader'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { useForm, useFormFields } from 'lib-common/form/hooks'
@@ -11,7 +12,7 @@ import { ReserverType } from '../../../shared/types'
 import StepIndicator from '../../StepIndicator'
 import ReservedSpace from '../../components/ReservedSpace'
 import { cancelReservationMutation } from '../../queries'
-import { useReservationState } from '../../state'
+import { ReservationStateContext } from '../../state'
 
 import {
   BoatForm,
@@ -39,7 +40,8 @@ export default React.memo(function FormPage() {
     reservation: false,
     citizenBoats: false
   })
-  const unfinishedReservation = useReservationState()
+  const { reservation } = useContext(ReservationStateContext)
+  const maybeReservation = reservation.getOrElse(undefined)
   const citizenBoats = useQueryResult(citizenBoatsQuery())
 
   const [newBoatStateStore, setNewBoatStateStore] = useState<
@@ -83,11 +85,8 @@ export default React.memo(function FormPage() {
   } = useFormFields(form)
 
   useEffect(() => {
-    if (
-      !hasSetDefaults.current.reservation &&
-      unfinishedReservation !== undefined
-    ) {
-      const { email, phone } = unfinishedReservation.citizen
+    if (!hasSetDefaults.current.reservation && maybeReservation !== undefined) {
+      const { email, phone } = maybeReservation.citizen
       reserver.set({
         email: email,
         phone: phone
@@ -118,15 +117,15 @@ export default React.memo(function FormPage() {
       }))
       hasSetDefaults.current.citizenBoats = true
     }
-  }, [reserver, unfinishedReservation, citizenBoats])
+  }, [reserver, maybeReservation, citizenBoats])
 
   const { mutateAsync: cancelReservation } = useMutation(
     cancelReservationMutation
   )
 
   const onReservationCancel = () => {
-    if (unfinishedReservation)
-      cancelReservation(unfinishedReservation.id)
+    if (maybeReservation)
+      cancelReservation(maybeReservation.id)
         .then(() => {
           return navigate('/kuntalainen/venepaikka')
         })
@@ -136,75 +135,75 @@ export default React.memo(function FormPage() {
   }
 
   const onSubmit = async () => {
-    if (unfinishedReservation && form.isValid()) {
+    if (maybeReservation && form.isValid()) {
       await submitForm({
-        id: unfinishedReservation?.id,
+        id: maybeReservation?.id,
         input: { ...form.value() }
       })
       return navigate('/kuntalainen/venepaikka/maksu')
     }
   }
 
-  if (unfinishedReservation === undefined) {
-    return (
-      <section className="section">
-        <div className="container">
-          <h2 className="title pb-l">Error...</h2>
-        </div>
-      </section>
-    )
-  }
-
   return (
     <section className="section">
-      <StepIndicator step="fillInformation" />
-      <div className="container">
-        <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
-          <h1 className="title pb-l" id="boat-space-form-header">
-            {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
-          </h1>
-          <div id="form-inputs" className="block">
-            <Reserver
-              reserver={unfinishedReservation.citizen}
-              form={reserver}
-            />
-            <RenterType form={renterType} />
-            {renterType.state.type.domValue !==
-            ReserverType.Organization.toString() ? null : (
-              <Organization form={organization} />
-            )}
-            <BoatSection form={boat} />
-            <BoatOwnershipStatus form={boatOwnership} />
-            <ReservedSpace
-              boatSpace={unfinishedReservation.boatSpace}
-              price={{
-                totalPrice: unfinishedReservation.totalPrice,
-                vatValue: unfinishedReservation.vatValue,
-                netPrice: unfinishedReservation.netPrice
-              }}
-            />
-            <UserAgreements form={userAgreement} />
-          </div>
+      <Loader result={reservation}>
+        {(loadedReservation) => (
+          <>
+            <StepIndicator step="fillInformation" />
+            <div className="container">
+              <form
+                id="form"
+                className="column"
+                onSubmit={(e) => e.preventDefault()}
+              >
+                <h1 className="title pb-l" id="boat-space-form-header">
+                  {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
+                </h1>
+                <div id="form-inputs" className="block">
+                  <Reserver
+                    reserver={loadedReservation.citizen}
+                    form={reserver}
+                  />
+                  <RenterType form={renterType} />
+                  {renterType.state.type.domValue !==
+                  ReserverType.Organization.toString() ? null : (
+                    <Organization form={organization} />
+                  )}
+                  <BoatSection form={boat} />
+                  <BoatOwnershipStatus form={boatOwnership} />
+                  <ReservedSpace
+                    boatSpace={loadedReservation.boatSpace}
+                    price={{
+                      totalPrice: loadedReservation.totalPrice,
+                      vatValue: loadedReservation.vatValue,
+                      netPrice: loadedReservation.netPrice
+                    }}
+                  />
+                  <UserAgreements form={userAgreement} />
+                </div>
 
-          <div className="buttons">
-            <button
-              id="cancel"
-              className="button is-secondary"
-              onClick={onReservationCancel}
-            >
-              Peruuta varaus
-            </button>
-            <button
-              id="submit-button"
-              className="button is-primary"
-              type="submit"
-              onClick={onSubmit}
-            >
-              Jatka maksamaan
-            </button>
-          </div>
-        </form>
-      </div>
+                <div className="buttons">
+                  <button
+                    id="cancel"
+                    className="button is-secondary"
+                    onClick={onReservationCancel}
+                  >
+                    Peruuta varaus
+                  </button>
+                  <button
+                    id="submit-button"
+                    className="button is-primary"
+                    type="submit"
+                    onClick={onSubmit}
+                  >
+                    Jatka maksamaan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </>
+        )}
+      </Loader>
     </section>
   )
 })

@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 
+import LocalDate from 'lib-common/date/local-date'
 import { BoundFormState } from 'lib-common/form/hooks'
-
-import LocalDate from '../../lib-common/date/local-date'
 
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'

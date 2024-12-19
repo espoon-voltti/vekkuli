@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useQueryResult } from '../../../../lib-common/query'
+import { useQueryResult } from 'lib-common/query'
 
 import PaymentButton from './PaymentButton'
 import { paymentInformationQuery } from './queries'

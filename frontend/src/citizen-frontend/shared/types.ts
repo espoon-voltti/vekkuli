@@ -1,4 +1,4 @@
-import LocalDate from '../../lib-common/date/local-date'
+import LocalDate from 'lib-common/date/local-date'
 
 export const reservationStatuses = [
   'Info',

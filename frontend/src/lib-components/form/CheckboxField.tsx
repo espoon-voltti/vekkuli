@@ -1,9 +1,8 @@
 import classNames from 'classnames'
 import React from 'react'
 
+import { MultiSelectState } from 'lib-common/form/form'
 import { BoundFormState } from 'lib-common/form/hooks'
-
-import { MultiSelectState } from '../../lib-common/form/form'
 
 import { BaseFieldProps } from './BaseField'
 import ReadOnly from './ReadOnly'

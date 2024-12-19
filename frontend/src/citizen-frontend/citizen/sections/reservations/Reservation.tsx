@@ -1,7 +1,7 @@
 import { Button, Buttons, Column, Columns } from 'lib-components/dom'
+import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
-import TextField from '../../../../lib-components/form/TextField'
 import { BoatSpaceReservation } from '../../../api-types/reservation'
 
 export default React.memo(function Reservation({

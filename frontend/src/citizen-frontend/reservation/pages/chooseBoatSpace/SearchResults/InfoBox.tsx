@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { InfoCircle } from '../../../../../lib-icons'
+import { InfoCircle } from 'lib-icons'
+
 import { useTranslation } from '../../../../localization'
 
 export const InfoBox = React.memo(function InfoBox() {

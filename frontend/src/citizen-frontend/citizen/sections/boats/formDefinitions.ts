@@ -1,8 +1,8 @@
 import { positiveNumber, string } from 'lib-common/form/fields'
 import { multiSelect, object, oneOf, required } from 'lib-common/form/form'
+import { StateOf } from 'lib-common/form/types'
+import { Translations } from 'lib-customizations/vekkuli/citizen'
 
-import { StateOf } from '../../../../lib-common/form/types'
-import { Translations } from '../../../../lib-customizations/vekkuli/citizen'
 import {
   Boat,
   BoatType,

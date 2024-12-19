@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Result } from '../lib-common/api'
+import { Result } from 'lib-common/api'
 
 interface LoaderProps<T> {
   children: (value: T) => React.ReactNode

@@ -1,9 +1,9 @@
+import { NumberField } from 'lib-components/form/NumberField'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { NumberField } from '../../../../../lib-components/form/NumberField'
 import { OrganizationForm } from '../formDefinitions'
 
 export default React.memo(function Organization({
@@ -34,7 +34,7 @@ export default React.memo(function Organization({
           <NumberField
             id="organization-municipality-code"
             label="Kotikunta *"
-            value="n/a"
+            value={NaN}
             readonly={true}
           />
         </div>

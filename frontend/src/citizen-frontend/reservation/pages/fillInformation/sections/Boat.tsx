@@ -1,12 +1,12 @@
 import { CheckboxField } from 'lib-components/form/CheckboxField'
 import { NumberField } from 'lib-components/form/NumberField'
+import { RadioField } from 'lib-components/form/RadioField'
 import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { RadioField } from '../../../../../lib-components/form/RadioField'
 import { BoatForm } from '../formDefinitions'
 
 export default React.memo(function Boat({

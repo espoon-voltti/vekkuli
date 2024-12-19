@@ -3,13 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 import { useQueryClient } from '@tanstack/react-query'
-import React, {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useMemo
-} from 'react'
+import React, { createContext, ReactNode, useCallback, useMemo } from 'react'
 
 import { Loading, Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
@@ -21,7 +15,7 @@ import { unfinishedReservationQuery } from './queries'
 export interface Reservation extends BoatSpaceReservation {}
 
 type ReservationState = {
-  reservation: Result<Reservation | undefined>
+  reservation: Result<Reservation>
   refreshReservationStatus: () => void
 }
 
@@ -63,8 +57,3 @@ export const ReservationStateContextProvider = React.memo(
     )
   }
 )
-
-export const useReservationState = (): Reservation | undefined => {
-  const reservationContext = useContext(ReservationStateContext)
-  return reservationContext.reservation.getOrElse(undefined)
-}

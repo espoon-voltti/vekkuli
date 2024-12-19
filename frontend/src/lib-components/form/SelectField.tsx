@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 
+import { OneOfState } from 'lib-common/form/form'
 import { BoundFormState } from 'lib-common/form/hooks'
-
-import { OneOfState } from '../../lib-common/form/form'
 
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'

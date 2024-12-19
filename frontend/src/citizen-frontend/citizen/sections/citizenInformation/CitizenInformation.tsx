@@ -1,8 +1,8 @@
 import { Column, Columns, Container } from 'lib-components/dom'
+import TextField from 'lib-components/form/TextField'
 import { EditLink } from 'lib-components/links'
 import React from 'react'
 
-import TextField from '../../../../lib-components/form/TextField'
 import { User } from '../../../auth/state'
 
 export default React.memo(function Header({ user }: { user: User }) {

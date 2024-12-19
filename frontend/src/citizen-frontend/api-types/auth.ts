@@ -1,4 +1,4 @@
-import { UUID } from '../../lib-common/types'
+import { UUID } from 'lib-common/types'
 
 export interface CitizenUserDetails {
   id: UUID

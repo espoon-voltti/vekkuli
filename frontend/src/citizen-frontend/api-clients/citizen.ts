@@ -19,6 +19,22 @@ export async function citizenBoats(): Promise<Boat[]> {
   return deserializeJsonCitizenBoatsResponse(json)
 }
 
+export async function citizenBoatsInReservations(): Promise<Boat[]> {
+  const { data: json } = await client.request<CitizenBoatsResponse>({
+    url: uri`/current/boats`.toString(),
+    method: 'GET'
+  })
+  return deserializeJsonCitizenBoatsResponse(json)
+}
+
+export async function citizenBoatsWithoutReservations(): Promise<Boat[]> {
+  const { data: json } = await client.request<CitizenBoatsResponse>({
+    url: uri`/current/boats`.toString(),
+    method: 'GET'
+  })
+  return deserializeJsonCitizenBoatsResponse(json)
+}
+
 function deserializeJsonCitizenBoatsResponse(
   json: CitizenBoatsResponse
 ): Boat[] {
