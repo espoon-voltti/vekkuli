@@ -288,7 +288,7 @@ class BoatSpaceReservationList : BaseView() {
                                 </div>
                             </div>
                             <div class="filter-group">
-                                <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
+                                <h1 class="label">${t("boatSpaceReservation.title.paymentState")}</h1>
                                 <div class="tag-container">
                                     $paymentFilters
                                 </div>
