@@ -777,8 +777,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date, created)
-                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate, :currentDate)
+                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date, created, validity)
+                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate, :currentDate, :validity)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -787,6 +787,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
             query.bind("currentDate", timeProvider.getCurrentDateTime())
+            query.bind("validity", ReservationValidity.Indefinite)
             query.mapTo<BoatSpaceReservation>().one()
         }
 

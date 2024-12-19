@@ -114,7 +114,7 @@ class ReservationFormView(
                 )
             )}
             </div>
-            <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}' }">
+            <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}', reservationValidity: '${input.reservationValidity}' }">
                 <div class='form-section mb-none'>
                     ${storageTypeContainer.render(
                 input.trailerRegistrationNumber,

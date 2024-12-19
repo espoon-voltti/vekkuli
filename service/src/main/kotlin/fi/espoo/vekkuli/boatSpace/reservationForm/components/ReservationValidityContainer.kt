@@ -18,8 +18,8 @@ class ReservationValidityContainer(
                 "reservationValidity",
                 reservationValidity?.name,
                 listOf(
-                    RadioOption(ReservationValidity.Indefinite.toString(), t("boatApplication.title.reservationValidity.indefinite")),
-                    RadioOption(ReservationValidity.FixedTerm.toString(), t("boatApplication.title.reservationValidity.fixedTerm"))
+                    RadioOption(ReservationValidity.Indefinite.name, t("boatApplication.title.reservationValidity.indefinite")),
+                    RadioOption(ReservationValidity.FixedTerm.name, t("boatApplication.title.reservationValidity.fixedTerm"))
                 ),
                 mapOf("x-model" to "reservationValidity"),
                 isColumnLayout = false
