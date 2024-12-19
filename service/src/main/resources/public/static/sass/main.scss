@@ -941,3 +941,7 @@ ul {
 .employee-filter-container:not(:last-child) {
   margin-bottom: calc($block-spacing*2);
 }
+
+.employee-warning-filter {
+  display: flex;
+}
