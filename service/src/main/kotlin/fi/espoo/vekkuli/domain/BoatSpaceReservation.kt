@@ -149,6 +149,7 @@ data class BoatSpaceReservationFilter(
     val sectionFilter: List<String> = emptyList(),
     val expiration: ReservationExpiration = ReservationExpiration.Active,
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
+    val validity: List<ReservationValidity> = emptyList(),
 ) {
     fun hasHarbor(id: Int): Boolean = harbor.contains(id)
 
@@ -157,4 +158,6 @@ data class BoatSpaceReservationFilter(
     fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
 
     fun hasPayment(paymentFilter: PaymentFilter): Boolean = payment.contains(paymentFilter)
+
+    fun hasValidity(id: ReservationValidity): Boolean = validity.contains(id)
 }

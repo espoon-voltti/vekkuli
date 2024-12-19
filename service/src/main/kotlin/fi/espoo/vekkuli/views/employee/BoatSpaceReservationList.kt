@@ -115,6 +115,26 @@ class BoatSpaceReservationList : BaseView() {
                 """.trimIndent()
             }
 
+        val reservationValidityFilters =
+            ReservationValidity.entries.joinToString("\n") { validity ->
+                """
+                <label class="filter-button" data-testid="filter-reservation-validity-$validity">
+                    <input type="checkbox" name="reservation-validity" value="${validity.name}" class="is-hidden" ${if (params.hasValidity(
+                        validity
+                    )
+                ) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("employee.boatReservations.validity.$validity")}</span>
+                </label>
+                """.trimIndent()
+            }
+
         val warningFilterCheckbox =
             """
             <label class="checkbox">
@@ -291,6 +311,12 @@ class BoatSpaceReservationList : BaseView() {
                                 <h1 class="label">${t("boatSpaceReservation.title.paymentState")}</h1>
                                 <div class="tag-container">
                                     $paymentFilters
+                                </div>
+                            </div>                            
+                            <div class="filter-group">
+                                <h1 class="label">${t("employee.boatReservations.title.reservationValidity")}</h1>
+                                <div class="tag-container">
+                                    $reservationValidityFilters
                                 </div>
                             </div>                            
                         </div>
