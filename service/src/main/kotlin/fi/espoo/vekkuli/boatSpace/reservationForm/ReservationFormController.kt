@@ -1,7 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.BoatForm
-import fi.espoo.vekkuli.boatSpace.reservationForm.components.CitizensSearchForm
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.CitizenContainerForEmployee
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.CitizensSearchContent
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
@@ -45,7 +46,8 @@ class ReservationFormController(
     private val layout: Layout,
     private val commonComponents: CommonComponents,
     private val boatForm: BoatForm,
-    private val citizensSearchForm: CitizensSearchForm
+    private val citizensSearchContent: CitizensSearchContent,
+    private val citizenContainerForEmployee: CitizenContainerForEmployee
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -140,7 +142,7 @@ class ReservationFormController(
             logger.audit(it, "SEARCH_CITIZENS")
         }
         reserverService.getCitizens(nameParameter).let {
-            return citizensSearchForm.render(it, reservationId)
+            return citizenContainerForEmployee.reservationFormCitizenSearchContent(it, reservationId)
         }
     }
 

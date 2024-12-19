@@ -23,23 +23,53 @@ class OrganizationMembersContainer : BaseView() {
                 </tr>
                 """.trimIndent()
             }
+
+        val editUrl = "/virkailija/yhteiso/$organizationId/jasenet/lisaa"
+
+        val addOrganizationButton =
+            """
+                <div class='is-flex is-justify-content-right'>
+            <a class="is-link is-icon-link" 
+                id="add-organization-member"
+                hx-get="$editUrl"
+                hx-include="[name='citizenId']"
+                hx-target="#add-members-container"
+                hx-swap="innerHTML">
+                <span class="icon">
+                    ${icons.plus}
+                </span>
+                <span>${t("organizationDetails.button.addOrganizationMembers")}</span>
+            </a>
+            </div>
+            """.trimIndent()
         return (
             """
-            <div class="form-section">
+            <div class="form-section id="organization-member-table" x-data='{citizenFullName: "", citizenId:"", updateFullName(event) {
+                    const selectElement = event.target;
+                    if (selectElement.selectedOptions.length > 0) {
+                        const selectedOption = selectElement.selectedOptions[0];
+                        this.citizenFullName = selectedOption.dataset.fullname;
+                        this.citizenId = selectedOption.value;
+                    } else {
+                        this.citizenFullName = "";
+                        this.citizenId = "";
+                    };
+                }}'>
                 <h4>${t("organizationDetails.title.organizationMembers")}</h4>
-                <table>
+                <table class='container'>
                      <thead>
                           <tr>
                                <th>${t("organizationDetails.tableHeaders.name")}</th>
                                <th>${t("organizationDetails.tableHeaders.phone")}</th>
                                <th>${t("organizationDetails.tableHeaders.email")}</th>
                                <th>${t("organizationDetails.tableHeaders.removeUser")}</th>
-                          </tr>
+                        </tr>
                      </thead>
                      <tbody>
                          $organizationMembersRows
-                     </tbody>
+                      </tbody>
                 </table>
+                <div id="add-members-container" class='pt-s' >$addOrganizationButton</div>
             </div>
             """.trimIndent()
         )

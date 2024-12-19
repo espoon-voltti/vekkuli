@@ -6,25 +6,11 @@ import org.springframework.stereotype.Component
 
 // language=HTML
 @Component
-class CitizensSearchForm : BaseView() {
-    fun render(
-        citizens: List<CitizenWithDetails>,
-        reservationId: Int
-    ): String {
+class CitizensSearchContent : BaseView() {
+    fun searchContentList(citizens: List<CitizenWithDetails>): String {
         // language=HTML
-        val listSize = if (citizens.size > 5) 5 else citizens.size
         return (
             """
-            <select 
-                x-show="citizenFullName != ''" 
-                multiple 
-                size="$listSize" 
-                name='citizenIdOption' 
-                hx-get="/virkailija/venepaikka/varaus/$reservationId"  
-                hx-include="#form"
-                hx-trigger="change" 
-                hx-select="#form"
-                hx-target="#form" @change="updateFullName">
             ${
                 citizens.withIndex().joinToString("\n") { (index, citizen) ->
                     """
@@ -36,7 +22,6 @@ class CitizensSearchForm : BaseView() {
                     """.trimIndent()
                 }
             }
-            </select>
 
             """.trimIndent()
         )
