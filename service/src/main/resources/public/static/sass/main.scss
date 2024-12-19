@@ -922,6 +922,11 @@ ul {
     margin-right: $spacing-small;
   }
 }
+.employee-reservation-list-page {
+  display: block;
+  overflow: auto;
+}
+
 
 #boat-space-reservations-employee .container {
   max-width: none;

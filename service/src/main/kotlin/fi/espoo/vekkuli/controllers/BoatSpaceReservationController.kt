@@ -80,7 +80,8 @@ class BoatSpaceReservationController {
             layout.render(
                 true,
                 employee.fullName,
-                boatSpaceReservationList.render(harbors, boatSpaceTypes, actualAmenities, reservations, params, UserType.EMPLOYEE)
+                boatSpaceReservationList.render(harbors, boatSpaceTypes, actualAmenities, reservations, params, UserType.EMPLOYEE),
+                "employee-reservation-list-page"
             )
         )
     }
