@@ -2,13 +2,11 @@ package fi.espoo.vekkuli.boatSpace.citizenHome
 
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
 
 @Service
 class HomeView(
-    private val markDownService: MarkDownService,
-    private val icons: Icons
+    private val markDownService: MarkDownService
 ) : BaseView() {
     fun render(parameters: HomeViewParameters): String {
         // language=HTML

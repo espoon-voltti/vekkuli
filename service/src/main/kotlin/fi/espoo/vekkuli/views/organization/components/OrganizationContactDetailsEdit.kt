@@ -4,13 +4,11 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Component
 
 @Component
 class OrganizationContactDetailsEdit(
     private val formComponents: FormComponents,
-    private val icons: Icons,
     private val organizationContactDetails: OrganizationContactDetails
 ) : BaseView() {
     fun render(

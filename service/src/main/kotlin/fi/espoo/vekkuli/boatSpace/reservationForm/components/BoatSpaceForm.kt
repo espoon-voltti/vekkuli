@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
 import org.springframework.stereotype.Component
@@ -24,7 +23,6 @@ data class ReservationUrls(
 class BoatSpaceForm(
     private val stepIndicator: StepIndicator,
     private val sessionTimer: SessionTimer,
-    private val icons: Icons,
     private val markDownService: MarkDownService,
     private val timeProvicer: TimeProvider
 ) : BaseView() {

@@ -1,23 +1,15 @@
 package fi.espoo.vekkuli.views.employee
 
-import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsShortYearDate
-import fi.espoo.vekkuli.views.Icons
-import org.springframework.beans.factory.annotation.Autowired
+import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class BoatSpaceReservationList {
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
-    @Autowired
-    lateinit var icons: Icons
-
+class BoatSpaceReservationList : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(

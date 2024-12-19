@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.boatSpace.terminateReservation.modal
 
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.modal.Modal
 import fi.espoo.vekkuli.views.components.modal.ModalButtonStyle
 import fi.espoo.vekkuli.views.components.modal.ModalButtonType
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component
 @Component
 class TerminationFailModalView(
     private val modal: Modal,
-    private val icons: Icons
 ) : BaseView() {
     fun render(): String {
         val modalBuilder = modal.createModalBuilder()

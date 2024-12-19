@@ -1,14 +1,11 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Service
 
 // language=HTML
 @Service
-class EmployeeHome(
-    private val icons: Icons
-) : BaseView() {
+class EmployeeHome : BaseView() {
     fun render(): String =
         """
         <div class="centered is-gap-4">
