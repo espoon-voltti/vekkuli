@@ -1,11 +1,13 @@
 import Section from 'lib-components/dom/Section'
 import React, { useContext } from 'react'
 
-import { Result } from '../../lib-common/api'
+import { Result } from 'lib-common/api'
+
 import { AuthContext, User } from '../auth/state'
 
 import Header from './sections/Header'
 import CitizenInformation from './sections/citizenInformation'
+import Reservations from './sections/reservations/Reservations'
 
 export default React.memo(function CitizenPage() {
   const { user } = useContext(AuthContext)
@@ -37,6 +39,7 @@ const Content = React.memo(function Content({
     <Section>
       <Header user={currentUser} />
       <CitizenInformation user={currentUser} />
+      <Reservations />
     </Section>
   )
 })

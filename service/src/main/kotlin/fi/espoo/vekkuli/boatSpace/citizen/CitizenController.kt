@@ -1,5 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.citizen
 
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationResponse
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationResponseMapper
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.service.BoatService
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController
 class CitizenController(
     private val reserverService: ReserverService,
     private val boatService: BoatService,
-    private val organizationService: OrganizationService
+    private val organizationService: OrganizationService,
+    private val reservationService: ReservationService,
+    private val reservationResponseMapper: ReservationResponseMapper,
 ) {
     @GetMapping("/public/current")
     fun getCurrentCitizen(request: HttpServletRequest): CurrentCitizenResponse {
@@ -35,5 +40,12 @@ class CitizenController(
         val citizenId = request.ensureCitizenId()
         val organizations = organizationService.getCitizenOrganizations(citizenId)
         return organizations.toCitizenOrganizationListResponse()
+    }
+
+    @GetMapping("/current/active-reservations")
+    fun getActiveReservations(request: HttpServletRequest): List<ReservationResponse> {
+
+        val reservations = reservationService.getActiveReservationsForCurrentCitizen()
+        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
     }
 }

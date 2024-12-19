@@ -136,11 +136,6 @@ export default React.memo(function FormPage() {
   }
 
   const onSubmit = async () => {
-    console.log(
-      'onSubmit',
-      form.isValid() ? 'isValid' : 'notValid',
-      form.validationError()
-    )
     if (unfinishedReservation && form.isValid()) {
       await submitForm({
         id: unfinishedReservation?.id,

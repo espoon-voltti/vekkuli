@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React from 'react'
 
-export type ButtonType = 'primary' | 'secondary' | 'danger'
+export type ButtonType = 'primary' | 'secondary' | 'danger' | 'danger-outlined'
 
 export type ButtonProps = {
   type?: ButtonType
@@ -21,6 +21,10 @@ export default React.memo(function Button({
       break
     case 'danger':
       classes.push('is-danger')
+      break
+    case 'danger-outlined':
+      classes.push('is-danger')
+      classes.push('is-outlined')
       break
   }
 

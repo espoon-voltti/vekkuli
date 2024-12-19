@@ -28,7 +28,7 @@ function CheckboxFieldR<T>({
     } else if (!checked && isSelected) {
       update((prev) => ({
         ...prev,
-        domValues: prev.domValues.filter((v) => v !== val)
+        domValues: prev.domValues.filter((v: T) => v !== val)
       }))
     }
   }

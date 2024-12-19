@@ -66,7 +66,7 @@ export async function paymentInformation(
   return data
 }
 
-function deserializeJsonBoatSpaceReservationResponse(
+export function deserializeJsonBoatSpaceReservationResponse(
   json: BoatSpaceReservationResponse
 ): BoatSpaceReservation {
   return {

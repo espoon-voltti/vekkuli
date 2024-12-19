@@ -33,6 +33,11 @@ class ReservationService(
         return boatReservationService.getUnfinishedReservationForCitizen(citizenId)?.toBoatSpaceReservation()
     }
 
+    fun getActiveReservationsForCurrentCitizen(): List<BoatSpaceReservation> {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        return boatReservationService.getBoatSpaceReservationsForCitizen(citizenId).map { it.toBoatSpaceReservation() }
+    }
+
     fun getReservation(reservationId: Int): BoatSpaceReservation {
         return accessReservation(reservationId).toBoatSpaceReservation()
     }

@@ -6,7 +6,12 @@ import { QueryClient } from '@tanstack/react-query'
 
 import { queryKeysNamespace } from 'lib-common/query'
 
-export type QueryKeyPrefix = 'free-spaces' | 'reservation' | 'auth' | 'shared'
+export type QueryKeyPrefix =
+  | 'free-spaces'
+  | 'reservation'
+  | 'auth'
+  | 'shared'
+  | 'citizen'
 
 export const queryClient = new QueryClient({
   defaultOptions: {

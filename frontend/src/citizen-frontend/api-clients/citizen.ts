@@ -2,8 +2,14 @@ import { uri } from 'lib-common/uri'
 
 import { client } from '../api-client'
 import { CitizenBoatsResponse } from '../api-types/citizen'
+import {
+  BoatSpaceReservation,
+  BoatSpaceReservationResponse
+} from '../api-types/reservation'
 import { formatCmToM } from '../shared/formatters'
 import { Boat } from '../shared/types'
+
+import { deserializeJsonBoatSpaceReservationResponse } from './reservation'
 
 export async function citizenBoats(): Promise<Boat[]> {
   const { data: json } = await client.request<CitizenBoatsResponse>({
@@ -30,4 +36,14 @@ function deserializeJsonCitizenBoatsResponse(
     otherIdentification: boat.otherIdentification,
     extraInformation: boat.extraInformation
   }))
+}
+
+export async function citizenActiveReservations(): Promise<
+  BoatSpaceReservation[]
+> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+    url: uri`/current/active-reservations`.toString(),
+    method: 'GET'
+  })
+  return json.map(deserializeJsonBoatSpaceReservationResponse)
 }
