@@ -188,7 +188,6 @@ class BoatSpaceReservationList : BaseView() {
         // language=HTML
         val reservationRows =
             reservations.joinToString("\n") { result ->
-                val startDateFormatted = formatAsShortYearDate(result.startDate)
                 val endDateFormatted = formatAsShortYearDate(result.endDate)
                 val paymentDateFormatted = formatAsShortYearDate(result.paymentDate)
                 val endDateText =
@@ -218,7 +217,6 @@ class BoatSpaceReservationList : BaseView() {
                     <td>${result.email}</td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
-                    <td>$startDateFormatted</td>
                     <td ${addTestId(
                     "reservation-end-date"
                 )}>$endDateText</td>
@@ -348,9 +346,6 @@ class BoatSpaceReservationList : BaseView() {
                                         ${t("boatSpaceReservation.title.paymentState")}
                                     </span></th>
                                     <th class="nowrap">
-                                        ${sortButton("START_DATE", t("boatSpaceReservation.title.startDate"))}
-                                    </th>
-                                    <th class="nowrap">
                                         ${sortButton("END_DATE", t("boatSpaceReservation.title.endDate"))}
                                     </th>
 
@@ -363,7 +358,6 @@ class BoatSpaceReservationList : BaseView() {
                                     <th></th>
                                     <th>${textSearchInput("nameSearch", params.nameSearch)}</th>
                                     <th>${textSearchInput("phoneSearch", params.phoneSearch)}</th>
-                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
