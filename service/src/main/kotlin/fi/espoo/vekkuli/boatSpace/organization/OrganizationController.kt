@@ -1,8 +1,9 @@
 package fi.espoo.vekkuli.boatSpace.organization
 
-import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetails
 import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetailsEdit
+import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.CitizenUserController.BoatUpdateForm
 import fi.espoo.vekkuli.controllers.UserType
@@ -12,13 +13,13 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
-import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -51,12 +52,12 @@ class OrganizationUserController(
     private val editBoat: EditBoat,
     private val organizationControllerService: OrganizationControllerService,
     private val citizenUserController: CitizenUserController,
-    private val organizationContactDetails: OrganizationContactDetails,
     private val organizationService: OrganizationService,
     private val reserverService: ReserverService,
     private val organizationContactDetailsEdit: OrganizationContactDetailsEdit,
-    private val permissionService: PermissionService
 ) {
+    private val logger = KotlinLogging.logger {}
+
     @GetMapping("/virkailija/yhteiso/{organizationId}")
     @ResponseBody
     fun citizenProfile(
@@ -139,6 +140,9 @@ class OrganizationUserController(
         @PathVariable citizenId: UUID,
         request: HttpServletRequest
     ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "UNLINK_CITIZEN_FROM_ORGANIZATION")
+        }
         request.ensureEmployeeId()
         organizationService.removeCitizenFromOrganization(organizationId, citizenId)
     }
