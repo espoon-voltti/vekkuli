@@ -389,8 +389,13 @@ class BoatReservationService(
         if (params.amenity.isNotEmpty()) {
             filters.add(AmenityExpr(params.amenity))
         }
+
         if (params.sectionFilter.isNotEmpty()) {
             filters.add(SectionExpr(params.sectionFilter))
+        }
+
+        if (params.validity.isNotEmpty()) {
+            filters.add(ReservationValidityExpr(params.validity))
         }
 
         val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
