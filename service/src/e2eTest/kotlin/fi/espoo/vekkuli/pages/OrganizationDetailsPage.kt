@@ -200,4 +200,10 @@ class OrganizationDetailsPage(
     val trailerWidthInput = page.getByTestId("trailerWidth")
     val trailerLengthInput = page.getByTestId("trailerLength")
     val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
+
+    val removeOliviaButton = page.getByTestId("remove-user-8b220a43-86a0-4054-96f6-d29a5aba17e7-509edb00-5549-11ef-a1c7-776e76028a49")
+    val confirmOliviaRemove =
+        page.getByTestId(
+            "delete-modal-confirm-8b220a43-86a0-4054-96f6-d29a5aba17e7-509edb00-5549-11ef-a1c7-776e76028a49"
+        )
 }
