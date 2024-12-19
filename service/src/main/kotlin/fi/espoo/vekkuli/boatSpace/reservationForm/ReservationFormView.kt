@@ -123,16 +123,20 @@ class ReservationFormView(
                 input.storageType
             )}
                 </div>
-                <div class='form-section'>
-                     ${reservationValidityContainer.render(input.reservationValidity)}
-                </div>
                 
+                ${if (userType == UserType.EMPLOYEE) {
+                """<div class='form-section'>
+                  ${reservationValidityContainer.render(input.reservationValidity)}
+                 </div>"""
+            } else {
+                ""
+            }}
+            
                  <div class='form-section'>
                      ${reservationInformation.reservationInformationWithStorageType(reservation)}
                 </div>
             </div>
             """.trimIndent()
-
         return boatSpaceForm.render(
             reservation,
             userType,
@@ -194,12 +198,16 @@ class ReservationFormView(
             )}
             </div>
             
+            ${if (userType == UserType.EMPLOYEE) {
+                """<div class='form-section' x-data="{ reservationValidity: '${input.reservationValidity}' }">
+              ${reservationValidityContainer.render(input.reservationValidity)}
+            </div>"""
+            } else {
+                ""
+            }}
+
             <div class='form-section'>
-                ${reservationValidityContainer.render(input.reservationValidity)}
-            </div>
-            
-             <div class='form-section'>
-                ${reservationInformation.render(reservation)}
+              ${reservationInformation.render(reservation)}
             </div>
             """.trimIndent()
 
