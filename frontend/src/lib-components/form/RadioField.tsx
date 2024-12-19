@@ -10,14 +10,12 @@ import { bindOrPlaceholders } from './utils'
 
 export interface RadioOption {
   value: string
-  label: string
+  label?: string
   info?: string
 }
 
-interface RadioFieldProps<T>
-  extends Omit<BaseFieldProps, 'onChange' | 'label'> {
+interface RadioFieldProps<T> extends Omit<BaseFieldProps, 'onChange'> {
   bind?: BoundFormState<OneOfState<T>>
-  label?: string
   options?: RadioOption[]
 }
 
@@ -74,7 +72,7 @@ interface RadioFieldInputProps
   extends Omit<BaseFieldProps, 'value'>,
     RadioOption {
   id: string
-  name: string
+  name?: string
   selected: boolean
 }
 

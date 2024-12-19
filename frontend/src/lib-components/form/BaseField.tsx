@@ -2,8 +2,8 @@ import React from 'react'
 
 export interface BaseFieldProps<TValue = string> {
   id?: string
-  name: string
-  label: string
+  name?: string
+  label?: string
   readOnly?: boolean
   required?: boolean
   infoKey?: string

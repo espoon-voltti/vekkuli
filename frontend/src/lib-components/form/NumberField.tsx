@@ -7,12 +7,12 @@ import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
 import { bindOrPlaceholders } from './utils'
 
-interface NumberFieldProps extends Omit<BaseFieldProps, 'onChange' | 'name'> {
+interface NumberFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   bind?: BoundFormState<string>
-  name?: string
   step?: number
   min?: number
   max?: number
+  value?: number
 }
 
 function NumberFieldR({
@@ -31,7 +31,7 @@ function NumberFieldR({
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
   const showError = (showErrorsBeforeTouched || touched) && !isValid()
-
+  const readOnlyValue = state !== undefined ? state : value
   return (
     <div className="field">
       <div className="control">
@@ -39,7 +39,7 @@ function NumberFieldR({
           {label}
         </label>
         {readonly ? (
-          <ReadOnly value={value} />
+          <ReadOnly value={readOnlyValue?.toString()} />
         ) : (
           <>
             <input

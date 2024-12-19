@@ -6,6 +6,7 @@ import { Result } from 'lib-common/api'
 import { AuthContext, User } from '../auth/state'
 
 import Header from './sections/Header'
+import Boats from './sections/boats/Boats'
 import CitizenInformation from './sections/citizenInformation'
 import Reservations from './sections/reservations/Reservations'
 
@@ -40,6 +41,7 @@ const Content = React.memo(function Content({
       <Header user={currentUser} />
       <CitizenInformation user={currentUser} />
       <Reservations />
+      <Boats />
     </Section>
   )
 })

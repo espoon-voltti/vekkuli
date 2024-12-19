@@ -6,11 +6,11 @@ import { BoundFormState } from 'lib-common/form/hooks'
 import { MultiSelectState } from '../../lib-common/form/form'
 
 import { BaseFieldProps } from './BaseField'
+import ReadOnly from './ReadOnly'
+import { bindOrPlaceholders } from './utils'
 
-interface CheckboxFieldProps<T>
-  extends Omit<BaseFieldProps, 'onChange' | 'label'> {
-  bind: BoundFormState<MultiSelectState<T>>
-  label?: string
+interface CheckboxFieldProps<T> extends Omit<BaseFieldProps, 'onChange'> {
+  bind?: BoundFormState<MultiSelectState<T>>
   isFullWidth?: boolean
 }
 
@@ -18,20 +18,27 @@ function CheckboxFieldR<T>({
   id,
   name,
   label,
-  bind: { state, update },
-  isFullWidth
+  value,
+  bind,
+  isFullWidth,
+  readOnly
 }: CheckboxFieldProps<T>) {
+  const { state, update } = bindOrPlaceholders(bind)
   const onOnChange = (val: string, checked: boolean) => {
-    const isSelected = state.domValues.includes(val)
+    const isSelected = state?.domValues.includes(val)
     if (checked && !isSelected) {
-      update((prev) => ({ ...prev, domValues: [...state.domValues, val] }))
+      update((prev) => ({
+        ...prev,
+        domValues: [...(state?.domValues || []), val]
+      }))
     } else if (!checked && isSelected) {
       update((prev) => ({
         ...prev,
-        domValues: prev.domValues.filter((v: T) => v !== val)
+        domValues: prev.domValues.filter((v) => v !== val)
       }))
     }
   }
+  const readOnlyValue = state !== undefined ? state.domValues[0] : value
   return (
     <div>
       {!label ? null : (
@@ -40,18 +47,22 @@ function CheckboxFieldR<T>({
         </label>
       )}
       <div className="field columns is-multiline is-mobile">
-        {state.options.map((option) => (
-          <CheckboxFieldInput
-            key={option.domValue}
-            id={`${id}-${option.domValue}`}
-            onChange={(checked) => onOnChange(option.domValue, checked)}
-            name={name}
-            selected={state.domValues.includes(option.domValue)}
-            value={option.domValue}
-            label={option.label}
-            isFullWidth={isFullWidth}
-          />
-        ))}
+        {readOnly ? (
+          <ReadOnly value={readOnlyValue?.toString()} />
+        ) : (
+          state?.options.map((option) => (
+            <CheckboxFieldInput
+              key={option.domValue}
+              id={`${id}-${option.domValue}`}
+              onChange={(checked) => onOnChange(option.domValue, checked)}
+              name={name}
+              selected={state.domValues.includes(option.domValue)}
+              value={option.domValue}
+              label={option.label}
+              isFullWidth={isFullWidth}
+            />
+          ))
+        )}
       </div>
     </div>
   )
@@ -62,7 +73,7 @@ export const CheckboxField = React.memo(CheckboxFieldR) as typeof CheckboxFieldR
 interface CheckboxFieldInputProps
   extends Omit<BaseFieldProps<boolean>, 'value'> {
   id: string
-  name: string
+  name?: string
   value: string
   selected: boolean
   isFullWidth?: boolean

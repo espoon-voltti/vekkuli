@@ -29,7 +29,10 @@ function SelectField_<T>({
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
   const showError = (showErrorsBeforeTouched || touched) && !isValid()
-
+  const readOnlyValue =
+    state !== undefined
+      ? state.options.find((o) => o.domValue === state.domValue)?.label
+      : value
   return (
     <div className="field">
       <div className="control">
@@ -37,7 +40,7 @@ function SelectField_<T>({
           {label}
         </label>
         {readonly ? (
-          <ReadOnly value={value} />
+          <ReadOnly value={readOnlyValue} />
         ) : (
           <div className={`select${isFullWidth ? ' is-fullwidth' : ''}`}>
             <select

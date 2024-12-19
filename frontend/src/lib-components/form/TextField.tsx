@@ -7,10 +7,8 @@ import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
 import { bindOrPlaceholders } from './utils'
 
-interface TextFieldProps
-  extends Omit<BaseFieldProps, 'onChange' | 'name' | 'value'> {
+interface TextFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   bind?: BoundFormState<string>
-  name?: string
   value?: string | string[]
 }
 
@@ -28,6 +26,8 @@ export default React.memo(function TextField({
   const [touched, setTouched] = useState(false)
   const showError = (showErrorsBeforeTouched || touched) && !isValid()
 
+  const readOnlyValue = state !== undefined ? state : value
+
   return (
     <div className="field">
       <div className="control">
@@ -35,7 +35,7 @@ export default React.memo(function TextField({
           {label}
         </label>
         {readonly ? (
-          <ReadOnly value={value} />
+          <ReadOnly value={readOnlyValue} />
         ) : (
           <>
             <input
