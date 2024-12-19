@@ -310,7 +310,6 @@ class BoatSpaceReservationList : BaseView() {
                             </div>                        
                         </div>
 
-                        <div class="block columns is-vcentered">
                         <div class="employee-warning-filter">
                             $warningFilterCheckbox
                         </div>
