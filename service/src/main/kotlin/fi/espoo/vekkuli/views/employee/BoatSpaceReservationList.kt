@@ -23,7 +23,9 @@ class BoatSpaceReservationList : BaseView() {
         val harborFilters =
             harbors.joinToString("\n") { harbor ->
                 """
-                <label class="filter-button" data-testid="filter-harbor-${harbor.name}">
+                <label class="filter-button" ${addTestId(
+                    "filter-harbor-$harbor.name"
+                )}>
                     <input type="checkbox" name="harbor" value="${harbor.id}" class="is-hidden" ${if (params.hasHarbor(
                         harbor.id
                     )
@@ -43,7 +45,9 @@ class BoatSpaceReservationList : BaseView() {
         val boatSpaceTypeFilters =
             boatSpaceTypes.joinToString("\n") { boatSpaceType ->
                 """
-                <label class="filter-button" data-testid="filter-type-$boatSpaceType">
+                <label class="filter-button" ${addTestId(
+                    "filter-type-$boatSpaceType"
+                )}>
                     <input type="checkbox" name="boatSpaceType" value="$boatSpaceType" class="is-hidden" ${if (params.hasBoatSpaceType(
                         boatSpaceType
                     )
@@ -80,7 +84,9 @@ class BoatSpaceReservationList : BaseView() {
         val amenityFilters =
             amenities.joinToString("\n") { amenity ->
                 """
-                <label class="filter-button" data-testid="filter-amenity-$amenity">
+                <label class="filter-button" ${addTestId(
+                    "filter-amenity-$amenity"
+                )}>
                     <input type="checkbox" name="amenity" value="${amenity.name}" class="is-hidden" ${if (params.hasAmenity(
                         amenity
                     )
@@ -118,8 +124,10 @@ class BoatSpaceReservationList : BaseView() {
         val reservationValidityFilters =
             ReservationValidity.entries.joinToString("\n") { validity ->
                 """
-                <label class="filter-button" data-testid="filter-reservation-validity-$validity">
-                    <input type="checkbox" name="reservation-validity" value="${validity.name}" class="is-hidden" ${if (params.hasValidity(
+                <label class="filter-button" ${addTestId(
+                    "filter-reservation-validity-$validity"
+                )}>
+                    <input type="checkbox" name="validity" value="$validity" class="is-hidden" ${if (params.hasValidity(
                         validity
                     )
                 ) {
@@ -154,9 +162,9 @@ class BoatSpaceReservationList : BaseView() {
             inputVal: String?
         ) = """
             <p class="control has-icons-left">
-                <input class="input search-input" type="text" name="$name" data-testid="search-input-$name" 
-                    aria-label="${t("boatSpaces.searchButton")}" value="${inputVal ?: ""}"/>
-                <span class="icon is-small is-left">${icons.search}</span>
+                <input class="input search-input" type="text" name="$name" ${addTestId("search-input-$name")} 
+                aria-label="${t("boatSpaces.searchButton")}" value="${inputVal ?: ""}"/>                
+                <span class="icon is-small is-left">${icons.search}</span>                
             </p>
             """.trimIndent()
 
@@ -200,7 +208,7 @@ class BoatSpaceReservationList : BaseView() {
 
         fun getWarningIcon(hasWarnings: Boolean) =
             if (hasWarnings) {
-                "<div data-testid='warning-icon'>${icons.warningExclamation(false)}</div>"
+                "<div ${addTestId("warning-icon")}data-testid='warning-icon'>${icons.warningExclamation(false)}</div>"
             } else {
                 ""
             }
@@ -229,10 +237,14 @@ class BoatSpaceReservationList : BaseView() {
                     <td>${getWarningIcon(result.hasAnyWarnings())}</td>
                     <td>${result.locationName}</td>
                     <td>
-                        <span>${result.place}</span>
+                        <span ${addTestId(
+                    "place"
+                )}>${result.place}</span>
                     </td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
-                    <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
+                    <td ${addTestId(
+                    "reserver-name"
+                )}><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.phone}</td>
                     <td>${result.email}</td>
                     <td>${result.municipalityName}</td>
