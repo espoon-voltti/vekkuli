@@ -202,7 +202,7 @@ WHERE id = :jobId
         val toMillis =
             Duration
                 .between(
-                    timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC),
+                    Instant.now(),
                     permit.availableAt
                 ).toMillis()
         if (toMillis > 0) {
@@ -212,7 +212,7 @@ WHERE id = :jobId
             )
         }
         return claimJob(timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC), pool.registration.jobTypes())?.also {
-            updatePermit(pool.id, timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC).plus(pool.throttleInterval))
+            updatePermit(pool.id, Instant.now().plus(pool.throttleInterval))
         }
     }
 
