@@ -1,6 +1,9 @@
 package fi.espoo.vekkuli.boatSpace.organization
 
 import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetailsEdit
+import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationMemberAdd
+import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationMembersContainer
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.CitizensSearchContent
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
@@ -10,6 +13,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
@@ -55,6 +59,9 @@ class OrganizationUserController(
     private val organizationService: OrganizationService,
     private val reserverService: ReserverService,
     private val organizationContactDetailsEdit: OrganizationContactDetailsEdit,
+    private val organizationMemberAdd: OrganizationMemberAdd,
+    private val citizensSearchContent: CitizensSearchContent,
+    private val organizationMembersContainer: OrganizationMembersContainer
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -180,5 +187,51 @@ class OrganizationUserController(
             request.requestURI,
             page
         )
+    }
+
+    @GetMapping("/virkailija/yhteiso/{organizationId}/jasenet/lisaa")
+    @ResponseBody
+    fun addMemberToOrganizationView(
+        @PathVariable organizationId: UUID,
+        @RequestParam citizenId: UUID?,
+        request: HttpServletRequest
+    ): String {
+        var citizen: CitizenWithDetails? = null
+        if (citizenId != null) {
+            citizen = reserverService.getCitizen(citizenId)
+        }
+
+        return organizationMemberAdd.render(citizen, organizationId)
+    }
+
+    @PatchMapping("/virkailija/yhteiso/{organizationId}/jasenet/lisaa")
+    @ResponseBody
+    fun addMemberToOrganization(
+        @PathVariable organizationId: UUID,
+        @RequestParam citizenId: UUID,
+        request: HttpServletRequest
+    ): String {
+        request.ensureEmployeeId()
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "ADD_ORGANIZATION_MEMBERS")
+        }
+        organizationService.addCitizenToOrganization(organizationId, citizenId)
+        val organizationMembers = organizationService.getOrganizationMembers(organizationId)
+        return organizationMembersContainer.render(organizationId, organizationMembers)
+    }
+
+    @GetMapping("/virkailija/yhteiso/{organizationId}/jasenet/hae")
+    @ResponseBody
+    fun searchCitizens(
+        @PathVariable organizationId: UUID,
+        request: HttpServletRequest,
+        @RequestParam nameParameter: String,
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "SEARCH_ORGANIZATION_MEMBERS")
+        }
+        reserverService.getCitizens(nameParameter).let {
+            return organizationMemberAdd.organizationAddMemberSearchContent(it, organizationId)
+        }
     }
 }

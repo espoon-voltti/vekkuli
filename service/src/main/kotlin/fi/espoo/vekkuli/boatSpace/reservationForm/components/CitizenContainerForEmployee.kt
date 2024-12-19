@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component
 @Component
 class CitizenContainerForEmployee(
     private val commonComponents: CommonComponents,
-    private val formComponents: FormComponents
+    private val formComponents: FormComponents,
+    private val citizenSearch: CitizenSearch,
+    private val citizensSearchContent: CitizensSearchContent
 ) : BaseView() {
     fun citizenInputFields(
         input: ReservationInput,
@@ -127,45 +129,6 @@ class CitizenContainerForEmployee(
             """.trimIndent()
     }
 
-    fun citizenSearch(
-        reservationId: Int,
-        citizen: CitizenWithDetails?,
-        municipalities: List<Municipality>
-    ) = // language=HTML
-
-        """
-        <div id="citizen-results-container" class="container" >
-            <div class="field" id="customer-search-container">
-                <label class="label">${t("boatApplication.select.citizen")}</label>
-                <div class="control width-is-half">
-                    <p class="control has-icons-left has-icons-right">
-                        <input x-model="citizenFullName" id="customer-search" 
-                            placeholder="${t("boatApplication.placeholder.searchCitizens")}"
-                            name="nameParameter" class="input search-input" type="text" 
-                            hx-get="/virkailija/venepaikka/varaus/$reservationId/kuntalainen/hae" hx-trigger="keyup changed delay:500ms" 
-                            hx-target="#citizen-results">
-                        <span class="icon is-small is-left">
-                            ${icons.search}
-                        </span>
-                        <span id="citizen-empty-input" x-show="citizenFullName != ''" class="icon is-small is-right is-clickable p-s" @click="citizenFullName = ''; citizenId = ''">
-                            ${icons.xMark}
-                        </span>
-                    </p>
-                           
-                    <!-- Where the results will be displayed -->                    
-                    <div id="citizen-results" class="select is-multiple" ></div>                   
-                </div>
-                <input id="citizenId" name="citizenId" x-model.fill="citizenId" data-required hidden />
-                <div id="citizenId-error-container">
-                    <span id="citizenId-error" class="help is-danger" style="display: none" x-show="citizenId == ''">
-                        ${t("validation.required")}
-                    </span>
-                </div>
-            </div>
-            ${ if (citizen != null) commonComponents.citizenDetails(citizen, municipalities) else "" }
-        </div>
-        """.trimIndent()
-
     fun customerTypeRadioButtons(
         userType: UserType,
         reservationId: Int,
@@ -211,23 +174,53 @@ class CitizenContainerForEmployee(
         
         """.trimIndent()
 
+    fun reservationFormCitizenSearchContent(
+        citizens: List<CitizenWithDetails>,
+        reservationId: Int
+    ): String {
+        val listSize = if (citizens.size > 5) 5 else citizens.size
+
+        // language=HTML
+        return (
+            """
+            <select 
+                x-show="citizenFullName != ''" 
+                multiple 
+                size="$listSize" 
+                name='citizenIdOption' 
+                hx-get="/virkailija/venepaikka/varaus/$reservationId"
+                hx-include="#form"
+                hx-trigger="change" 
+                hx-select="#form"
+                hx-target="#form" @change="updateFullName">
+                ${citizensSearchContent.searchContentList(citizens)}
+            </select>
+
+            """.trimIndent()
+        )
+    }
+
     fun citizenSelection(
         input: ReservationInput,
         citizen: CitizenWithDetails?,
         municipalities: List<Municipality>,
         reservationId: Int,
-    ) = if (input.citizenSelection == "newCitizen") {
-        citizenInputFields(
-            input,
-            citizen,
-            municipalities
-        )
-    } else {
-        citizenSearch(
-            reservationId,
-            citizen?.copy(email = input.email ?: citizen.email, phone = input.phone ?: citizen.phone),
-            municipalities
-        )
+    ): String {
+        if (input.citizenSelection == "newCitizen") {
+            return citizenInputFields(
+                input,
+                citizen,
+                municipalities
+            )
+        } else {
+            val citizenCopy = citizen?.copy(email = input.email ?: citizen.email, phone = input.phone ?: citizen.phone)
+            return(
+                """
+                ${citizenSearch.render("/venepaikka/varaus/$reservationId/kuntalainen/hae")}
+                ${if (citizenCopy != null) commonComponents.citizenDetails(citizenCopy, municipalities) else ""}
+                """.trimIndent()
+            )
+        }
     }
 
     fun render(

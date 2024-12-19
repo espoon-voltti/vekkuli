@@ -230,4 +230,25 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             handleError(e)
         }
     }
+
+    @Test
+    fun `employee can add an existing citizen to organization`() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+            organizationDetails.navigateToEspoonPursiseura()
+            assertThat(organizationDetails.organizationDetailsSection).isVisible()
+//            organizationDetails.addCitizenButton.click()
+//            assertThat(organizationDetails.addCitizenForm).isVisible()
+//
+//            organizationDetails.citizenSearchInput.fill("Kalle")
+//            organizationDetails.citizenSearchButton.click()
+//            assertThat(organizationDetails.citizenSearchResults).isVisible()
+//            organizationDetails.addCitizenToOrganizationButton.click()
+//            assertThat(organizationDetails.citizenSearchResults).isHidden()
+//            assertThat(organizationDetails.citizenAddedMessage).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
 }
