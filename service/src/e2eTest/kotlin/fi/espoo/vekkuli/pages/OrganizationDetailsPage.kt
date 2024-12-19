@@ -214,4 +214,16 @@ class OrganizationDetailsPage(
         page.getByTestId(
             "delete-modal-confirm-8b220a43-86a0-4054-96f6-d29a5aba17e7-509edb00-5549-11ef-a1c7-776e76028a49"
         )
+
+    // Add members
+    val citizenSearchContainer = page.locator("#customer-search-container")
+    val citizenSearchOption1 = page.locator("#option-0")
+    val addMemberButton: Locator = page.getByTestId("add-organization-member")
+    val addMemberSearchContainer = page.getByTestId("add-member-search-container")
+    val citizenSearchInput = page.getByTestId("customer-search")
+    val citizenNameField = page.getByTestId("citizenFullNameField")
+    val citizenPhoneField = page.getByTestId("citizenPhoneNumberField")
+    val citizenEmailField = page.getByTestId("citizenEmailField")
+    val submitOrganizationMemberAdd = page.getByTestId("submit-organization-member-add")
+    val organizationMemberTableLastRow = page.getByTestId("organization-member-table").locator("tbody tr:last-child")
 }
