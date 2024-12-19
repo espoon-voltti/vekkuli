@@ -20,42 +20,55 @@ class ReservationController {
 
     @PostMapping("/reservations")
     fun clearReservations(
-        @RequestParam reserverName: String
+        @RequestParam reserverName: String,
+        @RequestParam user: UserColumn,
     ): String {
         if (getEnv() !in setOf(EnvType.Staging, EnvType.Local)) {
             return ""
         }
 
+        val query =
+            when (user) {
+                UserColumn.Reserver -> """SELECT id FROM reserver WHERE (name ILIKE '%$reserverName%')"""
+                UserColumn.ActingUser -> """SELECT id FROM reserver WHERE (name ILIKE '%$reserverName%')"""
+                UserColumn.Employee -> """SELECT id FROM app_user WHERE (CONCAT(last_name, ' ', first_name) ILIKE '%$reserverName%')"""
+            }
+
         val reservers =
             jdbi.withHandleUnchecked { handle ->
                 handle
-                    .createQuery("""SELECT id FROM reserver WHERE (name ILIKE '%$reserverName%')""")
+                    .createQuery(query)
                     .mapTo<UUID>()
                     .list()
             }
+
         return when (reservers.size) {
             0 -> reservationView.render("Varaajaa ei löytynyt")
-            1 -> {
-                deleteReservations(reservers[0])
-                reservationView.render("Varaukset poistettu henkilöltä")
-            }
+            1 -> reservationView.render(deleteReservations(reservers[0], user))
             else ->
                 reservationView.render("Varaajia löytyi useita. Tarkenna nimeä.")
         }
     }
 
-    fun deleteReservations(reserverId: UUID) {
-        jdbi.withHandleUnchecked { handle ->
+    fun deleteReservations(
+        userId: UUID,
+        userColumn: UserColumn
+    ): String {
+        val query = "SELECT id FROM boat_space_reservation WHERE ${userColumn.toName()} = :userId"
+        return jdbi.withHandleUnchecked { handle ->
             // Read all reservation ids for the reserver
             val reservationIds =
                 handle
                     .createQuery(
-                        "SELECT id FROM boat_space_reservation WHERE reserver_id = :reserverId",
-                    ).bind("reserverId", reserverId)
+                        query,
+                    ).bind("userId", userId)
                     .mapTo<Int>()
                     .list()
 
+            if (reservationIds.isEmpty()) return@withHandleUnchecked "Ei löytynyt varauksia henkilölle $userId"
+
             val ids = reservationIds.joinToString(", ")
+
             // Delete invoices
             handle
                 .createUpdate(
@@ -85,6 +98,8 @@ class ReservationController {
                 .createUpdate(
                     "DELETE FROM boat_space_reservation WHERE id IN ($ids)",
                 ).execute()
+
+            "Henkilöltä $userId poistettu seuraavat varaukset: $ids"
         }
     }
 }
