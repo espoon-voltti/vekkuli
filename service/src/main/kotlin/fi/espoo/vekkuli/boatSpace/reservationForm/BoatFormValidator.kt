@@ -162,4 +162,5 @@ interface BoatRegistrationBaseInput {
     val trailerRegistrationNumber: String?
     val trailerWidth: BigDecimal?
     val trailerLength: BigDecimal?
+    val reservationValidity: ReservationValidity?
 }

@@ -59,7 +59,8 @@ class ReservationFormView(
     private val boatSpaceForm: BoatSpaceForm,
     private val reservationInformation: ReservationInformation,
     private val formComponents: FormComponents,
-    private val storageTypeContainer: StorageTypeContainer
+    private val storageTypeContainer: StorageTypeContainer,
+    private val reservationValidityContainer: ReservationValidityContainer,
 ) : BaseView() {
     fun winterStorageForm(
         reservation: ReservationForApplicationForm,
@@ -122,6 +123,10 @@ class ReservationFormView(
                 input.storageType
             )}
                 </div>
+                <div class='form-section'>
+                     ${reservationValidityContainer.render(input.reservationValidity)}
+                </div>
+                
                  <div class='form-section'>
                      ${reservationInformation.reservationInformationWithStorageType(reservation)}
                 </div>
@@ -187,6 +192,10 @@ class ReservationFormView(
                     )
                 )
             )}
+            </div>
+            
+            <div class='form-section'>
+                ${reservationValidityContainer.render(input.reservationValidity)}
             </div>
             
              <div class='form-section'>
