@@ -3,13 +3,11 @@ package fi.espoo.vekkuli.views.organization.components
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import org.springframework.stereotype.Component
 
 @Component
 class OrganizationContactDetails(
     private val formComponents: FormComponents,
-    private val icons: Icons
 ) : BaseView() {
     fun getOrganizationContactDetailsFields(
         organizationNameValue: String,

@@ -4,7 +4,6 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.utils.PHONE_NUMBER_REGEX
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.stereotype.Component
 
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component
 @Component
 class CitizenContainerForCitizen(
     private val commonComponents: CommonComponents,
-    private val icons: Icons,
     private val formComponents: FormComponents
 ) : BaseView() {
     // language=HTML

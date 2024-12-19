@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.components.WarningBox
 import fi.espoo.vekkuli.views.employee.SanitizeInput
@@ -21,7 +20,6 @@ import java.util.*
 class ReserverDetailsReservationsContainer(
     private val reservationListBuilder: ReservationList,
     private val warningBox: WarningBox,
-    private val icons: Icons
 ) : BaseView() {
     private fun getTabUrl(last: String): String = getServiceUrl("/virkailija/kayttaja/$last")
 

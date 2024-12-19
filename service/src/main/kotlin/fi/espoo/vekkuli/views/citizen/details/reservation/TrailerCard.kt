@@ -6,14 +6,12 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Trailer
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.components.WarningBox
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
 class TrailerCard(
-    private val icons: Icons,
     private val formComponents: FormComponents,
     private val warningBox: WarningBox,
 ) : BaseView() {

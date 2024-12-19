@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
@@ -19,7 +18,6 @@ import java.util.*
 class OrganizationDetails(
     var commonComponents: CommonComponents,
     var formComponents: FormComponents,
-    var icons: Icons,
     private val organizationContactDetails: OrganizationContactDetails,
     private val organizationMembersContainer: OrganizationMembersContainer,
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,

@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,9 +12,6 @@ import java.util.*
 
 @Component
 class ReservationCardInformation : BaseView() {
-    @Autowired
-    lateinit var icons: Icons
-
     @Autowired
     lateinit var trailerCard: TrailerCard
 

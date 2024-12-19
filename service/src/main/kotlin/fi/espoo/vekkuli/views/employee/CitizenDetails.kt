@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.components.WarningBox
@@ -24,7 +23,6 @@ enum class SubTab {
 class CitizenDetails(
     private val formComponents: FormComponents,
     private val reservationListBuilder: ReservationList,
-    private val icons: Icons,
     private val commonComponents: CommonComponents,
     private val warningBox: WarningBox,
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
