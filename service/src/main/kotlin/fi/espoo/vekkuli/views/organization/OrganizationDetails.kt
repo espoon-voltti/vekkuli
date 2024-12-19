@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.views.Icons
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
+import fi.espoo.vekkuli.views.organization.components.OrganizationBillingInformation
 import fi.espoo.vekkuli.views.organization.components.OrganizationContactDetails
 import fi.espoo.vekkuli.views.organization.components.OrganizationMembersContainer
 import org.springframework.stereotype.Service
@@ -22,6 +23,7 @@ class OrganizationDetails(
     private val organizationContactDetails: OrganizationContactDetails,
     private val organizationMembersContainer: OrganizationMembersContainer,
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
+    private val organizationBillingInformation: OrganizationBillingInformation,
 ) : BaseView() {
     fun organizationPageForEmployee(
         @SanitizeInput organization: Organization,
@@ -48,10 +50,15 @@ class OrganizationDetails(
                     <div class='form-section'>
                         ${organizationContactDetails.render(organization)}
                    </div>
+                   
+                   <div class='form-section'>
+                        ${organizationBillingInformation.render(organization)}
+                    </div>
                     <div class="form-section">
                         ${organizationMembersContainer.render(organizationMembers)}
                     </div>
                </div>
+             
                ${
                 reserverDetailsReservationsContainer.render(
                     organization.id,
