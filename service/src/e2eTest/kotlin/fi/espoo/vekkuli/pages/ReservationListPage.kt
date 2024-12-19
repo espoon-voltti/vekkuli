@@ -20,6 +20,9 @@ class ReservationListPage(
     val reservationsTableB314Row = page.locator("tr:has-text('B 314')")
     val reservationsTableB314RowEndDate = getByDataTestId("reservation-end-date", reservationsTableB314Row)
     val reservations = page.locator(".reservation-item")
-    val boatSpaceTypeFilter = { typeFilter: String -> getByDataTestId("filter-type-$typeFilter") }
     val searchInput = { inputName: String -> getByDataTestId("search-input-$inputName") }
+    val boatSpaceTypeFilter = { type: String -> filterLocator("type-$type") }
+    val reservationValidityFilter = { validity: String -> filterLocator("reservation-validity-$validity") }
+
+    private val filterLocator = { filter: String -> getByDataTestId("filter-$filter") }
 }
