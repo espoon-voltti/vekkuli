@@ -159,6 +159,10 @@ class OrganizationUserController(
         @RequestParam address: String,
         @RequestParam postOffice: String,
         @RequestParam postalCode: String,
+        @RequestParam billingName: String,
+        @RequestParam billingStreetAddress: String,
+        @RequestParam billingPostalCode: String,
+        @RequestParam billingPostOffice: String,
         request: HttpServletRequest
     ): String {
         organizationService.updateOrganization(
@@ -171,7 +175,11 @@ class OrganizationUserController(
                 email = email,
                 streetAddress = address,
                 postalCode = postalCode,
-                postOffice = postOffice
+                postOffice = postOffice,
+                billingName = billingName,
+                billingStreetAddress = billingStreetAddress,
+                billingPostalCode = billingPostalCode,
+                billingPostOffice = billingPostOffice,
             )
         )
         val page = organizationControllerService.buildOrganizationPage(organizationId)

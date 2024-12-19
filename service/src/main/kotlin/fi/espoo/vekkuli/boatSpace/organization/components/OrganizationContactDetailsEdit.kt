@@ -59,6 +59,26 @@ class OrganizationContactDetailsEdit(
         val addressPostalCode = formComponents.textInput("organizationDetails.title.postalCode", "postalCode", organization.postalCode)
         val addressPostOffice = formComponents.textInput("organizationDetails.title.postOffice", "postOffice", organization.postOffice)
 
+        val billingName = formComponents.textInput("organizationDetails.title.billingName", "billingName", organization.billingName)
+        val billingStreetAddress =
+            formComponents.textInput(
+                "organizationDetails.title.address",
+                "billingStreetAddress",
+                organization.billingStreetAddress
+            )
+        val billingPostalCode =
+            formComponents.textInput(
+                "organizationDetails.title.postalCode",
+                "billingPostalCode",
+                organization.billingPostalCode
+            )
+        val billingPostOffice =
+            formComponents.textInput(
+                "organizationDetails.title.postOffice",
+                "billingPostOffice",
+                organization.billingPostOffice
+            )
+
         val editContainer =
             organizationContactDetails.getOrganizationContactDetailsFields(
                 organizationNameInput,
@@ -68,7 +88,11 @@ class OrganizationContactDetailsEdit(
                 emailInput,
                 addressInput,
                 addressPostalCode,
-                addressPostOffice
+                addressPostOffice,
+                billingName,
+                billingStreetAddress,
+                billingPostalCode,
+                billingPostOffice
             )
 
         val editUrl = "/virkailija/yhteiso/${organization.id}/muokkaa"
@@ -79,8 +103,8 @@ class OrganizationContactDetailsEdit(
                 cancelUrl,
                 "#reserver-details",
                 "#reserver-details",
-                "cancel-boat-edit-form",
-                "submit-boat-edit-form"
+                "cancel-organization-edit-form",
+                "submit-organization-edit-form"
             )
         // language=HTML
         return """

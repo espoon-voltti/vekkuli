@@ -18,6 +18,10 @@ class OrganizationContactDetails(
         addressField: String,
         postalCode: String? = null,
         postOffice: String? = null,
+        billingName: String,
+        billingStreetAddress: String,
+        billingPostalCode: String? = null,
+        billingPostOffice: String? = null,
     ): String {
         // language=HTML
         val addressFields =
@@ -34,35 +38,59 @@ class OrganizationContactDetails(
                 ""
             }
 
+        val billingAddressFields =
+            if (billingPostalCode != null && billingPostOffice != null) {
+                """
+                <div class="field column is-one-eight">
+                    $billingPostalCode
+                </div>
+                <div class="field column is-one-eight">
+                    $billingPostOffice
+                </div>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
         // language=HTML
         return """
             <div>
-            <div class="columns">
-                <div class="field column is-one-quarter">
-                   $organizationNameValue
-                </div>
-                <div class="field column is-one-quarter">
-                    $businessIdValue
-                </div>
-            
-                <div class="field column is-one-quarter">
-                    $municipalityField
-                </div>
-            </div>
-            <div class="columns">
-             
-                <div class="field column is-one-quarter">
-                    $phoneNumberField
-                </div>
-                <div class="field column is-one-quarter">
-                    $emailField
-                </div>
-                 <div class="field column is-one-quarter">
-                   $addressField
-                </div>
+                <div class="columns">
+                    <div class="field column is-one-quarter">
+                       $organizationNameValue
+                    </div>
+                    <div class="field column is-one-quarter">
+                        $businessIdValue
+                    </div>
                 
-               $addressFields
-            </div>
+                    <div class="field column is-one-quarter">
+                        $municipalityField
+                    </div>
+                </div>
+                <div class="columns">
+                 
+                    <div class="field column is-one-quarter">
+                        $phoneNumberField
+                    </div>
+                    <div class="field column is-one-quarter">
+                        $emailField
+                    </div>
+                     <div class="field column is-one-quarter">
+                       $addressField
+                    </div>
+                    
+                   $addressFields
+                </div>
+                    <div class="columns">
+                     
+                        <div class="field column is-one-quarter">
+                            $billingName
+                        </div>
+                        <div class="field column is-one-quarter">
+                            $billingStreetAddress
+                        </div>
+                        $billingAddressFields
+                    </div>
             </div>
             """.trimIndent()
     }
@@ -93,6 +121,18 @@ class OrganizationContactDetails(
                 "${organization.streetAddress}, ${organization.postalCode}, ${organization.postOffice} "
             )
 
+        val billingNameField =
+            formComponents.field(
+                "organizationDetails.title.billingName",
+                "billingNameField",
+                organization.billingName
+            )
+        val billingAddressField =
+            formComponents.field(
+                "organizationDetails.title.billingAddress",
+                "billingAddressField",
+                "${organization.billingStreetAddress}, ${organization.billingPostalCode}, ${organization.billingPostOffice} "
+            )
         val phoneNumberValue =
             formComponents.field("organizationDetails.title.phoneNumber", "phoneNumberField", organization.phone)
         val emailValue = formComponents.field("organizationDetails.title.email", "emailField", organization.email)
@@ -131,7 +171,13 @@ class OrganizationContactDetails(
                     municipalityField,
                     phoneNumberValue,
                     emailValue,
-                    addressField
+                    addressField,
+                    null,
+                    null,
+                    billingNameField,
+                    billingAddressField,
+                    null,
+                    null
                 )
             }
             </div> 
