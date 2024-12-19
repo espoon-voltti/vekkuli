@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.admin.reservation
 
-import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
+import fi.espoo.vekkuli.controllers.EnvType
+import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -12,9 +13,6 @@ import java.util.UUID
 @RequestMapping("/admin")
 class ReservationController {
     @Autowired
-    private lateinit var boatSpaceInvoiceService: BoatSpaceInvoiceService
-
-    @Autowired
     lateinit var reservationView: ReservationView
 
     @Autowired
@@ -24,6 +22,10 @@ class ReservationController {
     fun clearReservations(
         @RequestParam reserverName: String
     ): String {
+        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local)) {
+            return ""
+        }
+
         val reservers =
             jdbi.withHandleUnchecked { handle ->
                 handle
