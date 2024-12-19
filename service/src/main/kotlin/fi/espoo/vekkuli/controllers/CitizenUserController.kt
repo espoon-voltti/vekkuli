@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.controllers
 
+import fi.espoo.vekkuli.boatSpace.organization.OrganizationDetailsView
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
@@ -20,7 +21,6 @@ import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
-import fi.espoo.vekkuli.views.organization.OrganizationDetails
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
@@ -35,7 +35,7 @@ import java.util.*
 
 @Controller
 class CitizenUserController(
-    private val organizationDetails: OrganizationDetails,
+    private val organizationDetailsView: OrganizationDetailsView,
     private val organizationService: OrganizationService,
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
     private val editBoat: EditBoat,
@@ -881,7 +881,7 @@ class CitizenUserController(
             val organization =
                 organizationService.getOrganizationById(reserverId)
                     ?: throw IllegalArgumentException("Reserver not found")
-            return organizationDetails.organizationPageForEmployee(
+            return organizationDetailsView.organizationPageForEmployee(
                 organization,
                 organizationService.getOrganizationMembers(reserverId),
                 boatSpaceReservations,

@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.organization
 
+import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetails
+import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetailsEdit
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.CitizenUserController.BoatUpdateForm
 import fi.espoo.vekkuli.controllers.UserType
@@ -13,8 +15,6 @@ import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
-import fi.espoo.vekkuli.views.organization.components.OrganizationContactDetails
-import fi.espoo.vekkuli.views.organization.components.OrganizationContactDetailsEdit
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Controller
