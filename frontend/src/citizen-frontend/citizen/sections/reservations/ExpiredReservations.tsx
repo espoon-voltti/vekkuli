@@ -1,4 +1,5 @@
 import { Loader } from 'lib-components/Loader'
+import Accordion from 'lib-components/accordion/Accordion'
 import { Container } from 'lib-components/dom'
 import React from 'react'
 
@@ -16,15 +17,17 @@ export default React.memo(function Reservations() {
       <h3>Päättyneet</h3>
       <div className="reservation-list form-section">
         <Loader results={[expiredReservations]}>
-          {(loadedReservations) =>
-            loadedReservations.map((reservation) => (
-              <Reservation
-                key={reservation.id}
-                reservation={reservation}
-                canTerminate={false}
-              />
-            ))
-          }
+          {(loadedReservations) => (
+            <Accordion title="Päättyneet varaukset">
+              {loadedReservations.map((reservation) => (
+                <Reservation
+                  key={reservation.id}
+                  reservation={reservation}
+                  canTerminate={false}
+                />
+              ))}
+            </Accordion>
+          )}
         </Loader>
       </div>
     </Container>
