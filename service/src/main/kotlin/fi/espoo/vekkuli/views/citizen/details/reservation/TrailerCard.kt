@@ -90,7 +90,7 @@ class TrailerCard(
                             <input type="hidden" name="reserverId" value="$reserverId" />
                             <div class="block">
                                 <div class="field">
-                                    <h1 class="label">${t("citizenDetails.warnings.ackSelect")}<</h1>
+                                    <h1 class="label">${t("citizenDetails.warnings.ackSelect")}</h1>
                                     <div class="control">
                                         $warningLabels
                                     </div>

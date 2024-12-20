@@ -19,6 +19,6 @@ data class BoatSpaceOption(
     val formattedSizes: String =
         if (amenity != BoatSpaceAmenity.Buoy) "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',') else ""
 ) {
-    val priceInEuro: Double
-        get() = priceCents / 100.0
+    val formattedPrice: String
+        get() = "${priceCents / 100.0}".replace('.', ',')
 }

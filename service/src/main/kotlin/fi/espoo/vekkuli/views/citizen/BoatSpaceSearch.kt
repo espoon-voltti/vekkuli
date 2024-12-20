@@ -311,7 +311,7 @@ class BoatSpaceSearch(
                     <tr :class="${index + 1} <= show  ? '' : 'is-hidden' ">
                         <td>${result.formattedSizes}</td>
                         <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
-                        <td>${result.priceInEuro} &euro;</td>
+                        <td>${result.formattedPrice} &euro;</td>
                         <td>${result.place}</td>
                         <td>
                     """.trimIndent()
@@ -347,7 +347,7 @@ class BoatSpaceSearch(
                         } else {
                             ""
                         }}',
-                                price: '${result.priceInEuro}'
+                                price: '${result.formattedPrice}'
                             };">
                             ${t("boatSpaces.reserve")}
                         </button>
