@@ -54,23 +54,23 @@ class JdbiReservationWarningRepository(
                 .map { it.value.first() }
         }
 
-    override fun setReservationWarningAcknowledged(
+    override fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,
-        key: String,
+        keys: List<String>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
+            val keysStr = keys.joinToString(", ") { "'$it'" }
             handle
                 .createUpdate(
                     """
                     DELETE from reservation_warning
                     WHERE reservation_id = :reservationId AND 
                       (boat_id = :boatIdOrTrailerId OR trailer_id = :boatIdOrTrailerId) AND 
-                      key = :key
+                      key IN ($keysStr)
                     """
                 ).bind("reservationId", reservationId)
                 .bind("boatIdOrTrailerId", boatIdOrTrailerId)
-                .bind("key", key)
                 .execute()
         }
 }

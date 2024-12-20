@@ -56,9 +56,9 @@ class ReserverDetailsReservationsContainer(
                 val warningLabels =
                     boat.warnings.joinToString("\n") { warning ->
                         """
-                        <label class="radio">
-                            <input type="radio" name="key" value="$warning">
-                            ${t("reservationWarning.$warning")}
+                        <label class="checkbox pb-s">
+                            <input type="checkbox" name="key" value="$warning">
+                            <span>${t("reservationWarning.$warning")}</span>
                         </label>
                         """.trimIndent()
                     }
