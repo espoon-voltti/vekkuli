@@ -72,9 +72,9 @@ class TrailerCard(
             val warningLabels =
                 trailer.warnings.joinToString("\n") { warning ->
                     """
-                    <label class="radio">
+                    <label class="checkbox pb-s">
                         <input type="checkbox" name="key" value="$warning">
-                        ${t("reservationWarning.$warning")}
+                        <span>${t("reservationWarning.$warning")}</span>
                     </label>
                     """.trimIndent()
                 }
