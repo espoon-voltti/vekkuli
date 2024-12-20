@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -28,7 +28,7 @@ data class SendInvoiceModel(
     val function: String
 )
 
-@Service
+@Component
 class InvoicePreview(
     val formComponents: FormComponents
 ) : BaseView() {
@@ -169,6 +169,7 @@ class InvoicePreview(
             """.trimIndent()
     }
 
+    // language=HTML
     fun invoiceLine(
         name: String,
         value: String
@@ -178,12 +179,13 @@ class InvoicePreview(
         </div>
         """.trimIndent()
 
+    // language=HTML
     fun invoiceErrorPage() =
         """
         <section class="section">
             <div class="container">
-                <h2 class="title pb-l">Laskun luonti epäonnistui</h2>
-                <p>Laskun luonti epäonnistui. Yritä myöhemmin uudelleen.</p>
+                <h2 class="title pb-l">${t("invoice.title.errorPage")}</h2>
+                <p>${t("invoice.text.errorPage")}</p>
             </div>
         </section>
         """.trimIndent()
