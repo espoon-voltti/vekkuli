@@ -81,7 +81,7 @@ class EmployeeLayout(
                         </div>
                     </div>
                 </div>
-                <div class="column content-column" >
+                <div class="employee-page column content-column" >
                     $bodyContent 
                 </div>
             </div>

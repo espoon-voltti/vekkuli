@@ -274,9 +274,16 @@ class BoatSpaceReservationList : BaseView() {
         // language=HTML
         return """
             <section class="section">
-                <div class="container block">
+                <div class="container block heading">
                     <h2 id="reservations-header">${t("boatSpaceReservation.title")}</h2>
-                    <a id="create-reservation" href="/virkailija/venepaikat">${t("boatSpaceReservation.createReservation")}</a>
+                    <span>                      
+                        <a id="create-reservation" href="/virkailija/venepaikat">
+                            <span class="icon is-small">
+                                ${icons.plus}
+                            </span>
+                            ${t("boatSpaceReservation.createReservation")}
+                        </a>
+                    </span>
                 </div>
                 <div class="container" x-data="{
                     sortColumn: '${params.sortBy}',
@@ -353,6 +360,7 @@ class BoatSpaceReservationList : BaseView() {
                         </div>
 
                         <div class="reservation-list form-section block">
+                        <div class='table-container'>
                             <table class="table is-hoverable">
                                 <thead>
                                 <tr class="table-borderless">
@@ -406,6 +414,7 @@ class BoatSpaceReservationList : BaseView() {
                                 $reservationRows
                                 </tbody>
                             </table>
+                            </div>
                             <div id="loader" class="htmx-indicator"> ${icons.spinner} <div>
                         </div>
                     </form>
