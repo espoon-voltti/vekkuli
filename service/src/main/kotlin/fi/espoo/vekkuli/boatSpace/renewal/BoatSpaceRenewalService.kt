@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
@@ -32,7 +33,8 @@ class BoatSpaceRenewalService(
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val seasonalService: SeasonalService,
     private val boatSpaceRenewForm: BoatSpaceRenewFormView,
-    private val trailerRepo: TrailerRepository
+    private val trailerRepo: TrailerRepository,
+    private val timeProvider: TimeProvider
 ) {
     fun getOrCreateRenewalReservationForEmployee(
         userId: UUID,
@@ -153,7 +155,7 @@ class BoatSpaceRenewalService(
             boatingSeasonStart = LocalDate.of(2025, 5, 1),
             boatingSeasonEnd = LocalDate.of(2025, 9, 30),
             invoiceNumber = "",
-            dueDate = LocalDate.of(2025, 12, 31),
+            dueDate = invoiceData.dueDate,
             costCenter = "?",
             invoiceType = "?",
             priceWithTax = intToDecimal(reservation.priceCents),

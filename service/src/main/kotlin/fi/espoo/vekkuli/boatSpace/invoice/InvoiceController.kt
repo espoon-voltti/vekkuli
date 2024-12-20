@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.intToDecimal
+import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
@@ -31,7 +32,7 @@ class InvoiceController(
     private val invoiceService: BoatSpaceInvoiceService,
     private val timeProvider: TimeProvider,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository
-) {
+) : BaseView() {
     private val logger = KotlinLogging.logger {}
 
     @RequestMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
@@ -53,8 +54,27 @@ class InvoiceController(
         if (invoiceData == null) {
             throw IllegalArgumentException("Failed to create invoice data")
         }
-
         val isOrganization = reservation.reserverType == ReserverType.Organization
+
+        val model = buildInvoiceModel(reservation, invoiceData, reservationId, isOrganization)
+        val content =
+            invoicePreview.render(
+                model,
+                submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
+                backUrl = "/virkailija/venepaikat/varaukset",
+                deleteUrl = "",
+                isOrganization
+            )
+        val page = employeeLayout.render(true, request.requestURI, content)
+        return ResponseEntity.ok(page)
+    }
+
+    private fun buildInvoiceModel(
+        reservation: ReservationWithDependencies,
+        invoiceData: InvoiceData,
+        reservationId: Int,
+        isOrganization: Boolean
+    ): SendInvoiceModel {
         val reserverName =
             if (isOrganization) {
                 invoiceData.orgName ?: ""
@@ -66,7 +86,7 @@ class InvoiceController(
                 reservationId = reservationId,
                 reserverName = reserverName,
                 reserverSsn = invoiceData.ssn ?: "",
-                reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
+                reserverAddress = "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}",
                 product = reservation.locationName,
                 function = getDefaultFunction(reservation.type),
                 billingPeriodStart = formatAsFullDate(reservation.startDate),
@@ -74,26 +94,17 @@ class InvoiceController(
                 boatingSeasonStart = LocalDate.of(2025, 5, 1),
                 boatingSeasonEnd = LocalDate.of(2025, 9, 30),
                 invoiceNumber = "",
-                dueDate = LocalDate.of(2025, 12, 31),
+                dueDate = invoiceData.dueDate,
                 costCenter = "",
                 invoiceType = "",
                 priceWithTax = intToDecimal(reservation.priceCents),
                 description =
-                    "Venepaikka, ${reservation.locationName} ${reservation.place}, " +
+                    "${t("shared.title.boatSpace.${reservation.type}")}, ${reservation.locationName} ${reservation.place}, " +
                         "${reservation.startDate.year}",
                 contactPerson = "",
                 orgId = invoiceData.orgId ?: "",
             )
-        val content =
-            invoicePreview.render(
-                model,
-                submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
-                backUrl = "/virkailija/venepaikat/varaukset",
-                deleteUrl = "",
-                isOrganization
-            )
-        val page = employeeLayout.render(true, request.requestURI, content)
-        return ResponseEntity.ok(page)
+        return model
     }
 
     fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
