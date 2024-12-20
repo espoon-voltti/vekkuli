@@ -89,4 +89,11 @@ class ReservationController(
     fun getMunicipalities(request: HttpServletRequest): List<MunicipalityResponse> {
         return reserverService.getMunicipalities().toMunicipalityListResponse()
     }
+
+    @PostMapping("/reservation/{reservationId}/terminate")
+    fun terminateReservation(
+        @PathVariable reservationId: Int,
+    ) {
+        reservationService.terminateReservation(reservationId)
+    }
 }

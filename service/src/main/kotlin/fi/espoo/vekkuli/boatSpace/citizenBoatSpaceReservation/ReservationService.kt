@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
+import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.NotFound
@@ -27,6 +28,7 @@ class ReservationService(
     private val boatSpaceRepository: BoatSpaceRepository,
     private val citizenAccessControl: CitizenAccessControl,
     private val reservationPaymentService: ReservationPaymentService,
+    private val terminateService: TerminateReservationService,
 ) {
     fun getUnfinishedReservationForCurrentCitizen(): BoatSpaceReservation? {
         val (citizenId) = citizenAccessControl.requireCitizen()
@@ -97,6 +99,13 @@ class ReservationService(
         }
 
         return reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation)
+    }
+
+    @Transactional
+    fun terminateReservation(reservationId: Int) {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        validateCurrentCitizenAccessToReservation(reservationId)
+        return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)
     }
 
     fun validateBoatType(
