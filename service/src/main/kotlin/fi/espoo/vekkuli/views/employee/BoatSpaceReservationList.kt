@@ -324,6 +324,7 @@ class BoatSpaceReservationList : BaseView() {
                         </div>
 
                         <div class="reservation-list form-section block">
+                        <div class='table-container'>
                             <table class="table is-hoverable">
                                 <thead>
                                 <tr class="table-borderless">
@@ -381,6 +382,7 @@ class BoatSpaceReservationList : BaseView() {
                                 $reservationRows
                                 </tbody>
                             </table>
+                            </div>
                             <div id="loader" class="htmx-indicator"> ${icons.spinner} <div>
                         </div>
                     </form>
