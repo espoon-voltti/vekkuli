@@ -1,9 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.organization
 
 import fi.espoo.vekkuli.FormComponents
-import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationBillingInformation
 import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationContactDetails
-import fi.espoo.vekkuli.boatSpace.organization.components.OrganizationMembersContainer
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
@@ -18,9 +16,7 @@ class OrganizationDetailsView(
     var commonComponents: CommonComponents,
     var formComponents: FormComponents,
     private val organizationContactDetails: OrganizationContactDetails,
-    private val organizationMembersContainer: OrganizationMembersContainer,
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
-    private val organizationBillingInformation: OrganizationBillingInformation,
 ) : BaseView() {
     fun organizationPageForEmployee(
         @SanitizeInput organization: Organization,
@@ -43,20 +39,12 @@ class OrganizationDetailsView(
                 </div>
                 <div class='container block'>
                     <h3>${t("organizationDetails.title.organizationInformation")}</h3>
-                
-                    <div class='form-section'>
-                        ${organizationContactDetails.render(organization)}
-                   </div>
-                   
-                   <div class='form-section'>
-                        ${organizationBillingInformation.render(organization)}
+                    <div id="organization-information">
+                      ${organizationContactDetails.render(organization, organizationMembers)}
                     </div>
-                    <div class="form-section">
-                        ${organizationMembersContainer.render(organization.id, organizationMembers)}
-                    </div>
-               </div>
-             
-               ${
+                </div>
+               
+                   ${
                 reserverDetailsReservationsContainer.render(
                     organization.id,
                     organizationReservations,
@@ -65,6 +53,7 @@ class OrganizationDetailsView(
                     ReserverType.Organization,
                 )
             }
+                
             </section>
             """.trimIndent()
 

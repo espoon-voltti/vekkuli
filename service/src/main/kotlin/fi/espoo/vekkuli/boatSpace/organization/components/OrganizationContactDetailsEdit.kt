@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.organization.components
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.views.BaseView
@@ -9,11 +10,13 @@ import org.springframework.stereotype.Component
 @Component
 class OrganizationContactDetailsEdit(
     private val formComponents: FormComponents,
-    private val organizationContactDetails: OrganizationContactDetails
+    private val organizationContactDetails: OrganizationContactDetails,
+    private val organizationMembersContainer: OrganizationMembersContainer,
 ) : BaseView() {
     fun render(
         organization: Organization,
-        municipalities: List<Municipality>
+        municipalities: List<Municipality>,
+        organizationMembers: List<CitizenWithDetails>,
     ): String {
         val organizationNameInput =
             formComponents.textInput(
@@ -59,8 +62,32 @@ class OrganizationContactDetailsEdit(
         val addressPostalCode = formComponents.textInput("organizationDetails.title.postalCode", "postalCode", organization.postalCode)
         val addressPostOffice = formComponents.textInput("organizationDetails.title.postOffice", "postOffice", organization.postOffice)
 
+        val billingName = formComponents.textInput("organizationDetails.title.billingName", "billingName", organization.billingName)
+        val billingStreetAddress =
+            formComponents.textInput(
+                "organizationDetails.title.address",
+                "billingStreetAddress",
+                organization.billingStreetAddress
+            )
+        val billingPostalCode =
+            formComponents.textInput(
+                "organizationDetails.title.postalCode",
+                "billingPostalCode",
+                organization.billingPostalCode
+            )
+        val billingPostOffice =
+            formComponents.textInput(
+                "organizationDetails.title.postOffice",
+                "billingPostOffice",
+                organization.billingPostOffice
+            )
+
+        val editUrl = "/virkailija/yhteiso/${organization.id}/muokkaa"
+
         val editContainer =
             organizationContactDetails.getOrganizationContactDetailsFields(
+                null,
+                "/virkailija/yhteiso/${organization.id}",
                 organizationNameInput,
                 businessIdInput,
                 municipalityInput,
@@ -68,20 +95,13 @@ class OrganizationContactDetailsEdit(
                 emailInput,
                 addressInput,
                 addressPostalCode,
-                addressPostOffice
+                addressPostOffice,
+                billingName,
+                billingStreetAddress,
+                billingPostalCode,
+                billingPostOffice
             )
 
-        val editUrl = "/virkailija/yhteiso/${organization.id}/muokkaa"
-        val cancelUrl = "/virkailija/yhteiso/${organization.id}"
-
-        val buttons =
-            formComponents.buttons(
-                cancelUrl,
-                "#reserver-details",
-                "#reserver-details",
-                "cancel-boat-edit-form",
-                "submit-boat-edit-form"
-            )
         // language=HTML
         return """
             <form id="edit-organization-form"
@@ -93,8 +113,7 @@ class OrganizationContactDetailsEdit(
                   hx-swap="outerHTML"
             >
                 $editContainer
-                
-                $buttons
+                ${organizationMembersContainer.render(organization.id, organizationMembers)}
             </form>
             <script>
                 validation.init({forms: ['edit-organization-form']})
