@@ -13,6 +13,7 @@ import fi.espoo.vekkuli.repository.filter.SortDirection
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.LocationExpr
 import fi.espoo.vekkuli.utils.*
+import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -506,8 +507,8 @@ class BoatReservationService(
             Trailer(
                 id = trailerId,
                 registrationCode = trailerRegistrationCode,
-                widthCm = trailerWidth.mToCm(),
-                lengthCm = trailerLength.mToCm(),
+                widthCm = decimalToInt(trailerWidth),
+                lengthCm = decimalToInt(trailerLength),
                 reserverId = oldTrailer.reserverId
             )
 

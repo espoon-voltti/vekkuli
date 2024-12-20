@@ -12,8 +12,8 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.JdbiReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.cmToM
-import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.utils.decimalToInt
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.citizen.details.reservation.TrailerCard
@@ -376,9 +376,9 @@ class CitizenUserController(
             id = boat.id,
             name = boat.name ?: "",
             type = boat.type,
-            width = boat.widthCm.cmToM(),
-            length = boat.lengthCm.cmToM(),
-            depth = boat.depthCm.cmToM(),
+            width = intToDecimal(boat.widthCm),
+            length = intToDecimal(boat.lengthCm),
+            depth = intToDecimal(boat.depthCm),
             weight = boat.weightKg,
             registrationNumber = boat.registrationCode ?: "",
             otherIdentifier = boat.otherIdentification ?: "",
@@ -475,9 +475,9 @@ class CitizenUserController(
             boat.copy(
                 name = input.name,
                 type = input.type,
-                widthCm = input.width!!.mToCm(),
-                lengthCm = input.length!!.mToCm(),
-                depthCm = input.depth!!.mToCm(),
+                widthCm = decimalToInt(input.width!!),
+                lengthCm = decimalToInt(input.length!!),
+                depthCm = decimalToInt(input.depth!!),
                 weightKg = input.weight!!,
                 registrationCode = input.registrationNumber,
                 otherIdentification = input.otherIdentifier,
@@ -538,9 +538,9 @@ class CitizenUserController(
             boat.copy(
                 name = input.name,
                 type = input.type,
-                widthCm = input.width!!.mToCm(),
-                lengthCm = input.length!!.mToCm(),
-                depthCm = input.depth!!.mToCm(),
+                widthCm = decimalToInt(input.width!!),
+                lengthCm = decimalToInt(input.length!!),
+                depthCm = decimalToInt(input.depth!!),
                 weightKg = input.weight!!,
                 registrationCode = input.registrationNumber,
                 otherIdentification = input.otherIdentifier,

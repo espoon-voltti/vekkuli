@@ -5,8 +5,8 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.StorageType
-import fi.espoo.vekkuli.utils.cmToM
 import fi.espoo.vekkuli.utils.formatAsFullDate
+import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.common.ReservationInformationParams
@@ -66,7 +66,7 @@ class ReservationInformation(
                 "boatApplication.boatSpaceDimensions",
                 "boatSpaceDimension",
                 if (reservation.amenity != BoatSpaceAmenity.Buoy) {
-                    "${reservation.widthCm.cmToM()} m x ${reservation.lengthCm.cmToM()} m"
+                    "${formatInt(reservation.widthCm)} m x ${formatInt(reservation.lengthCm)} m"
                 } else {
                     ""
                 },

@@ -12,6 +12,8 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
+import fi.espoo.vekkuli.utils.decimalToInt
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.validation.constraints.*
@@ -347,9 +349,9 @@ class ReservationFormService(
                     id = boat.id,
                     boatName = boat.name ?: "",
                     boatType = boat.type,
-                    width = boat.widthCm.cmToM(),
-                    length = boat.lengthCm.cmToM(),
-                    depth = boat.depthCm.cmToM(),
+                    width = intToDecimal(boat.widthCm),
+                    length = intToDecimal(boat.lengthCm),
+                    depth = intToDecimal(boat.depthCm),
                     weight = boat.weightKg,
                     boatRegistrationNumber = boat.registrationCode ?: "",
                     otherIdentification = boat.otherIdentification ?: "",
@@ -473,8 +475,8 @@ class ReservationFormService(
                 input.reservationId,
                 reserverId,
                 input.trailerRegistrationNumber,
-                input.trailerWidthInM.mToCm(),
-                input.trailerLengthInM.mToCm()
+                decimalToInt(input.trailerWidthInM),
+                decimalToInt(input.trailerLengthInM)
             )
         } else {
             throw IllegalArgumentException("Trailer information can not be empty.")
@@ -490,9 +492,9 @@ class ReservationFormService(
                 reserverId,
                 input.boatRegistrationNumber ?: "",
                 input.boatName!!,
-                input.width.mToCm(),
-                input.length.mToCm(),
-                input.depth.mToCm(),
+                decimalToInt(input.width),
+                decimalToInt(input.length),
+                decimalToInt(input.depth),
                 input.weight!!,
                 input.boatType,
                 input.otherIdentification ?: "",
@@ -506,9 +508,9 @@ class ReservationFormService(
                     reserverId = reserverId,
                     registrationCode = input.boatRegistrationNumber ?: "",
                     name = input.boatName!!,
-                    widthCm = input.width.mToCm(),
-                    lengthCm = input.length.mToCm(),
-                    depthCm = input.depth.mToCm(),
+                    widthCm = decimalToInt(input.width),
+                    lengthCm = decimalToInt(input.length),
+                    depthCm = decimalToInt(input.depth),
                     weightKg = input.weight!!,
                     type = input.boatType,
                     otherIdentification = input.otherIdentification ?: "",
@@ -564,8 +566,8 @@ class ReservationFormService(
             Recipient(reserverId, input.email!!),
             mapOf(
                 "name" to "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}",
-                "width" to boatSpace.widthCm.cmToM(),
-                "length" to boatSpace.lengthCm.cmToM(),
+                "width" to intToDecimal(boatSpace.widthCm),
+                "length" to intToDecimal(boatSpace.lengthCm),
                 "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
                 "endDate" to reservation.endDate,
                 "invoiceDueDate" to
@@ -593,11 +595,11 @@ class ReservationFormService(
                 input =
                     input.copy(
                         boatId = boat.id,
-                        depth = boat.depthCm.cmToM(),
+                        depth = intToDecimal(boat.depthCm),
                         boatName = boat.name,
                         weight = boat.weightKg,
-                        width = boat.widthCm.cmToM(),
-                        length = boat.lengthCm.cmToM(),
+                        width = intToDecimal(boat.widthCm),
+                        length = intToDecimal(boat.lengthCm),
                         otherIdentification = boat.otherIdentification,
                         extraInformation = boat.extraInformation,
                         ownership = boat.ownership,

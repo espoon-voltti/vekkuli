@@ -12,8 +12,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.centToEuro
-import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -157,7 +156,7 @@ class BoatSpaceRenewalService(
             dueDate = LocalDate.of(2025, 12, 31),
             costCenter = "?",
             invoiceType = "?",
-            priceWithTax = reservation.priceCents.centToEuro(),
+            priceWithTax = intToDecimal(reservation.priceCents),
             description = invoiceData.description,
             contactPerson = "",
             orgId = invoiceData.orgId ?: "",
@@ -216,8 +215,8 @@ class BoatSpaceRenewalService(
             val trailer = trailerRepo.getTrailer(renewedReservation.trailerId) ?: throw BadRequest("Trailer not found")
             input =
                 input.copy(
-                    trailerLength = trailer?.lengthCm?.cmToM(),
-                    trailerWidth = trailer?.widthCm?.cmToM(),
+                    trailerLength = intToDecimal(trailer?.lengthCm),
+                    trailerWidth = intToDecimal(trailer?.widthCm),
                     trailerRegistrationNumber = trailer?.registrationCode,
                 )
         }
@@ -230,11 +229,11 @@ class BoatSpaceRenewalService(
                 input =
                     input.copy(
                         boatId = boat.id,
-                        depth = boat.depthCm.cmToM(),
+                        depth = intToDecimal(boat.depthCm),
                         boatName = boat.name,
                         weight = boat.weightKg,
-                        width = boat.widthCm.cmToM(),
-                        length = boat.lengthCm.cmToM(),
+                        width = intToDecimal(boat.widthCm),
+                        length = intToDecimal(boat.lengthCm),
                         otherIdentification = boat.otherIdentification,
                         extraInformation = boat.extraInformation,
                         ownership = boat.ownership,

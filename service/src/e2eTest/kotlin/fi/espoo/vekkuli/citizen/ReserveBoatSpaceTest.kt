@@ -269,12 +269,10 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             assertThat(formPage.trailerInformationInputs).isVisible()
 
             val trailerRegistrationCode = "ID12345"
-            val trailerWidth = "1.5"
-            val trailerLength = "1.5"
 
             formPage.trailerRegistrationNumberInput.fill(trailerRegistrationCode)
-            formPage.trailerWidthInput.fill(trailerWidth)
-            formPage.trailerLengthInput.fill(trailerLength)
+            formPage.trailerWidthInput.fill("1.5")
+            formPage.trailerLengthInput.fill("2.5")
             assertThat(formPage.storageTypeTextTrailer).isVisible()
 
             formPage.certifyInfoCheckbox.check()
@@ -298,8 +296,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val id = 2
             assertThat(citizenDetailPage.trailerInformation(id)).isVisible()
-            assertThat(citizenDetailPage.trailerWidth(id)).containsText(trailerWidth)
-            assertThat(citizenDetailPage.trailerLength(id)).containsText(trailerLength)
+            assertThat(citizenDetailPage.trailerWidth(id)).containsText("1,5")
+            assertThat(citizenDetailPage.trailerLength(id)).containsText("2,5")
             assertThat(citizenDetailPage.trailerRegistrationCode(id)).containsText(trailerRegistrationCode)
         } catch (e: AssertionError) {
             handleError(e)

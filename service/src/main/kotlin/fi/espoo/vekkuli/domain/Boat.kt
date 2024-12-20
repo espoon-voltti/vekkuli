@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.formatInt
 import java.time.LocalDateTime
 import java.util.*
 
@@ -31,7 +31,7 @@ data class Boat(
                     else -> {
                         messageUtil.getMessage(
                             "boatApplication.boatTypeOption.$type"
-                        ) + " " + widthCm.cmToM() + " x " + lengthCm.cmToM() + " m"
+                        ) + " " + formatInt(widthCm) + " x " + formatInt(lengthCm) + " m"
                     }
                 }
         )

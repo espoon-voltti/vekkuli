@@ -5,8 +5,7 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.utils.addTestId
-import fi.espoo.vekkuli.utils.fullDateTimeFormat
+import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
 import fi.espoo.vekkuli.views.components.WarningBox
@@ -238,11 +237,11 @@ class ReserverDetailsReservationsContainer(
                             "boatSpaceReservation.title.boatType"
                         )
 
-                    val depth = boatInfo("boat-depth-text-${boat.id}", boat.depth.toString(), "boatSpaceReservation.title.draft",)
+                    val depth = boatInfo("boat-depth-text-${boat.id}", formatDecimal(boat.depth), "boatSpaceReservation.title.draft",)
                     val width =
                         boatInfo(
                             "boat-width-text-${boat.id}",
-                            boat.width.toString(),
+                            formatDecimal(boat.width),
                             "shared.label.widthInMeters",
                             showWarnings && boat.hasWarning(ReservationWarningType.BoatWidth.name)
                         )
@@ -255,7 +254,7 @@ class ReserverDetailsReservationsContainer(
                     val length =
                         boatInfo(
                             "boat-length-text-${boat.id}",
-                            boat.length.toString(),
+                            formatDecimal(boat.length),
                             "shared.label.lengthInMeters",
                             showWarnings && boat.hasWarning(ReservationWarningType.BoatLength.name)
                         )
