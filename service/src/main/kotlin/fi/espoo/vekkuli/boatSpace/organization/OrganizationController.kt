@@ -130,7 +130,8 @@ class OrganizationUserController(
                 ?: throw IllegalArgumentException("Organization not found")
 
         val municipalities = reserverService.getMunicipalities()
-        return organizationContactDetailsEdit.render(organization, municipalities)
+        val organizationMembers = organizationService.getOrganizationMembers(organizationId)
+        return organizationContactDetailsEdit.render(organization, municipalities, organizationMembers)
     }
 
     @DeleteMapping("/virkailija/yhteiso/{organizationId}/poista-henkilo/{citizenId}")

@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.organization.components
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.views.BaseView
@@ -9,11 +10,13 @@ import org.springframework.stereotype.Component
 @Component
 class OrganizationContactDetailsEdit(
     private val formComponents: FormComponents,
-    private val organizationContactDetails: OrganizationContactDetails
+    private val organizationContactDetails: OrganizationContactDetails,
+    private val organizationMembersContainer: OrganizationMembersContainer,
 ) : BaseView() {
     fun render(
         organization: Organization,
-        municipalities: List<Municipality>
+        municipalities: List<Municipality>,
+        organizationMembers: List<CitizenWithDetails>,
     ): String {
         val organizationNameInput =
             formComponents.textInput(
@@ -79,8 +82,12 @@ class OrganizationContactDetailsEdit(
                 organization.billingPostOffice
             )
 
+        val editUrl = "/virkailija/yhteiso/${organization.id}/muokkaa"
+
         val editContainer =
             organizationContactDetails.getOrganizationContactDetailsFields(
+                null,
+                "/virkailija/yhteiso/${organization.id}",
                 organizationNameInput,
                 businessIdInput,
                 municipalityInput,
@@ -95,17 +102,6 @@ class OrganizationContactDetailsEdit(
                 billingPostOffice
             )
 
-        val editUrl = "/virkailija/yhteiso/${organization.id}/muokkaa"
-        val cancelUrl = "/virkailija/yhteiso/${organization.id}"
-
-        val buttons =
-            formComponents.buttons(
-                cancelUrl,
-                "#reserver-details",
-                "#reserver-details",
-                "cancel-organization-edit-form",
-                "submit-organization-edit-form"
-            )
         // language=HTML
         return """
             <form id="edit-organization-form"
@@ -117,8 +113,7 @@ class OrganizationContactDetailsEdit(
                   hx-swap="outerHTML"
             >
                 $editContainer
-                
-                $buttons
+                ${organizationMembersContainer.render(organization.id, organizationMembers)}
             </form>
             <script>
                 validation.init({forms: ['edit-organization-form']})

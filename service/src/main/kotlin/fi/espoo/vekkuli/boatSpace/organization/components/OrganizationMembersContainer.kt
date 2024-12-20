@@ -25,19 +25,22 @@ class OrganizationMembersContainer : BaseView() {
             }
         return (
             """
-            <h4>${t("organizationDetails.title.organizationMembers")}</h4>
-            <table>
-                 <thead>
-                      <tr>
-                           <th>${t("organizationDetails.tableHeaders.name")}</th>
-                           <th>${t("organizationDetails.tableHeaders.phone")}</th>
-                           <th>${t("organizationDetails.tableHeaders.email")}</th>
-                           <th>${t("organizationDetails.tableHeaders.removeUser")}</th>
-                      </tr>
-                 </thead>
-                 <tbody>
-                     $organizationMembersRows
-            </table>
+            <div class="form-section">
+                <h4>${t("organizationDetails.title.organizationMembers")}</h4>
+                <table>
+                     <thead>
+                          <tr>
+                               <th>${t("organizationDetails.tableHeaders.name")}</th>
+                               <th>${t("organizationDetails.tableHeaders.phone")}</th>
+                               <th>${t("organizationDetails.tableHeaders.email")}</th>
+                               <th>${t("organizationDetails.tableHeaders.removeUser")}</th>
+                          </tr>
+                     </thead>
+                     <tbody>
+                         $organizationMembersRows
+                     </tbody>
+                </table>
+            </div>
             """.trimIndent()
         )
     }
