@@ -44,7 +44,7 @@ class OrganizationMembersContainer : BaseView() {
             """.trimIndent()
         return (
             """
-            <div class="form-section id="organization-member-table" x-data='{citizenFullName: "", citizenId:"", updateFullName(event) {
+            <div class="form-section" id="organization-member-table" x-data='{citizenFullName: "", citizenId:"", updateFullName(event) {
                     const selectElement = event.target;
                     if (selectElement.selectedOptions.length > 0) {
                         const selectedOption = selectElement.selectedOptions[0];
