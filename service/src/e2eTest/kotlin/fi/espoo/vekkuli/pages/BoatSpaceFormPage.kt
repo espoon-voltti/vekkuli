@@ -75,6 +75,9 @@ class BoatSpaceFormPage(
     val reservationValidityIndefiniteRadioButton = getByDataTestId("radio-button-reservationValidity-Indefinite")
     val reservationValidityFixedTermRadioButton = getByDataTestId("radio-button-reservationValidity-FixedTerm")
 
+    val reservationSummeryReservationValidityFixedTerm = page.getByTestId("reservation-validity-fixedTerm")
+    val reservationSummeryReservationValidityIndefinite = page.getByTestId("reservation-validity-indefinitre")
+
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")
         widthInput.fill("3")

@@ -40,10 +40,22 @@ class ReservationInformation(
             </div>
             """.trimIndent()
 
+        val reservationValidityField =
+            """
+            <div class='field' >
+               <label class="label">${t("boatApplication.title.reservationValidity")}</label>
+                <p x-show="reservationValidity === '${ReservationValidity.FixedTerm}'" id="reservation-validity-fixedTerm">
+                  ${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>
+                  
+                <p x-show="reservationValidity === '${ReservationValidity.Indefinite}'" id="reservation-validity-indefinite">
+                  ${t("boatApplication.Indefinite")}</p>
+            </div>        
+            """.trimIndent()
         val informationFields = buildReservationInformationFields(reservation)
         val informationFieldsWithDynamicAmenity =
             informationFields.copy(
-                amenityField = storageTypeInformationField
+                amenityField = storageTypeInformationField,
+                reservationTimeField = reservationValidityField
             )
         return render(reservation, informationFieldsWithDynamicAmenity)
     }

@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
+import kotlin.test.assertContains
 import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
@@ -261,9 +262,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             formPage.submitButton.click()
 
             fillWinterBoatSpaceForm(formPage)
-
             formPage.reservationValidityFixedTermRadioButton.click()
-
+            assertContains(formPage.reservationSummeryReservationValidityFixedTerm.first().textContent(), "01.04.2024 - 31.12.2024",)
             formPage.submitButton.click()
 
             val invoicePreviewPage = InvoicePreviewPage(page)
@@ -276,7 +276,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-            assertTrue("Until 31.08.2024" in citizenDetailsPage.reservationValidity.first().textContent())
+            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 31.08.2024")
 
             citizenDetailsPage.invoicePaidButton.click()
             val info = "invoice has been paid"
