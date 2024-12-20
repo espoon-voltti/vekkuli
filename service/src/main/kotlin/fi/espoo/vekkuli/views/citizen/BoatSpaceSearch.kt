@@ -442,7 +442,7 @@ class BoatSpaceSearch(
                             ${t("cancel")}
                         </button>
                         <a id="auth-modal-continue" class="button is-primary" 
-                           x-bind:href="'/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikka/varaa/' + boatSpace.id">
+                           x-bind:href="'/api/auth/saml-suomifi/login?RelayState=/kuntalainen/venepaikka/varaa/' + boatSpace.id">
                             ${t("auth.continue")}
                         </a>
                     </div>

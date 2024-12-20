@@ -18,7 +18,7 @@
                 <div th:if="${!isAuthenticated}">
                     <a id="loginButton" th:text="#{auth.login}"
                        class="link"
-                       href="/auth/saml-suomifi/login">Login</a>
+                       href="/api/auth/saml-suomifi/login">Login</a>
                 </div>
                 <div th:if="${isAuthenticated}">
                     <div class="container" x-data="{ open: false }">
@@ -37,7 +37,7 @@
                             </div>
                             <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                 <div class="dropdown-content">
-                                    <a th:text="#{auth.logout}" href="/auth/saml-suomifi/logout" class="dropdown-item">
+                                    <a th:text="#{auth.logout}" href="/api/auth/saml-suomifi/logout" class="dropdown-item">
                                     </a>
                                 </div>
                             </div>

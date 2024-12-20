@@ -30,7 +30,7 @@ class Layout(
                 """
                 <a id="loginButton"
                    class="link"
-                   href="/auth/saml-suomifi/login">${t("auth.login")}</a>
+                   href="/api/auth/saml-suomifi/login">${t("auth.login")}</a>
                 """.trimIndent()
             } else {
                 """
@@ -46,7 +46,7 @@ class Layout(
                         </div>
                         <div class="dropdown-menu" id="dropdown-menu" role="menu">
                             <div class="dropdown-content">
-                                <a href="/auth/saml-suomifi/logout" class="dropdown-item">
+                                <a href="/api/auth/saml-suomifi/logout" class="dropdown-item">
                                     ${t("auth.logout")}
                                 </a>
                             </div>

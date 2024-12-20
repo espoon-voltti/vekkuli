@@ -50,7 +50,6 @@ app.use(loggingMiddleware)
 passport.serializeUser<Express.User>((user, done) => done(null, user))
 passport.deserializeUser<Express.User>((user, done) => done(null, user))
 
-app.use('/auth', createAuthRouter(config, redisClient))
 app.use('/api/auth', createAuthRouter(config, redisClient))
 app.use('/api/citizen', createCitizenRouter(config, redisClient))
 app.use('/', createSystemRouter(config, redisClient))
