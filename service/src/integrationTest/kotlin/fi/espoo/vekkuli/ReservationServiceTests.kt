@@ -65,6 +65,12 @@ class ReservationServiceTests : IntegrationTestBase() {
         deleteAllOrganizations(jdbi)
     }
 
+    @BeforeEach
+    fun denyAllByDefault() {
+        logOut()
+        disallowReservation(any())
+    }
+
     @Test
     fun `should prevent reservation for non citizens`() {
         allowReservation(any())
@@ -92,6 +98,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `should prevent multiple unfinished reservations`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
 
         reservationService.startReservation(boatSpaceId)
@@ -106,6 +113,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `citizen should have unfinished reservation after starting`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
 
         reservationService.startReservation(boatSpaceId)
@@ -119,6 +127,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `should prevent filling reservation for non citizens`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
         val information = createReservationInformation()
         val (reservationId) = reservationService.startReservation(boatSpaceId)
@@ -132,6 +141,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `citizen should not be allowed to fill other people reservations`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
         val information = createReservationInformation()
         val (reservationId) = reservationService.startReservation(boatSpaceId)
@@ -145,6 +155,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `fill should validate reservation information`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
         val information =
             createReservationInformation(
@@ -162,6 +173,44 @@ class ReservationServiceTests : IntegrationTestBase() {
             }
 
         assertEquals("email: {validation.email}", exception.message)
+    }
+
+    @Test
+    fun `citizen must certify information when filling the reservation`() {
+        loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
+        val boatSpaceId = insertBoatSpace()
+        val information =
+            createReservationInformation(
+                certifyInformation = false
+            )
+
+        val (reservationId) = reservationService.startReservation(boatSpaceId)
+        val exception =
+            assertThrows<ConstraintViolationException> {
+                reservationService.fillReservationInformation(reservationId, information)
+            }
+
+        assertEquals("certifyInformation: {validation.certifyInformation}", exception.message)
+    }
+
+    @Test
+    fun `citizen must agree to rules when filling the reservation`() {
+        loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
+        val boatSpaceId = insertBoatSpace()
+        val information =
+            createReservationInformation(
+                agreeToRules = false
+            )
+
+        val (reservationId) = reservationService.startReservation(boatSpaceId)
+        val exception =
+            assertThrows<ConstraintViolationException> {
+                reservationService.fillReservationInformation(reservationId, information)
+            }
+
+        assertEquals("agreeToRules: {validation.agreeToRules}", exception.message)
     }
 
     @Test
@@ -229,7 +278,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `fill should create new organization`() {
         loginAs(citizenIdOlivia)
-        allowReservation()
+        allowReservation(any())
         val boatSpaceId = insertBoatSpace()
         val information =
             createReservationInformation(
@@ -257,7 +306,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `fill should update existing organization`() {
         loginAs(citizenIdOlivia)
-        allowReservation()
+        allowReservation(any())
         val boatSpaceId = insertBoatSpace()
         val existingOrganizationId = insertOrganization("old name")
         val information =
@@ -320,6 +369,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `should prevent canceling reservation for non citizens`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
         val (reservationId) = reservationService.startReservation(boatSpaceId)
 
@@ -332,6 +382,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `citizen should be allowed to cancel only own reservations`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
         val (reservationId) = reservationService.startReservation(boatSpaceId)
 
@@ -344,6 +395,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `cancel should delete reservation`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
 
         val (reservationId) = reservationService.startReservation(boatSpaceId)
@@ -356,6 +408,7 @@ class ReservationServiceTests : IntegrationTestBase() {
     @Test
     fun `citizen should not have unfinished reservation after cancel`() {
         loginAs(citizenIdOlivia)
+        allowReservation(eq(citizenIdOlivia))
         val boatSpaceId = insertBoatSpace()
 
         val (reservationId) = reservationService.startReservation(boatSpaceId)
@@ -498,6 +551,8 @@ class ReservationServiceTests : IntegrationTestBase() {
         citizen: ReservationInformation.Citizen? = null,
         organization: ReservationInformation.Organization? = null,
         boat: ReservationInformation.Boat? = null,
+        certifyInformation: Boolean = true,
+        agreeToRules: Boolean = true,
     ): ReservationInformation {
         val information =
             ReservationInformation(
@@ -521,8 +576,8 @@ class ReservationServiceTests : IntegrationTestBase() {
                         extraInformation = "",
                         ownership = OwnershipStatus.Owner,
                     ),
-                certifyInformation = true,
-                agreeToRules = true,
+                certifyInformation = certifyInformation,
+                agreeToRules = agreeToRules,
             )
         return information
     }
