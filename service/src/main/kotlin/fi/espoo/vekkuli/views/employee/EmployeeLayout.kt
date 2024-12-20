@@ -21,7 +21,6 @@ class EmployeeLayout(
         isAuthenticated: Boolean,
         currentUri: String,
         bodyContent: String,
-        layoutClass: String? = null
     ): String {
         val authMenu =
             if (isAuthenticated) {
@@ -82,7 +81,7 @@ class EmployeeLayout(
                         </div>
                     </div>
                 </div>
-                <div class="${layoutClass ?: ""} column content-column" >
+                <div class="employee-page column content-column" >
                     $bodyContent 
                 </div>
             </div>
