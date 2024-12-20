@@ -116,13 +116,24 @@ class CitizenDetails(
             )
         }
 
+        fun getOrganizationLink(
+            id: UUID,
+            name: String
+        ) = if (userType ==
+            UserType.CITIZEN
+        ) {
+            name
+        } else {
+            """<a href="/virkailija/yhteiso/$id">$name</a>"""
+        }
+
         val organizationListItems =
             organizations
                 .map { org ->
                     """     
                     <div class="columns">
                         <div class="column is-one-fifth">
-                            <p>${org.name}</p>
+                            <p>${getOrganizationLink(org.id, org.name)}</p>
                         </div>
                         <div class="column is-one-fifth">
                             <p>${org.businessId}</p>
