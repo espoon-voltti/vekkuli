@@ -343,12 +343,13 @@ class JdbiBoatSpaceReservationRepository(
                     ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.acting_citizen_id = :id
                         AND bsr.status IN ('Info', 'Payment') 
-                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
+                        AND :currentTime BETWEEN bsr.created AND bsr.created + make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
+
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
