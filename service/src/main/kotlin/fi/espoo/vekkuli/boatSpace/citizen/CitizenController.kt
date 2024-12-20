@@ -44,7 +44,6 @@ class CitizenController(
 
     @GetMapping("/current/active-reservations")
     fun getActiveReservations(request: HttpServletRequest): List<ReservationResponse> {
-
         val reservations = reservationService.getActiveReservationsForCurrentCitizen()
         return reservations.map { reservationResponseMapper.toReservationResponse(it) }
     }
