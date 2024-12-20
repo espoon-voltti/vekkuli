@@ -23,7 +23,9 @@ class BoatSpaceReservationList : BaseView() {
         val harborFilters =
             harbors.joinToString("\n") { harbor ->
                 """
-                <label class="filter-button" data-testid="filter-harbor-${harbor.name}">
+                <label class="filter-button" ${addTestId(
+                    "filter-harbor-$harbor.name"
+                )}>
                     <input type="checkbox" name="harbor" value="${harbor.id}" class="is-hidden" ${if (params.hasHarbor(
                         harbor.id
                     )
@@ -43,7 +45,9 @@ class BoatSpaceReservationList : BaseView() {
         val boatSpaceTypeFilters =
             boatSpaceTypes.joinToString("\n") { boatSpaceType ->
                 """
-                <label class="filter-button" data-testid="filter-type-$boatSpaceType">
+                <label class="filter-button" ${addTestId(
+                    "filter-type-$boatSpaceType"
+                )}>
                     <input type="checkbox" name="boatSpaceType" value="$boatSpaceType" class="is-hidden" ${if (params.hasBoatSpaceType(
                         boatSpaceType
                     )
@@ -80,7 +84,9 @@ class BoatSpaceReservationList : BaseView() {
         val amenityFilters =
             amenities.joinToString("\n") { amenity ->
                 """
-                <label class="filter-button" data-testid="filter-amenity-$amenity">
+                <label class="filter-button" ${addTestId(
+                    "filter-amenity-$amenity"
+                )}>
                     <input type="checkbox" name="amenity" value="${amenity.name}" class="is-hidden" ${if (params.hasAmenity(
                         amenity
                     )
@@ -115,6 +121,28 @@ class BoatSpaceReservationList : BaseView() {
                 """.trimIndent()
             }
 
+        val reservationValidityFilters =
+            ReservationValidity.entries.joinToString("\n") { validity ->
+                """
+                <label class="filter-button" ${addTestId(
+                    "filter-reservation-validity-$validity"
+                )}>
+                    <input type="checkbox" name="validity" value="$validity" class="is-hidden" ${if (params.hasValidity(
+                        validity
+                    )
+                ) {
+                    "checked"
+                } else {
+                    ""
+                }}>
+                    <span class="icon is-small">
+                        ${icons.check}
+                    </span>
+                    <span>${t("employee.boatReservations.validity.$validity")}</span>
+                </label>
+                """.trimIndent()
+            }
+
         val warningFilterCheckbox =
             """
             <label class="checkbox">
@@ -134,9 +162,9 @@ class BoatSpaceReservationList : BaseView() {
             inputVal: String?
         ) = """
             <p class="control has-icons-left">
-                <input class="input search-input" type="text" name="$name" data-testid="search-input-$name" 
-                    aria-label="${t("boatSpaces.searchButton")}" value="${inputVal ?: ""}"/>
-                <span class="icon is-small is-left">${icons.search}</span>
+                <input class="input search-input" type="text" name="$name" ${addTestId("search-input-$name")} 
+                aria-label="${t("boatSpaces.searchButton")}" value="${inputVal ?: ""}"/>                
+                <span class="icon is-small is-left">${icons.search}</span>                
             </p>
             """.trimIndent()
 
@@ -180,7 +208,7 @@ class BoatSpaceReservationList : BaseView() {
 
         fun getWarningIcon(hasWarnings: Boolean) =
             if (hasWarnings) {
-                "<div data-testid='warning-icon'>${icons.warningExclamation(false)}</div>"
+                "<div ${addTestId("warning-icon")}data-testid='warning-icon'>${icons.warningExclamation(false)}</div>"
             } else {
                 ""
             }
@@ -188,7 +216,6 @@ class BoatSpaceReservationList : BaseView() {
         // language=HTML
         val reservationRows =
             reservations.joinToString("\n") { result ->
-                val startDateFormatted = formatAsShortYearDate(result.startDate)
                 val endDateFormatted = formatAsShortYearDate(result.endDate)
                 val paymentDateFormatted = formatAsShortYearDate(result.paymentDate)
                 val endDateText =
@@ -210,15 +237,18 @@ class BoatSpaceReservationList : BaseView() {
                     <td>${getWarningIcon(result.hasAnyWarnings())}</td>
                     <td>${result.locationName}</td>
                     <td>
-                        <span>${result.place}</span>
+                        <span ${addTestId(
+                    "place"
+                )}>${result.place}</span>
                     </td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
-                    <td><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
+                    <td ${addTestId(
+                    "reserver-name"
+                )}><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
                     <td>${result.phone}</td>
                     <td>${result.email}</td>
                     <td>${result.municipalityName}</td>
                     <td>$paymentDateFormatted</td>
-                    <td>$startDateFormatted</td>
                     <td ${addTestId(
                     "reservation-end-date"
                 )}>$endDateText</td>
@@ -290,9 +320,15 @@ class BoatSpaceReservationList : BaseView() {
                                 </div>
                             </div>
                             <div class="filter-group">
-                                <h1 class="label">${t("boatSpaceReservation.title.payment")}</h1>
+                                <h1 class="label">${t("boatSpaceReservation.title.paymentState")}</h1>
                                 <div class="tag-container">
                                     $paymentFilters
+                                </div>
+                            </div>                            
+                            <div class="filter-group">
+                                <h1 class="label">${t("employee.boatReservations.title.reservationValidity")}</h1>
+                                <div class="tag-container">
+                                    $reservationValidityFilters
                                 </div>
                             </div>                            
                         </div>
@@ -312,7 +348,7 @@ class BoatSpaceReservationList : BaseView() {
                             </div>                        
                         </div>
 
-                        <div class="block columns is-vcentered">
+                        <div class="employee-warning-filter">
                             $warningFilterCheckbox
                         </div>
 
@@ -347,9 +383,6 @@ class BoatSpaceReservationList : BaseView() {
                                         ${t("boatSpaceReservation.title.paymentState")}
                                     </span></th>
                                     <th class="nowrap">
-                                        ${sortButton("START_DATE", t("boatSpaceReservation.title.startDate"))}
-                                    </th>
-                                    <th class="nowrap">
                                         ${sortButton("END_DATE", t("boatSpaceReservation.title.endDate"))}
                                     </th>
 
@@ -362,7 +395,6 @@ class BoatSpaceReservationList : BaseView() {
                                     <th></th>
                                     <th>${textSearchInput("nameSearch", params.nameSearch)}</th>
                                     <th>${textSearchInput("phoneSearch", params.phoneSearch)}</th>
-                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
