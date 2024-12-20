@@ -82,6 +82,7 @@ export function deserializeJsonBoatSpaceReservationResponse(
     boatSpace: json.boatSpace,
     totalPrice: json.totalPrice,
     vatValue: json.vatValue,
-    netPrice: json.netPrice
+    netPrice: json.netPrice,
+    boat: json.boat
   }
 }

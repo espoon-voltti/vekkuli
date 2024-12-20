@@ -146,7 +146,7 @@ export default React.memo(function FormPage() {
 
   return (
     <section className="section">
-      <Loader result={reservation}>
+      <Loader results={[reservation]}>
         {(loadedReservation) => (
           <>
             <StepIndicator step="fillInformation" />

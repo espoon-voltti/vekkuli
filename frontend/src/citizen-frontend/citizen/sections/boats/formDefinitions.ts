@@ -72,3 +72,22 @@ export const transformBoatToFormBoat = (
     }))
   }
 })
+
+export const showBoatsForm = object({
+  show: multiSelect<boolean>()
+})
+
+export const initShowBoatsForm = (
+  i18n: Translations
+): StateOf<typeof showBoatsForm> => ({
+  show: {
+    domValues: [],
+    options: [
+      {
+        domValue: 'show',
+        label: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
+        value: true
+      }
+    ]
+  }
+})

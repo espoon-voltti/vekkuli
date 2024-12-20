@@ -2,15 +2,23 @@ import React from 'react'
 
 import { Result } from 'lib-common/api'
 
-interface LoaderProps<T> {
-  children: (value: T) => React.ReactNode
-  result: Result<T>
+interface LoaderProps<T extends unknown[]> {
+  children: (...values: { [K in keyof T]: T[K] }) => React.ReactNode
+  results: { [K in keyof T]: Result<T[K]> }
 }
 
-function LoaderR<T>({ children, result }: LoaderProps<T>) {
-  if (result.isLoading) return <div>Loading...</div>
-  if (result.isFailure) return <div>Error</div>
-  return <>{children(result.value)}</>
+function LoaderR<T extends unknown[]>({ children, results }: LoaderProps<T>) {
+  if (results.some((r) => r.isLoading)) return <div>Loading...</div>
+  if (results.some((r) => r.isFailure)) return <div>Error</div>
+  const values = results.map((r) => {
+    if (!r.isLoading && !r.isFailure) {
+      return r.value
+    }
+    throw new Error(
+      'Unexpected state: All results should be successful at this point.'
+    )
+  }) as { [K in keyof T]: T[K] }
+  return <>{children(...values)}</>
 }
 
 export const Loader = React.memo(LoaderR) as typeof LoaderR

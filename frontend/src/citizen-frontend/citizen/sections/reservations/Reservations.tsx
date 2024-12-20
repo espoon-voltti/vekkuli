@@ -15,7 +15,7 @@ export default React.memo(function Reservations() {
     <Container isBlock>
       <h3>Paikkavaraukset</h3>
       <div className="reservation-list form-section">
-        <Loader result={activeReservations}>
+        <Loader results={[activeReservations]}>
           {(loadedReservations) =>
             loadedReservations.map((reservation) => (
               <Reservation key={reservation.id} reservation={reservation} />

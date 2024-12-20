@@ -18,6 +18,7 @@ export default React.memo(function TextField({
   label,
   bind,
   readonly,
+  required,
   value,
   showErrorsBeforeTouched
 }: TextFieldProps) {
@@ -33,6 +34,7 @@ export default React.memo(function TextField({
       <div className="control">
         <label className="label" htmlFor={id}>
           {label}
+          {required && ' *'}
         </label>
         {readonly ? (
           <ReadOnly value={readOnlyValue} />

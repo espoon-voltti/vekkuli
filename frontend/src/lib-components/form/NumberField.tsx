@@ -25,7 +25,8 @@ function NumberFieldR({
   max,
   readonly,
   value,
-  showErrorsBeforeTouched
+  showErrorsBeforeTouched,
+  required
 }: NumberFieldProps) {
   const { state, set, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
@@ -37,6 +38,7 @@ function NumberFieldR({
       <div className="control">
         <label className="label" htmlFor={id}>
           {label}
+          {required && ' *'}
         </label>
         {readonly ? (
           <ReadOnly value={readOnlyValue?.toString()} />

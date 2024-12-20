@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
 import { StateOf } from 'lib-common/form/types'
 import { useMutation, useQueryResult } from 'lib-common/query'
+import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
 import { AuthContext } from '../../../auth/state'
 import { useTranslation } from '../../../localization'
@@ -122,6 +123,9 @@ export default React.memo(function SearchPage() {
           <div className="columns">
             <div className="column is-two-fifths">
               <SearchFilters bind={form} />
+              <div className="mt-xl">
+                <img src={MapImage} alt="Espoon venesatamat" />
+              </div>
             </div>
             <div className="column">
               <SearchResult

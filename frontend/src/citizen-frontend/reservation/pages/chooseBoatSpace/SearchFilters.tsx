@@ -45,6 +45,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
         <div className="column">
           <NumberField
             id="boat-width"
+            required={true}
             label={
               i18n.reservation.searchPage.filters.branchSpecific[branch].width
             }
@@ -61,6 +62,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
             label={
               i18n.reservation.searchPage.filters.branchSpecific[branch].length
             }
+            required={true}
             bind={length}
             name="length"
             step={0.01}

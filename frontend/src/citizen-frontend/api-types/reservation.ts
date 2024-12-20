@@ -22,6 +22,7 @@ export type BoatSpaceReservation = {
   totalPrice: string
   vatValue: string
   netPrice: string
+  boat: Boat
 }
 
 export type BoatSpaceReservationResponse = {
@@ -35,6 +36,7 @@ export type BoatSpaceReservationResponse = {
   totalPrice: string
   vatValue: string
   netPrice: string
+  boat: Boat
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }
