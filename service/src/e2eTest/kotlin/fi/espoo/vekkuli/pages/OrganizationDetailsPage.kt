@@ -226,5 +226,5 @@ class OrganizationDetailsPage(
     val citizenPhoneField = page.getByTestId("citizenPhoneNumberField")
     val citizenEmailField = page.getByTestId("citizenEmailField")
     val submitOrganizationMemberAdd = page.getByTestId("submit-organization-member-add")
-    val organizationMemberTableLastRow = page.getByTestId("organization-member-table").locator("tbody tr:last-child")
+    val organizationMemberTableBody = page.getByTestId("organization-member-table").locator("tbody")
 }

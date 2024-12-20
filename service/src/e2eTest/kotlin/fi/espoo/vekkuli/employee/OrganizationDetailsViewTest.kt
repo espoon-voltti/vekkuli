@@ -256,6 +256,8 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             organizationDetails.addMemberButton.click()
             assertThat(organizationDetails.addMemberSearchContainer).isVisible()
 
+            assertThat(organizationDetails.organizationMemberTableBody).not().containsText("Mikko Virtanen")
+
             assertThat(organizationDetails.citizenSearchContainer).isVisible()
             organizationDetails.citizenSearchInput.pressSequentially("mikko")
             assertThat(organizationDetails.citizenSearchOption1).isVisible()
@@ -265,7 +267,7 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             assertThat(organizationDetails.citizenPhoneField).isVisible()
             assertThat(organizationDetails.citizenEmailField).isVisible()
             organizationDetails.submitOrganizationMemberAdd.click()
-            assertThat(organizationDetails.organizationMemberTableLastRow).containsText("Mikko Virtanen")
+            assertThat(organizationDetails.organizationMemberTableBody).containsText("Mikko Virtanen")
         } catch (e: AssertionError) {
             handleError(e)
         }
