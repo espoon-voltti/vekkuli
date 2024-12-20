@@ -24,13 +24,18 @@ class ReservationInformation(
             """
             <div class='field' >
                <label class="label">${t("boatApplication.title.boatSpaceStorageType")}</label>
-                <p x-show="storageType === '${StorageType.Trailer}'" id="storage-type-text-trailer">${t(
-                "boatSpaces.storageType.Trailer"
-            )}</p>
-                <p x-show="storageType === '${StorageType.Buck}'" id="storage-type-text-buck">${t("boatSpaces.storageType.Buck")}</p>
-                <p x-show="storageType === '${StorageType.BuckWithTent}'" id="storage-type-text-buckTent">${t(
-                "boatSpaces.storageType.BuckWithTent"
-            )}</p>
+               <template x-if="storageType === '${StorageType.Trailer.name}'">
+                <p id="storage-type-text-trailer">${t("boatSpaces.storageType.Trailer")}</p>
+              </template>
+            
+              <template x-if="storageType === '${StorageType.Buck.name}'">
+                <p id="storage-type-text-buck">${t("boatSpaces.storageType.Buck")}</p>
+              </template>
+            
+              <template x-if="storageType === '${StorageType.BuckWithTent.name}'">
+                <p id="storage-type-text-buckTent">${t("boatSpaces.storageType.BuckWithTent")}</p>
+              </template>
+               
             </div>
             """.trimIndent()
 
