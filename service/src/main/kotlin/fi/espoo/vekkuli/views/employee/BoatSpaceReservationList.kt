@@ -143,6 +143,8 @@ class BoatSpaceReservationList : BaseView() {
                 """.trimIndent()
             }
 
+        val reservationsWithWarningsCount =
+            reservations.fold(0) { acc, reservation -> acc + if (reservation.hasAnyWarnings()) 1 else 0 }
         val warningFilterCheckbox =
             """
             <label class="checkbox">
@@ -151,7 +153,7 @@ class BoatSpaceReservationList : BaseView() {
             } else {
                 ""
             }}>
-                <span>${t("boatSpaceReservation.showReservationsWithWarnings")}</span>
+                <span>${t("boatSpaceReservation.showReservationsWithWarnings", listOf(reservationsWithWarningsCount.toString()))}</span>
                
             </label>
              <span class="ml-s">${icons.warningExclamation(false)}</span>

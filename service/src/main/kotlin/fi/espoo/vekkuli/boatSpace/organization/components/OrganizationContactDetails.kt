@@ -171,7 +171,7 @@ class OrganizationContactDetails(
             formComponents.field(
                 "organizationDetails.title.address",
                 "addressField",
-                "${organization.streetAddress}, ${organization.postalCode}, ${organization.postOffice} "
+                buildAddress(organization.streetAddress, organization.postalCode, organization.postOffice)
             )
 
         val billingNameField =
@@ -184,7 +184,7 @@ class OrganizationContactDetails(
             formComponents.field(
                 "organizationDetails.title.billingAddress",
                 "billingAddressField",
-                "${organization.billingStreetAddress}, ${organization.billingPostalCode}, ${organization.billingPostOffice} "
+                buildAddress(organization.billingStreetAddress, organization.billingPostalCode, organization.billingPostOffice)
             )
         val phoneNumberValue =
             formComponents.field("organizationDetails.title.phoneNumber", "phoneNumberField", organization.phone)
@@ -213,4 +213,13 @@ class OrganizationContactDetails(
             """
         )
     }
+
+    private fun buildAddress(
+        address: String?,
+        postalCode: String?,
+        postOffice: String?
+    ) = listOf(address, postalCode, postOffice)
+        .filter {
+            !it.isNullOrBlank()
+        }.joinToString(", ")
 }
