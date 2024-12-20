@@ -183,6 +183,10 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             val organizationPostalCode = "12345"
             val organizationPostOffice = "Espoo"
             val organizationMunicipalityCode = "91"
+            val billingName = "Espoo laskutus"
+            val billingAddress = "Laskukatu 12"
+            val billingPostalCode = "20220"
+            val billingPostOffice = "Espoo"
             organizationDetails.organizationNameInput.fill("")
             organizationDetails.organizationBusinessIdInput.fill("")
             organizationDetails.organizationMunicipalityInput.selectOption(organizationMunicipalityCode)
@@ -191,6 +195,12 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             organizationDetails.organizationAddressInput.fill(organizationAddress)
             organizationDetails.organizationPostalCodeInput.fill(organizationPostalCode)
             organizationDetails.organizationPostOfficeInput.fill(organizationPostOffice)
+
+            organizationDetails.organizationBillingNameInput.fill(billingName)
+            organizationDetails.organizationBillingAddressInput.fill(billingAddress)
+            organizationDetails.organizationBillingPostalCodeInput.fill(billingPostalCode)
+            organizationDetails.organizationBillingPostOfficeInput.fill(billingPostOffice)
+
             organizationDetails.organizationEditSubmitButton.click()
 
             // assert that email and phone can not be empty
@@ -211,6 +221,11 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             assertThat(organizationDetails.organizationBusinessIdField).hasText(organizationBusinessId)
 
             assertThat(organizationDetails.organizationMunicipalityField).hasText("Helsinki")
+
+            assertThat(organizationDetails.organizationBillingNameField).hasText(billingName)
+            assertThat(
+                organizationDetails.organizationBillingAddressField
+            ).hasText("$billingAddress, $billingPostalCode, $billingPostOffice")
         } catch (e: AssertionError) {
             handleError(e)
         }

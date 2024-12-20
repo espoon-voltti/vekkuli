@@ -66,6 +66,11 @@ class OrganizationDetailsPage(
     val organizationPostalCodeInput = page.getByTestId("postalCode")
     val organizationPostOfficeInput = page.getByTestId("postOffice")
 
+    val organizationBillingNameInput = page.getByTestId("billingName")
+    val organizationBillingAddressInput = page.getByTestId("billingStreetAddress")
+    val organizationBillingPostalCodeInput = page.getByTestId("billingPostalCode")
+    val organizationBillingPostOfficeInput = page.getByTestId("billingPostOffice")
+
     val organizationFirstNameField = page.getByTestId("organizationNameField")
     val organizationBusinessIdField = page.getByTestId("businessIdField")
     val organizationMunicipalityField = page.getByTestId("municipalityCodeField")
@@ -73,7 +78,10 @@ class OrganizationDetailsPage(
     val organizationPhoneField = page.getByTestId("phoneNumberField")
     val organizationAddressField = page.getByTestId("addressField")
 
-    val organizationEditSubmitButton = page.getByTestId("submit-boat-edit-form")
+    val organizationBillingNameField = page.getByTestId("billingNameField")
+    val organizationBillingAddressField = page.getByTestId("billingAddressField")
+
+    val organizationEditSubmitButton = page.getByTestId("submit-organization-edit-form")
     val organizationBusinessIdError = page.getByTestId("businessId-error")
     val organizationNameError = page.getByTestId("organizationName-error")
     val organizationMunicipalityError = page.getByTestId("municipalityCode-error")
