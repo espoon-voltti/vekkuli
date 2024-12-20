@@ -245,4 +245,39 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             handleError(e)
         }
     }
+
+    @Test
+    fun `employee can add an existing citizen to organization`() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+            organizationDetails.navigateToEspoonPursiseura()
+            assertThat(organizationDetails.addOrganizationContainer).isVisible()
+
+            // Test that cancel works
+            organizationDetails.addMemberButton.click()
+            assertThat(organizationDetails.addMemberSearchContainer).isVisible()
+            organizationDetails.cancelOrganizationMemberAdd.click()
+            assertThat(organizationDetails.addMemberSearchContainer).not().isVisible()
+
+            // Make sure that the citizen is not in the organization
+            organizationDetails.addMemberButton.click()
+            assertThat(organizationDetails.citizenSearchContainer).isVisible()
+            assertThat(organizationDetails.organizationMemberTableBody).not().containsText("Mikko Virtanen")
+
+            // Add the citizen to the organization
+            organizationDetails.citizenSearchInput.pressSequentially("mikko")
+            assertThat(organizationDetails.citizenSearchOption1).isVisible()
+            organizationDetails.citizenSearchOption1.click()
+
+            // Check that the citizen is added to the organization
+            assertThat(organizationDetails.citizenNameField).isVisible()
+            assertThat(organizationDetails.citizenPhoneField).isVisible()
+            assertThat(organizationDetails.citizenEmailField).isVisible()
+            organizationDetails.submitOrganizationMemberAdd.click()
+            assertThat(organizationDetails.organizationMemberTableBody).containsText("Mikko Virtanen")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
 }
