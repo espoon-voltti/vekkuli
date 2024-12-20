@@ -252,7 +252,7 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             EmployeeHomePage(page).employeeLogin()
             val organizationDetails = OrganizationDetailsPage(page)
             organizationDetails.navigateToEspoonPursiseura()
-            assertThat(organizationDetails.organizationDetailsSection).isVisible()
+            assertThat(organizationDetails.addOrganizationContainer).isVisible()
             organizationDetails.addMemberButton.click()
             assertThat(organizationDetails.addMemberSearchContainer).isVisible()
 

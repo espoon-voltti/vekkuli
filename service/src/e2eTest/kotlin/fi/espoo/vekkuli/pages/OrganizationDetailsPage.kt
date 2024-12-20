@@ -216,6 +216,7 @@ class OrganizationDetailsPage(
         )
 
     // Add members
+    val addOrganizationContainer = page.getByTestId("add-members-container")
     val citizenSearchContainer = page.locator("#customer-search-container")
     val citizenSearchOption1 = page.locator("#option-0")
     val addMemberButton: Locator = page.getByTestId("add-organization-member")
