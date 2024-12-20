@@ -199,6 +199,16 @@ server {
     proxy_pass  $apiGatewayURL;
   }
 
+  location /auth {
+    include     proxy_params;
+    proxy_pass  $apiGatewayURL;
+  }
+
+  location /virkailija {
+    include     proxy_params;
+    proxy_pass  $apiGatewayURL;
+  }
+
   location / {
     try_files $uri $uri/ @indexPage;
   }

@@ -1,6 +1,17 @@
 version: '3.5'
 
 services:
+  frontend:
+    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/frontend/frontend:${TAG:-master}
+    build:
+      context: ../frontend/
+    ports:
+      - "8765:80"
+    environment:
+      RESOLVER: "127.0.0.11 ipv6=off"
+      API_GATEWAY_URL: http://api-gateway:8888
+      HTTP_SCHEME: http
+
   service:
     image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/service:${TAG:-master}
     build:
