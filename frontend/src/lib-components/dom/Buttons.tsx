@@ -1,9 +1,17 @@
+import classNames from 'classnames'
 import React from 'react'
 
 export default React.memo(function Button({
-  children
+  children,
+  centered
 }: {
   children: React.ReactNode
+  centered?: boolean
 }) {
-  return <div className="buttons">{children}</div>
+  const classes = ['buttons']
+  if (centered) {
+    classes.push('is-justify-content-center')
+  }
+
+  return <div className={classNames(classes)}>{children}</div>
 })

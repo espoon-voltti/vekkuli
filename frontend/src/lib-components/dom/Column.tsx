@@ -10,6 +10,7 @@ export type ColumnProps = {
   isOneQuarter?: boolean
   isOneEight?: boolean
   toRight?: boolean
+  textCentered?: boolean
 }
 
 export default React.memo(function Column({
@@ -20,7 +21,8 @@ export default React.memo(function Column({
   isOneThird = false,
   isOneQuarter = false,
   isOneEight = false,
-  toRight = false
+  toRight = false,
+  textCentered = false
 }: ColumnProps) {
   const classes = classNames('column', {
     'is-narrow': isNarrow,
@@ -29,7 +31,8 @@ export default React.memo(function Column({
     'is-one-third': isOneThird,
     'is-one-quarter': isOneQuarter,
     'is-one-eight': isOneEight,
-    'ml-auto': toRight
+    'ml-auto': toRight,
+    'has-text-centered': textCentered
   })
   return <div className={classes}>{children}</div>
 })

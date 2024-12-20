@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react'
 
-type ModalWrapperProps = {
+type ModalContentProps = {
   children?: ReactNode | ReactNode[]
 }
-export default React.memo(function ModalWrapper({
+export default React.memo(function ModalContent({
   children
-}: ModalWrapperProps) {
+}: ModalContentProps) {
   return <div className="modal-content mv-m">{children}</div>
 })

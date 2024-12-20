@@ -33,7 +33,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
   } = useFormFields(bind)
   return (
     <div className="reservation-card">
-      <Columns isVcentered>
+      <Columns isVCentered>
         <Column isNarrow>
           <h4>{boat.name}</h4>
         </Column>

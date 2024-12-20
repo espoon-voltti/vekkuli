@@ -55,6 +55,15 @@ export async function cancelReservation(reservationId: number): Promise<void> {
   })
 }
 
+export async function terminateReservation(
+  reservationId: number
+): Promise<void> {
+  await client.request<BoatSpaceReservation>({
+    url: uri`/reservation/${reservationId}/terminate`.toString(),
+    method: 'POST'
+  })
+}
+
 export async function paymentInformation(
   reservationId: number
 ): Promise<PaymentInformationResponse> {

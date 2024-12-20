@@ -4,15 +4,17 @@ import React from 'react'
 export type ButtonType = 'primary' | 'secondary' | 'danger' | 'danger-outlined'
 
 export type ButtonProps = {
+  children: React.ReactNode
   type?: ButtonType
   action?: () => void
-  children: React.ReactNode
+  loading?: boolean
 }
 
 export default React.memo(function Button({
   children,
   action,
-  type
+  type,
+  loading
 }: ButtonProps) {
   const classes = ['button']
   switch (type) {
@@ -28,11 +30,15 @@ export default React.memo(function Button({
       break
   }
 
+  if (loading) {
+    classes.push('is-loading')
+  }
+
   const props: React.ButtonHTMLAttributes<HTMLButtonElement> = {
     className: classNames(classes)
   }
 
-  if (action) {
+  if (action && !loading) {
     props.onClick = action
   }
 
