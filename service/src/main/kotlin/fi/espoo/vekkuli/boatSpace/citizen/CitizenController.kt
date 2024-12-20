@@ -47,4 +47,10 @@ class CitizenController(
         val reservations = reservationService.getActiveReservationsForCurrentCitizen()
         return reservations.map { reservationResponseMapper.toReservationResponse(it) }
     }
+
+    @GetMapping("/current/expired-reservations")
+    fun getExpiredReservations(request: HttpServletRequest): List<ReservationResponse> {
+        val reservations = reservationService.getExpiredReservationsForCurrentCitizen()
+        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+    }
 }

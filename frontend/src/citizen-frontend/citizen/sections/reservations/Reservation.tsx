@@ -18,9 +18,11 @@ import TerminateModalSuccess from './TerminateModalSuccess'
 type TerminateModalState = 'hidden' | 'visible' | 'success' | 'failure'
 
 export default React.memo(function Reservation({
-  reservation
+  reservation,
+  canTerminate
 }: {
   reservation: BoatSpaceReservation
+  canTerminate?: boolean
 }) {
   const i18n = useTranslation()
   const [terminateModalVisible, setTerminateModalVisible] =
@@ -111,15 +113,16 @@ export default React.memo(function Reservation({
             <TextField label="Maksettu" value="<MISSING>" readonly={true} />
           </Column>
         </Columns>
-
-        <Buttons>
-          <Button
-            type="danger-outlined"
-            action={() => setTerminateModalVisible('visible')}
-          >
-            Irtisano paikka
-          </Button>
-        </Buttons>
+        {canTerminate && (
+          <Buttons>
+            <Button
+              type="danger-outlined"
+              action={() => setTerminateModalVisible('visible')}
+            >
+              Irtisano paikka
+            </Button>
+          </Buttons>
+        )}
       </div>
       {terminateModalVisible === 'visible' && (
         <TerminateModal

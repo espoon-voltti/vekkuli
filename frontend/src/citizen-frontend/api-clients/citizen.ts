@@ -63,3 +63,13 @@ export async function citizenActiveReservations(): Promise<
   })
   return json.map(deserializeJsonBoatSpaceReservationResponse)
 }
+
+export async function citizenExpiredReservations(): Promise<
+  BoatSpaceReservation[]
+> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+    url: uri`/current/expired-reservations`.toString(),
+    method: 'GET'
+  })
+  return json.map(deserializeJsonBoatSpaceReservationResponse)
+}

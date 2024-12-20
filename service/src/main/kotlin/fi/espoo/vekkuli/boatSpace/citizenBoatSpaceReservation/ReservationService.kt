@@ -40,6 +40,11 @@ class ReservationService(
         return boatReservationService.getBoatSpaceReservationsForCitizen(citizenId).map { it.toBoatSpaceReservation() }
     }
 
+    fun getExpiredReservationsForCurrentCitizen(): List<BoatSpaceReservation> {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        return boatReservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId).map { it.toBoatSpaceReservation() }
+    }
+
     fun getReservation(reservationId: Int): BoatSpaceReservation {
         return accessReservation(reservationId).toBoatSpaceReservation()
     }

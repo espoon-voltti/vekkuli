@@ -8,6 +8,7 @@ import { AuthContext, User } from '../auth/state'
 import Header from './sections/Header'
 import Boats from './sections/boats/Boats'
 import CitizenInformation from './sections/citizenInformation'
+import ExpiredReservations from './sections/reservations/ExpiredReservations'
 import Reservations from './sections/reservations/Reservations'
 
 export default React.memo(function CitizenPage() {
@@ -42,6 +43,7 @@ const Content = React.memo(function Content({
       <CitizenInformation user={currentUser} />
       <Reservations />
       <Boats />
+      <ExpiredReservations />
     </Section>
   )
 })
