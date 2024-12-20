@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.common.ReservationInformationParams
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 // language=HTML
 @Component
@@ -88,7 +89,7 @@ class ReservationInformation(
                 "boatSpaceReservation.label.reservationValidity",
                 "reservationTime",
                 if (reservation.validity === ReservationValidity.FixedTerm) {
-                    """<p>${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>"""
+                    """<p>${renderReservationValidity(reservation.validity, reservation.endDate)}</p>"""
                 } else {
                     (
                         """
@@ -115,6 +116,15 @@ class ReservationInformation(
             priceField
         )
     }
+
+    fun renderReservationValidity(
+        validity: ReservationValidity,
+        endDate: LocalDate
+    ): String =
+        t(
+            "boatSpaceReservation.validity.$validity",
+            listOf(formatAsFullDate(endDate))
+        )
 
     fun render(
         reservation: ReservationForApplicationForm,
