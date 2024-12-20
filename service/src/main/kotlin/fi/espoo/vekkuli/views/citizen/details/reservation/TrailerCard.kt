@@ -73,7 +73,7 @@ class TrailerCard(
                 trailer.warnings.joinToString("\n") { warning ->
                     """
                     <label class="radio">
-                        <input type="radio" name="key" value="$warning">
+                        <input type="checkbox" name="key" value="$warning">
                         ${t("reservationWarning.$warning")}
                     </label>
                     """.trimIndent()

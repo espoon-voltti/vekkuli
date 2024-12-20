@@ -825,7 +825,7 @@ class CitizenUserController(
     fun ackWarning(
         @RequestParam("reservationId") reservationId: Int,
         @RequestParam("boatId") boatId: Int,
-        @RequestParam("key") key: String,
+        @RequestParam("key") key: List<String>,
         @RequestParam("infoText") infoText: String,
         @RequestParam("reserverId") reserverId: UUID,
         request: HttpServletRequest,
@@ -834,9 +834,7 @@ class CitizenUserController(
             logger.audit(it, "CITIZEN_PROFILE_ACK_WARNING")
         }
         val userId = request.ensureEmployeeId()
-
-        reservationService.acknowledgeWarning(reservationId, userId, boatId, key, infoText)
-
+        reservationService.acknowledgeWarnings(reservationId, userId, boatId, key, infoText)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
@@ -846,7 +844,7 @@ class CitizenUserController(
     fun ackTrailerWarning(
         @RequestParam("reserverId") reserverId: UUID,
         @RequestParam("trailerId") trailerId: Int,
-        @RequestParam("key") key: String,
+        @RequestParam("key") key: List<String>,
         @RequestParam("infoText") infoText: String,
         request: HttpServletRequest,
     ): ResponseEntity<String> {

@@ -67,10 +67,10 @@ interface ReservationWarningRepository {
 
     fun getWarningsForReservation(reservationId: Int): List<ReservationWarning>
 
-    fun setReservationWarningAcknowledged(
+    fun setReservationWarningsAcknowledged(
         reservationId: Int,
         boatIdOrTrailerId: Int,
-        key: String,
+        keys: List<String>,
     ): Unit
 }
 
@@ -433,14 +433,15 @@ class BoatReservationService(
     fun getExpiringFixedTermBoatSpaceReservations(): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getExpiringBoatSpaceReservations(ReservationValidity.FixedTerm)
 
-    fun acknowledgeWarning(
+    fun acknowledgeWarnings(
         reservationId: Int,
         userId: UUID,
         boatOrTrailerId: Int,
-        key: String,
+        keys: List<String>,
         infoText: String,
     ) {
-        reservationWarningRepo.setReservationWarningAcknowledged(reservationId, boatOrTrailerId, key)
+        if (keys.isEmpty()) return
+        reservationWarningRepo.setReservationWarningsAcknowledged(reservationId, boatOrTrailerId, keys)
         val reservation = getReservationWithDependencies(reservationId)
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("No reservation or reservation has no reserver")
@@ -451,12 +452,13 @@ class BoatReservationService(
     fun acknowledgeWarningForTrailer(
         trailerId: Int,
         userId: UUID,
-        key: String,
+        keys: List<String>,
         infoText: String
     ) {
+        if (keys.isEmpty()) return
         val reservationsWithTrailer = getReservationsForTrailer(trailerId)
         reservationsWithTrailer.forEach {
-            acknowledgeWarning(it.id, userId, trailerId, key, infoText)
+            acknowledgeWarnings(it.id, userId, trailerId, keys, infoText)
         }
     }
 
