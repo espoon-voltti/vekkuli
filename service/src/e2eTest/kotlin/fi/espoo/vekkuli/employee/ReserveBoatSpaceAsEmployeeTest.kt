@@ -170,6 +170,180 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Employee can reserve a winter space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
+        try {
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+
+            listingPage.boatSpaceTypeFilter("Winter").click()
+
+            listingPage.createReservation.click()
+
+            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("OutboardMotor")
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Winter).click()
+
+            reservationPage.widthFilterInput.fill("1.8")
+            reservationPage.lengthFilterInput.fill("5.5")
+
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+
+            formPage.submitButton.click()
+
+            fillWinterBoatSpaceForm(formPage)
+
+            formPage.submitButton.click()
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.sendButton.click()
+
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("Doe John").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+            assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
+
+            citizenDetailsPage.invoicePaidButton.click()
+            val info = "invoice has been paid"
+            citizenDetailsPage.invoicePaidInfo.fill(info)
+            val testDate = LocalDate.of(2024, 7, 22)
+
+            citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
+
+            citizenDetailsPage.invoiceModalConfirm.click()
+            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
+
+            citizenDetailsPage.memoNavi.click()
+            assertThat(page.getByText(info)).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a winter space on behalf of a citizen, and change the reservation validity to fixed time`() {
+        try {
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+
+            listingPage.boatSpaceTypeFilter("Winter").click()
+
+            listingPage.createReservation.click()
+
+            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("OutboardMotor")
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Winter).click()
+
+            reservationPage.widthFilterInput.fill("1.8")
+            reservationPage.lengthFilterInput.fill("5.5")
+
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+
+            formPage.submitButton.click()
+
+            fillWinterBoatSpaceForm(formPage)
+
+            formPage.reservationValidityFixedTermRadioButton.click()
+
+            formPage.submitButton.click()
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.sendButton.click()
+
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("Doe John").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+            assertTrue("Until 31.08.2024" in citizenDetailsPage.reservationValidity.first().textContent())
+
+            citizenDetailsPage.invoicePaidButton.click()
+            val info = "invoice has been paid"
+            citizenDetailsPage.invoicePaidInfo.fill(info)
+            val testDate = LocalDate.of(2024, 7, 22)
+
+            citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
+
+            citizenDetailsPage.invoiceModalConfirm.click()
+            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
+
+            citizenDetailsPage.memoNavi.click()
+            assertThat(page.getByText(info)).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun fillWinterBoatSpaceForm(formPage: BoatSpaceFormPage) {
+        assertThat(formPage.depthError).isVisible()
+        assertThat(formPage.weightError).isVisible()
+        assertThat(formPage.boatRegistrationNumberError).isVisible()
+        assertThat(formPage.certifyInfoError).isVisible()
+        assertThat(formPage.agreementError).isVisible()
+
+        // Fill in the boat information
+        formPage.boatTypeSelect.selectOption("OutboardMotor")
+
+        formPage.boatNameInput.fill("My Boat")
+        formPage.widthInput.fill("1.8")
+        formPage.widthInput.blur()
+
+        formPage.lengthInput.fill("5")
+        formPage.lengthInput.blur()
+
+        formPage.depthInput.fill("1.5")
+        formPage.depthInput.blur()
+
+        formPage.weightInput.fill("500")
+        formPage.depthInput.blur()
+
+        formPage.otherIdentification.fill("ID12345")
+        formPage.noRegistrationCheckbox.check()
+        assertThat(formPage.boatRegistrationNumberError).isHidden()
+
+        formPage.ownerRadioButton.check()
+
+        formPage.firstNameInput.fill("John")
+        formPage.lastNameInput.fill("Doe")
+        formPage.ssnInput.fill("123456-789A")
+        formPage.addressInput.fill("Test street 1")
+        formPage.postalCodeInput.fill("12345")
+
+        formPage.emailInput.fill("test@example.com")
+        formPage.emailInput.blur()
+        assertThat(formPage.emailError).isHidden()
+        formPage.phoneInput.fill("123456789")
+        formPage.phoneInput.blur()
+        assertThat(formPage.phoneError).isHidden()
+
+        formPage.storageTypeBuckOption.click()
+
+        formPage.certifyInfoCheckbox.check()
+        formPage.agreementCheckbox.check()
+    }
+
+    @Test
     fun `Employee can reserve a boat space on behalf of a citizen and change the reservation validity type`() {
         try {
             val employeeHome = EmployeeHomePage(page)
