@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
+import { required as requiredValidator } from './form-validation'
 import { memoizeLast } from './memoize'
 import {
   AnyForm,
@@ -268,7 +269,7 @@ export function required<Output, Error extends string, State, Shape>(
   form: Form<Output | undefined, Error, State, Shape>
 ): Form<Output, Error | 'required', State, Shape> {
   return transformed(form, (value) =>
-    value === undefined
+    value === undefined || requiredValidator(value) !== undefined
       ? ValidationError.of('required')
       : ValidationSuccess.of(value)
   )

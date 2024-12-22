@@ -11,7 +11,7 @@ export default React.memo(function PaymentPage() {
 
   return (
     <section className="section">
-      <Loader results={reservation}>
+      <Loader results={[reservation]}>
         {(unfinishedReservation) => (
           <>
             <StepIndicator step="payment" />

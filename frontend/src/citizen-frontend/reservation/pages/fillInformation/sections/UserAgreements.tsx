@@ -3,7 +3,7 @@ import React from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { UserAgreementForm } from '../formDefinitions'
+import { UserAgreementForm } from '../formDefinitions/userAgreement'
 
 export default React.memo(function UserAgreements({
   form

@@ -1,0 +1,218 @@
+import { Container } from 'lib-components/dom'
+import React, { useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
+
+import { useForm, useFormFields } from 'lib-common/form/hooks'
+import { StateOf } from 'lib-common/form/types'
+import { useMutation } from 'lib-common/query'
+
+import { Municipality } from '../../../api-types/reservation'
+import { useTranslation } from '../../../localization'
+import { Boat } from '../../../shared/types'
+import ReservedSpace from '../../components/ReservedSpace'
+import { cancelReservationMutation } from '../../queries'
+import { Reservation } from '../../state'
+
+import { BoatForm, initialBoatValue } from './formDefinitions/boat'
+import initialOrganizationFormState, {
+  initialUnionFormState,
+  organizationForm
+} from './formDefinitions/organization'
+import {
+  initialFormState,
+  ReserveSpaceForm,
+  reserveSpaceForm
+} from './formDefinitions/reserveSpace'
+import { onBoatFormUpdate } from './helpers'
+import { fillBoatSpaceReservationMutation } from './queries'
+import BoatSection from './sections/Boat'
+import BoatOwnershipStatus from './sections/BoatOwnershipStatus'
+import Organization from './sections/Organization'
+import RenterType from './sections/RenterType'
+import Reserver from './sections/Reserver'
+import UserAgreements from './sections/UserAgreements'
+
+type FormProperties = {
+  reservation: Reservation
+  boats: Boat[]
+  municipalities: Municipality[]
+}
+
+export default React.memo(function Form({
+  reservation,
+  boats,
+  municipalities
+}: FormProperties) {
+  const i18n = useTranslation()
+  const navigate = useNavigate()
+  const { mutateAsync: submitForm } = useMutation(
+    fillBoatSpaceReservationMutation
+  )
+  const hasSetDefaults = useRef({
+    reservation: false,
+    citizenBoats: false
+  })
+
+  const [newBoatStateStore, setNewBoatStateStore] = useState<
+    StateOf<BoatForm> | undefined
+  >()
+  const organizationFormBind = useForm(
+    organizationForm,
+    () => initialOrganizationFormState(i18n),
+    i18n.components.validationErrors,
+    {
+      onUpdate: (prev, next) => {
+        if (prev.renterType.type.domValue !== next.renterType.type.domValue) {
+          const branch =
+            next.renterType.type.domValue === 'Organization'
+              ? 'new'
+              : 'noOrganization'
+          return {
+            ...next,
+            ...{
+              organization: {
+                ...initialUnionFormState(branch, municipalities)
+              }
+            }
+          }
+        }
+        return next
+      }
+    }
+  )
+  const formBind = useForm(
+    reserveSpaceForm,
+    () => initialFormState(i18n),
+    i18n.components.validationErrors,
+    {
+      onUpdate: (prev, next): StateOf<ReserveSpaceForm> => {
+        const prevBoatId = prev.boat.existingBoat.domValue
+        const nextBoatId = next.boat.existingBoat.domValue
+
+        if (prevBoatId !== nextBoatId) {
+          return {
+            ...next,
+            ...{
+              boat: onBoatFormUpdate({
+                prevBoatState: prev.boat,
+                nextBoatState: next.boat,
+                i18n,
+                citizenBoats: boats,
+                newBoatStateStore,
+                setNewBoatStateStore
+              })
+            }
+          }
+        }
+        return next
+      }
+    }
+  )
+  const { reserver, boat, boatOwnership, userAgreement } =
+    useFormFields(formBind)
+  const { renterType, organization } = useFormFields(organizationFormBind)
+
+  if (!hasSetDefaults.current.reservation) {
+    const { email, phone } = reservation.citizen
+    reserver.set({
+      email: email,
+      phone: phone
+    })
+    hasSetDefaults.current.reservation = true
+  }
+
+  if (!hasSetDefaults.current.citizenBoats) {
+    const options = boats.map((boat) => ({
+      domValue: boat.id,
+      label: boat.name,
+      value: boat
+    }))
+
+    if (options.length > 0)
+      options.unshift({
+        domValue: '',
+        label: 'Uusi vene',
+        value: initialBoatValue()
+      })
+
+    boat.update((prev) => ({
+      ...prev,
+      existingBoat: {
+        domValue: '',
+        options: options
+      }
+    }))
+    hasSetDefaults.current.citizenBoats = true
+  }
+
+  const { mutateAsync: cancelReservation } = useMutation(
+    cancelReservationMutation
+  )
+
+  const onReservationCancel = () => {
+    cancelReservation(reservation.id)
+      .then(() => {
+        return navigate('/kuntalainen/venepaikka')
+      })
+      .catch((error) => {
+        console.error('Error cancelling reservation', error)
+      })
+  }
+
+  const onSubmit = async () => {
+    console.log('reservation', reservation)
+    console.log('formBind', formBind.isValid())
+    console.log('organizationFormBind', organizationFormBind.isValid())
+    if (formBind.isValid() && organizationFormBind.isValid()) {
+      await submitForm({
+        id: reservation?.id,
+        input: { ...formBind.value(), ...organizationFormBind.value() }
+      })
+      return navigate('/kuntalainen/venepaikka/maksu')
+    }
+  }
+
+  return (
+    <Container>
+      <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
+        <h1 className="title pb-l" id="boat-space-form-header">
+          {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
+        </h1>
+        <div id="form-inputs" className="block">
+          <Reserver reserver={reservation.citizen} form={reserver} />
+          <RenterType form={renterType} />
+          <Organization bind={organization} />
+          <BoatSection form={boat} />
+          <BoatOwnershipStatus form={boatOwnership} />
+          <ReservedSpace
+            boatSpace={reservation.boatSpace}
+            price={{
+              totalPrice: reservation.totalPrice,
+              vatValue: reservation.vatValue,
+              netPrice: reservation.netPrice
+            }}
+          />
+          <UserAgreements form={userAgreement} />
+        </div>
+
+        <div className="buttons">
+          <button
+            id="cancel"
+            className="button is-secondary"
+            onClick={onReservationCancel}
+          >
+            Peruuta varaus
+          </button>
+          <button
+            id="submit-button"
+            className="button is-primary"
+            type="submit"
+            onClick={onSubmit}
+          >
+            Jatka maksamaan
+          </button>
+        </div>
+      </form>
+    </Container>
+  )
+})

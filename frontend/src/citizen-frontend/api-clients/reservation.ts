@@ -6,6 +6,7 @@ import {
   BoatSpaceReservation,
   BoatSpaceReservationResponse,
   FillBoatSpaceReservationInput,
+  Municipality,
   PaymentInformationResponse
 } from '../api-types/reservation'
 
@@ -35,6 +36,15 @@ export async function getReservation(
     method: 'GET'
   })
   return deserializeJsonBoatSpaceReservationResponse(json)
+}
+
+export async function municipalities(): Promise<Municipality[]> {
+  const { data: json } = await client.request<Municipality[]>({
+    url: uri`/municipalities`.toString(),
+    method: 'GET'
+  })
+
+  return json
 }
 
 export async function fillReservation(

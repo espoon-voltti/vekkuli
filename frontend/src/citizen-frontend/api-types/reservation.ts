@@ -66,3 +66,8 @@ export type PaymentInformation = {
 export type PaymentInformationResponse = {
   providers: PaymentInformation[]
 }
+
+export type Municipality = {
+  code: string
+  name: string
+}

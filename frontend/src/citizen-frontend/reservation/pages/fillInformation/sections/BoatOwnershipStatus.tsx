@@ -3,7 +3,7 @@ import React from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { BoatOwnershipTypeForm } from '../formDefinitions'
+import { BoatOwnershipTypeForm } from '../formDefinitions/boat'
 
 export default React.memo(function BoatOwnershipSatus({
   form

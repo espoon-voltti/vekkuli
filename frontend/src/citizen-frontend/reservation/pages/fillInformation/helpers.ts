@@ -1,17 +1,16 @@
-import { Result } from 'lib-common/api'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import { Boat } from '../../../shared/types'
 
-import { BoatForm, transformBoatToFormBoat } from './formDefinitions'
+import { BoatForm, transformBoatToFormBoat } from './formDefinitions/boat'
 
 type BoatFormUpdateProps = {
   prevBoatState: StateOf<BoatForm>
   nextBoatState: StateOf<BoatForm>
   newBoatStateStore: StateOf<BoatForm> | undefined
   setNewBoatStateStore: (state: StateOf<BoatForm> | undefined) => void
-  citizenBoats: Result<Boat[]>
+  citizenBoats: Boat[]
   i18n: Translations
 }
 
@@ -28,9 +27,7 @@ export function onBoatFormUpdate({
 
   if (prevBoatId !== nextBoatId) {
     const boatStateStoreValue = newBoatStateStore ?? prevBoatState
-    const selectedBoat = citizenBoats
-      .getOrElse([])
-      .find((boat) => boat.id === nextBoatId)
+    const selectedBoat = citizenBoats.find((boat) => boat.id === nextBoatId)
     if (selectedBoat) {
       //Update state store if previous boat id is empty
       if (!prevBoatId) {

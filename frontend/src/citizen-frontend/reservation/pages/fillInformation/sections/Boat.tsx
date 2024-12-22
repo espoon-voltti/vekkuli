@@ -7,7 +7,7 @@ import React from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { BoatForm } from '../formDefinitions'
+import { BoatForm } from '../formDefinitions/boat'
 
 export default React.memo(function Boat({
   form

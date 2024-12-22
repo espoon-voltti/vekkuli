@@ -1,41 +1,71 @@
-import { NumberField } from 'lib-components/form/NumberField'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
-import { BoundForm, useFormFields } from 'lib-common/form/hooks'
+import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 
-import { OrganizationForm } from '../formDefinitions'
+import { SelectField } from '../../../../../lib-components/form/SelectField'
+import {
+  existingOrganizationForm,
+  newOrganizationForm,
+  OrganisationUnionForm
+} from '../formDefinitions/organization'
 
 export default React.memo(function Organization({
-  form
+  bind
 }: {
-  form: BoundForm<OrganizationForm>
+  bind: BoundForm<OrganisationUnionForm>
 }) {
-  const { name, businessId, phone, email, city, postalCode, address } =
-    useFormFields(form)
+  const { branch, form } = useFormUnion(bind)
+  switch (branch) {
+    case 'existing':
+    case 'new':
+      return <WithOrganization bind={form} />
+  }
+  return <NoOrganization />
+})
+
+const WithOrganization = React.memo(function Organization({
+  bind
+}: {
+  bind: BoundForm<typeof newOrganizationForm | typeof existingOrganizationForm>
+}) {
+  const { details } = useFormFields(bind)
+  const {
+    name,
+    businessId,
+    phone,
+    email,
+    city,
+    postalCode,
+    address,
+    municipality
+  } = useFormFields(details)
+
   return (
     <div className="form-section">
       <div className="columns">
         <div className="column is-one-quarter">
           <TextField
             id="organization-name"
-            label="Yhteisön nimi *"
+            label="Yhteisön nimi"
+            required={true}
             bind={name}
           />
         </div>
         <div className="column is-one-quarter">
           <TextField
             id="organization-business-id"
-            label="Y-tunnus *"
+            label="Y-tunnus"
+            required={true}
             bind={businessId}
           />
         </div>
         <div className="column is-one-quarter">
-          <NumberField
+          <SelectField
             id="organization-municipality-code"
-            label="Kotikunta *"
-            value={NaN}
-            readonly={true}
+            label="Kotikunta"
+            required={true}
+            bind={municipality}
           />
         </div>
       </div>
@@ -43,14 +73,16 @@ export default React.memo(function Organization({
         <div className="column is-one-quarter">
           <TextField
             id="organization-phone"
-            label="Puhelinnumero *"
+            label="Puhelinnumero"
+            required={true}
             bind={phone}
           />
         </div>
         <div className="column is-one-quarter">
           <TextField
             id="organization-email"
-            label="Sähköposti *"
+            label="Sähköposti"
+            required={true}
             bind={email}
           />
         </div>
@@ -78,4 +110,8 @@ export default React.memo(function Organization({
       </div>
     </div>
   )
+})
+
+const NoOrganization = React.memo(function Organization() {
+  return null
 })

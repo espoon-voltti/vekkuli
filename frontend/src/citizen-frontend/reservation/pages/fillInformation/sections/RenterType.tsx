@@ -3,7 +3,7 @@ import React from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { RenterTypeForm } from '../formDefinitions'
+import { RenterTypeForm } from '../formDefinitions/organization'
 
 export default React.memo(function ReserverType({
   form

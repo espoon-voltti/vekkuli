@@ -5,7 +5,7 @@ import React from 'react'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
 import { Citizen } from '../../../../shared/types'
-import { ReserverForm } from '../formDefinitions'
+import { ReserverForm } from '../formDefinitions/reserver'
 
 export default React.memo(function Reserver({
   reserver,
