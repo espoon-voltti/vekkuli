@@ -32,8 +32,8 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.trailerEditSubmitButton.click()
 
             assertThat(citizenDetails.trailerRegistrationCode(id)).hasText("FOO-123")
-            assertThat(citizenDetails.trailerWidth(id)).hasText("3.00")
-            assertThat(citizenDetails.trailerLength(id)).hasText("5.00")
+            assertThat(citizenDetails.trailerWidth(id)).hasText("3,00")
+            assertThat(citizenDetails.trailerLength(id)).hasText("5,00")
 
             val employeeHomePage = EmployeeHomePage(page)
             employeeHomePage.employeeLogin()
