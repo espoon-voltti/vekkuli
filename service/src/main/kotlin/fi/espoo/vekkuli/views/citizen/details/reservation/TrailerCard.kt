@@ -4,7 +4,8 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.Trailer
-import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.formatInt
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.WarningBox
 import org.springframework.stereotype.Component
@@ -141,14 +142,14 @@ class TrailerCard(
         val trailerWidth =
             trailerValue(
                 "trailer-width",
-                "${trailer.widthCm.cmToM()}",
+                formatInt(trailer.widthCm),
                 "shared.label.widthInMeters",
                 isEmployee && trailer.hasWarning(ReservationWarningType.TrailerWidth.name)
             )
         val trailerLength =
             trailerValue(
                 "trailer-length",
-                "${trailer.lengthCm.cmToM()}",
+                formatInt(trailer.lengthCm),
                 "shared.label.lengthInMeters",
                 isEmployee && trailer.hasWarning(ReservationWarningType.TrailerLength.name)
             )
@@ -196,14 +197,14 @@ class TrailerCard(
         val width =
             formComponents.decimalInput(
                 labelKey = "shared.label.widthInMeters",
-                value = trailer.widthCm.cmToM(),
+                value = intToDecimal(trailer.widthCm),
                 id = "trailerWidth",
                 required = true,
             )
         val length =
             formComponents.decimalInput(
                 labelKey = "shared.label.lengthInMeters",
-                value = trailer.lengthCm.cmToM(),
+                value = intToDecimal(trailer.lengthCm),
                 id = "trailerLength",
                 required = true,
             )

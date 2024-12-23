@@ -16,7 +16,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.common.CommonComponents
@@ -320,8 +320,8 @@ class ReservationFormController(
 
         val showBoatSizeWarning =
             showBoatSizeWarning(
-                width?.mToCm(),
-                length?.mToCm(),
+                decimalToInt(width),
+                decimalToInt(length),
                 reservation.amenity,
                 reservation.widthCm,
                 reservation.lengthCm

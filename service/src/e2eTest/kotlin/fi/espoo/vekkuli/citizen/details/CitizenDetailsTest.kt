@@ -32,8 +32,8 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.trailerEditSubmitButton.click()
 
             assertThat(citizenDetails.trailerRegistrationCode(id)).hasText("FOO-123")
-            assertThat(citizenDetails.trailerWidth(id)).hasText("3.00")
-            assertThat(citizenDetails.trailerLength(id)).hasText("5.00")
+            assertThat(citizenDetails.trailerWidth(id)).hasText("3,00")
+            assertThat(citizenDetails.trailerLength(id)).hasText("5,00")
 
             val employeeHomePage = EmployeeHomePage(page)
             employeeHomePage.employeeLogin()
@@ -229,11 +229,11 @@ class CitizenDetailsTest : PlaywrightTest() {
             assertThat(citizenDetails.nameText(3)).hasText("New Boat Name")
             assertThat(citizenDetails.weightText(3)).hasText("2000")
             assertThat(citizenDetails.typeText(3)).hasText("Sailboat")
-            assertThat(citizenDetails.depthText(3)).hasText("1.50")
-            assertThat(citizenDetails.widthText(3)).hasText("3.00")
+            assertThat(citizenDetails.depthText(3)).hasText("1,50")
+            assertThat(citizenDetails.widthText(3)).hasText("3,00")
             assertThat(citizenDetails.registrationNumberText(3)).hasText("ABC123")
 
-            assertThat(citizenDetails.lengthText(3)).hasText("6.00")
+            assertThat(citizenDetails.lengthText(3)).hasText("6,00")
             assertThat(citizenDetails.ownershipText(3)).hasText("I own the boat")
             assertThat(citizenDetails.otherIdentifierText(3)).hasText("ID12345")
             assertThat(citizenDetails.extraInformationText(3)).hasText("Extra info")

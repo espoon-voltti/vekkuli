@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.utils.centsToEuro
+import fi.espoo.vekkuli.utils.formatInt
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -78,11 +78,11 @@ data class ReservationWithDependencies(
     val renewedFromId: Int? = null,
 ) {
     val priceInEuro: String
-        get() = priceCents.centsToEuro()
+        get() = formatInt(priceCents)
     val vatPriceInEuro: String
-        get() = vatCents.centsToEuro()
+        get() = formatInt(vatCents)
     val priceWithoutVatInEuro: String
-        get() = netPriceCents.centsToEuro()
+        get() = formatInt(netPriceCents)
 }
 
 data class BoatSpaceReservationItem(

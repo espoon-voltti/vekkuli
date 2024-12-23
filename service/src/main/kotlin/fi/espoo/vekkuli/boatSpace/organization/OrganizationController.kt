@@ -18,7 +18,7 @@ import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.ReserverService
-import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
@@ -37,9 +37,9 @@ fun toBoatUpdateForm(
         id = boat.id,
         name = boat.name ?: "",
         type = boat.type,
-        width = boat.widthCm.cmToM(),
-        length = boat.lengthCm.cmToM(),
-        depth = boat.depthCm.cmToM(),
+        width = intToDecimal(boat.widthCm),
+        length = intToDecimal(boat.lengthCm),
+        depth = intToDecimal(boat.depthCm),
         weight = boat.weightKg,
         registrationNumber = boat.registrationCode ?: "",
         otherIdentifier = boat.otherIdentification ?: "",

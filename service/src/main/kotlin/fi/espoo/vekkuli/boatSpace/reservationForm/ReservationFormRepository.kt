@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.boatSpace.reservationForm
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.centsToEuro
+import fi.espoo.vekkuli.utils.formatInt
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -34,11 +34,11 @@ open class ReservationForApplicationForm(
     val storageType: StorageType?,
 ) {
     val priceInEuro: String
-        get() = priceCents.centsToEuro()
+        get() = formatInt(priceCents)
     val vatPriceInEuro: String
-        get() = vatCents.centsToEuro()
+        get() = formatInt(vatCents)
     val priceWithoutVatInEuro: String
-        get() = netPriceCents.centsToEuro()
+        get() = formatInt(netPriceCents)
 }
 
 @Repository

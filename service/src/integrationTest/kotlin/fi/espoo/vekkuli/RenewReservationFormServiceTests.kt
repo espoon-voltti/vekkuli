@@ -526,7 +526,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         boatSpaceRenewalService.updateRenewReservation(citizenIdLeo, validInput, renewalReservation.id)
         val updatedReservation = reservationService.getBoatSpaceReservation(renewalReservation.id)
         assertEquals(validInput.trailerRegistrationNumber, updatedReservation?.trailer?.registrationCode)
-        assertEquals(validInput.trailerWidth?.mToCm(), updatedReservation?.trailer?.widthCm)
-        assertEquals(validInput.trailerLength?.mToCm(), updatedReservation?.trailer?.lengthCm)
+        assertEquals(decimalToInt(validInput.trailerWidth), updatedReservation?.trailer?.widthCm)
+        assertEquals(decimalToInt(validInput.trailerLength), updatedReservation?.trailer?.lengthCm)
     }
 }

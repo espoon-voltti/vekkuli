@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
-import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -45,9 +45,9 @@ class OrganizationControllerService(
             boat.copy(
                 name = input.name,
                 type = input.type,
-                widthCm = input.width!!.mToCm(),
-                lengthCm = input.length!!.mToCm(),
-                depthCm = input.depth!!.mToCm(),
+                widthCm = decimalToInt(input.width!!),
+                lengthCm = decimalToInt(input.length!!),
+                depthCm = decimalToInt(input.depth!!),
                 weightKg = input.weight!!,
                 registrationCode = input.registrationNumber,
                 otherIdentification = input.otherIdentifier,

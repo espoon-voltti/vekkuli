@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.domain
 
-import fi.espoo.vekkuli.utils.*
+import fi.espoo.vekkuli.utils.formatInt
 
 enum class ReservationValidity {
     Indefinite,
@@ -17,8 +17,8 @@ data class BoatSpaceOption(
     val locationAddress: String,
     val amenity: BoatSpaceAmenity,
     val formattedSizes: String =
-        if (amenity != BoatSpaceAmenity.Buoy) "${widthCm.cmToM()} x ${lengthCm.cmToM()} m".replace('.', ',') else ""
+        if (amenity != BoatSpaceAmenity.Buoy) "${formatInt(widthCm)} x ${formatInt(lengthCm)} m" else ""
 ) {
     val formattedPrice: String
-        get() = "${priceCents / 100.0}".replace('.', ',')
+        get() = formatInt(priceCents)
 }

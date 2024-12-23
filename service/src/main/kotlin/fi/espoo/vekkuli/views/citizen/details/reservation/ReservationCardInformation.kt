@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
+import fi.espoo.vekkuli.utils.formatDecimal
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,7 +51,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("shared.label.widthInMeters")}</label>
-                         <p>${reservation.boatSpaceWidthInM}</p>
+                         <p>${formatDecimal(reservation.boatSpaceWidthInM)}</p>
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.reservationDate")}</label>
@@ -64,7 +65,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("shared.label.lengthInMeters")}</label>
-                         <p>${reservation.boatSpaceLengthInM}</p>
+                         <p>${formatDecimal(reservation.boatSpaceLengthInM)}</p>
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.label.reservationValidity")}</label>

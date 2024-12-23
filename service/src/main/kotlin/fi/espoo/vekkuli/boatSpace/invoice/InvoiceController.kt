@@ -9,8 +9,8 @@ import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.centToEuro
 import fi.espoo.vekkuli.utils.formatAsFullDate
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
@@ -77,7 +77,7 @@ class InvoiceController(
                 dueDate = LocalDate.of(2025, 12, 31),
                 costCenter = "",
                 invoiceType = "",
-                priceWithTax = reservation.priceCents.centToEuro(),
+                priceWithTax = intToDecimal(reservation.priceCents),
                 description =
                     "Venepaikka, ${reservation.locationName} ${reservation.place}, " +
                         "${reservation.startDate.year}",
