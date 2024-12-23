@@ -3,17 +3,46 @@ import { NumberField } from 'lib-components/form/NumberField'
 import { RadioField } from 'lib-components/form/RadioField'
 import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
-import React from 'react'
+import React, { useRef } from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { BoatForm } from '../formDefinitions/boat'
+import { Boat } from '../../../../shared/types'
+import { BoatForm, initialBoatValue } from '../formDefinitions/boat'
 
 export default React.memo(function Boat({
-  form
+  bind,
+  boats
 }: {
-  form: BoundForm<BoatForm>
+  bind: BoundForm<BoatForm>
+  boats: Boat[]
 }) {
+  const hasSetDefaults = useRef(false)
+
+  if (!hasSetDefaults.current) {
+    const options = boats.map((boat) => ({
+      domValue: boat.id,
+      label: boat.name,
+      value: boat
+    }))
+
+    if (options.length > 0)
+      options.unshift({
+        domValue: '',
+        label: 'Uusi vene',
+        value: initialBoatValue()
+      })
+
+    bind.update((prev) => ({
+      ...prev,
+      existingBoat: {
+        domValue: '',
+        options: options
+      }
+    }))
+    hasSetDefaults.current = true
+  }
+
   const {
     name,
     type,
@@ -26,7 +55,7 @@ export default React.memo(function Boat({
     otherIdentification,
     extraInformation,
     existingBoat
-  } = useFormFields(form)
+  } = useFormFields(bind)
 
   return (
     <div className="form-section">
@@ -92,7 +121,7 @@ export default React.memo(function Boat({
             max={9999999}
           />
         </div>
-        {form.state.noRegisterNumber.domValues.length === 0 && (
+        {bind.state.noRegisterNumber.domValues.length === 0 && (
           <div className="column is-one-quarter">
             <TextField
               id="register-number"

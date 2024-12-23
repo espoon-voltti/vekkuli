@@ -1,5 +1,5 @@
 import { Container } from 'lib-components/dom'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { useForm, useFormFields } from 'lib-common/form/hooks'
@@ -13,7 +13,7 @@ import ReservedSpace from '../../components/ReservedSpace'
 import { cancelReservationMutation } from '../../queries'
 import { Reservation } from '../../state'
 
-import { BoatForm, initialBoatValue } from './formDefinitions/boat'
+import { BoatForm } from './formDefinitions/boat'
 import initialOrganizationFormState, {
   initialUnionFormState,
   organizationForm
@@ -48,10 +48,6 @@ export default React.memo(function Form({
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
   )
-  const hasSetDefaults = useRef({
-    reservation: false,
-    citizenBoats: false
-  })
 
   const [newBoatStateStore, setNewBoatStateStore] = useState<
     StateOf<BoatForm> | undefined
@@ -112,39 +108,6 @@ export default React.memo(function Form({
     useFormFields(formBind)
   const { renterType, organization } = useFormFields(organizationFormBind)
 
-  if (!hasSetDefaults.current.reservation) {
-    const { email, phone } = reservation.citizen
-    reserver.set({
-      email: email,
-      phone: phone
-    })
-    hasSetDefaults.current.reservation = true
-  }
-
-  if (!hasSetDefaults.current.citizenBoats) {
-    const options = boats.map((boat) => ({
-      domValue: boat.id,
-      label: boat.name,
-      value: boat
-    }))
-
-    if (options.length > 0)
-      options.unshift({
-        domValue: '',
-        label: 'Uusi vene',
-        value: initialBoatValue()
-      })
-
-    boat.update((prev) => ({
-      ...prev,
-      existingBoat: {
-        domValue: '',
-        options: options
-      }
-    }))
-    hasSetDefaults.current.citizenBoats = true
-  }
-
   const { mutateAsync: cancelReservation } = useMutation(
     cancelReservationMutation
   )
@@ -179,10 +142,10 @@ export default React.memo(function Form({
           {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
         </h1>
         <div id="form-inputs" className="block">
-          <Reserver reserver={reservation.citizen} form={reserver} />
+          <Reserver reserver={reservation.citizen} bind={reserver} />
           <RenterType form={renterType} />
           <Organization bind={organization} />
-          <BoatSection form={boat} />
+          <BoatSection bind={boat} boats={boats} />
           <BoatOwnershipStatus form={boatOwnership} />
           <ReservedSpace
             boatSpace={reservation.boatSpace}
