@@ -80,7 +80,14 @@ class CitizenDetails(
                 <div class="container block" id="citizen-information">
                     <div class="columns">
                         <div class="column is-narrow">
-                            <h3 class="header">${t("boatSpaceReservation.title.customerInformation")}</h3>
+                            <h3 class="header">
+                             ${if (userType == UserType.EMPLOYEE)
+                    {
+                        t("boatSpaceReservation.title.customerInformation")
+                    } else {
+                    t("boatSpaceReservation.title.customerInformationCitizen")
+                }}
+                            </h3>
                         </div>
                         <div class="column">
                             <div>
@@ -92,7 +99,14 @@ class CitizenDetails(
                                     <span class="icon">
                                         ${icons.edit}
                                     </span>
-                                    <span>${t("boatSpaceReservation.button.editCustomerDetails")}</span>
+                                    <span>
+                                      ${if (userType == UserType.EMPLOYEE)
+                    {
+                        t("boatSpaceReservation.button.editCustomerDetails")
+                    } else {
+                    t("boatSpaceReservation.button.editCustomerDetailsCitizen")
+                }}
+                                    </span>                         
                                 </a>
                             </div>
                             <!-- Placeholder for additional actions, if needed -->
