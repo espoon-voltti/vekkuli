@@ -222,7 +222,12 @@ class ReserverDetailsReservationsContainer(
         ): String =
             boats
                 .mapIndexed { _, boat ->
-                    val name = boatInfo("boat-name-text-${boat.id}", boat.name, "boatSpaceReservation.title.boatName")
+                    val name =
+                        boatInfo(
+                            "boat-name-text-${boat.id}",
+                            if (!boat.name.isEmpty()) boat.name else "-",
+                            "boatSpaceReservation.title.boatName"
+                        )
                     val weight =
                         boatInfo(
                             "boat-weight-text-${boat.id}",
