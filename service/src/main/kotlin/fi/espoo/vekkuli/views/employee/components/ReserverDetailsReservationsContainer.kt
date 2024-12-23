@@ -354,23 +354,26 @@ class ReserverDetailsReservationsContainer(
                        ${if (userType == UserType.EMPLOYEE) renderTabNavi(reserverId, SubTab.Reservations) else ""}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
                         $reservationList
-                       <h3>${t("boatSpaceReservation.title.boats")}</h3>
-                       <div class="reservation-list form-section no-bottom-border">
-                           ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)} 
-                       </div>
-                     
-                      <div>
-                         $showAllBoatsCheckbox
-                          <div class="reservation-list form-section" x-show="showAllBoats">    
-                            ${getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)} 
-                           </div>
-                      </div>
-                      <div 
+                       
+                       <div 
                           hx-get="/reservation/partial/expired-boat-space-reservation-list/$reserverId" 
                           hx-trigger="load"
                           hx-swap="outerHTML"
                           ${addTestId("expired-reservation-list-loader")}
                           class='mt-1'>  
+                       </div>
+                       
+                       <h3>${t("boatSpaceReservation.title.boats")}</h3>
+
+                       <div class="reservation-list form-section no-bottom-border">
+                           ${getBoatsList(boats.filter { it.reservationId != null }, userType == UserType.EMPLOYEE)} 
+                       </div>
+                     
+                       <div>
+                         $showAllBoatsCheckbox
+                          <div class="reservation-list form-section" x-show="showAllBoats">    
+                            ${getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)} 
+                           </div>
                        </div>
                    </div>
             """.trimIndent()
