@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.utils.decimalToInt
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -215,8 +215,8 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
 
         assertEquals(StorageType.Trailer, reservation?.storageType, "Storage type should be Trailer")
-        assertEquals(input.trailerLength?.mToCm(), reservation?.trailer?.lengthCm, "Trailer length should be the same as in the input")
-        assertEquals(input.trailerWidth?.mToCm(), reservation?.trailer?.widthCm, "Trailer width should be the same as in the input")
+        assertEquals(decimalToInt(input.trailerLength), reservation?.trailer?.lengthCm, "Trailer length should be the same as in the input")
+        assertEquals(decimalToInt(input.trailerWidth), reservation?.trailer?.widthCm, "Trailer width should be the same as in the input")
         assertEquals(
             input.trailerRegistrationNumber,
             reservation?.trailer?.registrationCode,
