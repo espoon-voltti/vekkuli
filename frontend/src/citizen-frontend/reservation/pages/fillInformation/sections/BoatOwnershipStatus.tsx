@@ -6,11 +6,11 @@ import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 import { BoatOwnershipTypeForm } from '../formDefinitions/boat'
 
 export default React.memo(function BoatOwnershipSatus({
-  form
+  bind
 }: {
-  form: BoundForm<BoatOwnershipTypeForm>
+  bind: BoundForm<BoatOwnershipTypeForm>
 }) {
-  const { status } = useFormFields(form)
+  const { status } = useFormFields(bind)
   return (
     <div className="form-section">
       <div id="shipHolder">

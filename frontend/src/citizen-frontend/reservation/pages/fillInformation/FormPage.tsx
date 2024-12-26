@@ -3,7 +3,10 @@ import React, { useContext } from 'react'
 
 import { useQueryResult } from 'lib-common/query'
 
-import { citizenBoatsQuery } from '../../../shared/queries'
+import {
+  citizenBoatsQuery,
+  citizenOrganizationsQuery
+} from '../../../shared/queries'
 import StepIndicator from '../../StepIndicator'
 import { getMunicipalitiesQuery } from '../../queries'
 import { ReservationStateContext } from '../../state'
@@ -14,11 +17,19 @@ export default React.memo(function FormPage() {
   const { reservation } = useContext(ReservationStateContext)
   const citizenBoats = useQueryResult(citizenBoatsQuery())
   const municipalities = useQueryResult(getMunicipalitiesQuery())
+  const organizations = useQueryResult(citizenOrganizationsQuery())
 
   return (
     <section className="section">
-      <Loader results={[reservation, citizenBoats, municipalities]}>
-        {(loadedReservation, loadedBoats, loadedMunicipalities) => (
+      <Loader
+        results={[reservation, citizenBoats, municipalities, organizations]}
+      >
+        {(
+          loadedReservation,
+          loadedBoats,
+          loadedMunicipalities,
+          organizations
+        ) => (
           <>
             <StepIndicator step="fillInformation" />
             <div className="container">
@@ -26,6 +37,7 @@ export default React.memo(function FormPage() {
                 reservation={loadedReservation}
                 boats={loadedBoats}
                 municipalities={loadedMunicipalities}
+                organizations={organizations}
               />
             </div>
           </>

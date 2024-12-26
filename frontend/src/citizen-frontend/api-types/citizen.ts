@@ -1,4 +1,4 @@
-import { BoatType, OwnershipStatus } from '../shared/types'
+import { BoatType, Organization, OwnershipStatus } from '../shared/types'
 
 export type CitizenBoatsResponse = {
   id: string
@@ -13,3 +13,5 @@ export type CitizenBoatsResponse = {
   extraInformation: string
   ownership: OwnershipStatus
 }[]
+
+export type CitizenOrganizationResponse = Organization[]

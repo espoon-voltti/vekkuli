@@ -23,6 +23,7 @@ export const renterTypeForm = object({
 export type RenterTypeForm = typeof renterTypeForm
 
 const organizationInfoForm = object({
+  id: string(),
   name: required(string()),
   businessId: required(string()),
   municipality: required(oneOf<Municipality>()),
@@ -34,33 +35,74 @@ const organizationInfoForm = object({
 })
 export type OrganizationInfoForm = typeof organizationInfoForm
 
+const initialInfoFormState = (
+  municipalities: Municipality[]
+): StateOf<OrganizationInfoForm> => ({
+  id: '',
+  name: '',
+  businessId: '',
+  municipality: {
+    domValue: '',
+    options: municipalities.map((municipality) => ({
+      domValue: municipality.code.toString(),
+      label: municipality.name,
+      value: municipality
+    }))
+  },
+  phone: '',
+  email: '',
+  address: '',
+  postalCode: '',
+  city: ''
+})
+
 export type OrganizationUnionBranch = 'noOrganization' | 'existing' | 'new'
 
-export const existingOrganizationForm = object({
-  details: organizationInfoForm,
-  newCache: value<StateOf<OrganizationInfoForm>>()
-})
-
-export const newOrganizationForm = object({
-  details: organizationInfoForm
-})
+export const organizationSelectionForm = oneOf<Organization | null>()
+export type OrganizationSelectionForm = typeof organizationSelectionForm
 
 export const organisationUnionForm = union({
   noOrganization: value<null>(),
-  existing: existingOrganizationForm,
-  new: newOrganizationForm
+  existing: organizationInfoForm,
+  new: organizationInfoForm
 })
 export type OrganisationUnionForm = typeof organisationUnionForm
+const initialUnionFormState = (
+  branch: OrganizationUnionBranch,
+  municipalities: Municipality[],
+  cache?: StateOf<OrganizationInfoForm> | null
+): StateOf<OrganisationUnionForm> => {
+  const organization = initialInfoFormState(municipalities)
+
+  switch (branch) {
+    case 'existing':
+      return {
+        branch: branch,
+        state: organization
+      }
+    case 'new':
+      return {
+        branch: branch,
+        state: cache || organization
+      }
+  }
+
+  return {
+    branch: branch,
+    state: null
+  }
+}
 
 export const organizationForm = mapped(
   object({
     renterType: renterTypeForm,
-    organization: organisationUnionForm
+    organizationSelection: organizationSelectionForm,
+    organization: organisationUnionForm,
+    newOrganizationCache: value<StateOf<OrganizationInfoForm>>()
   }),
   ({
     organization
   }): { organization: Organization | NewOrganization | null } => {
-    console.log('mapping organization', organization)
     if (organization.branch === 'noOrganization')
       return {
         organization: null
@@ -68,11 +110,9 @@ export const organizationForm = mapped(
 
     return {
       organization: {
-        ...organization.value.details,
+        ...organization.value,
         ...{
-          municipalityCode: parseInt(
-            organization.value.details.municipality.code
-          )
+          municipalityCode: parseInt(organization.value.municipality.code)
         }
       }
     }
@@ -81,13 +121,32 @@ export const organizationForm = mapped(
 export type OrganizationForm = typeof organizationForm
 
 export default function initialFormState(
-  i18n: Translations
+  i18n: Translations,
+  municipalities: Municipality[],
+  organizations: Organization[]
 ): StateOf<OrganizationForm> {
+  const selectionOptions: StateOf<OrganizationSelectionForm> = {
+    domValue: '',
+    options: organizations.map((organization) => ({
+      domValue: organization.id,
+      label: organization.name,
+      value: organization
+    }))
+  }
+  if (selectionOptions.options.length > 0)
+    selectionOptions.options.push({
+      domValue: '',
+      label: 'Uusi yhteisö',
+      value: null
+    })
+
   return {
     organization: {
       branch: 'noOrganization',
       state: null
     },
+    organizationSelection: selectionOptions,
+    newOrganizationCache: initialInfoFormState(municipalities),
     renterType: {
       type: {
         domValue: ReserverType.Citizen,
@@ -101,48 +160,98 @@ export default function initialFormState(
   }
 }
 
-export const initialUnionFormState = (
-  branch: OrganizationUnionBranch,
+export const onOrganizationFormUpdate = (
+  prev: StateOf<OrganizationForm>,
+  next: StateOf<OrganizationForm>,
+  organizations: Organization[],
   municipalities: Municipality[]
-): StateOf<OrganisationUnionForm> => {
-  const organization = {
-    name: '',
-    businessId: '',
-    municipality: {
-      domValue: '',
-      options: municipalities.map((municipality) => ({
-        domValue: municipality.code.toString(),
-        label: municipality.name,
-        value: municipality
-      }))
-    },
-    phone: '',
-    email: '',
-    address: '',
-    postalCode: '',
-    city: ''
-  }
+): StateOf<OrganizationForm> => {
+  const nextBranch = determineOrganizationUnionBranch(next)
+  const prevBranch = determineOrganizationUnionBranch(prev)
+  if (prevBranch !== nextBranch) {
+    const newOrganizationCache: StateOf<OrganizationInfoForm> =
+      prevBranch === 'new'
+        ? prev.organization.state!
+        : prev.newOrganizationCache
 
-  switch (branch) {
-    case 'existing':
-      return {
-        branch: branch,
-        state: {
-          details: organization,
-          newCache: organization
+    switch (nextBranch) {
+      case 'new':
+        return {
+          ...next,
+          ...{
+            organization: {
+              branch: nextBranch,
+              state: next.newOrganizationCache
+            }
+          }
+        }
+      case 'existing': {
+        const foundOrganization = organizations.find(
+          (organization) =>
+            organization.id === next.organizationSelection.domValue
+        )
+        return {
+          ...next,
+          newOrganizationCache,
+          ...{
+            organization: {
+              branch: nextBranch,
+              state: transformOrganizationToFormOrganization(
+                foundOrganization,
+                municipalities
+              )
+            }
+          }
         }
       }
-    case 'new':
-      return {
-        branch: branch,
-        state: {
-          details: organization
+      default:
+        return {
+          ...next,
+          newOrganizationCache,
+          ...{
+            organization: {
+              ...initialUnionFormState(nextBranch, municipalities, null)
+            }
+          }
         }
-      }
+    }
   }
+  return next
+}
 
+export const determineOrganizationUnionBranch = (
+  state: StateOf<OrganizationForm>
+): OrganizationUnionBranch => {
+  const organizationId = state.organizationSelection.domValue
+  const renterType = state.renterType.type.domValue
+
+  if (renterType === 'Organization') {
+    return organizationId !== '' ? 'existing' : 'new'
+  }
+  return 'noOrganization'
+}
+
+const transformOrganizationToFormOrganization = (
+  organization: Organization | undefined,
+  municipalities: Municipality[]
+): StateOf<OrganizationInfoForm> => {
+  if (organization === undefined) {
+    return initialInfoFormState(municipalities)
+  }
   return {
-    branch: branch,
-    state: null
+    ...organization,
+    ...{
+      address: organization.address || '',
+      postalCode: organization.postalCode || '',
+      city: organization.city || '',
+      municipality: {
+        domValue: organization.municipalityCode.toString(),
+        options: municipalities.map((municipality) => ({
+          domValue: municipality.code.toString(),
+          label: municipality.name,
+          value: municipality
+        }))
+      }
+    }
   }
 }

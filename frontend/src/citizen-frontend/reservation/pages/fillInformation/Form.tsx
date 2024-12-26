@@ -8,14 +8,15 @@ import { useMutation } from 'lib-common/query'
 
 import { Municipality } from '../../../api-types/reservation'
 import { useTranslation } from '../../../localization'
-import { Boat } from '../../../shared/types'
+import { Boat, Organization } from '../../../shared/types'
 import ReservedSpace from '../../components/ReservedSpace'
 import { cancelReservationMutation } from '../../queries'
 import { Reservation } from '../../state'
 
 import { BoatForm } from './formDefinitions/boat'
 import initialOrganizationFormState, {
-  initialUnionFormState,
+  onOrganizationFormUpdate,
+  OrganizationForm,
   organizationForm
 } from './formDefinitions/organization'
 import {
@@ -27,53 +28,39 @@ import { onBoatFormUpdate } from './helpers'
 import { fillBoatSpaceReservationMutation } from './queries'
 import BoatSection from './sections/Boat'
 import BoatOwnershipStatus from './sections/BoatOwnershipStatus'
-import Organization from './sections/Organization'
-import RenterType from './sections/RenterType'
-import Reserver from './sections/Reserver'
-import UserAgreements from './sections/UserAgreements'
+import ReserverSection from './sections/Reserver'
+import UserAgreementsSection from './sections/UserAgreements'
+import OrganizationSection from './sections/organization/Organization'
 
 type FormProperties = {
   reservation: Reservation
   boats: Boat[]
   municipalities: Municipality[]
+  organizations: Organization[]
 }
 
 export default React.memo(function Form({
   reservation,
   boats,
-  municipalities
+  municipalities,
+  organizations
 }: FormProperties) {
   const i18n = useTranslation()
   const navigate = useNavigate()
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
   )
-
   const [newBoatStateStore, setNewBoatStateStore] = useState<
     StateOf<BoatForm> | undefined
   >()
+
   const organizationFormBind = useForm(
     organizationForm,
-    () => initialOrganizationFormState(i18n),
+    () => initialOrganizationFormState(i18n, municipalities, organizations),
     i18n.components.validationErrors,
     {
-      onUpdate: (prev, next) => {
-        if (prev.renterType.type.domValue !== next.renterType.type.domValue) {
-          const branch =
-            next.renterType.type.domValue === 'Organization'
-              ? 'new'
-              : 'noOrganization'
-          return {
-            ...next,
-            ...{
-              organization: {
-                ...initialUnionFormState(branch, municipalities)
-              }
-            }
-          }
-        }
-        return next
-      }
+      onUpdate: (prev, next): StateOf<OrganizationForm> =>
+        onOrganizationFormUpdate(prev, next, organizations, municipalities)
     }
   )
   const formBind = useForm(
@@ -106,7 +93,8 @@ export default React.memo(function Form({
   )
   const { reserver, boat, boatOwnership, userAgreement } =
     useFormFields(formBind)
-  const { renterType, organization } = useFormFields(organizationFormBind)
+  const { renterType, organization, organizationSelection } =
+    useFormFields(organizationFormBind)
 
   const { mutateAsync: cancelReservation } = useMutation(
     cancelReservationMutation
@@ -123,9 +111,6 @@ export default React.memo(function Form({
   }
 
   const onSubmit = async () => {
-    console.log('reservation', reservation)
-    console.log('formBind', formBind.isValid())
-    console.log('organizationFormBind', organizationFormBind.isValid())
     if (formBind.isValid() && organizationFormBind.isValid()) {
       await submitForm({
         id: reservation?.id,
@@ -142,11 +127,14 @@ export default React.memo(function Form({
           {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
         </h1>
         <div id="form-inputs" className="block">
-          <Reserver reserver={reservation.citizen} bind={reserver} />
-          <RenterType form={renterType} />
-          <Organization bind={organization} />
+          <ReserverSection reserver={reservation.citizen} bind={reserver} />
+          <OrganizationSection
+            organizationBind={organization}
+            renterTypeBind={renterType}
+            organizationSelectionBind={organizationSelection}
+          />
           <BoatSection bind={boat} boats={boats} />
-          <BoatOwnershipStatus form={boatOwnership} />
+          <BoatOwnershipStatus bind={boatOwnership} />
           <ReservedSpace
             boatSpace={reservation.boatSpace}
             price={{
@@ -155,7 +143,7 @@ export default React.memo(function Form({
               netPrice: reservation.netPrice
             }}
           />
-          <UserAgreements form={userAgreement} />
+          <UserAgreementsSection bind={userAgreement} />
         </div>
 
         <div className="buttons">

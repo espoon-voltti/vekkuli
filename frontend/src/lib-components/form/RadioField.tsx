@@ -17,6 +17,7 @@ export interface RadioOption {
 interface RadioFieldProps<T> extends Omit<BaseFieldProps, 'onChange'> {
   bind?: BoundFormState<OneOfState<T>>
   options?: RadioOption[]
+  noErrorContainer?: boolean
 }
 
 function RadioField_<T>({
@@ -26,7 +27,8 @@ function RadioField_<T>({
   bind,
   readonly,
   value,
-  showErrorsBeforeTouched
+  showErrorsBeforeTouched,
+  noErrorContainer
 }: RadioFieldProps<T>) {
   const { state, update, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
@@ -55,11 +57,13 @@ function RadioField_<T>({
               info={option.info}
             />
           ))}
-          <FieldErrorContainer
-            showError={showError}
-            error={validationError()}
-            translateError={translateError}
-          />
+          {!noErrorContainer && (
+            <FieldErrorContainer
+              showError={showError}
+              error={validationError()}
+              translateError={translateError}
+            />
+          )}
         </div>
       )}
     </div>

@@ -6,11 +6,11 @@ import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 import { UserAgreementForm } from '../formDefinitions/userAgreement'
 
 export default React.memo(function UserAgreements({
-  form
+  bind
 }: {
-  form: BoundForm<UserAgreementForm>
+  bind: BoundForm<UserAgreementForm>
 }) {
-  const { agreements } = useFormFields(form)
+  const { agreements } = useFormFields(bind)
   return (
     <div className="form-section">
       <div id="agreements">

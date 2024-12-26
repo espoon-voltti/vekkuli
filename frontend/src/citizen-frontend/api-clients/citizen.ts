@@ -1,33 +1,20 @@
 import { uri } from 'lib-common/uri'
 
 import { client } from '../api-client'
-import { CitizenBoatsResponse } from '../api-types/citizen'
+import {
+  CitizenBoatsResponse,
+  CitizenOrganizationResponse
+} from '../api-types/citizen'
 import {
   BoatSpaceReservation,
   BoatSpaceReservationResponse
 } from '../api-types/reservation'
 import { formatCmToM } from '../shared/formatters'
-import { Boat } from '../shared/types'
+import { Boat, Organization } from '../shared/types'
 
 import { deserializeJsonBoatSpaceReservationResponse } from './reservation'
 
 export async function citizenBoats(): Promise<Boat[]> {
-  const { data: json } = await client.request<CitizenBoatsResponse>({
-    url: uri`/current/boats`.toString(),
-    method: 'GET'
-  })
-  return deserializeJsonCitizenBoatsResponse(json)
-}
-
-export async function citizenBoatsInReservations(): Promise<Boat[]> {
-  const { data: json } = await client.request<CitizenBoatsResponse>({
-    url: uri`/current/boats`.toString(),
-    method: 'GET'
-  })
-  return deserializeJsonCitizenBoatsResponse(json)
-}
-
-export async function citizenBoatsWithoutReservations(): Promise<Boat[]> {
   const { data: json } = await client.request<CitizenBoatsResponse>({
     url: uri`/current/boats`.toString(),
     method: 'GET'
@@ -72,4 +59,12 @@ export async function citizenExpiredReservations(): Promise<
     method: 'GET'
   })
   return json.map(deserializeJsonBoatSpaceReservationResponse)
+}
+
+export async function citizenOrganizations(): Promise<Organization[]> {
+  const { data: json } = await client.request<CitizenOrganizationResponse>({
+    url: uri`/current/organizations`.toString(),
+    method: 'GET'
+  })
+  return json
 }

@@ -3,7 +3,7 @@ import { NumberField } from 'lib-components/form/NumberField'
 import { RadioField } from 'lib-components/form/RadioField'
 import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
@@ -17,31 +17,33 @@ export default React.memo(function Boat({
   bind: BoundForm<BoatForm>
   boats: Boat[]
 }) {
-  const hasSetDefaults = useRef(false)
+  const initialized = useRef(false)
 
-  if (!hasSetDefaults.current) {
-    const options = boats.map((boat) => ({
-      domValue: boat.id,
-      label: boat.name,
-      value: boat
-    }))
+  useEffect(() => {
+    if (!initialized.current) {
+      const options = boats.map((boat) => ({
+        domValue: boat.id,
+        label: boat.name,
+        value: boat
+      }))
 
-    if (options.length > 0)
-      options.unshift({
-        domValue: '',
-        label: 'Uusi vene',
-        value: initialBoatValue()
-      })
+      if (options.length > 0)
+        options.unshift({
+          domValue: '',
+          label: 'Uusi vene',
+          value: initialBoatValue()
+        })
 
-    bind.update((prev) => ({
-      ...prev,
-      existingBoat: {
-        domValue: '',
-        options: options
-      }
-    }))
-    hasSetDefaults.current = true
-  }
+      bind.update((prev) => ({
+        ...prev,
+        existingBoat: {
+          domValue: '',
+          options: options
+        }
+      }))
+      initialized.current = true
+    }
+  }, [boats, bind])
 
   const {
     name,

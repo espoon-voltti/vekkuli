@@ -1,6 +1,6 @@
 import DateField from 'lib-components/form/DateField'
 import TextField from 'lib-components/form/TextField'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
@@ -14,17 +14,18 @@ export default React.memo(function Reserver({
   reserver: Citizen
   bind: BoundForm<ReserverForm>
 }) {
-  const hasSetDefaults = useRef(false)
-  if (!hasSetDefaults.current) {
-    const { email, phone } = reserver
-    bind.set({
-      email: email,
-      phone: phone
-    })
-    hasSetDefaults.current = true
-  }
+  const initialized = useRef(false)
   const { email, phone } = useFormFields(bind)
 
+  useEffect(() => {
+    if (!initialized.current) {
+      bind.set({
+        email: reserver.email,
+        phone: reserver.phone
+      })
+      initialized.current = true
+    }
+  }, [bind, reserver])
   return (
     <div className="form-section">
       <h3 className="header">Varaaja</h3>
