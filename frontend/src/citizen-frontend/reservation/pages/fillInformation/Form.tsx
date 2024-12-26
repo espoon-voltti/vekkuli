@@ -1,4 +1,4 @@
-import { Container } from 'lib-components/dom'
+import { Button, Buttons, Container } from 'lib-components/dom'
 import React from 'react'
 import { useNavigate } from 'react-router'
 
@@ -113,23 +113,14 @@ export default React.memo(function Form({
           <UserAgreementsSection bind={userAgreement} />
         </div>
 
-        <div className="buttons">
-          <button
-            id="cancel"
-            className="button is-secondary"
-            onClick={onReservationCancel}
-          >
+        <Buttons>
+          <Button id="cancel" action={onReservationCancel}>
             Peruuta varaus
-          </button>
-          <button
-            id="submit-button"
-            className="button is-primary"
-            type="submit"
-            onClick={onSubmit}
-          >
+          </Button>
+          <Button id="submit-button" type="primary" action={onSubmit}>
             Jatka maksamaan
-          </button>
-        </div>
+          </Button>
+        </Buttons>
       </form>
     </Container>
   )

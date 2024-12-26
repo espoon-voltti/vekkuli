@@ -8,6 +8,7 @@ export type ColumnProps = {
   isHalf?: boolean
   isOneThird?: boolean
   isOneQuarter?: boolean
+  isTwoFifths?: boolean
   isOneEight?: boolean
   toRight?: boolean
   textCentered?: boolean
@@ -20,6 +21,7 @@ export default React.memo(function Column({
   isHalf = false,
   isOneThird = false,
   isOneQuarter = false,
+  isTwoFifths = false,
   isOneEight = false,
   toRight = false,
   textCentered = false
@@ -31,6 +33,7 @@ export default React.memo(function Column({
     'is-one-third': isOneThird,
     'is-one-quarter': isOneQuarter,
     'is-one-eight': isOneEight,
+    'is-two-fifths': isTwoFifths,
     'ml-auto': toRight,
     'has-text-centered': textCentered
   })

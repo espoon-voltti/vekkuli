@@ -1,4 +1,5 @@
 import { Loader } from 'lib-components/Loader'
+import { Column, Columns, Container, Section } from 'lib-components/dom'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -121,29 +122,29 @@ export default React.memo(function SearchPage() {
       {(reservation) =>
         !reservation && (
           <>
-            <section className="section">
+            <Section>
               <StepIndicator step="chooseBoatSpace" />
-              <div className="container">
+              <Container>
                 <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
                 <ReservationSeasons />
-                <div className="columns">
-                  <div className="column is-two-fifths">
+                <Columns>
+                  <Column isTwoFifths>
                     <SearchFilters bind={form} />
                     <div className="mt-xl">
                       <img src={MapImage} alt="Espoon venesatamat" />
                     </div>
-                  </div>
-                  <div className="column">
+                  </Column>
+                  <Column>
                     <SearchResult
                       placesWithSpaces={searchResult.places}
                       count={searchResult.count}
                       showInfoBox={!form.isValid()}
                       onReserveSpace={onReserveButtonPress}
                     />
-                  </div>
-                </div>
-              </div>
-            </section>
+                  </Column>
+                </Columns>
+              </Container>
+            </Section>
             {isLoginModalOpen && (
               <LoginBeforeReservingModal
                 close={() => setIsLoginModalOpen(false)}

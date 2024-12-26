@@ -1,3 +1,4 @@
+import { Loader } from 'lib-components/Loader'
 import Section from 'lib-components/dom/Section'
 import React, { useContext } from 'react'
 
@@ -26,24 +27,21 @@ const Content = React.memo(function Content({
 }: {
   user: Result<User | undefined>
 }) {
-  if (user.isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (user.isFailure) {
-    return <div>Error...</div>
-  }
-  const currentUser = user.value
-  if (!currentUser) {
-    return null
-  }
   return (
     <Section>
-      <Header user={currentUser} />
-      <CitizenInformation user={currentUser} />
-      <Reservations />
-      <Boats />
-      <ExpiredReservations />
+      <Loader results={[user]}>
+        {(currentUser) =>
+          currentUser && (
+            <>
+              <Header user={currentUser} />
+              <CitizenInformation user={currentUser} />
+              <Reservations />
+              <Boats />
+              <ExpiredReservations />
+            </>
+          )
+        }
+      </Loader>
     </Section>
   )
 })

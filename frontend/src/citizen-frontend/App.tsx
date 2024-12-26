@@ -22,10 +22,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Localization>
         <AuthContextProvider>
-          <ReservationStateContextProvider>
-            <Content />
-            <div id="modal-container" />
-          </ReservationStateContextProvider>
+          <Content />
+          <div id="modal-container" />
         </AuthContextProvider>
       </Localization>
     </QueryClientProvider>

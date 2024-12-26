@@ -5,6 +5,7 @@ export type ButtonType = 'primary' | 'secondary' | 'danger' | 'danger-outlined'
 
 export type ButtonProps = {
   children: React.ReactNode
+  id?: string
   type?: ButtonType
   action?: () => void
   loading?: boolean
@@ -13,6 +14,7 @@ export type ButtonProps = {
 export default React.memo(function Button({
   children,
   action,
+  id,
   type,
   loading
 }: ButtonProps) {
@@ -40,6 +42,10 @@ export default React.memo(function Button({
 
   if (action && !loading) {
     props.onClick = action
+  }
+
+  if (id) {
+    props.id = id
   }
 
   return <button {...props}>{children}</button>
