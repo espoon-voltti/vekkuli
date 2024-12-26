@@ -1,3 +1,4 @@
+import { Loader } from 'lib-components/Loader'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -9,6 +10,7 @@ import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 import { AuthContext } from '../../../auth/state'
 import { useTranslation } from '../../../localization'
 import StepIndicator from '../../StepIndicator'
+import { ReservationStateContext } from '../../state'
 
 import ErrorModal, { ErrorCode } from './ErrorModal'
 import LoginBeforeReservingModal from './LoginBeforeReservingModal'
@@ -29,6 +31,7 @@ export default React.memo(function SearchPage() {
   const navigate = useNavigate()
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
+  const { reservation } = useContext(ReservationStateContext)
   const [branchStateStore, setBranchStateStore] =
     useState<Record<SearchFormBranches, StateOf<SearchFormUnion> | undefined>>()
 
@@ -114,40 +117,48 @@ export default React.memo(function SearchPage() {
     ? onReserveSpace
     : () => setIsLoginModalOpen(true)
   return (
-    <>
-      <section className="section">
-        <StepIndicator step="chooseBoatSpace" />
-        <div className="container">
-          <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
-          <ReservationSeasons />
-          <div className="columns">
-            <div className="column is-two-fifths">
-              <SearchFilters bind={form} />
-              <div className="mt-xl">
-                <img src={MapImage} alt="Espoon venesatamat" />
+    <Loader results={[reservation]} allowFailure>
+      {(reservation) =>
+        !reservation && (
+          <>
+            <section className="section">
+              <StepIndicator step="chooseBoatSpace" />
+              <div className="container">
+                <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
+                <ReservationSeasons />
+                <div className="columns">
+                  <div className="column is-two-fifths">
+                    <SearchFilters bind={form} />
+                    <div className="mt-xl">
+                      <img src={MapImage} alt="Espoon venesatamat" />
+                    </div>
+                  </div>
+                  <div className="column">
+                    <SearchResult
+                      placesWithSpaces={searchResult.places}
+                      count={searchResult.count}
+                      showInfoBox={!form.isValid()}
+                      onReserveSpace={onReserveButtonPress}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="column">
-              <SearchResult
-                placesWithSpaces={searchResult.places}
-                count={searchResult.count}
-                showInfoBox={!form.isValid()}
-                onReserveSpace={onReserveButtonPress}
+            </section>
+            {isLoginModalOpen && (
+              <LoginBeforeReservingModal
+                close={() => setIsLoginModalOpen(false)}
               />
-            </div>
-          </div>
-        </div>
-      </section>
-      {isLoginModalOpen && (
-        <LoginBeforeReservingModal close={() => setIsLoginModalOpen(false)} />
-      )}
-      {!!reserveError && (
-        <ErrorModal
-          error={reserveError}
-          close={() => setReserveError(undefined)}
-        />
-      )}
-    </>
+            )}
+            {!!reserveError && (
+              <ErrorModal
+                error={reserveError}
+                close={() => setReserveError(undefined)}
+              />
+            )}
+          </>
+        )
+      }
+    </Loader>
   )
 })
 
