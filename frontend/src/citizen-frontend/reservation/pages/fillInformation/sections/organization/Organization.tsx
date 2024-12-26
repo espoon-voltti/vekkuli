@@ -2,37 +2,32 @@ import { Column, Columns } from 'lib-components/dom'
 import { FormSection } from 'lib-components/form'
 import React from 'react'
 
-import { BoundForm, useFormUnion } from 'lib-common/form/hooks'
+import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 
-import {
-  OrganisationUnionForm,
-  OrganizationSelectionForm,
-  RenterTypeForm
-} from '../../formDefinitions/organization'
+import { OrganizationForm } from '../../formDefinitions/organization'
 
 import OrganizationSelection from './OrganizationSelection'
 import RenterType from './RenterType'
 import { WithOrganization } from './WithOrganization'
 
 export default React.memo(function Organization({
-  renterTypeBind,
-  organizationSelectionBind,
-  organizationBind
+  bind
 }: {
-  organizationBind: BoundForm<OrganisationUnionForm>
-  renterTypeBind: BoundForm<RenterTypeForm>
-  organizationSelectionBind: BoundForm<OrganizationSelectionForm>
+  bind: BoundForm<OrganizationForm>
 }) {
-  const { branch, form } = useFormUnion(organizationBind)
+  const { renterType, organizationSelection, organization } =
+    useFormFields(bind)
+  const { branch, form } = useFormUnion(organization)
+
   return (
     <FormSection>
       <h3 className="header">Vuokralainen</h3>
       <Columns>
         <Column>
-          <RenterType bind={renterTypeBind} />
+          <RenterType bind={renterType} />
           {branch !== 'noOrganization' && (
             <>
-              <OrganizationSelection bind={organizationSelectionBind} />
+              <OrganizationSelection bind={organizationSelection} />
               <WithOrganization bind={form} />
             </>
           )}

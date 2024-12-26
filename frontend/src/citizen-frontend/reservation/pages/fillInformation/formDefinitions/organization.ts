@@ -168,7 +168,9 @@ export const onOrganizationFormUpdate = (
 ): StateOf<OrganizationForm> => {
   const nextBranch = determineOrganizationUnionBranch(next)
   const prevBranch = determineOrganizationUnionBranch(prev)
-  if (prevBranch !== nextBranch) {
+  const prevOrganizationId = prev.organizationSelection.domValue
+  const nextOrganizationId = next.organizationSelection.domValue
+  if (prevBranch !== nextBranch || prevOrganizationId !== nextOrganizationId) {
     const newOrganizationCache: StateOf<OrganizationInfoForm> =
       prevBranch === 'new'
         ? prev.organization.state!
@@ -187,9 +189,9 @@ export const onOrganizationFormUpdate = (
         }
       case 'existing': {
         const foundOrganization = organizations.find(
-          (organization) =>
-            organization.id === next.organizationSelection.domValue
+          (organization) => organization.id === nextOrganizationId
         )
+
         return {
           ...next,
           newOrganizationCache,

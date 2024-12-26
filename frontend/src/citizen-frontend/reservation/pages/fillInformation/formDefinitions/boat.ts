@@ -1,5 +1,11 @@
 import { positiveNumber, string } from 'lib-common/form/fields'
-import { multiSelect, object, oneOf, required } from 'lib-common/form/form'
+import {
+  multiSelect,
+  object,
+  oneOf,
+  required,
+  value
+} from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
@@ -11,7 +17,7 @@ import {
   ownershipStatuses
 } from '../../../../shared/types'
 
-export const boatForm = object({
+export const boatInfoForm = object({
   id: string(),
   name: required(string()),
   type: required(oneOf<BoatType>()),
@@ -22,83 +28,102 @@ export const boatForm = object({
   registrationNumber: string(),
   noRegisterNumber: multiSelect<boolean>(),
   otherIdentification: required(string()),
-  extraInformation: string(),
-  existingBoat: oneOf<Boat | undefined>()
+  extraInformation: string()
+})
+export type BoatInfoForm = typeof boatInfoForm
+
+export const boatOwnershipTypeForm = required(oneOf<OwnershipStatus>())
+export type BoatOwnershipTypeForm = typeof boatOwnershipTypeForm
+
+export const boatSelectionForm = required(oneOf<Boat | null>())
+
+export type BoatSelectionForm = typeof boatSelectionForm
+
+export const boatForm = object({
+  boatSelection: boatSelectionForm,
+  boatInfo: boatInfoForm,
+  ownership: boatOwnershipTypeForm,
+  newBoatCache: value<StateOf<BoatInfoForm>>()
 })
 export type BoatForm = typeof boatForm
 
-export const boatOwnershipTypeForm = object({
-  status: required(oneOf<OwnershipStatus>())
-})
-export type BoatOwnershipTypeForm = typeof boatOwnershipTypeForm
-
-export default function initialFormState(i18n: Translations) {
+export default function initialFormState(
+  i18n: Translations,
+  boats: Boat[]
+): StateOf<BoatForm> {
   return {
-    boat: {
-      id: '',
-      name: '',
-      type: {
-        domValue: 'OutboardMotor',
-        options: boatTypes.map((type) => ({
-          domValue: type,
-          label: i18n.boatSpace.boatType[type],
-          value: type
-        }))
-      },
-      width: positiveNumber.empty().value,
-      length: positiveNumber.empty().value,
-      depth: positiveNumber.empty().value,
-      weight: positiveNumber.empty().value,
-      registrationNumber: '',
-      noRegisterNumber: {
-        domValues: [],
-        options: [
-          {
-            domValue: '',
-            label: i18n.reservation.noRegistererNumber,
-            value: true
-          }
-        ]
-      },
-      otherIdentification: '',
-      extraInformation: '',
-      existingBoat: {
-        domValue: '',
-        options: []
-      }
-    },
-    boatOwnership: {
-      status: {
-        domValue: 'Owner',
-        options: ownershipStatuses.map((type) => ({
-          domValue: type,
-          label: i18n.boatSpace.ownershipStatus[type],
-          value: type
-        }))
-      }
-    }
+    boatInfo: initialBoatInfoFormState(i18n),
+    boatSelection: initialBoatSelectionState(boats),
+    ownership: initialOwnershipState(i18n),
+    newBoatCache: initialBoatInfoFormState(i18n)
   }
 }
 
-export const initialBoatValue = (): Boat => ({
-  id: '',
-  name: '',
-  type: 'OutboardMotor',
-  width: 0,
-  length: 0,
-  weight: 0,
-  depth: 0,
-  registrationNumber: '',
-  otherIdentification: '',
-  extraInformation: '',
-  hasNoRegistrationNumber: false,
-  ownership: 'Owner'
+function initialBoatInfoFormState(i18n: Translations) {
+  return {
+    id: '',
+    name: '',
+    type: {
+      domValue: 'OutboardMotor',
+      options: boatTypes.map((type) => ({
+        domValue: type,
+        label: i18n.boatSpace.boatType[type],
+        value: type
+      }))
+    },
+    width: positiveNumber.empty().value,
+    length: positiveNumber.empty().value,
+    depth: positiveNumber.empty().value,
+    weight: positiveNumber.empty().value,
+    registrationNumber: '',
+    noRegisterNumber: {
+      domValues: [],
+      options: [
+        {
+          domValue: '',
+          label: i18n.reservation.noRegistererNumber,
+          value: true
+        }
+      ]
+    },
+    otherIdentification: '',
+    extraInformation: ''
+  }
+}
+
+const initialOwnershipState = (i18n: Translations) => ({
+  domValue: 'Owner',
+  options: ownershipStatuses.map((type) => ({
+    domValue: type,
+    label: i18n.boatSpace.ownershipStatus[type],
+    value: type
+  }))
 })
 
-export const transformBoatToFormBoat = (
+const initialBoatSelectionState = (
+  boats: Boat[]
+): StateOf<BoatSelectionForm> => {
+  const initialBoatSelection: StateOf<BoatSelectionForm> = {
+    domValue: '',
+    options: boats.map((boat) => ({
+      domValue: boat.id,
+      label: boat.name,
+      value: boat
+    }))
+  }
+  if (initialBoatSelection.options.length > 0)
+    initialBoatSelection.options.unshift({
+      domValue: '',
+      label: 'Uusi vene',
+      value: null
+    })
+  return initialBoatSelection
+}
+
+const transformBoatToFormBoat = (
   boat: Boat,
   i18n: Translations
-): StateOf<BoatForm> => ({
+): StateOf<BoatInfoForm> => ({
   id: boat.id.toString(),
   name: boat.name,
   depth: boat.depth.toString(),
@@ -124,10 +149,48 @@ export const transformBoatToFormBoat = (
     ]
   },
   registrationNumber: boat.registrationNumber || '',
-  existingBoat: {
-    domValue: '',
-    options: []
-  },
   extraInformation: boat.extraInformation || '',
   otherIdentification: boat.otherIdentification || ''
 })
+
+type BoatFormUpdateProps = {
+  prev: StateOf<BoatForm>
+  next: StateOf<BoatForm>
+  citizenBoats: Boat[]
+  i18n: Translations
+}
+
+export function onBoatFormUpdate({
+  prev,
+  next,
+  citizenBoats,
+  i18n
+}: BoatFormUpdateProps): StateOf<BoatForm> {
+  const prevBoatId = prev.boatSelection.domValue
+  const nextBoatId = next.boatSelection.domValue
+  // Boat has been changed, we need to update the form values
+  if (prevBoatId !== nextBoatId) {
+    const selectedBoat = citizenBoats.find((boat) => boat.id === nextBoatId)
+    const cache = !prevBoatId ? prev.boatInfo : prev.newBoatCache
+
+    if (!nextBoatId) {
+      return {
+        ...next,
+        ...{
+          boatInfo: cache
+        }
+      }
+    }
+    if (selectedBoat) {
+      return {
+        ...next,
+        ...{
+          boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
+          newBoatCache: cache
+        }
+      }
+    }
+  }
+
+  return next
+}

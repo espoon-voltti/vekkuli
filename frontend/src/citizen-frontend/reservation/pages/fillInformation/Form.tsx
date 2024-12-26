@@ -1,5 +1,5 @@
 import { Container } from 'lib-components/dom'
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router'
 
 import { useForm, useFormFields } from 'lib-common/form/hooks'
@@ -13,7 +13,6 @@ import ReservedSpace from '../../components/ReservedSpace'
 import { cancelReservationMutation } from '../../queries'
 import { Reservation } from '../../state'
 
-import { BoatForm } from './formDefinitions/boat'
 import initialOrganizationFormState, {
   onOrganizationFormUpdate,
   OrganizationForm,
@@ -21,15 +20,13 @@ import initialOrganizationFormState, {
 } from './formDefinitions/organization'
 import {
   initialFormState,
-  ReserveSpaceForm,
+  onReserveSpaceUpdate,
   reserveSpaceForm
 } from './formDefinitions/reserveSpace'
-import { onBoatFormUpdate } from './helpers'
 import { fillBoatSpaceReservationMutation } from './queries'
-import BoatSection from './sections/Boat'
-import BoatOwnershipStatus from './sections/BoatOwnershipStatus'
 import ReserverSection from './sections/Reserver'
 import UserAgreementsSection from './sections/UserAgreements'
+import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 
 type FormProperties = {
@@ -50,9 +47,6 @@ export default React.memo(function Form({
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
   )
-  const [newBoatStateStore, setNewBoatStateStore] = useState<
-    StateOf<BoatForm> | undefined
-  >()
 
   const organizationFormBind = useForm(
     organizationForm,
@@ -65,36 +59,14 @@ export default React.memo(function Form({
   )
   const formBind = useForm(
     reserveSpaceForm,
-    () => initialFormState(i18n),
+    () => initialFormState(i18n, boats, reservation.citizen),
     i18n.components.validationErrors,
     {
-      onUpdate: (prev, next): StateOf<ReserveSpaceForm> => {
-        const prevBoatId = prev.boat.existingBoat.domValue
-        const nextBoatId = next.boat.existingBoat.domValue
-
-        if (prevBoatId !== nextBoatId) {
-          return {
-            ...next,
-            ...{
-              boat: onBoatFormUpdate({
-                prevBoatState: prev.boat,
-                nextBoatState: next.boat,
-                i18n,
-                citizenBoats: boats,
-                newBoatStateStore,
-                setNewBoatStateStore
-              })
-            }
-          }
-        }
-        return next
-      }
+      onUpdate: (prev, next) => onReserveSpaceUpdate(prev, next, i18n, boats)
     }
   )
-  const { reserver, boat, boatOwnership, userAgreement } =
-    useFormFields(formBind)
-  const { renterType, organization, organizationSelection } =
-    useFormFields(organizationFormBind)
+
+  const { reserver, boat, userAgreement } = useFormFields(formBind)
 
   const { mutateAsync: cancelReservation } = useMutation(
     cancelReservationMutation
@@ -128,13 +100,8 @@ export default React.memo(function Form({
         </h1>
         <div id="form-inputs" className="block">
           <ReserverSection reserver={reservation.citizen} bind={reserver} />
-          <OrganizationSection
-            organizationBind={organization}
-            renterTypeBind={renterType}
-            organizationSelectionBind={organizationSelection}
-          />
-          <BoatSection bind={boat} boats={boats} />
-          <BoatOwnershipStatus bind={boatOwnership} />
+          <OrganizationSection bind={organizationFormBind} />
+          <BoatSection bind={boat} />
           <ReservedSpace
             boatSpace={reservation.boatSpace}
             price={{

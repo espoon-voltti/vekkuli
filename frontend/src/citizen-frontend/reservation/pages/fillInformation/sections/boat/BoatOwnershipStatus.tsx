@@ -1,16 +1,15 @@
 import { RadioField } from 'lib-components/form/RadioField'
 import React from 'react'
 
-import { BoundForm, useFormFields } from 'lib-common/form/hooks'
+import { BoundForm } from 'lib-common/form/hooks'
 
-import { BoatOwnershipTypeForm } from '../formDefinitions/boat'
+import { BoatOwnershipTypeForm } from '../../formDefinitions/boat'
 
 export default React.memo(function BoatOwnershipSatus({
   bind
 }: {
   bind: BoundForm<BoatOwnershipTypeForm>
 }) {
-  const { status } = useFormFields(bind)
   return (
     <div className="form-section">
       <div id="shipHolder">
@@ -20,7 +19,7 @@ export default React.memo(function BoatOwnershipSatus({
               id="boat-ownership-status"
               name="boatOwnershipStatus"
               label="Veneen omistussuhde Traficomin mukaan"
-              bind={status}
+              bind={bind}
             />
           </div>
         </div>

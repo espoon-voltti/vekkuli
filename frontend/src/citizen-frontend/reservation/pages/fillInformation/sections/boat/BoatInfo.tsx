@@ -1,50 +1,18 @@
 import { CheckboxField } from 'lib-components/form/CheckboxField'
 import { NumberField } from 'lib-components/form/NumberField'
-import { RadioField } from 'lib-components/form/RadioField'
 import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { Boat } from '../../../../shared/types'
-import { BoatForm, initialBoatValue } from '../formDefinitions/boat'
+import { BoatInfoForm } from '../../formDefinitions/boat'
 
 export default React.memo(function Boat({
-  bind,
-  boats
+  bind
 }: {
-  bind: BoundForm<BoatForm>
-  boats: Boat[]
+  bind: BoundForm<BoatInfoForm>
 }) {
-  const initialized = useRef(false)
-
-  useEffect(() => {
-    if (!initialized.current) {
-      const options = boats.map((boat) => ({
-        domValue: boat.id,
-        label: boat.name,
-        value: boat
-      }))
-
-      if (options.length > 0)
-        options.unshift({
-          domValue: '',
-          label: 'Uusi vene',
-          value: initialBoatValue()
-        })
-
-      bind.update((prev) => ({
-        ...prev,
-        existingBoat: {
-          domValue: '',
-          options: options
-        }
-      }))
-      initialized.current = true
-    }
-  }, [boats, bind])
-
   const {
     name,
     type,
@@ -55,16 +23,11 @@ export default React.memo(function Boat({
     registrationNumber,
     noRegisterNumber,
     otherIdentification,
-    extraInformation,
-    existingBoat
+    extraInformation
   } = useFormFields(bind)
 
   return (
-    <div className="form-section">
-      <h3 className="header">Veneen tiedot</h3>
-      {existingBoat && existingBoat.state.options.length > 0 && (
-        <RadioField id="boat-select" name="boatSelect" bind={existingBoat} />
-      )}
+    <>
       <div className="columns">
         <div className="column is-one-quarter">
           <TextField id="boatName" label="Veneen nimi" bind={name} />
@@ -157,6 +120,6 @@ export default React.memo(function Boat({
           />
         </div>
       </div>
-    </div>
+    </>
   )
 })
