@@ -3,7 +3,6 @@ import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import { FillBoatSpaceReservationInput } from '../../../../api-types/reservation'
-import { formatMToCm } from '../../../../shared/formatters'
 import { Boat, Citizen } from '../../../../shared/types'
 
 import initialBoatFormState, { boatForm, onBoatFormUpdate } from './boat'
@@ -26,9 +25,9 @@ export const reserveSpaceForm = mapped(
         id: boat.boatInfo.id || undefined,
         name: boat.boatInfo.name,
         type: boat.boatInfo.type,
-        width: formatMToCm(boat.boatInfo.width),
-        length: formatMToCm(boat.boatInfo.length),
-        depth: formatMToCm(boat.boatInfo.depth),
+        width: boat.boatInfo.width,
+        length: boat.boatInfo.length,
+        depth: boat.boatInfo.depth,
         weight: boat.boatInfo.weight,
         registrationNumber: boat.boatInfo.registrationNumber,
         hasNoRegistrationNumber:

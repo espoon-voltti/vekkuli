@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.ReserverService
-import fi.espoo.vekkuli.utils.mToCm
+import fi.espoo.vekkuli.utils.decimalToInt
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
@@ -79,7 +79,7 @@ class ReservationController(
         @RequestParam width: BigDecimal,
         @RequestParam length: BigDecimal,
     ): Boolean {
-        return reservationService.validateBoatSize(reservationId, width.mToCm(), length.mToCm())
+        return reservationService.validateBoatSize(reservationId, decimalToInt(width), decimalToInt(length))
     }
 
     @GetMapping("/reservation/{reservationId}/validate-boat-weight")

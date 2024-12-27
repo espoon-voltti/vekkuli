@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.cmToM
+import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -181,9 +181,9 @@ class ReservationResponseMapper(
             id = boat.id,
             name = boat.name ?: "",
             type = boat.type,
-            width = boat.widthCm.cmToM(),
-            length = boat.lengthCm.cmToM(),
-            depth = boat.depthCm.cmToM(),
+            width = intToDecimal(boat.widthCm),
+            length = intToDecimal(boat.lengthCm),
+            depth = intToDecimal(boat.depthCm),
             weight = boat.weightKg,
             registrationNumber = boat.registrationCode ?: "",
             hasNoRegistrationNumber = boat.registrationCode == null,
@@ -204,8 +204,8 @@ class ReservationResponseMapper(
             section = boatSpace.section,
             placeNumber = boatSpace.placeNumber,
             amenity = boatSpace.amenity,
-            width = boatSpace.widthCm.cmToM(),
-            length = boatSpace.lengthCm.cmToM(),
+            width = intToDecimal(boatSpace.widthCm),
+            length = intToDecimal(boatSpace.lengthCm),
             description = boatSpace.description,
             excludedBoatTypes = boatSpace.excludedBoatTypes,
             locationName = boatSpace.locationName
