@@ -23,7 +23,7 @@ import {
 
 const sharedUnionDefinition = () =>
   object({
-    boatType: required(oneOf<BoatType>()),
+    boatType: oneOf<BoatType>(),
     width: required(positiveNumber()),
     length: required(positiveNumber()),
     amenities: multiSelect<BoatSpaceAmenity>(),
@@ -45,9 +45,9 @@ export const searchFreeSpacesForm = mapped(
     boatSpaceUnionForm: boatSpaceUnionForm
   }),
   (output): SearchFreeSpacesParams => {
-    return {
+    const boatTypeValue = output.boatSpaceUnionForm.value.boatType
+    const result: SearchFreeSpacesParams = {
       spaceType: output.boatSpaceType,
-      boatType: output.boatSpaceUnionForm.value.boatType,
       amenities: output.boatSpaceUnionForm.value.amenities || [],
       harbor:
         output.boatSpaceUnionForm.value.harbor?.map((harbor) => harbor.value) ||
@@ -55,6 +55,11 @@ export const searchFreeSpacesForm = mapped(
       width: output.boatSpaceUnionForm.value.width,
       length: output.boatSpaceUnionForm.value.length
     }
+    if (boatTypeValue) {
+      result.boatType = boatTypeValue
+    }
+
+    return result
   }
 )
 export type SearchForm = typeof searchFreeSpacesForm
@@ -82,8 +87,11 @@ export const initialUnionFormState = (
 ): StateOf<SearchFormUnion> => {
   let branchAmenities: BoatSpaceAmenity[] = []
   let branchHarbors: Harbor[] = []
+  let branchBoatTypes: BoatType[] = []
+
   switch (branch) {
     case 'Slip':
+      branchBoatTypes = boatTypes.map((t) => t)
       branchAmenities = ['Buoy', 'RearBuoy', 'Beam', 'WalkBeam']
       branchHarbors = harbors.map((h) => h)
       break
@@ -96,12 +104,13 @@ export const initialUnionFormState = (
       )
       break
   }
+
   return {
     branch: branch,
     state: {
       boatType: {
         domValue: 'OutboardMotor',
-        options: boatTypes.map((type) => ({
+        options: branchBoatTypes.map((type) => ({
           domValue: type,
           label: i18n.boatSpace.boatType[type],
           value: type

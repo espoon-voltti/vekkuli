@@ -33,14 +33,16 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
           bind={boatSpaceType}
         />
       </div>
-      <div className="block">
-        <SelectField
-          id="boat-type"
-          name="boatType"
-          label={i18n.reservation.searchPage.filters.boatType}
-          bind={boatType}
-        />
-      </div>
+      {boatType.state.options.length === 0 ? null : (
+        <div className="block">
+          <SelectField
+            id="boat-type"
+            name="boatType"
+            label={i18n.reservation.searchPage.filters.boatType}
+            bind={boatType}
+          />
+        </div>
+      )}
       <div className="columns">
         <div className="column">
           <NumberField

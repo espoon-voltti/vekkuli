@@ -20,7 +20,7 @@ export const storageTypes = ['None', 'Trailer', 'Buck', 'BuckWithTent'] as const
 
 export type StorageType = (typeof storageTypes)[number]
 
-export const boatSpaceTypes = ['Slip', 'Storage', 'Trailer', 'Winter'] as const
+export const boatSpaceTypes = ['Slip', 'Trailer', 'Winter', 'Storage'] as const
 
 export type BoatSpaceType = (typeof boatSpaceTypes)[number]
 

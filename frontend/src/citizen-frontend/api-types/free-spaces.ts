@@ -1,5 +1,4 @@
-import { BoatSpaceType } from '../reservation/pages/chooseBoatSpace/config'
-import { BoatSpaceAmenity, BoatType } from '../shared/types'
+import { BoatSpaceAmenity, BoatSpaceType, BoatType } from '../shared/types'
 
 export interface Place {
   name: string
@@ -30,7 +29,7 @@ export interface FreeSpacesResponse {
 }
 
 export interface SearchFreeSpacesParams {
-  boatType: BoatType
+  boatType?: BoatType
   spaceType: BoatSpaceType
   amenities: BoatSpaceAmenity[]
   harbor: string[]

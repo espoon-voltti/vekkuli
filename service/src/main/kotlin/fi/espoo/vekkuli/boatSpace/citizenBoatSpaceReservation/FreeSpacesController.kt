@@ -21,7 +21,7 @@ class FreeSpacesController(
 ) {
     @GetMapping("/public/free-spaces/search")
     fun getFreeSpaces(
-        @RequestParam boatType: BoatType,
+        @RequestParam boatType: BoatType?,
         @RequestParam spaceType: BoatSpaceType,
         @RequestParam @Min(0) width: BigDecimal?,
         @RequestParam @Min(0) length: BigDecimal?,
