@@ -146,7 +146,8 @@ export default {
         Slip: (name: string) => `Venepaikan varaus: ${name}`,
         Trailer: (name: string) => `Traileripaikan varaus: ${name}`,
         Renew: (name: string) => `Paikan uusinta: ${name}`,
-        Winter: (name: string) => `Talvipaikan varaus: ${name}`
+        Winter: (name: string) => `Talvipaikan varaus: ${name}`,
+        Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
       }
     },
     noRegistererNumber: 'Ei rekisterinumeroa',

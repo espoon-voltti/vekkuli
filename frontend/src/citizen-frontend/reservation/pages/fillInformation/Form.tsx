@@ -8,6 +8,7 @@ import { useMutation } from 'lib-common/query'
 
 import { Municipality } from '../../../api-types/reservation'
 import { useTranslation } from '../../../localization'
+import { formatPlaceIdentifier } from '../../../shared/formatters'
 import { Boat, Organization } from '../../../shared/types'
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
@@ -81,7 +82,13 @@ export default React.memo(function Form({
   return (
     <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
       <h1 className="title pb-l" id="boat-space-form-header">
-        {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
+        {i18n.reservation.formPage.title[reservation.boatSpace.type](
+          formatPlaceIdentifier(
+            reservation.boatSpace.section,
+            reservation.boatSpace.placeNumber,
+            reservation.boatSpace.locationName
+          )
+        )}
       </h1>
       <div id="form-inputs" className="block">
         <ReserverSection reserver={reservation.citizen} bind={reserver} />
