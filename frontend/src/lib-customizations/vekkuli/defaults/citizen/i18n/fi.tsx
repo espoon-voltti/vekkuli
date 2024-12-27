@@ -204,6 +204,11 @@ export default {
       WalkBeam: 'Kävelyaisa',
       Trailer: 'Trailerisäilytys',
       Buck: 'Pukkisäilytys'
+    },
+    winterStorageType: {
+      Trailer: 'Trailerisäilytys',
+      Buck: 'Pukkisäilytys',
+      BuckWithTent: 'Pukkisäilytys suojateltalla'
     }
   }
 }

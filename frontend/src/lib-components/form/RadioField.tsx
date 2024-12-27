@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React, { useState } from 'react'
 
 import { OneOfState } from 'lib-common/form/form'
@@ -18,6 +19,7 @@ interface RadioFieldProps<T> extends Omit<BaseFieldProps, 'onChange'> {
   bind?: BoundFormState<OneOfState<T>>
   options?: RadioOption[]
   noErrorContainer?: boolean
+  horizontal?: boolean
 }
 
 function RadioField_<T>({
@@ -28,11 +30,11 @@ function RadioField_<T>({
   readonly,
   value,
   showErrorsBeforeTouched,
-  noErrorContainer
+  noErrorContainer,
+  horizontal
 }: RadioFieldProps<T>) {
   const { state, update, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
-
   const [touched, setTouched] = useState(false)
   const showError = (showErrorsBeforeTouched || touched) && !isValid()
   return (
@@ -41,7 +43,7 @@ function RadioField_<T>({
       {readonly ? (
         <ReadOnly value={value} />
       ) : (
-        <div className="control">
+        <div className={classNames('control', { columns: horizontal })}>
           {state?.options.map((option) => (
             <RadioFieldInput
               key={option.domValue}
@@ -55,6 +57,7 @@ function RadioField_<T>({
               label={option.label}
               selected={option.domValue === state?.domValue}
               info={option.info}
+              horizontal={horizontal}
             />
           ))}
           {!noErrorContainer && (
@@ -78,6 +81,7 @@ interface RadioFieldInputProps
   id: string
   name?: string
   selected: boolean
+  horizontal?: boolean
 }
 
 const RadioFieldInput = React.memo(function RadioFieldInput({
@@ -87,10 +91,17 @@ const RadioFieldInput = React.memo(function RadioFieldInput({
   label,
   info,
   selected,
-  onChange
+  onChange,
+  horizontal
 }: RadioFieldInputProps) {
   return (
-    <label className="radio has-text-top-aligned" htmlFor={id}>
+    <label
+      className={classNames('radio', {
+        'has-text-top-aligned': !horizontal,
+        'column is-narrow': horizontal
+      })}
+      htmlFor={id}
+    >
       <input
         type="radio"
         id={id}

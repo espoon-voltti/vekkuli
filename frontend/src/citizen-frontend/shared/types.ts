@@ -16,7 +16,7 @@ export enum ReserverType {
   Organization = 'Organization'
 }
 
-export const storageTypes = ['None', 'Trailer', 'Buck', 'BuckWithTent'] as const
+export const storageTypes = ['Trailer', 'Buck', 'BuckWithTent'] as const
 
 export type StorageType = (typeof storageTypes)[number]
 

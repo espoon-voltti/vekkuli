@@ -29,6 +29,7 @@ import ReserverSection from './sections/Reserver'
 import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
+import WinterStorageType from './sections/winterStorageType/WinterStorageType'
 
 type FormProperties = {
   reservation: Reservation
@@ -67,7 +68,8 @@ export default React.memo(function Form({
     }
   )
 
-  const { reserver, boat, userAgreement } = useFormFields(formBind)
+  const { reserver, boat, userAgreement, winterStorage } =
+    useFormFields(formBind)
 
   const onSubmit = async () => {
     if (formBind.isValid() && organizationFormBind.isValid()) {
@@ -94,6 +96,7 @@ export default React.memo(function Form({
         <ReserverSection reserver={reservation.citizen} bind={reserver} />
         <OrganizationSection bind={organizationFormBind} />
         <BoatSection bind={boat} />
+        <WinterStorageType bind={winterStorage} />
         <ReservedSpace
           boatSpace={reservation.boatSpace}
           price={{

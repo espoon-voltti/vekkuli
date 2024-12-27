@@ -30,13 +30,19 @@ export default React.memo(function Boat({
     <>
       <div className="columns">
         <div className="column is-one-quarter">
-          <TextField id="boatName" label="Veneen nimi" bind={name} />
+          <TextField
+            id="boatName"
+            label="Veneen nimi"
+            bind={name}
+            required={true}
+          />
         </div>
         <div className="column is-one-quarter">
           <SelectField
             id="boat-type"
             name="boatType"
             label="Venetyyppi"
+            required={true}
             bind={type}
           />
         </div>
@@ -49,6 +55,7 @@ export default React.memo(function Boat({
             step={0.01}
             min={0}
             max={9999999}
+            required={true}
           />
         </div>
         <div className="column is-one-quarter">
@@ -60,6 +67,7 @@ export default React.memo(function Boat({
             step={0.01}
             min={0}
             max={9999999}
+            required={true}
           />
         </div>
       </div>
@@ -73,6 +81,7 @@ export default React.memo(function Boat({
             step={0.01}
             min={0}
             max={9999999}
+            required={true}
           />
         </div>
         <div className="column is-one-quarter">
@@ -84,6 +93,7 @@ export default React.memo(function Boat({
             step={0.01}
             min={1}
             max={9999999}
+            required={true}
           />
         </div>
         {bind.state.noRegisterNumber.domValues.length === 0 && (
@@ -92,6 +102,7 @@ export default React.memo(function Boat({
               id="register-number"
               label="Rekisteritunnus"
               bind={registrationNumber}
+              required={true}
             />
           </div>
         )}
@@ -110,6 +121,7 @@ export default React.memo(function Boat({
             id="other-identifier"
             label="Muu tunniste"
             bind={otherIdentification}
+            required={true}
           />
         </div>
         <div className="column is-one-quarter">

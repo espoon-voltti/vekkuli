@@ -10,11 +10,16 @@ import initialReserverFormState, { reserverForm } from './reserver'
 import initialUserAgreementFormState, {
   userAgreementForm
 } from './userAgreement'
+import initialWinterStorageFormState, {
+  onWinterStorageFormUpdate,
+  winterStorageForm
+} from './winterStorage'
 
 export const reserveSpaceForm = mapped(
   object({
     reserver: reserverForm,
     boat: boatForm,
+    winterStorage: winterStorageForm,
     userAgreement: userAgreementForm
   }),
   ({ reserver, boat, userAgreement }): FillBoatSpaceReservationInput => {
@@ -53,6 +58,7 @@ export function initialFormState(
   return {
     ...initialReserverFormState(reserver),
     boat: initialBoatFormState(i18n, boats),
+    winterStorage: initialWinterStorageFormState(i18n),
     ...initialUserAgreementFormState(i18n)
   }
 }
@@ -70,6 +76,10 @@ export const onReserveSpaceUpdate = (
       next: next.boat,
       i18n,
       citizenBoats: boats
+    }),
+    winterStorage: onWinterStorageFormUpdate({
+      prev: prev.winterStorage,
+      next: next.winterStorage
     })
   }
 }
