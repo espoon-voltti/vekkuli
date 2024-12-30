@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.views.BaseView
@@ -88,7 +89,7 @@ class ReservationInformation(
                 "boatSpaceReservation.label.reservationValidity",
                 "reservationValidity",
                 """
-                <div class='field' >
+                <div class='field' ${addTestId("reservation-validity-information")}>
                    <template x-if="reservationValidity === '${ReservationValidity.FixedTerm}'">
                      <p id="reservation-validity-fixedTerm">${formatAsFullDate(
                     reservation.startDate

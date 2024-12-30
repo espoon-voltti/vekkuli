@@ -263,7 +263,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             fillWinterBoatSpaceForm(formPage)
             formPage.reservationValidityFixedTermRadioButton.click()
-            assertContains(formPage.reservationSummeryReservationValidityFixedTerm.first().textContent(), "01.04.2024 - 31.12.2024",)
+            assertContains(formPage.reservationSummeryReservationValidityFixedTerm.first().textContent(), "01.04.2024 - 31.12.2024")
+            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
             formPage.submitButton.click()
 
             val invoicePreviewPage = InvoicePreviewPage(page)
@@ -367,6 +368,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val formPage = BoatSpaceFormPage(page)
             fillAndTestForm(formPage)
             formPage.reservationValidityFixedTermRadioButton.click()
+            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+
             formPage.submitButton.click()
 
             val invoicePreviewPage = InvoicePreviewPage(page)
