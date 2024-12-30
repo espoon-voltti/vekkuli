@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.utils.addTestId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.util.HtmlUtils
@@ -177,7 +178,9 @@ class FormComponents {
         //language=HTML
         val opts =
             options.joinToString("\n") { opt ->
-                """ <label data-testid="radio-button-$id-${opt.value}" class="radio ${if (isColumnLayout) "column is-narrow" else "has-text-top-aligned" } for="${opt.value}" xmlns="http://www.w3.org/1999/html">
+                """ <label  ${addTestId(
+                    "radio-button-$id-${opt.value}"
+                )} class="radio ${if (isColumnLayout) "column is-narrow" else "has-text-top-aligned" } for="${opt.value}" xmlns="http://www.w3.org/1999/html">
                      <input type="radio" id="$id-${opt.value}" name="$id" value="${opt.value}" ${if (opt.value == defaultValue) "checked" else ""} ${
                     staticAttributesForOptions.map {
                         "${it.key}=${HtmlUtils.htmlEscape(it.value, "UTF-8")}"
