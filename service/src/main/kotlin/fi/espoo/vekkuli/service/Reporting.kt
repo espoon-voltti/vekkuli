@@ -154,7 +154,10 @@ data class StickerReportRow(
     val endDate: String?,
 )
 
-fun getStickerReport(jdbi: Jdbi, today: LocalDate): List<StickerReportRow> {
+fun getStickerReport(
+    jdbi: Jdbi,
+    today: LocalDate
+): List<StickerReportRow> {
     return jdbi.inTransactionUnchecked { tx ->
         tx.createQuery(
             """
@@ -204,7 +207,6 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
     csvContent.append(csvHeader)
 
     for (report in reportRows) {
-
         csvContent
             .append(sanitizeCsvCellData(report.name.toString())).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.streetAddress)).append(CSV_FIELD_SEPARATOR)
@@ -293,5 +295,3 @@ private fun escapeCsvInjection(value: String): String {
         value
     }
 }
-
-

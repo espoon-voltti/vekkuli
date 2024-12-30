@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
-import java.util.UUID
+import kotlin.random.Random
 import kotlin.test.assertEquals
 
 @ExtendWith(SpringExtension::class)
@@ -28,7 +28,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `raw report`() {
-        val boatSpaceId = 4242
+        val boatSpaceId = Random(42).nextInt(1000, 9999)
 
         insertDevBoatSpace(
             DevBoatSpace(
@@ -81,19 +81,13 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         )
 
         val today = LocalDate.of(2024, 10, 1)
-        val res = reservationService.insertBoatSpaceReservation(
-            citizenIdLeo,
-            citizenIdLeo,
-            boatSpaceId,
-            today,
-            today.plusMonths(12)
-        )
 
+        val boatId = 123321
         insertDevBoat(
             DevBoat(
-                id = UUID.randomUUID(),
+                id = boatId,
                 registrationCode = "U12345",
-                reserverId = res.reserverId!!,
+                reserverId = citizenIdLeo,
                 name = "Testi Venho",
                 widthCm = 100,
                 lengthCm = 200,
@@ -106,9 +100,22 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
+        val resId = 3131
+
+        insertDevBoatSpaceReservation(
+            DevBoatSpaceReservation(
+                id = resId,
+                reserverId = citizenIdLeo,
+                boatSpaceId = boatSpaceId,
+                startDate = today,
+                endDate = today.plusMonths(12),
+                boatId = boatId,
+            )
+        )
+
         val stickerReportRows = getStickerReport(jdbi, today)
         assertEquals(true, stickerReportRows.size > 0)
         val row = stickerReportRows.find { it.place == "A 001" }
-        assertEquals("Beam", row?.amenity)
+        assertEquals("Testi Venho", row?.boatName)
     }
 }
