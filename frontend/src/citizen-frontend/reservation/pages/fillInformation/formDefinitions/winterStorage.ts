@@ -18,7 +18,7 @@ export type StorageTypeForm = typeof storageTypeForm
 export const trailerInfoForm = object({
   length: required(positiveNumber()),
   width: required(positiveNumber()),
-  registrationNumber: string()
+  registrationNumber: required(string())
 })
 export type TrailerInfoForm = typeof trailerInfoForm
 

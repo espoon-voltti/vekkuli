@@ -1,10 +1,12 @@
-import classNames from 'classnames'
-import React from 'react'
+import { Column } from 'lib-components/dom'
+import React, { useState } from 'react'
 
 import { MultiSelectState } from 'lib-common/form/form'
 import { BoundFormState } from 'lib-common/form/hooks'
+import { useFormErrorContext } from 'lib-common/form/state'
 
 import { BaseFieldProps } from './BaseField'
+import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
 import { bindOrPlaceholders } from './utils'
 
@@ -20,10 +22,18 @@ function CheckboxFieldR<T>({
   value,
   bind,
   isFullWidth,
-  readOnly
+  readOnly,
+  showErrorsBeforeTouched
 }: CheckboxFieldProps<T>) {
-  const { state, update } = bindOrPlaceholders(bind)
+  const { state, update, isValid, validationError, translateError } =
+    bindOrPlaceholders(bind)
+  const [touched, setTouched] = useState(false)
+  const { showAllErrors } = useFormErrorContext()
+  const showError =
+    (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
+
   const onOnChange = (val: string, checked: boolean) => {
+    setTouched(true)
     const isSelected = state?.domValues.includes(val)
     if (checked && !isSelected) {
       update((prev) => ({
@@ -49,18 +59,29 @@ function CheckboxFieldR<T>({
         {readOnly ? (
           <ReadOnly value={readOnlyValue?.toString()} />
         ) : (
-          state?.options.map((option) => (
-            <CheckboxFieldInput
-              key={option.domValue}
-              id={`${id}-${option.domValue}`}
-              onChange={(checked) => onOnChange(option.domValue, checked)}
-              name={name}
-              selected={state.domValues.includes(option.domValue)}
-              value={option.domValue}
-              label={option.label}
-              isFullWidth={isFullWidth}
-            />
-          ))
+          <>
+            {state?.options.map((option) => (
+              <CheckboxFieldInput
+                key={option.domValue}
+                id={`${id}-${option.domValue}`}
+                onChange={(checked) => onOnChange(option.domValue, checked)}
+                name={name}
+                selected={state.domValues.includes(option.domValue)}
+                value={option.domValue}
+                label={option.label}
+                isFullWidth={isFullWidth}
+              />
+            ))}
+            {showError && (
+              <div className="ml-s">
+                <FieldErrorContainer
+                  showError={showError}
+                  error={validationError()}
+                  translateError={translateError}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -88,12 +109,7 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
   isFullWidth
 }: CheckboxFieldInputProps) {
   return (
-    <div
-      className={classNames('column', 'pb-none', {
-        'is-half': !isFullWidth,
-        'is-full': isFullWidth
-      })}
-    >
+    <Column isFull={isFullWidth} isHalf={!isFullWidth} noBottomPadding>
       <label className="checkbox">
         <input
           name={name}
@@ -108,6 +124,6 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
         />
         <span>{label}</span>
       </label>
-    </div>
+    </Column>
   )
 })

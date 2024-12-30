@@ -104,6 +104,8 @@ export interface Translations {
     selectedValuesMin: string
     selectedValuesMax: string
     positiveNumber: string
+    certify: string
+    terms: string
   }
 }
 

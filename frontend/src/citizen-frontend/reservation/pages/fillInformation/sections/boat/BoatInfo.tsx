@@ -21,10 +21,12 @@ export default React.memo(function Boat({
     weight,
     depth,
     registrationNumber,
-    noRegisterNumber,
     otherIdentification,
     extraInformation
   } = useFormFields(bind)
+
+  const { noRegisterNumber, number: registrationNumberValue } =
+    useFormFields(registrationNumber)
 
   return (
     <>
@@ -96,12 +98,12 @@ export default React.memo(function Boat({
             required={true}
           />
         </div>
-        {bind.state.noRegisterNumber.domValues.length === 0 && (
+        {noRegisterNumber.state.domValues.length === 0 && (
           <div className="column is-one-quarter">
             <TextField
               id="register-number"
               label="Rekisteritunnus"
-              bind={registrationNumber}
+              bind={registrationNumberValue}
               required={true}
             />
           </div>

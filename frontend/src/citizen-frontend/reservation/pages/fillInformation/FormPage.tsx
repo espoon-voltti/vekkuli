@@ -2,6 +2,7 @@ import { Loader } from 'lib-components/Loader'
 import { Container, Section } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
+import { FormErrorProvider } from 'lib-common/form/state'
 import { useQueryResult } from 'lib-common/query'
 
 import {
@@ -45,12 +46,14 @@ export default React.memo(function FormPage() {
               </Container>
               <StepIndicator step="fillInformation" />
               <ReservationTimer />
-              <Form
-                reservation={loadedReservation}
-                boats={loadedBoats}
-                municipalities={loadedMunicipalities}
-                organizations={organizations}
-              />
+              <FormErrorProvider>
+                <Form
+                  reservation={loadedReservation}
+                  boats={loadedBoats}
+                  municipalities={loadedMunicipalities}
+                  organizations={organizations}
+                />
+              </FormErrorProvider>
             </>
           )}
         </Loader>

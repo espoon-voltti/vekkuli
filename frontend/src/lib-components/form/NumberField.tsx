@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import { BoundFormState } from 'lib-common/form/hooks'
+import { useFormErrorContext } from 'lib-common/form/state'
 
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'
@@ -31,7 +32,9 @@ function NumberFieldR({
   const { state, set, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
-  const showError = (showErrorsBeforeTouched || touched) && !isValid()
+  const { showAllErrors } = useFormErrorContext()
+  const showError =
+    (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
   const readOnlyValue = state !== undefined ? state : value
   return (
     <div className="field">

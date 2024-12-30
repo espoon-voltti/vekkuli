@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import { BoundFormState } from 'lib-common/form/hooks'
+import { useFormErrorContext } from 'lib-common/form/state'
 
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'
@@ -22,10 +23,12 @@ export default React.memo(function TextField({
   value,
   showErrorsBeforeTouched
 }: TextFieldProps) {
+  const { showAllErrors } = useFormErrorContext()
   const { state, set, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
-  const showError = (showErrorsBeforeTouched || touched) && !isValid()
+  const showError =
+    (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
 
   const readOnlyValue = state !== undefined ? state : value
 

@@ -34,16 +34,16 @@ export const reserveSpaceForm = mapped(
         length: boat.boatInfo.length,
         depth: boat.boatInfo.depth,
         weight: boat.boatInfo.weight,
-        registrationNumber: boat.boatInfo.registrationNumber,
+        registrationNumber: boat.boatInfo.registrationNumber.number,
         hasNoRegistrationNumber:
-          boat.boatInfo.noRegisterNumber == undefined ||
-          boat.boatInfo.noRegisterNumber.length > 0,
+          boat.boatInfo.registrationNumber.noRegisterNumber == undefined ||
+          boat.boatInfo.registrationNumber.noRegisterNumber.length > 0,
         otherIdentification: boat.boatInfo.otherIdentification,
         extraInformation: boat.boatInfo.extraInformation,
         ownership: boat.ownership
       },
-      certifyInformation: !!userAgreement.agreements?.includes(true),
-      agreeToRules: !!userAgreement.agreements?.includes(true)
+      certifyInformation: !!userAgreement.certified?.includes(true),
+      agreeToRules: !!userAgreement.terms?.includes(true)
     }
   }
 )

@@ -2,14 +2,16 @@ import { Button, Buttons } from 'lib-components/dom'
 import React from 'react'
 import { useNavigate } from 'react-router'
 
+import { Municipality } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
+import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
+import { Boat, Organization } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
+import { useFormErrorContext } from 'lib-common/form/state'
 import { StateOf } from 'lib-common/form/types'
 import { useMutation } from 'lib-common/query'
+import { WarningExclamation } from 'lib-icons'
 
-import { Municipality } from '../../../api-types/reservation'
-import { useTranslation } from '../../../localization'
-import { formatPlaceIdentifier } from '../../../shared/formatters'
-import { Boat, Organization } from '../../../shared/types'
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
 import { Reservation } from '../../state'
@@ -46,6 +48,8 @@ export default React.memo(function Form({
 }: FormProperties) {
   const i18n = useTranslation()
   const navigate = useNavigate()
+  const { showAllErrors, setShowAllErrors } = useFormErrorContext()
+
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
   )
@@ -72,7 +76,9 @@ export default React.memo(function Form({
     useFormFields(formBind)
 
   const onSubmit = async () => {
-    if (formBind.isValid() && organizationFormBind.isValid()) {
+    const isValid = formBind.isValid() && organizationFormBind.isValid()
+    if (!isValid) setShowAllErrors(true)
+    else {
       await submitForm({
         id: reservation?.id,
         input: { ...formBind.value(), ...organizationFormBind.value() }
@@ -106,6 +112,7 @@ export default React.memo(function Form({
           }}
         />
         <UserAgreementsSection bind={userAgreement} />
+        {showAllErrors && <ValidationWarning />}
       </div>
 
       <Buttons>
@@ -117,5 +124,16 @@ export default React.memo(function Form({
         </Button>
       </Buttons>
     </form>
+  )
+})
+
+const ValidationWarning = React.memo(function ValidationWarning({}) {
+  return (
+    <div className="warning block form-validation-message">
+      <span className="icon">
+        <WarningExclamation isError={false} />
+      </span>
+      <span className="p-l">Pakollisia tietoja puuttuu</span>
+    </div>
   )
 })

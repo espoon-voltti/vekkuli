@@ -4,6 +4,7 @@ import {
   object,
   oneOf,
   required,
+  validated,
   value
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
@@ -25,8 +26,18 @@ export const boatInfoForm = object({
   length: required(positiveNumber()),
   depth: required(positiveNumber()),
   weight: required(positiveNumber()),
-  registrationNumber: string(),
-  noRegisterNumber: multiSelect<boolean>(),
+  registrationNumber: validated(
+    object({
+      number: string(),
+      noRegisterNumber: multiSelect<boolean>()
+    }),
+    (fields) => {
+      const noRegisterNumberSelected = fields.noRegisterNumber?.length || 0
+      return fields.number.length > 0 || noRegisterNumberSelected
+        ? undefined
+        : { number: 'required' }
+    }
+  ),
   otherIdentification: required(string()),
   extraInformation: string()
 })
@@ -35,7 +46,7 @@ export type BoatInfoForm = typeof boatInfoForm
 export const boatOwnershipTypeForm = required(oneOf<OwnershipStatus>())
 export type BoatOwnershipTypeForm = typeof boatOwnershipTypeForm
 
-export const boatSelectionForm = required(oneOf<Boat | null>())
+export const boatSelectionForm = oneOf<Boat | null>()
 
 export type BoatSelectionForm = typeof boatSelectionForm
 
@@ -75,16 +86,18 @@ function initialBoatInfoFormState(i18n: Translations) {
     length: positiveNumber.empty().value,
     depth: positiveNumber.empty().value,
     weight: positiveNumber.empty().value,
-    registrationNumber: '',
-    noRegisterNumber: {
-      domValues: [],
-      options: [
-        {
-          domValue: '',
-          label: i18n.reservation.noRegistererNumber,
-          value: true
-        }
-      ]
+    registrationNumber: {
+      number: '',
+      noRegisterNumber: {
+        domValues: [],
+        options: [
+          {
+            domValue: '',
+            label: i18n.reservation.noRegistererNumber,
+            value: true
+          }
+        ]
+      }
     },
     otherIdentification: '',
     extraInformation: ''
@@ -138,17 +151,20 @@ const transformBoatToFormBoat = (
       value: type
     }))
   },
-  noRegisterNumber: {
-    domValues: boat.registrationNumber.length === 0 ? [''] : [],
-    options: [
-      {
-        domValue: '',
-        label: i18n.reservation.noRegistererNumber,
-        value: true
-      }
-    ]
+  registrationNumber: {
+    number: boat.registrationNumber || '',
+    noRegisterNumber: {
+      domValues: boat.registrationNumber.length === 0 ? [''] : [],
+      options: [
+        {
+          domValue: '',
+          label: i18n.reservation.noRegistererNumber,
+          value: true
+        }
+      ]
+    }
   },
-  registrationNumber: boat.registrationNumber || '',
+
   extraInformation: boat.extraInformation || '',
   otherIdentification: boat.otherIdentification || ''
 })

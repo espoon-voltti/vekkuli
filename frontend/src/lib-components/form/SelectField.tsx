@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { OneOfState } from 'lib-common/form/form'
 import { BoundFormState } from 'lib-common/form/hooks'
+import { useFormErrorContext } from 'lib-common/form/state'
 
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'
@@ -27,7 +28,9 @@ function SelectField_<T>({
   const { state, update, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
-  const showError = (showErrorsBeforeTouched || touched) && !isValid()
+  const { showAllErrors } = useFormErrorContext()
+  const showError =
+    (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
   const readOnlyValue =
     state !== undefined
       ? state.options.find((o) => o.domValue === state.domValue)?.label

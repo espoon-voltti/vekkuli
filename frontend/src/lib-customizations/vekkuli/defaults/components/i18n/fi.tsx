@@ -85,7 +85,7 @@ const components: Translations = {
     expandDropdown: 'Avaa'
   },
   validationErrors: {
-    required: 'Pakollinen tieto',
+    required: 'Tämä kenttä on pakollinen',
     requiredSelection: 'Valinta puuttuu',
     format: 'Anna oikeassa muodossa',
     integerFormat: 'Anna kokonaisluku',
@@ -105,7 +105,9 @@ const components: Translations = {
     generic: 'Tarkista',
     selectedValuesMin: 'Valitse vähintään {min} arvoa',
     selectedValuesMax: 'Valitse enintään {max} arvoa',
-    positiveNumber: 'Anna positiivinen luku'
+    positiveNumber: 'Anna positiivinen luku',
+    certify: 'Vakuuta antamasi tiedot oikeiksi',
+    terms: 'Hyväksy venesatamasäännöt'
   }
 }
 
