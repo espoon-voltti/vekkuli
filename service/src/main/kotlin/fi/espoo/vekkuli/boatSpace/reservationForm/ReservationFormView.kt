@@ -173,7 +173,7 @@ class ReservationFormView(
             )}
             </div> 
             
-            <div class='form-section'>
+            <div class='form-section' >
                 ${boatForm.render(
                 BoatFormParams(
                     userType,
@@ -198,16 +198,20 @@ class ReservationFormView(
             )}
             </div>
             
-            ${if (userType == UserType.EMPLOYEE) {
-                """<div class='form-section' x-data="{ reservationValidity: '${input.reservationValidity}' }">
-              ${reservationValidityContainer.render(input.reservationValidity)}
-            </div>"""
+            <div x-data="{ reservationValidity: '${input.reservationValidity}' }">
+
+                ${if (userType == UserType.EMPLOYEE) {
+                """<div class='form-section'>
+                  ${reservationValidityContainer.render(input.reservationValidity)}
+                </div>"""
             } else {
                 ""
             }}
-
-            <div class='form-section'>
-              ${reservationInformation.render(reservation)}
+            
+                <div class='form-section'>
+                  ${reservationInformation.render(reservation)}
+                </div>
+                
             </div>
             """.trimIndent()
 

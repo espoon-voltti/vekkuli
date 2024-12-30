@@ -11,7 +11,6 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.common.ReservationInformationParams
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
 // language=HTML
 @Component
@@ -40,22 +39,10 @@ class ReservationInformation(
             </div>
             """.trimIndent()
 
-        val reservationValidityField =
-            """
-            <div class='field' >
-               <label class="label">${t("boatApplication.title.reservationValidity")}</label>
-                <p x-show="reservationValidity === '${ReservationValidity.FixedTerm}'" id="reservation-validity-fixedTerm">
-                  ${formatAsFullDate(reservation.startDate)} - ${formatAsFullDate(reservation.endDate)}</p>
-                  
-                <p x-show="reservationValidity === '${ReservationValidity.Indefinite}'" id="reservation-validity-indefinite">
-                  ${t("boatApplication.Indefinite")}</p>
-            </div>        
-            """.trimIndent()
         val informationFields = buildReservationInformationFields(reservation)
         val informationFieldsWithDynamicAmenity =
             informationFields.copy(
-                amenityField = storageTypeInformationField,
-                reservationTimeField = reservationValidityField
+                amenityField = storageTypeInformationField
             )
         return render(reservation, informationFieldsWithDynamicAmenity)
     }
@@ -96,19 +83,23 @@ class ReservationInformation(
                 t("boatSpaces.amenityOption.${reservation.amenity}"),
             )
 
-        val reservationTimeField =
+        val reservationValidityField =
             formComponents.field(
                 "boatSpaceReservation.label.reservationValidity",
-                "reservationTime",
-                if (reservation.validity === ReservationValidity.FixedTerm) {
-                    """<p>${renderReservationValidity(reservation.validity, reservation.endDate)}</p>"""
-                } else {
-                    (
-                        """
-                    <p>${t("boatApplication.Indefinite")}</p>
+                "reservationValidity",
                 """
-                    )
-                },
+                <div class='field' >
+                   <template x-if="reservationValidity === '${ReservationValidity.FixedTerm}'">
+                     <p id="reservation-validity-fixedTerm">${formatAsFullDate(
+                    reservation.startDate
+                )} - ${formatAsFullDate(reservation.endDate)}</p>
+                   </template>
+                  
+                  <template x-if="reservationValidity === '${ReservationValidity.Indefinite}'">
+                     <p id="reservation-validity-indefinite">${t("boatApplication.Indefinite")}</p>
+                  </template>
+                </div>        
+                """.trimIndent(),
             )
         val priceField =
             formComponents.field(
@@ -124,19 +115,10 @@ class ReservationInformation(
             boatSpaceTypeField,
             spaceDimensionField,
             amenityField,
-            reservationTimeField,
+            reservationValidityField,
             priceField
         )
     }
-
-    fun renderReservationValidity(
-        validity: ReservationValidity,
-        endDate: LocalDate
-    ): String =
-        t(
-            "boatSpaceReservation.validity.$validity",
-            listOf(formatAsFullDate(endDate))
-        )
 
     fun render(
         reservation: ReservationForApplicationForm,

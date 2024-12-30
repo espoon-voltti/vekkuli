@@ -14,7 +14,7 @@ data class ReservationInformationParams(
     val boatSpaceTypeField: String,
     val spaceDimensionField: String,
     val amenityField: String,
-    val reservationTimeField: String,
+    val reservationValidityField: String,
     val priceField: String,
 )
 
@@ -129,7 +129,7 @@ class CommonComponents(
     }
 
     fun reservationInformationFields(params: ReservationInformationParams): String {
-        val (harborField, placeField, boatSpaceTypeField, spaceDimensionField, amenityField, reservationTimeField, priceField) = params
+        val (harborField, placeField, boatSpaceTypeField, spaceDimensionField, amenityField, reservationValidityField, priceField) = params
 
         // language=HTML
         return (
@@ -153,7 +153,7 @@ class CommonComponents(
                     $amenityField
                 </div>
                 <div class='column is-one-quarter'>
-                    $reservationTimeField
+                    $reservationValidityField
                 </div>
                 <div class='column is-one-quarter' >
                    $priceField
