@@ -178,9 +178,9 @@ class BoatSpaceRenewalService(
     fun activateRenewalAndSendInvoice(
         renewedReservationId: Int,
         reserverId: UUID?,
-        renewedFromId: Int?
+        originalReservationId: Int?
     ) {
-        if (reserverId == null || renewedFromId == null) {
+        if (reserverId == null || originalReservationId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
 
@@ -190,7 +190,7 @@ class BoatSpaceRenewalService(
 
         boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
 
-        boatReservationService.markReservationEnded(renewedFromId)
+        boatReservationService.markReservationEnded(originalReservationId)
 
         invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
             ?: throw InternalError("Failed to send invoice")
@@ -288,7 +288,7 @@ class BoatSpaceRenewalService(
             reservationWithDependencies.excludedBoatTypes,
             reservationWithDependencies.section,
             reservationWithDependencies.storageType,
-            reservationWithDependencies.renewedFromId.toString(),
+            reservationWithDependencies.originalReservationId.toString(),
         )
 
     fun createRenewalReservation(

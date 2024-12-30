@@ -69,7 +69,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
-        assertEquals(reservation.id, createdRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -93,7 +93,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
-        assertEquals(reservation.id, createdRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -116,7 +116,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             )
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
-        assertEquals(reservation.id, createdRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
@@ -153,7 +153,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
 
         val secondRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, secondReservation.id)
         assertNotNull(secondRenewal.id, "Renewal reservation ID is not the same as original")
-        assertEquals(secondReservation.id, secondRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(secondReservation.id, secondRenewal.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Renewal, secondRenewal.status, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
@@ -190,7 +190,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
 
         val secondRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdOlivia, secondReservation.id)
         assertNotNull(secondRenewal.id, "Renewal reservation ID is not the same as original")
-        assertEquals(secondReservation.id, secondRenewal.renewedFromId, "Original reservation ID should match")
+        assertEquals(secondReservation.id, secondRenewal.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Renewal, secondRenewal.status, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
@@ -262,7 +262,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         boatSpaceRenewalService.activateRenewalAndSendInvoice(
             renewalReservation.id,
             renewalReservation.reserverId,
-            renewalReservation.renewedFromId
+            renewalReservation.originalReservationId
         )
 
         val updatedOldReservation = reservationService.getBoatSpaceReservation(oldReservation.id)
@@ -304,7 +304,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             boatSpaceRenewalService.activateRenewalAndSendInvoice(
                 renewalReservation.id,
                 renewalReservation.reserverId,
-                renewalReservation.renewedFromId
+                renewalReservation.originalReservationId
             )
         }
 

@@ -74,8 +74,8 @@ data class ReservationWithDependencies(
     val vatCents: Int,
     val netPriceCents: Int,
     val excludedBoatTypes: List<BoatType>?,
-    val validity: ReservationValidity? = ReservationValidity.Indefinite,
-    val renewedFromId: Int? = null,
+    val validity: ReservationValidity,
+    val originalReservationId: Int? = null,
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)

@@ -70,7 +70,7 @@ class BoatSpaceRenewalRepository(
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.acting_citizen_id = :id AND bsr.renewed_from_id = :reservationId AND bsr.status = 'Renewal' 
+                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.status = 'Renewal' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
@@ -90,7 +90,7 @@ class BoatSpaceRenewalRepository(
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.employee_id = :id AND bsr.renewed_from_id = :reservationId AND bsr.status = 'Renewal' 
+                    WHERE bsr.employee_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.status = 'Renewal' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
@@ -121,7 +121,7 @@ class BoatSpaceRenewalRepository(
                       validity, 
                       boat_id, 
                       employee_id,
-                      renewed_from_id,
+                      original_reservation_id,
                       storage_type,
                       trailer_id
                     )
@@ -135,7 +135,7 @@ class BoatSpaceRenewalRepository(
                              validity, 
                              boat_id, 
                              :employeeId as employee_id,
-                             id as renewed_from_id,
+                             id as original_reservation_id,
                              storage_type,
                              trailer_id
                       FROM boat_space_reservation

@@ -5,7 +5,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getStorageEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getTrailerEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
-import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.isEspooCitizen
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
@@ -97,11 +97,32 @@ class SeasonalService(
         )
     }
 
-    fun canSwitchAReservation(
-        reservation: BoatSpaceReservationDetails,
+    fun canSwitchReservation(
+        type: BoatSpaceType,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        validity: ReservationValidity,
+        isEspooCitizen: Boolean
+    ): ReservationResult {
+        val periods = seasonalRepository.getReservationPeriods()
+
+        return canSwitchReservation(
+            periods,
+            type,
+            startDate,
+            endDate,
+            validity,
+            isEspooCitizen
+        )
+    }
+
+    fun canSwitchReservation(
         periods: List<ReservationPeriod>,
-        isEspooCitizen: Boolean,
-        boatSpaceType: BoatSpaceType
+        type: BoatSpaceType,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        validity: ReservationValidity,
+        isEspooCitizen: Boolean
     ): ReservationResult {
         val now = timeProvider.getCurrentDate()
 
@@ -110,7 +131,7 @@ class SeasonalService(
                 periods,
                 now,
                 isEspooCitizen,
-                boatSpaceType,
+                type,
                 ReservationOperation.Change
             )
 
@@ -121,9 +142,9 @@ class SeasonalService(
 
         return ReservationResult.Success(
             ReservationResultSuccess(
-                reservation.startDate,
-                reservation.endDate,
-                reservation.validity
+                startDate,
+                endDate,
+                validity
             )
         )
     }
@@ -135,7 +156,7 @@ class SeasonalService(
         reservations: List<BoatSpaceReservationDetails>,
     ): List<BoatSpaceReservationDetails> {
         val reserver = reserverRepo.getReserverById(reserverID) ?: throw java.lang.IllegalArgumentException("Reserver not found")
-        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
+        val isEspooCitizen = isEspooCitizen(reserver.municipalityCode)
         if (!isEspooCitizen) {
             // Only Espoo citizens can renew reservations
             return reservations
@@ -143,7 +164,15 @@ class SeasonalService(
         val periods = getReservationPeriods()
         return reservations.map { reservation ->
             val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate, reservation.type)
-            val canSwitchResult = canSwitchAReservation(reservation, periods, isEspooCitizen, reservation.type)
+            val canSwitchResult =
+                canSwitchReservation(
+                    periods,
+                    reservation.type,
+                    reservation.startDate,
+                    reservation.endDate,
+                    reservation.validity,
+                    isEspooCitizen
+                )
             reservation.copy(
                 canRenew = canRenewResult.success,
                 canSwitch = canSwitchResult.success,
@@ -169,7 +198,7 @@ class SeasonalService(
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
-        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
+        val isEspooCitizen = isEspooCitizen(reserver.municipalityCode)
 
         if (hasSomePlace && !isEspooCitizen) {
             // Non-Espoo citizens can only have one reservation
@@ -228,7 +257,7 @@ class SeasonalService(
             reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
                 ReservationResultErrorCode.NoReserver
             )
-        val isEspooCitizen = reserver.municipalityCode == ESPOO_MUNICIPALITY_CODE
+        val isEspooCitizen = isEspooCitizen(reserver.municipalityCode)
 
         if (!isEspooCitizen) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
