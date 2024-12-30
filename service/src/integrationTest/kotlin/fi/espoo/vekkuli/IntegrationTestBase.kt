@@ -2,6 +2,8 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -76,6 +78,41 @@ abstract class IntegrationTestBase {
                 )
                 """
                 ).bindKotlin(boatSpace)
+                .execute()
+        }
+    }
+
+    data class DevBoat(
+        val id: UUID,
+        val registrationCode: String?,
+        val reserverId: UUID,
+        val name: String?,
+        val widthCm: Int,
+        val lengthCm: Int,
+        val depthCm: Int,
+        val weightKg: Int,
+        val type: BoatType,
+        val otherIdentification: String?,
+        val extraInformation: String?,
+        val ownership: OwnershipStatus,
+        val deletedAt: java.time.LocalDateTime? = null
+    )
+
+    fun insertDevBoat(boat: DevBoat) {
+        jdbi.inTransaction<Unit, Exception> { handle ->
+            handle
+                .createUpdate(
+                    """
+                INSERT INTO boat (
+                    registration_code, reserver_id, name, width_cm, length_cm, depth_cm, 
+                    weight_kg, type, other_identification, extra_information, ownership, deleted_at
+                ) VALUES (
+                    :registrationCode, :reserverId, :name, :widthCm, :lengthCm, :depthCm, 
+                    :weightKg, :type, :otherIdentification, :extraInformation, :ownership, :deletedAt
+                )
+                """.trimIndent()
+                )
+                .bindKotlin(boat)
                 .execute()
         }
     }

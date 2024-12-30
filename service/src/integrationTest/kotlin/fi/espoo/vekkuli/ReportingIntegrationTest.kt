@@ -2,8 +2,11 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.getRawReport
+import fi.espoo.vekkuli.service.getStickerReport
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
+import java.util.UUID
 import kotlin.test.assertEquals
 
 @ExtendWith(SpringExtension::class)
@@ -55,5 +59,56 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         val row = rawReportRows.find { it.boatSpaceId == boatSpaceId.toString() }
         assertEquals("Test boat space", row?.description)
         assertEquals(today.plusMonths(12).toString(), row?.endDate)
+    }
+
+    @Test
+    fun `sticker report`() {
+        val boatSpaceId = 4242
+
+        insertDevBoatSpace(
+            DevBoatSpace(
+                id = boatSpaceId,
+                type = BoatSpaceType.Slip,
+                locationId = 1,
+                priceId = 1,
+                section = "A",
+                placeNumber = 1,
+                amenity = BoatSpaceAmenity.Beam,
+                widthCm = 100,
+                lengthCm = 200,
+                description = "Test boat space"
+            )
+        )
+
+        val today = LocalDate.of(2024, 10, 1)
+        val res = reservationService.insertBoatSpaceReservation(
+            citizenIdLeo,
+            citizenIdLeo,
+            boatSpaceId,
+            today,
+            today.plusMonths(12)
+        )
+
+        insertDevBoat(
+            DevBoat(
+                id = UUID.randomUUID(),
+                registrationCode = "U12345",
+                reserverId = res.reserverId!!,
+                name = "Testi Venho",
+                widthCm = 100,
+                lengthCm = 200,
+                depthCm = 50,
+                weightKg = 1000,
+                type = BoatType.OutboardMotor,
+                otherIdentification = "123456",
+                extraInformation = "Test boat",
+                ownership = OwnershipStatus.Owner
+            )
+        )
+
+        val stickerReportRows = getStickerReport(jdbi, today)
+        assertEquals(true, stickerReportRows.size > 0)
+        val row = stickerReportRows.find { it.place == "A 001" }
+        assertEquals("Beam", row?.amenity)
     }
 }
