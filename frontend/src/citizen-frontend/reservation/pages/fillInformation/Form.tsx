@@ -6,7 +6,7 @@ import { Municipality } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 import { Boat, Organization } from 'citizen-frontend/shared/types'
-import { useForm, useFormFields } from 'lib-common/form/hooks'
+import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
 import { StateOf } from 'lib-common/form/types'
 import { useMutation } from 'lib-common/query'
@@ -65,15 +65,23 @@ export default React.memo(function Form({
   )
   const formBind = useForm(
     reserveSpaceForm,
-    () => initialFormState(i18n, boats, reservation.citizen),
+    () =>
+      initialFormState(
+        i18n,
+        boats,
+        reservation.citizen,
+        reservation.boatSpace.type
+      ),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => onReserveSpaceUpdate(prev, next, i18n, boats)
     }
   )
 
-  const { reserver, boat, userAgreement, winterStorage } =
+  const { reserver, boat, userAgreement, spaceTypeInfo } =
     useFormFields(formBind)
+
+  const { branch, form: winterStorageFom } = useFormUnion(spaceTypeInfo)
 
   const onSubmit = async () => {
     const isValid = formBind.isValid() && organizationFormBind.isValid()
@@ -102,7 +110,7 @@ export default React.memo(function Form({
         <ReserverSection reserver={reservation.citizen} bind={reserver} />
         <OrganizationSection bind={organizationFormBind} />
         <BoatSection bind={boat} />
-        <WinterStorageType bind={winterStorage} />
+        {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
         <ReservedSpace
           boatSpace={reservation.boatSpace}
           price={{

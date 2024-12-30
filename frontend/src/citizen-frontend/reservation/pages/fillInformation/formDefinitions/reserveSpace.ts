@@ -3,30 +3,31 @@ import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import { FillBoatSpaceReservationInput } from '../../../../api-types/reservation'
-import { Boat, Citizen } from '../../../../shared/types'
+import { Boat, BoatSpaceType, Citizen } from '../../../../shared/types'
 
 import initialBoatFormState, { boatForm, onBoatFormUpdate } from './boat'
 import initialReserverFormState, { reserverForm } from './reserver'
+import {
+  initialSpaceTypeInfoFormState,
+  onSpaceTypeInfoUpdate,
+  spaceTypeInfoUnionForm
+} from './spaceTypeInfo'
 import initialUserAgreementFormState, {
   userAgreementForm
 } from './userAgreement'
-import initialWinterStorageFormState, {
-  onWinterStorageFormUpdate,
-  winterStorageForm
-} from './winterStorage'
 
 export const reserveSpaceForm = mapped(
   object({
     reserver: reserverForm,
     boat: boatForm,
-    winterStorage: winterStorageForm,
+    spaceTypeInfo: spaceTypeInfoUnionForm,
     userAgreement: userAgreementForm
   }),
   ({
     reserver,
     boat,
     userAgreement,
-    winterStorage
+    spaceTypeInfo
   }): FillBoatSpaceReservationInput => {
     return {
       citizen: { ...reserver },
@@ -49,8 +50,8 @@ export const reserveSpaceForm = mapped(
       },
       certifyInformation: !!userAgreement.certified?.includes(true),
       agreeToRules: !!userAgreement.terms?.includes(true),
-      storageType: winterStorage.storageType || null,
-      trailer: winterStorage.trailerInfo || null
+      storageType: spaceTypeInfo.value?.storageType || null,
+      trailer: spaceTypeInfo.value?.trailerInfo || null
     }
   }
 )
@@ -60,12 +61,14 @@ export type ReserveSpaceForm = typeof reserveSpaceForm
 export function initialFormState(
   i18n: Translations,
   boats: Boat[],
-  reserver: Citizen
+  reserver: Citizen,
+  spaceType: BoatSpaceType
 ): StateOf<ReserveSpaceForm> {
   return {
     ...initialReserverFormState(reserver),
     boat: initialBoatFormState(i18n, boats),
-    winterStorage: initialWinterStorageFormState(i18n),
+    //winterStorage: initialWinterStorageFormState(i18n),
+    spaceTypeInfo: initialSpaceTypeInfoFormState(i18n, spaceType),
     ...initialUserAgreementFormState(i18n)
   }
 }
@@ -84,9 +87,15 @@ export const onReserveSpaceUpdate = (
       i18n,
       citizenBoats: boats
     }),
-    winterStorage: onWinterStorageFormUpdate({
-      prev: prev.winterStorage,
-      next: next.winterStorage
+    spaceTypeInfo: onSpaceTypeInfoUpdate({
+      prev: prev.spaceTypeInfo,
+      next: next.spaceTypeInfo
     })
   }
 }
+/*
+winterStorage: onWinterStorageFormUpdate({
+  prev: prev.winterStorage,
+  next: next.winterStorage
+})
+ */
