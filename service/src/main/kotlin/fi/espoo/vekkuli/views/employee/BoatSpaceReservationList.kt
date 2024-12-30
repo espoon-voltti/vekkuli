@@ -174,7 +174,7 @@ class BoatSpaceReservationList : BaseView() {
 
         fun sectionCheckbox(section: String) =
             """
-            <label class="checkbox" style="margin-bottom:4px;">
+            <label class="checkbox dropdown-item" style="margin-bottom:4px;">
                 <input type="checkbox" name="sectionFilter" value="$section" x-model="selectedSections" >
                 <span>$section</span>
             </label>
@@ -193,7 +193,7 @@ class BoatSpaceReservationList : BaseView() {
                 <div class="dropdown" :class="{ 'is-active': open }">
                     <div class="dropdown-trigger">
                             <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
-                                <div class="input search-input has-icons-left has-icons-right" style="width:120px">
+                                <div class="input search-input has-icons-left has-icons-right" style="width:60px">
                                     <span class="icon is-small is-left">${icons.filter}</span>
                                     <span class="filter-tag" x-show="selectedSections.length > 0" x-text="selectedSections.length" style="margin-left:auto"></span>
                                 </div>

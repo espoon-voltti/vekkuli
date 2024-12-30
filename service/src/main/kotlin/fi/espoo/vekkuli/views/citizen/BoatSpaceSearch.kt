@@ -292,6 +292,20 @@ class BoatSpaceSearch(
                         <h3 class="subtitle harbor-header mb-s">${harbor.location.name}</h3>
                         <p class="body">${harbor.location.address}</p>
                     </div>
+                    
+                 ${if (harbor.location.id == 955) {
+                    """
+                    <div class="ack-info">
+                        <div class="info-icon">${icons.warningExclamation(false)}</div>
+                        <div class="info-content">
+                            ${t("boatSpace.infoText.otsolahtiSailingBoat")}
+                        </div>
+                    </div>
+                    """.trimIndent()
+                } else {
+                    ""
+                }}
+                   
                     <table class="table search-results-table is-striped is-hoverable is-fullwidth">
                         <thead>
                             <tr>

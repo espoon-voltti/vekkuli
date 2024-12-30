@@ -423,7 +423,7 @@ body > .columns {
 .reservation-list {
   .table-container {
     width: 100%;
-    overflow-x: auto;
+    overflow: visible;
   }
   table {
     width: 100%;
