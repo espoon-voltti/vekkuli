@@ -6,9 +6,12 @@ import {
   Citizen,
   NewBoat,
   NewOrganization,
+  NewTrailer,
   Organization,
   ReservationStatus,
-  ReservationValidity
+  ReservationValidity,
+  StorageType,
+  Trailer
 } from '../shared/types'
 
 export type BoatSpaceReservation = {
@@ -47,6 +50,8 @@ export type FillBoatSpaceReservationInput = {
   boat: Boat | NewBoat | null
   certifyInformation: boolean
   agreeToRules: boolean
+  storageType: StorageType | null
+  trailer: Trailer | NewTrailer | null
 }
 
 export type PaymentInformation = {

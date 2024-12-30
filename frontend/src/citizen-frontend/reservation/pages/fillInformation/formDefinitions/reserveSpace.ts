@@ -22,7 +22,12 @@ export const reserveSpaceForm = mapped(
     winterStorage: winterStorageForm,
     userAgreement: userAgreementForm
   }),
-  ({ reserver, boat, userAgreement }): FillBoatSpaceReservationInput => {
+  ({
+    reserver,
+    boat,
+    userAgreement,
+    winterStorage
+  }): FillBoatSpaceReservationInput => {
     return {
       citizen: { ...reserver },
       organization: null,
@@ -43,7 +48,9 @@ export const reserveSpaceForm = mapped(
         ownership: boat.ownership
       },
       certifyInformation: !!userAgreement.certified?.includes(true),
-      agreeToRules: !!userAgreement.terms?.includes(true)
+      agreeToRules: !!userAgreement.terms?.includes(true),
+      storageType: winterStorage.storageType || null,
+      trailer: winterStorage.trailerInfo || null
     }
   }
 )

@@ -128,3 +128,12 @@ export const harbors = [
 ] as const
 
 export type Harbor = (typeof harbors)[number]
+
+export type Trailer = {
+  id: number
+  width: number
+  length: number
+  registrationNumber: string
+}
+
+export type NewTrailer = Omit<Trailer, 'id'>

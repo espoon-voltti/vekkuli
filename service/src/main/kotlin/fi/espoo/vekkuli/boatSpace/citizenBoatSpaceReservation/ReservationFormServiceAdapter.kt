@@ -76,10 +76,10 @@ fun ReservationInformation.toReservationInput(reservationId: Int): ReservationIn
             orgPostalCode = organization?.postalCode,
             orgCity = organization?.city,
             citizenSelection = null,
-            storageType = null,
-            trailerRegistrationNumber = null,
-            trailerWidth = null,
-            trailerLength = null,
+            storageType = storageType,
+            trailerRegistrationNumber = trailer?.registrationNumber,
+            trailerWidth = trailer?.width,
+            trailerLength = trailer?.length,
         )
 
     val validator: Validator = Validation.buildDefaultValidatorFactory().validator

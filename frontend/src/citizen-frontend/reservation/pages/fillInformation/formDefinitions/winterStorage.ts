@@ -41,7 +41,7 @@ export const winterStorageForm = mapped(
         trailerInfo.branch === 'Trailer'
           ? {
               length: trailerInfo.value.length,
-              weight: trailerInfo.value.width,
+              width: trailerInfo.value.width,
               registrationNumber: trailerInfo.value.registrationNumber
             }
           : null

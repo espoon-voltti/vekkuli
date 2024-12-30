@@ -193,6 +193,8 @@ data class ReservationInformation(
     val boat: Boat,
     val certifyInformation: Boolean = false,
     val agreeToRules: Boolean = false,
+    val storageType: StorageType? = null,
+    val trailer: Trailer? = null,
 ) {
     data class Citizen(
         val email: String,
@@ -224,5 +226,12 @@ data class ReservationInformation(
         val otherIdentification: String,
         val extraInformation: String? = null,
         val ownership: OwnershipStatus,
+    )
+
+    data class Trailer(
+        val id: Int?,
+        val registrationNumber: String,
+        val width: BigDecimal,
+        val length: BigDecimal,
     )
 }

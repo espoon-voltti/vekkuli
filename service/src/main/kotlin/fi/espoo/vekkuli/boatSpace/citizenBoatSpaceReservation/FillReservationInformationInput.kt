@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.StorageType
 import java.math.BigDecimal
 import java.util.*
 
@@ -11,6 +12,8 @@ data class FillReservationInformationInput(
     val boat: Boat,
     val certifyInformation: Boolean = false,
     val agreeToRules: Boolean = false,
+    val storageType: StorageType? = null,
+    val trailer: Trailer? = null,
 ) {
     data class Citizen(
         val email: String,
@@ -42,6 +45,13 @@ data class FillReservationInformationInput(
         val otherIdentification: String,
         val extraInformation: String? = null,
         val ownership: OwnershipStatus,
+    )
+
+    data class Trailer(
+        val id: Int?,
+        val registrationNumber: String,
+        val width: BigDecimal,
+        val length: BigDecimal,
     )
 }
 
@@ -84,5 +94,17 @@ fun FillReservationInformationInput.toReservationInformation() =
                 ownership = boat.ownership,
             ),
         certifyInformation = certifyInformation,
-        agreeToRules = agreeToRules
+        agreeToRules = agreeToRules,
+        storageType = storageType,
+        trailer =
+            if (trailer == null) {
+                null
+            } else {
+                ReservationInformation.Trailer(
+                    id = trailer.id,
+                    registrationNumber = trailer.registrationNumber,
+                    width = trailer.width,
+                    length = trailer.length,
+                )
+            },
     )
