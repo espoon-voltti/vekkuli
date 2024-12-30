@@ -188,22 +188,16 @@ class ReservationFormService(
             throw BadRequest("Reservation not found")
         }
 
-        val reserveSlipResult = seasonalService.canReserveANewSpace(reserverId, reservation.boatSpaceType)
         val data =
-            if (reserveSlipResult is ReservationResult.Success) {
-                reserveSlipResult.data
-            } else {
-                val now = timeProvider.getCurrentDate()
-                // TODO: get validity from input parameter for employee
-                ReservationResultSuccess(
-                    now,
-                    seasonalService.getBoatSpaceReservationEndDate(
-                        reservation.boatSpaceType,
-                        ReservationValidity.FixedTerm
-                    ),
-                    ReservationValidity.FixedTerm
-                )
-            }
+            ReservationResultSuccess(
+                timeProvider.getCurrentDate(),
+                seasonalService.getBoatSpaceReservationEndDate(
+                    reservation.boatSpaceType,
+                    input.reservationValidity
+                ),
+                input.reservationValidity
+            )
+
         processBoatSpaceReservation(
             reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
@@ -763,5 +757,6 @@ data class ReservationInput(
     override val storageType: StorageType?,
     override val trailerRegistrationNumber: String?,
     override val trailerWidth: BigDecimal?,
-    override val trailerLength: BigDecimal?
+    override val trailerLength: BigDecimal?,
+    override val reservationValidity: ReservationValidity = ReservationValidity.Indefinite
 ) : BoatRegistrationBaseInput

@@ -231,5 +231,6 @@ data class RenewalReservationInput(
     override val storageType: StorageType = StorageType.None,
     override val trailerRegistrationNumber: String? = null,
     override val trailerWidth: BigDecimal? = null,
-    override val trailerLength: BigDecimal? = null
+    override val trailerLength: BigDecimal? = null,
+    override val reservationValidity: ReservationValidity = ReservationValidity.Indefinite
 ) : BoatRegistrationBaseInput

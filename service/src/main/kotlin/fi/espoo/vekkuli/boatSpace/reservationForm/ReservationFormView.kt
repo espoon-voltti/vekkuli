@@ -59,7 +59,8 @@ class ReservationFormView(
     private val boatSpaceForm: BoatSpaceForm,
     private val reservationInformation: ReservationInformation,
     private val formComponents: FormComponents,
-    private val storageTypeContainer: StorageTypeContainer
+    private val storageTypeContainer: StorageTypeContainer,
+    private val reservationValidityContainer: ReservationValidityContainer,
 ) : BaseView() {
     fun winterStorageForm(
         reservation: ReservationForApplicationForm,
@@ -113,7 +114,7 @@ class ReservationFormView(
                 )
             )}
             </div>
-            <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}' }">
+            <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}', reservationValidity: '${input.reservationValidity}' }">
                 <div class='form-section mb-none'>
                     ${storageTypeContainer.render(
                 input.trailerRegistrationNumber,
@@ -122,12 +123,20 @@ class ReservationFormView(
                 input.storageType
             )}
                 </div>
+                
+                ${if (userType == UserType.EMPLOYEE) {
+                """<div class='form-section'>
+                  ${reservationValidityContainer.render(input.reservationValidity)}
+                 </div>"""
+            } else {
+                ""
+            }}
+            
                  <div class='form-section'>
                      ${reservationInformation.reservationInformationWithStorageType(reservation)}
                 </div>
             </div>
             """.trimIndent()
-
         return boatSpaceForm.render(
             reservation,
             userType,
@@ -164,7 +173,7 @@ class ReservationFormView(
             )}
             </div> 
             
-            <div class='form-section'>
+            <div class='form-section' >
                 ${boatForm.render(
                 BoatFormParams(
                     userType,
@@ -189,8 +198,20 @@ class ReservationFormView(
             )}
             </div>
             
-             <div class='form-section'>
-                ${reservationInformation.render(reservation)}
+            <div x-data="{ reservationValidity: '${input.reservationValidity}' }">
+
+                ${if (userType == UserType.EMPLOYEE) {
+                """<div class='form-section'>
+                  ${reservationValidityContainer.render(input.reservationValidity)}
+                </div>"""
+            } else {
+                ""
+            }}
+            
+                <div class='form-section'>
+                  ${reservationInformation.render(reservation)}
+                </div>
+                
             </div>
             """.trimIndent()
 
