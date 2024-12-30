@@ -17,6 +17,26 @@ class BoatSpaceSwitchRepository(
     private val jdbi: Jdbi,
     private val timeProvider: TimeProvider
 ) {
+    fun getSwitchReservationForCitizen(
+        id: UUID,
+        reservationId: Int
+    ): ReservationWithDependencies? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    ${buildSelectForReservationWithDependencies()}
+                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND bsr.status = 'Info'
+                    AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
+                    """.trimIndent()
+                )
+            query.bind("id", id)
+            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.bind("reservationId", reservationId)
+            query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
+        }
+
     fun getSwitchReservationForEmployee(
         actingCitizenId: UUID,
         originalReservationId: Int
@@ -26,7 +46,8 @@ class BoatSpaceSwitchRepository(
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.status = 'Renewal' 
+                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND 
+                    bsr.status = 'Info' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
@@ -37,16 +58,57 @@ class BoatSpaceSwitchRepository(
             query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
         }
 
-    fun getSwitchReservationForCitizen(
-        userId: UUID,
-        originalReservationId: Int
-    ): ReservationWithDependencies = throw NotImplementedError()
-
     fun createSwitchRow(
         originalReservationId: Int,
         userType: UserType,
         userId: UUID
-    ): Int = throw NotImplementedError()
+    ): Int =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    INSERT INTO boat_space_reservation (
+                      created,
+                      reserver_id, 
+                      acting_citizen_id, 
+                      boat_space_id, 
+                      start_date, 
+                      end_date, 
+                      status, 
+                      validity, 
+                      boat_id, 
+                      employee_id,
+                      original_reservation_id,
+                      storage_type,
+                      trailer_id,
+                      creation_type
+                    )
+                    (
+                      SELECT :created as created,
+                             reserver_id, 
+                             :actingCitizenId as acting_citizen_id, 
+                             boat_space_id, 
+                             start_date, 
+                             (end_date + INTERVAL '1 year') as end_date, 'Info' as status, 
+                             validity, 
+                             boat_id, 
+                             :employeeId as employee_id,
+                             id as original_reservation_id,
+                             storage_type,
+                             trailer_id,
+                             'Switch' as creation_type
+                      FROM boat_space_reservation
+                      WHERE id = :reservationId
+                    )
+                    RETURNING id
+                    """.trimIndent()
+                ).bind("created", timeProvider.getCurrentDateTime())
+                .bind("reservationId", originalReservationId)
+                .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
+                .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
+                .mapTo<Int>()
+                .one()
+        }
 
     private fun buildSelectForReservationWithDependencies() =
         """SELECT bsr.*, r.name,  r.email, r.phone, r.type as reserver_type,

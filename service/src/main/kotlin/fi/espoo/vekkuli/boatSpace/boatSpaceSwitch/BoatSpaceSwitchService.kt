@@ -1,8 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
+import fi.espoo.vekkuli.boatSpace.renewal.ModifyReservationInput
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationForApplicationForm
-import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
@@ -26,7 +26,7 @@ data class BoatSpaceSwitchViewParams(
     val reservation: RenewalReservationForApplicationForm,
     val boats: List<Boat>,
     val citizen: CitizenWithDetails? = null,
-    val input: RenewalReservationInput,
+    val input: ModifyReservationInput,
     val userType: UserType,
 )
 
@@ -40,38 +40,7 @@ class BoatSpaceSwitchService(
     private val boatSpaceSwitchRepository: BoatSpaceSwitchRepository,
     private val reservationService: ReservationFormService,
     private val invoiceService: BoatSpaceInvoiceService,
-    private val jdbiTrailerRepository: JdbiTrailerRepository,
 ) {
-    // ** Switchs the boat space reservation with the given reservationId to the given reserverId. */
-    @Transactional
-    fun switchBoatSpaceReservationAsEmployee(
-        userId: UUID,
-        reserverId: UUID,
-        oldReservationId: Int,
-        newReservationId: Int
-    ) {
-        val reservation =
-            boatSpaceReservationRepo.getReservationWithDependencies(
-                oldReservationId
-            ) ?: throw IllegalArgumentException("Reservation not found")
-        val reserver =
-            reserverService.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
-        val isEspooCitizen = isEspooCitizen(reserver.municipalityCode)
-        val reservationResult =
-            seasonalService.canSwitchReservation(
-                reservation.type,
-                reservation.startDate,
-                reservation.endDate,
-                reservation.validity,
-                isEspooCitizen
-            )
-
-        // cancel old reservation
-        cancelSwitchReservation(oldReservationId, reserverId)
-
-        // create new reservation
-    }
-
     fun switchBoatSpaceReservationAsCitizen(
         reserverId: UUID,
         reservationId: Int,
@@ -99,8 +68,10 @@ class BoatSpaceSwitchService(
     fun getOrCreateSwitchReservationForEmployee(
         userId: UUID,
         originalReservationId: Int,
-        reserverMunicipalityCode: Int
+        reserverId: UUID
     ): ReservationWithDependencies {
+        val reserverMunicipalityCode =
+            reserverService.getReserverById(reserverId)?.municipalityCode ?: throw IllegalArgumentException("Reserver not found")
         val original = boatSpaceSwitchRepository.getSwitchReservationForEmployee(userId, originalReservationId)
         if (original != null) return original
 
@@ -111,15 +82,16 @@ class BoatSpaceSwitchService(
     }
 
     fun getOrCreateSwitchReservationForCitizen(
-        userId: UUID,
-        originalReservationId: Int,
-        reserverMunicipalityCode: Int
+        reserverId: UUID,
+        originalReservationId: Int
     ): ReservationWithDependencies {
-        val original = boatSpaceSwitchRepository.getSwitchReservationForCitizen(userId, originalReservationId)
+        val reserverMunicipalityCode =
+            reserverService.getReserverById(reserverId)?.municipalityCode ?: throw IllegalArgumentException("Reserver not found")
+        val original = boatSpaceSwitchRepository.getSwitchReservationForCitizen(reserverId, originalReservationId)
         if (original != null) return original
 
         val originalReservation =
-            createSwitchReservation(originalReservationId, userId, UserType.CITIZEN, isEspooCitizen(reserverMunicipalityCode))
+            createSwitchReservation(originalReservationId, reserverId, UserType.CITIZEN, isEspooCitizen(reserverMunicipalityCode))
                 ?: throw IllegalStateException("Reservation not found")
         return originalReservation
     }
@@ -148,7 +120,7 @@ class BoatSpaceSwitchService(
 
     fun updateSwitchReservation(
         citizenId: UUID,
-        input: RenewalReservationInput,
+        input: ModifyReservationInput,
         reservationId: Int
     ) {
         val reservation =
@@ -173,7 +145,7 @@ class BoatSpaceSwitchService(
     fun updateReserver(
         reserverType: ReserverType?,
         reserverId: UUID,
-        input: RenewalReservationInput,
+        input: ModifyReservationInput,
     ) {
         if (reserverType == ReserverType.Organization) {
             organizationService.updateOrganization(

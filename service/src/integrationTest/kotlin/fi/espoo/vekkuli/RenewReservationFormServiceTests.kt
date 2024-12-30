@@ -3,7 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
-import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationInput
+import fi.espoo.vekkuli.boatSpace.renewal.ModifyReservationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -213,7 +213,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             )
 
         val renewalInput =
-            RenewalReservationInput(
+            ModifyReservationInput(
                 boatId = 2,
                 boatType = BoatType.Sailboat,
                 width = BigDecimal(3.0),
@@ -348,7 +348,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                 )
             )
         val renewalInput =
-            RenewalReservationInput(
+            ModifyReservationInput(
                 boatId = 0,
                 boatType = BoatType.Sailboat,
                 width = BigDecimal(3.0),
@@ -390,7 +390,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                 )
             )
         val renewalInput =
-            RenewalReservationInput(
+            ModifyReservationInput(
                 boatId = 0,
                 boatType = BoatType.Sailboat,
                 width = BigDecimal(3.0),
@@ -477,7 +477,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
 
         val renewalReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, madeReservation.id)
         val invalidInput =
-            RenewalReservationInput(
+            ModifyReservationInput(
                 boatId = 2,
                 boatType = BoatType.Sailboat,
                 width = BigDecimal(3.0),

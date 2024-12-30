@@ -86,7 +86,7 @@ class BoatSpaceRenewalService(
 
     fun updateRenewReservation(
         citizenId: UUID,
-        input: RenewalReservationInput,
+        input: ModifyReservationInput,
         reservationId: Int
     ) {
         val reservation =
@@ -111,7 +111,7 @@ class BoatSpaceRenewalService(
     fun updateReserver(
         reserverType: ReserverType?,
         reserverId: UUID,
-        input: RenewalReservationInput,
+        input: ModifyReservationInput,
     ) {
         if (reserverType == ReserverType.Organization) {
             organizationService.updateOrganization(
@@ -199,7 +199,7 @@ class BoatSpaceRenewalService(
     fun buildBoatSpaceRenewalViewParams(
         citizenId: UUID,
         renewedReservation: ReservationWithDependencies,
-        formInput: RenewalReservationInput,
+        formInput: ModifyReservationInput,
     ): BoatSpaceRenewViewParams {
         val citizen = reserverService.getCitizen(citizenId)
         if (citizen == null || renewedReservation.reserverId != citizenId) {
@@ -309,7 +309,7 @@ class BoatSpaceRenewalService(
     fun buildRenewForm(
         citizenId: UUID,
         renewedReservation: ReservationWithDependencies,
-        formInput: RenewalReservationInput,
+        formInput: ModifyReservationInput,
     ): String {
         val htmlParams =
             buildBoatSpaceRenewalViewParams(citizenId, renewedReservation, formInput)

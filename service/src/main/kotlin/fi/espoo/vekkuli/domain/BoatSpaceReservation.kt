@@ -17,6 +17,12 @@ enum class ReservationStatus {
     Invoiced
 }
 
+enum class CreationType {
+    Switch,
+    Renew,
+    New
+}
+
 data class BoatSpace(
     val id: Int,
     val type: BoatSpaceType,
@@ -76,6 +82,7 @@ data class ReservationWithDependencies(
     val excludedBoatTypes: List<BoatType>?,
     val validity: ReservationValidity,
     val originalReservationId: Int? = null,
+    val creationType: CreationType,
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)

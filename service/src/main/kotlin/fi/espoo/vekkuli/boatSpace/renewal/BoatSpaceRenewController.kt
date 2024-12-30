@@ -45,7 +45,7 @@ class BoatSpaceRenewController(
     @ResponseBody
     fun boatSpaceRenewPage(
         @PathVariable originalReservationId: Int,
-        @ModelAttribute formInput: RenewalReservationInput,
+        @ModelAttribute formInput: ModifyReservationInput,
         request: HttpServletRequest,
         response: HttpServletResponse,
     ): ResponseEntity<String> {
@@ -106,7 +106,7 @@ class BoatSpaceRenewController(
     @PostMapping("/kuntalainen/venepaikka/jatka/{originalReservationId}")
     fun renewBoatSpace(
         @PathVariable originalReservationId: Int,
-        @Valid @ModelAttribute("input") input: RenewalReservationInput,
+        @Valid @ModelAttribute("input") input: ModifyReservationInput,
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
@@ -192,7 +192,7 @@ class BoatSpaceRenewController(
 }
 
 @ValidBoatRegistration
-data class RenewalReservationInput(
+data class ModifyReservationInput(
     @field:NotNull(message = "{validation.required}")
     private val originalReservationId: Int?,
     override val boatId: Int?,
