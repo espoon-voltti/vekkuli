@@ -34,6 +34,8 @@ export default React.memo(function ErrorModal({
           <h2 className="has-text-centered mb-none">
             {i18n.reservation.errors.startReservation.title}
           </h2>
+        </Column>
+        <Column isFull textCentered>
           <p>{i18n.reservation.errors.startReservation[error]}</p>
         </Column>
       </Columns>
