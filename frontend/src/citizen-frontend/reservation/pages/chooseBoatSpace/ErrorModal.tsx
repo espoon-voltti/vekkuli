@@ -3,7 +3,7 @@ import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import { Failure } from 'lib-icons'
+import { ErrorGeneric } from 'lib-icons'
 
 export type ErrorCode = 'MAX_RESERVATIONS' | 'SERVER_ERROR' | 'NOT_POSSIBLE'
 
@@ -20,7 +20,7 @@ export default React.memo(function ErrorModal({
   const buttons = [
     {
       label: 'Ok',
-      type: 'danger' as const
+      type: 'primary' as const
     }
   ]
 
@@ -28,7 +28,7 @@ export default React.memo(function ErrorModal({
     <Modal close={close} buttons={buttons} buttonsCentered>
       <Columns isVCentered isMultiline>
         <Column isFull textCentered>
-          <Failure />
+          <ErrorGeneric />
         </Column>
         <Column isFull textCentered>
           <h2 className="has-text-centered mb-none">

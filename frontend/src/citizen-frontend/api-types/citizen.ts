@@ -15,3 +15,8 @@ export type CitizenBoatsResponse = {
 }[]
 
 export type CitizenOrganizationResponse = Organization[]
+
+export type UpdateCitizenInformationInput = {
+  email: string
+  phone: string
+}

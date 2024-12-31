@@ -3,7 +3,8 @@ import { uri } from 'lib-common/uri'
 import { client } from '../api-client'
 import {
   CitizenBoatsResponse,
-  CitizenOrganizationResponse
+  CitizenOrganizationResponse,
+  UpdateCitizenInformationInput
 } from '../api-types/citizen'
 import {
   BoatSpaceReservation,
@@ -67,4 +68,14 @@ export async function citizenOrganizations(): Promise<Organization[]> {
     method: 'GET'
   })
   return json
+}
+
+export async function updateCitizenInformation(
+  input: UpdateCitizenInformationInput
+): Promise<void> {
+  await client.request<BoatSpaceReservation>({
+    url: uri`/current/update-information`.toString(),
+    method: 'POST',
+    data: input
+  })
 }

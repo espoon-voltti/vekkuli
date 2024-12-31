@@ -5,11 +5,14 @@ import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationRespons
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
+import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.ReserverService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -52,5 +55,20 @@ class CitizenController(
     fun getExpiredReservations(request: HttpServletRequest): List<ReservationResponse> {
         val reservations = reservationService.getExpiredReservationsForCurrentCitizen()
         return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+    }
+
+    @PostMapping("/current/update-information")
+    fun postUpdateCitizenInformation(
+        request: HttpServletRequest,
+        @RequestBody input: UpdateCitizenInformationInput,
+    ) {
+        val citizenId = request.ensureCitizenId()
+        val params =
+            UpdateCitizenParams(
+                id = citizenId,
+                phone = input.phone,
+                email = input.email,
+            )
+        reserverService.updateCitizen(params)
     }
 }

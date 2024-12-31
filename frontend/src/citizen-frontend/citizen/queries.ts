@@ -1,9 +1,10 @@
-import { query } from 'lib-common/query'
+import { mutation, query } from 'lib-common/query'
 
 import {
   citizenActiveReservations,
   citizenExpiredReservations,
-  citizenOrganizations
+  citizenOrganizations,
+  updateCitizenInformation
 } from '../api-clients/citizen'
 import { createQueryKeys } from '../query'
 
@@ -26,4 +27,8 @@ export const citizenExpiredReservationsQuery = query({
 export const citizenOrganizationQuery = query({
   api: citizenOrganizations,
   queryKey: queryKeys.citizenOrganizations
+})
+
+export const updateCitizenInformationMutation = mutation({
+  api: updateCitizenInformation
 })
