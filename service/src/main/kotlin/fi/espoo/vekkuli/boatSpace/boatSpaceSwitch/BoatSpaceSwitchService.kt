@@ -120,7 +120,7 @@ class BoatSpaceSwitchService(
             reserverId = reservation.reserverId,
             reservationService.buildReserveBoatSpaceInput(reservationId, input),
             ReservationStatus.Payment,
-            reservation.validity ?: ReservationValidity.FixedTerm,
+            reservation.validity,
             reservation.startDate,
             reservation.endDate
         )
@@ -244,20 +244,31 @@ class BoatSpaceSwitchService(
         if (originalReservation.type !== boatSpace.type) {
             throw BadRequest("Boat space type does not match")
         }
-        if (!seasonalService
+
+        val reservationResult =
+            seasonalService
                 .canSwitchReservation(
                     originalReservation.type,
                     originalReservation.startDate,
                     originalReservation.endDate,
                     originalReservation.validity,
                     isEspooCitizen
-                ).success
+                )
+        if (!reservationResult.success
         ) {
             throw Conflict("Reservation cannot be renewed")
         }
+        val reservationResultSuccessData = (reservationResult as ReservationResult.Success).data
 
-        // TODO: update start and end date
-        val newId = boatSpaceSwitchRepository.createSwitchRow(originalReservationId, userType, userId, boatSpaceId)
+        val newId =
+            boatSpaceSwitchRepository.createSwitchRow(
+                originalReservationId,
+                userType,
+                userId,
+                boatSpaceId,
+                reservationResultSuccessData.endDate,
+                reservationResultSuccessData.reservationValidity
+            )
         return boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(newId)
     }
 

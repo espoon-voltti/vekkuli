@@ -2,15 +2,15 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import java.util.*
-
-class data
 
 @Repository
 class BoatSpaceSwitchRepository(
@@ -62,7 +62,9 @@ class BoatSpaceSwitchRepository(
         originalReservationId: Int,
         userType: UserType,
         userId: UUID,
-        boatSpaceId: Int
+        boatSpaceId: Int,
+        endDate: LocalDate,
+        validity: ReservationValidity
     ): Int =
         jdbi.withHandleUnchecked { handle ->
             handle
@@ -90,8 +92,9 @@ class BoatSpaceSwitchRepository(
                              :actingCitizenId as acting_citizen_id, 
                              :boatSpaceId as boat_space_id, 
                              start_date, 
-                             (end_date + INTERVAL '1 year') as end_date, 'Info' as status, 
-                             validity, 
+                             :endDate as end_date, 
+                             'Info' as status, 
+                             :validity as validity, 
                              boat_id, 
                              :employeeId as employee_id,
                              id as original_reservation_id,
@@ -108,6 +111,8 @@ class BoatSpaceSwitchRepository(
                 .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
                 .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
                 .bind("boatSpaceId", boatSpaceId)
+                .bind("endDate", endDate)
+                .bind("validity", validity)
                 .mapTo<Int>()
                 .one()
         }

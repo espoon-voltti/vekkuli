@@ -117,6 +117,8 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         assertEquals(ReservationStatus.Info, switchedReservation.status, "Status should be info")
         assertEquals(CreationType.Switch, switchedReservation.creationType, "Creation type should be switch")
         assertEquals(newBoatSpaceId, switchedReservation.boatSpaceId, "Boat space id should be changed")
+        assertEquals(reservation.endDate, switchedReservation.endDate, "End date should be the same")
+        assertEquals(reservation.startDate, switchedReservation.startDate, "Start date should be the same")
 
         val newReservation =
             boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, reservation.id, newBoatSpaceId)
