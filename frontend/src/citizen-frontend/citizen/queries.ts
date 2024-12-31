@@ -2,13 +2,15 @@ import { query } from 'lib-common/query'
 
 import {
   citizenActiveReservations,
-  citizenExpiredReservations
+  citizenExpiredReservations,
+  citizenOrganizations
 } from '../api-clients/citizen'
 import { createQueryKeys } from '../query'
 
 export const queryKeys = createQueryKeys('citizen', {
   citizenActiveReservations: () => ['citizenActiveReservations'],
-  citizenExpiredReservations: () => ['citizenExpiredReservations']
+  citizenExpiredReservations: () => ['citizenExpiredReservations'],
+  citizenOrganizations: () => ['citizenOrganizations']
 })
 
 export const citizenActiveReservationsQuery = query({
@@ -19,4 +21,9 @@ export const citizenActiveReservationsQuery = query({
 export const citizenExpiredReservationsQuery = query({
   api: citizenExpiredReservations,
   queryKey: queryKeys.citizenExpiredReservations
+})
+
+export const citizenOrganizationQuery = query({
+  api: citizenOrganizations,
+  queryKey: queryKeys.citizenOrganizations
 })

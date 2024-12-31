@@ -2,10 +2,11 @@ import { Loader } from 'lib-components/Loader'
 import Section from 'lib-components/dom/Section'
 import React, { useContext } from 'react'
 
+import { AuthContext, User } from 'citizen-frontend/auth/state'
 import { Result } from 'lib-common/api'
+import { useQueryResult } from 'lib-common/query'
 
-import { AuthContext, User } from '../auth/state'
-
+import { citizenOrganizationQuery } from './queries'
 import Header from './sections/Header'
 import Boats from './sections/boats/Boats'
 import CitizenInformation from './sections/citizenInformation'
@@ -14,7 +15,6 @@ import Reservations from './sections/reservations/Reservations'
 
 export default React.memo(function CitizenPage() {
   const { user } = useContext(AuthContext)
-
   return (
     <Section>
       <Content user={user} />
@@ -27,14 +27,19 @@ const Content = React.memo(function Content({
 }: {
   user: Result<User | undefined>
 }) {
+  const organizations = useQueryResult(citizenOrganizationQuery())
+
   return (
     <Section>
-      <Loader results={[user]}>
-        {(currentUser) =>
+      <Loader results={[user, organizations]}>
+        {(currentUser, loadedOrganizations) =>
           currentUser && (
             <>
               <Header user={currentUser} />
-              <CitizenInformation user={currentUser} />
+              <CitizenInformation
+                user={currentUser}
+                organizations={loadedOrganizations}
+              />
               <Reservations />
               <Boats />
               <ExpiredReservations />
