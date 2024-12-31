@@ -1,7 +1,12 @@
 import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
-export type ErrorCode = 'MAX_RESERVATIONS' | 'SERVER_ERROR'
+import { useTranslation } from 'citizen-frontend/localization'
+
+import { Column, Columns } from '../../../../lib-components/dom'
+import { Failure } from '../../../../lib-icons'
+
+export type ErrorCode = 'MAX_RESERVATIONS' | 'SERVER_ERROR' | 'NOT_POSSIBLE'
 
 export type ErrorModalProps = {
   close: () => void
@@ -12,18 +17,27 @@ export default React.memo(function ErrorModal({
   close,
   error
 }: ErrorModalProps) {
+  const i18n = useTranslation()
   const buttons = [
     {
-      label: 'Ok'
+      label: 'Ok',
+      type: 'danger' as const
     }
   ]
 
   return (
-    <Modal close={close} buttons={buttons}>
-      <p>Paikan varaamisessa tapahtui virhe</p>
-      {error === 'MAX_RESERVATIONS' && (
-        <p>Olet jo varannut maksimimäärän paikkoja</p>
-      )}
+    <Modal close={close} buttons={buttons} buttonsCentered>
+      <Columns isVCentered isMultiline>
+        <Column isFull textCentered>
+          <Failure />
+        </Column>
+        <Column isFull textCentered>
+          <h2 className="has-text-centered mb-none">
+            {i18n.reservation.errors.startReservation.title}
+          </h2>
+          <p>{i18n.reservation.errors.startReservation[error]}</p>
+        </Column>
+      </Columns>
     </Modal>
   )
 })

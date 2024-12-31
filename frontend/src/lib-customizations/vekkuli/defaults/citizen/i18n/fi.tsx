@@ -4,7 +4,13 @@
 
 import type { Translations as ComponentTranslations } from 'lib-components/i18n'
 
-import components from '../../components/i18n/fi'
+import {
+  BoatSpaceType,
+  OwnershipStatus,
+  ReservationValidity
+} from 'citizen-frontend/shared/types'
+import LocalDate from 'lib-common/date/local-date'
+import components from 'lib-customizations/vekkuli/defaults/components/i18n/fi'
 
 const componentTranslations: ComponentTranslations = {
   ...components
@@ -115,7 +121,7 @@ export default {
     },
     searchPage: {
       missingFieldsInfoBox:
-        'Anna ensin venetyyppi ja veneen mitat niin näet veneellesi sopivat paikat.',
+        'Anna ensin paikan mitat niin näet veneellesi sopivat paikat.',
       filters: {
         boatSpaceType: 'Haettava paikka',
         harbor: 'Satama',
@@ -156,8 +162,37 @@ export default {
       'Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.',
     prices: {
       totalPrice: (amount: string) => `Yhteensä: ${amount} €`,
-      vatValue: (amount: string) => `Alv.: ${amount} €`,
-      netPrice: (amount: string) => `Hinta: ${amount} €`
+      vatValue: (amount: string) => `Arvonlisävero: ${amount} €`,
+      netPrice: (amount: string) => `Hinta ennen veroja: ${amount} €`
+    },
+    validity: (
+      endDate: LocalDate,
+      validity: ReservationValidity,
+      boatSpaceType: BoatSpaceType
+    ) => {
+      switch (validity) {
+        case 'FixedTerm':
+          return `${endDate.format()} asti`
+        case 'Indefinite':
+          switch (boatSpaceType) {
+            case 'Slip':
+              return 'Toistaiseksi, jatko vuosittain tammikuussa'
+            case 'Winter':
+            case 'Storage':
+              return 'Toistaiseksi, jatko vuosittain elokuussa'
+            case 'Trailer':
+              return 'Toistaiseksi, jatko vuosittain huhtikuussa'
+          }
+      }
+    },
+    errors: {
+      startReservation: {
+        title: 'Varaaminen ei ole mahdollista',
+        MAX_RESERVATIONS: 'Sinulla on jo maksimimäärä paikkoja.',
+        NOT_POSSIBLE:
+          'Paikkojen varaaminen ei ole auki tällä hetkellä. Ole hyvä ja tarkista aukioloajat.',
+        SERVER_ERROR: 'Hups! Tapahtui virhe. Ole hyvä ja yritä uudelleen.'
+      }
     }
   },
   boatSpace: {
@@ -196,6 +231,17 @@ export default {
       User: 'Olen veneen haltija',
       CoOwner: 'Omistan veneen yhdessä muiden kanssa',
       FutureOwner: 'Olen ostamassa veneen'
+    },
+    ownershipStatusInfo: (type: OwnershipStatus, spaceType: BoatSpaceType) => {
+      if (type === 'CoOwner') {
+        switch (spaceType) {
+          case 'Slip':
+            return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta venepaikan voi uusia vuosittain. Muutoin paikka on määräaikainen.'
+          case 'Winter':
+            return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta saatte varata talvipaikan. Ämmäsmäen säilytyspaikkoja saa varata kaikki kotikunnasta riippumatta.'
+        }
+      }
+      return undefined
     },
     amenities: {
       Buoy: 'Poiju',

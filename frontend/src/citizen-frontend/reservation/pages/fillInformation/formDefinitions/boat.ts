@@ -12,6 +12,7 @@ import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import {
   Boat,
+  BoatSpaceType,
   BoatType,
   boatTypes,
   OwnershipStatus,
@@ -60,12 +61,13 @@ export type BoatForm = typeof boatForm
 
 export default function initialFormState(
   i18n: Translations,
-  boats: Boat[]
+  boats: Boat[],
+  boatSpaceType: BoatSpaceType
 ): StateOf<BoatForm> {
   return {
     boatInfo: initialBoatInfoFormState(i18n),
     boatSelection: initialBoatSelectionState(boats),
-    ownership: initialOwnershipState(i18n),
+    ownership: initialOwnershipState(i18n, boatSpaceType),
     newBoatCache: initialBoatInfoFormState(i18n)
   }
 }
@@ -104,11 +106,15 @@ function initialBoatInfoFormState(i18n: Translations) {
   }
 }
 
-const initialOwnershipState = (i18n: Translations) => ({
+const initialOwnershipState = (
+  i18n: Translations,
+  boatSpaceType: BoatSpaceType
+) => ({
   domValue: 'Owner',
   options: ownershipStatuses.map((type) => ({
     domValue: type,
     label: i18n.boatSpace.ownershipStatus[type],
+    info: i18n.boatSpace.ownershipStatusInfo(type, boatSpaceType),
     value: type
   }))
 })

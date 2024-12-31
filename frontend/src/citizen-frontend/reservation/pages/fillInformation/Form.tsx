@@ -118,6 +118,7 @@ export default React.memo(function Form({
             vatValue: reservation.vatValue,
             netPrice: reservation.netPrice
           }}
+          reservation={reservation}
         />
         <UserAgreementsSection bind={userAgreement} />
         {showAllErrors && <ValidationWarning />}

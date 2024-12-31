@@ -1,18 +1,21 @@
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
-import { useTranslation } from '../../localization'
+import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
 import {
   formatDimensions,
   formatPlaceIdentifier
-} from '../../shared/formatters'
-import { BoatSpace } from '../../shared/types'
+} from 'citizen-frontend/shared/formatters'
+import { BoatSpace } from 'citizen-frontend/shared/types'
 
-export default React.memo(function ReserveredSpace({
+export default React.memo(function ReservedSpace({
   boatSpace,
+  reservation,
   price: { totalPrice, vatValue, netPrice }
 }: {
   boatSpace: BoatSpace
+  reservation: BoatSpaceReservation
   price: {
     totalPrice: string
     vatValue: string
@@ -23,7 +26,7 @@ export default React.memo(function ReserveredSpace({
 
   return (
     <div className="form-section">
-      <h3 className="header">Varaaja</h3>
+      <h3 className="header">Varattava paikka</h3>
       <div className="columns">
         <div className="column is-one-quarter">
           <TextField
@@ -48,7 +51,7 @@ export default React.memo(function ReserveredSpace({
           <TextField
             id="space-type"
             label="Venepaikkatyyppi"
-            value={boatSpace.type}
+            value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
             readonly={true}
           />
         </div>
@@ -66,7 +69,7 @@ export default React.memo(function ReserveredSpace({
           <TextField
             id="amenity"
             label="Varuste"
-            value={boatSpace.amenity}
+            value={i18n.boatSpace.amenities[boatSpace.amenity]}
             readonly={true}
           />
         </div>
@@ -74,7 +77,11 @@ export default React.memo(function ReserveredSpace({
           <TextField
             id="amenity"
             label="Varaus voimassa:"
-            value="01.04.2024 - 31.01.2025"
+            value={i18n.reservation.validity(
+              reservation.endDate,
+              reservation.validity,
+              boatSpace.type
+            )}
             readonly={true}
           />
         </div>

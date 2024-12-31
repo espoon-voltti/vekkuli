@@ -63,6 +63,7 @@ const Content = React.memo(function Content({
       </div>
       <ReservedSpace
         boatSpace={boatSpace}
+        reservation={reservation.value}
         price={{ netPrice, totalPrice, vatValue }}
       />
     </>

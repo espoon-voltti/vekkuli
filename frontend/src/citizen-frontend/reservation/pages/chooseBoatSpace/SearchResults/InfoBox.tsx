@@ -1,8 +1,7 @@
 import React from 'react'
 
-import { InfoCircle } from 'lib-icons'
-
-import { useTranslation } from '../../../../localization'
+import { useTranslation } from 'citizen-frontend/localization'
+import { BlueInfoCircle } from 'lib-icons'
 
 export const InfoBox = React.memo(function InfoBox() {
   const i18n = useTranslation()
@@ -13,7 +12,7 @@ export const InfoBox = React.memo(function InfoBox() {
     >
       <div className="column is-narrow">
         <span className="icon">
-          <InfoCircle />
+          <BlueInfoCircle />
         </span>
       </div>
       <p className="column">

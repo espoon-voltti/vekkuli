@@ -1,4 +1,5 @@
-import { RadioField } from 'lib-components/form/RadioField'
+import { Column, Columns } from 'lib-components/dom'
+import { FormSection, RadioField } from 'lib-components/form'
 import React from 'react'
 
 import { BoundForm } from 'lib-common/form/hooks'
@@ -11,19 +12,17 @@ export default React.memo(function BoatOwnershipSatus({
   bind: BoundForm<BoatOwnershipTypeForm>
 }) {
   return (
-    <div className="form-section">
-      <div id="shipHolder">
-        <div className="columns">
-          <div className="column">
-            <RadioField
-              id="boat-ownership-status"
-              name="boatOwnershipStatus"
-              label="Veneen omistussuhde Traficomin mukaan"
-              bind={bind}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+    <FormSection>
+      <Columns>
+        <Column isHalf>
+          <RadioField
+            id="boat-ownership-status"
+            name="boatOwnershipStatus"
+            label="Veneen omistussuhde Traficomin mukaan"
+            bind={bind}
+          />
+        </Column>
+      </Columns>
+    </FormSection>
   )
 })

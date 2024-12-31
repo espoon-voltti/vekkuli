@@ -167,6 +167,8 @@ const mapErrorCode = (errorCode: string): ErrorCode => {
   switch (errorCode) {
     case 'MaxReservations':
       return 'MAX_RESERVATIONS'
+    case 'NotPossible':
+      return 'NOT_POSSIBLE'
     default:
       return 'SERVER_ERROR'
   }

@@ -14,11 +14,11 @@ export function formatDimensions({
   width: number
   length: number
 }) {
-  return `${formatDimension(width)} x ${formatDimension(length)} m`
+  return `${formatDimension(width)} m x ${formatDimension(length)} m`
 }
 
 export function formatDimension(value: number): string {
-  return value.toFixed(1).replace('.', ',')
+  return value.toFixed(2).replace('.', ',')
 }
 
 export function formatPrice(value: number): string {

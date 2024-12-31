@@ -18,7 +18,11 @@ export default React.memo(function Reservations() {
         <Loader results={[activeReservations]}>
           {(loadedReservations) =>
             loadedReservations.map((reservation) => (
-              <Reservation key={reservation.id} reservation={reservation} />
+              <Reservation
+                key={reservation.id}
+                reservation={reservation}
+                canTerminate
+              />
             ))
           }
         </Loader>

@@ -66,7 +66,7 @@ export function initialFormState(
 ): StateOf<ReserveSpaceForm> {
   return {
     ...initialReserverFormState(reserver),
-    boat: initialBoatFormState(i18n, boats),
+    boat: initialBoatFormState(i18n, boats, spaceType),
     //winterStorage: initialWinterStorageFormState(i18n),
     spaceTypeInfo: initialSpaceTypeInfoFormState(i18n, spaceType),
     ...initialUserAgreementFormState(i18n)
