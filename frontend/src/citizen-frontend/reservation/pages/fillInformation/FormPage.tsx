@@ -2,13 +2,13 @@ import { Loader } from 'lib-components/Loader'
 import { Container, Section } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
-import { FormErrorProvider } from 'lib-common/form/state'
-import { useQueryResult } from 'lib-common/query'
-
 import {
   citizenBoatsQuery,
   citizenOrganizationsQuery
-} from '../../../shared/queries'
+} from 'citizen-frontend/shared/queries'
+import { FormErrorProvider } from 'lib-common/form/state'
+import { useQueryResult } from 'lib-common/query'
+
 import StepIndicator from '../../StepIndicator'
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservationTimer from '../../components/ReservationTimer'

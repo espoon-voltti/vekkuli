@@ -1,9 +1,8 @@
+import { FillBoatSpaceReservationInput } from 'citizen-frontend/api-types/reservation'
+import { Boat, BoatSpaceType, Citizen } from 'citizen-frontend/shared/types'
 import { mapped, object } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-
-import { FillBoatSpaceReservationInput } from '../../../../api-types/reservation'
-import { Boat, BoatSpaceType, Citizen } from '../../../../shared/types'
 
 import initialBoatFormState, { boatForm, onBoatFormUpdate } from './boat'
 import initialReserverFormState, { reserverForm } from './reserver'

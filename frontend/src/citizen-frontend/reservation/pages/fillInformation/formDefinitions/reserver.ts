@@ -1,7 +1,6 @@
+import { Citizen } from 'citizen-frontend/shared/types'
 import { string } from 'lib-common/form/fields'
 import { object, required } from 'lib-common/form/form'
-
-import { Citizen } from '../../../../shared/types'
 
 export const reserverForm = object({
   email: required(string()),

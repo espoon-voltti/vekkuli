@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Place, Space } from '../../../../api-types/free-spaces'
+import { Place, Space } from 'citizen-frontend/api-types/free-spaces'
 
 import { ResultRow } from './ResultRow'
 import { ShowMore } from './ShowMore'

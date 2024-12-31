@@ -1,15 +1,15 @@
 import { Button, Buttons, Column, Columns } from 'lib-components/dom'
+import DateField from 'lib-components/form/DateField'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
-import { Result } from '../../../../lib-common/api'
-import DateField from '../../../../lib-components/form/DateField'
-import { BoatSpaceReservation } from '../../../api-types/reservation'
-import { useTranslation } from '../../../localization'
+import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
 import {
   formatDimension,
   formatPlaceIdentifier
-} from '../../../shared/formatters'
+} from 'citizen-frontend/shared/formatters'
+import { Result } from 'lib-common/api'
 
 import TerminateModal from './TerminateModal'
 import TerminateModalFailure from './TerminateModalFailure'

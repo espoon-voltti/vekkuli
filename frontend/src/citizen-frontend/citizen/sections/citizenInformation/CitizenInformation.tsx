@@ -3,7 +3,7 @@ import TextField from 'lib-components/form/TextField'
 import { EditLink } from 'lib-components/links'
 import React from 'react'
 
-import { User } from '../../../auth/state'
+import { User } from 'citizen-frontend/auth/state'
 
 export default React.memo(function Header({ user }: { user: User }) {
   const [editMode, setEditMode] = React.useState(false)

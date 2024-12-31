@@ -1,11 +1,9 @@
+import { Column, Columns } from 'lib-components/dom'
+import { FormSection, TextField } from 'lib-components/form'
 import React from 'react'
 
-import {
-  BoundForm,
-  useFormFields
-} from '../../../../../../lib-common/form/hooks'
-import { Column, Columns } from '../../../../../../lib-components/dom'
-import { FormSection, TextField } from '../../../../../../lib-components/form'
+import { BoundForm, useFormFields } from 'lib-common/form/hooks'
+
 import { TrailerInfoForm } from '../../formDefinitions/winterStorage'
 
 export const TrailerInfo = React.memo(function TrailerInfo({

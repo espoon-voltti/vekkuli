@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { PlaceWithSpaces } from '../../../../api-types/free-spaces'
+import { PlaceWithSpaces } from 'citizen-frontend/api-types/free-spaces'
 
 import { InfoBox } from './InfoBox'
 import { ResultGroup } from './ResultGroup'

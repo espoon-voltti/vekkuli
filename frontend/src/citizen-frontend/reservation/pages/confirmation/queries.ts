@@ -1,6 +1,6 @@
+import { getReservation } from 'citizen-frontend/api-clients/reservation'
 import { query } from 'lib-common/query'
 
-import { getReservation } from '../../../api-clients/reservation'
 import { createQueryKeys } from '../../../query'
 
 const queryKeys = createQueryKeys('reservation', {

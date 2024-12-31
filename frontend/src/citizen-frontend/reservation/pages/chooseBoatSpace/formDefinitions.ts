@@ -1,3 +1,4 @@
+import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces'
 import { positiveNumber } from 'lib-common/form/fields'
 import {
   mapped,
@@ -10,7 +11,6 @@ import {
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
-import { SearchFreeSpacesParams } from '../../../api-types/free-spaces'
 import {
   BoatSpaceAmenity,
   BoatSpaceType,

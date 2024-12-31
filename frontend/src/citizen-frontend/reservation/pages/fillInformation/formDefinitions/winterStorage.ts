@@ -8,9 +8,8 @@ import {
   union,
   value
 } from 'lib-common/form/form'
-
-import { StateOf } from '../../../../../lib-common/form/types'
-import { Translations } from '../../../../../lib-customizations/vekkuli/citizen'
+import { StateOf } from 'lib-common/form/types'
+import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 export const storageTypeForm = oneOf<StorageType>()
 export type StorageTypeForm = typeof storageTypeForm

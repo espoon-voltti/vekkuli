@@ -1,6 +1,6 @@
+import { terminateReservation } from 'citizen-frontend/api-clients/reservation'
 import { mutation } from 'lib-common/query'
 
-import { terminateReservation } from '../../../api-clients/reservation'
 import { queryKeys } from '../../queries'
 
 export const terminateReservationMutation = mutation({

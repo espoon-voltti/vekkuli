@@ -5,10 +5,9 @@ import TextField from 'lib-components/form/TextField'
 import { EditLink } from 'lib-components/links'
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
+import { Boat } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
-
-import { useTranslation } from '../../../localization'
-import { Boat } from '../../../shared/types'
 
 import { boatForm, transformBoatToFormBoat } from './formDefinitions'
 

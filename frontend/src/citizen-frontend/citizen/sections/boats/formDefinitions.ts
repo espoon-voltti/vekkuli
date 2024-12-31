@@ -1,15 +1,14 @@
-import { positiveNumber, string } from 'lib-common/form/fields'
-import { multiSelect, object, oneOf, required } from 'lib-common/form/form'
-import { StateOf } from 'lib-common/form/types'
-import { Translations } from 'lib-customizations/vekkuli/citizen'
-
 import {
   Boat,
   BoatType,
   boatTypes,
   OwnershipStatus,
   ownershipStatuses
-} from '../../../shared/types'
+} from 'citizen-frontend/shared/types'
+import { positiveNumber, string } from 'lib-common/form/fields'
+import { multiSelect, object, oneOf, required } from 'lib-common/form/form'
+import { StateOf } from 'lib-common/form/types'
+import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 export const boatForm = object({
   id: string(),

@@ -1,7 +1,7 @@
 import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
-import { getLoginUri } from '../../../config'
+import { getLoginUri } from 'citizen-frontend/config'
 
 export type LoginBeforeReservingModalProps = {
   close: () => void

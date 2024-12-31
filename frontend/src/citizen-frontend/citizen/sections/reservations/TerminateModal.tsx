@@ -2,14 +2,14 @@ import { Column, Columns } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
-import { Result } from '../../../../lib-common/api'
-import { useMutationResult } from '../../../../lib-common/query'
-import { BoatSpaceReservation } from '../../../api-types/reservation'
-import { useTranslation } from '../../../localization'
+import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
 import {
   formatDimensions,
   formatPlaceIdentifier
-} from '../../../shared/formatters'
+} from 'citizen-frontend/shared/formatters'
+import { Result } from 'lib-common/api'
+import { useMutationResult } from 'lib-common/query'
 
 import { terminateReservationMutation } from './queries'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Space } from '../../../../api-types/free-spaces'
+import { Space } from 'citizen-frontend/api-types/free-spaces'
 
 import { PriceFormat, SpaceSize } from './utils'
 

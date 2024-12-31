@@ -4,9 +4,8 @@ import { RadioField } from 'lib-components/form/RadioField'
 import { SelectField } from 'lib-components/form/SelectField'
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
-
-import { useTranslation } from '../../../localization'
 
 import { SearchForm } from './formDefinitions'
 

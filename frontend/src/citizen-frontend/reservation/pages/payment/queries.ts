@@ -1,7 +1,6 @@
+import { paymentInformation } from 'citizen-frontend/api-clients/reservation'
+import { createQueryKeys } from 'citizen-frontend/query'
 import { query } from 'lib-common/query'
-
-import { paymentInformation } from '../../../api-clients/reservation'
-import { createQueryKeys } from '../../../query'
 
 const queryKeys = createQueryKeys('reservation', {
   paymentInformation: () => ['paymentInformation']

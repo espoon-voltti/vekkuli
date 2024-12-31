@@ -1,8 +1,7 @@
+import { BoatSpaceType } from 'citizen-frontend/shared/types'
 import { union, value } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-
-import { BoatSpaceType } from '../../../../shared/types'
 
 import initialWinterStorageFormState, {
   onWinterStorageFormUpdate,

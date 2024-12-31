@@ -3,13 +3,13 @@ import { Column, Columns, Container, Section } from 'lib-components/dom'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import { AuthContext } from 'citizen-frontend/auth/state'
+import { useTranslation } from 'citizen-frontend/localization'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
 import { StateOf } from 'lib-common/form/types'
 import { useMutation, useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
-import { AuthContext } from '../../../auth/state'
-import { useTranslation } from '../../../localization'
 import StepIndicator from '../../StepIndicator'
 import { ReservationStateContext } from '../../state'
 

@@ -2,11 +2,11 @@ import { Loader } from 'lib-components/Loader'
 import { Container } from 'lib-components/dom'
 import React from 'react'
 
+import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { citizenBoatsQuery } from 'citizen-frontend/shared/queries'
+import { Boat } from 'citizen-frontend/shared/types'
 import { useQueryResult } from 'lib-common/query'
 
-import { BoatSpaceReservation } from '../../../api-types/reservation'
-import { citizenBoatsQuery } from '../../../shared/queries'
-import { Boat } from '../../../shared/types'
 import { citizenActiveReservationsQuery } from '../../queries'
 
 import BoatComponent from './Boat'

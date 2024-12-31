@@ -1,9 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { ChevronLeft } from 'lib-icons'
-
-import { useTranslation } from '../../citizen-frontend/localization'
 
 import IconLink from './IconLink'
 

@@ -2,9 +2,9 @@ import DateField from 'lib-components/form/DateField'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
+import { Citizen } from 'citizen-frontend/shared/types'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { Citizen } from '../../../../shared/types'
 import { ReserverForm } from '../formDefinitions/reserver'
 
 export default React.memo(function Reserver({

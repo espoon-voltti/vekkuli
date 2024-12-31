@@ -1,10 +1,9 @@
 import { CheckboxField } from 'lib-components/form/CheckboxField'
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
+import { Boat } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
-
-import { useTranslation } from '../../../localization'
-import { Boat } from '../../../shared/types'
 
 import BoatComponent from './Boat'
 import { initShowBoatsForm, showBoatsForm } from './formDefinitions'

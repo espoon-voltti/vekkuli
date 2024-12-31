@@ -1,3 +1,9 @@
+import { Municipality } from 'citizen-frontend/api-types/reservation'
+import {
+  NewOrganization,
+  Organization,
+  ReserverType
+} from 'citizen-frontend/shared/types'
 import { string } from 'lib-common/form/fields'
 import {
   mapped,
@@ -9,13 +15,6 @@ import {
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-
-import { Municipality } from '../../../../api-types/reservation'
-import {
-  NewOrganization,
-  Organization,
-  ReserverType
-} from '../../../../shared/types'
 
 export const renterTypeForm = object({
   type: oneOf<ReserverType>()

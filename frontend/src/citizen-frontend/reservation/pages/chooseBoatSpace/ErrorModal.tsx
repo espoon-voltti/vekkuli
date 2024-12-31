@@ -1,10 +1,9 @@
+import { Column, Columns } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
-
-import { Column, Columns } from '../../../../lib-components/dom'
-import { Failure } from '../../../../lib-icons'
+import { Failure } from 'lib-icons'
 
 export type ErrorCode = 'MAX_RESERVATIONS' | 'SERVER_ERROR' | 'NOT_POSSIBLE'
 

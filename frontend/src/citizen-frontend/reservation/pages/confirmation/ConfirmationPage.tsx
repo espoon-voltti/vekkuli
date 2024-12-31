@@ -1,10 +1,10 @@
 import React from 'react'
 
+import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 import useRouteParams from 'lib-common/useRouteParams'
 
-import { BoatSpaceReservation } from '../../../api-types/reservation'
 import StepIndicator from '../../StepIndicator'
 import ReservedSpace from '../../components/ReservedSpace'
 

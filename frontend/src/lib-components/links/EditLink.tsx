@@ -1,8 +1,7 @@
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { Edit } from 'lib-icons'
-
-import { useTranslation } from '../../citizen-frontend/localization'
 
 import IconLink from './IconLink'
 

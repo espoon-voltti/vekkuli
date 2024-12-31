@@ -3,7 +3,8 @@ import { Container } from 'lib-components/dom'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { useQueryResult } from '../../../lib-common/query'
+import { useQueryResult } from 'lib-common/query'
+
 import { unfinishedReservationExpirationQuery } from '../queries'
 
 export default React.memo(function ReservationTimer() {
