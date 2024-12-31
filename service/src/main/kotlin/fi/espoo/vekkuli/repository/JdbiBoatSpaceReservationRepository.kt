@@ -881,7 +881,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET status = :reservationStatus, updated = :updatedTime
                     WHERE id = :reservationId
-                        AND (status = 'Payment' OR status = 'Renewal')
+                        AND (status = 'Payment' OR status = 'Renewal' OR status = 'Info')
                         AND created > :currentTime - make_interval(secs => :paymentTimeout)
                     RETURNING *
                     """.trimIndent()

@@ -38,7 +38,7 @@ class BoatSpaceSwitchRepository(
         }
 
     fun getSwitchReservationForEmployee(
-        actingCitizenId: UUID,
+        employeeId: UUID,
         originalReservationId: Int
     ): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
@@ -46,12 +46,12 @@ class BoatSpaceSwitchRepository(
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND 
+                    WHERE bsr.employee_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND 
                     bsr.status = 'Info' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
-            query.bind("id", actingCitizenId)
+            query.bind("id", employeeId)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.bind("reservationId", originalReservationId)
@@ -61,7 +61,8 @@ class BoatSpaceSwitchRepository(
     fun createSwitchRow(
         originalReservationId: Int,
         userType: UserType,
-        userId: UUID
+        userId: UUID,
+        boatSpaceId: Int
     ): Int =
         jdbi.withHandleUnchecked { handle ->
             handle
@@ -87,7 +88,7 @@ class BoatSpaceSwitchRepository(
                       SELECT :created as created,
                              reserver_id, 
                              :actingCitizenId as acting_citizen_id, 
-                             boat_space_id, 
+                             :boatSpaceId as boat_space_id, 
                              start_date, 
                              (end_date + INTERVAL '1 year') as end_date, 'Info' as status, 
                              validity, 
@@ -106,6 +107,7 @@ class BoatSpaceSwitchRepository(
                 .bind("reservationId", originalReservationId)
                 .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
                 .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
+                .bind("boatSpaceId", boatSpaceId)
                 .mapTo<Int>()
                 .one()
         }

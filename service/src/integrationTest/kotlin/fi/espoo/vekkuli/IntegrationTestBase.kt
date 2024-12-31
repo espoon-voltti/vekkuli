@@ -41,6 +41,11 @@ abstract class IntegrationTestBase {
 
     val userId: UUID = UUID.fromString("94833b54-132b-4ab8-b841-60df45809b3e")
 
+    val boatSpaceIdForSlip = 1
+    val boatSpaceIdForSlip2 = 2
+    val boatSpaceIdForWinter = 8
+    val boatSpaceIdForWinter2 = 8
+
     @MockBean
     lateinit var timeProvider: TimeProvider
 

@@ -201,4 +201,23 @@ class JdbiBoatSpaceRepository(
 
             query.mapTo<BoatSpace>().firstOrNull()
         }
+
+    override fun isBoatSpaceReserved(boatSpaceId: Int): Boolean =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT 
+                    COUNT(*)
+                FROM boat_space_reservation bsr
+                WHERE bsr.boat_space_id = :boatSpaceId
+                AND ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut) 
+                OR (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut) 
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            query.bind("boatSpaceId", boatSpaceId)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+
+            query.mapTo<Int>().first() > 0
+        }
 }

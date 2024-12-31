@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
-import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isEspooCitizen
 import fi.espoo.vekkuli.controllers.UserType
@@ -40,35 +39,13 @@ class BoatSpaceSwitchService(
     private val boatSpaceSwitchRepository: BoatSpaceSwitchRepository,
     private val reservationService: ReservationFormService,
     private val invoiceService: BoatSpaceInvoiceService,
+    private val boatSpaceRepository: BoatSpaceRepository,
 ) {
-    fun switchBoatSpaceReservationAsCitizen(
-        reserverId: UUID,
-        reservationId: Int,
-        newReservationId: Int
-    ) {
-        val reservation =
-            boatSpaceReservationRepo.getReservationWithDependencies(
-                reservationId
-            ) ?: throw IllegalArgumentException("Reservation not found")
-        val reserver =
-            reserverService.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
-        val reservationResult =
-            seasonalService.canSwitchReservation(
-                reservation.type,
-                reservation.startDate,
-                reservation.endDate,
-                reservation.validity,
-                isEspooCitizen(reserver.municipalityCode)
-            )
-        if (!reservationResult.success) {
-            throw Forbidden("Cannot switch reservation")
-        }
-    }
-
     fun getOrCreateSwitchReservationForEmployee(
         userId: UUID,
         originalReservationId: Int,
-        reserverId: UUID
+        reserverId: UUID,
+        boatSpaceId: Int
     ): ReservationWithDependencies {
         val reserverMunicipalityCode =
             reserverService.getReserverById(reserverId)?.municipalityCode ?: throw IllegalArgumentException("Reserver not found")
@@ -76,14 +53,15 @@ class BoatSpaceSwitchService(
         if (original != null) return original
 
         val originalReservation =
-            createSwitchReservation(originalReservationId, userId, UserType.EMPLOYEE, isEspooCitizen(reserverMunicipalityCode))
+            createSwitchReservation(originalReservationId, userId, UserType.EMPLOYEE, isEspooCitizen(reserverMunicipalityCode), boatSpaceId)
                 ?: throw IllegalStateException("Reservation not found")
         return originalReservation
     }
 
     fun getOrCreateSwitchReservationForCitizen(
         reserverId: UUID,
-        originalReservationId: Int
+        originalReservationId: Int,
+        boatSpaceId: Int
     ): ReservationWithDependencies {
         val reserverMunicipalityCode =
             reserverService.getReserverById(reserverId)?.municipalityCode ?: throw IllegalArgumentException("Reserver not found")
@@ -91,7 +69,13 @@ class BoatSpaceSwitchService(
         if (original != null) return original
 
         val originalReservation =
-            createSwitchReservation(originalReservationId, reserverId, UserType.CITIZEN, isEspooCitizen(reserverMunicipalityCode))
+            createSwitchReservation(
+                originalReservationId,
+                reserverId,
+                UserType.CITIZEN,
+                isEspooCitizen(reserverMunicipalityCode),
+                boatSpaceId
+            )
                 ?: throw IllegalStateException("Reservation not found")
         return originalReservation
     }
@@ -208,26 +192,36 @@ class BoatSpaceSwitchService(
             BoatSpaceType.Trailer -> "T1270"
         }
 
+    fun calculatePriceDifference(
+        originalPriceCents: Int,
+        newPriceCents: Int
+    ): Int = newPriceCents - originalPriceCents
+
     @Transactional
-    fun activateSwitchAndSendInvoice(
-        renewedReservationId: Int,
+    fun endOriginalReservationAndCreateInvoice(
+        switchedReservationId: Int,
         reserverId: UUID?,
-        originalReservationId: Int?
+        originalReservationId: Int?,
+        originalPriceCents: Int,
+        newPriceCents: Int
     ) {
         if (reserverId == null || originalReservationId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
 
-        val invoiceData =
-            invoiceService.createInvoiceData(renewedReservationId, reserverId)
-                ?: throw InternalError("Failed to create invoice batch")
-
-        boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
-
+        // Set the original reservation to ended
         boatReservationService.markReservationEnded(originalReservationId)
 
-        invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
-            ?: throw InternalError("Failed to send invoice")
+        // Send invoice for new reservation
+        val priceInCents = calculatePriceDifference(originalPriceCents, newPriceCents)
+        if (priceInCents >= 0) {
+            val invoiceData =
+                invoiceService.createInvoiceData(switchedReservationId, reserverId, priceInCents)
+                    ?: throw InternalError("Failed to create invoice batch")
+            boatReservationService.setReservationStatusToInvoiced(switchedReservationId)
+            invoiceService.createAndSendInvoice(invoiceData, reserverId, switchedReservationId)
+                ?: throw InternalError("Failed to send invoice")
+        }
     }
 
     fun createSwitchReservation(
@@ -235,22 +229,35 @@ class BoatSpaceSwitchService(
         userId: UUID,
         userType: UserType,
         isEspooCitizen: Boolean,
+        boatSpaceId: Int
     ): ReservationWithDependencies? {
-        val reservation =
+        val originalReservation =
             boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
-                ?: throw BadRequest("Reservation to renew not found")
+                ?: throw BadRequest("Reservation to switch not found")
+
+        if (seasonalService.isBoatSpaceReserved(boatSpaceId)) {
+            throw BadRequest("Boat space is already reserved")
+        }
+        val boatSpace =
+            boatSpaceRepository.getBoatSpace(boatSpaceId)
+                ?: throw BadRequest("Boat space not found")
+        if (originalReservation.type !== boatSpace.type) {
+            throw BadRequest("Boat space type does not match")
+        }
         if (!seasonalService
                 .canSwitchReservation(
-                    reservation.type,
-                    reservation.startDate,
-                    reservation.endDate,
-                    reservation.validity,
+                    originalReservation.type,
+                    originalReservation.startDate,
+                    originalReservation.endDate,
+                    originalReservation.validity,
                     isEspooCitizen
                 ).success
         ) {
             throw Conflict("Reservation cannot be renewed")
         }
-        val newId = boatSpaceSwitchRepository.createSwitchRow(originalReservationId, userType, userId)
+
+        // TODO: update start and end date
+        val newId = boatSpaceSwitchRepository.createSwitchRow(originalReservationId, userType, userId, boatSpaceId)
         return boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(newId)
     }
 

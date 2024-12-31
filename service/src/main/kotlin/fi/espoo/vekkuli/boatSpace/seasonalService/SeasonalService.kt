@@ -149,6 +149,8 @@ class SeasonalService(
         )
     }
 
+    fun isBoatSpaceReserved(boatSpaceId: Int): Boolean = boatSpaceRepository.isBoatSpaceReserved(boatSpaceId)
+
     fun getReservationPeriods(): List<ReservationPeriod> = seasonalRepository.getReservationPeriods()
 
     fun addPeriodInformationToReservation(
