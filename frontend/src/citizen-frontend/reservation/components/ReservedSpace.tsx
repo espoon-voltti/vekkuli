@@ -7,23 +7,14 @@ import {
   formatDimensions,
   formatPlaceIdentifier
 } from 'citizen-frontend/shared/formatters'
-import { BoatSpace } from 'citizen-frontend/shared/types'
 
 export default React.memo(function ReservedSpace({
-  boatSpace,
-  reservation,
-  price: { totalPrice, vatValue, netPrice }
+  reservation
 }: {
-  boatSpace: BoatSpace
   reservation: BoatSpaceReservation
-  price: {
-    totalPrice: string
-    vatValue: string
-    netPrice: string
-  }
 }) {
   const i18n = useTranslation()
-
+  const { netPrice, totalPrice, vatValue, boatSpace } = reservation
   return (
     <div className="form-section">
       <h3 className="header">Varattava paikka</h3>

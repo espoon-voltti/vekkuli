@@ -1,3 +1,4 @@
+import { Loader } from 'lib-components/Loader'
 import React from 'react'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
@@ -32,40 +33,30 @@ const Content = React.memo(function Content({
 }: {
   reservation: Result<BoatSpaceReservation>
 }) {
-  if (reservation.isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (reservation.isFailure) {
-    return <div>Error...</div>
-  }
-
-  const { boatSpace, netPrice, totalPrice, vatValue } = reservation.value
-
   return (
-    <>
-      <h1>Venepaikan varaus onnistui</h1>
-      <div className="container">
-        <ul className="has-bullets ml-none">
-          <li>
-            Saat viestin vahvistuksesta myös ilmoittamaasi
-            sähköpostiosoitteeseen.
-          </li>
-          <li>
-            Vahvistussähköpostissa on lisätietoa varaamastasi venepaikasta ja
-            sataman käytännöistä.
-          </li>
-          <li>
-            Varauksesi on voimassa toistaiseksi ja voit jatkaa sitä seuraavalle
-            kaudelle aina tammikuussa.
-          </li>
-        </ul>
-      </div>
-      <ReservedSpace
-        boatSpace={boatSpace}
-        reservation={reservation.value}
-        price={{ netPrice, totalPrice, vatValue }}
-      />
-    </>
+    <Loader results={[reservation]}>
+      {(loadedReservation) => (
+        <>
+          <h1>Venepaikan varaus onnistui</h1>
+          <div className="container">
+            <ul className="has-bullets ml-none">
+              <li>
+                Saat viestin vahvistuksesta myös ilmoittamaasi
+                sähköpostiosoitteeseen.
+              </li>
+              <li>
+                Vahvistussähköpostissa on lisätietoa varaamastasi venepaikasta
+                ja sataman käytännöistä.
+              </li>
+              <li>
+                Varauksesi on voimassa toistaiseksi ja voit jatkaa sitä
+                seuraavalle kaudelle aina tammikuussa.
+              </li>
+            </ul>
+          </div>
+          <ReservedSpace reservation={loadedReservation} />
+        </>
+      )}
+    </Loader>
   )
 })

@@ -188,10 +188,12 @@ export default {
     errors: {
       startReservation: {
         title: 'Varaaminen ei ole mahdollista',
-        MAX_RESERVATIONS: 'Sinulla on jo maksimimäärä paikkoja.',
-        NOT_POSSIBLE:
-          'Paikkojen varaaminen ei ole auki tällä hetkellä. Ole hyvä ja tarkista aukioloajat.',
-        SERVER_ERROR: 'Hups! Tapahtui virhe. Ole hyvä ja yritä uudelleen.'
+        MAX_RESERVATIONS: 'Sinulla on jo maksimimäärä tämän tyypin paikkoja.',
+        NOT_POSSIBLE: 'Varauskausi ei ole auki. Tarkista hakuajat etusivulta.',
+        SERVER_ERROR:
+          'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.',
+        MAX_PERSONAL_RESERVATIONS:
+          'Sinulla on jo maksimimäärä tämän tyypin paikkoja. Jos asioit yhteisön puolesta, voit jatkaa varaamista. '
       }
     }
   },

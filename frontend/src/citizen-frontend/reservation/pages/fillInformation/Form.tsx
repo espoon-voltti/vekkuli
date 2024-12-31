@@ -111,15 +111,7 @@ export default React.memo(function Form({
         <OrganizationSection bind={organizationFormBind} />
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
-        <ReservedSpace
-          boatSpace={reservation.boatSpace}
-          price={{
-            totalPrice: reservation.totalPrice,
-            vatValue: reservation.vatValue,
-            netPrice: reservation.netPrice
-          }}
-          reservation={reservation}
-        />
+        <ReservedSpace reservation={reservation} />
         <UserAgreementsSection bind={userAgreement} />
         {showAllErrors && <ValidationWarning />}
       </div>

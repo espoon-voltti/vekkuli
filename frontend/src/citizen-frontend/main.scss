@@ -71,6 +71,11 @@ $help-min-height: 18px;
   color: $white
 }
 
+.button.is-transparent {
+  background-color: transparent;
+  border-color: transparent;
+}
+
 html, body {
   height: 100%;
   background: $light-gray;
@@ -932,4 +937,12 @@ ul {
 .field .help
 {
   min-height: $help-min-height;
+}
+
+.is-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
