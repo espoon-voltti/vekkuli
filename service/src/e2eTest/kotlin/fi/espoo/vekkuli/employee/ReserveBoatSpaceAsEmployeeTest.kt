@@ -283,7 +283,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val info = "invoice has been paid"
             citizenDetailsPage.invoicePaidInfo.fill(info)
             val testDate = LocalDate.of(2024, 7, 22)
-
             citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
 
             citizenDetailsPage.invoiceModalConfirm.click()
