@@ -4,9 +4,12 @@ import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import fi.espoo.vekkuli.config.DomainConstants.INVOICE_PAYMENT_PERIOD
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.utils.SecondsRemaining
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.getNextDate
+import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class Dimensions(
     val width: Int?,
@@ -181,6 +184,20 @@ object BoatSpaceConfig {
     ) = when (validity) {
         ReservationValidity.FixedTerm -> getNextDate(now, 4, 30)
         ReservationValidity.Indefinite -> getNextDate(now, 4, 30)
+    }
+
+    fun getUnfinishedReservationExpirationTime(
+        reservationCreated: LocalDateTime,
+        currentDate: LocalDateTime
+    ): SecondsRemaining {
+        val reservationTimePassed = Duration.between(reservationCreated, currentDate).toSeconds()
+        val remainingTime = BoatSpaceConfig.SESSION_TIME_IN_SECONDS - reservationTimePassed
+
+        // Check for overflow or underflow before converting to Int. This should never happen without bad input.
+        if (remainingTime > Int.MAX_VALUE || remainingTime < Int.MIN_VALUE) {
+            throw IllegalArgumentException("Remaining time exceeds the range of Int")
+        }
+        return SecondsRemaining(remainingTime.toInt())
     }
 
     fun getInvoiceDueDate(timeProvider: TimeProvider): LocalDate = timeProvider.getCurrentDate().plusDays(INVOICE_PAYMENT_PERIOD.toLong())

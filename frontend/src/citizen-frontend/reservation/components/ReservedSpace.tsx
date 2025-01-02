@@ -8,7 +8,7 @@ import {
 } from '../../shared/formatters'
 import { BoatSpace } from '../../shared/types'
 
-export default React.memo(function Reserver({
+export default React.memo(function ReserveredSpace({
   boatSpace,
   price: { totalPrice, vatValue, netPrice }
 }: {

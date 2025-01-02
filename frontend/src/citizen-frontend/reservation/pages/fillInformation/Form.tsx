@@ -1,4 +1,4 @@
-import { Button, Buttons, Container } from 'lib-components/dom'
+import { Button, Buttons } from 'lib-components/dom'
 import React from 'react'
 import { useNavigate } from 'react-router'
 
@@ -9,8 +9,8 @@ import { useMutation } from 'lib-common/query'
 import { Municipality } from '../../../api-types/reservation'
 import { useTranslation } from '../../../localization'
 import { Boat, Organization } from '../../../shared/types'
+import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
-import { cancelReservationMutation } from '../../queries'
 import { Reservation } from '../../state'
 
 import initialOrganizationFormState, {
@@ -68,20 +68,6 @@ export default React.memo(function Form({
 
   const { reserver, boat, userAgreement } = useFormFields(formBind)
 
-  const { mutateAsync: cancelReservation } = useMutation(
-    cancelReservationMutation
-  )
-
-  const onReservationCancel = () => {
-    cancelReservation(reservation.id)
-      .then(() => {
-        return navigate('/kuntalainen/venepaikka')
-      })
-      .catch((error) => {
-        console.error('Error cancelling reservation', error)
-      })
-  }
-
   const onSubmit = async () => {
     if (formBind.isValid() && organizationFormBind.isValid()) {
       await submitForm({
@@ -93,35 +79,33 @@ export default React.memo(function Form({
   }
 
   return (
-    <Container>
-      <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
-        <h1 className="title pb-l" id="boat-space-form-header">
-          {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
-        </h1>
-        <div id="form-inputs" className="block">
-          <ReserverSection reserver={reservation.citizen} bind={reserver} />
-          <OrganizationSection bind={organizationFormBind} />
-          <BoatSection bind={boat} />
-          <ReservedSpace
-            boatSpace={reservation.boatSpace}
-            price={{
-              totalPrice: reservation.totalPrice,
-              vatValue: reservation.vatValue,
-              netPrice: reservation.netPrice
-            }}
-          />
-          <UserAgreementsSection bind={userAgreement} />
-        </div>
+    <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
+      <h1 className="title pb-l" id="boat-space-form-header">
+        {i18n.reservation.formPage.title.Slip('Laajalahti 008')}
+      </h1>
+      <div id="form-inputs" className="block">
+        <ReserverSection reserver={reservation.citizen} bind={reserver} />
+        <OrganizationSection bind={organizationFormBind} />
+        <BoatSection bind={boat} />
+        <ReservedSpace
+          boatSpace={reservation.boatSpace}
+          price={{
+            totalPrice: reservation.totalPrice,
+            vatValue: reservation.vatValue,
+            netPrice: reservation.netPrice
+          }}
+        />
+        <UserAgreementsSection bind={userAgreement} />
+      </div>
 
-        <Buttons>
-          <Button id="cancel" action={onReservationCancel}>
-            Peruuta varaus
-          </Button>
-          <Button id="submit-button" type="primary" action={onSubmit}>
-            Jatka maksamaan
-          </Button>
-        </Buttons>
-      </form>
-    </Container>
+      <Buttons>
+        <ReservationCancel reservationId={reservation.id} type="button">
+          Peruuta varaus
+        </ReservationCancel>
+        <Button id="submit-button" type="primary" action={onSubmit}>
+          Jatka maksamaan
+        </Button>
+      </Buttons>
+    </form>
   )
 })

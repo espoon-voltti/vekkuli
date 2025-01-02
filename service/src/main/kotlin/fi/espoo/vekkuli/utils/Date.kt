@@ -139,3 +139,5 @@ fun getNextDate(
         LocalDate.of(currentYear + 1, targetMonth, targetDay)
     }
 }
+
+data class SecondsRemaining(val value: Int)

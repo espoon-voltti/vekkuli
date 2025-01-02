@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
 import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.SecondsRemaining
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +21,7 @@ import java.time.Month
 import java.util.*
 
 @Service
-class ReservationService(
+open class ReservationService(
     private val boatReservationService: BoatReservationService,
     private val seasonalService: SeasonalService,
     private val timeProvider: TimeProvider,
@@ -33,6 +34,11 @@ class ReservationService(
     fun getUnfinishedReservationForCurrentCitizen(): BoatSpaceReservation? {
         val (citizenId) = citizenAccessControl.requireCitizen()
         return boatReservationService.getUnfinishedReservationForCitizen(citizenId)?.toBoatSpaceReservation()
+    }
+
+    fun getUnfinishedReservationExpirationForCurrentCitizen(): SecondsRemaining? {
+        val reservation = getUnfinishedReservationForCurrentCitizen() ?: return null
+        return BoatSpaceConfig.getUnfinishedReservationExpirationTime(reservation.created, timeProvider.getCurrentDateTime())
     }
 
     fun getActiveReservationsForCurrentCitizen(): List<BoatSpaceReservation> {
@@ -50,7 +56,7 @@ class ReservationService(
     }
 
     @Transactional
-    fun startReservation(spaceId: Int): BoatSpaceReservation {
+    open fun startReservation(spaceId: Int): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val result = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
@@ -73,7 +79,7 @@ class ReservationService(
     }
 
     @Transactional
-    fun fillReservationInformation(
+    open fun fillReservationInformation(
         reservationId: Int,
         information: ReservationInformation
     ): BoatSpaceReservation {
@@ -88,14 +94,14 @@ class ReservationService(
     }
 
     @Transactional
-    fun cancelUnfinishedReservation(reservationId: Int) {
+    open fun cancelUnfinishedReservation(reservationId: Int) {
         val (citizenId) = citizenAccessControl.requireCitizen()
         validateCurrentCitizenAccessToReservation(reservationId)
         return reservationFormServiceAdapter.cancelUnfinishedReservation(citizenId, reservationId)
     }
 
     @Transactional
-    suspend fun getPaymentInformation(reservationId: Int): PaytrailPaymentResponse {
+    open suspend fun getPaymentInformation(reservationId: Int): PaytrailPaymentResponse {
         val citizen = citizenAccessControl.requireCitizen()
         val reservation = accessReservation(reservationId)
 
@@ -107,7 +113,7 @@ class ReservationService(
     }
 
     @Transactional
-    fun terminateReservation(reservationId: Int) {
+    open fun terminateReservation(reservationId: Int) {
         val (citizenId) = citizenAccessControl.requireCitizen()
         validateCurrentCitizenAccessToReservation(reservationId)
         return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)

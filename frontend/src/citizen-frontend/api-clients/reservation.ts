@@ -28,6 +28,14 @@ export async function unfinishedReservation(): Promise<BoatSpaceReservation> {
   return deserializeJsonBoatSpaceReservationResponse(json)
 }
 
+export async function unfinishedReservationExpiration(): Promise<number> {
+  const { data: json } = await client.request<number>({
+    url: uri`/unfinished-reservation-expiration`.toString(),
+    method: 'GET'
+  })
+  return json
+}
+
 export async function getReservation(
   reservationId: number
 ): Promise<BoatSpaceReservation> {

@@ -1,4 +1,5 @@
 import { Loader } from 'lib-components/Loader'
+import { Container, Section } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { useQueryResult } from 'lib-common/query'
@@ -8,6 +9,8 @@ import {
   citizenOrganizationsQuery
 } from '../../../shared/queries'
 import StepIndicator from '../../StepIndicator'
+import ReservationCancel from '../../components/ReservationCancel'
+import ReservationTimer from '../../components/ReservationTimer'
 import { getMunicipalitiesQuery } from '../../queries'
 import { ReservationStateContext } from '../../state'
 
@@ -20,29 +23,38 @@ export default React.memo(function FormPage() {
   const organizations = useQueryResult(citizenOrganizationsQuery())
 
   return (
-    <section className="section">
-      <Loader
-        results={[reservation, citizenBoats, municipalities, organizations]}
-      >
-        {(
-          loadedReservation,
-          loadedBoats,
-          loadedMunicipalities,
-          organizations
-        ) => (
-          <>
-            <StepIndicator step="fillInformation" />
-            <div className="container">
+    <Section>
+      <Container>
+        <Loader
+          results={[reservation, citizenBoats, municipalities, organizations]}
+        >
+          {(
+            loadedReservation,
+            loadedBoats,
+            loadedMunicipalities,
+            organizations
+          ) => (
+            <>
+              <Container>
+                <ReservationCancel
+                  reservationId={loadedReservation.id}
+                  type="link"
+                >
+                  Takaisin
+                </ReservationCancel>
+              </Container>
+              <StepIndicator step="fillInformation" />
+              <ReservationTimer />
               <Form
                 reservation={loadedReservation}
                 boats={loadedBoats}
                 municipalities={loadedMunicipalities}
                 organizations={organizations}
               />
-            </div>
-          </>
-        )}
-      </Loader>
-    </section>
+            </>
+          )}
+        </Loader>
+      </Container>
+    </Section>
   )
 })

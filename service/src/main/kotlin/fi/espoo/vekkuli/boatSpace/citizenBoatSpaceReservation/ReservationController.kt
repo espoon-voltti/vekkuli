@@ -21,6 +21,11 @@ class ReservationController(
         return reservationResponseMapper.toReservationResponse(reservation)
     }
 
+    @GetMapping("/unfinished-reservation-expiration")
+    fun getUnfinishedReservationExpiration(): Int {
+        return reservationService.getUnfinishedReservationExpirationForCurrentCitizen()?.value ?: throw NotFound()
+    }
+
     @PostMapping("/reserve/{spaceId}")
     fun postStartReservation(
         @PathVariable spaceId: Int,
