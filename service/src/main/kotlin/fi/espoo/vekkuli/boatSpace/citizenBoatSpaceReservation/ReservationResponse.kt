@@ -22,6 +22,8 @@ data class ReservationResponse(
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
+    val storageType: StorageType?,
+    val trailer: Trailer? = null,
 ) {
     data class Citizen(
         val id: UUID,
@@ -76,6 +78,13 @@ data class ReservationResponse(
         val excludedBoatTypes: List<BoatType>? = null,
         val locationName: String?,
     )
+
+    data class Trailer(
+        val id: Int,
+        val registrationCode: String,
+        val width: BigDecimal,
+        val length: BigDecimal,
+    )
 }
 
 @Service
@@ -83,7 +92,7 @@ class ReservationResponseMapper(
     private val boatService: BoatService,
     private val spaceReservationService: BoatReservationService,
     private val reserverService: ReserverService,
-    private val organizationService: OrganizationService,
+    private val organizationService: OrganizationService
 ) {
     fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse {
         val reservationWithDependencies = spaceReservationService.getReservationWithDependencies(reservation.id) ?: throw NotFound()
@@ -91,6 +100,7 @@ class ReservationResponseMapper(
         val organization = getOrganization(reservationWithDependencies)
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservation)
+        val trailer = getTrailer(reservationWithDependencies)
 
         return ReservationResponse(
             id = reservation.id,
@@ -105,6 +115,8 @@ class ReservationResponseMapper(
             totalPrice = reservationWithDependencies.priceInEuro,
             vatValue = reservationWithDependencies.vatPriceInEuro,
             netPrice = reservationWithDependencies.priceWithoutVatInEuro,
+            storageType = reservationWithDependencies.storageType,
+            trailer = formatTrailer(trailer),
         )
     }
 
@@ -209,6 +221,25 @@ class ReservationResponseMapper(
             description = boatSpace.description,
             excludedBoatTypes = boatSpace.excludedBoatTypes,
             locationName = boatSpace.locationName
+        )
+    }
+
+    private fun getTrailer(reservation: ReservationWithDependencies): Trailer? {
+        if (reservation.trailerId == null) {
+            return null
+        }
+        return spaceReservationService.getTrailer(reservation.trailerId) ?: throw NotFound()
+    }
+
+    private fun formatTrailer(trailer: Trailer?): ReservationResponse.Trailer? {
+        if (trailer == null) {
+            return null
+        }
+        return ReservationResponse.Trailer(
+            id = trailer.id,
+            registrationCode = trailer.registrationCode?: "",
+            width = intToDecimal(trailer.widthCm),
+            length = intToDecimal(trailer.lengthCm),
         )
     }
 }

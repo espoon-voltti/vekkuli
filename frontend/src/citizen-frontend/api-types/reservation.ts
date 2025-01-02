@@ -25,6 +25,8 @@ export type BoatSpaceReservation = {
   totalPrice: string
   vatValue: string
   netPrice: string
+  storageType?: StorageType
+  trailer?: Trailer
   boat: Boat
 }
 
@@ -39,6 +41,8 @@ export type BoatSpaceReservationResponse = {
   totalPrice: string
   vatValue: string
   netPrice: string
+  storageType: StorageType | null
+  trailer: Trailer | null
   boat: Boat
 }
 

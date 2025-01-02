@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router'
 import { Municipality } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
-import { Boat, Organization } from 'citizen-frontend/shared/types'
+import { Boat, Organization, StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
 import { StateOf } from 'lib-common/form/types'
@@ -95,23 +95,33 @@ export default React.memo(function Form({
     }
   }
 
+  const updatedReservation = {
+    ...reservation,
+    storageType: winterStorageFom?.state?.storageType.domValue as
+      | StorageType
+      | undefined
+  }
+
   return (
     <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
       <h1 className="title pb-l" id="boat-space-form-header">
-        {i18n.reservation.formPage.title[reservation.boatSpace.type](
+        {i18n.reservation.formPage.title[updatedReservation.boatSpace.type](
           formatPlaceIdentifier(
-            reservation.boatSpace.section,
-            reservation.boatSpace.placeNumber,
-            reservation.boatSpace.locationName
+            updatedReservation.boatSpace.section,
+            updatedReservation.boatSpace.placeNumber,
+            updatedReservation.boatSpace.locationName
           )
         )}
       </h1>
       <div id="form-inputs" className="block">
-        <ReserverSection reserver={reservation.citizen} bind={reserver} />
+        <ReserverSection
+          reserver={updatedReservation.citizen}
+          bind={reserver}
+        />
         <OrganizationSection bind={organizationFormBind} />
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
-        <ReservedSpace reservation={reservation} />
+        <ReservedSpace reservation={updatedReservation} />
         <UserAgreementsSection bind={userAgreement} />
         {showAllErrors && <ValidationWarning />}
       </div>

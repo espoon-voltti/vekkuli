@@ -3,5 +3,3 @@ export const getLoginUri = (
 ) => `/auth/saml-suomifi/login?RelayState=${encodeURIComponent(url)}`
 
 export const getLogoutUri = () => `/auth/saml-suomifi/logout`
-
-export const getCreateReservationUri = () => `/api/reservations/create`
