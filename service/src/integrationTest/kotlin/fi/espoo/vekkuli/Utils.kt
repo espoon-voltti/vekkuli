@@ -61,8 +61,8 @@ data class CreateReservationParams(
     val validity: ReservationValidity = ReservationValidity.FixedTerm,
     val reserverId: UUID = citizenId,
     val status: ReservationStatus = ReservationStatus.Payment,
-    val startDate: LocalDate = timeProvider.getCurrentDate(),
-    val endDate: LocalDate = timeProvider.getCurrentDate().plusDays(365),
+    val startDate: LocalDate = timeProvider.getCurrentDate().minusMonths(1),
+    val endDate: LocalDate = startDate.plusDays(365),
 )
 
 @Service
