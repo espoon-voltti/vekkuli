@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.citizen.UpdateTrailerInformationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Conflict
@@ -119,6 +120,18 @@ open class ReservationService(
         return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)
     }
 
+    @Transactional
+    open fun updateTrailer(trailer: UpdateTrailerInformationInput) {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        boatReservationService.updateTrailer(
+            citizenId,
+            trailer.id,
+            trailer.registrationNumber,
+            trailer.width,
+            trailer.length
+        )
+    }
+
     fun validateBoatType(
         reservationId: Int,
         boatType: BoatType
@@ -230,7 +243,7 @@ data class ReservationInformation(
 
     data class Trailer(
         val id: Int?,
-        val registrationNumber: String,
+        val registrationCode: String,
         val width: BigDecimal,
         val length: BigDecimal,
     )

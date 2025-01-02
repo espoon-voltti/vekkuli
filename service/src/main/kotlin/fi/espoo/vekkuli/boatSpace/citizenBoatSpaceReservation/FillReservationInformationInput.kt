@@ -102,7 +102,7 @@ fun FillReservationInformationInput.toReservationInformation() =
             } else {
                 ReservationInformation.Trailer(
                     id = trailer.id,
-                    registrationNumber = trailer.registrationNumber,
+                    registrationCode = trailer.registrationNumber,
                     width = trailer.width,
                     length = trailer.length,
                 )

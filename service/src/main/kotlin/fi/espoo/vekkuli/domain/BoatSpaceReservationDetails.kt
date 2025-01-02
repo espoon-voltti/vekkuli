@@ -73,4 +73,5 @@ fun BoatSpaceReservationDetails.toBoatSpaceReservation() =
         actingCitizenId = actingCitizenId,
         reserverId = reserverId,
         validity = validity,
+        paymentDate = paymentDate,
     )

@@ -1,12 +1,12 @@
 import { Button, Buttons, Column, Columns } from 'lib-components/dom'
-import DateField from 'lib-components/form/DateField'
+import { NumberField } from 'lib-components/form'
 import TextField from 'lib-components/form/TextField'
-import React from 'react'
+import React, { useState } from 'react'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import {
-  formatDimension,
+  formatNumber,
   formatPlaceIdentifier
 } from 'citizen-frontend/shared/formatters'
 import { Result } from 'lib-common/api'
@@ -14,6 +14,7 @@ import { Result } from 'lib-common/api'
 import TerminateModal from './TerminateModal'
 import TerminateModalFailure from './TerminateModalFailure'
 import TerminateModalSuccess from './TerminateModalSuccess'
+import TrailerInformation from './TrailerInformation'
 
 type TerminateModalState = 'hidden' | 'visible' | 'success' | 'failure'
 
@@ -26,7 +27,8 @@ export default React.memo(function Reservation({
 }) {
   const i18n = useTranslation()
   const [terminateModalVisible, setTerminateModalVisible] =
-    React.useState<TerminateModalState>('hidden')
+    useState<TerminateModalState>('hidden')
+  const [buttonsVisible, setButtonsVisible] = useState(true)
   const { boatSpace } = reservation
   const onTermination = (mutation: Promise<Result<void>>) => {
     mutation
@@ -60,12 +62,16 @@ export default React.memo(function Reservation({
               value={boatSpace.locationName || undefined}
               readonly={true}
             />
-            <TextField
+            <NumberField
               label="Leveys (m)"
-              value={formatDimension(boatSpace.width)}
+              value={formatNumber(boatSpace.width)}
               readonly={true}
             />
-            <TextField label="Varaus tehty" value="<MISSING>" readonly={true} />
+            <TextField
+              label="Varaus tehty"
+              value={reservation.created.format()}
+              readonly={true}
+            />
           </Column>
           <Column>
             <TextField
@@ -76,14 +82,18 @@ export default React.memo(function Reservation({
               )}
               readonly={true}
             />
-            <TextField
+            <NumberField
               label="Pituus (m)"
-              value={formatDimension(boatSpace.length)}
+              value={formatNumber(boatSpace.length)}
               readonly={true}
             />
-            <DateField
+            <TextField
               label="Varaus voimassa"
-              value={reservation.endDate}
+              value={i18n.reservation.validity(
+                reservation.endDate,
+                reservation.validity,
+                boatSpace.type
+              )}
               readonly={true}
             />
           </Column>
@@ -95,7 +105,10 @@ export default React.memo(function Reservation({
             />
             <TextField
               label="Hinta"
-              value={reservation.totalPrice}
+              value={i18n.reservation.totalPrice(
+                reservation.totalPrice,
+                reservation.vatValue
+              )}
               readonly={true}
             />
             <TextField
@@ -105,15 +118,38 @@ export default React.memo(function Reservation({
             />
           </Column>
           <Column>
+            {boatSpace.type !== 'Winter' && (
+              <TextField
+                label="Varuste"
+                value={i18n.boatSpace.amenities[reservation.boatSpace.amenity]}
+                readonly={true}
+              />
+            )}
+            {boatSpace.type === 'Winter' && (
+              <TextField
+                label="Säilytystapa"
+                value={
+                  reservation.storageType
+                    ? i18n.boatSpace.winterStorageType[reservation.storageType]
+                    : '-'
+                }
+                readonly={true}
+              />
+            )}
             <TextField
-              label="Varuste"
-              value={i18n.boatSpace.amenities[reservation.boatSpace.amenity]}
+              label="Maksun tila"
+              value={i18n.reservation.paymentState(reservation.paymentDate)}
               readonly={true}
             />
-            <TextField label="Maksettu" value="<MISSING>" readonly={true} />
           </Column>
         </Columns>
-        {canTerminate && (
+        {reservation.trailer && (
+          <TrailerInformation
+            trailer={reservation.trailer}
+            setEditIsOn={(mode) => setButtonsVisible(!mode)}
+          />
+        )}
+        {canTerminate && buttonsVisible && (
           <Buttons>
             <Button
               type="danger-outlined"

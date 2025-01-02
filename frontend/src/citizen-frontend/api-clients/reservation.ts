@@ -1,3 +1,4 @@
+import HelsinkiDateTime from 'lib-common/date/helsinki-date-time'
 import LocalDate from 'lib-common/date/local-date'
 import { uri } from 'lib-common/uri'
 
@@ -103,10 +104,14 @@ export function deserializeJsonBoatSpaceReservationResponse(
       birthDate: LocalDate.parseIso(json.citizen.birthDate)
     },
     status: json.status,
+    created: HelsinkiDateTime.parseIso(json.created),
     startDate: LocalDate.parseIso(json.startDate),
     endDate: LocalDate.parseIso(json.endDate),
     validity: json.validity,
     boatSpace: json.boatSpace,
+    paymentDate: json.paymentDate
+      ? LocalDate.parseIso(json.paymentDate)
+      : undefined,
     totalPrice: json.totalPrice,
     vatValue: json.vatValue,
     netPrice: json.netPrice,

@@ -1,5 +1,6 @@
 import LocalDate from 'lib-common/date/local-date'
 
+import HelsinkiDateTime from '../../lib-common/date/helsinki-date-time'
 import {
   Boat,
   BoatSpace,
@@ -19,9 +20,11 @@ export type BoatSpaceReservation = {
   citizen: Citizen
   status: ReservationStatus
   boatSpace: BoatSpace
+  created: HelsinkiDateTime
   startDate: LocalDate
   endDate: LocalDate
   validity: ReservationValidity
+  paymentDate?: LocalDate
   totalPrice: string
   vatValue: string
   netPrice: string
@@ -35,9 +38,11 @@ export type BoatSpaceReservationResponse = {
   citizen: ResponseCitizen
   boatSpace: BoatSpace
   status: ReservationStatus
+  created: string
   startDate: string
   endDate: string
   validity: ReservationValidity
+  paymentDate: string | null
   totalPrice: string
   vatValue: string
   netPrice: string

@@ -77,7 +77,7 @@ fun ReservationInformation.toReservationInput(reservationId: Int): ReservationIn
             orgCity = organization?.city,
             citizenSelection = null,
             storageType = storageType,
-            trailerRegistrationNumber = trailer?.registrationNumber,
+            trailerRegistrationNumber = trailer?.registrationCode,
             trailerWidth = trailer?.width,
             trailerLength = trailer?.length,
         )

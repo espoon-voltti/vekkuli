@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 data class ReservationResponse(
@@ -16,9 +17,11 @@ data class ReservationResponse(
     val boatSpace: BoatSpace,
     val boat: Boat?,
     val status: ReservationStatus,
+    val created: LocalDateTime,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val validity: ReservationValidity,
+    val paymentDate: LocalDate?,
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
@@ -81,7 +84,7 @@ data class ReservationResponse(
 
     data class Trailer(
         val id: Int,
-        val registrationCode: String,
+        val registrationNumber: String,
         val width: BigDecimal,
         val length: BigDecimal,
     )
@@ -109,6 +112,7 @@ class ReservationResponseMapper(
             boat = formatBoat(boat),
             boatSpace = formatBoatSpace(boatSpace),
             status = reservation.status,
+            created = reservation.created,
             startDate = reservation.startDate,
             validity = reservation.validity,
             endDate = reservation.endDate,
@@ -117,6 +121,7 @@ class ReservationResponseMapper(
             netPrice = reservationWithDependencies.priceWithoutVatInEuro,
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
+            paymentDate = reservation.paymentDate,
         )
     }
 
@@ -237,7 +242,7 @@ class ReservationResponseMapper(
         }
         return ReservationResponse.Trailer(
             id = trailer.id,
-            registrationCode = trailer.registrationCode?: "",
+            registrationNumber = trailer.registrationCode?: "",
             width = intToDecimal(trailer.widthCm),
             length = intToDecimal(trailer.lengthCm),
         )

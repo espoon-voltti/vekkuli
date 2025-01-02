@@ -71,4 +71,13 @@ class CitizenController(
             )
         reserverService.updateCitizen(params)
     }
+
+    @PostMapping("/current/update-trailer")
+    fun postUpdateCitizenInformation(
+        @RequestBody input: UpdateTrailerInformationInput,
+    ) {
+        reservationService.updateTrailer(
+            input
+        )
+    }
 }

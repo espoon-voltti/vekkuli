@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { formatNumber } from 'citizen-frontend/shared/formatters'
 import { BoundFormState } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
 
@@ -13,7 +14,7 @@ interface NumberFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   step?: number
   min?: number
   max?: number
-  value?: number
+  value?: number | string
 }
 
 function NumberFieldR({
@@ -44,7 +45,7 @@ function NumberFieldR({
           {required && ' *'}
         </label>
         {readonly ? (
-          <ReadOnly value={readOnlyValue?.toString()} />
+          <ReadOnly value={formatNumber(readOnlyValue)} />
         ) : (
           <>
             <input

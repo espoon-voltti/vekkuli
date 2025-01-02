@@ -165,6 +165,8 @@ export default {
       vatValue: (amount: string) => `Arvonlisävero: ${amount} €`,
       netPrice: (amount: string) => `Hinta ennen veroja: ${amount} €`
     },
+    totalPrice: (totalPrice: string, vatValue: string) =>
+      `${totalPrice} € (sis. alv ${vatValue} €)`,
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
@@ -184,6 +186,9 @@ export default {
               return 'Toistaiseksi, jatko vuosittain huhtikuussa'
           }
       }
+    },
+    paymentState: (paymentDate?: LocalDate) => {
+      return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'
     },
     errors: {
       startReservation: {

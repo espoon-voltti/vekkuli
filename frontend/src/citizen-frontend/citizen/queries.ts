@@ -6,6 +6,7 @@ import {
   citizenOrganizations,
   updateCitizenInformation
 } from '../api-clients/citizen'
+import { updateCitizenTrailer } from '../api-clients/trailer'
 import { createQueryKeys } from '../query'
 
 export const queryKeys = createQueryKeys('citizen', {
@@ -31,4 +32,9 @@ export const citizenOrganizationQuery = query({
 
 export const updateCitizenInformationMutation = mutation({
   api: updateCitizenInformation
+})
+
+export const updateTrailerInformationMutation = mutation({
+  api: updateCitizenTrailer,
+  invalidateQueryKeys: () => [queryKeys.citizenActiveReservations()]
 })
