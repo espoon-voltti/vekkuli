@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -28,7 +28,7 @@ data class SendInvoiceModel(
     val function: String
 )
 
-@Service
+@Component
 class InvoicePreview(
     val formComponents: FormComponents
 ) : BaseView() {
@@ -99,26 +99,25 @@ class InvoicePreview(
         // language=HTML
         return """
             <section class="section">
-            
-            <div class="container">
-                <h2 class="title pb-l" id="invoice-preview-header">Laskuluonnos</h2>
-                
-                <h3 class="subtitle">Varaajan tiedot</h3>
-                <form
-                    hx-post="$submitUrl"
-                    hx-target="body"
-                >
-                ${invoiceLine("Varaaja", model.reserverName)}
-                ${if (!isOrganization)invoiceLine("Varaajan henkilötunnus", model.reserverSsn) else ""}
-                
-                ${if (isOrganization)invoiceLine("Y-tunnus", model.orgId) else ""}
-                ${invoiceLine("Varaajan osoite", model.reserverAddress)}
-                
-                <hr/>
-                
+                <div class="container">
+                    <h2 class="title pb-l" id="invoice-preview-header">${t("invoice.title.previewHeader")}</h2>
+
+                    <h3 class="subtitle">${t("invoice.subtitle.bookerDetails")}</h3>
+                    <form
+                        hx-post="$submitUrl"
+                        hx-target="body"
+                    >
+                    ${invoiceLine(t("invoice.label.booker"), model.reserverName)}
+                    ${if (!isOrganization) invoiceLine(t("invoice.label.bookerSsn"), model.reserverSsn) else ""}
+                    
+                    ${if (isOrganization) invoiceLine(t("invoice.label.companyId"), model.orgId) else ""}
+                    ${invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress)}
+                    
+                    <hr/>
+                    
                     $contactPerson
                     
-                    <h3 class="subtitle">Laskun tiedot</h3>
+                    <h3 class="subtitle">${t("invoice.subtitle.invoiceDetails")}</h3>
                     <div class="columns">
                         <div class="column">
                             $functionSelect
@@ -136,7 +135,6 @@ class InvoicePreview(
                             $priceWithTax
                         </div>
                     </div>
-                    
                                 
                     <div class="columns">
                         <div class="column is-half">
@@ -146,29 +144,29 @@ class InvoicePreview(
                     
                     <hr/>
                     
-                <div class="field block">
-                    <div class="control">
-                        <button id="cancel"
-                            class="button is-secondary"
-                            hx-delete="$deleteUrl"
-                            hx-target="body"
-                            hx-on-htmx-after-request="window.location = '$backUrl';"
-                            type="button">
-                            ${t("cancel")}
-                        </button>
-                        <button id="submit"
-                            class="button is-primary">
-                            Lähetä lasku
-                        </button>
-                    </div>
-                </div> 
-                </form>
-            </div>
+                    <div class="field block">
+                        <div class="control">
+                            <button id="cancel"
+                                class="button is-secondary"
+                                hx-delete="$deleteUrl"
+                                hx-target="body"
+                                hx-on-htmx-after-request="window.location = '$backUrl';"
+                                type="button">
+                                ${t("invoice.button.cancel")}
+                            </button>
+                            <button id="submit"
+                                class="button is-primary">
+                                ${t("invoice.button.sendInvoice")}
+                            </button>
+                        </div>
+                    </div> 
+                    </form>
+                </div>
             </section>
-
             """.trimIndent()
     }
 
+    // language=HTML
     fun invoiceLine(
         name: String,
         value: String
@@ -178,12 +176,13 @@ class InvoicePreview(
         </div>
         """.trimIndent()
 
+    // language=HTML
     fun invoiceErrorPage() =
         """
         <section class="section">
             <div class="container">
-                <h2 class="title pb-l">Laskun luonti epäonnistui</h2>
-                <p>Laskun luonti epäonnistui. Yritä myöhemmin uudelleen.</p>
+                <h2 class="title pb-l">${t("invoice.title.errorPage")}</h2>
+                <p>${t("invoice.text.errorPage")}</p>
             </div>
         </section>
         """.trimIndent()

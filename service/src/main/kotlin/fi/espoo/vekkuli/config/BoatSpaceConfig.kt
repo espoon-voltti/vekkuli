@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.config
 
+import fi.espoo.vekkuli.config.DomainConstants.INVOICE_PAYMENT_PERIOD
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.getNextDate
 import java.time.LocalDate
 
@@ -179,4 +181,6 @@ object BoatSpaceConfig {
         ReservationValidity.FixedTerm -> getNextDate(now, 4, 30)
         ReservationValidity.Indefinite -> getNextDate(now, 4, 30)
     }
+
+    fun getInvoiceDueDate(timeProvider: TimeProvider): LocalDate = timeProvider.getCurrentDate().plusDays(INVOICE_PAYMENT_PERIOD.toLong())
 }

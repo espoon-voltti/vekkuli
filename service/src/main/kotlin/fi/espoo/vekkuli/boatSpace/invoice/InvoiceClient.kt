@@ -153,7 +153,7 @@ private fun createInvoiceBatchForPerson(
             Invoice(
                 invoiceNumber = invoiceData.invoiceNumber,
                 useInvoiceNumber = true,
-                dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
+                dueDate = invoiceData.dueDate.toString(),
                 client =
                     Client(
                         ssn = invoiceData.ssn,
@@ -199,7 +199,7 @@ private fun createInvoiceBatchForOrganization(
             Invoice(
                 invoiceNumber = invoiceData.invoiceNumber,
                 useInvoiceNumber = true,
-                dueDate = timeProvider.getCurrentDate().plusDays(21).toString(),
+                dueDate = invoiceData.dueDate.toString(),
                 client =
                     Client(
                         ytunnus = invoiceData.orgId,

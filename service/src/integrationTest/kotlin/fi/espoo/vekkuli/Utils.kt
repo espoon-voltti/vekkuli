@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.invoice.InvoiceData
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.service.*
@@ -210,7 +211,7 @@ class TestUtils(
             invoiceService.createInvoice(
                 InvoiceData(
                     invoiceNumber = 1L,
-                    dueDate = timeProvider.getCurrentDate().plusDays(14),
+                    dueDate = getInvoiceDueDate(timeProvider),
                     ssn =
                         citizen.nationalId,
                     firstnames = citizen.firstName,

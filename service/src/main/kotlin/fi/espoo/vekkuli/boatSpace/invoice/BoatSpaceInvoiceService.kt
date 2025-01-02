@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.asyncJob.JobParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.repository.OrganizationRepository
@@ -110,7 +111,7 @@ class BoatSpaceInvoiceService(
             }
             return InvoiceData(
                 type = reservation.type,
-                dueDate = timeProvider.getCurrentDate().plusDays(21),
+                dueDate = getInvoiceDueDate(timeProvider),
                 startDate = reservation.startDate,
                 endDate = reservation.endDate,
                 ssn = citizen.nationalId,
@@ -130,7 +131,7 @@ class BoatSpaceInvoiceService(
             val organization = organizationRepository.getOrganizationById(reserverId)
             return InvoiceData(
                 type = reservation.type,
-                dueDate = timeProvider.getCurrentDate().plusDays(21),
+                dueDate = getInvoiceDueDate(timeProvider),
                 startDate = reservation.startDate,
                 endDate = reservation.endDate,
                 // Organization name
@@ -146,6 +147,7 @@ class BoatSpaceInvoiceService(
                 description = description,
                 orgId = organization?.businessId,
                 function = function ?: "T1270",
+                orgName = organization?.name
             )
         }
     }

@@ -4,7 +4,7 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
-import fi.espoo.vekkuli.config.DomainConstants
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.*
@@ -566,7 +566,7 @@ class ReservationFormService(
                 "endDate" to reservation.endDate,
                 "invoiceDueDate" to
                     formatAsFullDate(
-                        timeProvider.getCurrentDate().plusDays(DomainConstants.INVOICE_PAYMENT_PERIOD.toLong())
+                        getInvoiceDueDate(timeProvider)
                     )
             )
         )
