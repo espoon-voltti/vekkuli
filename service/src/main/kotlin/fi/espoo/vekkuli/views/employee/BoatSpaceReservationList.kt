@@ -244,6 +244,7 @@ class BoatSpaceReservationList : BaseView() {
                 )}>${result.place}</span>
                     </td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
+                    <td>${t("boatSpaces.amenityOption.${result.getBoatSpaceAmenity()}")}</td>
                     <td ${addTestId(
                     "reserver-name"
                 )}><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
@@ -378,6 +379,9 @@ class BoatSpaceReservationList : BaseView() {
                                         ${sortButton("PLACE_TYPE", t("employee.boatSpaceReservations.table.title.type"))}
                                     </th>
                                     <th class="nowrap">
+                                        ${sortButton("AMENITY", t("employee.boatReservations.title.amenity"))}
+                                    </th>
+                                    <th class="nowrap">
                                         ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}
                                     </th>
                                     <th class="nowrap">
@@ -402,6 +406,7 @@ class BoatSpaceReservationList : BaseView() {
                                     <th></th>
                                     <th></th>
                                     <th>$sectionFilter</th>
+                                    <th></th>
                                     <th></th>
                                     <th>${textSearchInput("nameSearch", params.nameSearch)}</th>
                                     <th>${textSearchInput("phoneSearch", params.phoneSearch)}</th>
