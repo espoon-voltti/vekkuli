@@ -1,7 +1,9 @@
 package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.BoatRepository
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
+import fi.espoo.vekkuli.repository.TrailerRepository
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -10,6 +12,8 @@ class PermissionService(
     private val userService: UserService,
     private val organizationService: OrganizationService,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
+    private val trailerRepository: TrailerRepository,
+    private val boatRepository: BoatRepository,
 ) {
     fun canTerminateBoatSpaceReservation(
         terminatorId: UUID,
@@ -64,4 +68,28 @@ class PermissionService(
             editorId == trailerReserverId -> true
             else -> false
         }
+
+    fun canEditTrailer(
+        editorId: UUID,
+        trailerId: Int
+    ): Boolean {
+        val trailer = trailerRepository.getTrailer(trailerId)
+        return when {
+            userService.isAppUser(editorId) -> true
+            editorId == trailer?.reserverId -> true
+            else -> false
+        }
+    }
+
+    fun canEditBoat(
+        editorId: UUID,
+        boatId: Int
+    ): Boolean {
+        val boat = boatRepository.getBoat(boatId)
+        return when {
+            userService.isAppUser(editorId) -> true
+            editorId == boat?.reserverId -> true
+            else -> false
+        }
+    }
 }
