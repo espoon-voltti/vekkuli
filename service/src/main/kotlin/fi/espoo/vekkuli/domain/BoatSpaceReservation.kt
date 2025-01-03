@@ -148,6 +148,7 @@ enum class BoatSpaceFilterColumn {
     BOAT,
     EMAIL,
     PHONE,
+    AMENITY,
 }
 
 enum class PaymentFilter {
