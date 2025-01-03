@@ -1,7 +1,7 @@
+import ScrollToTop from 'lib-components/ScrollToTop'
 import React from 'react'
 import { createBrowserRouter, Outlet } from 'react-router'
 
-import ScrollToTop from './ScrollToTop'
 import RequireAuth from './auth/RequireAuth'
 import { AuthContextProvider } from './auth/state'
 import CitizenPage from './citizen/CitizenPage'

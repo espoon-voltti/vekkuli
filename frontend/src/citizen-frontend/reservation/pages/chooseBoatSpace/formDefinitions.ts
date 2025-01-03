@@ -1,4 +1,13 @@
 import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces'
+import {
+  BoatSpaceAmenity,
+  BoatSpaceType,
+  boatSpaceTypes,
+  BoatType,
+  boatTypes,
+  Harbor,
+  harbors
+} from 'citizen-frontend/shared/types'
 import { positiveNumber } from 'lib-common/form/fields'
 import {
   mapped,
@@ -11,16 +20,6 @@ import {
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-
-import {
-  BoatSpaceAmenity,
-  BoatSpaceType,
-  boatSpaceTypes,
-  BoatType,
-  boatTypes,
-  Harbor,
-  harbors
-} from '../../../shared/types'
 
 const searchSpaceParamsForm = object({
   boatType: oneOf<BoatType>(),

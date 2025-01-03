@@ -1,3 +1,4 @@
+import { Loader } from 'lib-components/Loader'
 import React from 'react'
 
 import { useQueryResult } from 'lib-common/query'
@@ -16,19 +17,18 @@ export default React.memo(function PaymentProviders({
     paymentInformationQuery(reservationId)
   )
 
-  if (paymentProviders.isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (paymentProviders.isFailure) {
-    return <div>Error...</div>
-  }
-  const { providers } = paymentProviders.value
   return (
-    <div className="columns is-multiline">
-      {providers.map((provider) => (
-        <PaymentButton key={provider.id} paymentInformation={provider} />
-      ))}
-    </div>
+    <Loader results={[paymentProviders]}>
+      {({ providers }) => (
+        <div className="columns is-multiline">
+          {providers.map((provider) => (
+            <PaymentButton
+              key={`payment-provider-${provider.id}-${provider.name}`}
+              paymentInformation={provider}
+            />
+          ))}
+        </div>
+      )}
+    </Loader>
   )
 })
