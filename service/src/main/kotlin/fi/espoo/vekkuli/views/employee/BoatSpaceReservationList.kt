@@ -351,7 +351,7 @@ class BoatSpaceReservationList : BaseView() {
                               </div>
                             </div>
                             <div class="filter-group">
-                                <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                                <h1 class="label">${t("employee.boatReservations.title.amenity")}</h1>
                                 <div class="tag-container">
                                     $amenityFilters
                                 </div>
