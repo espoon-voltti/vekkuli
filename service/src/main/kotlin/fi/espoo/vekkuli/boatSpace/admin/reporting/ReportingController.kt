@@ -56,7 +56,7 @@ class ReportingController(
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_STICKER_REPORT")
 
         val now = startDate?.atStartOfDay()
-        val todayFormatted = timeProvider.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val todayFormatted = now?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$todayFormatted.csv\"")
@@ -72,7 +72,7 @@ class ReportingController(
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_BOAT_SPACE_REPORT")
 
         val now = startDate?.atStartOfDay()
-        val todayFormatted = timeProvider.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val todayFormatted = now?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-venepaikkaraportti-$todayFormatted.csv\"")
