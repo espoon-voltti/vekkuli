@@ -25,6 +25,10 @@ class EmployeeLayout(
         val authMenu =
             if (isAuthenticated) {
                 """
+                <a href="/admin/reporting">
+                    <span class="login-link">${t("auth.reporting")}</span>
+                    ${icons.logout}
+                </a>
                 <a href="/auth/saml/logout">
                     <span class="login-link">${t("auth.logout")}</span>
                     ${icons.logout}

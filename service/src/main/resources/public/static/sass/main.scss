@@ -969,3 +969,9 @@ ul {
 .employee-warning-filter {
   display: flex;
 }
+
+.reports-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-large;
+}

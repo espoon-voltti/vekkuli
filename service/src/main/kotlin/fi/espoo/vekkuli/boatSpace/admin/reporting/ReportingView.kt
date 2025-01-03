@@ -8,11 +8,10 @@ class ReportingView {
         // language=HTML
         return """
             <section class="section">
-                <div class="container">
-                    <h2>Raportit</h2>
+                <h2>Raportit</h2>
+                <div class="reports-container">
                     <a href="/admin/reporting/sticker-report">Tarraraportti</a>
-                    <br/>
-                    <br/>
+                    <a href="/admin/reporting/boat-space-report">Paikkaraportti (kaikki)</a>
                     <a href="/admin/reporting/raw-report">Raakaraportti</a>
                 </div>
             </section>

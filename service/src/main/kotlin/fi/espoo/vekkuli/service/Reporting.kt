@@ -1,11 +1,12 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.domain.OwnershipStatus
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
 import org.unbescape.csv.CsvEscape
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 data class RawReportRow(
     // BoatSpace fields
@@ -149,14 +150,14 @@ data class StickerReportRow(
     val weightKg: String?,
     val registrationCode: String?,
     val otherIdentification: String?,
-    val ownership: OwnershipStatus?,
+    val ownership: String?,
     val startDate: String?,
     val endDate: String?,
 )
 
 fun getStickerReport(
     jdbi: Jdbi,
-    today: LocalDate
+    startDate: LocalDateTime?
 ): List<StickerReportRow> {
     return jdbi.inTransactionUnchecked { tx ->
         tx.createQuery(
@@ -172,11 +173,10 @@ fun getStickerReport(
                 JOIN boat_space bs ON bs.id = bsr.boat_space_id
                 JOIN location l ON l.id = bs.location_id
                 LEFT JOIN boat b ON b.id = bsr.boat_id
-            WHERE
-                daterange(bsr.start_date, bsr.end_date) @> :today
+            ${if (startDate != null) "WHERE :startDate::date >= bsr.start_date" else ""} 
             """.trimIndent()
         )
-            .bind("today", today)
+            .also { if (startDate != null) it.bind("startDate", startDate) }
             .mapTo<StickerReportRow>()
             .list()
     }
@@ -208,7 +208,7 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
 
     for (report in reportRows) {
         csvContent
-            .append(sanitizeCsvCellData(report.name.toString())).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.streetAddress)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.postalCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.postOffice)).append(CSV_FIELD_SEPARATOR)
@@ -216,14 +216,117 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(placeTypeToText(report.placeType))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.boatName ?: "")).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.boatName)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(boatTypeToText(report.boatType))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.widthCm.toString())).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.lengthCm.toString())).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.weightKg.toString())).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.weightKg)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.otherIdentification.toString())).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(ownershipStatusToText(report.ownership.toString()))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.otherIdentification)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(ownershipStatusToText(report.ownership))).append(CSV_FIELD_SEPARATOR)
+            .append(CSV_RECORD_SEPARATOR)
+    }
+
+    return csvContent.toString()
+}
+
+data class BoatSpaceReportRow(
+    val harbor: String?,
+    val pier: String?,
+    val place: String?,
+    val widthCm: String?,
+    val lengthCm: String?,
+    val amenity: String?,
+    val name: String?,
+    val municipality: String?,
+    val registrationCode: String?,
+    val totalCents: String?,
+    val productCode: String?,
+    val terminationTimestamp: LocalDateTime?,
+    val terminationReason: String?,
+    val startDate: LocalDate?,
+    val endDate: LocalDate?,
+)
+
+fun getBoatSpaceReport(
+    jdbi: Jdbi,
+    startDate: LocalDateTime?
+): List<BoatSpaceReportRow> {
+    return jdbi.inTransactionUnchecked { tx ->
+        tx.createQuery(
+            """
+            SELECT
+                l.name AS harbor,
+                bs.section AS pier,
+                CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
+                b.width_cm, b.length_cm,
+                bs.amenity,
+                r.name,
+                coalesce(m.name, '') AS municipality,
+                b.registration_code,
+                p.total_cents,
+                p.product_code,
+                bsr.termination_timestamp,
+                bsr.termination_reason,
+                bsr.start_date,
+                bsr.end_date
+            FROM boat_space bs
+                 LEFT JOIN location l ON l.id = bs.location_id
+                 LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
+                 LEFT JOIN reserver r ON r.id = bsr.reserver_id
+                 LEFT JOIN payment p ON p.reserver_id = r.id
+                 LEFT JOIN boat b ON b.id = bsr.boat_id
+                 LEFT JOIN municipality m ON m.code = r.municipality_code
+            ${if (startDate != null) "WHERE :startDate::date >= bsr.start_date" else ""} 
+            ORDER BY harbor, pier, place
+            """.trimIndent()
+        )
+            .also { if (startDate != null) it.bind("startDate", startDate) }
+            .mapTo<BoatSpaceReportRow>()
+            .list()
+    }
+}
+
+fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
+    val csvHeader =
+        listOf(
+            "satama",
+            "laituri",
+            "paikka",
+            "veneen leveys",
+            "veneen pituus",
+            "paikan varuste",
+            "varaaja",
+            "kotikunta",
+            "veneen rekisterinumero",
+            "hinta",
+            "maksuluokka",
+            "irtisanomisaika",
+            "irtisanomissyy",
+            "alkupvm",
+            "loppupvm"
+        ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
+
+    val csvContent = StringBuilder()
+    csvContent.append(csvHeader)
+
+    for (report in reportRows) {
+        csvContent
+            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(centsToEur(report.totalCents))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.endDate))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -272,6 +375,34 @@ fun ownershipStatusToText(ownershipStatus: String?): String {
         "FutureOwner" -> "Tuleva omistaja"
         else -> ownershipStatus ?: ""
     }
+}
+
+fun terminationReasonToText(terminationReason: String?): String {
+    return when (terminationReason) {
+        "UserRequest" -> "Toive"
+        "InvalidOwner" -> "Väärä omistaja"
+        "RuleViolation" -> "Sääntörikkomus"
+        "PaymentViolation" -> "Maksurikkomus"
+        "Other" -> "Muu"
+        else -> terminationReason ?: ""
+    }
+}
+
+val localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+fun localDateTimeToText(theDate: LocalDateTime?): String {
+    return theDate?.format(localDateTimeFormatter) ?: ""
+}
+
+fun localDateToText(theDate: LocalDate?): String {
+    return theDate?.toString() ?: ""
+}
+
+fun centsToEur(cents: String?): String {
+    return cents?.let {
+        val centsInt = it.toIntOrNull() ?: 0
+        (centsInt / 100.0).toString().replace(".", ",")
+    } ?: ""
 }
 
 const val CSV_FIELD_SEPARATOR = ";"
