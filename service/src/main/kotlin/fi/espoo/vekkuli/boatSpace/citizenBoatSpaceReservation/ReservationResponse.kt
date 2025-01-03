@@ -242,7 +242,7 @@ class ReservationResponseMapper(
         }
         return ReservationResponse.Trailer(
             id = trailer.id,
-            registrationNumber = trailer.registrationCode?: "",
+            registrationNumber = trailer.registrationCode ?: "",
             width = intToDecimal(trailer.widthCm),
             length = intToDecimal(trailer.lengthCm),
         )
