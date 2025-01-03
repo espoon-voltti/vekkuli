@@ -1,12 +1,11 @@
 import { Loader } from 'lib-components/Loader'
 import { Column, Columns, Container, Section } from 'lib-components/dom'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import { useNavigate } from 'react-router'
 
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
-import { useForm, useFormFields } from 'lib-common/form/hooks'
-import { StateOf } from 'lib-common/form/types'
+import { useForm } from 'lib-common/form/hooks'
 import { useMutation, useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
@@ -20,9 +19,7 @@ import SearchFilters from './SearchFilters'
 import SearchResult from './SearchResults'
 import {
   initialFormState,
-  initialUnionFormState,
   SearchFormBranches,
-  SearchFormUnion,
   searchFreeSpacesForm
 } from './formDefinitions'
 import { freeSpacesQuery, reserveSpaceMutation } from './queries'
@@ -33,61 +30,41 @@ export default React.memo(function SearchPage() {
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
   const { reservation } = useContext(ReservationStateContext)
-  const [branchStateStore, setBranchStateStore] =
-    useState<Record<SearchFormBranches, StateOf<SearchFormUnion> | undefined>>()
 
-  const form = useForm(
+  const bind = useForm(
     searchFreeSpacesForm,
     () => initialFormState(i18n),
-    i18n.components.validationErrors
-  )
-  const branch = form.state.boatSpaceType.domValue as SearchFormBranches
-
-  const {
-    boatSpaceUnionForm: { update }
-  } = useFormFields(form)
-
-  const setFormUnionBranch = useCallback(
-    (newBranch: SearchFormBranches) => {
-      update((prev) => {
-        setBranchStateStore((prevStateStore) => {
-          const updatedStateStore = prevStateStore || {
-            Slip: undefined,
-            Trailer: undefined,
-            Winter: undefined,
-            Storage: undefined
-          }
-
+    i18n.components.validationErrors,
+    {
+      onUpdate: (prev, next) => {
+        const prevBranch = prev.boatSpaceType.domValue as SearchFormBranches
+        const nextBranch = next.boatSpaceType.domValue as SearchFormBranches
+        if (prevBranch !== nextBranch) {
           return {
-            ...updatedStateStore,
-            [branch]: { branch, state: prev.state }
+            ...next,
+            boatSpaceUnionForm: {
+              branch: nextBranch,
+              state: prev.boatSpaceUnionCache[nextBranch]
+            },
+            boatSpaceUnionCache: {
+              ...prev.boatSpaceUnionCache,
+              [prevBranch]: prev.boatSpaceUnionForm.state
+            }
           }
-        })
-
-        const newBranchState =
-          branchStateStore?.[newBranch] ||
-          initialUnionFormState(i18n, newBranch)
-
-        return {
-          ...newBranchState
         }
-      })
-    },
-    [update, branchStateStore, i18n]
+        return next
+      }
+    }
   )
-
-  useEffect(() => {
-    setFormUnionBranch(branch)
-  }, [branch])
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false)
   const [reserveError, setReserveError] = React.useState<
     ErrorCode | undefined
   >()
   const freeSpaces = useQueryResult(
-    freeSpacesQuery(form.isValid() ? form.value() : undefined),
+    freeSpacesQuery(bind.isValid() ? bind.value() : undefined),
     {
-      enabled: form.isValid()
+      enabled: bind.isValid()
     }
   )
 
@@ -129,7 +106,7 @@ export default React.memo(function SearchPage() {
                 <ReservationSeasons />
                 <Columns>
                   <Column isTwoFifths>
-                    <SearchFilters bind={form} />
+                    <SearchFilters bind={bind} />
                     <div className="mt-xl">
                       <img src={MapImage} alt="Espoon venesatamat" />
                     </div>
@@ -138,7 +115,7 @@ export default React.memo(function SearchPage() {
                     <SearchResult
                       placesWithSpaces={searchResult.places}
                       count={searchResult.count}
-                      showInfoBox={!form.isValid()}
+                      showInfoBox={!bind.isValid()}
                       onReserveSpace={onReserveButtonPress}
                     />
                   </Column>

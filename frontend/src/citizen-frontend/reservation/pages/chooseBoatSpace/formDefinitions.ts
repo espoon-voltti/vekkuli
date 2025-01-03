@@ -6,7 +6,8 @@ import {
   object,
   oneOf,
   required,
-  union
+  union,
+  value
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
@@ -21,28 +22,39 @@ import {
   harbors
 } from '../../../shared/types'
 
-const sharedUnionDefinition = () =>
-  object({
-    boatType: oneOf<BoatType>(),
-    width: required(positiveNumber()),
-    length: required(positiveNumber()),
-    amenities: multiSelect<BoatSpaceAmenity>(),
-    harbor: multiSelect<Harbor>()
-  })
+const searchSpaceParamsForm = object({
+  boatType: oneOf<BoatType>(),
+  width: required(positiveNumber()),
+  length: required(positiveNumber()),
+  amenities: multiSelect<BoatSpaceAmenity>(),
+  harbor: multiSelect<Harbor>()
+})
+
+type SearchSpaceParamsForm = typeof searchSpaceParamsForm
 
 const boatSpaceUnionForm = union({
-  Slip: sharedUnionDefinition(),
-  Trailer: sharedUnionDefinition(),
-  Winter: sharedUnionDefinition(),
-  Storage: sharedUnionDefinition()
+  Slip: searchSpaceParamsForm,
+  Trailer: searchSpaceParamsForm,
+  Winter: searchSpaceParamsForm,
+  Storage: searchSpaceParamsForm
 })
 
 export type SearchFormUnion = typeof boatSpaceUnionForm
 
+const boatSpaceUnionCache = object({
+  Slip: value<StateOf<SearchSpaceParamsForm>>(),
+  Trailer: value<StateOf<SearchSpaceParamsForm>>(),
+  Winter: value<StateOf<SearchSpaceParamsForm>>(),
+  Storage: value<StateOf<SearchSpaceParamsForm>>()
+})
+
+export type BoatSpaceUnionCache = typeof boatSpaceUnionCache
+
 export const searchFreeSpacesForm = mapped(
   object({
     boatSpaceType: required(oneOf<BoatSpaceType>()),
-    boatSpaceUnionForm: boatSpaceUnionForm
+    boatSpaceUnionForm: boatSpaceUnionForm,
+    boatSpaceUnionCache: boatSpaceUnionCache
   }),
   (output): SearchFreeSpacesParams => {
     const boatTypeValue = output.boatSpaceUnionForm.value.boatType
@@ -75,11 +87,23 @@ export function initialFormState(i18n: Translations): StateOf<SearchForm> {
         value: type
       }))
     },
-    boatSpaceUnionForm: initialUnionFormState(i18n, 'Slip')
+    boatSpaceUnionForm: initialUnionFormState(i18n, 'Slip'),
+    boatSpaceUnionCache: initialUnionCacheFormState(i18n)
   }
 }
 
 export type SearchFormBranches = BoatSpaceType
+
+const initialUnionCacheFormState = (
+  i18n: Translations
+): StateOf<BoatSpaceUnionCache> => {
+  return {
+    Slip: initialUnionFormState(i18n, 'Slip').state,
+    Trailer: initialUnionFormState(i18n, 'Trailer').state,
+    Winter: initialUnionFormState(i18n, 'Winter').state,
+    Storage: initialUnionFormState(i18n, 'Storage').state
+  }
+}
 
 export const initialUnionFormState = (
   i18n: Translations,
