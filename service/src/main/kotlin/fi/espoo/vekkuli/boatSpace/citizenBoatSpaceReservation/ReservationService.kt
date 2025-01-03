@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
-import fi.espoo.vekkuli.boatSpace.citizen.UpdateTrailerInformationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Conflict
@@ -118,18 +117,6 @@ open class ReservationService(
         val (citizenId) = citizenAccessControl.requireCitizen()
         validateCurrentCitizenAccessToReservation(reservationId)
         return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)
-    }
-
-    @Transactional
-    open fun updateTrailer(trailer: UpdateTrailerInformationInput) {
-        val (citizenId) = citizenAccessControl.requireCitizen()
-        boatReservationService.updateTrailer(
-            citizenId,
-            trailer.id,
-            trailer.registrationNumber,
-            trailer.width,
-            trailer.length
-        )
     }
 
     fun validateBoatType(

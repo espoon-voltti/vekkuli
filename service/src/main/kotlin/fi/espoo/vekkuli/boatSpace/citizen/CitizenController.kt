@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationRespons
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.repository.UpdateCitizenParams
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.ReserverService
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 class CitizenController(
     private val reserverService: ReserverService,
     private val boatService: BoatService,
+    private val citizenService: CitizenService,
     private val organizationService: OrganizationService,
     private val reservationService: ReservationService,
     private val reservationResponseMapper: ReservationResponseMapper,
@@ -62,22 +62,20 @@ class CitizenController(
         request: HttpServletRequest,
         @RequestBody input: UpdateCitizenInformationInput,
     ) {
-        val citizenId = request.ensureCitizenId()
-        val params =
-            UpdateCitizenParams(
-                id = citizenId,
-                phone = input.phone,
-                email = input.email,
-            )
-        reserverService.updateCitizen(params)
+        citizenService.updateCitizen(input)
     }
 
     @PostMapping("/current/update-trailer")
     fun postUpdateCitizenInformation(
         @RequestBody input: UpdateTrailerInformationInput,
     ) {
-        reservationService.updateTrailer(
-            input
-        )
+        citizenService.updateTrailer(input)
+    }
+
+    @PostMapping("/current/update-boat")
+    fun postUpdateCitizenInformation(
+        @RequestBody input: UpdateBoatInformationInput,
+    ) {
+        citizenService.updateBoat(input)
     }
 }

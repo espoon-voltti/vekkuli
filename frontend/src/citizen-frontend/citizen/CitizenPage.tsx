@@ -6,7 +6,11 @@ import { AuthContext, User } from 'citizen-frontend/auth/state'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
-import { citizenOrganizationQuery } from './queries'
+import {
+  citizenActiveReservationsQuery,
+  citizenExpiredReservationsQuery,
+  citizenOrganizationQuery
+} from './queries'
 import Header from './sections/Header'
 import Boats from './sections/boats/Boats'
 import CitizenInformation from './sections/citizenInformation'
@@ -28,11 +32,20 @@ const Content = React.memo(function Content({
   user: Result<User | undefined>
 }) {
   const organizations = useQueryResult(citizenOrganizationQuery())
+  const activeReservations = useQueryResult(citizenActiveReservationsQuery())
+  const expiredReservations = useQueryResult(citizenExpiredReservationsQuery())
 
   return (
     <Section>
-      <Loader results={[user, organizations]}>
-        {(currentUser, loadedOrganizations) =>
+      <Loader
+        results={[user, organizations, activeReservations, expiredReservations]}
+      >
+        {(
+          currentUser,
+          loadedOrganizations,
+          loadedActiveReservations,
+          loadedExpiredReservations
+        ) =>
           currentUser && (
             <>
               <Header user={currentUser} />
@@ -40,9 +53,9 @@ const Content = React.memo(function Content({
                 user={currentUser}
                 organizations={loadedOrganizations}
               />
-              <Reservations />
+              <Reservations reservations={loadedActiveReservations} />
               <Boats />
-              <ExpiredReservations />
+              <ExpiredReservations reservations={loadedExpiredReservations} />
             </>
           )
         }

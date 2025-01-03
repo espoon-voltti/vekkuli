@@ -1,31 +1,28 @@
-import { Loader } from 'lib-components/Loader'
 import { Container } from 'lib-components/dom'
 import React from 'react'
 
-import { useQueryResult } from 'lib-common/query'
-
-import { citizenActiveReservationsQuery } from '../../queries'
+import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 
 import Reservation from './Reservation'
 
-export default React.memo(function Reservations() {
-  const activeReservations = useQueryResult(citizenActiveReservationsQuery())
+export default React.memo(function Reservations({
+  reservations
+}: {
+  reservations: BoatSpaceReservation[]
+}) {
+  if (!reservations.length) return null
 
   return (
     <Container isBlock>
       <h3>Paikkavaraukset</h3>
       <div className="reservation-list form-section">
-        <Loader results={[activeReservations]}>
-          {(loadedReservations) =>
-            loadedReservations.map((reservation) => (
-              <Reservation
-                key={reservation.id}
-                reservation={reservation}
-                canTerminate
-              />
-            ))
-          }
-        </Loader>
+        {reservations.map((reservation) => (
+          <Reservation
+            key={reservation.id}
+            reservation={reservation}
+            canTerminate
+          />
+        ))}
       </div>
     </Container>
   )

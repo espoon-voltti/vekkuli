@@ -1,7 +1,6 @@
+import { client } from 'citizen-frontend/api-client'
+import { UpdateCitizenTrailerInput } from 'citizen-frontend/api-types/trailer'
 import { uri } from 'lib-common/uri'
-
-import { client } from '../api-client'
-import { UpdateCitizenTrailerInput } from '../api-types/trailer'
 
 export async function updateCitizenTrailer(
   input: UpdateCitizenTrailerInput

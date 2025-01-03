@@ -1,9 +1,12 @@
+import {
+  citizenBoats,
+  citizenOrganizations
+} from 'citizen-frontend/api-clients/citizen'
 import { query } from 'lib-common/query'
 
-import { citizenBoats, citizenOrganizations } from '../api-clients/citizen'
 import { createQueryKeys } from '../query'
 
-const queryKeys = createQueryKeys('shared', {
+export const queryKeys = createQueryKeys('shared', {
   citizenBoats: () => ['citizenBoats'],
   organizations: () => ['citizenOrganizations']
 })

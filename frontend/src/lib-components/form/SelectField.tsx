@@ -45,30 +45,32 @@ function SelectField_<T>({
         {readonly ? (
           <ReadOnly value={readOnlyValue} />
         ) : (
-          <div className={`select${isFullWidth ? ' is-fullwidth' : ''}`}>
-            <select
-              id={id}
-              name={name}
-              required={required}
-              value={state?.domValue}
-              onBlur={() => setTouched(true)}
-              onChange={(e) => {
-                e.preventDefault()
-                update((prev) => ({ ...prev, domValue: e.target.value }))
-              }}
-            >
-              {state?.options.map((opt) => (
-                <option key={opt.domValue} value={opt.domValue}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+          <>
+            <div className={`select${isFullWidth ? ' is-fullwidth' : ''}`}>
+              <select
+                id={id}
+                name={name}
+                required={required}
+                value={state?.domValue}
+                onBlur={() => setTouched(true)}
+                onChange={(e) => {
+                  e.preventDefault()
+                  update((prev) => ({ ...prev, domValue: e.target.value }))
+                }}
+              >
+                {state?.options.map((opt) => (
+                  <option key={opt.domValue} value={opt.domValue}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             <FieldErrorContainer
               showError={showError}
               error={validationError()}
               translateError={translateError}
             />
-          </div>
+          </>
         )}
       </div>
     </div>

@@ -6,25 +6,47 @@ import {
   ownershipStatuses
 } from 'citizen-frontend/shared/types'
 import { positiveNumber, string } from 'lib-common/form/fields'
-import { multiSelect, object, oneOf, required } from 'lib-common/form/form'
+import {
+  mapped,
+  multiSelect,
+  object,
+  oneOf,
+  required
+} from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
-export const boatForm = object({
-  id: string(),
-  name: required(string()),
-  type: required(oneOf<BoatType>()),
-  width: required(positiveNumber()),
-  length: required(positiveNumber()),
-  depth: required(positiveNumber()),
-  weight: required(positiveNumber()),
-  registrationNumber: string(),
-  noRegisterNumber: multiSelect<boolean>(),
-  otherIdentification: required(string()),
-  extraInformation: string(),
-  existingBoat: oneOf<Boat | undefined>(),
-  ownershipStatus: oneOf<OwnershipStatus>()
-})
+import { UpdateCitizenBoatInput } from '../../../api-types/boat'
+
+export const boatForm = mapped(
+  object({
+    id: string(),
+    name: required(string()),
+    type: required(oneOf<BoatType>()),
+    width: required(positiveNumber()),
+    length: required(positiveNumber()),
+    depth: required(positiveNumber()),
+    weight: required(positiveNumber()),
+    registrationNumber: string(),
+    otherIdentification: required(string()),
+    extraInformation: string(),
+    ownership: required(oneOf<OwnershipStatus>())
+  }),
+  (values): UpdateCitizenBoatInput => ({
+    id: values.id,
+    name: values.name,
+    type: values.type,
+    width: values.width,
+    length: values.length,
+    depth: values.depth,
+    weight: values.weight,
+    registrationNumber: values.registrationNumber,
+    hasNoRegistrationNumber: !values.registrationNumber,
+    otherIdentification: values.otherIdentification,
+    extraInformation: values.extraInformation,
+    ownership: values.ownership
+  })
+)
 export type BoatForm = typeof boatForm
 
 export const transformBoatToFormBoat = (
@@ -32,7 +54,7 @@ export const transformBoatToFormBoat = (
   i18n: Translations
 ): StateOf<BoatForm> => ({
   id: boat.id.toString(),
-  name: boat.name,
+  name: boat.name || '-',
   depth: boat.depth.toString(),
   length: boat.length.toString(),
   weight: boat.weight.toString(),
@@ -45,24 +67,10 @@ export const transformBoatToFormBoat = (
       value: type
     }))
   },
-  noRegisterNumber: {
-    domValues: boat.registrationNumber.length === 0 ? [''] : [],
-    options: [
-      {
-        domValue: '',
-        label: i18n.reservation.noRegistererNumber,
-        value: true
-      }
-    ]
-  },
-  registrationNumber: boat.registrationNumber || '',
-  existingBoat: {
-    domValue: '',
-    options: []
-  },
-  extraInformation: boat.extraInformation || '',
-  otherIdentification: boat.otherIdentification || '',
-  ownershipStatus: {
+  registrationNumber: boat.registrationNumber || '-',
+  extraInformation: boat.extraInformation || '-',
+  otherIdentification: boat.otherIdentification || '-',
+  ownership: {
     domValue: boat.ownership,
     options: ownershipStatuses.map((type) => ({
       domValue: type,

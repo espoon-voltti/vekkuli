@@ -1,4 +1,4 @@
-import { Column, Columns } from 'lib-components/dom'
+import { Button, Buttons, Column, Columns } from 'lib-components/dom'
 import { NumberField } from 'lib-components/form/NumberField'
 import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
@@ -8,6 +8,9 @@ import React from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Boat } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
+import { useMutation } from 'lib-common/query'
+
+import { updateBoatInformationMutation } from '../../queries'
 
 import { boatForm, transformBoatToFormBoat } from './formDefinitions'
 
@@ -18,6 +21,21 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
     () => transformBoatToFormBoat(boat, i18n),
     i18n.components.validationErrors
   )
+  const { mutateAsync: updateBoat, isPending } = useMutation(
+    updateBoatInformationMutation
+  )
+  const [editMode, setEditMode] = React.useState(false)
+
+  const cancel = () => {
+    bind.set(transformBoatToFormBoat(boat, i18n))
+    setEditMode(false)
+  }
+  const onSubmit = async () => {
+    if (bind.isValid()) {
+      await updateBoat(bind.value())
+      setEditMode(false)
+    }
+  }
   const {
     name,
     weight,
@@ -26,10 +44,11 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
     type,
     depth,
     registrationNumber,
-    ownershipStatus,
+    ownership,
     otherIdentification,
     extraInformation
   } = useFormFields(bind)
+
   return (
     <div className="reservation-card">
       <Columns isVCentered>
@@ -39,7 +58,9 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
         <Column>
           <Columns>
             <Column isNarrow toRight>
-              <EditLink>Muokkaa veneen tietoja</EditLink>
+              <EditLink action={() => setEditMode(true)}>
+                Muokkaa veneen tietoja
+              </EditLink>
             </Column>
           </Columns>
         </Column>
@@ -50,22 +71,43 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
             label="Veneen nimi"
             name="name"
             bind={name}
-            readonly={true}
+            required={editMode}
+            readonly={!editMode}
           />
           <NumberField
             label="Paino (kg)"
             name="weight"
             bind={weight}
-            readonly={true}
+            required={editMode}
+            readonly={!editMode}
+          />
+          <TextField
+            label="Muu tunniste"
+            name="otherIdentification"
+            bind={otherIdentification}
+            required={editMode}
+            readonly={!editMode}
           />
         </Column>
         <Column>
-          <SelectField label="Veneen tyyppi" bind={type} readonly={true} />
+          <SelectField
+            label="Veneen tyyppi"
+            bind={type}
+            readonly={!editMode}
+            required={editMode}
+          />
           <NumberField
             label="Syväys (m)"
             name="depth"
             bind={depth}
-            readonly={true}
+            required={editMode}
+            readonly={!editMode}
+          />
+          <TextField
+            label="Lisätiedot"
+            name="extraInformation"
+            bind={extraInformation}
+            readonly={!editMode}
           />
         </Column>
         <Column>
@@ -73,13 +115,14 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
             label="Leveys (m)"
             name="width"
             bind={width}
-            readonly={true}
+            required={editMode}
+            readonly={!editMode}
           />
           <TextField
             label="Rekisteritunnus"
             name="registrationNumber"
             bind={registrationNumber}
-            readonly={true}
+            readonly={!editMode}
           />
         </Column>
         <Column>
@@ -87,30 +130,28 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
             label="Pituus (m)"
             name="length"
             bind={length}
-            readonly={true}
+            required={editMode}
+            readonly={!editMode}
           />
           <SelectField
             label="Omistussuhde"
             name="ownershipStatus"
-            bind={ownershipStatus}
-            readonly={true}
-          />
-        </Column>
-        <Column>
-          <TextField
-            label="Muu tunniste"
-            name="otherIdentification"
-            bind={otherIdentification}
-            readonly={true}
-          />
-          <TextField
-            label="Lisätiedot"
-            name="extraInformation"
-            bind={extraInformation}
-            readonly={true}
+            bind={ownership}
+            required={editMode}
+            readonly={!editMode}
           />
         </Column>
       </Columns>
+      {editMode && (
+        <Buttons>
+          <Button action={cancel} loading={isPending}>
+            Peruuta
+          </Button>
+          <Button action={onSubmit} type="primary" loading={isPending}>
+            Tallenna muutokset
+          </Button>
+        </Buttons>
+      )}
     </div>
   )
 })
