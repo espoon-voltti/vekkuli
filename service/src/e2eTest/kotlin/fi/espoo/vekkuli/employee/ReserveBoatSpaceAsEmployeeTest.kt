@@ -433,6 +433,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
+        val place = page.getByTestId("place").innerText()
         formPage.existingCitizenSelector.click()
         assertThat(formPage.citizenSearchContainer).isVisible()
 
@@ -442,6 +443,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         formPage.citizenSearchInput.pressSequentially("virtane")
         formPage.citizenSearchOption1.click()
+        assertThat(page.getByTestId("firstName")).containsText("Mikko")
+        assertThat(page.getByTestId("lastName")).containsText("Virtanen")
         // Fill in the boat information
         formPage.boatTypeSelect.selectOption("Sailboat")
 
@@ -466,6 +469,20 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.certifyInfoCheckbox.check()
         formPage.agreementCheckbox.check()
         formPage.submitButton.click()
+
+        val invoicePage = InvoicePreviewPage(page)
+        assertThat(invoicePage.header).isVisible()
+        assertThat(page.getByTestId("reserverName")).containsText("Mikko Virtanen")
+        val description = page.getByTestId("description").inputValue()
+        assertContains(description, place)
+
+        invoicePage.sendButton.click()
+
+        val reservationListPage = ReservationListPage(page)
+        assertThat(reservationListPage.header).isVisible()
+
+        // Check that the reservation is visible in the list
+        assertThat(page.getByText(place)).isVisible()
     }
 
     @Test

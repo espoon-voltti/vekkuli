@@ -107,11 +107,11 @@ class InvoicePreview(
                         hx-post="$submitUrl"
                         hx-target="body"
                     >
-                    ${invoiceLine(t("invoice.label.booker"), model.reserverName)}
-                    ${if (!isOrganization) invoiceLine(t("invoice.label.bookerSsn"), model.reserverSsn) else ""}
+                    ${invoiceLine(t("invoice.label.booker"), model.reserverName,"reserverName")}
+                    ${if (!isOrganization) invoiceLine(t("invoice.label.bookerSsn"), model.reserverSsn,"reserverSsn") else ""}
                     
-                    ${if (isOrganization) invoiceLine(t("invoice.label.companyId"), model.orgId) else ""}
-                    ${invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress)}
+                    ${if (isOrganization) invoiceLine(t("invoice.label.companyId"), model.orgId,"orgId") else ""}
+                    ${invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress,"reserverAddress")}
                     
                     <hr/>
                     
@@ -169,10 +169,11 @@ class InvoicePreview(
     // language=HTML
     fun invoiceLine(
         name: String,
-        value: String
+        value: String,
+        id: String
     ) = """
         <div class="block">
-            <span class="invoice-line">$name:</span><span>$value</span>
+            <span class="invoice-line">$name:</span><span id="$id" >$value</span>
         </div>
         """.trimIndent()
 
