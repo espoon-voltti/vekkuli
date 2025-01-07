@@ -15,8 +15,8 @@ class ReportingView(
         val stickerReportStartDateInputField =
             formComponents.dateInput(
                 DateInputOptions(
-                    id = "startDate",
-                    labelKey = "reporting.filter.startDate",
+                    id = "reportingDate",
+                    labelKey = "reporting.filter.reportingDate",
                     value = timeProvider.getCurrentDate().toString(),
                     autoWidth = true
                 )
@@ -25,8 +25,8 @@ class ReportingView(
         val boatSpaceReportStartDateInputField =
             formComponents.dateInput(
                 DateInputOptions(
-                    id = "startDate",
-                    labelKey = "reporting.filter.startDate",
+                    id = "reportingDate",
+                    labelKey = "reporting.filter.reportingDate",
                     value = timeProvider.getCurrentDate().toString(),
                     autoWidth = true
                 )
@@ -34,7 +34,7 @@ class ReportingView(
 
         // language=HTML
         return """
-            <section class="section">
+            <section class="section reports-container">
                 <h2>Raportit</h2>
                 <div class="container">
                     <form id="form"
@@ -42,8 +42,10 @@ class ReportingView(
                           action="/admin/reporting/sticker-report"
                           class="block"
                     >
-                        <h2 class="subtitle">${t("reporting.stickerReport")}</h2>
+                        <h2>${t("reporting.stickerReport")}</h2>
                      
+                        <p class="reports-info">${t("reporting.stickerReportInfo")}</p>
+                        
                         <div class='columns'>
                             <div class='column'>
                                 $stickerReportStartDateInputField
@@ -67,8 +69,10 @@ class ReportingView(
                           action="/admin/reporting/boat-space-report"
                           class="block"
                     >
-                        <h2 class="subtitle">${t("reporting.boatSpaceReport")}</h2>
-                     
+                        <h2>${t("reporting.boatSpaceReport")}</h2>
+                        
+                        <p class="reports-info">${t("reporting.boatSpaceReportInfo")}</p>
+                                                
                         <div class='columns'>
                             <div class='column'>
                                 $boatSpaceReportStartDateInputField

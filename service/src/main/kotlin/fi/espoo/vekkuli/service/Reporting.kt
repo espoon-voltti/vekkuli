@@ -31,7 +31,7 @@ data class StickerReportRow(
 
 fun getStickerReport(
     jdbi: Jdbi,
-    startDate: LocalDateTime?
+    reportDate: LocalDateTime
 ): List<StickerReportRow> {
     return jdbi.inTransactionUnchecked { tx ->
         tx.createQuery(
@@ -47,10 +47,13 @@ fun getStickerReport(
                 JOIN boat_space bs ON bs.id = bsr.boat_space_id
                 JOIN location l ON l.id = bs.location_id
                 LEFT JOIN boat b ON b.id = bsr.boat_id
-            ${if (startDate != null) "WHERE :startDate::date >= bsr.start_date" else ""} 
+            WHERE 
+                bsr.reserver_id IS NOT NULL
+                AND :reportDate::date >= bsr.start_date 
+                AND :reportDate::date <= bsr.end_date
             """.trimIndent()
         )
-            .also { if (startDate != null) it.bind("startDate", startDate) }
+            .bind("reportDate", reportDate)
             .mapTo<StickerReportRow>()
             .list()
     }
@@ -124,7 +127,7 @@ data class BoatSpaceReportRow(
 
 fun getBoatSpaceReport(
     jdbi: Jdbi,
-    startDate: LocalDateTime?
+    reportDate: LocalDateTime
 ): List<BoatSpaceReportRow> {
     return jdbi.inTransactionUnchecked { tx ->
         tx.createQuery(
@@ -151,11 +154,14 @@ fun getBoatSpaceReport(
                  LEFT JOIN payment p ON p.reserver_id = r.id
                  LEFT JOIN boat b ON b.id = bsr.boat_id
                  LEFT JOIN municipality m ON m.code = r.municipality_code
-            ${if (startDate != null) "WHERE :startDate::date >= bsr.start_date" else ""} 
+            WHERE
+                bsr.start_date is NULL OR
+                (:reportDate::date >= bsr.start_date
+                AND :reportDate::date <= bsr.end_date) 
             ORDER BY harbor, pier, place
             """.trimIndent()
         )
-            .also { if (startDate != null) it.bind("startDate", startDate) }
+            .bind("reportDate", reportDate)
             .mapTo<BoatSpaceReportRow>()
             .list()
     }

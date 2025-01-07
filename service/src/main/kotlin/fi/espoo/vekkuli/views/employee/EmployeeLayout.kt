@@ -25,10 +25,6 @@ class EmployeeLayout(
         val authMenu =
             if (isAuthenticated) {
                 """
-                <a href="/admin/reporting">
-                    <span class="login-link">${t("auth.reporting")}</span>
-                    ${icons.logout}
-                </a>
                 <a href="/auth/saml/logout">
                     <span class="login-link">${t("auth.logout")}</span>
                     ${icons.logout}
@@ -47,6 +43,10 @@ class EmployeeLayout(
                 <a class="${if (currentUri == "/virkailija/venepaikat/varaukset") "active" else ""}"
                    href="/virkailija/venepaikat/varaukset">
                     ${t("menu.boatSpaceReservations")}
+                </a>
+                <a  class="${if (currentUri == "/virkailija/venepaikat/varaukset") "active" else ""}"
+                    href="/admin/reporting">
+                    ${t("menu.reports")}
                 </a>
                 """.trimIndent()
             } else {

@@ -37,12 +37,12 @@ class ReportingController(
     @ResponseBody
     fun stickerReport(
         request: HttpServletRequest,
-        @RequestParam("startDate") startDate: LocalDate?,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
     ): ResponseEntity<String> {
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_STICKER_REPORT")
 
-        val now = startDate?.atStartOfDay()
-        val todayFormatted = now?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
+        val now = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$todayFormatted.csv\"")
@@ -53,12 +53,12 @@ class ReportingController(
     @ResponseBody
     fun boatSpaceReport(
         request: HttpServletRequest,
-        @RequestParam("startDate") startDate: LocalDate?,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
     ): ResponseEntity<String> {
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_BOAT_SPACE_REPORT")
 
-        val now = startDate?.atStartOfDay()
-        val todayFormatted = now?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
+        val now = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-venepaikkaraportti-$todayFormatted.csv\"")
