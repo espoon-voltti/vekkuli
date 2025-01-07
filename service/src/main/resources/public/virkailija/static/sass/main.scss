@@ -719,6 +719,21 @@ label.filter-button:has(input:checked) .icon {
   border-top: 0;
 }
 
+.selectedSections {
+  .search-input {
+    width: 70px;
+  }
+}
+
+.amenity {
+  .search-input {
+    width: 80px;
+  }
+  .filter-dropdown-menu {
+    width: 180px;
+  }
+}
+
 .filter-tag {
   background-color: $bulma-primary;
   color: $white;
