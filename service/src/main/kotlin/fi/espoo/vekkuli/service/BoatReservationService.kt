@@ -321,6 +321,7 @@ class BoatReservationService(
         reserverId: UUID,
         actingUserId: UUID?,
         boatSpaceId: Int,
+        creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation =
@@ -328,6 +329,7 @@ class BoatReservationService(
             reserverId,
             actingUserId,
             boatSpaceId,
+            creationType,
             startDate,
             endDate,
         )
@@ -335,12 +337,14 @@ class BoatReservationService(
     fun insertBoatSpaceReservationAsEmployee(
         employeeId: UUID,
         boatSpaceId: Int,
+        creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservationAsEmployee(
             employeeId,
             boatSpaceId,
+            creationType,
             startDate,
             endDate,
         )

@@ -1,9 +1,6 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.getRawReport
 import fi.espoo.vekkuli.service.getStickerReport
@@ -50,6 +47,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             citizenIdLeo,
             citizenIdLeo,
             boatSpaceId,
+            CreationType.New,
             today,
             today.plusMonths(12)
         )

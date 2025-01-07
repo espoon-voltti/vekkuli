@@ -70,11 +70,13 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
         assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
-        assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, createdRenewal.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, createdRenewal.creationType, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
-        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
     }
 
     @Test
@@ -94,11 +96,13 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
         assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
-        assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, createdRenewal.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, createdRenewal.creationType, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
-        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
     }
 
     @Test
@@ -117,11 +121,13 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
         assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
-        assertEquals(ReservationStatus.Renewal, createdRenewal.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, createdRenewal.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, createdRenewal.creationType, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
         assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
-        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
     }
 
     @Test
@@ -154,11 +160,13 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         val secondRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, secondReservation.id)
         assertNotNull(secondRenewal.id, "Renewal reservation ID is not the same as original")
         assertEquals(secondReservation.id, secondRenewal.originalReservationId, "Original reservation ID should match")
-        assertEquals(ReservationStatus.Renewal, secondRenewal.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, secondRenewal.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, secondRenewal.creationType, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertEquals(firstRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
-        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
     }
 
     @Test
@@ -191,11 +199,13 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         val secondRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdOlivia, secondReservation.id)
         assertNotNull(secondRenewal.id, "Renewal reservation ID is not the same as original")
         assertEquals(secondReservation.id, secondRenewal.originalReservationId, "Original reservation ID should match")
-        assertEquals(ReservationStatus.Renewal, secondRenewal.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, secondRenewal.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, secondRenewal.creationType, "Status should be renewal")
 
         var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenIdLeo, reservation.id)
         assertEquals(firstRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
-        assertEquals(ReservationStatus.Renewal, newReservation.status, "Status should be renewal")
+        assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
     }
 
     @Test
@@ -308,7 +318,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             )
         }
 
-        assertEquals(ReservationStatus.Renewal, renewalReservation.status, "Renewal reservation should be rolled back")
+        assertEquals(ReservationStatus.Info, renewalReservation.status, "Renewal reservation should be rolled back")
         assertEquals(ReservationStatus.Confirmed, oldReservation.status, "Old reservation should be rolled back")
         assertEquals(
             startOfSlipRenewPeriod.plusDays(1).toLocalDate(),

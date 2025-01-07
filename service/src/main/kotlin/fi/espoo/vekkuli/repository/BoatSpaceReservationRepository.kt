@@ -57,6 +57,7 @@ interface BoatSpaceReservationRepository {
         reserverId: UUID,
         actingUserId: UUID?,
         boatSpaceId: Int,
+        creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation
@@ -64,6 +65,7 @@ interface BoatSpaceReservationRepository {
     fun insertBoatSpaceReservationAsEmployee(
         employeeId: UUID,
         boatSpaceId: Int,
+        creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation

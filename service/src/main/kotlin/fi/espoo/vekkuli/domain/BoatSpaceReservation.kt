@@ -10,7 +10,6 @@ import java.util.*
 
 enum class ReservationStatus {
     Info,
-    Renewal,
     Payment,
     Confirmed,
     Cancelled,
@@ -19,7 +18,7 @@ enum class ReservationStatus {
 
 enum class CreationType {
     Switch,
-    Renew,
+    Renewal,
     New
 }
 

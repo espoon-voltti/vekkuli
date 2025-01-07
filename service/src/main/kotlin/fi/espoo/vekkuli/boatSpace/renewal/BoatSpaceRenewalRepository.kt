@@ -70,7 +70,7 @@ class BoatSpaceRenewalRepository(
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.status = 'Renewal' 
+                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Renewal' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
@@ -90,7 +90,7 @@ class BoatSpaceRenewalRepository(
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.employee_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.status = 'Renewal' 
+                    WHERE bsr.employee_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Renewal' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
@@ -118,6 +118,7 @@ class BoatSpaceRenewalRepository(
                       start_date, 
                       end_date, 
                       status, 
+                      creation_type,
                       validity, 
                       boat_id, 
                       employee_id,
@@ -131,7 +132,9 @@ class BoatSpaceRenewalRepository(
                              :actingCitizenId as acting_citizen_id, 
                              boat_space_id, 
                              start_date, 
-                             (end_date + INTERVAL '1 year') as end_date, 'Renewal' as status, 
+                             (end_date + INTERVAL '1 year') as end_date, 
+                             'Info' as status, 
+                             'Renewal' as creation_type, 
                              validity, 
                              boat_id, 
                              :employeeId as employee_id,

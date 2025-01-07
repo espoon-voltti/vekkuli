@@ -332,6 +332,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 this.citizenIdLeo,
                 this.citizenIdLeo,
                 1,
+                CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
             )
@@ -349,6 +350,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 this.citizenIdLeo,
                 this.citizenIdLeo,
                 1,
+                CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
             )
@@ -377,6 +379,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 this.citizenIdLeo,
                 this.citizenIdLeo,
                 1,
+                CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
             )
@@ -707,6 +710,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 this.citizenIdLeo,
                 this.citizenIdLeo,
                 boatSpaceId,
+                CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
             )

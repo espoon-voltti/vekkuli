@@ -105,6 +105,7 @@ class ReservationFormService(
                         citizenId,
                         citizenId,
                         spaceId,
+                        CreationType.New,
                         today,
                         getEndDate(result),
                     ).id
@@ -306,7 +307,7 @@ class ReservationFormService(
             } else {
                 val today = timeProvider.getCurrentDate()
                 val endOfYear = LocalDate.of(today.year, Month.DECEMBER, 31)
-                boatReservationService.insertBoatSpaceReservationAsEmployee(employeeId, spaceId, today, endOfYear).id
+                boatReservationService.insertBoatSpaceReservationAsEmployee(employeeId, spaceId, CreationType.New, today, endOfYear).id
             }
         return reservationId
     }

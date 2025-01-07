@@ -435,7 +435,7 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.id = :id
-                        AND (bsr.status = 'Info' OR bsr.status = 'Payment' OR bsr.status = 'Renewal')
+                        AND (bsr.status = 'Info' OR bsr.status = 'Payment')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
@@ -502,7 +502,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN price ON price_id = price.id
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :id
-                        AND (bsr.status = 'Info' OR bsr.status = 'Payment' OR bsr.status = 'Renewal')
+                        AND (bsr.status = 'Info' OR bsr.status = 'Payment')
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     GROUP BY bsr.id, location.name, price.id, bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm, bs.description
                     """.trimIndent()
@@ -746,6 +746,7 @@ class JdbiBoatSpaceReservationRepository(
         reserverId: UUID,
         actingUserId: UUID?,
         boatSpaceId: Int,
+        creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation =
@@ -753,8 +754,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created)
-                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate, :currentDate)
+                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type)
+                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -764,12 +765,14 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
             query.bind("currentDate", timeProvider.getCurrentDateTime())
+            query.bind("creationType", creationType)
             query.mapTo<BoatSpaceReservation>().one()
         }
 
     override fun insertBoatSpaceReservationAsEmployee(
         employeeId: UUID,
         boatSpaceId: Int,
+        creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
     ): BoatSpaceReservation =
@@ -777,8 +780,8 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date, created, validity)
-                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate, :currentDate, :validity)
+                    INSERT INTO boat_space_reservation (employee_id, boat_space_id, start_date, end_date, created, validity, creation_type)
+                    VALUES (:employeeId, :boatSpaceId, :startDate, :endDate, :currentDate, :validity, :creationType)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -788,6 +791,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("endDate", endDate)
             query.bind("currentDate", timeProvider.getCurrentDateTime())
             query.bind("validity", ReservationValidity.Indefinite)
+            query.bind("creationType", creationType)
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -807,7 +811,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET status = :status, updated = :updatedTime, boat_id = :boatId, reserver_id = :reserverId, validity = :validity, start_date = :startDate, end_date = :endDate
                     WHERE id = :id
-                        AND (status = 'Info' OR status = 'Payment' OR status = 'Renewal')
+                        AND (status = 'Info' OR status = 'Payment')
                         AND created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     RETURNING *
                     """.trimIndent()
@@ -836,7 +840,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET trailer_id = :trailerId
                     WHERE id = :reservationId
-                        AND (status = 'Info' OR status = 'Payment' OR status = 'Renewal')
+                        AND (status = 'Info' OR status = 'Payment')
                         AND created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     RETURNING *
                     """.trimIndent()
@@ -881,7 +885,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET status = :reservationStatus, updated = :updatedTime
                     WHERE id = :reservationId
-                        AND (status = 'Payment' OR status = 'Renewal' OR status = 'Info')
+                        AND (status = 'Payment' OR status = 'Info')
                         AND created > :currentTime - make_interval(secs => :paymentTimeout)
                     RETURNING *
                     """.trimIndent()

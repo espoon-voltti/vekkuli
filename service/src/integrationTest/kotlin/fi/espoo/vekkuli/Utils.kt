@@ -77,6 +77,7 @@ class TestUtils(
                 params.reserverId,
                 params.citizenId,
                 params.boatSpaceId,
+                CreationType.New,
                 startDate = params.startDate,
                 endDate = params.endDate,
             )
@@ -107,7 +108,7 @@ class TestUtils(
             params.boatSpaceId,
             params.timeProvider,
             params.boatId,
-            ReservationStatus.Renewal
+            ReservationStatus.Info
         )
 
     fun createReservationInPaymentState(
@@ -165,12 +166,14 @@ class TestUtils(
         timeProvider: TimeProvider,
         boatId: Int,
         state: ReservationStatus = ReservationStatus.Payment,
+        creationType: CreationType = CreationType.New,
     ): BoatSpaceReservation {
         val madeReservation =
             reservationService.insertBoatSpaceReservation(
                 reserverId,
                 citizenId,
                 boatSpaceId,
+                creationType,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate().plusDays(365),
             )
@@ -194,6 +197,7 @@ class TestUtils(
                 citizenId,
                 citizenId,
                 boatSpaceId,
+                CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate().plusDays(365),
             )
