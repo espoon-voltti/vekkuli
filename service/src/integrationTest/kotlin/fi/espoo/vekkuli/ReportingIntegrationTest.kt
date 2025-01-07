@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.getBoatSpaceReport
-import fi.espoo.vekkuli.service.getRawReport
 import fi.espoo.vekkuli.service.getStickerReport
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -16,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDate
-import kotlin.random.Random
 import kotlin.test.assertEquals
 
 @ExtendWith(SpringExtension::class)
@@ -31,41 +29,6 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         deleteAllReservations(jdbi)
         deleteAllBoats(jdbi)
         deleteAllBoatSpaces(jdbi)
-    }
-
-    @Test
-    fun `raw report`() {
-        val boatSpaceId = Random(42).nextInt(1000, 9999)
-
-        insertDevBoatSpace(
-            DevBoatSpace(
-                id = boatSpaceId,
-                type = BoatSpaceType.Slip,
-                locationId = 1,
-                priceId = 1,
-                section = "A",
-                placeNumber = 1,
-                amenity = BoatSpaceAmenity.None,
-                widthCm = 100,
-                lengthCm = 200,
-                description = "Test boat space"
-            )
-        )
-
-        val today = LocalDate.of(2024, 10, 1)
-        reservationService.insertBoatSpaceReservation(
-            citizenIdLeo,
-            citizenIdLeo,
-            boatSpaceId,
-            today,
-            today.plusMonths(12)
-        )
-
-        val rawReportRows = getRawReport(jdbi)
-        assertEquals(true, rawReportRows.size > 0)
-        val row = rawReportRows.find { it.boatSpaceId == boatSpaceId.toString() }
-        assertEquals("Test boat space", row?.description)
-        assertEquals(today.plusMonths(12).toString(), row?.endDate)
     }
 
     @Test

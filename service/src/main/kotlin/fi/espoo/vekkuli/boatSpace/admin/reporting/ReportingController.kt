@@ -5,9 +5,7 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedEmployee
 import fi.espoo.vekkuli.service.boatSpaceReportToCsv
 import fi.espoo.vekkuli.service.getBoatSpaceReport
-import fi.espoo.vekkuli.service.getRawReport
 import fi.espoo.vekkuli.service.getStickerReport
-import fi.espoo.vekkuli.service.rawReportToCsv
 import fi.espoo.vekkuli.service.stickerReportToCsv
 import fi.espoo.vekkuli.utils.TimeProvider
 import jakarta.servlet.http.HttpServletRequest
@@ -34,18 +32,6 @@ class ReportingController(
     private val logger = KotlinLogging.logger {}
 
     val utf8BOM = "\uFEFF"
-
-    @GetMapping("/raw-report", produces = ["text/csv"])
-    @ResponseBody
-    fun rawReport(request: HttpServletRequest): ResponseEntity<String> {
-        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_RAW_REPORT")
-
-        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        return ResponseEntity
-            .ok()
-            .header("Content-Disposition", "attachment; filename=\"vekkuli-raakaraportti-$today.csv\"")
-            .body(utf8BOM + rawReportToCsv(getRawReport(jdbi)))
-    }
 
     @GetMapping("/sticker-report", produces = ["text/csv"])
     @ResponseBody
