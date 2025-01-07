@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.service.getStickerReport
 import fi.espoo.vekkuli.service.reservedBoatSpaceReportToCsv
 import fi.espoo.vekkuli.service.stickerReportToCsv
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
@@ -32,6 +33,9 @@ class ReportingController(
 
     @Autowired
     lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var layout: EmployeeLayout
 
     private val logger = KotlinLogging.logger {}
 
@@ -105,11 +109,11 @@ class ReportingController(
     @ResponseBody
     fun getReportingView(request: HttpServletRequest) =
         ResponseEntity
-            .ok()
-            .header("Content-Type", "text/html")
-            .body(
-                reportingLayout.render(
-                    reportingView.render()
+            .ok(
+                layout.render(
+                    true,
+                    request.requestURI,
+                    reportingLayout.render(reportingView.render())
                 )
             )
 }
