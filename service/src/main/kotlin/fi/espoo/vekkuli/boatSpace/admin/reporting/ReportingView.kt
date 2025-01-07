@@ -32,6 +32,26 @@ class ReportingView(
                 )
             )
 
+        val freeBoatSpaceReportStartDateInputField =
+            formComponents.dateInput(
+                DateInputOptions(
+                    id = "reportingDate",
+                    labelKey = "reporting.filter.reportingDate",
+                    value = timeProvider.getCurrentDate().toString(),
+                    autoWidth = true
+                )
+            )
+
+        val reservedBoatSpaceReportStartDateInputField =
+            formComponents.dateInput(
+                DateInputOptions(
+                    id = "reportingDate",
+                    labelKey = "reporting.filter.reportingDate",
+                    value = timeProvider.getCurrentDate().toString(),
+                    autoWidth = true
+                )
+            )
+
         // language=HTML
         return """
             <section class="section reports-container">
@@ -82,6 +102,60 @@ class ReportingView(
                                     class="button is-primary"
                                     type="submit"
                                     data-testid="boat-space-report-button"
+                                >
+                                    ${t("reporting.submit")}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="container">
+                    <form id="form"
+                          method="get"
+                          action="/admin/reporting/boat-space-report/free"
+                          class="block"
+                    >
+                        <h2>${t("reporting.freeBoatSpaceReport")}</h2>
+                        
+                        <p class="reports-info">${t("reporting.freeBoatSpaceReportInfo")}</p>
+                                                
+                        <div class='columns'>
+                            <div class='column'>
+                                $freeBoatSpaceReportStartDateInputField
+                            </div>
+                            <div class='column'>
+                                <button id="submit-button"
+                                    class="button is-primary"
+                                    type="submit"
+                                    data-testid="free-boat-space-report-button"
+                                >
+                                    ${t("reporting.submit")}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="container">
+                    <form id="form"
+                          method="get"
+                          action="/admin/reporting/boat-space-report/reserved"
+                          class="block"
+                    >
+                        <h2>${t("reporting.reservedBoatSpaceReport")}</h2>
+                        
+                        <p class="reports-info">${t("reporting.reservedBoatSpaceReportInfo")}</p>
+                                                
+                        <div class='columns'>
+                            <div class='column'>
+                                $reservedBoatSpaceReportStartDateInputField
+                            </div>
+                            <div class='column'>
+                                <button id="submit-button"
+                                    class="button is-primary"
+                                    type="submit"
+                                    data-testid="reserved-boat-space-report-button"
                                 >
                                     ${t("reporting.submit")}
                                 </button>

@@ -213,6 +213,72 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
     return csvContent.toString()
 }
 
+fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
+    val csvHeader =
+        listOf(
+            "satama",
+            "laituri",
+            "paikka",
+            "veneen leveys",
+            "veneen pituus",
+            "paikan varuste"
+        ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
+
+    val csvContent = StringBuilder()
+    csvContent.append(csvHeader)
+
+    for (report in reportRows) {
+        csvContent
+            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
+            .append(CSV_RECORD_SEPARATOR)
+    }
+
+    return csvContent.toString()
+}
+
+fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
+    val csvHeader =
+        listOf(
+            "satama",
+            "laituri",
+            "paikka",
+            "veneen leveys",
+            "veneen pituus",
+            "paikan varuste",
+            "varaaja",
+            "kotikunta",
+            "veneen rekisterinumero",
+            "hinta",
+            "maksuluokka"
+        ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
+
+    val csvContent = StringBuilder()
+    csvContent.append(csvHeader)
+
+    for (report in reportRows) {
+        csvContent
+            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(centsToEur(report.totalCents))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
+            .append(CSV_RECORD_SEPARATOR)
+    }
+
+    return csvContent.toString()
+}
+
 fun placeTypeToText(placeType: String?): String {
     return when (placeType) {
         "Storage" -> "Säilytys"

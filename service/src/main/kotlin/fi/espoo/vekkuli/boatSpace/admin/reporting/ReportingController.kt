@@ -4,8 +4,10 @@ import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedEmployee
 import fi.espoo.vekkuli.service.boatSpaceReportToCsv
+import fi.espoo.vekkuli.service.freeBoatSpaceReportToCsv
 import fi.espoo.vekkuli.service.getBoatSpaceReport
 import fi.espoo.vekkuli.service.getStickerReport
+import fi.espoo.vekkuli.service.reservedBoatSpaceReportToCsv
 import fi.espoo.vekkuli.service.stickerReportToCsv
 import fi.espoo.vekkuli.utils.TimeProvider
 import jakarta.servlet.http.HttpServletRequest
@@ -41,12 +43,12 @@ class ReportingController(
     ): ResponseEntity<String> {
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_STICKER_REPORT")
 
-        val now = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
-        val todayFormatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$todayFormatted.csv\"")
-            .body(utf8BOM + stickerReportToCsv(getStickerReport(jdbi, now)))
+            .body(utf8BOM + stickerReportToCsv(getStickerReport(jdbi, reportDate)))
     }
 
     @GetMapping("/boat-space-report", produces = ["text/csv"])
@@ -57,12 +59,44 @@ class ReportingController(
     ): ResponseEntity<String> {
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_BOAT_SPACE_REPORT")
 
-        val now = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
-        val todayFormatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: "kaikki"
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-venepaikkaraportti-$todayFormatted.csv\"")
-            .body(utf8BOM + boatSpaceReportToCsv(getBoatSpaceReport(jdbi, now)))
+            .body(utf8BOM + boatSpaceReportToCsv(getBoatSpaceReport(jdbi, reportDate)))
+    }
+
+    @GetMapping("/boat-space-report/free", produces = ["text/csv"])
+    @ResponseBody
+    fun freeBoatSpaceReport(
+        request: HttpServletRequest,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
+    ): ResponseEntity<String> {
+        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_FREE_BOAT_SPACE_REPORT")
+
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-vapaat-paikat-raportti-$todayFormatted.csv\"")
+            .body(utf8BOM + freeBoatSpaceReportToCsv(getBoatSpaceReport(jdbi, reportDate).filter { it.startDate == null }))
+    }
+
+    @GetMapping("/boat-space-report/reserved", produces = ["text/csv"])
+    @ResponseBody
+    fun reservedBoatSpaceReport(
+        request: HttpServletRequest,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
+    ): ResponseEntity<String> {
+        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_RESERVED_BOAT_SPACE_REPORT")
+
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-varatut-paikat-raportti-$todayFormatted.csv\"")
+            .body(utf8BOM + reservedBoatSpaceReportToCsv(getBoatSpaceReport(jdbi, reportDate).filter { it.startDate != null }))
     }
 
     @GetMapping
