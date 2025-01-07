@@ -137,9 +137,9 @@ class BoatSpaceInvoiceService(
                 // Organization name
                 lastname = reserver.name,
                 firstnames = null,
-                street = reserver.streetAddress,
-                post = reserver.postOffice,
-                postalCode = reserver.postalCode,
+                street = organization?.billingStreetAddress ?: reserver.streetAddress,
+                post = organization?.billingPostOffice ?: reserver.postOffice,
+                postalCode = organization?.billingPostalCode ?: reserver.postalCode,
                 language = "fi",
                 mobilePhone = reserver.phone,
                 email = reserver.email,
@@ -147,7 +147,8 @@ class BoatSpaceInvoiceService(
                 description = description,
                 orgId = organization?.businessId,
                 function = function ?: "T1270",
-                orgName = organization?.name
+                orgName = organization?.name,
+                orgRepresentative = organization?.billingName,
             )
         }
     }
@@ -172,5 +173,6 @@ data class InvoiceData(
     val description: String,
     val type: BoatSpaceType,
     val orgName: String? = null,
-    val function: String? = null
+    val function: String? = null,
+    val orgRepresentative: String? = null,
 )
