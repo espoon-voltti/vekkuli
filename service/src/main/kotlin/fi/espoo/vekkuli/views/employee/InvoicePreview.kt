@@ -86,6 +86,12 @@ class InvoicePreview(
                 compact = true
             )
 
+        val markAsPaid =
+            formComponents.checkBox(
+                t("invoice.markAsPaid"),
+                "markAsPaid"
+            )
+
         val contactPerson =
             if (isOrganization) {
                 """
@@ -133,6 +139,7 @@ class InvoicePreview(
                         
                         <div class="column">
                             $priceWithTax
+                            $markAsPaid
                         </div>
                     </div>
                                 

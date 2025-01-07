@@ -903,7 +903,7 @@ class JdbiBoatSpaceReservationRepository(
                     UPDATE boat_space_reservation
                     SET status = 'Confirmed', updated = :updatedTime
                     WHERE id = :id
-                        AND status = 'Invoiced'
+                        AND (status = 'Invoiced' OR status = 'Payment')
                     RETURNING *
                     """.trimIndent()
                 )

@@ -3,6 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
+import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -83,9 +84,32 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
                 this.citizenIdLeo
             )
         val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!, this.citizenIdLeo, madeReservation.id)
-        assertNotNull(invoice, "Invoice is sent")
+        assertNotNull(invoice, "Invoice is created")
+        verify(asyncJobRunner).plan(any())
         assertEquals(this.citizenIdLeo, invoice!!.reserverId, "Invoice is sent to correct citizen")
         val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
         assertNull(reservation?.paymentDate, "Reservation has not been paid yet")
+    }
+
+    @Test
+    fun `should not send invoice if invoice is marked as paid`() {
+        val madeReservation =
+            testUtils.createReservationInPaymentState(
+                timeProvider,
+                boatReservationService,
+                this.citizenIdLeo
+            )
+        val invoiceBatchParameters =
+            boatSpaceInvoiceService.createInvoiceData(
+                madeReservation.id,
+                this.citizenIdLeo
+            )
+        val invoice = boatSpaceInvoiceService.createAndSendInvoice(invoiceBatchParameters!!, this.citizenIdLeo, madeReservation.id, true)
+
+        assertNotNull(invoice, "Invoice is created")
+        assertEquals(this.citizenIdLeo, invoice!!.reserverId, "Invoice is sent to correct citizen")
+        val reservation = boatReservationService.getBoatSpaceReservation(madeReservation.id)
+        assertEquals(reservation?.status, ReservationStatus.Confirmed, "Reservation is paid")
+        assertEquals(reservation?.paymentDate, timeProvider.getCurrentDate(), "Reservation has been paid")
     }
 }

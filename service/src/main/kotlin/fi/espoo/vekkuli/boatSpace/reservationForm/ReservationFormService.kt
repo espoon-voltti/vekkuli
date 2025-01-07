@@ -181,7 +181,7 @@ class ReservationFormService(
     fun reserveSpaceForEmployee(
         reservationId: Int,
         reserverId: UUID,
-        input: ReservationInput,
+        input: ReservationInput
     ) {
         val reservation = getReservationForApplicationForm(reservationId)
         if (reservation == null) {

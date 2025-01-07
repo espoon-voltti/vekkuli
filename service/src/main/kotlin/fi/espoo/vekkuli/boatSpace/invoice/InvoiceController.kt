@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
@@ -118,7 +119,8 @@ class InvoiceController(
     data class InvoiceInput(
         val priceWithTax: BigDecimal,
         val description: String,
-        val function: String
+        val function: String,
+        val markAsPaid: Boolean = false
     )
 
     @PostMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
@@ -157,18 +159,25 @@ class InvoiceController(
             throw IllegalArgumentException("Reservation not found")
         }
         val priceWithVat = input.priceWithTax
-        val priceWithVatInCents = priceWithVat.multiply(BigDecimal(100)).toInt()
+        val priceWithVatInCents = decimalToInt(priceWithVat)
         val invoiceData =
             invoiceService.createInvoiceData(reservation.id, reservation.reserverId, priceWithVatInCents, input.description, input.function)
                 ?: throw InternalError("Failed to create invoice batch")
 
-        val invoice = invoiceService.createAndSendInvoice(invoiceData, reservation.reserverId, reservation.id)
+        val invoice =
+            invoiceService.createAndSendInvoice(
+                invoiceData,
+                reservation.reserverId,
+                reservation.id,
+                markAsPaidAndSkipSending = input.markAsPaid
+            )
 
         if (invoice == null) {
             throw InternalError("Failed to create invoice")
         }
-
-        reservationService.setReservationStatusToInvoiced(reservation.id)
+        if (!input.markAsPaid) {
+            reservationService.setReservationStatusToInvoiced(reservation.id)
+        }
     }
 
     @DeleteMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")
