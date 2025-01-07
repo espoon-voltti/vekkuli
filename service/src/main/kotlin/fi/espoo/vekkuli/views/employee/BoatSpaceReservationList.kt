@@ -178,25 +178,21 @@ class BoatSpaceReservationList : BaseView() {
             modelName: String,
             content: String
         ) = """
-                                    <div x-data="{ open: false, $modelName: [${filter.joinToString(
-            ","
-        ) { "'$it'" }}] }" @click.outside="open = false">
-                                        <div class="dropdown $modelName" :class="{ 'is-active': open }" ${addTestId(
-            "filter-selection-$modelName"
-        )}>        
-                                            <div class="dropdown-trigger">                    
-                                                <a aria-haspopup="true" aria-controls="dropdown-menu-$modelName" @click="open = !open">                    
-                                                    <div class="input search-input has-icons-left has-icons-right">                    
-                                                        <span class="icon is-small is-left">${icons.filter}</span>
-                                                        <span class="filter-tag" x-show="$modelName.length > 0" x-text="$modelName.length" style="margin-left:auto"></span>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                            <div class="dropdown-menu filter-dropdown-menu" id="dropdown-menu-$modelName" role="menu">
-                                                <div>$content</div>
-                                            </div>
-                                        </div>
+            <div x-data="{ open: false, $modelName: [${filter.joinToString(",") { "'$it'" }}] }" @click.outside="open = false">
+                        <div class="dropdown $modelName" :class="{ 'is-active': open }" ${addTestId("filter-selection-$modelName")}>
+                            <div class="dropdown-trigger">
+                                <a aria-haspopup="true" aria-controls="dropdown-menu-$modelName" @click="open = !open">
+                                    <div class="input search-input has-icons-left has-icons-right">
+                                        <span class="icon is-small is-left">${icons.filter}</span>
+                                        <span class="filter-tag" x-show="$modelName.length > 0" x-text="$modelName.length" style="margin-left:auto"></span>
                                     </div>
+                                </a>
+                            </div>
+                            <div class="dropdown-menu filter-dropdown-menu" id="dropdown-menu-$modelName" role="menu">
+                                <div>$content</div>
+                            </div>
+                        </div>
+            </div>
             """.trimIndent()
 
         val sectionFilter =
