@@ -19,9 +19,11 @@ data class StickerReportRow(
     val amenity: String?,
     val boatName: String?,
     val boatType: String?,
-    val widthCm: String?,
-    val lengthCm: String?,
-    val weightKg: String?,
+    val placeWidthCm: String?,
+    val placeLengthCm: String?,
+    val boatWidthCm: String?,
+    val boatLengthCm: String?,
+    val boatWeightKg: String?,
     val registrationCode: String?,
     val otherIdentification: String?,
     val ownership: String?,
@@ -40,7 +42,7 @@ fun getStickerReport(
                 r.name, r.street_address, r.postal_code, r.post_office,
                 l.name AS harbor, CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                 bs.type AS place_type, bs.amenity, b.name AS boat_name, b.type AS boat_type,
-                b.width_cm, b.length_cm, b.weight_kg, b.registration_code, b.other_identification,
+                bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm, b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm, b.weight_kg AS boat_weight_kg, b.registration_code, b.other_identification,
                 b.ownership, bsr.start_date, bsr.end_date
             FROM boat_space_reservation bsr
                 JOIN reserver r ON r.id = bsr.reserver_id
@@ -69,6 +71,8 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             "satama",
             "paikka",
             "paikan tyyppi",
+            "paikan leveys",
+            "paikan pituus",
             "paikan varuste",
             "veneen nimi",
             "veneen tyyppi",
@@ -92,12 +96,14 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(placeTypeToText(report.placeType))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.boatName)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(boatTypeToText(report.boatType))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.weightKg)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.boatWeightKg)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.otherIdentification)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(ownershipStatusToText(report.ownership))).append(CSV_FIELD_SEPARATOR)
@@ -111,8 +117,8 @@ data class BoatSpaceReportRow(
     val harbor: String?,
     val pier: String?,
     val place: String?,
-    val widthCm: String?,
-    val lengthCm: String?,
+    val placeWidthCm: String?,
+    val placeLengthCm: String?,
     val amenity: String?,
     val name: String?,
     val municipality: String?,
@@ -146,7 +152,7 @@ fun getBoatSpaceReport(
                 l.name AS harbor,
                 bs.section AS pier,
                 CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
-                b.width_cm, b.length_cm,
+                bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm,
                 bs.amenity,
                 r.name,
                 coalesce(m.name, '') AS municipality,
@@ -183,8 +189,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "satama",
             "laituri",
             "paikka",
-            "veneen leveys",
-            "veneen pituus",
+            "paikan leveys",
+            "paikan pituus",
             "paikan varuste",
             "varaaja",
             "kotikunta",
@@ -205,13 +211,13 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(centsToEur(report.totalCents))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason))).append(CSV_FIELD_SEPARATOR)
@@ -229,8 +235,8 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "satama",
             "laituri",
             "paikka",
-            "veneen leveys",
-            "veneen pituus",
+            "paikan leveys",
+            "paikan pituus",
             "paikan varuste"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
@@ -242,8 +248,8 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
@@ -257,8 +263,8 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "satama",
             "laituri",
             "paikka",
-            "veneen leveys",
-            "veneen pituus",
+            "paikan leveys",
+            "paikan pituus",
             "paikan varuste",
             "varaaja",
             "kotikunta",
@@ -275,13 +281,13 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.widthCm)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.lengthCm)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(centsToEur(report.totalCents))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
@@ -354,8 +360,8 @@ fun localDateToText(theDate: LocalDate?): String {
     return theDate?.toString() ?: ""
 }
 
-fun centsToEur(cents: String?): String {
-    return cents?.let {
+fun intToDecimal(nr: String?): String {
+    return nr?.let {
         val centsInt = it.toIntOrNull() ?: 0
         (centsInt / 100.0).toString().replace(".", ",")
     } ?: ""
