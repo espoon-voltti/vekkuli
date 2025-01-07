@@ -81,6 +81,7 @@ class InvoiceController(
             } else {
                 "${invoiceData.firstnames} ${invoiceData.lastname}"
             }
+
         val model =
             SendInvoiceModel(
                 reservationId = reservationId,
@@ -101,7 +102,7 @@ class InvoiceController(
                 description =
                     "${t("shared.title.boatSpace.${reservation.type}")}, ${reservation.locationName} ${reservation.place}, " +
                         "${reservation.startDate.year}",
-                contactPerson = "",
+                contactPerson = invoiceData.orgRepresentative ?: "",
                 orgId = invoiceData.orgId ?: "",
             )
         return model
