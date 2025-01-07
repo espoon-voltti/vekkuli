@@ -125,6 +125,16 @@ data class BoatSpaceReportRow(
     val endDate: LocalDate?,
 )
 
+fun getFreeBoatSpaceReport(
+    jdbi: Jdbi,
+    reportDate: LocalDateTime
+): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.startDate == null }
+
+fun getReservedBoatSpaceReport(
+    jdbi: Jdbi,
+    reportDate: LocalDateTime
+): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.startDate != null }
+
 fun getBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime

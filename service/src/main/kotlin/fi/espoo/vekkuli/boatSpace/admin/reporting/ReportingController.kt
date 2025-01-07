@@ -6,6 +6,8 @@ import fi.espoo.vekkuli.config.getAuthenticatedEmployee
 import fi.espoo.vekkuli.service.boatSpaceReportToCsv
 import fi.espoo.vekkuli.service.freeBoatSpaceReportToCsv
 import fi.espoo.vekkuli.service.getBoatSpaceReport
+import fi.espoo.vekkuli.service.getFreeBoatSpaceReport
+import fi.espoo.vekkuli.service.getReservedBoatSpaceReport
 import fi.espoo.vekkuli.service.getStickerReport
 import fi.espoo.vekkuli.service.reservedBoatSpaceReportToCsv
 import fi.espoo.vekkuli.service.stickerReportToCsv
@@ -80,7 +82,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-vapaat-paikat-raportti-$todayFormatted.csv\"")
-            .body(utf8BOM + freeBoatSpaceReportToCsv(getBoatSpaceReport(jdbi, reportDate).filter { it.startDate == null }))
+            .body(utf8BOM + freeBoatSpaceReportToCsv(getFreeBoatSpaceReport(jdbi, reportDate)))
     }
 
     @GetMapping("/boat-space-report/reserved", produces = ["text/csv"])
@@ -96,7 +98,7 @@ class ReportingController(
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-varatut-paikat-raportti-$todayFormatted.csv\"")
-            .body(utf8BOM + reservedBoatSpaceReportToCsv(getBoatSpaceReport(jdbi, reportDate).filter { it.startDate != null }))
+            .body(utf8BOM + reservedBoatSpaceReportToCsv(getReservedBoatSpaceReport(jdbi, reportDate)))
     }
 
     @GetMapping
