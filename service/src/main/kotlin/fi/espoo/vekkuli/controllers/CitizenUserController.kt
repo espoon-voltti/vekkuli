@@ -271,17 +271,17 @@ class CitizenUserController(
         return reserverDetailsReservationsContainer.paymentTabContent(reserver.id)
     }
 
-    @GetMapping("/virkailija/kayttaja/{citizenId}/poikkeukset")
+    @GetMapping("/virkailija/kayttaja/{reserverId}/poikkeukset")
     @ResponseBody
     fun boatSpaceExceptionContent(
         request: HttpServletRequest,
-        @PathVariable citizenId: UUID
+        @PathVariable reserverId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EXEPTIONS")
+            logger.audit(it, "RESERVER_PROFILE_EXEPTIONS")
         }
-        //val memos = memoService.getMemos(citizenId, ReservationType.Marine)
-        return reserverDetailsReservationsContainer.exceptionsTabContent(citizenId)
+        val reserver = reserverRepository.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
+        return reserverDetailsReservationsContainer.exceptionsTabContent(reserver)
     }
 
 

@@ -633,15 +633,16 @@ class ReserverDetailsReservationsContainer(
     }
 
 
-    fun exceptionsTabContent(reserverId: UUID): String {
+    fun exceptionsTabContent(reserver: ReserverWithDetails): String {
+        val icon = if (reserver.espooRulesApplied) icons.switchOn else icons.switchOff
         // language=HTML
         return """
             <div id="tab-content" class="container block">
-              ${renderTabNavi(reserverId, SubTab.Exceptions)}
+              ${renderTabNavi(reserver.id, SubTab.Exceptions)}
               <div class="exceptions-container">
                 <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
                 <div>
-                    <span>${icons.switchOn}</span>
+                    <span>$icon</span>
                     <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>
                 </div>
               </div>              
@@ -694,7 +695,7 @@ class ReserverDetailsReservationsContainer(
                        hx-swap="outerHTML">${t("boatSpaceReservation.title.notes")}</a>
                </li>
                <li class="${tabCls(activeTab, SubTab.Exceptions)}">
-                    <a id="memos-tab-navi"
+                    <a id="exceptions-tab-navi"
                        hx-get="${getTabUrl("$citizenId/poikkeukset")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 

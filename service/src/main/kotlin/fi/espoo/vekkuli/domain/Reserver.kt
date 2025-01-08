@@ -39,4 +39,5 @@ data class ReserverWithDetails(
     val postOffice: String,
     val postOfficeSv: String,
     val postalCode: String,
+    val espooRulesApplied: Boolean,
 )
