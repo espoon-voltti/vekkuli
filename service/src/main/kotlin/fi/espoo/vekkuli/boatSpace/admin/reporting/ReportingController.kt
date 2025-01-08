@@ -3,10 +3,16 @@ package fi.espoo.vekkuli.boatSpace.admin.reporting
 import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedEmployee
-import fi.espoo.vekkuli.service.getRawReport
+import fi.espoo.vekkuli.service.boatSpaceReportToCsv
+import fi.espoo.vekkuli.service.freeBoatSpaceReportToCsv
+import fi.espoo.vekkuli.service.getBoatSpaceReport
+import fi.espoo.vekkuli.service.getFreeBoatSpaceReport
+import fi.espoo.vekkuli.service.getReservedBoatSpaceReport
 import fi.espoo.vekkuli.service.getStickerReport
-import fi.espoo.vekkuli.service.rawReportToCsv
+import fi.espoo.vekkuli.service.reservedBoatSpaceReportToCsv
 import fi.espoo.vekkuli.service.stickerReportToCsv
+import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
@@ -23,46 +29,91 @@ class ReportingController(
     private val reportingView: ReportingView
 ) {
     @Autowired
+    private lateinit var timeProvider: TimeProvider
+
+    @Autowired
     lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var layout: EmployeeLayout
 
     private val logger = KotlinLogging.logger {}
 
     val utf8BOM = "\uFEFF"
 
-    @GetMapping("/raw-report", produces = ["text/csv"])
-    @ResponseBody
-    fun rawReport(request: HttpServletRequest): ResponseEntity<String> {
-        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_RAW_REPORT")
-
-        val today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        return ResponseEntity
-            .ok()
-            .header("Content-Disposition", "attachment; filename=\"vekkuli-raakaraportti-$today.csv\"")
-            .body(rawReportToCsv(getRawReport(jdbi)))
-    }
-
     @GetMapping("/sticker-report", produces = ["text/csv"])
     @ResponseBody
-    fun stickerReport(request: HttpServletRequest): ResponseEntity<String> {
+    fun stickerReport(
+        request: HttpServletRequest,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
+    ): ResponseEntity<String> {
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_STICKER_REPORT")
 
-        val today = LocalDate.now()
-        val todayFormatted = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$todayFormatted.csv\"")
-            .body(utf8BOM + stickerReportToCsv(getStickerReport(jdbi, today)))
+            .body(utf8BOM + stickerReportToCsv(getStickerReport(jdbi, reportDate)))
+    }
+
+    @GetMapping("/boat-space-report", produces = ["text/csv"])
+    @ResponseBody
+    fun boatSpaceReport(
+        request: HttpServletRequest,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
+    ): ResponseEntity<String> {
+        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_BOAT_SPACE_REPORT")
+
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-venepaikkaraportti-$todayFormatted.csv\"")
+            .body(utf8BOM + boatSpaceReportToCsv(getBoatSpaceReport(jdbi, reportDate)))
+    }
+
+    @GetMapping("/boat-space-report/free", produces = ["text/csv"])
+    @ResponseBody
+    fun freeBoatSpaceReport(
+        request: HttpServletRequest,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
+    ): ResponseEntity<String> {
+        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_FREE_BOAT_SPACE_REPORT")
+
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-vapaat-paikat-raportti-$todayFormatted.csv\"")
+            .body(utf8BOM + freeBoatSpaceReportToCsv(getFreeBoatSpaceReport(jdbi, reportDate)))
+    }
+
+    @GetMapping("/boat-space-report/reserved", produces = ["text/csv"])
+    @ResponseBody
+    fun reservedBoatSpaceReport(
+        request: HttpServletRequest,
+        @RequestParam("reportingDate") reportingDate: LocalDate?,
+    ): ResponseEntity<String> {
+        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_RESERVED_BOAT_SPACE_REPORT")
+
+        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
+        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        return ResponseEntity
+            .ok()
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-varatut-paikat-raportti-$todayFormatted.csv\"")
+            .body(utf8BOM + reservedBoatSpaceReportToCsv(getReservedBoatSpaceReport(jdbi, reportDate)))
     }
 
     @GetMapping
     @ResponseBody
     fun getReportingView(request: HttpServletRequest) =
         ResponseEntity
-            .ok()
-            .header("Content-Type", "text/html")
-            .body(
-                reportingLayout.render(
-                    reportingView.render()
+            .ok(
+                layout.render(
+                    true,
+                    request.requestURI,
+                    reportingLayout.render(reportingView.render())
                 )
             )
 }

@@ -44,6 +44,10 @@ class EmployeeLayout(
                    href="/virkailija/venepaikat/varaukset">
                     ${t("menu.boatSpaceReservations")}
                 </a>
+                <a  class="${if (currentUri == "/virkailija/venepaikat/varaukset") "active" else ""}"
+                    href="/admin/reporting">
+                    ${t("menu.reports")}
+                </a>
                 """.trimIndent()
             } else {
                 """
