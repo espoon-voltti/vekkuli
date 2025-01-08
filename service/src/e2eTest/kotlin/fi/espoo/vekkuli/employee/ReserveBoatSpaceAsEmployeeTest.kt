@@ -509,12 +509,19 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         formPage.citizenSearchInput.pressSequentially("virtane")
         formPage.citizenSearchOption1.click()
+        assertThat(page.getByTestId("firstName")).containsText("Mikko")
+        assertThat(page.getByTestId("lastName")).containsText("Virtanen")
 
         formPage.organizationRadioButton.click()
         formPage.orgNameInput.fill("My Organization")
         formPage.orgBusinessIdInput.fill("1234567-8")
         formPage.orgPhoneNumberInput.fill("123456789")
         formPage.orgEmailInput.fill("foo@bar.com")
+
+        formPage.orgBillingNameInput.fill("Billing Name")
+        formPage.orgBillingAddressInput.fill("Billing Name")
+        formPage.orgBillingPostalCodeInput.fill("12345")
+        formPage.orgBillingCityInput.fill("12345")
 
         formPage.depthInput.fill("1.5")
         formPage.depthInput.blur()

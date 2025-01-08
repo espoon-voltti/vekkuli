@@ -70,6 +70,11 @@ class BoatSpaceFormPage(
     val orgPhoneNumberInput = page.getByTestId("orgPhone")
     val orgEmailInput = page.getByTestId("orgEmail")
 
+    val orgBillingNameInput = page.getByTestId("orgBillingName")
+    val orgBillingAddressInput = page.getByTestId("orgBillingAddress")
+    val orgBillingPostalCodeInput = page.getByTestId("orgBillingPostalCode")
+    val orgBillingCityInput = page.getByTestId("orgBillingPostOffice")
+
     val backButton = getByDataTestId("go-back")
 
     val reservationValidityIndefiniteRadioButton = getByDataTestId("radio-button-reservationValidity-Indefinite")

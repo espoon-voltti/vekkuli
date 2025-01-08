@@ -15,7 +15,7 @@ class BusinessIdInput(
         val allowedDuplicateInfo =
             """
             hx-post="/info/businessid" 
-            hx-trigger="keyup changed" 
+            hx-trigger="keyup changed delay:500ms" 
             hx-target="#orgBusinessId-server-info" 
             hx-params="orgBusinessId"
             """.trimIndent()
