@@ -7,6 +7,9 @@ A tool for tracking the monitoring and guidance cases related to compulsory educ
 ## Technical overview
 
 The application consists of
+- Frontend (React, TypeScript)
+  - Citizen UI
+  - nginx for proxying requests to API-Gateway and Service
 - API-Gateway (Node.js, TypeScript, Express)
   - handles AD SAML authentication and stores the session in a cookie and in redis
   - proxies other API requests to the service, passing the valid user session as a signed JWT token
@@ -66,6 +69,13 @@ To lint and format code
 - `yarn lint --fix`
 
 The default config uses dev login with hard coded users, but it is also possible to configure the local development environment to use some real SAML IDP.
+
+### Frontend
+
+To start dev server in http://localhost:9000
+- `cd frontend`
+- `yarn`
+- `yarn dev`
 
 ### Version updates
 
