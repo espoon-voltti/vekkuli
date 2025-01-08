@@ -70,7 +70,7 @@ class EmployeeLayout(
                 <div class="column is-one-fifth menu-container">
                     <div class='menu'>
                         <p class="menu-label">
-                            <img src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                            <img src="/virkailija/static/images/espoo_logo.png" alt="Espoo logo" />
                         </p>
                         <p class="menu-label">${t("menu.marineOutdoor")}</p>
                         <ul class="menu-list">

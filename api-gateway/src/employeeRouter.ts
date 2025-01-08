@@ -24,15 +24,17 @@ export function createEmployeeRouter(
 
   router.use(cacheControl(() => 'forbid-cache'))
 
-  router.get('/static/*splat', proxy)
-  router.get('/kuntalainen/venepaikat/*splat', proxy)
-  router.get('/kuntalainen/venepaikat', proxy)
-  router.get('/kuntalainen/partial/vapaat-paikat', proxy)
+  router.get('/virkailija/static/*splat', proxy)
   router.get('/ext/*splat', proxy)
-  router.get('/', proxy)
 
   router.use(requireAuthentication)
-  router.use(proxy)
+  router.use('/admin', proxy)
+  router.use('/boat-space', proxy)
+  router.use('/reservation', proxy)
+  router.use('/validate', proxy)
+  router.use('/venepaikka', proxy)
+  router.use('/virkailija', proxy)
+  router.use('/yhteiso', proxy)
   router.use(errorHandler)
 
   return router

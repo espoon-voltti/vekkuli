@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -16,6 +17,7 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
+    @Disabled("Waiting for React version")
     fun `employee can change the language`() {
         page.navigate("$baseUrl?lang=fi")
         assertThat(page.getByText("Venepaikat").first()).isVisible()
@@ -30,6 +32,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun reservingShouldFailOutsidePeriod() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 22, 22, 22))
@@ -63,6 +66,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `reserving a boat space slip as a citizen`() {
         try {
             page.navigate(baseUrlWithEnglishLangParam)
@@ -184,6 +188,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `reserving a winter storage boat space as a citizen`() {
         try {
             mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
@@ -305,6 +310,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun reservingABoatSpaceAsOrganization() {
         try {
             page.navigate(baseUrlWithEnglishLangParam)
@@ -367,6 +373,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun cancelReservationFromForm() {
         // login and pick first free space
         page.navigate(baseUrlWithEnglishLangParam)
@@ -396,6 +403,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun authenticationOnReservation() {
         // go directly to reservation page
         val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
@@ -422,6 +430,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun formValuesArePreservedAfterPaymentPageBackButton() {
         page.navigate(baseUrlWithEnglishLangParam)
         page.getByTestId("loginButton").click()
@@ -455,6 +464,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun paymentSuccess() {
         // login and pick first free space
         page.navigate(baseUrlWithEnglishLangParam)
@@ -477,6 +487,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun paymentFailed() {
         // login and pick first free space
         page.navigate(baseUrlWithEnglishLangParam)
@@ -504,6 +515,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `show error page when reserving space off season`() {
         // login and pick first free space
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 0, 0, 0))

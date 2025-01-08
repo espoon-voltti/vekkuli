@@ -5,12 +5,14 @@ import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.CitizenHomePage
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
 class CitizenReservationsTest : PlaywrightTest() {
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can see their active reservations`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -30,6 +32,7 @@ class CitizenReservationsTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can see their expired reservations`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)

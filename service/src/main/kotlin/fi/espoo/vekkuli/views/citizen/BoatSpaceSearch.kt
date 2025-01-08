@@ -261,7 +261,8 @@ class BoatSpaceSearch(
                                 });
                             </script>
                             <div class="mt-xl">
-                               <img src="/static/images/map-of-locations.png" alt="${t("citizenFrontPage.image.harbors.altText")}" />
+                               <img src="/virkailija/static/images/map-of-locations.png"
+                                    alt="${t("citizenFrontPage.image.harbors.altText")}" />
                             </div>
                         </div>
                         <div class="column">

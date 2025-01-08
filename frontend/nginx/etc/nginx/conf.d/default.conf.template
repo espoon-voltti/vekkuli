@@ -167,7 +167,8 @@ server {
   set $contentSecurityPolicyBase "block-all-mixed-content; upgrade-insecure-requests; default-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://o318158.ingest.sentry.io; object-src 'none'; report-uri /api/csp; report-to csp-endpoint";
   <% end %>
 
-  add_header Content-Security-Policy "${contentSecurityPolicyBase}; frame-ancestors 'none'; form-action 'self';";
+  # disabled due to HTMX using eval
+  # add_header Content-Security-Policy "${contentSecurityPolicyBase}; frame-ancestors 'none'; form-action 'self';";
 
   # Tracing
   # Return the request ID to the client to make tracing of test requests very easy
@@ -194,17 +195,7 @@ server {
     return     200;
   }
 
-  location /api {
-    include     proxy_params;
-    proxy_pass  $apiGatewayURL;
-  }
-
-  location /auth {
-    include     proxy_params;
-    proxy_pass  $apiGatewayURL;
-  }
-
-  location /virkailija {
+  location ~ ^/(admin|api|auth|boat-space|ext|reservation|validate|venepaikka|virkailija|yhteiso) {
     include     proxy_params;
     proxy_pass  $apiGatewayURL;
   }

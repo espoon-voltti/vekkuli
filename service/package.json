@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "sass": "sass --watch  --load-path=node_modules src/main/resources/public/static/sass:src/main/resources/public/static/css",
+    "sass": "sass --watch  --load-path=node_modules src/main/resources/public/virkailija/static/sass:src/main/resources/public/virkailija/static/css",
     "build": "webpack"
   },
   "author": "",

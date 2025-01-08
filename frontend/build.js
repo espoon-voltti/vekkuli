@@ -110,7 +110,18 @@ async function buildProject(config) {
 function serve() {
   const app = express()
   app.use(
-    ['/api', '/auth', '/virkailija'],
+    [
+      '/admin',
+      '/api',
+      '/auth',
+      '/boat-space',
+      '/ext',
+      '/reservation',
+      '/validate',
+      '/venepaikka',
+      '/virkailija',
+      '/yhteiso'
+    ],
     proxy(process.env.API_GATEWAY_URL ?? 'http://localhost:3000', {
       parseReqBody: false,
       proxyReqPathResolver: ({ originalUrl }) => originalUrl

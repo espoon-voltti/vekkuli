@@ -20,9 +20,8 @@ class Utils {
             when (getEnv()) {
                 EnvType.Production -> "https://varaukset.espoo.fi"
                 EnvType.Staging -> "https://staging.varaukset.espoo.fi"
-                // enable react e2e tests: EnvType.LocalDocker -> "http://frontend"
-                EnvType.LocalDocker -> "http://api-gateway:3000"
-                EnvType.Local -> System.getenv("BASE_URL") ?: "http://localhost:3000"
+                EnvType.LocalDocker -> "http://frontend"
+                EnvType.Local -> System.getenv("BASE_URL") ?: "http://localhost:9000"
             }
 
         fun getEnv(): EnvType {

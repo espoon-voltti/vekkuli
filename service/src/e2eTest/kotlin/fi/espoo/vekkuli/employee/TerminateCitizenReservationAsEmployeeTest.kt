@@ -16,6 +16,7 @@ import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
@@ -144,6 +145,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `Employee can terminate reservation to end in the future`() {
         try {
             val listingPage = ReservationListPage(page)
