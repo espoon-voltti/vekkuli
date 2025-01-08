@@ -602,6 +602,12 @@ a.active {
   border-bottom: solid 1px $grey;
 }
 
+.form-section-hack {
+  padding-top: $spacing-xl;
+  margin-top: $spacing-xl;
+  border-top: solid 1px $grey;
+}
+
 .form-section.no-bottom-border,
 .form-section:last-child {
   border-bottom: none;
