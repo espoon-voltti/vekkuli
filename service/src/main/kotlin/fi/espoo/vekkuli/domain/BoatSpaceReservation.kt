@@ -10,11 +10,16 @@ import java.util.*
 
 enum class ReservationStatus {
     Info,
-    Renewal,
     Payment,
     Confirmed,
     Cancelled,
     Invoiced
+}
+
+enum class CreationType {
+    Switch,
+    Renewal,
+    New
 }
 
 data class BoatSpace(
@@ -74,8 +79,9 @@ data class ReservationWithDependencies(
     val vatCents: Int,
     val netPriceCents: Int,
     val excludedBoatTypes: List<BoatType>?,
-    val validity: ReservationValidity? = ReservationValidity.Indefinite,
-    val renewedFromId: Int? = null,
+    val validity: ReservationValidity,
+    val originalReservationId: Int? = null,
+    val creationType: CreationType,
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)

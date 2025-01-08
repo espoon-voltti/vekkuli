@@ -86,7 +86,7 @@ class BoatSpaceRenewalService(
 
     fun updateRenewReservation(
         citizenId: UUID,
-        input: RenewalReservationInput,
+        input: ModifyReservationInput,
         reservationId: Int
     ) {
         val reservation =
@@ -111,7 +111,7 @@ class BoatSpaceRenewalService(
     fun updateReserver(
         reserverType: ReserverType?,
         reserverId: UUID,
-        input: RenewalReservationInput,
+        input: ModifyReservationInput,
     ) {
         if (reserverType == ReserverType.Organization) {
             organizationService.updateOrganization(
@@ -178,9 +178,9 @@ class BoatSpaceRenewalService(
     fun activateRenewalAndSendInvoice(
         renewedReservationId: Int,
         reserverId: UUID?,
-        renewedFromId: Int?
+        originalReservationId: Int?
     ) {
-        if (reserverId == null || renewedFromId == null) {
+        if (reserverId == null || originalReservationId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
 
@@ -190,7 +190,7 @@ class BoatSpaceRenewalService(
 
         boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
 
-        boatReservationService.markReservationEnded(renewedFromId)
+        boatReservationService.markReservationEnded(originalReservationId)
 
         invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
             ?: throw InternalError("Failed to send invoice")
@@ -199,7 +199,7 @@ class BoatSpaceRenewalService(
     fun buildBoatSpaceRenewalViewParams(
         citizenId: UUID,
         renewedReservation: ReservationWithDependencies,
-        formInput: RenewalReservationInput,
+        formInput: ModifyReservationInput,
     ): BoatSpaceRenewViewParams {
         val citizen = reserverService.getCitizen(citizenId)
         if (citizen == null || renewedReservation.reserverId != citizenId) {
@@ -288,7 +288,7 @@ class BoatSpaceRenewalService(
             reservationWithDependencies.excludedBoatTypes,
             reservationWithDependencies.section,
             reservationWithDependencies.storageType,
-            reservationWithDependencies.renewedFromId.toString(),
+            reservationWithDependencies.originalReservationId.toString(),
         )
 
     fun createRenewalReservation(
@@ -309,7 +309,7 @@ class BoatSpaceRenewalService(
     fun buildRenewForm(
         citizenId: UUID,
         renewedReservation: ReservationWithDependencies,
-        formInput: RenewalReservationInput,
+        formInput: ModifyReservationInput,
     ): String {
         val htmlParams =
             buildBoatSpaceRenewalViewParams(citizenId, renewedReservation, formInput)

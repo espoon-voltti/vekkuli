@@ -50,22 +50,6 @@ class EmployeeCardButtons(
 
     fun createInvoicePaidModalButton(
         reservation: BoatSpaceReservationDetails,
-        citizen: CitizenWithDetails
-    ): String {
-        if (reservation.status == ReservationStatus.Invoiced) {
-            return modal
-                .createOpenModalBuilder()
-                .addAttribute("id", "invoice-paid-button")
-                .setText(t("citizenDetails.markInvoicePaid"))
-                .setPath("/reservation/modal/mark-invoice-paid/${reservation.id}/${citizen.id}")
-                .setStyle(ModalButtonStyle.Primary)
-                .build()
-        }
-        return ""
-    }
-
-    fun createInvoicePaidModalButton(
-        reservation: BoatSpaceReservationDetails,
         reserverId: UUID
     ): String {
         if (reservation.status == ReservationStatus.Invoiced) {

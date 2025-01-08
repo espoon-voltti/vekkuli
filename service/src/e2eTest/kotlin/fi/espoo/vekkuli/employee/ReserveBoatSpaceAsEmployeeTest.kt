@@ -107,7 +107,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
-    fun `Employee can reserve a boat space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
+    fun `Employee can reserve a boat space on behalf of a citizen, send the invoice and set the reservation as paid on citizen page`() {
         try {
             val employeeHome = EmployeeHomePage(page)
             employeeHome.employeeLogin()
@@ -165,6 +165,49 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText(info)).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a boat space on behalf of a citizen and to set the invoice as paid`() {
+        try {
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+
+            listingPage.createReservation.click()
+
+            val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+            reservationPage.widthFilterInput.fill("3")
+            reservationPage.lengthFilterInput.fill("6")
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
+
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+            fillAndTestForm(formPage)
+            formPage.submitButton.click()
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.markAsPaid.click()
+            invoicePreviewPage.sendButton.click()
+
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("Doe John").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            assertThat(citizenDetailsPage.invoicePaidButton).isHidden()
+
+            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(timeProvider.getCurrentDate()))
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -368,7 +411,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             fillAndTestForm(formPage)
             formPage.reservationValidityFixedTermRadioButton.click()
             assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
-
             formPage.submitButton.click()
 
             val invoicePreviewPage = InvoicePreviewPage(page)

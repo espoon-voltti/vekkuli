@@ -45,7 +45,7 @@ class BoatSpaceRenewController(
     @ResponseBody
     fun boatSpaceRenewPage(
         @PathVariable originalReservationId: Int,
-        @ModelAttribute formInput: RenewalReservationInput,
+        @ModelAttribute formInput: ModifyReservationInput,
         request: HttpServletRequest,
         response: HttpServletResponse,
     ): ResponseEntity<String> {
@@ -83,13 +83,13 @@ class BoatSpaceRenewController(
                 boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, originalReservationId)
 
             val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(renewedReservation.id)
-            if (renewedReservation.reserverId == null || renewedReservation.renewedFromId == null) {
+            if (renewedReservation.reserverId == null || renewedReservation.originalReservationId == null) {
                 return badRequest("Invalid renewal reservation")
             }
             val content =
                 invoicePreview.render(
                     invoiceModel,
-                    submitUrl = "/virkailija/venepaikka/jatka/${renewedReservation.renewedFromId}/lasku",
+                    submitUrl = "/virkailija/venepaikka/jatka/${renewedReservation.originalReservationId}/lasku",
                     backUrl = getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId),
                     deleteUrl = "/virkailija/venepaikka/jatka/${renewedReservation.id}/lasku",
                     invoiceModel.orgId.isNotEmpty()
@@ -106,7 +106,7 @@ class BoatSpaceRenewController(
     @PostMapping("/kuntalainen/venepaikka/jatka/{originalReservationId}")
     fun renewBoatSpace(
         @PathVariable originalReservationId: Int,
-        @Valid @ModelAttribute("input") input: RenewalReservationInput,
+        @Valid @ModelAttribute("input") input: ModifyReservationInput,
         bindingResult: BindingResult,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
@@ -144,7 +144,7 @@ class BoatSpaceRenewController(
             boatSpaceRenewalService.activateRenewalAndSendInvoice(
                 renewedReservation.id,
                 renewedReservation.reserverId,
-                renewedReservation.renewedFromId,
+                renewedReservation.originalReservationId,
             )
             return redirectUrl(getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId))
         } catch (e: Exception) {
@@ -192,7 +192,7 @@ class BoatSpaceRenewController(
 }
 
 @ValidBoatRegistration
-data class RenewalReservationInput(
+data class ModifyReservationInput(
     @field:NotNull(message = "{validation.required}")
     private val originalReservationId: Int?,
     override val boatId: Int?,

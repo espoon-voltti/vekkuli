@@ -21,3 +21,9 @@ val endDateWithinMonthOfWinterRenewWindow: LocalDate = LocalDate.of(2025, 8, 25)
 
 val startOfSlipReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
 val startOfWinterReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 1, 12, 0, 0)
+
+val startOfSlipSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
+val startOfWinterSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 1, 12, 0, 0)
+
+val startOfSlipSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
+val startOfWinterSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)

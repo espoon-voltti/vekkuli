@@ -41,6 +41,11 @@ abstract class IntegrationTestBase {
 
     val userId: UUID = UUID.fromString("94833b54-132b-4ab8-b841-60df45809b3e")
 
+    val boatSpaceIdForSlip = 1
+    val boatSpaceIdForSlip2 = 2
+    val boatSpaceIdForWinter = 8
+    val boatSpaceIdForWinter2 = 8
+
     @MockBean
     lateinit var timeProvider: TimeProvider
 
@@ -117,8 +122,7 @@ abstract class IntegrationTestBase {
                         :weightKg, :type, :otherIdentification, :extraInformation, :ownership, :deletedAt
                     )
                     """.trimIndent()
-                )
-                .bindKotlin(boat)
+                ).bindKotlin(boat)
                 .execute()
         }
     }
@@ -136,7 +140,7 @@ abstract class IntegrationTestBase {
         val employeeId: UUID? = null,
         val actingCitizenId: UUID? = null,
         val validity: ReservationValidity = ReservationValidity.Indefinite,
-        val renewedFromId: Int? = null,
+        val originalReservationId: Int? = null,
         val terminationReason: ReservationTerminationReason? = null,
         val terminationComment: String? = null,
         val terminationTimestamp: LocalDateTime? = null,
@@ -151,16 +155,15 @@ abstract class IntegrationTestBase {
                     """
                     INSERT INTO boat_space_reservation (
                         reserver_id, boat_space_id, start_date, end_date, created, updated, 
-                        status, boat_id, employee_id, acting_citizen_id, validity, renewed_from_id, 
+                        status, boat_id, employee_id, acting_citizen_id, validity, original_reservation_id, 
                         termination_reason, termination_comment, termination_timestamp, trailer_id, storage_type
                     ) VALUES (
                         :reserverId, :boatSpaceId, :startDate, :endDate, :created, :updated, 
-                        :status, :boatId, :employeeId, :actingCitizenId, :validity, :renewedFromId, 
+                        :status, :boatId, :employeeId, :actingCitizenId, :validity, :originalReservationId, 
                         :terminationReason, :terminationComment, :terminationTimestamp, :trailerId, :storageType
                     )
                     """.trimIndent()
-                )
-                .bindKotlin(reservation)
+                ).bindKotlin(reservation)
                 .execute()
         }
     }

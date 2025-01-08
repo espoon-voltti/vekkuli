@@ -34,32 +34,42 @@ class BoatSpaceInvoiceService(
     fun createAndSendInvoice(
         invoiceData: InvoiceData,
         reserverId: UUID,
-        reservationId: Int
+        reservationId: Int,
+        markAsPaidAndSkipSending: Boolean = false
     ): Invoice? {
         val invoice = paymentService.getInvoiceForReservation(reservationId)
         if (invoice != null) {
             return invoice
         }
         val (createdInvoice) = createInvoice(invoiceData, reserverId, reservationId)
-        val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
 
-        asyncJobRunner.plan(
-            sequenceOf(
-                JobParams(
-                    AsyncJob.SendInvoiceBatch(invoiceDataWithNumber),
-                    300,
-                    Duration.ofMinutes(3),
-                    timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
+        val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
+        if (markAsPaidAndSkipSending) {
+            // Mark as paid but never send invoice
+            boatReservationService.markInvoicePaid(
+                reservationId,
+                timeProvider.getCurrentDateTime()
+            )
+        } else {
+            // Send invoice and continue with normal flow
+            asyncJobRunner.plan(
+                sequenceOf(
+                    JobParams(
+                        AsyncJob.SendInvoiceBatch(invoiceDataWithNumber),
+                        300,
+                        Duration.ofMinutes(3),
+                        timeProvider.getCurrentDateTime().toInstant(ZoneOffset.UTC)
+                    )
                 )
             )
-        )
+        }
         return createdInvoice
     }
 
     fun createInvoice(
         invoiceData: InvoiceData,
         reserverId: UUID,
-        reservationId: Int
+        reservationId: Int,
     ): Pair<Invoice, Payment> {
         val payment =
             paymentService.insertPayment(
