@@ -10,4 +10,5 @@ class InvoicePreviewPage(
     val cancelButton = page.getByTestId("cancel")
     val markAsPaid = page.getByTestId("mark-as-paid")
     val confirmModalSubmit = page.getByTestId("confirm-modal-submit")
+    val confirmModalCancel = page.getByTestId("confirm-modal-cancel")
 }

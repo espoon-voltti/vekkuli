@@ -198,6 +198,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.markAsPaid.click()
+            invoicePreviewPage.confirmModalCancel.click()
+            assertThat(invoicePreviewPage.header).isVisible()
+
+            invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
 
             val reservationListPage = ReservationListPage(page)

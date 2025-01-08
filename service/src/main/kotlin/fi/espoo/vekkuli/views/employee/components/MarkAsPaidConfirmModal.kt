@@ -13,7 +13,7 @@ class MarkAsPaidConfirmModal : BaseView() {
                 <div class="modal-underlay" @click="confirmModalOpen = false"></div>
                 <div class="modal-content">
                     <p class="block has-text-left">
-                        Oletko varma että haluat varata paikan ilman, että asiakasta laskutetaan?
+                        ${t("invoice.modal.text")}
                     </p>
                     <!-- Cancel button inside modal -->
                     <button id="confirm-modal-cancel"
@@ -27,7 +27,7 @@ class MarkAsPaidConfirmModal : BaseView() {
                             class="button is-primary"
                             type="submit"
                             @click="markAsPaidInputValue = true; confirmModalOpen = false">
-                        Kyllä, varaa laskuttamatta
+                        ${t("invoice.modal.button.confirm")}
                     </button>
                 </div>
             </div>
