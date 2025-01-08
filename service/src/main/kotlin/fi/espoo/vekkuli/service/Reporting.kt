@@ -167,7 +167,7 @@ fun getBoatSpaceReport(
                  LEFT JOIN location l ON l.id = bs.location_id
                  LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
                  LEFT JOIN reserver r ON r.id = bsr.reserver_id
-                 LEFT JOIN payment p ON p.reserver_id = r.id
+                 LEFT JOIN payment p ON p.reservation_id = bsr.id
                  LEFT JOIN boat b ON b.id = bsr.boat_id
                  LEFT JOIN municipality m ON m.code = r.municipality_code
             WHERE
