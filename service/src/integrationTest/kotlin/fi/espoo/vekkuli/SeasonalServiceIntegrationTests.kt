@@ -798,15 +798,28 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         val isReserved = seasonalService.isBoatSpaceReserved(boatSpaceId)
         assertEquals(false, isReserved, "Boat space is not reserved")
 
+        // create a first reservation for the same boat space
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
                 timeProvider,
                 this.citizenIdLeo,
-                1,
+                boatSpaceId,
                 1,
             )
         )
         val isReservedAfterReservation = seasonalService.isBoatSpaceReserved(boatSpaceId)
         assertEquals(true, isReservedAfterReservation, "Boat space is reserved")
+
+        // create a second reservation for the same boat space
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdLeo,
+                boatSpaceId,
+                2,
+            )
+        )
+        val isReservedAfterReservationSecond = seasonalService.isBoatSpaceReserved(boatSpaceId)
+        assertEquals(true, isReservedAfterReservationSecond, "Boat space is reserved")
     }
 }
