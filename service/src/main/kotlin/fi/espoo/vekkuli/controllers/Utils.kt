@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity
 enum class EnvType {
     Production,
     Staging,
+    Dev,
     Local,
     LocalDocker
 }
@@ -20,6 +21,7 @@ class Utils {
             when (getEnv()) {
                 EnvType.Production -> "https://varaukset.espoo.fi"
                 EnvType.Staging -> "https://staging.varaukset.espoo.fi"
+                EnvType.Dev -> "https://dev.varaukset.espoo.fi"
                 EnvType.LocalDocker -> "http://frontend"
                 EnvType.Local -> System.getenv("BASE_URL") ?: "http://localhost:9000"
             }
@@ -29,6 +31,7 @@ class Utils {
             return when (env) {
                 "production" -> EnvType.Production
                 "staging" -> EnvType.Staging
+                "dev" -> EnvType.Dev
                 "local" -> EnvType.Local
                 "local-docker" -> EnvType.LocalDocker
                 else -> EnvType.Local
