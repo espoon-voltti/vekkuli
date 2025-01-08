@@ -676,6 +676,13 @@ class ReserverDetailsReservationsContainer(
                        hx-trigger="click" 
                        hx-swap="outerHTML">${t("boatSpaceReservation.title.notes")}</a>
                </li>
+               <li class="${tabCls(activeTab, SubTab.Exceptions)}">
+                    <a id="memos-tab-navi"
+                       hx-get="${getTabUrl("$citizenId/exceptions")}" 
+                       hx-target="#tab-content" 
+                       hx-trigger="click" 
+                       hx-swap="outerHTML">${t("boatSpaceReservation.title.exceptions")}</a>
+               </li>
             </ul>
         </div>
         """.trimIndent()
