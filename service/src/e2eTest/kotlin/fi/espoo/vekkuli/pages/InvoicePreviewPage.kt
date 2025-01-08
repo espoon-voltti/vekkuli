@@ -8,5 +8,6 @@ class InvoicePreviewPage(
     val header = page.getByTestId("invoice-preview-header")
     val sendButton = page.getByTestId("submit")
     val cancelButton = page.getByTestId("cancel")
-    val markAsPaid = page.getByTestId("markAsPaid")
+    val markAsPaid = page.getByTestId("mark-as-paid")
+    val confirmModalSubmit = page.getByTestId("confirm-modal-submit")
 }
