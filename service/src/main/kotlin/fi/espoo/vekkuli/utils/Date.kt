@@ -20,7 +20,7 @@ abstract class TimeProvider {
     fun getCurrentDate(): LocalDate = getCurrentDateTime().toLocalDate()
 }
 
-@Profile("staging || local")
+@Profile("staging || local || dev")
 @Service
 class StagingTimeProvider(
     private val variable: VariableService,
@@ -37,7 +37,7 @@ class StagingTimeProvider(
     override fun isOverwritten(): Boolean = variable.get("current_system_staging_datetime") != null
 }
 
-@Profile("!local & !staging")
+@Profile("!local & !staging & !dev")
 @Service
 class SystemTimeProvider : TimeProvider() {
     override fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now()
