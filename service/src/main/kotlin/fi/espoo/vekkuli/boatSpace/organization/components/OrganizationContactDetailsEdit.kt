@@ -62,24 +62,33 @@ class OrganizationContactDetailsEdit(
         val addressPostalCode = formComponents.textInput("organizationDetails.title.postalCode", "postalCode", organization.postalCode)
         val addressPostOffice = formComponents.textInput("organizationDetails.title.postOffice", "postOffice", organization.postOffice)
 
-        val billingName = formComponents.textInput("organizationDetails.title.billingName", "billingName", organization.billingName)
+        val billingName =
+            formComponents.textInput(
+                "organizationDetails.title.billingName",
+                "billingName",
+                organization.billingName,
+                required = true,
+            )
         val billingStreetAddress =
             formComponents.textInput(
                 "organizationDetails.title.address",
                 "billingStreetAddress",
-                organization.billingStreetAddress
+                organization.billingStreetAddress,
+                required = true,
             )
         val billingPostalCode =
             formComponents.textInput(
                 "organizationDetails.title.postalCode",
                 "billingPostalCode",
-                organization.billingPostalCode
+                organization.billingPostalCode,
+                required = true,
             )
         val billingPostOffice =
             formComponents.textInput(
                 "organizationDetails.title.postOffice",
                 "billingPostOffice",
-                organization.billingPostOffice
+                organization.billingPostOffice,
+                required = true,
             )
 
         val editUrl = "/virkailija/yhteiso/${organization.id}/muokkaa"

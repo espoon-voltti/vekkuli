@@ -240,24 +240,28 @@ class SlipHolder(
                 "organizationDetails.title.billingName",
                 "orgBillingName",
                 org?.billingName,
+                required = true,
             )
         val billingAddressInput =
             formComponents.textInput(
                 "organizationDetails.title.billingAddress",
                 "orgBillingAddress",
                 org?.billingStreetAddress,
+                required = true,
             )
         val billingPostalCodeInput =
             formComponents.textInput(
                 "organizationDetails.title.postalCode",
                 "orgBillingPostalCode",
                 org?.billingPostalCode,
+                required = true,
             )
         val billingPostOfficeInput =
             formComponents.textInput(
                 "organizationDetails.title.postOffice",
                 "orgBillingPostOffice",
                 org?.billingPostOffice,
+                required = true,
             )
         val billingAddressFields =
             // language=HTML
