@@ -16,7 +16,7 @@ class AuthControllerAdvice : ResponseEntityExceptionHandler() {
     fun handleAuth(request: HttpServletRequest) {
         val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
 
-        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local) && !authenticatedUser.isEmployee()) {
+        if (getEnv() == EnvType.Production && !authenticatedUser.isEmployee()) {
             throw NotFound()
         }
     }

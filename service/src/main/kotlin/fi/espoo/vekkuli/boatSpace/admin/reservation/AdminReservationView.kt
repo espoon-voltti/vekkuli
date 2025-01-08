@@ -30,7 +30,7 @@ class ReservationView {
     lateinit var messageUtil: MessageUtil
 
     fun render(resultMessage: String? = null): String {
-        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local)) {
+        if (getEnv() == EnvType.Production) {
             return ""
         }
         val radios =

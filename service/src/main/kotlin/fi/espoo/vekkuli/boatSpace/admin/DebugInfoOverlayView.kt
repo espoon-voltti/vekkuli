@@ -13,7 +13,7 @@ class DebugInfoOverlayView(
     private val icons: Icons
 ) {
     fun render(isAuthenticated: Boolean): String =
-        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local) || !isAuthenticated) {
+        if (getEnv() == EnvType.Production || !isAuthenticated) {
             ""
         } else {
             // language=HTML

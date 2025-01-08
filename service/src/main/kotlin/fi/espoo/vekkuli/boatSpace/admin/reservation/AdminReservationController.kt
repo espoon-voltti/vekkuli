@@ -26,7 +26,7 @@ class AdminReservationController {
         @RequestParam reserverName: String,
         @RequestParam user: UserColumn,
     ): String {
-        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local)) {
+        if (getEnv() == EnvType.Production) {
             return ""
         }
 

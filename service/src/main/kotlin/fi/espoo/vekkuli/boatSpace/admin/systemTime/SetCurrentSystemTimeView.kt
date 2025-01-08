@@ -13,7 +13,7 @@ class SetCurrentSystemTimeView(
     private val timeProvider: TimeProvider
 ) {
     fun render(time: LocalDateTime): String {
-        if (getEnv() !in setOf(EnvType.Staging, EnvType.Local)) {
+        if (getEnv() == EnvType.Production) {
             return ""
         }
         val currentTime = timeProvider.getCurrentDateTime()
