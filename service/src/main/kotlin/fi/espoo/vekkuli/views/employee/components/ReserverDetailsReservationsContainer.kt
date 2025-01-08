@@ -667,7 +667,7 @@ class ReserverDetailsReservationsContainer(
                        hx-get="${getTabUrl("$citizenId/maksut")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
-                       hx-swap="outerHTML">${t("boatSpaceReservation.title.paymentHistory")}</a>
+                       hx-swap="outerHTML">${t("boatSpaceReservation.title.payments")}</a>
                 </li>
                <li class="${tabCls(activeTab, SubTab.Memos)}">
                     <a id="memos-tab-navi"
