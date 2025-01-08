@@ -404,15 +404,15 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         val formPage = BoatSpaceFormPage(page)
         formPage.existingCitizenSelector.click()
         assertThat(formPage.citizenSearchContainer).isVisible()
-        formPage.citizenSearchInput.pressSequentially("virtane")
+        typeText(formPage.citizenSearchInput, "virtane")
         assertThat(formPage.citizenSearchOption1).isVisible()
         assertThat(formPage.citizenSearchOption2).isVisible()
         formPage.citizenEmptyInput.click()
         assertThat(formPage.citizenSearchOption1).isHidden()
-        formPage.citizenSearchInput.pressSequentially("virtane")
+        typeText(formPage.citizenSearchInput, "virtane")
         assertThat(formPage.citizenSearchOption1).containsText("Mikko Virtanen")
         formPage.citizenSearchInput.clear()
-        formPage.citizenSearchInput.pressSequentially("010106A957V")
+        typeText(formPage.citizenSearchInput, "010106A957V")
         assertThat(formPage.citizenSearchOption1).containsText("Mikko Virtanen")
         formPage.citizenSearchOption1.click()
         assertThat(formPage.citizenSearchInput).hasValue("Mikko Virtanen")
@@ -440,7 +440,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         assertThat(formPage.citizenIdError).isVisible()
 
-        formPage.citizenSearchInput.pressSequentially("virtane")
+        "virtane".forEach { character ->
+            formPage.citizenSearchInput.press("$character")
+        }
+
         formPage.citizenSearchOption1.click()
         // Fill in the boat information
         formPage.boatTypeSelect.selectOption("Sailboat")
@@ -490,7 +493,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         formPage.submitButton.click()
 
-        formPage.citizenSearchInput.pressSequentially("virtane")
+        typeText(formPage.citizenSearchInput, "virtane")
         formPage.citizenSearchOption1.click()
 
         formPage.organizationRadioButton.click()
