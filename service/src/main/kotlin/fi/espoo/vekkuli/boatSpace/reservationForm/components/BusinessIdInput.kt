@@ -28,7 +28,7 @@ class BusinessIdInput(
                     <input
                         class="input"
                         data-required
-                        ${if (!allowDuplicateIds) """data-validate-url="/validate/businessid"""" else allowedDuplicateInfo}
+                        ${if (allowDuplicateIds) allowedDuplicateInfo else """data-validate-url="/validate/businessid"""" }
                         type="text"
                         id="orgBusinessId"
                         name="orgBusinessId" />
