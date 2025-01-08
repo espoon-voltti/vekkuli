@@ -410,6 +410,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.citizenEmptyInput.click()
         assertThat(formPage.citizenSearchOption1).isHidden()
         formPage.citizenSearchInput.pressSequentially("virtane")
+        assertThat(formPage.citizenSearchOption1).containsText("Mikko Virtanen")
+        formPage.citizenSearchInput.clear()
+        formPage.citizenSearchInput.pressSequentially("010106A957V")
+        assertThat(formPage.citizenSearchOption1).containsText("Mikko Virtanen")
         formPage.citizenSearchOption1.click()
         assertThat(formPage.citizenSearchInput).hasValue("Mikko Virtanen")
     }
