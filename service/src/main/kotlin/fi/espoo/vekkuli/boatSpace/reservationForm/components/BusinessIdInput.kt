@@ -3,11 +3,13 @@ package fi.espoo.vekkuli.boatSpace.reservationForm.components
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.components.WarningBox
 import org.springframework.stereotype.Component
 
 @Component
 class BusinessIdInput(
     private val markDownService: MarkDownService,
+    private val warningBox: WarningBox
 ) : BaseView() {
     fun render(allowDuplicateIds: Boolean): String {
         val allowedDuplicateInfo =
@@ -50,20 +52,7 @@ class BusinessIdInput(
         val firstParagraph = messageUtil.getMessage("warning.businessId1", listOf(businessId))
         val secondParagraph = markDownService.render(t("info.businessId2"))
 
-        val orgList = organizations.joinToString { "<li>${it.name}</li>" }
-        // language=HTML
-        return """
-            <div class="warning">
-                <p class="block">$firstParagraph</p>
-                <p class="block">
-                <ul class="bullets">
-                   $orgList 
-                </ul></p>
-                <p class="block">
-                    $secondParagraph
-               </p>
-            </div>
-            """.trimMargin()
+        return warningBox.render(duplicateOrgIdContent(firstParagraph, secondParagraph, organizations))
     }
 
     fun warning(
@@ -73,18 +62,22 @@ class BusinessIdInput(
         val firstParagraph = messageUtil.getMessage("warning.businessId1", listOf(businessId))
         val secondParagraph = markDownService.render(t("warning.businessId2"))
 
-        val orgList = organizations.joinToString { "<li>${it.name}</li>" }
+        return warningBox.render(duplicateOrgIdContent(firstParagraph, secondParagraph, organizations))
+    }
+
+    private fun duplicateOrgIdContent(
+        firstParagraph: String,
+        secondParagraph: String,
+        organizations: List<Organization>
+    ): String {
+        val orgList = organizations.joinToString("") { "<li>${it.name}</li>" }
         // language=HTML
         return """
-            <div class="warning">
-                <p class="block">$firstParagraph</p>
-                <p class="block"><ul>
-                   $orgList 
-                </ul></p>
-                <p class="block">
-                    $secondParagraph
-               </p>
-            </div>
-            """.trimMargin()
+            <p>$firstParagraph</p>
+            <ul class="bullets" style="margin: 12px">
+               $orgList 
+            </ul>
+            $secondParagraph
+            """.trimIndent()
     }
 }
