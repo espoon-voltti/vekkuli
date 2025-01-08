@@ -15,12 +15,12 @@ class ReserverService(
 ) {
     fun getCitizen(id: UUID): CitizenWithDetails? = reserverRepository.getCitizenById(id)
 
-    fun getCitizens(nameSearch: String?): List<CitizenWithDetails> {
-        if (nameSearch != null && isFinnishNationalId(nameSearch)) {
-            val res = reserverRepository.getCitizenByNationalId(nameSearch)
+    fun getCitizens(nameOrNationalId: String?): List<CitizenWithDetails> {
+        if (nameOrNationalId != null && isFinnishNationalId(nameOrNationalId)) {
+            val res = reserverRepository.getCitizenByNationalId(nameOrNationalId)
             return res?.let { listOf(it) } ?: emptyList()
         } else {
-            return reserverRepository.searchCitizens(nameSearch)
+            return reserverRepository.searchCitizens(nameOrNationalId)
         }
     }
 
