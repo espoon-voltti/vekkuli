@@ -632,6 +632,23 @@ class ReserverDetailsReservationsContainer(
         return result
     }
 
+
+    fun exceptionsTabContent(reserverId: UUID): String {
+        // language=HTML
+        return """
+            <div id="tab-content" class="container block">
+              ${renderTabNavi(reserverId, SubTab.Exceptions)}
+              <div class="exceptions-container">
+                <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
+                <div>
+                    <span>${icons.switchOn}</span>
+                    <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>
+                </div>
+              </div>              
+            </div>
+            """.trimIndent()
+    }
+
     fun tabCls(
         activeTab: SubTab,
         tab: SubTab,
@@ -678,7 +695,7 @@ class ReserverDetailsReservationsContainer(
                </li>
                <li class="${tabCls(activeTab, SubTab.Exceptions)}">
                     <a id="memos-tab-navi"
-                       hx-get="${getTabUrl("$citizenId/exceptions")}" 
+                       hx-get="${getTabUrl("$citizenId/poikkeukset")}" 
                        hx-target="#tab-content" 
                        hx-trigger="click" 
                        hx-swap="outerHTML">${t("boatSpaceReservation.title.exceptions")}</a>

@@ -273,4 +273,20 @@ class Icons {
         <path d="M19.9992 13.1647C20.4237 13.1647 20.7679 12.8206 20.7679 12.396C20.7679 11.9715 20.4237 11.6273 19.9992 11.6273C19.5746 11.6273 19.2305 11.9715 19.2305 12.396C19.2305 12.8206 19.5746 13.1647 19.9992 13.1647Z" stroke="#0047B6" stroke-width="2" stroke-linejoin="round"/>
         </svg>
         """.trimIndent()
+
+    val switchOff =
+        """
+            <svg width="64" height="32" viewBox="0 0 64 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.5" y="0.5" width="63" height="31" rx="15.5" fill="white" stroke="#0047B6"/>
+            <circle cx="16" cy="16" r="13" fill="#0047B6"/>
+            </svg>
+        """.trimIndent()
+
+    val switchOn =
+        """
+            <svg width="64" height="32" viewBox="0 0 64 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="64" height="32" rx="16" fill="#0047B6"/>
+            <circle cx="48" cy="16" r="13" fill="white"/>
+            </svg>
+        """.trimIndent()
 }

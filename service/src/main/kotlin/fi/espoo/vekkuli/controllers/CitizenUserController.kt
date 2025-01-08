@@ -271,6 +271,20 @@ class CitizenUserController(
         return reserverDetailsReservationsContainer.paymentTabContent(reserver.id)
     }
 
+    @GetMapping("/virkailija/kayttaja/{citizenId}/poikkeukset")
+    @ResponseBody
+    fun boatSpaceExceptionContent(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_EXEPTIONS")
+        }
+        //val memos = memoService.getMemos(citizenId, ReservationType.Marine)
+        return reserverDetailsReservationsContainer.exceptionsTabContent(citizenId)
+    }
+
+
     @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
     @ResponseBody
     fun boatEditPageForEmployee(

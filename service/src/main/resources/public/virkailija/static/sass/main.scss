@@ -670,6 +670,7 @@ tr.table-borderless th {
 .secondary-tabs.tabs.is-boxed ul {
   border-bottom: none;
   background-color: $light-gray;
+  margin-left: 0;
 }
 
 .tabs.is-boxed ul li a {
@@ -1000,5 +1001,17 @@ ul {
 
   .reports-info {
     margin-bottom: $spacing-medium;
+  }
+}
+
+.employee-page .exceptions-container {
+  .label {
+    padding-bottom: 16px;
+  }
+
+  div {
+    display: flex;
+    column-gap: 12px;
+    max-width: 400px;
   }
 }
