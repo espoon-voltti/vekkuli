@@ -278,7 +278,7 @@ class SlipHolder(
 
         // language=HTML
         return """
-            <div class="form-section-hack">
+            <div class="form-section-top-line">
                 <div class="columns">
                     <div class="column is-narrow">
                         <h4>${t("organizationDetails.title.billingInformation")}</h4>
