@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.SentMessageRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
+import fi.espoo.vekkuli.utils.FINNISH_NATIONAL_ID_REGEX
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -14,7 +15,16 @@ class ReserverService(
 ) {
     fun getCitizen(id: UUID): CitizenWithDetails? = reserverRepository.getCitizenById(id)
 
-    fun getCitizens(nameSearch: String?): List<CitizenWithDetails> = reserverRepository.searchCitizens(nameSearch)
+    fun getCitizens(nameSearch: String?): List<CitizenWithDetails> {
+        if (nameSearch != null && isFinnishNationalId(nameSearch)) {
+            val res = reserverRepository.getCitizenByNationalId(nameSearch)
+            return res?.let { listOf(it) } ?: emptyList()
+        } else {
+            return reserverRepository.searchCitizens(nameSearch)
+        }
+    }
+
+    fun isFinnishNationalId(s: String): Boolean = s.matches(FINNISH_NATIONAL_ID_REGEX.toRegex()) ?: false
 
     fun updateCitizen(params: UpdateCitizenParams): CitizenWithDetails? {
         reserverRepository.updateCitizen(params)
