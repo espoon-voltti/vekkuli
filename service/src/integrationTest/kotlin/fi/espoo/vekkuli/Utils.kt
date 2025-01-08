@@ -28,6 +28,12 @@ fun deleteAllBoats(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllBoatSpaces(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM boat_space")
+    }
+}
+
 fun deleteAllPayments(jdbi: Jdbi) {
     jdbi.withHandleUnchecked { handle ->
         handle.execute("DELETE FROM invoice")

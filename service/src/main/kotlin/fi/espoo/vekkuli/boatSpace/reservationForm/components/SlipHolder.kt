@@ -161,6 +161,7 @@ class SlipHolder(
                         $cityFieldInput
                     </div>
                 </div>
+                ${billingInformation(null)}
             </div>
             """.trimIndent()
     }
@@ -196,6 +197,7 @@ class SlipHolder(
                 "orgCity",
                 org.postOffice,
             )
+
         // language=HTML
         return """
             <div>
@@ -226,6 +228,68 @@ class SlipHolder(
                     <div class='column is-one-eight'>
                       $cityFieldInput
                     </div>
+                </div>
+                ${billingInformation(org)}
+            </div>
+            """.trimIndent()
+    }
+
+    fun billingInformation(org: Organization?): String {
+        val billingNameField =
+            formComponents.textInput(
+                "organizationDetails.title.billingName",
+                "orgBillingName",
+                org?.billingName,
+                required = true,
+            )
+        val billingAddressInput =
+            formComponents.textInput(
+                "organizationDetails.title.billingAddress",
+                "orgBillingAddress",
+                org?.billingStreetAddress,
+                required = true,
+            )
+        val billingPostalCodeInput =
+            formComponents.textInput(
+                "organizationDetails.title.postalCode",
+                "orgBillingPostalCode",
+                org?.billingPostalCode,
+                required = true,
+            )
+        val billingPostOfficeInput =
+            formComponents.textInput(
+                "organizationDetails.title.postOffice",
+                "orgBillingPostOffice",
+                org?.billingPostOffice,
+                required = true,
+            )
+        val billingAddressFields =
+            // language=HTML
+            """
+             <div class="field column is-one-fifth">
+               $billingNameField
+            </div>
+             <div class="field column is-one-fifth">
+                $billingAddressInput
+             </div>
+             <div class="field column is-one-fifth">
+                $billingPostalCodeInput
+             </div>
+             <div class="field column is-one-fifth">
+                $billingPostOfficeInput
+             </div>
+            """.trimIndent()
+
+        // language=HTML
+        return """
+            <div class="form-section-top-line">
+                <div class="columns">
+                    <div class="column is-narrow">
+                        <h4>${t("organizationDetails.title.billingInformation")}</h4>
+                    </div>
+                </div>
+                <div class="columns">
+                    $billingAddressFields
                 </div>
             </div>
             """.trimIndent()

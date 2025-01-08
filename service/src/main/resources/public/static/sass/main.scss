@@ -602,6 +602,12 @@ a.active {
   border-bottom: solid 1px $grey;
 }
 
+.form-section-top-line {
+  padding-top: $spacing-xl;
+  margin-top: $spacing-xl;
+  border-top: solid 1px $grey;
+}
+
 .form-section.no-bottom-border,
 .form-section:last-child {
   border-bottom: none;
@@ -968,4 +974,14 @@ ul {
 
 .employee-warning-filter {
   display: flex;
+}
+
+.reports-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-small;
+
+  .reports-info {
+    margin-bottom: $spacing-medium;
+  }
 }
