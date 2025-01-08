@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.components.BusinessIdInput
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
@@ -7,7 +8,6 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.citizen.ReservationConfirmation
 import jakarta.servlet.http.HttpServletRequest
@@ -30,7 +30,7 @@ class BoatFormValidator(
     private val reserverService: ReserverService,
     private val organizationService: OrganizationService,
     private val reservationConfirmation: ReservationConfirmation,
-    private val warnings: Warnings,
+    private val businessIdInput: BusinessIdInput
 ) {
     // TODO: move this to somewhere else
     @GetMapping("/$USERTYPE/venepaikka/varaus/{reservationId}/vahvistus")
@@ -77,7 +77,7 @@ class BoatFormValidator(
         val organizations = value?.let { organizationService.getOrganizationsByBusinessId(value) }
         val showBusinessIdWarning = !organizations.isNullOrEmpty()
         if (showBusinessIdWarning) {
-            val warning = warnings.businessId(organizations ?: listOf(), value ?: "")
+            val warning = businessIdInput.warning(organizations ?: listOf(), value ?: "")
             return ResponseEntity.ok(
                 mapOf(
                     "isValid" to false,
@@ -86,6 +86,21 @@ class BoatFormValidator(
             )
         }
         return ResponseEntity.ok(mapOf("isValid" to true, "message" to ""))
+    }
+
+    @PostMapping("/info/businessid")
+    fun businessIdInfo(
+        @RequestParam orgBusinessId: String,
+    ): ResponseEntity<String> {
+        val organizations = organizationService.getOrganizationsByBusinessId(orgBusinessId)
+        val showBusinessIdInfo = organizations.isNotEmpty()
+        if (showBusinessIdInfo) {
+            val info = businessIdInput.infoBox(organizations ?: listOf(), orgBusinessId ?: "")
+            return ResponseEntity.ok(
+                info
+            )
+        }
+        return ResponseEntity.ok("")
     }
 }
 

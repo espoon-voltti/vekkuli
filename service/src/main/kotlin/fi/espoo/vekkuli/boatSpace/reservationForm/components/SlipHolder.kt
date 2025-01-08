@@ -12,6 +12,7 @@ import java.util.*
 @Component
 class SlipHolder(
     private val formComponents: FormComponents,
+    private val businessIdInput: BusinessIdInput
 ) : BaseView() {
     fun organizationRadioButton(
         userType: UserType,
@@ -64,7 +65,10 @@ class SlipHolder(
         ""
     }
 
-    fun newOrganizationForm(municipalities: List<Municipality>): String {
+    fun newOrganizationForm(
+        municipalities: List<Municipality>,
+        userType: UserType
+    ): String {
         val nameInput =
             formComponents.textInput(
                 "boatApplication.organizationName",
@@ -74,27 +78,7 @@ class SlipHolder(
             )
 
         //language=HTML
-        val businessIdInput =
-            """
-            <div class="field">
-                <div class="control">
-                    <label class="label required" for="orgBusinessId" >${t("boatApplication.organizationId")}</label>
-                    <input
-                        class="input"
-                        data-required
-                        data-validate-url="/validate/businessid"
-                        type="text"
-                        id="orgBusinessId"
-                        name="orgBusinessId" />
-                   
-                    <div id="orgBusinessId-error-container">
-                        <span id="orgBusinessId-error" class="help is-danger" style="display: none">
-                            ${t("validation.required")}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            """.trimIndent()
+        val businessIdInput = businessIdInput.render(userType == UserType.EMPLOYEE)
 
         val municipalityInput =
             formComponents.select(
@@ -144,6 +128,7 @@ class SlipHolder(
                     </div>
                 </div>
                 <div id="orgBusinessId-server-error" class="block" style="display: none"></div>
+                <div id="orgBusinessId-server-info" class="block"></div>
                 <div class='columns'>
                     <div class='column is-one-quarter'>
                         $phoneInput
@@ -305,7 +290,7 @@ class SlipHolder(
     ): String {
         val organizationForm =
             if (isOrganization && selectedOrganizationId == null) {
-                newOrganizationForm(municipalities)
+                newOrganizationForm(municipalities, userType)
             } else if (isOrganization) {
                 val org = organizations.find { it.id == selectedOrganizationId }
                 if (org == null) throw IllegalArgumentException("Organization not found")
