@@ -3,13 +3,19 @@ import React from 'react'
 
 export default React.memo(function Container({
   children,
-  isBlock = false
+  isBlock = false,
+  ...rest
 }: {
   children: React.ReactNode
   isBlock?: boolean
+  'data-testid'?: string
 }) {
   const classes = classNames('container', {
     block: isBlock
   })
-  return <div className={classes}>{children}</div>
+  return (
+    <div className={classes} {...rest}>
+      {children}
+    </div>
+  )
 })

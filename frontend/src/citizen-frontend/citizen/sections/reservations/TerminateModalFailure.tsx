@@ -19,7 +19,12 @@ export default React.memo(function TerminateModalFailure({
   ]
 
   return (
-    <Modal close={close} buttons={buttons} buttonsCentered>
+    <Modal
+      close={close}
+      buttons={buttons}
+      buttonsCentered
+      data-testid="terminate-reservation-failure-modal"
+    >
       <Columns isVCentered isMultiline>
         <Column isFull textCentered>
           <Failure />

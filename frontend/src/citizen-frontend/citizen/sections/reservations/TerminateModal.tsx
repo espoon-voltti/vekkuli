@@ -47,24 +47,27 @@ export default React.memo(function TerminateModal({
       title="Olet irtisanomassa venepaikkaa:"
       close={close}
       buttons={buttons}
+      data-testid="terminate-reservation-modal"
     >
       <Columns isMultiline>
         <Column isFull>
           <ul className="no-bullets">
-            <li>
+            <li data-testid="place-identifier">
               {formatPlaceIdentifier(
                 reservation.boatSpace.section,
                 reservation.boatSpace.placeNumber,
                 reservation.boatSpace.locationName
               )}
             </li>
-            <li>
+            <li data-testid="boat-space">
               {formatDimensions({
                 width: reservation.boatSpace.width,
                 length: reservation.boatSpace.length
               })}
             </li>
-            <li>{i18n.boatSpace.amenities[reservation.boatSpace.amenity]}</li>
+            <li data-testid="amenity">
+              {i18n.boatSpace.amenities[reservation.boatSpace.amenity]}
+            </li>
           </ul>
         </Column>
         <Column isFull>

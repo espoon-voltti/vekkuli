@@ -46,7 +46,7 @@ export default React.memo(function CitizenInformation({
 
   const { phone, email } = useFormFields(form)
   return (
-    <Container isBlock>
+    <Container isBlock data-testid="citizen-information">
       <FormSection>
         <Columns>
           <Column>

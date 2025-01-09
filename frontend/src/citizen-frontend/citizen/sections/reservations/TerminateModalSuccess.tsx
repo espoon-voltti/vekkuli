@@ -13,7 +13,7 @@ export default React.memo(function TerminateModalSuccess({
 }: TerminateModalProps) {
   setTimeout(() => close(), 3000)
   return (
-    <Modal close={close}>
+    <Modal close={close} data-testid="terminate-reservation-success-modal">
       <Columns isVCentered isMultiline>
         <Column isFull textCentered>
           <Success />

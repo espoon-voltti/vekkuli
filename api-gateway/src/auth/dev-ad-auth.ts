@@ -45,6 +45,7 @@ const loginFormHandler: AsyncRequestHandler = async (req, res) => {
             <input
               type="radio"
               id="${externalId}"
+              data-testid="${externalId}"
               name="preset"
               ${idx == 0 ? 'checked' : ''}
               value="${_.escape(json)}" />

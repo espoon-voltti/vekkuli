@@ -42,7 +42,7 @@ export default React.memo(function Reservation({
   }
   return (
     <>
-      <div className="reservation-card">
+      <div className="reservation-card" data-testid="reservation-list-card">
         <Columns isVCentered>
           <Column isNarrow>
             <h4>
@@ -64,8 +64,9 @@ export default React.memo(function Reservation({
             />
             <NumberField
               label="Leveys (m)"
-              value={formatNumber(boatSpace.width)}
+              value={formatNumber(boatSpace.width, 2)}
               readonly={true}
+              precision={2}
             />
             <TextField
               label="Varaus tehty"
@@ -84,8 +85,9 @@ export default React.memo(function Reservation({
             />
             <NumberField
               label="Pituus (m)"
-              value={formatNumber(boatSpace.length)}
+              value={formatNumber(boatSpace.length, 2)}
               readonly={true}
+              precision={2}
             />
             <TextField
               label="Varaus voimassa"

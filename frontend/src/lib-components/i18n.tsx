@@ -106,6 +106,7 @@ export interface Translations {
     positiveNumber: string
     certify: string
     terms: string
+    validDate: string
   }
 }
 

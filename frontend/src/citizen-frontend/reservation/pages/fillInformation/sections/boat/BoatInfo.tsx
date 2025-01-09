@@ -58,6 +58,7 @@ export default React.memo(function Boat({
             min={0}
             max={9999999}
             required={true}
+            precision={2}
           />
         </div>
         <div className="column is-one-quarter">
@@ -70,6 +71,7 @@ export default React.memo(function Boat({
             min={0}
             max={9999999}
             required={true}
+            precision={2}
           />
         </div>
       </div>
@@ -84,6 +86,7 @@ export default React.memo(function Boat({
             min={0}
             max={9999999}
             required={true}
+            precision={2}
           />
         </div>
         <div className="column is-one-quarter">
