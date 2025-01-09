@@ -113,5 +113,5 @@ fun CitizenWithDetails.toReserverDetails() =
         postalCode = postalCode,
         name = fullName,
         type = ReserverType.Citizen,
-        espooRulesApplied = espooRulesApplied,
+        espooRulesApplied = espooRulesApplied
     )

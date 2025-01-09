@@ -675,7 +675,7 @@ class ReserverDetailsReservationsContainer(
         activeTab: SubTab,
     ): String {
         val reserverId = reserver.id
-        val attentionClass = "attention ${if (reserver.espooRulesApplied) " on" else ""}"
+        val attentionClass = "attention ${if (reserver.hasExceptions()) " on" else ""}"
         // language=HTML
         return """
             <div class="tabs is-boxed secondary-tabs">
