@@ -23,7 +23,7 @@ class EmployeeCardButtons(
         return """
             <div class="buttons">
                 ${createRenewPlaceButton(reservation)}
-                ${createInvoicePaidModalButton(reservation, reserverId)}
+                ${createUpdatePaymentStatusModalButton(reservation, reserverId)}
                 ${createTerminateReservationModalButton(reservation)}
             </div>
             """.trimIndent()
@@ -48,20 +48,17 @@ class EmployeeCardButtons(
             """.trimIndent()
     }
 
-    fun createInvoicePaidModalButton(
+    fun createUpdatePaymentStatusModalButton(
         reservation: BoatSpaceReservationDetails,
         reserverId: UUID
     ): String {
-        if (reservation.status == ReservationStatus.Invoiced) {
-            return modal
-                .createOpenModalBuilder()
-                .addAttribute("id", "invoice-paid-button")
-                .setText(t("citizenDetails.markInvoicePaid"))
-                .setPath("/reservation/modal/mark-invoice-paid/${reservation.id}/$reserverId")
-                .setStyle(ModalButtonStyle.Primary)
-                .build()
-        }
-        return ""
+        return modal
+            .createOpenModalBuilder()
+            .addAttribute("id", "update-payment-status-button")
+            .setText(t("boatSpaceReservation.button.updateReservationStatus"))
+            .setPath("/reservation/modal/update-payment-status/${reservation.id}/$reserverId")
+            .setStyle(ModalButtonStyle.Primary)
+            .build()
     }
 
     fun createTerminateReservationModalButton(reservation: BoatSpaceReservationDetails): String =
