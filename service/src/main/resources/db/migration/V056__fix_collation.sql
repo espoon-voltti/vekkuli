@@ -1,4 +1,4 @@
-CREATE COLLATION fi_fi_icu (provider = icu, locale = 'fi-FI', deterministic = false);
+CREATE COLLATION fi_fi_icu (provider = icu, locale = 'fi-FI', deterministic = true);
 
 ALTER TABLE reserver
     ALTER COLUMN name TYPE text COLLATE fi_fi_icu,
