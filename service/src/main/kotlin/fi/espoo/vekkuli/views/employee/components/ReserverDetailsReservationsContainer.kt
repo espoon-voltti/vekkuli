@@ -642,10 +642,10 @@ class ReserverDetailsReservationsContainer(
                     hx-trigger="click"
                     hx-target="#espooRulesApplied"
                     hx-swap="outerHTML"
-                >
-                <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>
+                >                
+                <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>                
             </label>
-             """.trimIndent()
+            """.trimIndent()
     }
 
     fun exceptionsTabContent(reserver: ReserverWithDetails): String {
@@ -660,7 +660,6 @@ class ReserverDetailsReservationsContainer(
             </div>
             """.trimIndent()
     }
-
 
     fun tabCls(
         activeTab: SubTab,

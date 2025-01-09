@@ -295,9 +295,7 @@ class CitizenUserController(
         }
         val reserver = reserverService.toggleEspooRulesApplied(reserverId) ?: throw IllegalArgumentException("Reserver not found")
         return reserverDetailsReservationsContainer.espooRulesAppliedContent(reserver)
-
     }
-
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
     @ResponseBody
