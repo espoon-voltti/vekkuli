@@ -284,6 +284,20 @@ class CitizenUserController(
         return reserverDetailsReservationsContainer.exceptionsTabContent(reserver)
     }
 
+    @PatchMapping("/virkailija/kayttaja/{reserverId}/poikkeukset/toggle-espoo-rules-applied")
+    @ResponseBody
+    fun boatSpaceEspooRulesAppliedPatch(
+        request: HttpServletRequest,
+        @PathVariable reserverId: UUID,
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE")
+        }
+        val reserver = reserverService.toggleEspooRulesApplied(reserverId) ?: throw IllegalArgumentException("Reserver not found")
+        return reserverDetailsReservationsContainer.espooRulesAppliedContent(reserver)
+
+    }
+
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
     @ResponseBody
