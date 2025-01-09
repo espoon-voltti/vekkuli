@@ -4,7 +4,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 /node_modules/
-/src/main/resources/public/static/css/
+/src/main/resources/public/virkailija/static/css/
 ### STS ###
 .apt_generated
 .classpath

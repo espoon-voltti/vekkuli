@@ -55,7 +55,7 @@ interface BoatSpaceReservationRepository {
 
     fun insertBoatSpaceReservation(
         reserverId: UUID,
-        actingUserId: UUID?,
+        actingCitizenId: UUID?,
         boatSpaceId: Int,
         creationType: CreationType,
         startDate: LocalDate,

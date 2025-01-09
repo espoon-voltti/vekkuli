@@ -1,0 +1,122 @@
+import HelsinkiDateTime from 'lib-common/date/helsinki-date-time'
+import LocalDate from 'lib-common/date/local-date'
+import { uri } from 'lib-common/uri'
+
+import { client } from '../api-client'
+import {
+  BoatSpaceReservation,
+  BoatSpaceReservationResponse,
+  FillBoatSpaceReservationInput,
+  Municipality,
+  PaymentInformationResponse
+} from '../api-types/reservation'
+
+export async function reserveSpace(
+  spaceId: number
+): Promise<BoatSpaceReservation> {
+  const { data: json } = await client.request<BoatSpaceReservation>({
+    url: uri`/reserve/${spaceId}`.toString(),
+    method: 'POST'
+  })
+  return json
+}
+
+export async function unfinishedReservation(): Promise<BoatSpaceReservation> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse>({
+    url: uri`/unfinished-reservation`.toString(),
+    method: 'GET'
+  })
+  return deserializeJsonBoatSpaceReservationResponse(json)
+}
+
+export async function unfinishedReservationExpiration(): Promise<number> {
+  const { data: json } = await client.request<number>({
+    url: uri`/unfinished-reservation-expiration`.toString(),
+    method: 'GET'
+  })
+  return json
+}
+
+export async function getReservation(
+  reservationId: number
+): Promise<BoatSpaceReservation> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse>({
+    url: uri`/reservation/${reservationId}`.toString(),
+    method: 'GET'
+  })
+  return deserializeJsonBoatSpaceReservationResponse(json)
+}
+
+export async function municipalities(): Promise<Municipality[]> {
+  const { data: json } = await client.request<Municipality[]>({
+    url: uri`/municipalities`.toString(),
+    method: 'GET'
+  })
+
+  return json
+}
+
+export async function fillReservation(
+  reservationId: number,
+  input: FillBoatSpaceReservationInput
+): Promise<void> {
+  await client.request<BoatSpaceReservation>({
+    url: uri`/reservation/${reservationId}/fill`.toString(),
+    method: 'POST',
+    data: input
+  })
+}
+
+export async function cancelReservation(reservationId: number): Promise<void> {
+  await client.request<BoatSpaceReservation>({
+    url: uri`/reservation/${reservationId}/cancel`.toString(),
+    method: 'DELETE'
+  })
+}
+
+export async function terminateReservation(
+  reservationId: number
+): Promise<void> {
+  await client.request<BoatSpaceReservation>({
+    url: uri`/reservation/${reservationId}/terminate`.toString(),
+    method: 'POST'
+  })
+}
+
+export async function paymentInformation(
+  reservationId: number
+): Promise<PaymentInformationResponse> {
+  const { data } = await client.request<PaymentInformationResponse>({
+    url: uri`/reservation/${reservationId}/payment-information`.toString(),
+    method: 'POST'
+  })
+
+  return data
+}
+
+export function deserializeJsonBoatSpaceReservationResponse(
+  json: BoatSpaceReservationResponse
+): BoatSpaceReservation {
+  return {
+    id: json.id,
+    citizen: {
+      ...json.citizen,
+      birthDate: LocalDate.parseIso(json.citizen.birthDate)
+    },
+    status: json.status,
+    created: HelsinkiDateTime.parseIso(json.created),
+    startDate: LocalDate.parseIso(json.startDate),
+    endDate: LocalDate.parseIso(json.endDate),
+    validity: json.validity,
+    boatSpace: json.boatSpace,
+    paymentDate: json.paymentDate
+      ? LocalDate.parseIso(json.paymentDate)
+      : undefined,
+    totalPrice: json.totalPrice,
+    vatValue: json.vatValue,
+    netPrice: json.netPrice,
+    boat: json.boat,
+    storageType: json.storageType ?? undefined,
+    trailer: json.trailer ?? undefined
+  }
+}

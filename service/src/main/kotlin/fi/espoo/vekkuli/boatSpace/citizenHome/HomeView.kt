@@ -23,7 +23,8 @@ class HomeView(
                              ${renderInfoColumn(icons.infoCircle, "citizenFrontPage.info.readMore")}
                          </div>
                          <div class="column is-align-content-center">
-                             <img src="/static/images/map-of-locations.png" alt="${t("citizenFrontPage.image.harbors.altText")}" />
+                             <img src="/virkailija/static/images/map-of-locations.png"
+                                  alt="${t("citizenFrontPage.image.harbors.altText")}" />
                          </div>
                      </div>
                      <div class="block">

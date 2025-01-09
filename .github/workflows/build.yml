@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024-2025 City of Espoo
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 name: Build
 on:
   - push
@@ -26,10 +30,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Reuse Compliance Check
-        uses: fsfe/reuse-action@v4
+        uses: fsfe/reuse-action@v5
 
-  api-gateway:
+  dockerize:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: vekkuli/frontend
+            path: frontend
+          - name: vekkuli/api-gateway
+            path: api-gateway
 
     steps:
       - uses: actions/checkout@v4
@@ -38,13 +50,13 @@ jobs:
         uses: espoon-voltti/voltti-actions/docker-build-push@master
         id: build
         with:
-          path: api-gateway
+          path: ${{ matrix.path }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE }}
           AWS_REGION: ${{ env.AWS_REGION }}
           registry: ${{ env.ECR_REGISTRY }}
-          name: vekkuli/api-gateway
+          name: ${{ matrix.name }}
           build-args: |
             build=${{ github.run_number }}
             commit=${{ github.sha }}
@@ -54,13 +66,13 @@ jobs:
         id: test
         with:
           push: false
-          path: api-gateway
+          path: ${{ matrix.path }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE }}
           AWS_REGION: ${{ env.AWS_REGION }}
           registry: ${{ env.ECR_REGISTRY }}
-          name: vekkuli/api-gateway-test
+          name: ${{ matrix.name }}-test
           build-args: |
             build=${{ github.run_number }}
             commit=${{ github.sha }}
@@ -168,7 +180,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - service
-      - api-gateway
+      - dockerize
     env:
       BUILD: "false"
       TAG: "${{ github.event.pull_request.head.sha || github.sha }}"
@@ -293,7 +305,7 @@ jobs:
     needs:
       - test
       - e2e-test
-      - api-gateway
+      - dockerize
     strategy:
       fail-fast: false
       matrix:
@@ -315,7 +327,7 @@ jobs:
 
       - name: Retag
         run: |
-          for repository in service api-gateway; do
+          for repository in service api-gateway frontend; do
             MANIFEST=$(aws ecr batch-get-image --repository-name "vekkuli/$repository" --image-ids imageTag="${{ github.event.pull_request.head.sha || github.sha }}" --output json | jq --raw-output --join-output '.images[0].imageManifest')
             aws ecr put-image --repository-name "vekkuli/$repository" --image-tag "env-${{ matrix.environment }}" --image-manifest "$MANIFEST"
           done

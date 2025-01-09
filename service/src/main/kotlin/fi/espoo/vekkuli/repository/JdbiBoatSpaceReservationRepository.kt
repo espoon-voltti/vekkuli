@@ -20,6 +20,7 @@ import java.util.*
 data class BoatSpaceReservationDetailsRow(
     val id: Int,
     val created: LocalDateTime,
+    val updated: LocalDateTime,
     val priceCents: Int,
     val vatCents: Int,
     val netPriceCents: Int,
@@ -34,6 +35,7 @@ data class BoatSpaceReservationDetailsRow(
     val terminationTimestamp: LocalDateTime?,
     val reserverType: ReserverType,
     val reserverId: UUID,
+    val actingCitizenId: UUID?,
     val name: String,
     val email: String,
     val phone: String,
@@ -81,7 +83,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     val endDate: LocalDate,
     val status: ReservationStatus,
     val reserverId: UUID,
-    val actingUserId: UUID?,
+    val actingCitizenId: UUID?,
     val reserverType: ReserverType,
     val name: String,
     val email: String,
@@ -270,6 +272,7 @@ class JdbiBoatSpaceReservationRepository(
             BoatSpaceReservationDetails(
                 id = dbResult.id,
                 created = dbResult.created,
+                updated = dbResult.updated,
                 priceCents = dbResult.priceCents,
                 vatCents = dbResult.vatCents,
                 netPriceCents = dbResult.netPriceCents,
@@ -282,6 +285,7 @@ class JdbiBoatSpaceReservationRepository(
                 terminationTimestamp = dbResult.terminationTimestamp,
                 reserverType = dbResult.reserverType,
                 reserverId = dbResult.reserverId,
+                actingCitizenId = dbResult.actingCitizenId,
                 name = dbResult.name,
                 email = dbResult.email,
                 phone = dbResult.phone,
@@ -339,12 +343,13 @@ class JdbiBoatSpaceReservationRepository(
                     ${buildSqlSelectFromJoinForReservationWithDependencies()}
                     WHERE bsr.acting_citizen_id = :id
                         AND bsr.status IN ('Info', 'Payment') 
-                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
+                        AND :currentTime BETWEEN bsr.created AND bsr.created + make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
+
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
@@ -391,6 +396,7 @@ class JdbiBoatSpaceReservationRepository(
                 BoatSpaceReservationDetails(
                     id = it.id,
                     created = it.created,
+                    updated = it.updated,
                     priceCents = it.priceCents,
                     vatCents = it.vatCents,
                     netPriceCents = it.netPriceCents,
@@ -403,6 +409,7 @@ class JdbiBoatSpaceReservationRepository(
                     terminationTimestamp = it.terminationTimestamp,
                     reserverType = it.reserverType,
                     reserverId = it.reserverId,
+                    actingCitizenId = it.actingCitizenId,
                     name = it.name,
                     email = it.email,
                     phone = it.phone,
@@ -562,6 +569,7 @@ class JdbiBoatSpaceReservationRepository(
                 BoatSpaceReservationDetails(
                     id = it.id,
                     created = it.created,
+                    updated = it.updated,
                     priceCents = it.priceCents,
                     vatCents = it.vatCents,
                     netPriceCents = it.netPriceCents,
@@ -574,6 +582,7 @@ class JdbiBoatSpaceReservationRepository(
                     terminationTimestamp = it.terminationTimestamp,
                     reserverType = it.reserverType,
                     reserverId = it.reserverId,
+                    actingCitizenId = it.actingCitizenId,
                     name = it.name,
                     email = it.email,
                     phone = it.phone,
@@ -731,7 +740,7 @@ class JdbiBoatSpaceReservationRepository(
                             },
                         trailer = null,
                         warnings = (warnings.mapNotNull { it.warning }).toSet(),
-                        actingUserId = null,
+                        actingCitizenId = row.actingCitizenId,
                         reserverType = row.reserverType,
                         municipalityCode = row.municipalityCode,
                         municipalityName = row.municipalityName,
@@ -744,7 +753,7 @@ class JdbiBoatSpaceReservationRepository(
 
     override fun insertBoatSpaceReservation(
         reserverId: UUID,
-        actingUserId: UUID?,
+        actingCitizenId: UUID?,
         boatSpaceId: Int,
         creationType: CreationType,
         startDate: LocalDate,
@@ -755,12 +764,12 @@ class JdbiBoatSpaceReservationRepository(
                 handle.createQuery(
                     """
                     INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type)
-                    VALUES (:reserverId, :actingUserId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType)
+                    VALUES (:reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType)
                     RETURNING *
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("actingUserId", actingUserId)
+            query.bind("actingCitizenId", actingCitizenId)
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
@@ -995,6 +1004,7 @@ class JdbiBoatSpaceReservationRepository(
         bsr.termination_comment,
         bsr.termination_timestamp,
         bsr.storage_type,
+        bsr.acting_citizen_id,
         p.id as payment_id,
         p.paid as payment_date,
         r.id as reserver_id,

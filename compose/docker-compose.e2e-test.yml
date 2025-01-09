@@ -1,6 +1,20 @@
 version: '3.5'
 
 services:
+  frontend:
+    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/frontend:${TAG:-master}
+    build:
+      context: ../frontend/
+    ports:
+      - "9000:80"
+    environment:
+      RESOLVER: "127.0.0.11 ipv6=off"
+      API_GATEWAY_URL: http://api-gateway:3000
+      RATE_LIMIT_CIDR_WHITELIST: "0.0.0.0/0;::/0"
+      HTTP_SCHEME: http
+    depends_on:
+      - api-gateway
+
   api-gateway:
     image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/api-gateway:${TAG:-master}
     build:
@@ -41,4 +55,5 @@ services:
     depends_on:
       - vekkuli-db
       - api-gateway
+      - frontend
       - redis

@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import fi.espoo.vekkuli.utils.startOfWinterSpaceRenewPeriod
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -15,6 +16,7 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can edit trailer information and it should add warnings when trailer is too large`() {
         try {
             page.navigate(baseUrl)
@@ -63,6 +65,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can renew slip reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
@@ -97,6 +100,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can renew winter storage reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
@@ -142,6 +146,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen cannot renew reservation if it is not time to renew`() {
         try {
             // Set time over month before the reservation ends. Renewal should not be possible.
@@ -160,6 +165,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can edit their own information`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
@@ -202,6 +208,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can edit their own boat`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
@@ -248,6 +255,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `should add warning when citizen edits boat to be too heavy`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()

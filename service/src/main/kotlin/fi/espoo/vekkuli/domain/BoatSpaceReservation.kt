@@ -43,9 +43,10 @@ data class BoatSpaceReservation(
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: ReservationStatus,
-    val actingUserId: UUID?,
+    val actingCitizenId: UUID?,
     val reserverId: UUID?,
-    val validity: ReservationValidity
+    val validity: ReservationValidity,
+    val paymentDate: LocalDate?,
 )
 
 data class ReservationWithDependencies(
@@ -58,7 +59,7 @@ data class ReservationWithDependencies(
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: ReservationStatus,
-    val actingUserId: UUID?,
+    val actingCitizenId: UUID?,
     val reserverId: UUID?,
     val employeeId: UUID?,
     val reserverType: ReserverType?,
@@ -98,7 +99,7 @@ data class BoatSpaceReservationItem(
     val endDate: LocalDate,
     val status: ReservationStatus,
     val reserverId: UUID,
-    val actingUserId: UUID?,
+    val actingCitizenId: UUID?,
     val reserverType: ReserverType,
     val name: String,
     val email: String,
@@ -167,3 +168,18 @@ data class BoatSpaceReservationFilter(
 
     fun hasValidity(id: ReservationValidity): Boolean = validity.contains(id)
 }
+
+fun ReservationWithDependencies.toBoatSpaceReservation() =
+    BoatSpaceReservation(
+        id = id,
+        boatSpaceId = boatSpaceId,
+        startDate = startDate,
+        endDate = endDate,
+        created = created,
+        updated = updated,
+        status = status,
+        actingCitizenId = actingCitizenId,
+        reserverId = reserverId,
+        validity = validity ?: ReservationValidity.Indefinite,
+        paymentDate = null
+    )

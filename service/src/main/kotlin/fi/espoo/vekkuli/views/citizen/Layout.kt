@@ -90,7 +90,7 @@ class Layout(
             <nav role="navigation" aria-label="main navigation">
                 <div class="nav-row">
                     <div class='columns'>
-                        <img class="logo" src="/static/images/espoo_logo.png" alt="Espoo logo" />
+                        <img class="logo" src="/virkailija/static/images/espoo_logo.png" alt="Espoo logo" />
                         <h1>${t("home.title")}</h1>
                     </div>
                     <div class="columns">

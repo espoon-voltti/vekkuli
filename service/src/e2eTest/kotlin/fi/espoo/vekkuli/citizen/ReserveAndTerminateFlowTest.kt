@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.*
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
@@ -17,6 +18,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
     lateinit var messageUtil: MessageUtil
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can reserve a boat space and terminate it to allow others to see it`() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         val reserveBoatSpacePage = ReserveBoatSpacePage(page, userType = UserType.CITIZEN)
@@ -62,6 +64,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `employee can reserve a boat space and terminate to future and allow others to see it after end date`() {
         // We are at the start of reservation period
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)

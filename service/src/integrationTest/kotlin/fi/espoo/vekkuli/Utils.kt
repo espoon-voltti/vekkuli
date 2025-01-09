@@ -41,6 +41,13 @@ fun deleteAllPayments(jdbi: Jdbi) {
     }
 }
 
+fun deleteAllOrganizations(jdbi: Jdbi) {
+    jdbi.withHandleUnchecked { handle ->
+        handle.execute("DELETE FROM organization")
+    }
+    deleteAllOrganizationMembers(jdbi)
+}
+
 fun deleteAllOrganizationMembers(jdbi: Jdbi) {
     jdbi.withHandleUnchecked { handle ->
         handle.execute("DELETE FROM organization_member")

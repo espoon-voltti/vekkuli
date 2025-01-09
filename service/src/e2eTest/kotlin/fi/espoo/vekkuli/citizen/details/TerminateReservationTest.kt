@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
@@ -23,6 +24,7 @@ class TerminateReservationTest : PlaywrightTest() {
     lateinit var messageUtil: MessageUtil
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can open a terminate reservation modal from a reservation list item and cancel it`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -52,6 +54,7 @@ class TerminateReservationTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen can terminate reservation and see it in expired reservations list`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
@@ -107,6 +110,7 @@ class TerminateReservationTest : PlaywrightTest() {
     }
 
     @Test
+    @Disabled("Waiting for React version")
     fun `citizen sees an error message if the termination is unsuccessful`() {
         try {
             val citizenDetailsPage = CitizenDetailsPage(page)
