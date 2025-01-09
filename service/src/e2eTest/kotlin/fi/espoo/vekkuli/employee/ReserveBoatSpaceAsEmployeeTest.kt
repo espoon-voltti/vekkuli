@@ -483,9 +483,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         assertThat(formPage.citizenIdError).isVisible()
 
-        "virtane".forEach { character ->
-            formPage.citizenSearchInput.press("$character")
-        }
+        typeText(formPage.citizenSearchInput, "virtane")
 
         formPage.citizenSearchOption1.click()
         assertThat(page.getByTestId("firstName")).containsText("Mikko")
