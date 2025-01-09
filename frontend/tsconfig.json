@@ -3,12 +3,5 @@
   "compilerOptions": {
     "baseUrl": "src",
     "noEmit": true
-  },
-  "references": [
-    { "path": "./src/citizen-frontend" },
-    { "path": "./src/lib-common" },
-    { "path": "./src/lib-icons" },
-    { "path": "./src/lib-customizations" },
-    { "path": "./eslint-plugin" }
-  ]
+  }
 }
