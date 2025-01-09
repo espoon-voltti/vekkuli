@@ -1,67 +1,23 @@
-package fi.espoo.vekkuli.boatSpace.renewal
+package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 
-import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
-class RenewalReservationForApplicationForm(
-    id: Int,
-    reserverId: UUID?,
-    boatId: Int?,
-    lengthCm: Int,
-    widthCm: Int,
-    amenity: BoatSpaceAmenity,
-    boatSpaceType: BoatSpaceType,
-    place: String,
-    locationName: String?,
-    validity: ReservationValidity?,
-    startDate: LocalDate,
-    endDate: LocalDate,
-    priceCents: Int,
-    vatCents: Int,
-    netPriceCents: Int,
-    created: LocalDateTime,
-    excludedBoatTypes: List<BoatType>?,
-    section: String,
-    storageType: StorageType?,
-    val renewdFromReservationId: String
-) : ReservationForApplicationForm(
-        id,
-        reserverId,
-        boatId,
-        lengthCm,
-        widthCm,
-        amenity,
-        boatSpaceType,
-        place,
-        locationName,
-        validity,
-        startDate,
-        endDate,
-        priceCents,
-        vatCents,
-        netPriceCents,
-        created,
-        excludedBoatTypes,
-        section,
-        storageType
-    )
-
 @Repository
-class BoatSpaceRenewalRepository(
+class BoatSpaceSwitchRepository(
     private val jdbi: Jdbi,
     private val timeProvider: TimeProvider
 ) {
-    fun getRenewalReservationForCitizen(
+    fun getSwitchReservationForCitizen(
         id: UUID,
         reservationId: Int
     ): ReservationWithDependencies? =
@@ -70,8 +26,8 @@ class BoatSpaceRenewalRepository(
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Renewal' 
-                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
+                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND bsr.status = 'Info'
+                    AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
             query.bind("id", id)
@@ -81,30 +37,34 @@ class BoatSpaceRenewalRepository(
             query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
         }
 
-    fun getRenewalReservationForEmployee(
-        id: UUID,
-        reservationId: Int
+    fun getSwitchReservationForEmployee(
+        employeeId: UUID,
+        originalReservationId: Int
     ): ReservationWithDependencies? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
                     ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.employee_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Renewal' 
+                    WHERE bsr.employee_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND 
+                    bsr.status = 'Info' 
                         AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
                     """.trimIndent()
                 )
-            query.bind("id", id)
+            query.bind("id", employeeId)
             query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.bind("reservationId", reservationId)
+            query.bind("reservationId", originalReservationId)
             query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
         }
 
-    fun createRenewalRow(
-        reservationId: Int,
+    fun createSwitchRow(
+        originalReservationId: Int,
         userType: UserType,
-        userId: UUID
+        userId: UUID,
+        boatSpaceId: Int,
+        endDate: LocalDate,
+        validity: ReservationValidity
     ): Int =
         jdbi.withHandleUnchecked { handle ->
             handle
@@ -118,38 +78,41 @@ class BoatSpaceRenewalRepository(
                       start_date, 
                       end_date, 
                       status, 
-                      creation_type,
                       validity, 
                       boat_id, 
                       employee_id,
                       original_reservation_id,
                       storage_type,
-                      trailer_id
+                      trailer_id,
+                      creation_type
                     )
                     (
                       SELECT :created as created,
                              reserver_id, 
                              :actingCitizenId as acting_citizen_id, 
-                             boat_space_id, 
+                             :boatSpaceId as boat_space_id, 
                              start_date, 
-                             (end_date + INTERVAL '1 year') as end_date, 
+                             :endDate as end_date, 
                              'Info' as status, 
-                             'Renewal' as creation_type, 
-                             validity, 
+                             :validity as validity, 
                              boat_id, 
                              :employeeId as employee_id,
                              id as original_reservation_id,
                              storage_type,
-                             trailer_id
+                             trailer_id,
+                             'Switch' as creation_type
                       FROM boat_space_reservation
                       WHERE id = :reservationId
                     )
                     RETURNING id
                     """.trimIndent()
                 ).bind("created", timeProvider.getCurrentDateTime())
-                .bind("reservationId", reservationId)
+                .bind("reservationId", originalReservationId)
                 .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
                 .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
+                .bind("boatSpaceId", boatSpaceId)
+                .bind("endDate", endDate)
+                .bind("validity", validity)
                 .mapTo<Int>()
                 .one()
         }

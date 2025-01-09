@@ -5,6 +5,7 @@ enum class ReservationTerminationReason {
     InvalidOwner,
     RuleViolation,
     PaymentViolation,
+    Switch,
     Other,
 }
 

@@ -116,6 +116,17 @@ class FormComponents {
                 """.trimIndent()
         )
 
+    fun checkBox(
+        text: String,
+        id: String,
+        required: Boolean? = false
+    ) = """
+        <label class="checkbox">
+                    <input data-required=$required name="$id" id="$id" type="checkbox"/>
+                    <span>$text</span>
+                </label>
+        """.trimIndent()
+
     fun select(
         labelKey: String,
         id: String,

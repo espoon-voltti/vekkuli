@@ -43,7 +43,7 @@ data class BoatSpaceReservationDetails(
     val excludedBoatTypes: List<BoatType>?,
     val canSwitch: Boolean = false,
     val canRenew: Boolean = false,
-    val renewedFromId: Int? = null,
+    val originalReservationId: Int? = null,
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
 ) {

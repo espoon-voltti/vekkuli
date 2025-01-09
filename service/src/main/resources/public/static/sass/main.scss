@@ -60,6 +60,10 @@ $checkbox-size: 36px;
   padding: $spacing-small $spacing-small;
 }
 
+ul.bullets {
+    list-style-type: disc;
+}
+
 .is-secondary {
   background-color: $white;
   border-color: $bulma-primary;

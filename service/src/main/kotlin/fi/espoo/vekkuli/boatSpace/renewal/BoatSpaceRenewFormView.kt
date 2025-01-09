@@ -12,7 +12,7 @@ data class BoatSpaceRenewViewParams(
     val reservation: RenewalReservationForApplicationForm,
     val boats: List<Boat>,
     val citizen: CitizenWithDetails? = null,
-    val input: RenewalReservationInput,
+    val input: ModifyReservationInput,
     val userType: UserType,
 )
 

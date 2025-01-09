@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.views
 
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.service.MarkDownService
 import org.springframework.stereotype.Service
 
@@ -12,28 +11,6 @@ class Warnings(
     private val icons: Icons
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
-
-    fun businessId(
-        organizations: List<Organization>,
-        businessId: String
-    ): String {
-        val firstParagraph = messageUtil.getMessage("warning.businessId1", listOf(businessId))
-        val secondParagraph = markDownService.render(t("warning.businessId2"))
-
-        val orgList = organizations.joinToString { "<li>${it.name}</li>" }
-        // language=HTML
-        return """
-            <div class="warning">
-                <p class="block">$firstParagraph</p>
-                <p class="block"><ul>
-                   $orgList 
-                </ul></p>
-                <p class="block">
-                    $secondParagraph
-               </p>
-            </div>
-            """.trimMargin()
-    }
 
     fun boatTypeWarning() =
         """

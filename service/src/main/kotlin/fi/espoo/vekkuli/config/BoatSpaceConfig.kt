@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.config
 
+import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import fi.espoo.vekkuli.config.DomainConstants.INVOICE_PAYMENT_PERIOD
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
@@ -183,4 +184,6 @@ object BoatSpaceConfig {
     }
 
     fun getInvoiceDueDate(timeProvider: TimeProvider): LocalDate = timeProvider.getCurrentDate().plusDays(INVOICE_PAYMENT_PERIOD.toLong())
+
+    fun isEspooCitizen(reserverMunicipalityCode: Int) = reserverMunicipalityCode == ESPOO_MUNICIPALITY_CODE
 }

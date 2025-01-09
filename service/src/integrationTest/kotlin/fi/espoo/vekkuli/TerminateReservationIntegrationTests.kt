@@ -64,6 +64,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
                 citizenIdOlivia,
                 citizenIdOlivia,
                 boatSpaceId,
+                CreationType.New,
                 startDate = timeProvider.getCurrentDate().minusWeeks(2),
                 endDate = endDate
             )

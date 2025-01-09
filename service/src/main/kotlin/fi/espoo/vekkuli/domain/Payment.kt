@@ -38,7 +38,7 @@ data class CreatePaymentParams(
     val reference: String,
     val totalCents: Int,
     val vatPercentage: Double,
-    val productCode: String,
+    val productCode: String
 )
 
 data class CreateInvoiceParams(

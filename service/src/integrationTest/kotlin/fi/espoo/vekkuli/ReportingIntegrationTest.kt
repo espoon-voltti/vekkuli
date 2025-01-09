@@ -4,11 +4,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.getBoatSpaceReport
-import fi.espoo.vekkuli.service.getFreeBoatSpaceReport
-import fi.espoo.vekkuli.service.getReservedBoatSpaceReport
-import fi.espoo.vekkuli.service.getStickerReport
+import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
