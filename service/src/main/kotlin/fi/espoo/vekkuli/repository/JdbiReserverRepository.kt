@@ -47,7 +47,7 @@ class JdbiReserverRepository(
                         r.post_office,
                         r.post_office_sv,
                         r.postal_code,
-                        r.espooRulesApplied
+                        r.espoo_rules_applied
                     FROM reserver r
                     JOIN municipality m ON r.municipality_code = m.code
                     WHERE r.id = :id
