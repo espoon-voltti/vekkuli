@@ -38,6 +38,15 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Employee can filter by reserver exceptions`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 4 }
+        listingPage.exceptionsFilter.click()
+        page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 2 }
+        assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Virtanen Olivia")
+    }
+
+    @Test
     fun `Employee can filter by amenity`() {
         val listingPage = reservationListPage()
         page.waitForCondition { listingPage.reservations.count() == 4 }

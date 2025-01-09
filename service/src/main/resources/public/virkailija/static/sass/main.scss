@@ -991,7 +991,14 @@ ul {
 }
 
 .employee-warning-filter {
-  display: flex;
+  display: block;
+
+  div {
+    display: flex;
+    &:not(:last-child) {
+      margin-bottom: $spacing-medium;
+    }
+  }
 }
 
 .reports-container {

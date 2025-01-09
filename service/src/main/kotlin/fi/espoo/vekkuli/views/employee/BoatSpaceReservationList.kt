@@ -131,10 +131,24 @@ class BoatSpaceReservationList : BaseView() {
             } else {
                 ""
             }}>
-                <span>${t("boatSpaceReservation.showReservationsWithWarnings", listOf(reservationsWithWarningsCount.toString()))}</span>
-               
+                <span>${t(
+                "boatSpaceReservation.showReservationsWithWarnings",
+                listOf(reservationsWithWarningsCount.toString())
+            )}</span>               
             </label>
              <span class="ml-s">${icons.warningExclamation(false)}</span>
+            """.trimIndent()
+
+        val reserverExceptionsFilterCheckbox =
+            """
+            <label class="checkbox">
+                <input type="checkbox" name="exceptionsFilter" ${if (params.exceptionsFilter == true) {
+                "checked"
+            } else {
+                ""
+            }} ${addTestId("filter-exceptions")}>
+            <span>${t("boatSpaceReservation.showReservationsWithReserverExceptions")}</span>
+            </label>
             """.trimIndent()
 
         fun textSearchInput(
@@ -352,7 +366,8 @@ class BoatSpaceReservationList : BaseView() {
                         </div>
 
                         <div class="employee-warning-filter">
-                            $warningFilterCheckbox
+                            <div>$warningFilterCheckbox</div>
+                            <div>$reserverExceptionsFilterCheckbox</div>
                         </div>
 
                         <div class="reservation-list form-section block">
