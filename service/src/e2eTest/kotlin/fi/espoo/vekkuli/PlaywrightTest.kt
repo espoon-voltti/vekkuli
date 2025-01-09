@@ -66,4 +66,13 @@ abstract class PlaywrightTest {
 
         throw e
     }
+
+    fun typeText(
+        locator: Locator,
+        text: String
+    ) {
+        text.forEach { character ->
+            locator.press("$character")
+        }
+    }
 }

@@ -266,7 +266,7 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             assertThat(organizationDetails.organizationMemberTableBody).not().containsText("Mikko Virtanen")
 
             // Add the citizen to the organization
-            organizationDetails.citizenSearchInput.pressSequentially("mikko")
+            typeText(organizationDetails.citizenSearchInput, "mikko")
             assertThat(organizationDetails.citizenSearchOption1).isVisible()
             organizationDetails.citizenSearchOption1.click()
 
