@@ -249,7 +249,7 @@ const sv: Translations = {
       if (type === 'CoOwner') {
         switch (spaceType) {
           case 'Slip':
-            return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att platsen ska kunna förnyas årligen. Annars är platsen tidsbegränsad.' as string
+            return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att platsen ska kunna förnyas årligen. Annars är platsen tidsbegränsad.'
 
           case 'Winter':
             return 'Minst 50% av båtägarna måste vara bosatta i Esbo för att ni ska kunna boka en vinterplats. Förvaringsplatser i Ämmäsmäki kan bokas av alla oavsett hemkommun.'
