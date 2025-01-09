@@ -73,6 +73,7 @@ open class ReservationService(
             citizenId,
             citizenId,
             spaceId,
+            CreationType.New,
             today,
             getEndDate(result),
         )
