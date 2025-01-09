@@ -39,22 +39,5 @@ data class ReserverWithDetails(
     val postOffice: String,
     val postOfficeSv: String,
     val postalCode: String,
-    val espooRulesApplied: Boolean,
+    val espooRulesApplied: Boolean
 )
-
-fun reserverWithDetailsFromOrganization(organization: Organization): ReserverWithDetails =
-    ReserverWithDetails(
-        id = organization.id,
-        name = organization.name,
-        type = ReserverType.Organization,
-        email = organization.email,
-        phone = organization.phone,
-        municipalityCode = organization.municipalityCode,
-        municipalityName = organization.municipalityName,
-        streetAddress = organization.streetAddress,
-        streetAddressSv = organization.streetAddressSv,
-        postOffice = organization.postOffice,
-        postOfficeSv = organization.postOfficeSv,
-        postalCode = organization.postalCode,
-        espooRulesApplied = organization.espooRulesApplied
-    )
