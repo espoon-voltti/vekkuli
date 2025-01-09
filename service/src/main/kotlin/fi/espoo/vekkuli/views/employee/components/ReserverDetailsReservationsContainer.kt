@@ -632,23 +632,35 @@ class ReserverDetailsReservationsContainer(
         return result
     }
 
+    fun espooRulesAppliedContent(reserver: ReserverWithDetails): String {
+        // language=HTML
+        return """
+            <label class="checkbox" id="espooRulesApplied">            
+                <input type="checkbox" id="edit-espoorules-applied-button"
+                    ${if (reserver.espooRulesApplied) "checked" else "" }
+                    hx-patch="${getTabUrl("${reserver.id}/poikkeukset/toggle-espoo-rules-applied")}"
+                    hx-trigger="click"
+                    hx-target="#espooRulesApplied"
+                    hx-swap="outerHTML"
+                >
+                <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>
+            </label>
+             """.trimIndent()
+    }
 
     fun exceptionsTabContent(reserver: ReserverWithDetails): String {
-        val icon = if (reserver.espooRulesApplied) icons.switchOn else icons.switchOff
         // language=HTML
         return """
             <div id="tab-content" class="container block">
               ${renderTabNavi(reserver.id, SubTab.Exceptions)}
               <div class="exceptions-container">
                 <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
-                <div>
-                    <span>$icon</span>
-                    <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>
-                </div>
+                ${espooRulesAppliedContent(reserver)}
               </div>              
             </div>
             """.trimIndent()
     }
+
 
     fun tabCls(
         activeTab: SubTab,
