@@ -174,7 +174,7 @@ export default {
     ) => {
       switch (validity) {
         case 'FixedTerm':
-          return `${endDate.format()} asti`
+          return `${endDate.format()} asti` as string
         case 'Indefinite':
           switch (boatSpaceType) {
             case 'Slip':
@@ -243,7 +243,8 @@ export default {
       if (type === 'CoOwner') {
         switch (spaceType) {
           case 'Slip':
-            return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta venepaikan voi uusia vuosittain. Muutoin paikka on määräaikainen.'
+            return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta venepaikan voi uusia vuosittain. Muutoin paikka on määräaikainen.' as string
+
           case 'Winter':
             return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta saatte varata talvipaikan. Ämmäsmäen säilytyspaikkoja saa varata kaikki kotikunnasta riippumatta.'
         }

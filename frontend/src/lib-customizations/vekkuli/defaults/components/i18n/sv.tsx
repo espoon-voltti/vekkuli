@@ -103,7 +103,13 @@ const components: Translations = {
     generic: 'Kolla',
     selectedValuesMin: 'Välj minst {min} värden',
     selectedValuesMax: 'Välj högst {max} värden',
-    positiveNumber: 'Ange ett positivt tal'
+    positiveNumber: 'Ange ett positivt tal',
+    certify: 'Intyga att den information du har angett är korrekt',
+    terms: 'Godkänn hamnreglerna'
+  },
+  links: {
+    goBack: 'Tillbaka',
+    edit: 'Redigera'
   }
 }
 
