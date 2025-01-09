@@ -1020,3 +1020,15 @@ ul {
     }
   }
 }
+
+.attention {
+  display: none;
+  height: 16px;
+  width: 16px;
+  background-color: #70C673;
+  border-radius: 50%;
+  margin-left: 10px;
+  &.on {
+    display: inline-block;
+  }
+}

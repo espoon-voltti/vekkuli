@@ -98,3 +98,20 @@ data class Municipality(
     val code: Int,
     val name: String
 )
+
+fun CitizenWithDetails.toReserverDetails() =
+    ReserverWithDetails(
+        id = id,
+        email = email,
+        phone = phone,
+        municipalityCode = municipalityCode,
+        municipalityName = municipalityName,
+        streetAddress = streetAddress,
+        streetAddressSv = streetAddressSv,
+        postOffice = postOffice,
+        postOfficeSv = postOfficeSv,
+        postalCode = postalCode,
+        name = fullName,
+        type = ReserverType.Citizen,
+        espooRulesApplied = espooRulesApplied,
+    )
