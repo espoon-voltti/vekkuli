@@ -107,7 +107,8 @@ const components: Translations = {
     selectedValuesMax: 'Valitse enintään {max} arvoa',
     positiveNumber: 'Anna positiivinen luku',
     certify: 'Vakuuta antamasi tiedot oikeiksi',
-    terms: 'Hyväksy venesatamasäännöt'
+    terms: 'Hyväksy venesatamasäännöt',
+    validDate: 'Anna muodossa pp.kk.vvvv'
   }
 }
 

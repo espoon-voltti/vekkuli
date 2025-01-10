@@ -14,14 +14,20 @@ export function formatDimensions({
   width: number
   length: number
 }) {
-  return `${formatNumber(width)} m x ${formatNumber(length)} m`
+  return `${formatNumber(width, 2)} m x ${formatNumber(length, 2)} m`
 }
 
-export function formatNumber(value?: number | string): string {
+export function formatNumber(
+  value?: number | string,
+  precision?: number
+): string {
+  const useDecimal = precision != undefined && precision > 0
   if (typeof value === 'string') {
-    value = parseFloat(value)
+    value = useDecimal ? parseFloat(value) : parseInt(value, 10)
   }
-  return value !== undefined ? value.toFixed(2).replace('.', ',') : ''
+  return value !== undefined
+    ? value.toFixed(precision ?? 0).replace('.', ',')
+    : ''
 }
 
 export function formatPrice(value: number): string {

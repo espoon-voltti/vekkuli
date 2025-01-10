@@ -48,5 +48,9 @@ export default React.memo(function Button({
     props.id = id
   }
 
-  return <button {...props}>{children}</button>
+  return (
+    <button role="button" {...props}>
+      {children}
+    </button>
+  )
 })

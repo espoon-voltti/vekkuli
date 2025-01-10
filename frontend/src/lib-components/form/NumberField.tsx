@@ -15,6 +15,7 @@ interface NumberFieldProps extends Omit<BaseFieldProps, 'onChange' | 'value'> {
   min?: number
   max?: number
   value?: number | string
+  precision?: number
 }
 
 function NumberFieldR({
@@ -28,7 +29,8 @@ function NumberFieldR({
   readonly,
   value,
   showErrorsBeforeTouched,
-  required
+  required,
+  precision
 }: NumberFieldProps) {
   const { state, set, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
@@ -45,7 +47,7 @@ function NumberFieldR({
           {required && ' *'}
         </label>
         {readonly ? (
-          <ReadOnly value={formatNumber(readOnlyValue)} />
+          <ReadOnly value={formatNumber(readOnlyValue, precision)} />
         ) : (
           <>
             <input

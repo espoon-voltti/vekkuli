@@ -5,5 +5,8 @@ import { queryKeys } from '../../queries'
 
 export const terminateReservationMutation = mutation({
   api: terminateReservation,
-  invalidateQueryKeys: () => [queryKeys.citizenActiveReservations()]
+  invalidateQueryKeys: () => [
+    queryKeys.citizenActiveReservations(),
+    queryKeys.citizenExpiredReservations()
+  ]
 })

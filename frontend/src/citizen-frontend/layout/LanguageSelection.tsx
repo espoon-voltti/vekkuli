@@ -8,7 +8,7 @@ export default React.memo(function LanguageSelection() {
   const i18n = useTranslation()
   const [lang, setLang] = useLang()
   return (
-    <div className="dropdown is-hoverable" id="language-selection">
+    <div className="dropdown is-hoverable" data-testid="language-selection">
       <div className="dropdown-trigger">
         <a
           className="dropdown-title"
