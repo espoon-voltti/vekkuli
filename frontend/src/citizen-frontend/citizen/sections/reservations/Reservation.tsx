@@ -12,21 +12,25 @@ import TerminateModal from './TerminateModal'
 import TerminateModalFailure from './TerminateModalFailure'
 import TerminateModalSuccess from './TerminateModalSuccess'
 import TrailerInformation from './TrailerInformation'
+import { useNavigate } from 'react-router'
 
 type TerminateModalState = 'hidden' | 'visible' | 'success' | 'failure'
 
 export default React.memo(function Reservation({
   reservation,
-  canTerminate
+  canTerminate,
+  canSwitch
 }: {
   reservation: BoatSpaceReservation
   canTerminate?: boolean
+  canSwitch?: boolean
 }) {
   const i18n = useTranslation()
   const [terminateModalVisible, setTerminateModalVisible] =
     useState<TerminateModalState>('hidden')
   const [buttonsVisible, setButtonsVisible] = useState(true)
   const { boatSpace } = reservation
+  const navigate = useNavigate()
   const onTermination = (mutation: Promise<Result<void>>) => {
     mutation
       .then((result) => {
@@ -148,14 +152,24 @@ export default React.memo(function Reservation({
             setEditIsOn={(mode) => setButtonsVisible(!mode)}
           />
         )}
-        {canTerminate && buttonsVisible && (
+        {buttonsVisible && (
           <Buttons>
-            <Button
-              type="danger-outlined"
-              action={() => setTerminateModalVisible('visible')}
-            >
-              Irtisano paikka
-            </Button>
+            {canTerminate && (
+              <Button
+                type="danger-outlined"
+                action={() => setTerminateModalVisible('visible')}
+              >
+                Irtisano paikka
+              </Button>
+            )}
+            {canSwitch && (
+              <Button
+                type="primary"
+                action={() => navigate('/kuntalainen/venepaikka')}
+              >
+                {i18n.citizenPage.reservation.actions.change}
+              </Button>
+            )}
           </Buttons>
         )}
       </div>

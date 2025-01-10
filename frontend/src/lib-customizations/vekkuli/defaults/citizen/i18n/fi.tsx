@@ -292,5 +292,28 @@ export default {
       Buck: 'Pukkisäilytys',
       BuckWithTent: 'Pukkisäilytys suojateltalla'
     }
+  },
+  citizen: {
+    firstName: 'Etunimi',
+    lastName: 'Sukunimi',
+    email: 'Sähköposti',
+    phoneNumber: 'Puhelinnumero',
+    address: 'Osoite',
+    nationalId: 'Henkilötunnus',
+    postalCode: 'Postinumero',
+    postOffice: 'Postitoimipaikka',
+    municipality: 'Kotikunta'
+  },
+  citizenPage: {
+    title: 'Omat tiedot',
+    reservation: {
+      title: 'Varaukset',
+      noReservations: 'Ei varauksia',
+      actions: {
+        cancel: 'Irtisano paikka',
+        renew: 'Uusi paikka',
+        change: 'Vaihda paikka'
+      }
+    }
   }
 }

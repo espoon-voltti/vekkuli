@@ -291,6 +291,29 @@ const en: Translations = {
       Buck: 'Stand storage',
       BuckWithTent: 'Stand storage with protective tent'
     }
+  },
+  citizen: {
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    email: 'Email',
+    phoneNumber: 'Phone Number',
+    address: 'Address',
+    nationalId: 'National ID',
+    postalCode: 'Postal Code',
+    postOffice: 'Post Office',
+    municipality: 'Municipality'
+  },
+  citizenPage: {
+    title: 'My Information',
+    reservation: {
+      title: 'Reservations',
+      noReservations: 'No Reservations',
+      actions: {
+        cancel: 'Cancel Place',
+        renew: 'Renew Place',
+        change: 'Change Place'
+      }
+    }
   }
 }
 

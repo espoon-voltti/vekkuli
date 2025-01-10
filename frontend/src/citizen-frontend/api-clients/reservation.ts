@@ -21,6 +21,27 @@ export async function reserveSpace(
   return json
 }
 
+export async function switchBoatSpace(input: {
+  reservationId: number
+  spaceId: number
+}): Promise<BoatSpaceReservation> {
+  const { data: json } = await client.request<BoatSpaceReservation>({
+    url: uri`/reservation/${input.reservationId}/switch/${input.spaceId}`.toString(),
+    method: 'POST'
+  })
+  return json
+}
+
+export async function getReservationForReserver(): Promise<
+  BoatSpaceReservation[]
+> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+    url: uri`/current/active-reservations`.toString(),
+    method: 'GET'
+  })
+  return deserializeJsonBoatSpaceReservationListResponse(json)
+}
+
 export async function unfinishedReservation(): Promise<BoatSpaceReservation> {
   const { data: json } = await client.request<BoatSpaceReservationResponse>({
     url: uri`/unfinished-reservation`.toString(),
@@ -92,6 +113,12 @@ export async function paymentInformation(
   })
 
   return data
+}
+
+export function deserializeJsonBoatSpaceReservationListResponse(
+  json: BoatSpaceReservationResponse[]
+): BoatSpaceReservation[] {
+  return json.map((j) => deserializeJsonBoatSpaceReservationResponse(j))
 }
 
 export function deserializeJsonBoatSpaceReservationResponse(

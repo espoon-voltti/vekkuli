@@ -21,6 +21,7 @@ export default React.memo(function Reservations({
             key={reservation.id}
             reservation={reservation}
             canTerminate
+            canSwitch
           />
         ))}
       </div>

@@ -295,6 +295,29 @@ const sv: Translations = {
       Buck: 'Förvaring på bock',
       BuckWithTent: 'Förvaring på bock med skyddstält'
     }
+  },
+  citizen: {
+    firstName: 'Förnamn',
+    lastName: 'Efternamn',
+    email: 'E-post',
+    phoneNumber: 'Telefonnummer',
+    address: 'Adress',
+    nationalId: 'Personnummer',
+    postalCode: 'Postnummer',
+    postOffice: 'Postort',
+    municipality: 'Kommun'
+  },
+  citizenPage: {
+    title: 'Mina uppgifter',
+    reservation: {
+      title: 'Bokningar',
+      noReservations: 'Inga bokningar',
+      actions: {
+        cancel: 'Avboka plats',
+        renew: 'Förnya plats',
+        change: 'Byt plats'
+      }
+    }
   }
 }
 
