@@ -670,6 +670,7 @@ tr.table-borderless th {
 .secondary-tabs.tabs.is-boxed ul {
   border-bottom: none;
   background-color: $light-gray;
+  margin-left: 0;
 }
 
 .tabs.is-boxed ul li a {
@@ -990,7 +991,14 @@ ul {
 }
 
 .employee-warning-filter {
-  display: flex;
+  display: block;
+
+  div {
+    display: flex;
+    &:not(:last-child) {
+      margin-bottom: $spacing-medium;
+    }
+  }
 }
 
 .reports-container {
@@ -1000,5 +1008,34 @@ ul {
 
   .reports-info {
     margin-bottom: $spacing-medium;
+  }
+}
+
+.employee-page .exceptions-container {
+  .label {
+    padding-bottom: 16px;
+  }
+
+  label.checkbox {
+    display: flex;
+    align-items: flex-start;
+    justify-content: normal;
+    gap: 16px;
+
+    span {
+      max-width: 600px;
+    }
+  }
+}
+
+.attention {
+  display: none;
+  height: 16px;
+  width: 16px;
+  background-color: #70C673;
+  border-radius: 50%;
+  margin-left: 10px;
+  &.on {
+    display: inline-block;
   }
 }

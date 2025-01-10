@@ -46,7 +46,8 @@ class JdbiReserverRepository(
                         r.street_address_sv,
                         r.post_office,
                         r.post_office_sv,
-                        r.postal_code
+                        r.postal_code,
+                        r.espoo_rules_applied
                     FROM reserver r
                     JOIN municipality m ON r.municipality_code = m.code
                     WHERE r.id = :id
@@ -272,5 +273,22 @@ class JdbiReserverRepository(
                 ).bind("code", code)
                 .mapTo<Municipality>()
                 .firstOrNull()
+        }
+
+    override fun toggleEspooRulesApplied(reserverId: UUID): ReserverWithDetails? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE reserver r
+                    SET espoo_rules_applied = NOT espoo_rules_applied
+                    FROM municipality m 
+                    WHERE r.municipality_code = m.code
+                    AND r.id = :id
+                    RETURNING r.*, m.name as municipality_name
+                    """.trimIndent()
+                )
+            query.bind("id", reserverId)
+            query.mapTo<ReserverWithDetails>().one()
         }
 }

@@ -170,6 +170,7 @@ data class BoatSpaceReservationFilter(
     val nameSearch: String? = null,
     val phoneSearch: String? = null,
     val warningFilter: Boolean? = null,
+    val exceptionsFilter: Boolean? = null,
     val sectionFilter: List<String> = emptyList(),
     val expiration: ReservationExpiration = ReservationExpiration.Active,
     val boatSpaceType: List<BoatSpaceType> = emptyList(),

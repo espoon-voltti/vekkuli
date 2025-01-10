@@ -46,7 +46,7 @@ class OrganizationDetailsView(
                
                    ${
                 reserverDetailsReservationsContainer.render(
-                    organization.id,
+                    organization.toReserverWithDetails(),
                     organizationReservations,
                     boats,
                     UserType.EMPLOYEE,

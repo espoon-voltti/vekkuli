@@ -23,12 +23,13 @@ class ReserverDetailsReservationsContainer(
     private fun getTabUrl(last: String): String = getServiceUrl("/virkailija/kayttaja/$last")
 
     fun render(
-        @SanitizeInput reserverId: UUID,
+        reserver: ReserverWithDetails,
         @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         userType: UserType,
         reserverType: ReserverType,
     ): String {
+        val reserverId = reserver.id
         val reservationList = reservationListBuilder.render(boatSpaceReservations, userType, reserverId)
 
         fun showBoatWarnings(boatHasWarnings: Boolean): String {
@@ -356,7 +357,7 @@ class ReserverDetailsReservationsContainer(
                    <div id="tab-content" class="container block" x-data="{ 
                 showAllBoats: document.getElementById('showAllBoats').checked 
             }">
-                       ${if (userType == UserType.EMPLOYEE) renderTabNavi(reserverId, SubTab.Reservations) else ""}
+                       ${if (userType == UserType.EMPLOYEE) renderTabNavi(reserver, SubTab.Reservations) else ""}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
                         $reservationList
                        
@@ -384,18 +385,18 @@ class ReserverDetailsReservationsContainer(
             """.trimIndent()
     }
 
-    fun paymentTabContent(reserverId: UUID): String {
+    fun paymentTabContent(reserver: ReserverWithDetails): String {
         // language=HTML
         return """
             <div id="tab-content" class="container block">
-              ${renderTabNavi(reserverId, SubTab.Payments)}
+              ${renderTabNavi(reserver, SubTab.Payments)}
               <h3>PAYMENTS</h3>
             </div>
             """.trimIndent()
     }
 
     fun messageTabContent(
-        reserverId: UUID,
+        reserver: ReserverWithDetails,
         messages: List<QueuedMessage>,
     ): String {
         val messageHtml =
@@ -438,7 +439,7 @@ class ReserverDetailsReservationsContainer(
         // language=HTML
         return """
             <div id="tab-content" class="container block">
-              ${renderTabNavi(reserverId, SubTab.Messages)}
+              ${renderTabNavi(reserver, SubTab.Messages)}
               $messagesHtml
             </div>
             """.trimIndent()
@@ -611,7 +612,7 @@ class ReserverDetailsReservationsContainer(
     }
 
     fun memoTabContent(
-        citizenId: UUID,
+        reserver: ReserverWithDetails,
         memos: List<ReserverMemoWithDetails>,
     ): String {
         val memoHtml =
@@ -623,13 +624,42 @@ class ReserverDetailsReservationsContainer(
             // language=HTML
             """
             <div id="tab-content" class="container block">
-                ${renderTabNavi(citizenId, SubTab.Memos)}
-                ${newMemoContent(citizenId, false)}
+                ${renderTabNavi(reserver, SubTab.Memos)}
+                ${newMemoContent(reserver.id, false)}
                 $memoHtml
             <div>
             """.trimIndent()
 
         return result
+    }
+
+    private fun espooRulesAppliedContent(reserver: ReserverWithDetails): String {
+        // language=HTML
+        return """
+            <label class="checkbox">            
+                <input type="checkbox" id="edit-espoorules-applied-button"
+                    ${if (reserver.espooRulesApplied) "checked" else "" }
+                    hx-patch="${getTabUrl("${reserver.id}/poikkeukset/toggle-espoo-rules-applied")}"
+                    hx-trigger="click"
+                    hx-target="#tab-content"
+                    hx-swap="outerHTML"
+                >                
+                <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>                
+            </label>
+            """.trimIndent()
+    }
+
+    fun exceptionsTabContent(reserver: ReserverWithDetails): String {
+        // language=HTML
+        return """
+            <div id="tab-content" class="container block">
+              ${renderTabNavi(reserver, SubTab.Exceptions)}
+              <div class="exceptions-container">
+                <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
+                ${espooRulesAppliedContent(reserver)}
+              </div>              
+            </div>
+            """.trimIndent()
     }
 
     fun tabCls(
@@ -641,42 +671,58 @@ class ReserverDetailsReservationsContainer(
     }
 
     fun renderTabNavi(
-        citizenId: UUID,
+        reserver: ReserverWithDetails,
         activeTab: SubTab,
-    ): String =
+    ): String {
+        val reserverId = reserver.id
+        val attentionClass = "attention ${if (reserver.hasExceptions()) " on" else ""}"
         // language=HTML
-        """
-        <div class="tabs is-boxed secondary-tabs">
-            <ul>
-                <li class="${tabCls(activeTab, SubTab.Reservations)}">
-                    <a id="reservations-tab-navi"
-                       hx-get="${getTabUrl("$citizenId/varaukset")}" 
-                       hx-target="#tab-content" 
-                       hx-trigger="click" 
-                       hx-swap="outerHTML">${t("boatSpaceReservation.title.reservations")}</a>
-                </li>
-                <li class="${tabCls(activeTab, SubTab.Messages)}">
-                    <a id="messages-tab-navi"
-                       hx-get="${getTabUrl("$citizenId/viestit")}"
-                       hx-target="#tab-content" 
-                       hx-trigger="click" 
-                       hx-swap="outerHTML"> ${t("boatSpaceReservation.title.messages")}</a>
-                </li>
-                <li class="${tabCls(activeTab, SubTab.Payments)}">
-                    <a id="payments-tab-navi"
-                       hx-get="${getTabUrl("$citizenId/maksut")}" 
-                       hx-target="#tab-content" 
-                       hx-trigger="click" 
-                       hx-swap="outerHTML">${t("boatSpaceReservation.title.paymentHistory")}</a>
-                </li>
-               <li class="${tabCls(activeTab, SubTab.Memos)}">
-                    <a id="memos-tab-navi"
-                       hx-get="${getTabUrl("$citizenId/muistiinpanot")}" 
-                       hx-target="#tab-content" 
-                       hx-trigger="click" 
-                       hx-swap="outerHTML">${t("boatSpaceReservation.title.notes")}</a>
-               </li>
-            </ul>
-        </div>
-        """.trimIndent()
+        return """
+            <div class="tabs is-boxed secondary-tabs">
+                <ul>
+                    <li class="${tabCls(activeTab, SubTab.Reservations)}">
+                        <a id="reservations-tab-navi"
+                            hx-get="${getTabUrl(" $reserverId/varaukset")}"
+                            hx-target="#tab-content"
+                            hx-trigger="click"
+                            hx-swap="outerHTML">${t("boatSpaceReservation.title.reservations")}
+                        </a>
+                    </li>
+                    <li class="${tabCls(activeTab, SubTab.Messages)}">
+                        <a id="messages-tab-navi"
+                            hx-get="${getTabUrl(" $reserverId/viestit")}"
+                            hx-target="#tab-content"
+                            hx-trigger="click"
+                            hx-swap="outerHTML">${t("boatSpaceReservation.title.messages")}
+                        </a>
+                    </li>
+                    <li class="${tabCls(activeTab, SubTab.Payments)}">
+                        <a id="payments-tab-navi"
+                            hx-get="${getTabUrl(" $reserverId/maksut")}"
+                            hx-target="#tab-content"
+                            hx-trigger="click"
+                            hx-swap="outerHTML">${t("boatSpaceReservation.title.payments")}
+                        </a>
+                    </li>
+                    <li class="${tabCls(activeTab, SubTab.Memos)}">
+                        <a id="memos-tab-navi"
+                            hx-get="${getTabUrl(" $reserverId/muistiinpanot")}"
+                            hx-target="#tab-content"
+                            hx-trigger="click"
+                            hx-swap="outerHTML">${t("boatSpaceReservation.title.notes")}
+                        </a>
+                    </li>
+                    <li class="${tabCls(activeTab, SubTab.Exceptions)}">
+                        <a id="exceptions-tab-navi"
+                            hx-get="${getTabUrl(" $reserverId/poikkeukset")}"
+                            hx-target="#tab-content"
+                            hx-trigger="click"
+                            hx-swap="outerHTML">${t("boatSpaceReservation.title.exceptions")}
+                            <span class="$attentionClass"></span>                                
+                        </a>
+                    </li>                    
+                </ul>
+            </div>
+            """.trimIndent()
+    }
 }
