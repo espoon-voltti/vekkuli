@@ -9,7 +9,6 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
-import fi.espoo.vekkuli.config.BoatSpaceConfig.isEspooCitizen
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
@@ -41,23 +40,6 @@ class BoatSpaceSwitchService(
     private val invoiceService: BoatSpaceInvoiceService,
     private val boatSpaceRepository: BoatSpaceRepository,
 ) {
-    fun getOrCreateSwitchReservationForEmployee(
-        userId: UUID,
-        originalReservationId: Int,
-        reserverId: UUID,
-        boatSpaceId: Int
-    ): ReservationWithDependencies {
-        val reserverMunicipalityCode =
-            reserverService.getReserverById(reserverId)?.municipalityCode ?: throw IllegalArgumentException("Reserver not found")
-        val original = boatSpaceSwitchRepository.getSwitchReservationForEmployee(userId, originalReservationId)
-        if (original != null) return original
-
-        val originalReservation =
-            createSwitchReservation(originalReservationId, userId, UserType.EMPLOYEE, isEspooCitizen(reserverMunicipalityCode), boatSpaceId)
-                ?: throw IllegalStateException("Reservation not found")
-        return originalReservation
-    }
-
     fun getOrCreateSwitchReservationForCitizen(
         reserverId: UUID,
         originalReservationId: Int,
