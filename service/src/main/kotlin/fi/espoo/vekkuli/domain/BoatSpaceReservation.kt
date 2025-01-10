@@ -115,11 +115,27 @@ data class BoatSpaceReservationItem(
     val municipalityName: String,
     val paymentDate: LocalDate?,
     val warnings: Set<String> = emptySet(),
-    val validity: ReservationValidity?
+    val validity: ReservationValidity?,
+    val amenity: BoatSpaceAmenity?
 ) {
     fun hasWarning(warning: String): Boolean = warnings.contains(warning)
 
     fun hasAnyWarnings(): Boolean = warnings.isNotEmpty()
+
+    private fun getAmenityForStorageType(): BoatSpaceAmenity =
+        when (storageType) {
+            null -> BoatSpaceAmenity.None
+            StorageType.Trailer -> BoatSpaceAmenity.Trailer
+            StorageType.Buck, StorageType.BuckWithTent -> BoatSpaceAmenity.Buck
+            else -> BoatSpaceAmenity.None
+        }
+
+    fun getBoatSpaceAmenity(): BoatSpaceAmenity =
+        when (type) {
+            BoatSpaceType.Slip -> amenity ?: BoatSpaceAmenity.None
+            BoatSpaceType.Winter, BoatSpaceType.Storage -> getAmenityForStorageType()
+            else -> BoatSpaceAmenity.None
+        }
 }
 
 enum class BoatSpaceFilterColumn {
@@ -132,6 +148,7 @@ enum class BoatSpaceFilterColumn {
     BOAT,
     EMAIL,
     PHONE,
+    AMENITY,
 }
 
 enum class PaymentFilter {

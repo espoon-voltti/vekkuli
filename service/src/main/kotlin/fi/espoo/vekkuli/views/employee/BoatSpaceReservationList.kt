@@ -81,28 +81,6 @@ class BoatSpaceReservationList : BaseView() {
                 """.trimIndent()
             }
 
-        val amenityFilters =
-            amenities.joinToString("\n") { amenity ->
-                """
-                <label class="filter-button" ${addTestId(
-                    "filter-amenity-$amenity"
-                )}>
-                    <input type="checkbox" name="amenity" value="${amenity.name}" class="is-hidden" ${if (params.hasAmenity(
-                        amenity
-                    )
-                ) {
-                    "checked"
-                } else {
-                    ""
-                }}>
-                    <span class="icon is-small">
-                        ${icons.check}
-                    </span>
-                    <span>${t("boatSpaces.amenityOption.$amenity")}</span>
-                </label>
-                """.trimIndent()
-            }
-
         val paymentOptions = listOf(PaymentFilter.PAID, PaymentFilter.UNPAID)
         val paymentFilters =
             paymentOptions.joinToString("\n") { paymentOption ->
@@ -180,37 +158,58 @@ class BoatSpaceReservationList : BaseView() {
             </label>
             """.trimIndent()
 
+        fun amenityCheckbox(amenity: String) =
+            """
+            <label class="checkbox dropdown-item" style="margin-bottom:4px;" ${addTestId(
+                "filter-amenity-$amenity"
+            )}>
+                <input type="checkbox" name="amenity" value="$amenity" x-model="amenity" >
+                <span>${t("boatSpaces.amenityOption.$amenity")}</span>
+            </label>
+            """.trimIndent()
+
         fun getReserverPageUrl(
             reserverId: UUID,
             reserverType: ReserverType
         ) = """"/virkailija/${if (reserverType == ReserverType.Citizen) "kayttaja" else "yhteiso"}/$reserverId""""
 
-        val sectionFilter =
-            """
-            <div x-data="{ open: false, selectedSections: [${params.sectionFilter.joinToString(
-                ","
-            ) { "'$it'" }}] }" @click.outside="open = false">
-                <div class="dropdown" :class="{ 'is-active': open }">
-                    <div class="dropdown-trigger">
-                            <a aria-haspopup="true" aria-controls="dropdown-menu" @click="open = !open">
-                                <div class="input search-input has-icons-left has-icons-right" style="width:60px">
-                                    <span class="icon is-small is-left">${icons.filter}</span>
-                                    <span class="filter-tag" x-show="selectedSections.length > 0" x-text="selectedSections.length" style="margin-left:auto"></span>
-                                </div>
-                            </a>
-                    </div>
-                    <div class="dropdown-menu filter-dropdown-menu" id="dropdown-menu" role="menu">
-                        <div >
-                            ${sections.joinToString("\n") { sectionCheckbox(it) }}
+        fun expandingSelectionFilter(
+            filter: List<String>,
+            modelName: String,
+            content: String
+        ) = """
+            <div x-data="{ open: false, $modelName: [${filter.joinToString(",") { "'$it'" }}] }" @click.outside="open = false">
+                        <div class="dropdown $modelName" :class="{ 'is-active': open }" ${addTestId("filter-selection-$modelName")}>
+                            <div class="dropdown-trigger">
+                                <a aria-haspopup="true" aria-controls="dropdown-menu-$modelName" @click="open = !open">
+                                    <div class="input search-input has-icons-left has-icons-right">
+                                        <span class="icon is-small is-left">${icons.filter}</span>
+                                        <span class="filter-tag" x-show="$modelName.length > 0" x-text="$modelName.length" style="margin-left:auto"></span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="dropdown-menu filter-dropdown-menu" id="dropdown-menu-$modelName" role="menu">
+                                <div>$content</div>
+                            </div>
                         </div>
-                    </div>
-                </div>
             </div>
             """.trimIndent()
 
+        val sectionFilter =
+            expandingSelectionFilter(params.sectionFilter, "selectedSections", sections.joinToString("\n") { sectionCheckbox(it) })
+
+        val amenityFilter =
+            expandingSelectionFilter(
+                params.amenity.map { t ->
+                    t.name
+                },
+                "amenity",
+                amenities.joinToString("\n") { amenityCheckbox(it.name) }
+            )
+
         fun getWarningIcon(hasWarnings: Boolean) =
             if (hasWarnings) {
-                "<div ${addTestId("warning-icon")}data-testid='warning-icon'>${icons.warningExclamation(false)}</div>"
+                "<div ${addTestId("warning-icon")}>${icons.warningExclamation(false)}</div>"
             } else {
                 ""
             }
@@ -244,6 +243,7 @@ class BoatSpaceReservationList : BaseView() {
                 )}>${result.place}</span>
                     </td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
+                    <td>${t("boatSpaces.amenityOption.${result.getBoatSpaceAmenity()}")}</td>
                     <td ${addTestId(
                     "reserver-name"
                 )}><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
@@ -349,12 +349,6 @@ class BoatSpaceReservationList : BaseView() {
                                 $boatSpaceTypeFilters
                               </div>
                             </div>
-                            <div class="filter-group">
-                                <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
-                                <div class="tag-container">
-                                    $amenityFilters
-                                </div>
-                            </div>                        
                         </div>
 
                         <div class="employee-warning-filter">
@@ -376,6 +370,9 @@ class BoatSpaceReservationList : BaseView() {
 
                                     <th class="nowrap">
                                         ${sortButton("PLACE_TYPE", t("employee.boatSpaceReservations.table.title.type"))}
+                                    </th>
+                                    <th class="nowrap">
+                                        ${sortButton("AMENITY", t("employee.boatReservations.title.amenity"))}
                                     </th>
                                     <th class="nowrap">
                                         ${sortButton("CUSTOMER", t("boatSpaceReservation.title.subject"))}
@@ -403,6 +400,7 @@ class BoatSpaceReservationList : BaseView() {
                                     <th></th>
                                     <th>$sectionFilter</th>
                                     <th></th>
+                                    <th>$amenityFilter</th>
                                     <th>${textSearchInput("nameSearch", params.nameSearch)}</th>
                                     <th>${textSearchInput("phoneSearch", params.phoneSearch)}</th>
                                     <th></th>

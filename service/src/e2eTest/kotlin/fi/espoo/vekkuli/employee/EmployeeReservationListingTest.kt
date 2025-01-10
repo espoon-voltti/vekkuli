@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.pages.*
 import org.junit.jupiter.api.Test
@@ -34,6 +35,18 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         listingPage.reservationValidityFilter(ReservationValidity.FixedTerm.toString()).click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 003")
+    }
+
+    @Test
+    fun `Employee can filter by amenity`() {
+        val listingPage = reservationListPage()
+        page.waitForCondition { listingPage.reservations.count() == 4 }
+        listingPage.expandingSelectionFilter("amenity").click()
+        listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
+        page.waitForCondition { listingPage.reservations.count() == 1 }
+        assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
+        listingPage.amenityFilter(BoatSpaceAmenity.Beam.name).click()
+        page.waitForCondition { listingPage.reservations.count() == 4 }
     }
 
     private fun reservationListPage(): ReservationListPage {

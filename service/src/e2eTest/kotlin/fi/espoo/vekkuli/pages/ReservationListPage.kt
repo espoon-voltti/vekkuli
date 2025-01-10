@@ -23,6 +23,9 @@ class ReservationListPage(
     val searchInput = { inputName: String -> getByDataTestId("search-input-$inputName") }
     val boatSpaceTypeFilter = { type: String -> filterLocator("type-$type") }
     val reservationValidityFilter = { validity: String -> filterLocator("reservation-validity-$validity") }
+    val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
+
+    val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
 
     private val filterLocator = { filter: String -> getByDataTestId("filter-$filter") }
 }
