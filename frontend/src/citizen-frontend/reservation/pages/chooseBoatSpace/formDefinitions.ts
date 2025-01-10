@@ -141,7 +141,7 @@ export const initialUnionFormState = (
   }
   const selectedHarbors = storedSearchState?.harbor
     ? branchHarbors
-        .filter((h) => storedSearchState?.harbor.includes(h.value))
+        .filter((h) => storedSearchState?.harbor?.includes(h.value))
         .map((h) => h.value)
     : []
 

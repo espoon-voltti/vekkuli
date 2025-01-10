@@ -1,12 +1,12 @@
 import useLocalStorage from 'lib-common/utils/useLocalStorage'
 
 export type StoredSearchState = {
-  width: string
-  length: string
-  amenities: string[]
-  spaceType: string
+  width?: string
+  length?: string
+  amenities?: string[]
+  spaceType?: string
   boatType?: string
-  harbor: string[]
+  harbor?: string[]
 }
 
 function useStoredSearchState(): [

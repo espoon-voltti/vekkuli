@@ -64,7 +64,7 @@ export default React.memo(function Form({
         onOrganizationFormUpdate(prev, next, organizations, municipalities)
     }
   )
-  const [searchState] = useStoredSearchState()
+  const [searchState, setSearchState] = useStoredSearchState()
   const formBind = useForm(
     reserveSpaceForm,
     () =>
@@ -90,6 +90,7 @@ export default React.memo(function Form({
     const isValid = formBind.isValid() && organizationFormBind.isValid()
     if (!isValid) setShowAllErrors(true)
     else {
+      setSearchState({})
       await submitForm({
         id: reservation?.id,
         input: { ...formBind.value(), ...organizationFormBind.value() }
