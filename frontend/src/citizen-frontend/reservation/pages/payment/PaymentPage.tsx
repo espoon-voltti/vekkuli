@@ -1,4 +1,5 @@
 import { Loader } from 'lib-components/Loader'
+import { MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import StepIndicator from '../../StepIndicator'
@@ -10,7 +11,7 @@ export default React.memo(function PaymentPage() {
   const { reservation } = useContext(ReservationStateContext)
 
   return (
-    <section className="section">
+    <MainSection>
       <Loader results={[reservation]}>
         {(unfinishedReservation) => (
           <>
@@ -22,6 +23,6 @@ export default React.memo(function PaymentPage() {
           </>
         )}
       </Loader>
-    </section>
+    </MainSection>
   )
 })

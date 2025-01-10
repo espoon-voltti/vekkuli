@@ -109,7 +109,8 @@ export default {
     logout: 'Kirjaudu ulos',
     openMenu: 'Avaa valikko',
     closeMenu: 'Sulje valikko',
-    goToHomepage: 'Siirry etusivulle'
+    goToHomepage: 'Siirry etusivulle',
+    goToMainContent: 'Siirry pääsisältöön'
   },
   components: componentTranslations,
   reservation: {

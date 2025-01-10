@@ -96,6 +96,19 @@ html, body {
   padding-top: $spacing-medium;
 }
 
+.skip-to-main-content-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  opacity: 0;
+  margin-top: 12px;
+  margin-left: 12px;
+}
+.skip-to-main-content-link:focus {
+  left: auto;
+  opacity: 1;
+}
+
 h1 {
   font-size: 32px;
   font-weight: 700;

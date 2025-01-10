@@ -4,15 +4,14 @@
 
 import { Translations as ComponentTranslations } from 'lib-components/i18n'
 
-import { Translations } from 'lib-customizations/vekkuli/citizen'
-
-import components from '../../components/i18n/en'
 import {
   BoatSpaceType,
   OwnershipStatus,
   ReservationValidity
-} from '../../../../../citizen-frontend/shared/types'
-import LocalDate from '../../../../../lib-common/date/local-date'
+} from 'citizen-frontend/shared/types'
+import LocalDate from 'lib-common/date/local-date'
+import { Translations } from 'lib-customizations/vekkuli/citizen'
+import components from 'lib-customizations/vekkuli/defaults/components/i18n/en'
 
 const yes = 'Yes'
 const no = 'No'
@@ -111,7 +110,8 @@ const en: Translations = {
     logout: 'Log out',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
-    goToHomepage: 'Go to homepage'
+    goToHomepage: 'Go to homepage',
+    goToMainContent: 'Skip to main content'
   },
   components: componentTranslations,
   reservation: {

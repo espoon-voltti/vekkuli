@@ -1,4 +1,5 @@
 import { Loader } from 'lib-components/Loader'
+import { MainSection } from 'lib-components/dom'
 import Section from 'lib-components/dom/Section'
 import React, { useContext } from 'react'
 
@@ -31,7 +32,7 @@ const Content = React.memo(function Content({
   const expiredReservations = useQueryResult(citizenExpiredReservationsQuery())
 
   return (
-    <Section>
+    <MainSection>
       <Loader
         results={[user, organizations, activeReservations, expiredReservations]}
       >
@@ -54,6 +55,6 @@ const Content = React.memo(function Content({
           )
         }
       </Loader>
-    </Section>
+    </MainSection>
   )
 })
