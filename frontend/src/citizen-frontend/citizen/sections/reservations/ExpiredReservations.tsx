@@ -16,7 +16,10 @@ export default React.memo(function ExpiredReservations({
   return (
     <Container isBlock>
       <h3>Päättyneet</h3>
-      <div className="reservation-list form-section">
+      <div
+        className="reservation-list form-section"
+        data-testid="expired-reservation-list"
+      >
         <Accordion title="Päättyneet varaukset">
           {reservations.map((reservation) => (
             <Reservation

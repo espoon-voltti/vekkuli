@@ -20,8 +20,8 @@ class CitizenHomePage(
 
     fun loginAsCitizen(ssn: String) {
         page.navigate(baseUrl)
-        page.getByTestId("loginButton").click()
-        page.getByTestId(ssn).click()
+        getByDataTestId("loginButton").click()
+        getByDataTestId(ssn).click()
         page.getByText("Kirjaudu").click()
     }
 }

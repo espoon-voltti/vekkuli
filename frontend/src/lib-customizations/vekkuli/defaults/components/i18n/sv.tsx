@@ -105,7 +105,8 @@ const components: Translations = {
     selectedValuesMax: 'Välj högst {max} värden',
     positiveNumber: 'Ange ett positivt tal',
     certify: 'Intyga att den information du har angett är korrekt',
-    terms: 'Godkänn hamnreglerna'
+    terms: 'Godkänn hamnreglerna',
+    validDate: 'Ange i format dd.mm.åååå'
   },
   links: {
     goBack: 'Tillbaka',

@@ -12,6 +12,7 @@ type ModalProperties = {
   close: () => void
   buttons?: ModalButton[]
   buttonsCentered?: boolean
+  'data-testid'?: string
 }
 
 export default React.memo(function Modal({
@@ -19,11 +20,12 @@ export default React.memo(function Modal({
   title,
   close,
   buttons,
-  buttonsCentered
+  buttonsCentered,
+  'data-testid': dataTestId
 }: ModalProperties) {
   return (
     <ModalBackground close={close}>
-      <ModalContent>
+      <ModalContent data-testid={dataTestId}>
         <ModalTitle title={title} />
         <ModalContentWrapper>{children}</ModalContentWrapper>
         <ModalButtons
