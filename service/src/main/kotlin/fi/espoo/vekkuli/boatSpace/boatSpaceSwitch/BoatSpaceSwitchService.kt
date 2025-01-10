@@ -45,8 +45,7 @@ class BoatSpaceSwitchService(
         originalReservationId: Int,
         boatSpaceId: Int
     ): ReservationWithDependencies {
-        val reserverMunicipalityCode =
-            reserverService.getReserverById(reserverId)?.municipalityCode ?: throw IllegalArgumentException("Reserver not found")
+        val reserver = reserverService.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
         val original = boatSpaceSwitchRepository.getSwitchReservationForCitizen(reserverId, originalReservationId)
         if (original != null) return original
 
@@ -55,7 +54,7 @@ class BoatSpaceSwitchService(
                 originalReservationId,
                 reserverId,
                 UserType.CITIZEN,
-                isEspooCitizen(reserverMunicipalityCode),
+                reserver.isEspooCitizen(),
                 boatSpaceId
             )
                 ?: throw IllegalStateException("Reservation not found")

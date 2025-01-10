@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.config.DomainConstants.ESPOO_MUNICIPALITY_CODE
 import java.util.UUID
 
 enum class ReserverType {
@@ -42,4 +43,5 @@ data class ReserverWithDetails(
     val espooRulesApplied: Boolean
 ) {
     fun hasExceptions() = espooRulesApplied
+    fun isEspooCitizen() = espooRulesApplied || municipalityCode == ESPOO_MUNICIPALITY_CODE
 }
