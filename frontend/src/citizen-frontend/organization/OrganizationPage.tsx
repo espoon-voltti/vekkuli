@@ -16,6 +16,7 @@ import {
 } from '../citizen/queries'
 import OrganizationInformation from './organizationInformation/OrganizationInformation'
 import { organizationBoatsQuery } from '../shared/queries'
+import useRouteParams from '../../lib-common/useRouteParams'
 
 export default function OrganizationPage() {
   const { user } = useContext(AuthContext)
@@ -28,14 +29,15 @@ const Content = React.memo(function Content({
   user: Result<User | undefined>
 }) {
   const organizations = useQueryResult(citizenOrganizationQuery())
-  const orgId = '8b220a43-86a0-4054-96f6-d29a5aba17e7'
+  const { organizationId } = useRouteParams(['organizationId'])
+
   const activeReservations = useQueryResult(
-    organizationActiveReservationsQuery(orgId)
+    organizationActiveReservationsQuery(organizationId)
   )
   const expiredReservations = useQueryResult(
-    organizationExpiredReservationsQuery(orgId)
+    organizationExpiredReservationsQuery(organizationId)
   )
-  const boats = useQueryResult(organizationBoatsQuery(orgId))
+  const boats = useQueryResult(organizationBoatsQuery(organizationId))
 
   return (
     <Section>
@@ -54,16 +56,25 @@ const Content = React.memo(function Content({
           loadedActiveReservations,
           loadedExpiredReservations,
           boats
-        ) =>
-          currentUser && (
-            <>
-              <OrganizationInformation organization={loadedOrganizations[0]} />
-              <Reservations reservations={loadedActiveReservations} />
-              <Boats boats={boats} reservations={loadedActiveReservations} />
-              <ExpiredReservations reservations={loadedExpiredReservations} />
-            </>
+        ) => {
+          const organization = loadedOrganizations.find(
+            (org) => org.id === organizationId
           )
-        }
+          console.log('organizationId', organizationId)
+          console.log('organizations', loadedOrganizations)
+          console.log('organization', organization)
+          return (
+            currentUser &&
+            organization && (
+              <>
+                <OrganizationInformation organization={organization} />
+                <Reservations reservations={loadedActiveReservations} />
+                <Boats boats={boats} reservations={loadedActiveReservations} />
+                <ExpiredReservations reservations={loadedExpiredReservations} />
+              </>
+            )
+          )
+        }}
       </Loader>
     </Section>
   )

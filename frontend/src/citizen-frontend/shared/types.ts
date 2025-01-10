@@ -77,12 +77,12 @@ export type Organization = {
   name: string
   businessId: string
   municipalityCode: number
+  municipalityName: string | null
   phone: string
   email: string
-  address: string | null
+  streetAddress: string | null
   postalCode: string | null
-  city: string | null
-  municipalityName: string | null
+  postOffice: string | null
 }
 
 export type NewOrganization = Omit<Organization, 'id'>

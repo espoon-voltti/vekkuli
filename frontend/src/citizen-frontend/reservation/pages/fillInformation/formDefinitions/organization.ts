@@ -29,9 +29,9 @@ const organizationInfoForm = object({
   municipality: required(oneOf<Municipality>()),
   phone: required(string()),
   email: required(string()),
-  address: string(),
+  streetAddress: string(),
   postalCode: string(),
-  city: string()
+  postOffice: string()
 })
 export type OrganizationInfoForm = typeof organizationInfoForm
 
@@ -51,9 +51,9 @@ const initialInfoFormState = (
   },
   phone: '',
   email: '',
-  address: '',
+  streetAddress: '',
   postalCode: '',
-  city: ''
+  postOffice: ''
 })
 
 export type OrganizationUnionBranch = 'noOrganization' | 'existing' | 'new'
@@ -244,9 +244,9 @@ const transformOrganizationToFormOrganization = (
   return {
     ...organization,
     ...{
-      address: organization.address || '',
+      streetAddress: organization.streetAddress || '',
       postalCode: organization.postalCode || '',
-      city: organization.city || '',
+      postOffice: organization.postOffice || '',
       municipality: {
         domValue: organization.municipalityCode.toString(),
         options: municipalities.map((municipality) => ({
