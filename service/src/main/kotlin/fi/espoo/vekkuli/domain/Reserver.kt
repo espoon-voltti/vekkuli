@@ -43,5 +43,6 @@ data class ReserverWithDetails(
     val espooRulesApplied: Boolean
 ) {
     fun hasExceptions() = espooRulesApplied
+
     fun isEspooCitizen() = espooRulesApplied || municipalityCode == ESPOO_MUNICIPALITY_CODE
 }
