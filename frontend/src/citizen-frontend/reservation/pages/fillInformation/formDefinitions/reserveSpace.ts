@@ -14,7 +14,7 @@ import {
 import initialUserAgreementFormState, {
   userAgreementForm
 } from './userAgreement'
-import { StoredSearchState } from '../../chooseBoatSpace/formDefinitions'
+import { StoredSearchState } from '../../useStoredSearchState'
 
 export const reserveSpaceForm = mapped(
   object({

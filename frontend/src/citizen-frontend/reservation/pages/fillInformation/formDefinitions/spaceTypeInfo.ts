@@ -7,7 +7,7 @@ import initialWinterStorageFormState, {
   onWinterStorageFormUpdate,
   winterStorageForm
 } from './winterStorage'
-import { StoredSearchState } from '../../chooseBoatSpace/formDefinitions'
+import { StoredSearchState } from '../../useStoredSearchState'
 
 export const spaceTypeInfoUnionForm = union({
   Slip: value<null>(),

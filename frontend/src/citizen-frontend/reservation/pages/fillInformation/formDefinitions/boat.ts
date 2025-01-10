@@ -18,7 +18,7 @@ import {
   OwnershipStatus,
   ownershipStatuses
 } from '../../../../shared/types'
-import { StoredSearchState } from '../../chooseBoatSpace/formDefinitions'
+import { StoredSearchState } from '../../useStoredSearchState'
 
 export const boatInfoForm = object({
   id: string(),

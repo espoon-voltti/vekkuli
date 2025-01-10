@@ -20,6 +20,7 @@ import {
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
+import { StoredSearchState } from '../useStoredSearchState'
 
 const searchSpaceParamsForm = object({
   boatType: oneOf<BoatType>(),
@@ -74,16 +75,6 @@ export const searchFreeSpacesForm = mapped(
   }
 )
 export type SearchForm = typeof searchFreeSpacesForm
-
-export type StoredSearchState = {
-  width: string
-  length: string
-  amenities: string[]
-  spaceType: string
-  boatType: string
-  harbor: string[]
-  branch: string
-}
 
 export function initialFormState(
   i18n: Translations,

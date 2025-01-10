@@ -10,7 +10,7 @@ import {
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-import { StoredSearchState } from '../../chooseBoatSpace/formDefinitions'
+import { StoredSearchState } from '../../useStoredSearchState'
 
 export const storageTypeForm = oneOf<StorageType>()
 export type StorageTypeForm = typeof storageTypeForm
