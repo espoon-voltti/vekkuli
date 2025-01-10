@@ -741,7 +741,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        val noExpiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(this.citizenIdLeo)
+        val noExpiredReservations = reservationService.getExpiredBoatSpaceReservationsForReserver(this.citizenIdLeo)
         assertEquals(0, noExpiredReservations.size)
 
         reservationService.markReservationEnded(reservationExpired.id)
@@ -750,7 +750,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             this.citizenIdLeo
         )
 
-        val expiredReservations = reservationService.getExpiredBoatSpaceReservationsForCitizen(this.citizenIdLeo)
+        val expiredReservations = reservationService.getExpiredBoatSpaceReservationsForReserver(this.citizenIdLeo)
         assertEquals(2, expiredReservations.size)
         assertEquals(
             ReservationStatus.Confirmed,

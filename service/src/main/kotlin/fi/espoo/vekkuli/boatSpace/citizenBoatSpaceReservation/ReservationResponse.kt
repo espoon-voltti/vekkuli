@@ -12,7 +12,8 @@ import java.util.*
 
 data class ReservationResponse(
     val id: Int,
-    val citizen: Citizen,
+    val reserverType: ReserverType,
+    val citizen: Citizen?,
     val organization: Organization?,
     val boatSpace: BoatSpace,
     val boat: Boat?,
@@ -99,14 +100,22 @@ class ReservationResponseMapper(
 ) {
     fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse {
         val reservationWithDependencies = spaceReservationService.getReservationWithDependencies(reservation.id) ?: throw NotFound()
-        val citizen = getCitizen(reservation)
-        val organization = getOrganization(reservationWithDependencies)
+        val citizen = if (reservationWithDependencies.reserverType == ReserverType.Citizen) getCitizen(reservation) else null
+        val organization =
+            if (reservationWithDependencies.reserverType ==
+                ReserverType.Organization
+            ) {
+                getOrganization(reservationWithDependencies)
+            } else {
+                null
+            }
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservation)
         val trailer = getTrailer(reservationWithDependencies)
 
         return ReservationResponse(
             id = reservation.id,
+            reserverType = reservationWithDependencies.reserverType ?: ReserverType.Citizen,
             citizen = formatCitizen(citizen),
             organization = formatOrganization(organization),
             boat = formatBoat(boat),
@@ -135,7 +144,10 @@ class ReservationResponseMapper(
         return reserverService.getCitizen(citizenId) ?: throw NotFound()
     }
 
-    private fun formatCitizen(citizen: CitizenWithDetails): ReservationResponse.Citizen {
+    private fun formatCitizen(citizen: CitizenWithDetails?): ReservationResponse.Citizen? {
+        if (citizen == null) {
+            return null
+        }
         return ReservationResponse.Citizen(
             id = citizen.id,
             firstName = citizen.firstName,
@@ -210,12 +222,11 @@ class ReservationResponseMapper(
         )
     }
 
-    private fun getBoatSpace(reservation: BoatSpaceReservation): BoatSpace {
-        return spaceReservationService.getBoatSpaceRelatedToReservation(reservation.id) ?: throw NotFound()
-    }
+    private fun getBoatSpace(reservation: BoatSpaceReservation): BoatSpace =
+        spaceReservationService.getBoatSpaceRelatedToReservation(reservation.id) ?: throw NotFound()
 
-    private fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace {
-        return ReservationResponse.BoatSpace(
+    private fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
+        ReservationResponse.BoatSpace(
             id = boatSpace.id,
             type = boatSpace.type,
             section = boatSpace.section,
@@ -227,7 +238,6 @@ class ReservationResponseMapper(
             excludedBoatTypes = boatSpace.excludedBoatTypes,
             locationName = boatSpace.locationName
         )
-    }
 
     private fun getTrailer(reservation: ReservationWithDependencies): Trailer? {
         if (reservation.trailerId == null) {

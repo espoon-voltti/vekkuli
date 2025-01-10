@@ -1,5 +1,7 @@
 import {
   citizenActiveReservations,
+  organizationActiveReservations,
+  organizationExpiredReservations,
   citizenExpiredReservations,
   citizenOrganizations,
   updateCitizenInformation
@@ -13,7 +15,9 @@ import { createQueryKeys } from '../query'
 
 export const queryKeys = createQueryKeys('citizen', {
   citizenActiveReservations: () => ['citizenActiveReservations'],
+  organizationActiveReservations: () => ['organizationActiveReservations'],
   citizenExpiredReservations: () => ['citizenExpiredReservations'],
+  organizationExpiredReservations: () => ['organizationExpiredReservations'],
   citizenOrganizations: () => ['citizenOrganizations']
 })
 
@@ -22,9 +26,19 @@ export const citizenActiveReservationsQuery = query({
   queryKey: queryKeys.citizenActiveReservations
 })
 
+export const organizationActiveReservationsQuery = query({
+  api: organizationActiveReservations,
+  queryKey: queryKeys.organizationActiveReservations
+})
+
 export const citizenExpiredReservationsQuery = query({
   api: citizenExpiredReservations,
   queryKey: queryKeys.citizenExpiredReservations
+})
+
+export const organizationExpiredReservationsQuery = query({
+  api: organizationExpiredReservations,
+  queryKey: queryKeys.organizationExpiredReservations
 })
 
 export const citizenOrganizationQuery = query({

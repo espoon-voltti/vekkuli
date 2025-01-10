@@ -44,7 +44,7 @@ class ExpiredBoatSpaceReservationList {
         }
 
         val reservations =
-            reservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId)
+            reservationService.getExpiredBoatSpaceReservationsForReserver(citizenId)
 
         if (reservations.isEmpty()) {
             return ResponseEntity.ok("")

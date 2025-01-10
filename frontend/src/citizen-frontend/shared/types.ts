@@ -11,10 +11,9 @@ export const reservationStatuses = [
 
 export type ReservationStatus = (typeof reservationStatuses)[number]
 
-export enum ReserverType {
-  Citizen = 'Citizen',
-  Organization = 'Organization'
-}
+export const reserverTypes = ['Citizen', 'Organization'] as const
+
+export type ReserverType = (typeof reserverTypes)[number]
 
 export const storageTypes = ['Trailer', 'Buck', 'BuckWithTent'] as const
 
@@ -78,11 +77,12 @@ export type Organization = {
   name: string
   businessId: string
   municipalityCode: number
+  municipalityName: string | null
   phone: string
   email: string
-  address: string | null
+  streetAddress: string | null
   postalCode: string | null
-  city: string | null
+  postOffice: string | null
 }
 
 export type NewOrganization = Omit<Organization, 'id'>

@@ -11,9 +11,11 @@ export default React.memo(function Reserver({
   reserver,
   bind
 }: {
-  reserver: Citizen
+  reserver: Citizen | undefined
   bind: BoundForm<ReserverForm>
 }) {
+  if (!reserver) return null
+
   const { email, phone } = useFormFields(bind)
   return (
     <div className="form-section">

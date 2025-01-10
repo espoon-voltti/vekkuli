@@ -11,7 +11,6 @@ import {
   citizenExpiredReservationsQuery,
   citizenOrganizationQuery
 } from './queries'
-import Header from './sections/Header'
 import Boats from './sections/boats/Boats'
 import CitizenInformation from './sections/citizenInformation'
 import ExpiredReservations from './sections/reservations/ExpiredReservations'
@@ -19,11 +18,7 @@ import Reservations from './sections/reservations/Reservations'
 
 export default React.memo(function CitizenPage() {
   const { user } = useContext(AuthContext)
-  return (
-    <Section>
-      <Content user={user} />
-    </Section>
-  )
+  return <Content user={user} />
 })
 
 const Content = React.memo(function Content({
@@ -48,7 +43,6 @@ const Content = React.memo(function Content({
         ) =>
           currentUser && (
             <>
-              <Header user={currentUser} />
               <CitizenInformation
                 user={currentUser}
                 organizations={loadedOrganizations}

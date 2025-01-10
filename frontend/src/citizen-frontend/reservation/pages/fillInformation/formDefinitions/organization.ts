@@ -2,7 +2,8 @@ import { Municipality } from 'citizen-frontend/api-types/reservation'
 import {
   NewOrganization,
   Organization,
-  ReserverType
+  ReserverType,
+  reserverTypes
 } from 'citizen-frontend/shared/types'
 import { string } from 'lib-common/form/fields'
 import {
@@ -28,9 +29,9 @@ const organizationInfoForm = object({
   municipality: required(oneOf<Municipality>()),
   phone: required(string()),
   email: required(string()),
-  address: string(),
+  streetAddress: string(),
   postalCode: string(),
-  city: string()
+  postOffice: string()
 })
 export type OrganizationInfoForm = typeof organizationInfoForm
 
@@ -50,9 +51,9 @@ const initialInfoFormState = (
   },
   phone: '',
   email: '',
-  address: '',
+  streetAddress: '',
   postalCode: '',
-  city: ''
+  postOffice: ''
 })
 
 export type OrganizationUnionBranch = 'noOrganization' | 'existing' | 'new'
@@ -111,7 +112,8 @@ export const organizationForm = mapped(
       organization: {
         ...organization.value,
         ...{
-          municipalityCode: parseInt(organization.value.municipality.code)
+          municipalityCode: parseInt(organization.value.municipality.code),
+          municipalityName: organization.value.municipality.name
         }
       }
     }
@@ -148,8 +150,8 @@ export default function initialFormState(
     newOrganizationCache: initialInfoFormState(municipalities),
     renterType: {
       type: {
-        domValue: ReserverType.Citizen,
-        options: Object.values(ReserverType).map((type) => ({
+        domValue: 'Citizen',
+        options: reserverTypes.map((type) => ({
           domValue: type,
           label: i18n.boatSpace.renterType[type],
           value: type
@@ -242,9 +244,9 @@ const transformOrganizationToFormOrganization = (
   return {
     ...organization,
     ...{
-      address: organization.address || '',
+      streetAddress: organization.streetAddress || '',
       postalCode: organization.postalCode || '',
-      city: organization.city || '',
+      postOffice: organization.postOffice || '',
       municipality: {
         domValue: organization.municipalityCode.toString(),
         options: municipalities.map((municipality) => ({
