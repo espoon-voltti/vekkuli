@@ -17,11 +17,7 @@ export default React.memo(function Reservations({
       <h3>Paikkavaraukset</h3>
       <div className="reservation-list form-section">
         {reservations.map((reservation) => (
-          <Reservation
-            key={reservation.id}
-            reservation={reservation}
-            canTerminate
-          />
+          <Reservation key={reservation.id} reservation={reservation} />
         ))}
       </div>
     </Container>

@@ -112,7 +112,8 @@ export const organizationForm = mapped(
       organization: {
         ...organization.value,
         ...{
-          municipalityCode: parseInt(organization.value.municipality.code)
+          municipalityCode: parseInt(organization.value.municipality.code),
+          municipalityName: organization.value.municipality.name
         }
       }
     }

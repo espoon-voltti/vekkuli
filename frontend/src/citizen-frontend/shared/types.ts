@@ -82,6 +82,7 @@ export type Organization = {
   address: string | null
   postalCode: string | null
   city: string | null
+  municipalityName: string | null
 }
 
 export type NewOrganization = Omit<Organization, 'id'>

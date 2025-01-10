@@ -65,6 +65,7 @@ export type ResponseOrganization = {
   address: string | null
   postalCode: string | null
   city: string | null
+  municipalityName: string | null
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

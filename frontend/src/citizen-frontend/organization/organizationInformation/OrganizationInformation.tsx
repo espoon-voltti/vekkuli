@@ -45,7 +45,7 @@ export default React.memo(function OrganizationInformation({
           <Column isOneEight>
             <TextField
               label="Postitoimipaikka"
-              value={organization.postOffice || undefined}
+              value={organization.city || undefined}
               readonly={true}
             />
           </Column>
@@ -54,7 +54,7 @@ export default React.memo(function OrganizationInformation({
           <Column isOneQuarter>
             <TextField
               label="Kotikunta"
-              value={organization.municipalityName}
+              value={organization.municipalityName || undefined}
               readonly={true}
             />
           </Column>

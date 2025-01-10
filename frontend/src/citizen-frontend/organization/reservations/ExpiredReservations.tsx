@@ -19,11 +19,7 @@ export default React.memo(function ExpiredReservations({
       <div className="reservation-list form-section">
         <Accordion title="Päättyneet varaukset">
           {reservations.map((reservation) => (
-            <Reservation
-              key={reservation.id}
-              reservation={reservation}
-              canTerminate={false}
-            />
+            <Reservation key={reservation.id} reservation={reservation} />
           ))}
         </Accordion>
       </div>

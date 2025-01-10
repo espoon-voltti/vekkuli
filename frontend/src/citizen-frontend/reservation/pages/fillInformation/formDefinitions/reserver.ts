@@ -8,7 +8,15 @@ export const reserverForm = object({
 })
 export type ReserverForm = typeof reserverForm
 
-export default function initialFormState(reserver: Citizen) {
+export default function initialFormState(reserver: Citizen | undefined) {
+  if (!reserver) {
+    return {
+      reserver: {
+        email: '',
+        phone: ''
+      }
+    }
+  }
   return {
     reserver: {
       email: reserver.email,

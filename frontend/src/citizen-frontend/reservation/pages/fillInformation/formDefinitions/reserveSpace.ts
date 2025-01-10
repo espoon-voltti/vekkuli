@@ -60,7 +60,7 @@ export type ReserveSpaceForm = typeof reserveSpaceForm
 export function initialFormState(
   i18n: Translations,
   boats: Boat[],
-  reserver: Citizen,
+  reserver: Citizen | undefined,
   spaceType: BoatSpaceType
 ): StateOf<ReserveSpaceForm> {
   return {
