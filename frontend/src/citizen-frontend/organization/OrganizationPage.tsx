@@ -60,9 +60,6 @@ const Content = React.memo(function Content({
           const organization = loadedOrganizations.find(
             (org) => org.id === organizationId
           )
-          console.log('organizationId', organizationId)
-          console.log('organizations', loadedOrganizations)
-          console.log('organization', organization)
           return (
             currentUser &&
             organization && (

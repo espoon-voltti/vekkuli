@@ -6,7 +6,6 @@ import { Error400, Error403, Error404, Error500 } from 'lib-icons'
 
 export default React.memo(function ErrorPage() {
   const error = useRouteError()
-  console.log(error)
   if (isRouteErrorResponse(error)) {
     return (
       <ErrorContainer>
