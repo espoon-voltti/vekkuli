@@ -6,8 +6,10 @@ import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
 import { Boat } from 'citizen-frontend/shared/types'
+import { useTranslation } from '../../localization'
 
 export default React.memo(function Boat({ boat }: { boat: Boat }) {
+  const i18n = useTranslation()
   return (
     <div className="reservation-card">
       <Columns isVCentered>
@@ -39,7 +41,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
         <Column>
           <SelectField
             label="Veneen tyyppi"
-            value={boat.type}
+            value={i18n.boatSpace.boatType[boat.type]}
             readonly={true}
           />
           <NumberField
@@ -79,7 +81,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
           <TextField
             label="Omistussuhde"
             name="ownershipStatus"
-            value={boat.ownership}
+            value={i18n.boatSpace.ownershipStatus[boat.ownership]}
             readonly={true}
           />
         </Column>
