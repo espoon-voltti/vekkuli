@@ -14,7 +14,7 @@ import {
 import initialUserAgreementFormState, {
   userAgreementForm
 } from './userAgreement'
-import { StoredState } from '../../chooseBoatSpace/formDefinitions'
+import { StoredSearchState } from '../../chooseBoatSpace/formDefinitions'
 
 export const reserveSpaceForm = mapped(
   object({
@@ -63,7 +63,7 @@ export function initialFormState(
   boats: Boat[],
   reserver: Citizen,
   spaceType: BoatSpaceType,
-  storedState?: StoredState
+  storedState?: StoredSearchState
 ): StateOf<ReserveSpaceForm> {
   return {
     ...initialReserverFormState(reserver),

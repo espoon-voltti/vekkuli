@@ -18,7 +18,7 @@ import {
   OwnershipStatus,
   ownershipStatuses
 } from '../../../../shared/types'
-import { StoredState } from '../../chooseBoatSpace/formDefinitions'
+import { StoredSearchState } from '../../chooseBoatSpace/formDefinitions'
 
 export const boatInfoForm = object({
   id: string(),
@@ -64,33 +64,37 @@ export default function initialFormState(
   i18n: Translations,
   boats: Boat[],
   boatSpaceType: BoatSpaceType,
-  storedState?: StoredState
+  storedSearchState?: StoredSearchState
 ): StateOf<BoatForm> {
   return {
-    boatInfo: initialBoatInfoFormState(i18n, boatSpaceType, storedState),
+    boatInfo: initialBoatInfoFormState(i18n, boatSpaceType, storedSearchState),
     boatSelection: initialBoatSelectionState(boats),
     ownership: initialOwnershipState(i18n, boatSpaceType),
-    newBoatCache: initialBoatInfoFormState(i18n, boatSpaceType, storedState)
+    newBoatCache: initialBoatInfoFormState(
+      i18n,
+      boatSpaceType,
+      storedSearchState
+    )
   }
 }
 
 function initialBoatInfoFormState(
   i18n: Translations,
   boatSpaceType: BoatSpaceType,
-  storedState?: StoredState
+  storedSearchState?: StoredSearchState
 ) {
   let width = positiveNumber.empty().value
   let length = positiveNumber.empty().value
   if (boatSpaceType !== 'Winter') {
-    width = storedState?.width ?? positiveNumber.empty().value
-    length = storedState?.length ?? positiveNumber.empty().value
+    width = storedSearchState?.width ?? positiveNumber.empty().value
+    length = storedSearchState?.length ?? positiveNumber.empty().value
   }
 
   return {
     id: '',
     name: '',
     type: {
-      domValue: storedState?.boatType ?? 'OutboardMotor',
+      domValue: storedSearchState?.boatType ?? 'OutboardMotor',
       options: boatTypes.map((type) => ({
         domValue: type,
         label: i18n.boatSpace.boatType[type],

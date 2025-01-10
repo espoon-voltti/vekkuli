@@ -75,7 +75,7 @@ export const searchFreeSpacesForm = mapped(
 )
 export type SearchForm = typeof searchFreeSpacesForm
 
-export type StoredState = {
+export type StoredSearchState = {
   width: string
   length: string
   amenities: string[]
@@ -87,9 +87,10 @@ export type StoredState = {
 
 export function initialFormState(
   i18n: Translations,
-  storedState: StoredState | undefined
+  storedSearchState: StoredSearchState | undefined
 ): StateOf<SearchForm> {
-  const boatSpaceType = (storedState?.spaceType as BoatSpaceType) ?? 'Slip'
+  const boatSpaceType =
+    (storedSearchState?.spaceType as BoatSpaceType) ?? 'Slip'
   return {
     boatSpaceType: {
       domValue: boatSpaceType,
@@ -100,8 +101,12 @@ export function initialFormState(
         value: type
       }))
     },
-    boatSpaceUnionForm: initialUnionFormState(i18n, boatSpaceType, storedState),
-    boatSpaceUnionCache: initialUnionCacheFormState(i18n, storedState)
+    boatSpaceUnionForm: initialUnionFormState(
+      i18n,
+      boatSpaceType,
+      storedSearchState
+    ),
+    boatSpaceUnionCache: initialUnionCacheFormState(i18n, storedSearchState)
   }
 }
 
@@ -109,20 +114,20 @@ export type SearchFormBranches = BoatSpaceType
 
 const initialUnionCacheFormState = (
   i18n: Translations,
-  storedState: StoredState | undefined
+  storedSearchState: StoredSearchState | undefined
 ): StateOf<BoatSpaceUnionCache> => {
   return {
-    Slip: initialUnionFormState(i18n, 'Slip', storedState).state,
-    Trailer: initialUnionFormState(i18n, 'Trailer', storedState).state,
-    Winter: initialUnionFormState(i18n, 'Winter', storedState).state,
-    Storage: initialUnionFormState(i18n, 'Storage', storedState).state
+    Slip: initialUnionFormState(i18n, 'Slip', storedSearchState).state,
+    Trailer: initialUnionFormState(i18n, 'Trailer', storedSearchState).state,
+    Winter: initialUnionFormState(i18n, 'Winter', storedSearchState).state,
+    Storage: initialUnionFormState(i18n, 'Storage', storedSearchState).state
   }
 }
 
 export const initialUnionFormState = (
   i18n: Translations,
   branch: BoatSpaceType,
-  storedState: StoredState | undefined
+  storedSearchState: StoredSearchState | undefined
 ): StateOf<SearchFormUnion> => {
   let branchAmenities: BoatSpaceAmenity[] = []
   let branchHarbors: Harbor[] = []
@@ -143,9 +148,9 @@ export const initialUnionFormState = (
       )
       break
   }
-  const selectedHarbors = storedState?.harbor
+  const selectedHarbors = storedSearchState?.harbor
     ? branchHarbors
-        .filter((h) => storedState?.harbor.includes(h.value))
+        .filter((h) => storedSearchState?.harbor.includes(h.value))
         .map((h) => h.value)
     : []
 
@@ -153,7 +158,7 @@ export const initialUnionFormState = (
     branch: branch,
     state: {
       boatType: {
-        domValue: storedState?.boatType ?? 'OutboardMotor',
+        domValue: storedSearchState?.boatType ?? 'OutboardMotor',
         options: branchBoatTypes.map((type) => ({
           domValue: type,
           label: i18n.boatSpace.boatType[type],
@@ -161,7 +166,7 @@ export const initialUnionFormState = (
         }))
       },
       amenities: {
-        domValues: storedState?.amenities ?? [],
+        domValues: storedSearchState?.amenities ?? [],
         options: Object.values(branchAmenities).map((amenity) => ({
           domValue: amenity,
           label: i18n.boatSpace.amenities[amenity],
@@ -176,8 +181,8 @@ export const initialUnionFormState = (
           value: harbor
         }))
       },
-      width: storedState?.width ?? positiveNumber.empty().value,
-      length: storedState?.length ?? positiveNumber.empty().value
+      width: storedSearchState?.width ?? positiveNumber.empty().value,
+      length: storedSearchState?.length ?? positiveNumber.empty().value
     }
   }
 }

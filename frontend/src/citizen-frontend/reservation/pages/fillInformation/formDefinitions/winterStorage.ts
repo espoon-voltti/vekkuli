@@ -10,7 +10,7 @@ import {
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-import { StoredState } from '../../chooseBoatSpace/formDefinitions'
+import { StoredSearchState } from '../../chooseBoatSpace/formDefinitions'
 
 export const storageTypeForm = oneOf<StorageType>()
 export type StorageTypeForm = typeof storageTypeForm
@@ -84,7 +84,7 @@ export function onWinterStorageFormUpdate({
 
 export default function initialFormState(
   i18n: Translations,
-  storedState?: StoredState
+  storedState?: StoredSearchState
 ): StateOf<WinterStorageForm> {
   return {
     storageType: initialStorageTypeState(i18n),
@@ -93,7 +93,7 @@ export default function initialFormState(
 }
 
 function initialTrailerInfoState(
-  storedState?: StoredState
+  storedState?: StoredSearchState
 ): StateOf<TrailerInfoUnionForm> {
   return {
     branch: 'Trailer',
