@@ -491,27 +491,31 @@ class BoatReservationService(
         paymentDate: LocalDate,
         paymentStatusText: String
     ) {
-        val reservation = boatSpaceReservationRepo.updateReservationStatus(reservationId, reservationStatus) ?:
-            throw RuntimeException("Reservation ${reservationId} missing")
+        val reservation =
+            boatSpaceReservationRepo.updateReservationStatus(reservationId, reservationStatus)
+                ?: throw RuntimeException("Reservation $reservationId missing")
 
         if (reservationStatus == ReservationStatus.Confirmed) {
             val payment = paymentRepository.getPaymentForReservation(reservationId)
             if (payment != null) {
-                paymentService.updatePayment(payment.copy(
-                    status = PaymentStatus.Success,
-                    paid = paymentDate.atStartOfDay(),
-                    reference = paymentStatusText
-                ))
-            } else if (reservation.reserverId != null) {
-                val paymentParams = CreatePaymentParams(
-                    reserverId = reservation.reserverId,
-                    reference = paymentStatusText,
-                    totalCents = 0,
-                    vatPercentage = 0.0,
-                    productCode = "?",
-                    status = PaymentStatus.Success,
-                    paid = paymentDate.atStartOfDay(),
+                paymentService.updatePayment(
+                    payment.copy(
+                        status = PaymentStatus.Success,
+                        paid = paymentDate.atStartOfDay(),
+                        reference = paymentStatusText
+                    )
                 )
+            } else if (reservation.reserverId != null) {
+                val paymentParams =
+                    CreatePaymentParams(
+                        reserverId = reservation.reserverId,
+                        reference = paymentStatusText,
+                        totalCents = 0,
+                        vatPercentage = 0.0,
+                        productCode = "?",
+                        status = PaymentStatus.Success,
+                        paid = paymentDate.atStartOfDay(),
+                    )
                 paymentService.insertPayment(paymentParams, reservationId)
             }
         }

@@ -19,9 +19,7 @@ interface PaymentRepository {
         reservationId: Int
     ): Payment
 
-    fun updatePayment(
-        payment: Payment
-    ): Payment
+    fun updatePayment(payment: Payment): Payment
 
     fun updatePaymentStatus(
         id: UUID,

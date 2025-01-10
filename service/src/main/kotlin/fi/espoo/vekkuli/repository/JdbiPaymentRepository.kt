@@ -37,9 +37,7 @@ class JdbiPaymentRepository(
             result
         }
 
-    override fun updatePayment(
-        payment: Payment
-    ): Payment =
+    override fun updatePayment(payment: Payment): Payment =
         jdbi.withHandleUnchecked { handle ->
             val id = UUID.randomUUID()
             val result =
@@ -47,7 +45,7 @@ class JdbiPaymentRepository(
                     .createQuery(
                         """
                         UPDATE payment
-                            SET status = :status, updated = :updated, paid = :paid, reference = :reference, total_cents = :total_cents, vat_percentage = :vat_percentage, product_code = :product_code
+                            SET status = :status, updated = :updated, paid = :paid, reference = :reference, total_cents = :totalCents, vat_percentage = :vatPercentage, product_code = :productCode
                         WHERE id = :id 
                         RETURNING *
                         """
@@ -159,5 +157,4 @@ class JdbiPaymentRepository(
                 .mapTo<Payment>()
                 .firstOrNull()
         }
-
 }

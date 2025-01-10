@@ -952,6 +952,26 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
+    override fun updateReservationStatus(
+        reservationId: Int,
+        status: ReservationStatus
+    ): BoatSpaceReservation? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET status = :status, updated = :updatedTime
+                    WHERE id = :id
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("id", reservationId)
+            query.bind("status", status)
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
+            query.mapTo<BoatSpaceReservation>().singleOrNull()
+        }
+
     override fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -969,23 +989,6 @@ class JdbiBoatSpaceReservationRepository(
             )
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<BoatSpaceReservationDetails>().list()
-        }
-
-    override fun updateReservationStatus(reservationId: Int, status: ReservationStatus): BoatSpaceReservation? =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    UPDATE boat_space_reservation
-                    SET status = :status, updated = :updatedTime
-                    WHERE id = :id
-                    RETURNING *
-                    """.trimIndent()
-                )
-            query.bind("id", reservationId)
-            query.bind("status", status)
-            query.bind("updatedTime", timeProvider.getCurrentDateTime())
-            query.mapTo<BoatSpaceReservation>().singleOrNull()
         }
 
     override fun setReservationAsExpired(reservationId: Int): Unit =
