@@ -146,6 +146,7 @@ export function deserializeJsonBoatSpaceReservationResponse(
     netPrice: json.netPrice,
     boat: json.boat,
     storageType: json.storageType ?? undefined,
-    trailer: json.trailer ?? undefined
+    trailer: json.trailer ?? undefined,
+    creationType: json.creationType
   }
 }

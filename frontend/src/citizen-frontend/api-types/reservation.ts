@@ -5,6 +5,7 @@ import {
   Boat,
   BoatSpace,
   Citizen,
+  CreationType,
   NewBoat,
   NewOrganization,
   NewTrailer,
@@ -33,6 +34,7 @@ export type BoatSpaceReservation = {
   storageType?: StorageType
   trailer?: Trailer
   boat: Boat
+  creationType: CreationType
 }
 
 export type BoatSpaceReservationResponse = {
@@ -53,6 +55,7 @@ export type BoatSpaceReservationResponse = {
   storageType: StorageType | null
   trailer: Trailer | null
   boat: Boat
+  creationType: CreationType
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

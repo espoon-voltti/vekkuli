@@ -18,6 +18,7 @@ import ConfirmationPage from './reservation/pages/confirmation/ConfirmationPage'
 import FormPage from './reservation/pages/fillInformation/FormPage'
 import PaymentPage from './reservation/pages/payment/PaymentPage'
 import { ReservationStateContextProvider } from './reservation/state'
+import ChangeFormPage from './reservation/pages/fillInformation/ChangeFormPage'
 
 function App() {
   return (
@@ -83,6 +84,16 @@ export const appRouter = createBrowserRouter([
               <RequireAuth>
                 <ScrollToTop>
                   <FormPage />
+                </ScrollToTop>
+              </RequireAuth>
+            )
+          },
+          {
+            path: 'vaihda',
+            element: (
+              <RequireAuth>
+                <ScrollToTop>
+                  <ChangeFormPage />
                 </ScrollToTop>
               </RequireAuth>
             )
