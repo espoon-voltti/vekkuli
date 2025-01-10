@@ -518,8 +518,9 @@ INSERT INTO reserver (id, type, name, updated_at, phone, email, street_address, 
 VALUES
     ('62d90eed-4ea3-4446-8023-8dad9c01dd34', 'Citizen', 'Mikko virtanen', now(), '0401122334', 'mikko.virtanen@noreplytest.fi', 'Katu 1', '00100', 49, 'Espoo', false),
     ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Citizen', 'Leo Korhonen', now(), '0405623462', 'leo@noreplytest.fi', '', '' , 49, 'Espoo', false),
-    ('509edb00-5549-11ef-a1c7-776e76028a49', 'Citizen', 'Olivia Virtanen', now(), '04083677348', 'olivia@noreplytest.fi', '', '' , 49, 'Espoo', true),
+    ('509edb00-5549-11ef-a1c7-776e76028a49', 'Citizen', 'Olivia Virtanen', now(), '04083677348', 'olivia@noreplytest.fi', '', '' , 49, 'Espoo', false),
     ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', 'Citizen', 'Marko Kuusinen', now(), '04583464312', 'marko@noreplytest.fi', '', '' , 91, 'Helsinki', false),
+    ('82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Citizen', 'Jorma Pulkkinen', now(), '0503528873', 'jorma@noreplytest.fi', '', '' , 398, 'Lahti', true),
     ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Organization', 'Espoon Pursiseura', now(), '0448101969', 'eps@noreplytest.fi', 'Nuottatie 19', '02230', 49, 'Espoo', false)
 ON CONFLICT (id) DO NOTHING;
 
@@ -528,7 +529,8 @@ VALUES
   ('62d90eed-4ea3-4446-8023-8dad9c01dd34', '010106A957V', 'Mikko', 'Virtanen'),
   ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', '150499-911U', 'Leo', 'Korhonen'),
   ('509edb00-5549-11ef-a1c7-776e76028a49', '031298-988S', 'Olivia', 'Virtanen'),
-  ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', '290991-993F', 'Marko', 'Kuusinen')
+  ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', '290991-993F', 'Marko', 'Kuusinen'),
+  ('82722a75-793a-4cbe-a3d9-a3043f2f5731', '111275-180K', 'Jorma', 'Pulkkinen')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO organization (id, business_id, billing_name, billing_street_address, billing_postal_code, billing_post_office)
@@ -556,7 +558,8 @@ VALUES
     ('C1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon toinen liian iso vene', 1200, 4000, 20, 180, 'OutboardMotor', 'Ismo 400', '', 'FutureOwner', null),
     ('D1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon poistettu vene', 120, 400, 20, 180, 'OutboardMotor', 'Delmo 600', '', 'Owner', '2024-04-01T00:00:00'),
     ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon lohi', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
-    ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon kuha', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null);
+    ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon kuha', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
+    (null, '82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Ruutuässä', 200, 300, 120, 3000, 'Sailboat', 'Swan 45', '', 'Owner', null);
 
 
 INSERT INTO email_template (id, subject, body)
@@ -3036,7 +3039,8 @@ VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'C
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm', null, null),
        ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer'),
-       ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 3, '2024-02-01', '2025-01-31', 'Confirmed', 5, 'Indefinite', null, null);
+       ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 3, '2024-02-01', '2025-01-31', 'Confirmed', 5, 'Indefinite', null, null),
+       ('82722a75-793a-4cbe-a3d9-a3043f2f5731', 1185, '2024-02-01', '2025-01-31', 'Confirmed', 7, 'Indefinite', null, null);
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)
