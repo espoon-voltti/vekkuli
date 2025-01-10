@@ -66,4 +66,6 @@ class ReserverService(
     fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails = reserverRepository.upsertCitizenUserFromAd(adUser)
 
     fun getReserverById(reserverId: UUID) = reserverRepository.getReserverById(reserverId)
+
+    fun toggleEspooRulesApplied(reserverId: UUID): ReserverWithDetails? = reserverRepository.toggleEspooRulesApplied(reserverId)
 }

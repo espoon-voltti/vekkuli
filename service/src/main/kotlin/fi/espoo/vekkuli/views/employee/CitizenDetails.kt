@@ -17,6 +17,7 @@ enum class SubTab {
     Payments,
     Messages,
     Memos,
+    Exceptions,
 }
 
 @Service
@@ -197,7 +198,13 @@ class CitizenDetails(
                 </div>
                 ${customerInfo()}
                 $organizationList
-                ${reserverDetailsReservationsContainer.render(citizen.id, boatSpaceReservations, boats, userType, reserverType)}
+                ${reserverDetailsReservationsContainer.render(
+                citizen.toReserverDetails(),
+                boatSpaceReservations,
+                boats,
+                userType,
+                reserverType
+            )}
             </section>
             """.trimIndent()
 

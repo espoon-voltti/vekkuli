@@ -34,4 +34,6 @@ interface ReserverRepository {
     fun getMunicipalities(): List<Municipality>
 
     fun getMunicipality(code: Int): Municipality?
+
+    fun toggleEspooRulesApplied(reserverId: UUID): ReserverWithDetails?
 }

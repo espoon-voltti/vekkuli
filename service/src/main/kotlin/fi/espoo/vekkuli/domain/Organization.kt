@@ -15,6 +15,7 @@ data class Organization(
     val postOffice: String,
     val postOfficeSv: String,
     val postalCode: String,
+    val espooRulesApplied: Boolean,
     // Fields for Organization
     val businessId: String,
     val billingName: String,
@@ -22,3 +23,20 @@ data class Organization(
     val billingPostalCode: String,
     val billingPostOffice: String,
 )
+
+fun Organization.toReserverWithDetails() =
+    ReserverWithDetails(
+        id = id,
+        name = name,
+        type = ReserverType.Organization,
+        email = email,
+        phone = phone,
+        municipalityCode = municipalityCode,
+        municipalityName = municipalityName,
+        streetAddress = streetAddress,
+        streetAddressSv = streetAddressSv,
+        postOffice = postOffice,
+        postOfficeSv = postOfficeSv,
+        postalCode = postalCode,
+        espooRulesApplied = espooRulesApplied
+    )
