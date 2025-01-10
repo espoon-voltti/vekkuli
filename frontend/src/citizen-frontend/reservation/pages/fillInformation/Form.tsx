@@ -32,6 +32,7 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
+import useLocalStorage from 'lib-common/utils/useLocalStorage'
 
 type FormProperties = {
   reservation: Reservation
@@ -63,6 +64,12 @@ export default React.memo(function Form({
         onOrganizationFormUpdate(prev, next, organizations, municipalities)
     }
   )
+  const [searchState] = useLocalStorage(
+    'searchState',
+    JSON.stringify({}),
+    (v): v is string => typeof v === 'string'
+  )
+
   const formBind = useForm(
     reserveSpaceForm,
     () =>
@@ -70,7 +77,8 @@ export default React.memo(function Form({
         i18n,
         boats,
         reservation.citizen,
-        reservation.boatSpace.type
+        reservation.boatSpace.type,
+        JSON.parse(searchState)
       ),
     i18n.components.validationErrors,
     {
