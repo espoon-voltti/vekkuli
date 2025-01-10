@@ -90,7 +90,7 @@ fun getBirthDateFromSSNAsDate(ssn: String): LocalDate {
 
 fun getBirthDateFromSSN(ssn: String): String {
     val date = getBirthDateFromSSNAsDate(ssn)
-    return "${date.dayOfMonth}.${date.month}.${date.year}"
+    return "${date.dayOfMonth}.${date.monthValue}.${date.year}"
 }
 
 data class Municipality(
