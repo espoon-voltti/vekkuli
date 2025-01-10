@@ -427,14 +427,12 @@ body > .columns {
 .reservation-list {
   .table-container {
     width: 100%;
-    overflow-x: auto;
-    overflow-y: visible;
+    overflow: auto;
   }
   table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    overflow-x: auto;
   }
 
   th, td {
@@ -672,6 +670,7 @@ tr.table-borderless th {
 .secondary-tabs.tabs.is-boxed ul {
   border-bottom: none;
   background-color: $light-gray;
+  margin-left: 0;
 }
 
 .tabs.is-boxed ul li a {
@@ -719,6 +718,21 @@ label.filter-button:has(input:checked) .icon {
   padding: 4px;
   border: 1px solid #DADDE2;
   border-top: 0;
+}
+
+.selectedSections {
+  .search-input {
+    width: 70px;
+  }
+}
+
+.amenity {
+  .search-input {
+    width: 80px;
+  }
+  .filter-dropdown-menu {
+    width: 180px;
+  }
 }
 
 .filter-tag {
@@ -963,7 +977,7 @@ ul {
 
 .employee-filter-container {
   display: flex;
-  row-gap: calc($block-spacing*2);
+  row-gap: $block-spacing;
   justify-content: flex-start;
   flex-wrap: wrap;
 
@@ -973,11 +987,18 @@ ul {
 }
 
 .employee-filter-container:not(:last-child) {
-  margin-bottom: calc($block-spacing*2);
+  margin-bottom: $block-spacing;
 }
 
 .employee-warning-filter {
-  display: flex;
+  display: block;
+
+  div {
+    display: flex;
+    &:not(:last-child) {
+      margin-bottom: $spacing-medium;
+    }
+  }
 }
 
 .reports-container {
@@ -987,5 +1008,34 @@ ul {
 
   .reports-info {
     margin-bottom: $spacing-medium;
+  }
+}
+
+.employee-page .exceptions-container {
+  .label {
+    padding-bottom: 16px;
+  }
+
+  label.checkbox {
+    display: flex;
+    align-items: flex-start;
+    justify-content: normal;
+    gap: 16px;
+
+    span {
+      max-width: 600px;
+    }
+  }
+}
+
+.attention {
+  display: none;
+  height: 16px;
+  width: 16px;
+  background-color: #70C673;
+  border-radius: 50%;
+  margin-left: 10px;
+  &.on {
+    display: inline-block;
   }
 }

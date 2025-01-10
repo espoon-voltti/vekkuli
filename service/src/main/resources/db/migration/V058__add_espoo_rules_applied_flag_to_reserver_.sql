@@ -1,0 +1,1 @@
+ALTER TABLE reserver ADD COLUMN espoo_rules_applied BOOLEAN NOT NULL DEFAULT FALSE;

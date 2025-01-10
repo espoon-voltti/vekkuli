@@ -375,6 +375,10 @@ class BoatReservationService(
             filters.add(HasWarningExpr())
         }
 
+        if (params.exceptionsFilter == true) {
+            filters.add(HasReserverExceptionsExpr())
+        }
+
         if (!params.nameSearch.isNullOrBlank()) {
             filters.add(NameSearchExpr(params.nameSearch))
         }

@@ -7,6 +7,12 @@ import { Translations as ComponentTranslations } from 'lib-components/i18n'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import components from '../../components/i18n/en'
+import {
+  BoatSpaceType,
+  OwnershipStatus,
+  ReservationValidity
+} from '../../../../../citizen-frontend/shared/types'
+import LocalDate from '../../../../../lib-common/date/local-date'
 
 const yes = 'Yes'
 const no = 'No'
@@ -148,7 +154,8 @@ const en: Translations = {
         Slip: (name: string) => `Space reservation: ${name}`,
         Trailer: (name: string) => `Trailer space reservation: ${name}`,
         Renew: (name: string) => `Renew reservation: ${name}`,
-        Winter: (name: string) => `Winter space reservation: ${name}`
+        Winter: (name: string) => `Winter space reservation: ${name}`,
+        Storage: (name: string) => `Storage space reservation: ${name}`
       }
     },
     noRegistererNumber: 'No registration number',
@@ -159,6 +166,44 @@ const en: Translations = {
       totalPrice: (amount: string) => `Total: ${amount} €`,
       vatValue: (amount: string) => `VAT: ${amount} €`,
       netPrice: (amount: string) => `Net price: ${amount} €`
+    },
+    totalPrice: (totalPrice: string, vatValue: string) =>
+      `${totalPrice} € (incl. vat ${vatValue} €)`,
+    validity: (
+      endDate: LocalDate,
+      validity: ReservationValidity,
+      boatSpaceType: BoatSpaceType
+    ) => {
+      switch (validity) {
+        case 'FixedTerm':
+          return `until ${endDate.format()}`
+        case 'Indefinite':
+          switch (boatSpaceType) {
+            case 'Slip':
+              return 'For now, resume annually in January'
+            case 'Winter':
+            case 'Storage':
+              return 'For now, resume annually in August'
+            case 'Trailer':
+              return 'For now, resume annually in April'
+          }
+      }
+    },
+    paymentState: (paymentDate?: LocalDate) => {
+      return paymentDate ? `Paid ${paymentDate.format()}` : '-'
+    },
+    errors: {
+      startReservation: {
+        title: 'Reservation is not possible',
+        MAX_RESERVATIONS:
+          'You already have the maximum number of spaces of this type.',
+        NOT_POSSIBLE:
+          'The reservation period is not open. Check the search times on the homepage.',
+        SERVER_ERROR:
+          'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
+        MAX_PERSONAL_RESERVATIONS:
+          'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.'
+      }
     }
   },
   boatSpace: {
@@ -205,6 +250,22 @@ const en: Translations = {
       WalkBeam: 'Walk beam',
       Trailer: 'Trailer storage',
       Buck: 'Stand storage'
+    },
+    ownershipStatusInfo: (type: OwnershipStatus, spaceType: BoatSpaceType) => {
+      if (type === 'CoOwner') {
+        switch (spaceType) {
+          case 'Slip':
+            return 'At least 50% of the boat owners must be residents of Espoo to renew the boat space annually. Otherwise, the space is fixed-term.'
+          case 'Winter':
+            return 'At least 50% of the boat owners must be residents of Espoo to reserve a winter space. Ämmäsmäki storage spaces can be reserved by anyone regardless of their home municipality.'
+        }
+      }
+      return undefined
+    },
+    winterStorageType: {
+      Trailer: 'Trailer storage',
+      Buck: 'Stand storage',
+      BuckWithTent: 'Stand storage with protective tent'
     }
   }
 }

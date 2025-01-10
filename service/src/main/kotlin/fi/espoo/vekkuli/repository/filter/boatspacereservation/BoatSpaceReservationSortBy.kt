@@ -30,7 +30,8 @@ class BoatSpaceReservationSortBy(
                 BoatSpaceFilterColumn.EMAIL to listOf("email"),
                 BoatSpaceFilterColumn.PHONE to listOf("phone"),
                 BoatSpaceFilterColumn.HOME_TOWN to listOf("municipality_name"),
-                BoatSpaceFilterColumn.BOAT to listOf("boat_registration_code")
+                BoatSpaceFilterColumn.BOAT to listOf("boat_registration_code"),
+                BoatSpaceFilterColumn.AMENITY to listOf("amenity", "storage_type"),
             )
     }
 }

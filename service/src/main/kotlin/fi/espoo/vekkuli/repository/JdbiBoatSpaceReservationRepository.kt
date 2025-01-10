@@ -95,6 +95,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     // Boat
     val boatId: Int?,
     val boatRegistrationCode: String?,
+    val amenity: BoatSpaceAmenity,
     val boatReserverId: UUID?,
     val boatName: String?,
     val boatWidthCm: Int?,
@@ -659,7 +660,7 @@ class JdbiBoatSpaceReservationRepository(
                         r.email, r.phone, r.type as reserver_type, r.name,
                         r.municipality_code,
                         location.name as location_name, 
-                        bs.type, bs.place_number, 
+                        bs.type, bs.place_number, bs.amenity,
                         CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                         rw.key as warning,
                         bs.section,
@@ -746,7 +747,8 @@ class JdbiBoatSpaceReservationRepository(
                         municipalityName = row.municipalityName,
                         paymentDate = row.paymentDate,
                         storageType = row.storageType,
-                        validity = row.validity
+                        validity = row.validity,
+                        amenity = row.amenity
                     )
                 }
         }

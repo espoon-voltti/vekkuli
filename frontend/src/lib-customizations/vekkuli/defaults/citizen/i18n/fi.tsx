@@ -171,7 +171,7 @@ export default {
       endDate: LocalDate,
       validity: ReservationValidity,
       boatSpaceType: BoatSpaceType
-    ) => {
+    ): string => {
       switch (validity) {
         case 'FixedTerm':
           return `${endDate.format()} asti`
@@ -239,11 +239,15 @@ export default {
       CoOwner: 'Omistan veneen yhdessä muiden kanssa',
       FutureOwner: 'Olen ostamassa veneen'
     },
-    ownershipStatusInfo: (type: OwnershipStatus, spaceType: BoatSpaceType) => {
+    ownershipStatusInfo: (
+      type: OwnershipStatus,
+      spaceType: BoatSpaceType
+    ): string | undefined => {
       if (type === 'CoOwner') {
         switch (spaceType) {
           case 'Slip':
             return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta venepaikan voi uusia vuosittain. Muutoin paikka on määräaikainen.'
+
           case 'Winter':
             return 'Vähintään 50% veneenomistajista tulee olla Espoolaisia, jotta saatte varata talvipaikan. Ämmäsmäen säilytyspaikkoja saa varata kaikki kotikunnasta riippumatta.'
         }

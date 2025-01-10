@@ -10,6 +10,8 @@ class ReservationListPage(
         page.navigate("$baseUrl/virkailija/venepaikat/varaukset")
     }
 
+    private val filterLocator = { filter: String -> getByDataTestId("filter-$filter") }
+
     val header = page.getByTestId("reservations-header")
     val boatSpace1 = page.locator("#boat-space-1").first()
     val boatSpace2 = page.locator("#boat-space-2").first()
@@ -23,6 +25,7 @@ class ReservationListPage(
     val searchInput = { inputName: String -> getByDataTestId("search-input-$inputName") }
     val boatSpaceTypeFilter = { type: String -> filterLocator("type-$type") }
     val reservationValidityFilter = { validity: String -> filterLocator("reservation-validity-$validity") }
-
-    private val filterLocator = { filter: String -> getByDataTestId("filter-$filter") }
+    val exceptionsFilter = filterLocator("exceptions")
+    val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
+    val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
 }

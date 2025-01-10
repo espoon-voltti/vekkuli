@@ -36,6 +36,7 @@ data class CitizenWithDetails(
     val postOffice: String,
     val postOfficeSv: String,
     val postalCode: String,
+    val espooRulesApplied: Boolean,
     // Fields for Citizen
     val nationalId: String,
     val firstName: String,
@@ -90,10 +91,27 @@ fun getBirthDateFromSSNAsDate(ssn: String): LocalDate {
 
 fun getBirthDateFromSSN(ssn: String): String {
     val date = getBirthDateFromSSNAsDate(ssn)
-    return "${date.dayOfMonth}.${date.month}.${date.year}"
+    return "${date.dayOfMonth}.${date.monthValue}.${date.year}"
 }
 
 data class Municipality(
     val code: Int,
     val name: String
 )
+
+fun CitizenWithDetails.toReserverDetails() =
+    ReserverWithDetails(
+        id = id,
+        email = email,
+        phone = phone,
+        municipalityCode = municipalityCode,
+        municipalityName = municipalityName,
+        streetAddress = streetAddress,
+        streetAddressSv = streetAddressSv,
+        postOffice = postOffice,
+        postOfficeSv = postOfficeSv,
+        postalCode = postalCode,
+        name = fullName,
+        type = ReserverType.Citizen,
+        espooRulesApplied = espooRulesApplied
+    )
