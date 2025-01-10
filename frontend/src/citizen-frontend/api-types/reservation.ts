@@ -11,13 +11,15 @@ import {
   Organization,
   ReservationStatus,
   ReservationValidity,
+  ReserverType,
   StorageType,
   Trailer
 } from '../shared/types'
 
 export type BoatSpaceReservation = {
   id: number
-  citizen: Citizen
+  citizen?: Citizen
+  organization?: Organization
   status: ReservationStatus
   boatSpace: BoatSpace
   created: HelsinkiDateTime
@@ -35,7 +37,9 @@ export type BoatSpaceReservation = {
 
 export type BoatSpaceReservationResponse = {
   id: number
-  citizen: ResponseCitizen
+  reserverType: ReserverType
+  citizen?: ResponseCitizen
+  organization?: ResponseOrganization
   boatSpace: BoatSpace
   status: ReservationStatus
   created: string
@@ -49,6 +53,18 @@ export type BoatSpaceReservationResponse = {
   storageType: StorageType | null
   trailer: Trailer | null
   boat: Boat
+}
+
+export type ResponseOrganization = {
+  id: string
+  name: string
+  businessId: string
+  municipalityCode: number
+  phone: string
+  email: string
+  address: string | null
+  postalCode: string | null
+  city: string | null
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

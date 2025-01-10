@@ -23,6 +23,14 @@ export async function citizenBoats(): Promise<Boat[]> {
   return deserializeJsonCitizenBoatsResponse(json)
 }
 
+export async function organizationBoats(orgId: string): Promise<Boat[]> {
+  const { data: json } = await client.request<CitizenBoatsResponse>({
+    url: uri`/current/organization-boats/${orgId}`.toString(),
+    method: 'GET'
+  })
+  return deserializeJsonCitizenBoatsResponse(json)
+}
+
 function deserializeJsonCitizenBoatsResponse(
   json: CitizenBoatsResponse
 ): Boat[] {
@@ -42,6 +50,16 @@ function deserializeJsonCitizenBoatsResponse(
   }))
 }
 
+export async function organizationActiveReservations(
+  orgId: string
+): Promise<BoatSpaceReservation[]> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+    url: uri`/current/organization-active-reservations/${orgId}`.toString(),
+    method: 'GET'
+  })
+  return json.map(deserializeJsonBoatSpaceReservationResponse)
+}
+
 export async function citizenActiveReservations(): Promise<
   BoatSpaceReservation[]
 > {
@@ -57,6 +75,16 @@ export async function citizenExpiredReservations(): Promise<
 > {
   const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
     url: uri`/current/expired-reservations`.toString(),
+    method: 'GET'
+  })
+  return json.map(deserializeJsonBoatSpaceReservationResponse)
+}
+
+export async function organizationExpiredReservations(
+  orgId: string
+): Promise<BoatSpaceReservation[]> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+    url: uri`/current/organization-expired-reservations/${orgId}`.toString(),
     method: 'GET'
   })
   return json.map(deserializeJsonBoatSpaceReservationResponse)

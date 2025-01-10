@@ -89,7 +89,7 @@ interface BoatSpaceReservationRepository {
 
     fun updateReservationInvoicePaid(reservationId: Int): BoatSpaceReservation?
 
-    fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails>
+    fun getExpiredBoatSpaceReservationsForReserver(reserverId: UUID): List<BoatSpaceReservationDetails>
 
     fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails>
 

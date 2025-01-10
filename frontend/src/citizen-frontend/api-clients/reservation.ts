@@ -97,12 +97,14 @@ export async function paymentInformation(
 export function deserializeJsonBoatSpaceReservationResponse(
   json: BoatSpaceReservationResponse
 ): BoatSpaceReservation {
+  const citizen = json.citizen
+    ? { ...json.citizen, birthDate: LocalDate.parseIso(json.citizen.birthDate) }
+    : undefined
+  const organization = json.organization ? json.organization : undefined
   return {
     id: json.id,
-    citizen: {
-      ...json.citizen,
-      birthDate: LocalDate.parseIso(json.citizen.birthDate)
-    },
+    citizen,
+    organization,
     status: json.status,
     created: HelsinkiDateTime.parseIso(json.created),
     startDate: LocalDate.parseIso(json.startDate),

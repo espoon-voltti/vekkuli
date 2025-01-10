@@ -2,7 +2,8 @@ import { Municipality } from 'citizen-frontend/api-types/reservation'
 import {
   NewOrganization,
   Organization,
-  ReserverType
+  ReserverType,
+  reserverTypes
 } from 'citizen-frontend/shared/types'
 import { string } from 'lib-common/form/fields'
 import {
@@ -148,8 +149,8 @@ export default function initialFormState(
     newOrganizationCache: initialInfoFormState(municipalities),
     renterType: {
       type: {
-        domValue: ReserverType.Citizen,
-        options: Object.values(ReserverType).map((type) => ({
+        domValue: 'Citizen',
+        options: reserverTypes.map((type) => ({
           domValue: type,
           label: i18n.boatSpace.renterType[type],
           value: type

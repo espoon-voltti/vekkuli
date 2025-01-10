@@ -3,17 +3,22 @@ package fi.espoo.vekkuli.boatSpace.citizen
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationResponse
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationResponseMapper
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
+import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.config.ensureCitizenId
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
+import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.*
 
 @RestController
 @RequestMapping("/api/citizen")
@@ -24,6 +29,7 @@ class CitizenController(
     private val organizationService: OrganizationService,
     private val reservationService: ReservationService,
     private val reservationResponseMapper: ReservationResponseMapper,
+    private val permissionService: PermissionService,
 ) {
     @GetMapping("/public/current")
     fun getCurrentCitizen(request: HttpServletRequest): CurrentCitizenResponse {
@@ -35,6 +41,17 @@ class CitizenController(
     fun getBoats(request: HttpServletRequest): List<CitizenBoatResponse> {
         val citizenId = request.ensureCitizenId()
         val boats = boatService.getBoatsForReserver(citizenId)
+        return boats.toCitizenBoatListResponse()
+    }
+
+    @GetMapping("/current/organization-boats/{orgId}")
+    fun getOrganizationBoats(
+        @PathVariable orgId: UUID,
+        request: HttpServletRequest
+    ): List<CitizenBoatResponse> {
+        val userId = request.getAuthenticatedUser()?.id
+        if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
+        val boats = boatService.getBoatsForReserver(orgId)
         return boats.toCitizenBoatListResponse()
     }
 
@@ -54,6 +71,28 @@ class CitizenController(
     @GetMapping("/current/expired-reservations")
     fun getExpiredReservations(request: HttpServletRequest): List<ReservationResponse> {
         val reservations = reservationService.getExpiredReservationsForCurrentCitizen()
+        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+    }
+
+    @GetMapping("/current/organization-active-reservations/{orgId}")
+    fun getOrganizationActiveReservations(
+        @PathVariable orgId: UUID,
+        request: HttpServletRequest
+    ): List<ReservationResponse> {
+        val userId = request.getAuthenticatedUser()?.id
+        if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
+        val reservations = reservationService.getActiveReservationsForOrganization(orgId)
+        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+    }
+
+    @GetMapping("/current/organization-expired-reservations/{orgId}")
+    fun getOrganizationExpiredReservations(
+        @PathVariable orgId: UUID,
+        request: HttpServletRequest
+    ): List<ReservationResponse> {
+        val userId = request.getAuthenticatedUser()?.id
+        if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
+        val reservations = reservationService.getExpiredReservationsForOrganization(orgId)
         return reservations.map { reservationResponseMapper.toReservationResponse(it) }
     }
 

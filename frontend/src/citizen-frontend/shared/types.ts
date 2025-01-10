@@ -11,10 +11,9 @@ export const reservationStatuses = [
 
 export type ReservationStatus = (typeof reservationStatuses)[number]
 
-export enum ReserverType {
-  Citizen = 'Citizen',
-  Organization = 'Organization'
-}
+export const reserverTypes = ['Citizen', 'Organization'] as const
+
+export type ReserverType = (typeof reserverTypes)[number]
 
 export const storageTypes = ['Trailer', 'Buck', 'BuckWithTent'] as const
 

@@ -417,20 +417,20 @@ class BoatReservationService(
         )
     }
 
-    fun getBoatSpaceReservationsForCitizen(
-        citizenId: UUID,
+    fun getBoatSpaceReservationsForReserver(
+        reserverId: UUID,
         spaceType: BoatSpaceType? = null
     ): List<BoatSpaceReservationDetails> =
         seasonalService.addPeriodInformationToReservation(
-            citizenId,
+            reserverId,
             boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(
-                citizenId,
+                reserverId,
                 spaceType,
             )
         )
 
-    fun getExpiredBoatSpaceReservationsForCitizen(citizenId: UUID): List<BoatSpaceReservationDetails> =
-        boatSpaceReservationRepo.getExpiredBoatSpaceReservationsForCitizen(citizenId)
+    fun getExpiredBoatSpaceReservationsForReserver(reserverId: UUID): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getExpiredBoatSpaceReservationsForReserver(reserverId)
 
     fun getExpiringIndefiniteBoatSpaceReservations(): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getExpiringBoatSpaceReservations(ReservationValidity.Indefinite)

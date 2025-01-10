@@ -16,6 +16,7 @@ import ConfirmationPage from './reservation/pages/confirmation/ConfirmationPage'
 import FormPage from './reservation/pages/fillInformation/FormPage'
 import PaymentPage from './reservation/pages/payment/PaymentPage'
 import { ReservationStateContextProvider } from './reservation/state'
+import OrganizationPage from './organization/OrganizationPage'
 
 function App() {
   return (
@@ -109,6 +110,16 @@ export const appRouter = createBrowserRouter([
           <RequireAuth>
             <ScrollToTop>
               <CitizenPage />
+            </ScrollToTop>
+          </RequireAuth>
+        )
+      },
+      {
+        path: 'kuntalainen/yhteiso/:organizationId',
+        element: (
+          <RequireAuth>
+            <ScrollToTop>
+              <OrganizationPage />
             </ScrollToTop>
           </RequireAuth>
         )
