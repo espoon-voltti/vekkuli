@@ -77,7 +77,7 @@ class BoatSpaceInvoiceService(
             paymentService.insertPayment(
                 CreatePaymentParams(
                     reserverId,
-                    invoiceData.invoiceNumber.toString(),
+                    invoiceData.invoiceNumber?.toString() ?: "",
                     invoiceData.priceCents,
                     BOAT_RESERVATION_ALV_PERCENTAGE,
                     reservationId.toString()
@@ -94,6 +94,10 @@ class BoatSpaceInvoiceService(
                     paymentId = payment.id
                 )
             )
+
+        // Solve chicken and egg problem with payment reference and invoice number
+        paymentService.updatePayment(payment.copy(reference = invoice.invoiceNumber.toString()))
+
         return Pair(invoice, payment)
     }
 

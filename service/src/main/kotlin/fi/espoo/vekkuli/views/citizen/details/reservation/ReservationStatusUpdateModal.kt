@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.DateInputOptions
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.boatSpace.reservationForm.components.ReservationStatusContainer
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
+import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
@@ -52,10 +53,14 @@ class ReservationStatusUpdateModal : BaseView() {
                         <div class="form-section" x-data="{ reservationStatus: '${reservation.status}' }">
                             $reservationStatusInput
                             <div x-show="reservationStatus === 'Invoiced' || reservationStatus === 'Confirmed'">
-                                ${formComponents.textInput("citizenDetails.info", "paymentStatusText", "")}
+                                ${formComponents.textInput(
+                    "citizenDetails.reservationStatus.infoText",
+                    "paymentStatusText",
+                    reservation.paymentReference ?: ""
+                )}
                                 ${formComponents.dateInput(
                     DateInputOptions(
-                        labelKey = "citizenDetails.paymentDate",
+                        labelKey = if (reservation.status == ReservationStatus.Invoiced) "citizenDetails.dueDate" else "citizenDetails.paymentDate",
                         id = "paymentDate",
                         value = today
                     )
@@ -72,7 +77,7 @@ class ReservationStatusUpdateModal : BaseView() {
                 addAttribute("id", "invoice-modal-cancel")
             }.addButton {
                 addAttribute("id", "invoice-modal-confirm")
-                setText(t("confirm"))
+                setText(t("citizenDetails.saveChanges"))
                 setType(ModalButtonType.Submit)
                 setStyle(ModalButtonStyle.Primary)
                 setTargetForm(formId)

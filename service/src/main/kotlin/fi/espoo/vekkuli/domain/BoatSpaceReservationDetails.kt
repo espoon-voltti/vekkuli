@@ -48,6 +48,7 @@ data class BoatSpaceReservationDetails(
     val originalReservationId: Int? = null,
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
+    val paymentReference: String?
 ) {
     val boatSpaceLengthInM: BigDecimal
         get() = intToDecimal(boatSpaceLengthCm)

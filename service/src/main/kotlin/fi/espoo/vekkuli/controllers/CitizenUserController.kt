@@ -834,7 +834,6 @@ class CitizenUserController(
         }
     }
 
-    // TODO
     @PostMapping("/virkailija/venepaikat/varaukset/status")
     fun updateReservationStatus(
         @RequestParam reservationId: Int,

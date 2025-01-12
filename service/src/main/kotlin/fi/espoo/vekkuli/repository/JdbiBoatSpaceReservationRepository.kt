@@ -74,6 +74,7 @@ data class BoatSpaceReservationDetailsRow(
     val trailerRegistrationCode: String?,
     val trailerWidthCm: Int?,
     val trailerLengthCm: Int?,
+    val paymentReference: String?
 )
 
 data class BoatSpaceReservationItemWithWarningRow(
@@ -308,6 +309,7 @@ class JdbiBoatSpaceReservationRepository(
                 boat = loadBoatForReserver(handle, dbResult.id, dbResult.boatId),
                 trailer = loadTrailerForReserver(handle, dbResult.id, dbResult.trailerId),
                 storageType = dbResult.storageType,
+                paymentReference = dbResult.paymentReference
             )
         } else {
             null
@@ -431,7 +433,8 @@ class JdbiBoatSpaceReservationRepository(
                     originalReservationId = it.originalReservationId,
                     paymentDate = it.paymentDate,
                     paymentId = it.paymentId,
-                    storageType = it.storageType
+                    storageType = it.storageType,
+                    paymentReference = it.paymentReference
                 )
             }
         }
@@ -604,7 +607,8 @@ class JdbiBoatSpaceReservationRepository(
                     originalReservationId = it.originalReservationId,
                     paymentDate = it.paymentDate,
                     paymentId = it.paymentId,
-                    storageType = it.storageType
+                    storageType = it.storageType,
+                    paymentReference = it.paymentReference
                 )
             }
         }
@@ -1065,7 +1069,8 @@ class JdbiBoatSpaceReservationRepository(
         t.reserver_id AS trailer_reserver_id,
         t.registration_code AS trailer_registration_code,
         t.width_cm AS trailer_width_cm,
-        t.length_cm AS trailer_length_cm
+        t.length_cm AS trailer_length_cm,
+        p.reference as payment_reference
         """.trimIndent()
 
     private fun buildSqlSelectFromJoinPartForBoatSpaceReservationDetails() =
