@@ -5,10 +5,8 @@ import React from 'react'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
-import {
-  formatNumber,
-  formatPlaceIdentifier
-} from 'citizen-frontend/shared/formatters'
+import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
+
 import TrailerInformation from './TrailerInformation'
 
 export default React.memo(function Reservation({
@@ -44,8 +42,9 @@ export default React.memo(function Reservation({
             />
             <NumberField
               label="Leveys (m)"
-              value={formatNumber(boatSpace.width)}
+              value={boatSpace.width}
               readonly={true}
+              precision={2}
             />
             <TextField
               label="Varaus tehty"
@@ -64,8 +63,9 @@ export default React.memo(function Reservation({
             />
             <NumberField
               label="Pituus (m)"
-              value={formatNumber(boatSpace.length)}
+              value={boatSpace.length}
               readonly={true}
+              precision={2}
             />
             <TextField
               label="Varaus voimassa"

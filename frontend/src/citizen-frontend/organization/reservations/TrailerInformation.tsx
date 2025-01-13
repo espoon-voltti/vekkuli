@@ -29,6 +29,7 @@ export default React.memo(function TrailerInformation({
             label="Leveys (m)"
             value={trailer.width}
             readonly={true}
+            precision={2}
           />
         </Column>
         <Column isOneQuarter>
@@ -36,6 +37,7 @@ export default React.memo(function TrailerInformation({
             label="Pituus (m)"
             value={trailer.length}
             readonly={true}
+            precision={2}
           />
         </Column>
       </Columns>

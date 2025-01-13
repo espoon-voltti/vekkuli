@@ -49,6 +49,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
             name="depth"
             value={boat.depth}
             readonly={true}
+            precision={2}
           />
           <TextField
             label="Lisätiedot"
@@ -63,6 +64,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
             name="width"
             value={boat.width}
             readonly={true}
+            precision={2}
           />
           <TextField
             label="Rekisteritunnus"
@@ -72,11 +74,12 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
           />
         </Column>
         <Column>
-          <TextField
+          <NumberField
             label="Pituus (m)"
             name="length"
-            value={String(boat.length)}
+            value={boat.length}
             readonly={true}
+            precision={2}
           />
           <TextField
             label="Omistussuhde"
