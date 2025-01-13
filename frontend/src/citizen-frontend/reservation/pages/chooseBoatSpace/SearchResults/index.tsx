@@ -17,7 +17,7 @@ export default React.memo(function SearchResults({
   onReserveSpace: (spaceId: number) => void
 }) {
   return (
-    <div className="block loaded-content">
+    <div className="block loaded-content" data-testid="boat-space-results">
       <h3>
         <span>Hakuehtoihin sopivat vapaat paikat</span> <span>({count})</span>
       </h3>

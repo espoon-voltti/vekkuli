@@ -6,6 +6,8 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
@@ -32,34 +34,36 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun reservingShouldFailOutsidePeriod() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 22, 22, 22))
-            page.navigate(baseUrlWithEnglishLangParam)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
 
-            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-            reservationPage.navigateTo()
-            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
-            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
-            reservationPage.widthFilterInput.fill("3")
-            reservationPage.lengthFilterInput.fill("6")
-            reservationPage.lengthFilterInput.blur()
-            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
-            reservationPage.amenityBuoyCheckbox.check()
-            reservationPage.amenityRearBuoyCheckbox.check()
-            reservationPage.amenityBeamCheckbox.check()
-            reservationPage.amenityWalkBeamCheckbox.check()
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
-            assertThat(reservationPage.harborHeaders).hasCount(3)
-            reservationPage.haukilahtiCheckbox.check()
-            reservationPage.kivenlahtiCheckbox.check()
-            assertThat(reservationPage.harborHeaders).hasCount(2)
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
 
-            reservationPage.firstReserveButton.click()
-            assertThat(page.locator("body")).containsText("Reservation not possible")
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.slipRadio.click()
+
+            val slipFilter = filterSection.getSlipFilterSection()
+            slipFilter.boatTypeSelect.selectOption("Sailboat")
+            slipFilter.widthInput.fill("3")
+            slipFilter.lengthInput.fill("6")
+            slipFilter.amenityBuoyCheckbox.check()
+            slipFilter.amenityRearBuoyCheckbox.check()
+            slipFilter.amenityBeamCheckbox.check()
+            slipFilter.amenityWalkBeamCheckbox.check()
+
+            val searchResults = reservationPage.getSearchResultsSection()
+            assertThat(searchResults.harborHeaders).hasCount(3)
+
+            slipFilter.haukilahtiCheckbox.check()
+            slipFilter.kivenlahtiCheckbox.check()
+            assertThat(searchResults.harborHeaders).hasCount(2)
+
+            searchResults.firstReserveButton.click()
+            assertThat(page.locator("body")).containsText("Varaaminen ei ole mahdollista")
         } catch (e: AssertionError) {
             handleError(e)
         }
