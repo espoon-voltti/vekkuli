@@ -32,6 +32,7 @@ export function createEmployeeRouter(
   router.use('/boat-space', proxy)
   router.use('/reservation', proxy)
   router.use('/validate', proxy)
+  router.use('/info', proxy)
   router.use('/venepaikka', proxy)
   router.use('/virkailija', proxy)
   router.use('/yhteiso', proxy)
