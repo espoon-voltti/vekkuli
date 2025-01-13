@@ -292,4 +292,25 @@ class JdbiReserverRepository(
             query.bind("id", reserverId)
             query.mapTo<ReserverWithDetails>().one()
         }
+
+    override fun updateDiscount(
+        reserverId: UUID,
+        discountPercentage: Int
+    ): ReserverWithDetails? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE reserver r
+                    SET discount_percentage = :discountPercentage
+                    FROM municipality m 
+                    WHERE r.municipality_code = m.code
+                    AND r.id = :id
+                    RETURNING r.*, m.name as municipality_name
+                    """.trimIndent()
+                )
+            query.bind("discountPercentage", discountPercentage)
+            query.bind("id", reserverId)
+            query.mapTo<ReserverWithDetails>().one()
+        }
 }

@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.employee.components
 
+import fi.espoo.vekkuli.config.DomainConstants
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.SubTab
@@ -27,38 +28,31 @@ class ReserverDetailsExceptionsContainer : BaseView() {
             """.trimIndent()
     }
 
+    private fun discountContentRow(
+        discount: Int,
+        reserver: ReserverWithDetails
+    ): String {
+        // language=HTML
+        return """
+            <div class="radio">            
+                <input type="radio" id="reserver_discount_$discount" name="discountPercentage" value='$discount'
+                    ${if (reserver.discountPercentage == discount) "checked" else ""}
+                    hx-patch="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/discount")}"
+                    hx-include="[name='discountPercentage']"
+                    hx-trigger="click"
+                    hx-target="#tab-content"
+                    hx-swap="outerHTML">
+                    <label for="reserver_discount_0" >${t("employee.reserverDetails.exceptions.discount_$discount")}</label>
+            </div>
+            """.trimIndent()
+    }
+
     private fun discountContent(reserver: ReserverWithDetails): String {
         // language=HTML
         return """
             <div class="discounts">
-                <div class="radio">            
-                    <input type="radio" id="reserver_discount_0" name="reserverDiscount" value='0'
-                        ${if (reserver.discountPercentage == 0) "checked" else ""}
-                        hx-patch="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/discount")}"
-                        hx-trigger="click"
-                        hx-target="#tab-content"
-                        hx-swap="outerHTML">
-                        <label for="reserver_discount_0" >${t("employee.reserverDetails.exceptions.discount_0")}</label>
-                </div>
-                <div class="radio">
-                    <input type="radio" id="reserver_discount_50" name="reserverDiscount" value='50'
-                        ${if (reserver.discountPercentage == 50) "checked" else ""}
-                        hx-patch="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/discount")}"
-                        hx-trigger="click"
-                        hx-target="#tab-content"
-                        hx-swap="outerHTML">
-                        <label for="reserver_discount_50" >${t("employee.reserverDetails.exceptions.discount_50")}</label>
-                </div>
-                <div class="radio">
-                    <input type="radio" id="reserver_discount_100" name="reserverDiscount" value='100'
-                        ${if (reserver.discountPercentage == 100) "checked" else ""}
-                        hx-patch="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/discount")}"
-                        hx-trigger="click"
-                        hx-target="#tab-content"
-                        hx-swap="outerHTML">
-                        <label for="reserver_discount_100" >${t("employee.reserverDetails.exceptions.discount_100")}</label>
-                </div>
-                </div>
+                ${DomainConstants.DISCOUNTS.joinToString("\n") { discount -> discountContentRow(discount, reserver) }}
+            </div>
             """.trimIndent()
     }
 

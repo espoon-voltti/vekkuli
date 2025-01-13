@@ -36,4 +36,9 @@ interface ReserverRepository {
     fun getMunicipality(code: Int): Municipality?
 
     fun toggleEspooRulesApplied(reserverId: UUID): ReserverWithDetails?
+
+    fun updateDiscount(
+        reserverId: UUID,
+        discountPercentage: Int
+    ): ReserverWithDetails?
 }
