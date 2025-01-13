@@ -35,6 +35,17 @@ class ReservationStatusUpdateModal : BaseView() {
         val formId = "reservation-status-update-form"
         val reservationStatusInput = reservationStatusContainer.render(reservation, reservation.status)
 
+        val defaultDate =
+            when (reservation.status) {
+                ReservationStatus.Confirmed ->
+                    reservation.paymentDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        ?: today
+                ReservationStatus.Invoiced ->
+                    reservation.invoiceDueDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        ?: today
+                else -> today
+            }
+
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder
             .setTitle(t("citizenDetails.updateReservationStatus"))
@@ -52,7 +63,7 @@ class ReservationStatusUpdateModal : BaseView() {
                         >
                         <div class="form-section" x-data="{ reservationStatus: '${reservation.status}' }">
                             $reservationStatusInput
-                            <div x-show="reservationStatus === 'Invoiced' || reservationStatus === 'Confirmed'">
+                            <div x-show="reservationStatus === 'Invoiced' || reservationStatus === 'Confirmed'" >
                                 ${formComponents.textInput(
                     "citizenDetails.reservationStatus.infoText",
                     "paymentStatusText",
@@ -62,7 +73,7 @@ class ReservationStatusUpdateModal : BaseView() {
                     DateInputOptions(
                         labelKey = if (reservation.status == ReservationStatus.Invoiced) "citizenDetails.dueDate" else "citizenDetails.paymentDate",
                         id = "paymentDate",
-                        value = today
+                        value = defaultDate
                     )
                 )}
                             </div>

@@ -495,17 +495,22 @@ class BoatReservationService(
             boatSpaceReservationRepo.updateReservationStatus(reservationId, reservationStatus)
                 ?: throw RuntimeException("Reservation $reservationId missing")
 
-        if (reservationStatus == ReservationStatus.Confirmed) {
+        if (reservationStatus == ReservationStatus.Confirmed || reservationStatus == ReservationStatus.Invoiced) {
             val payment = paymentRepository.getPaymentForReservation(reservationId)
             if (payment != null) {
                 paymentService.updatePayment(
                     payment.copy(
-                        status = PaymentStatus.Success,
+                        status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
                         paid = paymentDate.atStartOfDay(),
                         reference = paymentStatusText
                     )
                 )
-            } else if (reservation.reserverId != null) {
+            } else {
+                if (reservation.reserverId == null) {
+                    throw RuntimeException(
+                        "Cannot create payment for reservation $reservationId: reserverId is null"
+                    )
+                }
                 val paymentParams =
                     CreatePaymentParams(
                         reserverId = reservation.reserverId,
@@ -513,7 +518,7 @@ class BoatReservationService(
                         totalCents = 0,
                         vatPercentage = 0.0,
                         productCode = "?",
-                        status = PaymentStatus.Success,
+                        status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
                         paid = paymentDate.atStartOfDay(),
                     )
                 paymentService.insertPayment(paymentParams, reservationId)

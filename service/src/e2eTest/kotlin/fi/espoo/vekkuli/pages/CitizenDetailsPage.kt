@@ -11,6 +11,15 @@ class CitizenDetailsPage(
 
     val reservationValidity = getByDataTestId("reservation-validity")
 
+    val paymentStatus = getByDataTestId("payment-status")
+
+    val updatePaymentStatusLink = getByDataTestId("update-payment-status-link")
+
+    val paymentStatusUpdateModalConfirmed = page.getByTestId("reservationStatus-Confirmed")
+    val paymentStatusUpdateModalInfoTextInput = page.getByTestId("paymentStatusText")
+    val paymentStatusUpdateModalDateInput = page.getByTestId("paymentDate")
+    val paymentStatusUpdateModalSubmit = page.getByTestId("invoice-modal-confirm")
+
     private fun getBoatText(
         prop: String,
         i: Int

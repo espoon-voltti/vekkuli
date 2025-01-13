@@ -49,7 +49,7 @@ class ReservationCardInformation : BaseView() {
                     <div class="payment-status">
                         <span>${t(
                         "citizenDetails.reservationStatus.Confirmed"
-                    )}, ${reservation.paymentDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: ""}</span>
+                    )}, ${reservation.paymentDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
                         <span>${t("citizenDetails.reservationStatus.infoText")}: ${reservation.paymentReference}</span>
                     </div>    
                     """.trimIndent()
@@ -58,7 +58,7 @@ class ReservationCardInformation : BaseView() {
                     <div class="payment-status">
                         <span>${t(
                         "citizenDetails.reservationStatus.InvoicedStatusText"
-                    )}: ${reservation.invoiceDueDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) ?: ""}</span>
+                    )}: ${reservation.invoiceDueDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
                         <span>${t("citizenDetails.reservationStatus.infoText")}: ${reservation.paymentReference}</span>
                     </div>    
                     """.trimIndent()
@@ -70,7 +70,8 @@ class ReservationCardInformation : BaseView() {
             """
             <div>
                 <a class="is-link is-icon-link payment-status-edit-link"
-                    id="update-payment-status-button"
+                    id="update-payment-status-link"
+                    data-testid="update-payment-status-link"
                     hx-get="/reservation/modal/update-payment-status/${reservation.id}/$reserverId"
                     hx-target="#modal-container"
                     hx-swap="innerHTML">
@@ -135,7 +136,9 @@ class ReservationCardInformation : BaseView() {
                            <label class="label">${t("citizenDetails.reservationStatus.paymentStatus")}</label>
                            $paymentEditLink
                          </div>
-                         <p id="paidFieldInfo">$paymentStatus</p> 
+                         <div data-testid="payment-status">
+                            $paymentStatus
+                         </div>    
                      </div>
                  </div>
                  

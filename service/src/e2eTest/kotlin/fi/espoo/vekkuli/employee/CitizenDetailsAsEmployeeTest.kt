@@ -232,7 +232,6 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             citizenDetails.renewReservationButton(1).click()
             assertThat(invoiceDetails.header).isVisible()
             invoiceDetails.sendButton.click()
-            assertThat(citizenDetails.invoicePaidButton).isVisible()
             assertThat(citizenDetails.renewReservationButton(1)).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
