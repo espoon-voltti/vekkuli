@@ -77,7 +77,10 @@ class ReservationFormService(
         var reserverId: UUID = citizenId
         if (input.isOrganization == true) {
             reserverId = addOrUpdateOrganization(citizenId, input)
+        } else {
+            updateCitizenReserverContactInfo(reserverId, input.phone ?: "", input.email ?: "")
         }
+
         reserveSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
     }
 
@@ -123,6 +126,8 @@ class ReservationFormService(
         var reserverId: UUID = citizen.id
         if (input.isOrganization == true) {
             reserverId = addOrUpdateOrganization(reserverId, input)
+        } else {
+            updateCitizenReserverContactInfo(citizen.id, input.phone ?: "", input.email ?: "")
         }
         reserveSpaceForEmployee(reservationId, reserverId, input)
     }
@@ -418,8 +423,6 @@ class ReservationFormService(
             updateReservationWithStorageTypeRelatedInformation(input, reserverId)
         }
 
-        updateReserverContactInfo(reserverId, input)
-
         val reservation =
             boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
                 input.reservationId,
@@ -535,15 +538,16 @@ class ReservationFormService(
         )
     }
 
-    private fun updateReserverContactInfo(
+    private fun updateCitizenReserverContactInfo(
         reserverId: UUID,
-        input: ReserveBoatSpaceInput
+        phone: String,
+        email: String
     ) {
         reserverRepository.updateCitizen(
             UpdateCitizenParams(
                 id = reserverId,
-                phone = input.phone ?: "",
-                email = input.email ?: ""
+                phone = phone,
+                email = email
             )
         )
     }

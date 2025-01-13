@@ -27,9 +27,9 @@ data class FillReservationInformationInput(
         val municipalityCode: String,
         val phone: String,
         val email: String,
-        val address: String? = null,
+        val streetAddress: String? = null,
         val postalCode: String? = null,
-        val city: String? = null,
+        val postOffice: String? = null,
     )
 
     data class Boat(
@@ -73,9 +73,9 @@ fun FillReservationInformationInput.toReservationInformation() =
                     municipalityCode = organization.municipalityCode,
                     phone = organization.phone,
                     email = organization.email,
-                    address = organization.address,
+                    address = organization.streetAddress,
                     postalCode = organization.postalCode,
-                    city = organization.city,
+                    city = organization.postOffice,
                 )
             },
         boat =

@@ -29,7 +29,7 @@ export const WithOrganization = React.memo(function Organization({
           <TextField
             id="organization-name"
             label="Yhteisön nimi"
-            required={true}
+            readonly={true}
             bind={name}
           />
         </Column>
@@ -37,7 +37,7 @@ export const WithOrganization = React.memo(function Organization({
           <TextField
             id="organization-business-id"
             label="Y-tunnus"
-            required={true}
+            readonly={true}
             bind={businessId}
           />
         </Column>
@@ -45,7 +45,7 @@ export const WithOrganization = React.memo(function Organization({
           <SelectField
             id="organization-municipality-code"
             label="Kotikunta"
-            required={true}
+            readonly={true}
             bind={municipality}
           />
         </Column>
