@@ -180,7 +180,7 @@ class ReserverDetailsMemoContainer : BaseView() {
             """.trimIndent()
     }
 
-    fun memoTabContent(
+    fun tabContent(
         reserver: ReserverWithDetails,
         memos: List<ReserverMemoWithDetails>,
     ): String {

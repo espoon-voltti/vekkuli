@@ -162,7 +162,7 @@ class CitizenUserController(
         }
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
-        return reserverDetailsMemoContainer.memoTabContent(reserver, memos)
+        return reserverDetailsMemoContainer.tabContent(reserver, memos)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/muokkaa/{memoId}")
@@ -217,7 +217,7 @@ class CitizenUserController(
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         memoService.insertMemo(citizenId, userId, ReservationType.Marine, content)
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
-        return reserverDetailsMemoContainer.memoTabContent(reserver, memos)
+        return reserverDetailsMemoContainer.tabContent(reserver, memos)
     }
 
     @DeleteMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
@@ -233,7 +233,7 @@ class CitizenUserController(
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         memoService.removeMemo(memoId)
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
-        return reserverDetailsMemoContainer.memoTabContent(reserver, memos)
+        return reserverDetailsMemoContainer.tabContent(reserver, memos)
     }
 
     @PatchMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot/{memoId}")
