@@ -503,33 +503,4 @@ class ReserverDetailsReservationsContainer(
     }
 
     fun formatDate(d: LocalDateTime): String = d.format(fullDateTimeFormat)
-
-    private fun espooRulesAppliedContent(reserver: ReserverWithDetails): String {
-        // language=HTML
-        return """
-            <label class="checkbox">            
-                <input type="checkbox" id="edit-espoorules-applied-button"
-                    ${if (reserver.espooRulesApplied) "checked" else "" }
-                    hx-patch="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/toggle-espoo-rules-applied")}"
-                    hx-trigger="click"
-                    hx-target="#tab-content"
-                    hx-swap="outerHTML"
-                >                
-                <span>${t("employee.reserverDetails.exceptions.espooExplanation")}</span>                
-            </label>
-            """.trimIndent()
-    }
-
-    fun exceptionsTabContent(reserver: ReserverWithDetails): String {
-        // language=HTML
-        return """
-            <div id="tab-content" class="container block">
-              ${reserverDetailsTabs.renderTabNavi(reserver, SubTab.Exceptions)}
-              <div class="exceptions-container">
-                <label class="label">${t("employee.reserverDetails.exceptions.espooTitle")}</label>
-                ${espooRulesAppliedContent(reserver)}
-              </div>              
-            </div>
-            """.trimIndent()
-    }
 }
