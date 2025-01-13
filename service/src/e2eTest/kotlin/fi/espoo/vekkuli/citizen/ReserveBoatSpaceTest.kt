@@ -519,21 +519,25 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `show error page when reserving space off season`() {
         // login and pick first free space
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 0, 0, 0))
-        page.navigate(baseUrlWithEnglishLangParam)
-        page.getByTestId("loginButton").click()
-        page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-        reservationPage.navigateTo()
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.lengthFilterInput.blur()
-        reservationPage.firstReserveButton.click()
-        val errorPage = ErrorPage(page)
-        assertThat(errorPage.errorPageContainer).isVisible()
+        CitizenHomePage(page).loginAsLeoKorhonen()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+
+        val filterSection = reservationPage.getFilterSection()
+        filterSection.slipRadio.click()
+
+        val slipFilter = filterSection.getSlipFilterSection()
+        slipFilter.widthInput.fill("3")
+        slipFilter.lengthInput.fill("6")
+
+        val searchResults = reservationPage.getSearchResultsSection()
+        searchResults.firstReserveButton.click()
+
+        assertThat(page.locator("body")).containsText("Varaaminen ei ole mahdollista")
     }
 }
