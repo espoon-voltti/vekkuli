@@ -21,6 +21,7 @@ import fi.espoo.vekkuli.views.citizen.details.reservation.TrailerCard
 import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import fi.espoo.vekkuli.views.employee.components.ReserverDetailsExceptionsContainer
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsMemoContainer
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
 import jakarta.servlet.http.HttpServletRequest
@@ -40,6 +41,7 @@ class CitizenUserController(
     private val organizationService: OrganizationService,
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
     private val reserverDetailsMemoContainer: ReserverDetailsMemoContainer,
+    private val reserverDetailsExceptionsContainer: ReserverDetailsExceptionsContainer,
     private val editBoat: EditBoat,
     private val messageUtil: MessageUtil,
     private val reserverService: ReserverService,
@@ -288,7 +290,7 @@ class CitizenUserController(
             logger.audit(it, "RESERVER_PROFILE_EXEPTIONS")
         }
         val reserver = reserverRepository.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
-        return reserverDetailsReservationsContainer.exceptionsTabContent(reserver)
+        return reserverDetailsExceptionsContainer.tabContent(reserver)
     }
 
     @PatchMapping("/virkailija/kayttaja/{reserverId}/poikkeukset/toggle-espoo-rules-applied")
@@ -301,7 +303,7 @@ class CitizenUserController(
             logger.audit(it, "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE")
         }
         val reserver = reserverService.toggleEspooRulesApplied(reserverId) ?: throw IllegalArgumentException("Reserver not found")
-        return reserverDetailsReservationsContainer.exceptionsTabContent(reserver)
+        return reserverDetailsExceptionsContainer.tabContent(reserver)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/vene/{boatId}/muokkaa")
