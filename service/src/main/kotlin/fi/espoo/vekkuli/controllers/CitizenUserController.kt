@@ -299,10 +299,14 @@ class CitizenUserController(
         request: HttpServletRequest,
         @PathVariable reserverId: UUID,
     ): String {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE")
-        }
         val reserver = reserverService.toggleEspooRulesApplied(reserverId) ?: throw IllegalArgumentException("Reserver not found")
+        val espooRulesAppliedChangedTo = !reserver.espooRulesApplied
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it, "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE",
+                mapOf("espoo_rules_applied" to espooRulesAppliedChangedTo.toString())
+            )
+        }
         return reserverDetailsExceptionsContainer.tabContent(reserver)
     }
 
