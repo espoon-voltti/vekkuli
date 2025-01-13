@@ -1059,11 +1059,12 @@ ul {
     padding-bottom: 16px;
   }
 
-  label.checkbox {
+  div.espoo-rules-applied {
     display: flex;
     align-items: flex-start;
     justify-content: normal;
     gap: 16px;
+    margin-bottom: $spacing-xl;
 
     span {
       max-width: 600px;
