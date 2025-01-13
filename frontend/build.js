@@ -118,6 +118,7 @@ function serve() {
       '/ext',
       '/reservation',
       '/validate',
+      '/info',
       '/venepaikka',
       '/virkailija',
       '/yhteiso'

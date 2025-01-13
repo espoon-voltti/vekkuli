@@ -195,7 +195,7 @@ server {
     return     200;
   }
 
-  location ~ ^/(admin|api|auth|boat-space|ext|reservation|validate|venepaikka|virkailija|yhteiso) {
+  location ~ ^/(admin|api|auth|boat-space|ext|reservation|validate|info|venepaikka|virkailija|yhteiso) {
     include     proxy_params;
     proxy_pass  $apiGatewayURL;
   }
