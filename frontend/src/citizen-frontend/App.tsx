@@ -10,6 +10,7 @@ import ErrorPage from './errors/ErrorPage'
 import HomePage from './home/HomePage'
 import Navigation from './layout/Navigation'
 import { Localization, useTranslation } from './localization'
+import OrganizationPage from './organization/OrganizationPage'
 import { queryClient, QueryClientProvider } from './query'
 import ReservationStateRedirect from './reservation/ReservationStateRedirect'
 import SearchPage from './reservation/pages/chooseBoatSpace/SearchPage'
@@ -17,7 +18,6 @@ import ConfirmationPage from './reservation/pages/confirmation/ConfirmationPage'
 import FormPage from './reservation/pages/fillInformation/FormPage'
 import PaymentPage from './reservation/pages/payment/PaymentPage'
 import { ReservationStateContextProvider } from './reservation/state'
-import OrganizationPage from './organization/OrganizationPage'
 
 function App() {
   return (

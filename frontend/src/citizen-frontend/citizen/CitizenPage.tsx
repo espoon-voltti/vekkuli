@@ -1,6 +1,5 @@
 import { Loader } from 'lib-components/Loader'
 import { MainSection } from 'lib-components/dom'
-import Section from 'lib-components/dom/Section'
 import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
