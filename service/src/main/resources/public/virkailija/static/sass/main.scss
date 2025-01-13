@@ -639,6 +639,20 @@ tr.table-borderless th {
 .reservation-card {
   position: relative;
   padding-left: $spacing-large;
+
+  .payment-status {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .payment-status-label {
+    display: flex;
+    flex-direction: row;
+
+    .payment-status-edit-link {
+      margin-left: $spacing-small;
+    }
+  }
 }
 
 .reservation-card::before {

@@ -53,6 +53,8 @@ data class BoatSpaceReservationDetailsRow(
     val originalReservationId: Int? = null,
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
+    val paymentReference: String?,
+    val invoiceDueDate: LocalDate?,
     val storageType: StorageType?,
     // Boat
     val boatId: Int?,
@@ -74,7 +76,6 @@ data class BoatSpaceReservationDetailsRow(
     val trailerRegistrationCode: String?,
     val trailerWidthCm: Int?,
     val trailerLengthCm: Int?,
-    val paymentReference: String?
 )
 
 data class BoatSpaceReservationItemWithWarningRow(
@@ -258,6 +259,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON bs.price_id = price.id
                     JOIN municipality m ON r.municipality_code = m.code
+                    LEFT JOIN invoice i ON i.reservation_id = bsr.id
                     WHERE p.id = :paymentId              
                     """.trimIndent()
                 )
@@ -309,7 +311,8 @@ class JdbiBoatSpaceReservationRepository(
                 boat = loadBoatForReserver(handle, dbResult.id, dbResult.boatId),
                 trailer = loadTrailerForReserver(handle, dbResult.id, dbResult.trailerId),
                 storageType = dbResult.storageType,
-                paymentReference = dbResult.paymentReference
+                paymentReference = dbResult.paymentReference,
+                invoiceDueDate = dbResult.invoiceDueDate
             )
         } else {
             null
@@ -434,7 +437,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentDate = it.paymentDate,
                     paymentId = it.paymentId,
                     storageType = it.storageType,
-                    paymentReference = it.paymentReference
+                    paymentReference = it.paymentReference,
+                    invoiceDueDate = it.invoiceDueDate
                 )
             }
         }
@@ -608,7 +612,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentDate = it.paymentDate,
                     paymentId = it.paymentId,
                     storageType = it.storageType,
-                    paymentReference = it.paymentReference
+                    paymentReference = it.paymentReference,
+                    invoiceDueDate = it.invoiceDueDate
                 )
             }
         }
@@ -1070,7 +1075,9 @@ class JdbiBoatSpaceReservationRepository(
         t.registration_code AS trailer_registration_code,
         t.width_cm AS trailer_width_cm,
         t.length_cm AS trailer_length_cm,
-        p.reference as payment_reference
+        
+        p.reference AS payment_reference,
+        i.due_date AS invoice_due_date
         """.trimIndent()
 
     private fun buildSqlSelectFromJoinPartForBoatSpaceReservationDetails() =
@@ -1085,6 +1092,7 @@ class JdbiBoatSpaceReservationRepository(
         LEFT JOIN price ON price_id = price.id
         JOIN municipality m ON r.municipality_code = m.code
         LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status <> 'Failed'
+        LEFT JOIN invoice i ON i.reservation_id = bsr.id
         """.trimIndent()
 
     private fun buildSqlSelectPartForReservationWithDependencies() =

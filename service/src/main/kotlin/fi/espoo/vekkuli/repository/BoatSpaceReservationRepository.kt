@@ -91,7 +91,10 @@ interface BoatSpaceReservationRepository {
 
     fun getExpiredBoatSpaceReservationsForReserver(reserverId: UUID): List<BoatSpaceReservationDetails>
 
-    fun updateReservationStatus(reservationId: Int, status: ReservationStatus): BoatSpaceReservation?
+    fun updateReservationStatus(
+        reservationId: Int,
+        status: ReservationStatus
+    ): BoatSpaceReservation?
 
     fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails>
 
