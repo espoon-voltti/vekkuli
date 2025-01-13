@@ -2,10 +2,10 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.pages.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.EmployeeHomePage
-import fi.espoo.vekkuli.pages.InvoicePreviewPage
-import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
+import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles

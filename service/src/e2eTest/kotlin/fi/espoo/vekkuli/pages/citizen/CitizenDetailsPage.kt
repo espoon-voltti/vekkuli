@@ -1,11 +1,12 @@
-package fi.espoo.vekkuli.pages
+package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.pages.BasePage
 
-class CitizenDetailsReactPage(
+class CitizenDetailsPage(
     page: Page
 ) : BasePage(page) {
     inner class BoatSection(locator: Locator) {

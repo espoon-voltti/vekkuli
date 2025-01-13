@@ -1,7 +1,8 @@
-package fi.espoo.vekkuli.pages
+package fi.espoo.vekkuli.pages.employee
 
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.pages.BasePage
 
 class BoatSpaceFormPage(
     page: Page

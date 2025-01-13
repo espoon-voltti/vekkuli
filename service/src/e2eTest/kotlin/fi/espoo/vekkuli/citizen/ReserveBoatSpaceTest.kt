@@ -6,7 +6,7 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.pages.*
+import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Disabled

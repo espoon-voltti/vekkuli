@@ -1,7 +1,8 @@
-package fi.espoo.vekkuli.pages
+package fi.espoo.vekkuli.pages.employee
 
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.pages.BasePage
 
 class ReservationListPage(
     page: Page

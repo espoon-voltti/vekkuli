@@ -5,7 +5,8 @@ import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.pages.*
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

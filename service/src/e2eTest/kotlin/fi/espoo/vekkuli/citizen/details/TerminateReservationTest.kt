@@ -4,8 +4,8 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.pages.CitizenDetailsReactPage
-import fi.espoo.vekkuli.pages.CitizenHomePage
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
@@ -23,7 +23,7 @@ class TerminateReservationTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
             val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
@@ -53,7 +53,7 @@ class TerminateReservationTest : PlaywrightTest() {
             mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.userRequest")
@@ -102,7 +102,7 @@ class TerminateReservationTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
             val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
