@@ -41,9 +41,9 @@ class BoatSpaceInvoiceService(
         if (invoice != null) {
             return invoice
         }
-        val (createdInvoice) = createInvoice(invoiceData, reserverId, reservationId)
+        val invoiceDataInput = if (markAsPaidAndSkipSending) invoiceData.copy(priceCents = 0) else invoiceData
+        var (createdInvoice) = createInvoice(invoiceDataInput, reserverId, reservationId)
 
-        val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
         if (markAsPaidAndSkipSending) {
             // Mark as paid but never send invoice
             boatReservationService.markInvoicePaid(
@@ -51,6 +51,8 @@ class BoatSpaceInvoiceService(
                 timeProvider.getCurrentDateTime()
             )
         } else {
+            val invoiceDataWithNumber = invoiceData.copy(invoiceNumber = createdInvoice.invoiceNumber)
+
             // Send invoice and continue with normal flow
             asyncJobRunner.plan(
                 sequenceOf(
