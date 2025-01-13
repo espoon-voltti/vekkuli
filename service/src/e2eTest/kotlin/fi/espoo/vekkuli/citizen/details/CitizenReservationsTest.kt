@@ -2,27 +2,24 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.citizenPageInEnglish
-import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.CitizenDetailsReactPage
 import fi.espoo.vekkuli.pages.CitizenHomePage
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
 class CitizenReservationsTest : PlaywrightTest() {
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen can see their active reservations`() {
         try {
-            val citizenDetailsPage = CitizenDetailsPage(page)
-
             CitizenHomePage(page).loginAsOliviaVirtanen()
-            page.navigate(citizenPageInEnglish)
 
-            // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B 003")
+            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            citizenDetailsPage.navigateToPage()
+
+            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            assertThat(firstReservationSection.locationName).hasText("Haukilahti")
+            assertThat(firstReservationSection.place).hasText("B 003")
 
             // Seed user has 2 active reservations
             assertThat(citizenDetailsPage.reservationListCards).hasCount(2)
@@ -32,17 +29,18 @@ class CitizenReservationsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen can see their expired reservations`() {
         try {
-            val citizenDetailsPage = CitizenDetailsPage(page)
-
             CitizenHomePage(page).loginAsOliviaVirtanen()
-            page.navigate(citizenPageInEnglish)
 
-            // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B 003")
+            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            citizenDetailsPage.navigateToPage()
+
+            citizenDetailsPage.showExpiredReservationsToggle.click()
+
+            val firstExpiredReservationSection = citizenDetailsPage.getFirstExpiredReservationSection()
+            assertThat(firstExpiredReservationSection.locationName).hasText("Haukilahti")
+            assertThat(firstExpiredReservationSection.place).hasText("B 003")
 
             // Seed user has 2 expired reservations
             assertThat(citizenDetailsPage.expiredReservationListCards).hasCount(2)

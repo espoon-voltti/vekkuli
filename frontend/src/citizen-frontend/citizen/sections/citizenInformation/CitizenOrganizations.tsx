@@ -15,7 +15,13 @@ export default React.memo(function CitizenInformation({
       {organizations.map((organization) => (
         <Columns key={`organization-${organization.id}`}>
           <Column isOneQuarter>
-            <TextField label="Nimi" value={organization.name} readonly={true} />
+            <a href={`/kuntalainen/yhteiso/${organization.id}`}>
+              <TextField
+                label="Nimi"
+                value={organization.name}
+                readonly={true}
+              />
+            </a>
           </Column>
           <Column isOneQuarter>
             <TextField

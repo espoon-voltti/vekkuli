@@ -19,7 +19,7 @@ class OrganizationControllerService(
         val organization =
             organizationService.getOrganizationById(organizationId) ?: throw IllegalArgumentException("Organization not found")
         val organizationMembers = organizationService.getOrganizationMembers(organizationId)
-        val organizationReservations = boatReservationService.getBoatSpaceReservationsForCitizen(organizationId)
+        val organizationReservations = boatReservationService.getBoatSpaceReservationsForReserver(organizationId)
         val boats =
             boatService.getBoatsForReserver(organizationId).map { toBoatUpdateForm(it, organizationReservations) }
         return organizationDetailsView.organizationPageForEmployee(
@@ -56,7 +56,7 @@ class OrganizationControllerService(
             )
         boatService.updateBoat(updatedBoat)
 
-        val organizationReservations = boatReservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val organizationReservations = boatReservationService.getBoatSpaceReservationsForReserver(reserverId)
         val updatedBoats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, organizationReservations) }
 
         return organizationDetailsView.organizationPageForEmployee(

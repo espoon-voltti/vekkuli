@@ -47,7 +47,7 @@ export default React.memo(function TrailerInformation({
 
   const { registrationNumber, length, width } = useFormFields(form)
   return (
-    <>
+    <div data-testid="trailer-information">
       <Columns isVCentered>
         <Column isNarrow>
           <h4>Trailerin tiedot</h4>
@@ -69,10 +69,20 @@ export default React.memo(function TrailerInformation({
           />
         </Column>
         <Column isOneQuarter>
-          <NumberField label="Leveys (m)" bind={width} readonly={!editMode} />
+          <NumberField
+            label="Leveys (m)"
+            bind={width}
+            readonly={!editMode}
+            precision={2}
+          />
         </Column>
         <Column isOneQuarter>
-          <NumberField label="Pituus (m)" bind={length} readonly={!editMode} />
+          <NumberField
+            label="Pituus (m)"
+            bind={length}
+            readonly={!editMode}
+            precision={2}
+          />
         </Column>
       </Columns>
       {editMode && (
@@ -85,6 +95,6 @@ export default React.memo(function TrailerInformation({
           </Button>
         </Buttons>
       )}
-    </>
+    </div>
   )
 })

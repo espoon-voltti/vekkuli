@@ -43,17 +43,25 @@ open class ReservationService(
 
     fun getActiveReservationsForCurrentCitizen(): List<BoatSpaceReservation> {
         val (citizenId) = citizenAccessControl.requireCitizen()
-        return boatReservationService.getBoatSpaceReservationsForCitizen(citizenId).map { it.toBoatSpaceReservation() }
+        return boatReservationService.getBoatSpaceReservationsForReserver(citizenId).map { it.toBoatSpaceReservation() }
     }
 
     fun getExpiredReservationsForCurrentCitizen(): List<BoatSpaceReservation> {
         val (citizenId) = citizenAccessControl.requireCitizen()
-        return boatReservationService.getExpiredBoatSpaceReservationsForCitizen(citizenId).map { it.toBoatSpaceReservation() }
+        return boatReservationService.getExpiredBoatSpaceReservationsForReserver(citizenId).map { it.toBoatSpaceReservation() }
     }
 
-    fun getReservation(reservationId: Int): BoatSpaceReservation {
-        return accessReservation(reservationId).toBoatSpaceReservation()
-    }
+    fun getActiveReservationsForOrganization(orgId: UUID): List<BoatSpaceReservation> =
+        boatReservationService.getBoatSpaceReservationsForReserver(orgId).map {
+            it.toBoatSpaceReservation()
+        }
+
+    fun getExpiredReservationsForOrganization(orgId: UUID): List<BoatSpaceReservation> =
+        boatReservationService.getExpiredBoatSpaceReservationsForReserver(orgId).map {
+            it.toBoatSpaceReservation()
+        }
+
+    fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservation(reservationId).toBoatSpaceReservation()
 
     @Transactional
     open fun startReservation(spaceId: Int): BoatSpaceReservation {
@@ -148,9 +156,8 @@ open class ReservationService(
         return weight <= BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG
     }
 
-    private fun citizenHasExistingUnfinishedReservation(citizenId: UUID): Boolean {
-        return boatReservationService.getUnfinishedReservationForCitizen(citizenId) != null
-    }
+    private fun citizenHasExistingUnfinishedReservation(citizenId: UUID): Boolean =
+        boatReservationService.getUnfinishedReservationForCitizen(citizenId) != null
 
     private fun getEndDate(result: ReservationResult): LocalDate {
         val endOfYear = LocalDate.of(timeProvider.getCurrentDate().year, Month.DECEMBER, 31)
@@ -173,9 +180,7 @@ open class ReservationService(
     private fun citizenHasAccessToReservation(
         citizenId: UUID,
         reservation: BoatSpaceReservationDetails
-    ): Boolean {
-        return reservation.reserverId == citizenId || reservation.actingCitizenId == citizenId
-    }
+    ): Boolean = reservation.reserverId == citizenId || reservation.actingCitizenId == citizenId
 
     private fun validateCurrentCitizenAccessToReservation(reservationId: Int) {
         accessReservation(reservationId)

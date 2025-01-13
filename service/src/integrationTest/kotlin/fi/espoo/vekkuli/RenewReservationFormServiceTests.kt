@@ -451,7 +451,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             )
         var reservation =
             reservationService
-                .getBoatSpaceReservationsForCitizen(this.citizenIdLeo)
+                .getBoatSpaceReservationsForReserver(this.citizenIdLeo)
                 .firstOrNull {
                     it.id == madeReservation.id
                 }
@@ -463,7 +463,7 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         mockTimeProvider(timeProvider, reservationExpiringAndSeasonOpenTime)
         reservation =
             reservationService
-                .getBoatSpaceReservationsForCitizen(this.citizenIdLeo)
+                .getBoatSpaceReservationsForReserver(this.citizenIdLeo)
                 .firstOrNull {
                     it.id == madeReservation.id
                 }

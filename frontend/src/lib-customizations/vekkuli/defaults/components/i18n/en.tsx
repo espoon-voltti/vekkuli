@@ -105,7 +105,8 @@ const components: Translations = {
     selectedValuesMax: 'Select at most {max} values',
     positiveNumber: 'Enter a positive number',
     certify: 'Certify that the information you provided is correct',
-    terms: 'Accept the harbor rules'
+    terms: 'Accept the harbor rules',
+    validDate: 'Valid date format is dd.mm.yyyy'
   },
   links: {
     goBack: 'Back',

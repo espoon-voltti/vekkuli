@@ -24,7 +24,7 @@ export default React.memo(function IconLink({
   }
 
   return (
-    <a {...props}>
+    <a role="link" {...props}>
       <span className="icon">{icon}</span>
       <span>{children}</span>
     </a>

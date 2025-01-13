@@ -2,127 +2,115 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.pages.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.CitizenDetailsReactPage
 import fi.espoo.vekkuli.pages.CitizenHomePage
-import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
 class TerminateReservationTest : PlaywrightTest() {
-    val citizenPageInEnglish = "$baseUrl/kuntalainen/omat-tiedot?lang=en"
-
     @Autowired
     lateinit var messageUtil: MessageUtil
 
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen can open a terminate reservation modal from a reservation list item and cancel it`() {
         try {
-            val citizenDetailsPage = CitizenDetailsPage(page)
             CitizenHomePage(page).loginAsLeoKorhonen()
+
+            val citizenDetailsPage = CitizenDetailsReactPage(page)
             citizenDetailsPage.navigateToPage()
 
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
-            assertThat(citizenDetailsPage.expiredReservationList)
-            citizenDetailsPage.terminateReservationButton.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
-            assertThat(citizenDetailsPage.terminateReservationModalConfirm).isVisible()
-            assertThat(citizenDetailsPage.terminateReservationModalCancel).isVisible()
+            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            assertThat(firstReservationSection.locationName).hasText("Haukilahti")
+            assertThat(firstReservationSection.place).hasText("B 001")
 
-            assertThat(citizenDetailsPage.locationNameInFirstBoatSpaceReservationCard).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstBoatSpaceReservationCard).hasText("B 001")
+            firstReservationSection.terminateButton.click()
 
-            // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
-            assertThat(citizenDetailsPage.terminateReservationFormSize).hasText("2.50 x 4.50 m")
-            assertThat(citizenDetailsPage.terminateReservationFormAmenity).hasText("Beam")
+            val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
+            assertThat(terminateReservationModal.element).isVisible()
+            assertThat(terminateReservationModal.confirmButton).isVisible()
+            assertThat(terminateReservationModal.cancelButton).isVisible()
+            assertThat(terminateReservationModal.placeIdentifierText).hasText("Haukilahti B 001")
+            assertThat(terminateReservationModal.boatSpaceText).hasText("2,50 m x 4,50 m")
+            assertThat(terminateReservationModal.amenityText).hasText("Aisa")
 
-            citizenDetailsPage.terminateReservationModalCancel.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
+            terminateReservationModal.cancelButton.click()
+            assertThat(terminateReservationModal.element).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen can terminate reservation and see it in expired reservations list`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetailsPage = CitizenDetailsPage(page)
+            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            citizenDetailsPage.navigateToPage()
+
             val expectedTerminationReason = messageUtil.getMessage("boatSpaceReservation.terminateReason.userRequest")
             val expectedTerminationDate = timeProvider.getCurrentDate()
 
-            CitizenHomePage(page).loginAsLeoKorhonen()
-            citizenDetailsPage.navigateToPage()
-
             // Expired list is not on the page
-            assertThat(citizenDetailsPage.expiredReservationListLoader).hasCount(0)
             assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
 
-            citizenDetailsPage.terminateReservationButton.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
+            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            firstReservationSection.terminateButton.click()
 
-            // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
+            val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
+            assertThat(terminateReservationModal.element).isVisible()
+            assertThat(terminateReservationModal.placeIdentifierText).hasText("Haukilahti B 001")
 
-            citizenDetailsPage.terminateReservationModalConfirm.click()
+            terminateReservationModal.confirmButton.click()
+            // TODO assertThat(citizenDetailsPage.terminateReservationSuccessModal).isVisible()
 
-            // Shows a success message in modal
-            assertThat(citizenDetailsPage.terminateReservationSuccess).isVisible()
+            assertThat(terminateReservationModal.element).not().isVisible()
 
-            // Hides the modal and the expired list is on the page, but not visible
-            citizenDetailsPage.hideModalWindow()
+            citizenDetailsPage.showExpiredReservationsToggle.click()
 
-            assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
-            assertThat(citizenDetailsPage.expiredReservationList).not().isVisible()
-            assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
+            val firstExpiredReservationSection = citizenDetailsPage.getFirstExpiredReservationSection()
+            assertThat(firstExpiredReservationSection.locationName).hasText("Haukilahti")
+            assertThat(firstExpiredReservationSection.place).hasText("B 001")
 
-            citizenDetailsPage.toggleExpiredReservationsAccordion()
-            assertThat(citizenDetailsPage.expiredReservationList).isVisible()
-            assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B 001")
-
-            assertThat(
-                citizenDetailsPage.terminationDateInFirstExpiredReservationListItem
-            ).containsText(formatAsFullDate(expectedTerminationDate))
-
-            assertThat(
-                citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
-            ).containsText(expectedTerminationReason)
-
-            assertThat(
-                citizenDetailsPage.terminationCommentInFirstExpiredReservationListItem
-            ).containsText("-")
+            // TODO add termination date, reason and comment to the page
+//            assertThat(
+//                firstExpiredReservationSection.terminationDate
+//            ).containsText(formatAsFullDate(expectedTerminationDate))
+//
+//            assertThat(
+//                firstExpiredReservationSection.terminationReason
+//            ).containsText(expectedTerminationReason)
+//
+//            assertThat(
+//                firstExpiredReservationSection.terminationComment
+//            ).containsText("-")
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen sees an error message if the termination is unsuccessful`() {
         try {
-            val citizenDetailsPage = CitizenDetailsPage(page)
-
             CitizenHomePage(page).loginAsLeoKorhonen()
+
+            val citizenDetailsPage = CitizenDetailsReactPage(page)
             citizenDetailsPage.navigateToPage()
 
-            citizenDetailsPage.terminateReservationButton.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).isVisible()
+            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            firstReservationSection.terminateButton.click()
 
             // Opens up information from the first reservation of the first user
-            assertThat(citizenDetailsPage.terminateReservationFormLocation).hasText("Haukilahti B 001")
+            val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
+            assertThat(terminateReservationModal.placeIdentifierText).hasText("Haukilahti B 001")
             jdbi.inTransactionUnchecked { tx ->
                 tx
                     .createUpdate("UPDATE boat_space_reservation SET status = :status WHERE id = :id")
@@ -130,11 +118,15 @@ class TerminateReservationTest : PlaywrightTest() {
                     .bind("id", 1)
                     .execute()
             }
-            citizenDetailsPage.terminateReservationModalConfirm.click()
-            assertThat(citizenDetailsPage.terminateReservationForm).not().isVisible()
-            assertThat(citizenDetailsPage.terminateReservationFail).isVisible()
-            citizenDetailsPage.terminateReservationFailOkButton.click()
-            assertThat(citizenDetailsPage.terminateReservationFail).not().isVisible()
+
+            terminateReservationModal.confirmButton.click()
+            assertThat(terminateReservationModal.element).not().isVisible()
+
+            val terminateReservationFailureModal = citizenDetailsPage.getTerminateReservationFailureModal()
+            assertThat(terminateReservationFailureModal.element).isVisible()
+
+            terminateReservationFailureModal.okButton.click()
+            assertThat(terminateReservationFailureModal.element).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }

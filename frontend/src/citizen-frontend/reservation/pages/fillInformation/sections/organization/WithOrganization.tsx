@@ -16,9 +16,9 @@ export const WithOrganization = React.memo(function Organization({
     businessId,
     phone,
     email,
-    city,
+    postOffice,
     postalCode,
-    address,
+    streetAddress,
     municipality
   } = useFormFields(bind)
 
@@ -71,7 +71,7 @@ export const WithOrganization = React.memo(function Organization({
           <TextField
             id="organization-address"
             label="Katuosoite"
-            bind={address}
+            bind={streetAddress}
           />
         </Column>
         <Column isOneEight>
@@ -85,7 +85,7 @@ export const WithOrganization = React.memo(function Organization({
           <TextField
             id="organization-city"
             label="Postitoimipaikka"
-            bind={city}
+            bind={postOffice}
           />
         </Column>
       </Columns>

@@ -50,7 +50,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
   } = useFormFields(bind)
 
   return (
-    <div className="reservation-card">
+    <div className="reservation-card" data-testid={`boat-${boat.id}`}>
       <Columns isVCentered>
         <Column isNarrow>
           <h4>{boat.name}</h4>
@@ -102,6 +102,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
             bind={depth}
             required={editMode}
             readonly={!editMode}
+            precision={2}
           />
           <TextField
             label="Lisätiedot"
@@ -117,6 +118,7 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
             bind={width}
             required={editMode}
             readonly={!editMode}
+            precision={2}
           />
           <TextField
             label="Rekisteritunnus"
@@ -126,12 +128,13 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
           />
         </Column>
         <Column>
-          <TextField
+          <NumberField
             label="Pituus (m)"
             name="length"
             bind={length}
             required={editMode}
             readonly={!editMode}
+            precision={2}
           />
           <SelectField
             label="Omistussuhde"

@@ -15,6 +15,15 @@ class PermissionService(
     private val trailerRepository: TrailerRepository,
     private val boatRepository: BoatRepository,
 ) {
+    fun hasAccessToOrganization(
+        userId: UUID,
+        orgId: UUID
+    ): Boolean =
+        when {
+            userService.isAppUser(userId) -> true
+            else -> userId in organizationService.getOrganizationMembers(orgId).map { it.id }
+        }
+
     fun canTerminateBoatSpaceReservation(
         terminatorId: UUID,
         reservationId: Int

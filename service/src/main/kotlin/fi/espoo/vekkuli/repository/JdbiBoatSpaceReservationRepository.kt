@@ -927,7 +927,7 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservation>().singleOrNull()
         }
 
-    override fun getExpiredBoatSpaceReservationsForCitizen(reserverId: UUID): List<BoatSpaceReservationDetails> =
+    override fun getExpiredBoatSpaceReservationsForReserver(reserverId: UUID): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(

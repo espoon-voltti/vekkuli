@@ -55,6 +55,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
             step={0.01}
             min={1}
             max={9999999}
+            precision={2}
           />
         </div>
         <div className="column">
@@ -69,6 +70,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
             step={0.01}
             min={1}
             max={9999999}
+            precision={2}
           />
         </div>
       </div>

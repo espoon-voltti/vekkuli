@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.employee
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.employee.components.MarkAsPaidConfirmModal
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -30,7 +31,8 @@ data class SendInvoiceModel(
 
 @Component
 class InvoicePreview(
-    val formComponents: FormComponents
+    val formComponents: FormComponents,
+    private val markAsPaidConfirmModal: MarkAsPaidConfirmModal
 ) : BaseView() {
     fun render(
         model: SendInvoiceModel,
@@ -86,12 +88,6 @@ class InvoicePreview(
                 compact = true
             )
 
-        val markAsPaid =
-            formComponents.checkBox(
-                t("invoice.markAsPaid"),
-                "markAsPaid"
-            )
-
         val contactPerson =
             if (isOrganization) {
                 """
@@ -104,7 +100,7 @@ class InvoicePreview(
 
         // language=HTML
         return """
-            <section class="section">
+            <section class="section" x-data="{ confirmModalOpen: false, markAsPaidInputValue: false }">
                 <div class="container">
                     <h2 class="title pb-l" id="invoice-preview-header">${t("invoice.title.previewHeader")}</h2>
 
@@ -139,7 +135,6 @@ class InvoicePreview(
                         
                         <div class="column">
                             $priceWithTax
-                            $markAsPaid
                         </div>
                     </div>
                                 
@@ -149,6 +144,8 @@ class InvoicePreview(
                         </div>
                     </div>
                     
+                    <input type="hidden" name="markAsPaid" id="markAsPaidInput" x-model="markAsPaidInputValue">
+
                     <hr/>
                     
                     <div class="field block">
@@ -161,12 +158,20 @@ class InvoicePreview(
                                 type="button">
                                 ${t("invoice.button.cancel")}
                             </button>
+                              <button id="mark-as-paid"
+                                class="button is-primary"
+                                type='button'
+                                x-on:click="confirmModalOpen = true">
+                                ${t("invoice.button.reserveWithoutInvoice")}
+                            </button>
                             <button id="submit"
-                                class="button is-primary">
+                                class="button is-primary" type='submit'>
                                 ${t("invoice.button.sendInvoice")}
                             </button>
+                          
                         </div>
                     </div> 
+                    ${markAsPaidConfirmModal.render()}
                     </form>
                 </div>
             </section>

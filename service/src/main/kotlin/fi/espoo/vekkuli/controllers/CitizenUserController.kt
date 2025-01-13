@@ -64,7 +64,7 @@ class CitizenUserController(
         }
         val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         val organizations = organizationService.getCitizenOrganizations(citizenId)
 
@@ -89,7 +89,7 @@ class CitizenUserController(
             logger.audit(it, "CITIZEN_PROFILE")
         }
         val citizen = getAuthenticatedCitizen(request)
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizen.id)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizen.id)
         val boats = boatService.getBoatsForReserver(citizen.id).map { toBoatUpdateForm(it, boatSpaceReservations) }
         val organizations = organizationService.getCitizenOrganizations(citizen.id)
 
@@ -127,7 +127,7 @@ class CitizenUserController(
             logger.audit(it, "CITIZEN_PROFILE_RESERVATIONS")
         }
         val reserver = reserverService.getReserverById(citizenId) ?: throw IllegalArgumentException("Citizen not found")
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return reserverDetailsReservationsContainer.render(reserver, boatSpaceReservations, boats, UserType.EMPLOYEE, reserver.type)
     }
@@ -515,7 +515,7 @@ class CitizenUserController(
             )
         boatService.updateBoat(updatedBoat)
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
         val updatedBoats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
@@ -578,7 +578,7 @@ class CitizenUserController(
             )
         boatService.updateBoat(updatedBoat)
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
         val updatedBoats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
@@ -633,7 +633,7 @@ class CitizenUserController(
 
         val organizations = organizationService.getCitizenOrganizations(citizenId)
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
         val boatDeletionSuccessful = boatService.deleteBoat(boatId)
         // Update the boat list to remove the deleted boat
@@ -663,7 +663,7 @@ class CitizenUserController(
         val boats = boatService.getBoatsForReserver(organizationId)
         boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(organizationId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(organizationId)
 
         val boatDeletionSuccessful = boatService.deleteBoat(boatId)
         // Update the boat list to remove the deleted boat
@@ -691,7 +691,7 @@ class CitizenUserController(
         val boats = boatService.getBoatsForReserver(citizenId)
         boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
 
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
         val organizations = organizationService.getCitizenOrganizations(citizenId)
 
@@ -752,7 +752,7 @@ class CitizenUserController(
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_SAVE")
         }
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
         val organizations = organizationService.getCitizenOrganizations(citizenId)
 
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
@@ -784,7 +784,7 @@ class CitizenUserController(
         }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
         val organizations = organizationService.getCitizenOrganizations(citizenId)
 
         val boats = boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
@@ -840,7 +840,7 @@ class CitizenUserController(
             reservationId,
             LocalDateTime.of(paymentDate.year, paymentDate.month, paymentDate.dayOfMonth, 0, 0)
         )
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
         val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
@@ -864,7 +864,7 @@ class CitizenUserController(
         }
         val userId = request.ensureEmployeeId()
         reservationService.acknowledgeWarnings(reservationId, userId, boatId, key, infoText)
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
     }
@@ -883,7 +883,7 @@ class CitizenUserController(
         val userId = request.ensureEmployeeId()
 
         reservationService.acknowledgeWarningForTrailer(trailerId, userId, key, infoText)
-        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForCitizen(reserverId)
+        val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
     }

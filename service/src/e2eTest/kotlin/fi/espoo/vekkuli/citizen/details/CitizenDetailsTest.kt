@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -16,26 +15,25 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen can edit trailer information and it should add warnings when trailer is too large`() {
         try {
-            page.navigate(baseUrl)
-            page.getByTestId("loginButton").click()
-            page.getByTestId("031298-988S").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetails = CitizenDetailsPage(page)
+            val citizenDetails = CitizenDetailsReactPage(page)
             citizenDetails.navigateToPage()
-            val id = 1
-            citizenDetails.editTrailerButton(id).click()
-            citizenDetails.trailerRegistrationCodeInput.fill("FOO-123")
-            citizenDetails.trailerWidthInput.fill("3")
-            citizenDetails.trailerLengthInput.fill("5")
-            citizenDetails.trailerEditSubmitButton.click()
 
-            assertThat(citizenDetails.trailerRegistrationCode(id)).hasText("FOO-123")
-            assertThat(citizenDetails.trailerWidth(id)).hasText("3,00")
-            assertThat(citizenDetails.trailerLength(id)).hasText("5,00")
+            val firstReservationSection = citizenDetails.getReservationSection(1)
+            val trailerSection = firstReservationSection.trailerSection
+
+            trailerSection.editButton.click()
+            trailerSection.registrationCodeInput.fill("FOO-123")
+            trailerSection.widthInput.fill("3")
+            trailerSection.lengthInput.fill("5")
+            trailerSection.saveButton.click()
+
+            assertThat(trailerSection.registrationCodeField).hasText("FOO-123")
+            assertThat(trailerSection.widthField).hasText("3,00")
+            assertThat(trailerSection.lengthField).hasText("5,00")
 
             val employeeHomePage = EmployeeHomePage(page)
             employeeHomePage.employeeLogin()
@@ -47,18 +45,20 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             listingPage.boatSpace8.click()
 
-            citizenDetails.trailerAckWarningButton(1).click()
+            val employeeCitizenDetails = CitizenDetailsPage(page)
 
-            assertThat(citizenDetails.trailerWarningModalLengthInput).isVisible()
-            assertThat(citizenDetails.trailerWarningModalWidthInput).isVisible()
-            citizenDetails.trailerWarningModalLengthInput.click()
+            employeeCitizenDetails.trailerAckWarningButton(1).click()
+
+            assertThat(employeeCitizenDetails.trailerWarningModalLengthInput).isVisible()
+            assertThat(employeeCitizenDetails.trailerWarningModalWidthInput).isVisible()
+            employeeCitizenDetails.trailerWarningModalLengthInput.click()
 
             val infoText = "Length and width ok"
-            citizenDetails.boatWarningModalInfoInput.fill(infoText)
-            citizenDetails.boatWarningModalConfirmButton.click()
+            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+            employeeCitizenDetails.boatWarningModalConfirmButton.click()
 
-            citizenDetails.memoNavi.click()
-            assertThat(citizenDetails.userMemo(2)).containsText(infoText)
+            employeeCitizenDetails.memoNavi.click()
+            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -71,8 +71,8 @@ class CitizenDetailsTest : PlaywrightTest() {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            page.navigate(citizenPageInEnglish)
             val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToPage()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
 
@@ -108,8 +108,8 @@ class CitizenDetailsTest : PlaywrightTest() {
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
             val renewReservationId = 6
-            page.navigate(citizenPageInEnglish)
             val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToPage()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(renewReservationId).click()
             val formPage = BoatSpaceFormPage(page)
@@ -154,9 +154,9 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            page.navigate(citizenPageInEnglish)
-
             val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToPage()
+
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             assertThat(citizenDetails.renewReservationButton(1)).not().isVisible()
         } catch (e: AssertionError) {
@@ -165,90 +165,84 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen can edit their own information`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            page.navigate(citizenPageInEnglish)
+            val citizenDetails = CitizenDetailsReactPage(page)
+            citizenDetails.navigateToPage()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.editButton.click()
+            val citizenSection = citizenDetails.getCitizenSection()
+            citizenSection.editButton.click()
 
-            assertThat(page.getByTestId("edit-citizen-form")).isVisible()
             val citizenPhone = "0405839281"
             val citizenEmail = "test2@email.com"
 
-            citizenDetails.citizenEmailInput.fill("")
-            citizenDetails.citizenPhoneInput.fill("")
-            citizenDetails.citizenEditSubmitButton.click()
+            citizenSection.emailInput.fill("")
+            citizenSection.phoneInput.fill("")
+            citizenSection.saveButton.click()
 
             // assert that email and phone can not be empty
-            assertThat(citizenDetails.citizenEmailError).isVisible()
-            assertThat(citizenDetails.citizenPhoneError).isVisible()
-            citizenDetails.citizenEmailInput.fill("asd")
-            citizenDetails.citizenPhoneInput.fill("asd")
-            citizenDetails.citizenEditSubmitButton.click()
+            assertThat(citizenSection.emailError).isVisible()
+            assertThat(citizenSection.phoneError).isVisible()
+            citizenSection.emailInput.fill("asd")
+            citizenSection.phoneInput.fill("asd")
+            citizenSection.saveButton.click()
 
             // assert that email and phone have to be valid
-            assertThat(citizenDetails.citizenEmailPatternError).isVisible()
-            assertThat(citizenDetails.citizenPhonePatternError).isVisible()
-            citizenDetails.citizenEmailInput.fill(citizenEmail)
-            citizenDetails.citizenPhoneInput.fill(citizenPhone)
-            citizenDetails.citizenEditSubmitButton.click()
+            assertThat(citizenSection.emailError).isVisible()
+            assertThat(citizenSection.emailError).hasText("Virheellinen sähköpostiosoite")
+            assertThat(citizenSection.phoneError).isVisible()
+            assertThat(citizenSection.phoneError).hasText("Virheellinen numero")
+            citizenSection.emailInput.fill(citizenEmail)
+            citizenSection.phoneInput.fill(citizenPhone)
+            citizenSection.saveButton.click()
 
             // assert that the values are updated
-            assertThat(citizenDetails.citizenPhoneField).hasText(citizenPhone)
-            assertThat(citizenDetails.citizenEmailField).hasText(citizenEmail)
-            assertThat(citizenDetails.citizenMunicipalityField).hasText("Espoo")
+            assertThat(citizenSection.phoneField).hasText(citizenPhone)
+            assertThat(citizenSection.emailField).hasText(citizenEmail)
+            assertThat(citizenSection.municipalityField).hasText("Espoo")
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `citizen can edit their own boat`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            page.navigate(citizenPageInEnglish)
+            val citizenDetails = CitizenDetailsReactPage(page)
+            citizenDetails.navigateToPage()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.showAllBoatsButton.click()
-            page.getByTestId("edit-boat-3").click()
-            assertThat(page.getByTestId("form")).isVisible()
 
-            citizenDetails.nameInput.fill("New Boat Name")
-            citizenDetails.weightInput.fill("2000")
-            citizenDetails.typeSelect.selectOption("Sailboat")
-            citizenDetails.depthInput.fill("1.5")
-            citizenDetails.widthInput.fill("3")
-            citizenDetails.registrationNumberInput.fill("ABC123")
-            citizenDetails.length.fill("6")
-            citizenDetails.ownership.selectOption("Owner")
-            citizenDetails.otherIdentifier.fill("ID12345")
-            citizenDetails.extraInformation.fill("Extra info")
+            val boat = citizenDetails.getBoatSection(3)
+            boat.editButton.click()
 
-            citizenDetails.submitButton.click()
-            assertThat(citizenDetails.nameText(3)).hasText("New Boat Name")
-            assertThat(citizenDetails.weightText(3)).hasText("2000")
-            assertThat(citizenDetails.typeText(3)).hasText("Sailboat")
-            assertThat(citizenDetails.depthText(3)).hasText("1,50")
-            assertThat(citizenDetails.widthText(3)).hasText("3,00")
-            assertThat(citizenDetails.registrationNumberText(3)).hasText("ABC123")
+            boat.nameInput.fill("New Boat Name")
+            boat.weightInput.fill("2000")
+            boat.typeSelect.selectOption("Sailboat")
+            boat.depthInput.fill("1.5")
+            boat.widthInput.fill("3")
+            boat.registrationNumberInput.fill("ABC123")
+            boat.lengthInput.fill("6")
+            boat.ownershipSelect.selectOption("Owner")
+            boat.otherIdentifierInput.fill("ID12345")
+            boat.extraInformationInput.fill("Extra info")
 
-            assertThat(citizenDetails.lengthText(3)).hasText("6,00")
-            assertThat(citizenDetails.ownershipText(3)).hasText("I own the boat")
-            assertThat(citizenDetails.otherIdentifierText(3)).hasText("ID12345")
-            assertThat(citizenDetails.extraInformationText(3)).hasText("Extra info")
+            boat.saveButton.click()
 
-            // delete the boat
-            page.getByTestId("delete-boat-3").click()
-            page.getByTestId("delete-modal-confirm-3").click()
-            assertThat(page.getByTestId("boat-3")).isHidden()
+            assertThat(boat.nameField).hasText("New Boat Name")
+            assertThat(boat.weightField).hasText("2000")
+            assertThat(boat.typeField).hasText("Purjevene")
+            assertThat(boat.depthField).hasText("1,50")
+            assertThat(boat.widthField).hasText("3,00")
+            assertThat(boat.registrationNumberField).hasText("ABC123")
+            assertThat(boat.lengthField).hasText("6,00")
+            assertThat(boat.ownershipField).hasText("Omistan veneen")
+            assertThat(boat.otherIdentifierField).hasText("ID12345")
+            assertThat(boat.extraInformationField).hasText("Extra info")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -256,29 +250,39 @@ class CitizenDetailsTest : PlaywrightTest() {
 
     @Test
     @Disabled("Waiting for React version")
+    fun `citizen can delete their boat when it's without active reservation`() {
+        // TODO delete the boat
+        // page.getByTestId("delete-boat-3").click()
+        // page.getByTestId("delete-modal-confirm-3").click()
+        // assertThat(page.getByTestId("boat-3")).isHidden()
+    }
+
+    @Test
+    @Disabled("Feature is not working")
     fun `should add warning when citizen edits boat to be too heavy`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            page.navigate(citizenPageInEnglish)
+            val citizenDetails = CitizenDetailsReactPage(page)
+            citizenDetails.navigateToPage()
 
-            val citizenDetails = CitizenDetailsPage(page)
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.showAllBoatsButton.click()
-            page.getByTestId("edit-boat-1").click()
-            assertThat(page.getByTestId("form")).isVisible()
 
-            citizenDetails.nameInput.fill("New Boat Name")
-            citizenDetails.weightInput.fill("16000")
-            citizenDetails.typeSelect.selectOption("Sailboat")
-            citizenDetails.depthInput.fill("1.5")
-            citizenDetails.widthInput.fill("2")
-            citizenDetails.registrationNumberInput.fill("ABC123")
-            citizenDetails.length.fill("5")
-            citizenDetails.ownership.selectOption("Owner")
-            citizenDetails.otherIdentifier.fill("ID12345")
-            citizenDetails.extraInformation.fill("Extra info")
-            citizenDetails.submitButton.click()
+            val boat = citizenDetails.getBoatSection(3)
+            boat.editButton.click()
+
+            boat.nameInput.fill("New Boat Name")
+            boat.weightInput.fill("16000")
+            boat.typeSelect.selectOption("Sailboat")
+            boat.depthInput.fill("1.5")
+            boat.widthInput.fill("2")
+            boat.registrationNumberInput.fill("ABC123")
+            boat.lengthInput.fill("5")
+            boat.ownershipSelect.selectOption("Owner")
+            boat.otherIdentifierInput.fill("ID12345")
+            boat.extraInformationInput.fill("Extra info")
+
+            boat.saveButton.click()
 
             val employeeHomePage = EmployeeHomePage(page)
             employeeHomePage.employeeLogin()
@@ -290,15 +294,16 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             listingPage.boatSpace1.click()
 
-            citizenDetails.acknowledgeWarningButton(1).click()
-            assertThat(citizenDetails.boatWarningModalWeightInput).isVisible()
-            citizenDetails.boatWarningModalWeightInput.click()
+            val employeeCitizenDetails = CitizenDetailsPage(page)
+            employeeCitizenDetails.acknowledgeWarningButton(1).click()
+            assertThat(employeeCitizenDetails.boatWarningModalWeightInput).isVisible()
+            employeeCitizenDetails.boatWarningModalWeightInput.click()
             val infoText = "Test info"
-            citizenDetails.boatWarningModalInfoInput.fill(infoText)
-            citizenDetails.boatWarningModalConfirmButton.click()
+            employeeCitizenDetails.boatWarningModalInfoInput.fill(infoText)
+            employeeCitizenDetails.boatWarningModalConfirmButton.click()
 
-            citizenDetails.memoNavi.click()
-            assertThat(citizenDetails.userMemo(2)).containsText(infoText)
+            employeeCitizenDetails.memoNavi.click()
+            assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
         } catch (e: AssertionError) {
             handleError(e)
         }

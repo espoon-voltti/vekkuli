@@ -11,7 +11,7 @@ export default React.memo(function Menu() {
   const currentUser = user.getOrElse(undefined)
 
   return currentUser === undefined ? (
-    <a id="loginButton" className="link" href={getLoginUri()}>
+    <a data-testid="loginButton" className="link" href={getLoginUri()}>
       Kirjaudu sisään
     </a>
   ) : (
