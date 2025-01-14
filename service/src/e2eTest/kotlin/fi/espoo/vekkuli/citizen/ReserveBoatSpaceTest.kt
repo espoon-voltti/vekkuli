@@ -23,7 +23,7 @@ import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun `employee can change the language`() {
         page.navigate("$baseUrl?lang=fi")
         assertThat(page.getByText("Venepaikat").first()).isVisible()
@@ -432,7 +432,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun formValuesArePreservedAfterPaymentPageBackButton() {
         page.navigate(baseUrlWithEnglishLangParam)
         page.getByTestId("loginButton").click()
@@ -484,7 +484,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun paymentFailed() {
         // login and pick first free space
         page.navigate(baseUrlWithEnglishLangParam)
