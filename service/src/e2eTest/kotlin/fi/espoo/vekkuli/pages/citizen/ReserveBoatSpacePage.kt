@@ -14,10 +14,13 @@ class ReserveBoatSpacePage(
         private val fields = FieldLocator(root)
         val slipRadio = fields.getRadio("Laituripaikka")
         val trailerRadio = fields.getRadio("Traileripaikka")
+        val winterRadio = fields.getRadio("Talvipaikka")
 
         fun getSlipFilterSection() = SlipFilterSection(root)
 
         fun getTrailerFilterSection() = TrailerFilterSection(root)
+
+        fun getWinterFilterSection() = WinterFilterSection(root)
     }
 
     class SlipFilterSection(
@@ -41,6 +44,12 @@ class ReserveBoatSpacePage(
         private val fields = FieldLocator(root)
         val widthInput = fields.getInput("Trailerin leveys")
         val lengthInput = fields.getInput("Trailerin pituus")
+    }
+
+    class WinterFilterSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val widthInput = fields.getInput("Säilytyspaikan leveys")
+        val lengthInput = fields.getInput("Säilytyspaikan pituus")
     }
 
     class SearchResultsSection(

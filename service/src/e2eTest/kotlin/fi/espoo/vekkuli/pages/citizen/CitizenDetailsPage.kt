@@ -50,14 +50,14 @@ class CitizenDetailsPage(
         val phoneInput = fields.getInput("Puhelinnumero")
     }
 
-    inner class ReservationSection(root: Locator) {
+    inner class ReservationSection(private val root: Locator) {
         private val fields = FieldLocator(root)
         val terminateButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka").setExact(true))
 
         val locationName = fields.getField("Satama")
         val place = fields.getField("Paikka")
 
-        val trailerSection = TrailerSection(getByDataTestId("trailer-information", root))
+        fun getTrailerSection() = TrailerSection(getByDataTestId("trailer-information", root))
     }
 
     class TrailerSection(root: Locator) {

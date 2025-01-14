@@ -16,7 +16,7 @@ export default React.memo(function ReservedSpace({
   const i18n = useTranslation()
   const { netPrice, totalPrice, vatValue, boatSpace } = reservation
   return (
-    <div className="form-section">
+    <div className="form-section" data-testid="reserved-space">
       <h3 className="header">Varattava paikka</h3>
       <div className="columns">
         <div className="column is-one-quarter">

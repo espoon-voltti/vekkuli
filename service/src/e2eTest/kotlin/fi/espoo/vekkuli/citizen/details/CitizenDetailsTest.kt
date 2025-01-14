@@ -29,7 +29,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.navigateToPage()
 
             val firstReservationSection = citizenDetails.getReservationSection(1)
-            val trailerSection = firstReservationSection.trailerSection
+            val trailerSection = firstReservationSection.getTrailerSection()
 
             trailerSection.editButton.click()
             trailerSection.registrationCodeInput.fill("FOO-123")

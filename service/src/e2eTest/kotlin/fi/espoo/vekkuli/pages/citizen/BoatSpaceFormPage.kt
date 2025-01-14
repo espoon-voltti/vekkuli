@@ -40,6 +40,19 @@ class BoatSpaceFormPage(
         val widthInput = fields.getInput("Leveys")
     }
 
+    class WinterStorageTypeSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val buckStorageTypeRadio = fields.getRadio("Pukkisäilytys", true)
+        val buckWithTentStorageTypeRadio = fields.getRadio("Pukkisäilytys suojateltalla")
+        val trailerLengthError = fields.getInputError("Pituus")
+        val trailerLengthInput = fields.getInput("Pituus")
+        val trailerRegistrationNumberError = fields.getInputError("Rekisteritunnus")
+        val trailerRegistrationNumberInput = fields.getInput("Rekisteritunnus")
+        val trailerStorageTypeRadio = fields.getRadio("Trailerisäilytys")
+        val trailerWidthError = fields.getInputError("Leveys")
+        val trailerWidthInput = fields.getInput("Leveys")
+    }
+
     class UserAgreementSection(root: Locator) {
         private val fields = FieldLocator(root)
         val certifyInfoCheckbox = fields.getCheckbox("Vakuutan antamani tiedot oikeiksi")
@@ -48,11 +61,20 @@ class BoatSpaceFormPage(
         val agreementError = fields.getCheckboxError("Olen lukenut venesatamasäännöt")
     }
 
+    class ReservedSpaceSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val storageTypeField = fields.getField("Säilytystapa")
+    }
+
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen"))
 
     fun getBoatSection() = BoatSection(getByDataTestId("boat"))
 
+    fun getWinterStorageTypeSection() = WinterStorageTypeSection(getByDataTestId("winter-storage-type"))
+
     fun getUserAgreementSection() = UserAgreementSection(getByDataTestId("user-agreement"))
+
+    fun getReservedSpaceSection() = ReservedSpaceSection(getByDataTestId("reserved-space"))
 
     val validationWarning = page.locator(".form-validation-message").getByText("Pakollisia tietoja puuttuu")
     val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
