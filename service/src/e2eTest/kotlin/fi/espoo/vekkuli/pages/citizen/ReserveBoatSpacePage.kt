@@ -59,6 +59,8 @@ class ReserveBoatSpacePage(
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
     }
 
+    val header = page.getByText("Espoon kaupungin venepaikkojen vuokraus")
+
     fun navigateToPage() {
         page.navigate("$baseUrl/kuntalainen/venepaikka")
     }

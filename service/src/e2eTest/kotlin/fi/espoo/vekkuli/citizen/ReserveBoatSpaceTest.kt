@@ -378,32 +378,26 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun cancelReservationFromForm() {
-        // login and pick first free space
-        page.navigate(baseUrlWithEnglishLangParam)
-        page.getByTestId("loginButton").click()
-        page.getByText("Kirjaudu").click()
+        CitizenHomePage(page).loginAsOliviaVirtanen()
 
-        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-        reservationPage.navigateTo()
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.lengthFilterInput.blur()
-        reservationPage.firstReserveButton.click()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
 
-        val formPage = EmployeeBoatSpaceFormPage(page)
-        assertThat(formPage.header).isVisible()
+        val formPage = BoatSpaceFormPage(page)
+        val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+
         // Cancel, then cancel in modal
         formPage.cancelButton.click()
-        assertThat(formPage.confirmCancelModal).isVisible()
-        formPage.confirmCancelModalCancel.click()
-        assertThat(formPage.confirmCancelModal).isHidden()
+        assertThat(confirmCancelReservationModal.element).isVisible()
+        confirmCancelReservationModal.cancelButton.click()
+        assertThat(confirmCancelReservationModal.element).isHidden()
 
         // Cancel, then confirm in modal
         formPage.cancelButton.click()
-        assertThat(formPage.confirmCancelModal).isVisible()
-        formPage.confirmCancelModalConfirm.click()
+        assertThat(confirmCancelReservationModal.element).isVisible()
+        confirmCancelReservationModal.confirmButton.click()
         assertThat(reservationPage.header).isVisible()
     }
 

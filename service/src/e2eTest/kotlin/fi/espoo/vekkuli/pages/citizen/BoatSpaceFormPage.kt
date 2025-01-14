@@ -77,6 +77,12 @@ class BoatSpaceFormPage(
         val storageTypeField = fields.getField("Säilytystapa")
     }
 
+    class ConfirmCancelReservationModal(root: Locator) {
+        val element = root
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
+        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Jatka").setExact(true))
+    }
+
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen"))
     fun getOrganizationSection() = OrganizationSection(getByDataTestId("organization"))
 
@@ -88,6 +94,9 @@ class BoatSpaceFormPage(
 
     fun getReservedSpaceSection() = ReservedSpaceSection(getByDataTestId("reserved-space"))
 
+    fun getConfirmCancelReservationModal() = ConfirmCancelReservationModal(getByDataTestId("confirm-cancel-reservation-modal"))
+
     val validationWarning = page.locator(".form-validation-message").getByText("Pakollisia tietoja puuttuu")
     val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
+    val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
 }
