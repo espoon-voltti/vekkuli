@@ -2,7 +2,9 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.pages.*
+import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
+import fi.espoo.vekkuli.pages.employee.OrganizationDetailsPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import org.junit.jupiter.api.Test

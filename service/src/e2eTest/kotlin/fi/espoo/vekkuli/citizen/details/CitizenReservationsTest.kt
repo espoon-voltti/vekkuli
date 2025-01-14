@@ -2,8 +2,8 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.pages.CitizenDetailsReactPage
-import fi.espoo.vekkuli.pages.CitizenHomePage
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 
@@ -14,7 +14,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
             val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
@@ -33,7 +33,7 @@ class CitizenReservationsTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetailsPage = CitizenDetailsReactPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
             citizenDetailsPage.showExpiredReservationsToggle.click()

@@ -4,7 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.pages.*
+import fi.espoo.vekkuli.pages.employee.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertContains

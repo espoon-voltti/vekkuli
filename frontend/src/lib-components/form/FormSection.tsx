@@ -1,9 +1,15 @@
 import React from 'react'
 
 export default React.memo(function FormSection({
-  children
+  children,
+  ...rest
 }: {
   children: React.ReactNode
+  'data-testid'?: string
 }) {
-  return <div className="form-section">{children}</div>
+  return (
+    <div className="form-section" {...rest}>
+      {children}
+    </div>
+  )
 })

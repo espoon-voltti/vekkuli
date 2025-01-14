@@ -3,7 +3,12 @@ package fi.espoo.vekkuli.citizen.details
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.citizenPageInEnglish
-import fi.espoo.vekkuli.pages.*
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage
+import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.employee.PaymentPage
+import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import fi.espoo.vekkuli.utils.startOfWinterSpaceRenewPeriod
@@ -11,6 +16,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDetailsPage
 
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
@@ -19,7 +25,7 @@ class CitizenDetailsTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val citizenDetails = CitizenDetailsReactPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
             val firstReservationSection = citizenDetails.getReservationSection(1)
@@ -45,7 +51,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             listingPage.boatSpace8.click()
 
-            val employeeCitizenDetails = CitizenDetailsPage(page)
+            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
 
             employeeCitizenDetails.trailerAckWarningButton(1).click()
 
@@ -71,7 +77,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
+            val citizenDetails = EmployeeCitizenDetailsPage(page)
             citizenDetails.navigateToPage()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
@@ -108,7 +114,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
             val renewReservationId = 6
-            val citizenDetails = CitizenDetailsPage(page)
+            val citizenDetails = EmployeeCitizenDetailsPage(page)
             citizenDetails.navigateToPage()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(renewReservationId).click()
@@ -154,7 +160,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsPage(page)
+            val citizenDetails = EmployeeCitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -169,7 +175,7 @@ class CitizenDetailsTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsReactPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
             val citizenSection = citizenDetails.getCitizenSection()
@@ -212,7 +218,7 @@ class CitizenDetailsTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsReactPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
             citizenDetails.showAllBoatsButton.click()
@@ -263,7 +269,7 @@ class CitizenDetailsTest : PlaywrightTest() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = CitizenDetailsReactPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
             citizenDetails.showAllBoatsButton.click()
@@ -294,7 +300,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             listingPage.boatSpace1.click()
 
-            val employeeCitizenDetails = CitizenDetailsPage(page)
+            val employeeCitizenDetails = EmployeeCitizenDetailsPage(page)
             employeeCitizenDetails.acknowledgeWarningButton(1).click()
             assertThat(employeeCitizenDetails.boatWarningModalWeightInput).isVisible()
             employeeCitizenDetails.boatWarningModalWeightInput.click()

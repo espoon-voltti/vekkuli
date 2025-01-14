@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.pages
+package fi.espoo.vekkuli.pages.employee
 
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.employeeHomePage

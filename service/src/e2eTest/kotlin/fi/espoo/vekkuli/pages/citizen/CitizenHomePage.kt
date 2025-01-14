@@ -1,7 +1,8 @@
-package fi.espoo.vekkuli.pages
+package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
+import fi.espoo.vekkuli.pages.BasePage
 
 class CitizenHomePage(
     page: Page

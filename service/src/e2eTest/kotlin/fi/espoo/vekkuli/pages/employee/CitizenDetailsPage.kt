@@ -1,22 +1,25 @@
-package fi.espoo.vekkuli.pages
+package fi.espoo.vekkuli.pages.employee
 
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
-import java.util.*
+import fi.espoo.vekkuli.pages.BasePage
 
-class OrganizationDetailsPage(
+class CitizenDetailsPage(
     page: Page
 ) : BasePage(page) {
-    val organizationDetailsSection = page.getByTestId("reserver-details")
+    val citizenDetailsSection = page.getByTestId("reserver-details")
 
-    fun navigateToEspoonPursiseura() {
-        navigateToPage(UUID.fromString("8b220a43-86a0-4054-96f6-d29a5aba17e7"))
-    }
+    val reservationValidity = getByDataTestId("reservation-validity")
 
-    fun navigateToPage(organizationId: UUID) {
-        page.navigate("$baseUrl/virkailija/yhteiso/$organizationId")
-    }
+    val paymentStatus = getByDataTestId("payment-status")
+
+    val updatePaymentStatusLink = getByDataTestId("update-payment-status-link")
+
+    val paymentStatusUpdateModalConfirmed = page.getByTestId("reservationStatus-Confirmed")
+    val paymentStatusUpdateModalInfoTextInput = page.getByTestId("paymentStatusText")
+    val paymentStatusUpdateModalDateInput = page.getByTestId("paymentDate")
+    val paymentStatusUpdateModalSubmit = page.getByTestId("invoice-modal-confirm")
 
     private fun getBoatText(
         prop: String,
@@ -43,6 +46,10 @@ class OrganizationDetailsPage(
 
     fun extraInformationText(i: Int): Locator = getBoatText("extraInformation", i)
 
+    fun navigateToPage() {
+        page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
+    }
+
     fun hideModalWindow() {
         modalWindow.click(
             Locator
@@ -55,36 +62,35 @@ class OrganizationDetailsPage(
         getByDataTestId("accordion-title", expiredReservationListAccordion).click()
     }
 
-    // organization information
+    // Citizen information
     val editButton = page.getByTestId("edit-customer")
-    val organizationNameInput = page.getByTestId("organizationName")
-    val organizationBusinessIdInput = page.getByTestId("businessId")
-    val organizationMunicipalityInput = page.getByTestId("municipalityCode")
-    val organizationEmailInput = page.getByTestId("email")
-    val organizationPhoneInput = page.getByTestId("phoneNumber")
-    val organizationAddressInput = page.getByTestId("address")
-    val organizationPostalCodeInput = page.getByTestId("postalCode")
-    val organizationPostOfficeInput = page.getByTestId("postOffice")
+    val citizenFirstNameInput = page.getByTestId("firstName")
+    val citizenLastNameInput = page.getByTestId("lastName")
+    val citizenNationalIdInput = page.getByTestId("nationalId")
+    val citizenCityInput = page.getByTestId("city")
+    val citizenMunicipalityInput = page.getByTestId("municipalityCode")
+    val citizenEmailInput = page.getByTestId("email")
+    val citizenPhoneInput = page.getByTestId("phoneNumber")
+    val citizenAddressInput = page.getByTestId("address")
+    val citizenPostalCodeInput = page.getByTestId("postalCode")
 
-    val organizationBillingNameInput = page.getByTestId("billingName")
-    val organizationBillingAddressInput = page.getByTestId("billingStreetAddress")
-    val organizationBillingPostalCodeInput = page.getByTestId("billingPostalCode")
-    val organizationBillingPostOfficeInput = page.getByTestId("billingPostOffice")
+    val citizenFirstNameField = page.getByTestId("firstNameField")
+    val citizenLastNameField = page.getByTestId("lastNameField")
+    val citizenNationalIdField = page.getByTestId("nationalIdField")
+    val citizenCityField = page.getByTestId("cityField")
+    val citizenMunicipalityField = page.getByTestId("municipalityCodeField")
+    val citizenEmailField = page.getByTestId("emailField")
+    val citizenPhoneField = page.getByTestId("phoneNumberField")
+    val citizenAddressField = page.getByTestId("addressField")
+    val citizenPostalCodeField = page.getByTestId("postalCodeField")
 
-    val organizationFirstNameField = page.getByTestId("organizationNameField")
-    val organizationBusinessIdField = page.getByTestId("businessIdField")
-    val organizationMunicipalityField = page.getByTestId("municipalityCodeField")
-    val organizationEmailField = page.getByTestId("emailField")
-    val organizationPhoneField = page.getByTestId("phoneNumberField")
-    val organizationAddressField = page.getByTestId("addressField")
-
-    val organizationBillingNameField = page.getByTestId("billingNameField")
-    val organizationBillingAddressField = page.getByTestId("billingAddressField")
-
-    val organizationEditSubmitButton = page.getByTestId("submit-organization-edit-form")
-    val organizationBusinessIdError = page.getByTestId("businessId-error")
-    val organizationNameError = page.getByTestId("organizationName-error")
-    val organizationMunicipalityError = page.getByTestId("municipalityCode-error")
+    val citizenEditSubmitButton = page.getByTestId("submit-boat-edit-form")
+    val citizenEmailPatternError = page.getByTestId("email-pattern-error")
+    val citizenEmailError = page.getByTestId("email-error")
+    val citizenPhonePatternError = page.getByTestId("phoneNumber-pattern-error")
+    val citizenPhoneError = page.getByTestId("phoneNumber-error")
+    val citizenNationalIdError = page.getByTestId("nationalId-error")
+    val citizenNationalIdPatternError = page.getByTestId("nationalId-pattern-error")
 
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 
@@ -208,24 +214,4 @@ class OrganizationDetailsPage(
     val trailerWidthInput = page.getByTestId("trailerWidth")
     val trailerLengthInput = page.getByTestId("trailerLength")
     val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
-
-    val removeOliviaButton = page.getByTestId("remove-user-8b220a43-86a0-4054-96f6-d29a5aba17e7-509edb00-5549-11ef-a1c7-776e76028a49")
-    val confirmOliviaRemove =
-        page.getByTestId(
-            "delete-modal-confirm-8b220a43-86a0-4054-96f6-d29a5aba17e7-509edb00-5549-11ef-a1c7-776e76028a49"
-        )
-
-    // Add members
-    val addOrganizationContainer = page.getByTestId("add-members-container")
-    val citizenSearchContainer = page.locator("#customer-search-container")
-    val citizenSearchOption1 = page.locator("#option-0")
-    val addMemberButton = page.getByTestId("add-organization-member")
-    val addMemberSearchContainer = page.getByTestId("add-member-search-container")
-    val citizenSearchInput = page.getByTestId("customer-search")
-    val citizenNameField = page.getByTestId("citizenFullNameField")
-    val citizenPhoneField = page.getByTestId("citizenPhoneNumberField")
-    val citizenEmailField = page.getByTestId("citizenEmailField")
-    val submitOrganizationMemberAdd = page.getByTestId("submit-organization-member-add")
-    val cancelOrganizationMemberAdd = page.getByTestId("cancel-organization-member-add")
-    val organizationMemberTableBody = page.getByTestId("organization-member-table").locator("tbody")
 }

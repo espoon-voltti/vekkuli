@@ -13,7 +13,7 @@ export default React.memo(function UserAgreements({
 }) {
   const { certified, terms } = useFormFields(bind)
   return (
-    <FormSection>
+    <FormSection data-testid="user-agreement">
       <Columns isMultiline>
         <Column isFull>
           <CheckboxField

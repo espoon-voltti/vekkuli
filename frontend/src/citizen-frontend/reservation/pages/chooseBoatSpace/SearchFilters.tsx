@@ -20,7 +20,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
   const { boatType, width, length, amenities, harbor } = useFormFields(form)
 
   return (
-    <form className="block">
+    <form className="block" data-testid="boat-space-filter">
       <h2 className="subtitle" id="search-page-header">
         Venepaikan hakuehdot
       </h2>

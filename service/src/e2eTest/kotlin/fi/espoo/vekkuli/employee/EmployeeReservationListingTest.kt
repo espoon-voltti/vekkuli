@@ -4,7 +4,8 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.pages.*
+import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 

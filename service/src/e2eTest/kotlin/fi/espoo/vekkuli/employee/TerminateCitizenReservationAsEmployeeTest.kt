@@ -7,10 +7,10 @@ import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationRea
 import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
-import fi.espoo.vekkuli.pages.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.CitizenHomePage
-import fi.espoo.vekkuli.pages.EmployeeHomePage
-import fi.espoo.vekkuli.pages.ReservationListPage
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
+import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.service.TemplateEmailService
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate

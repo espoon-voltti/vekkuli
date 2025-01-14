@@ -139,8 +139,7 @@ class PaytrailMock : PaytrailInterface {
                     PaytrailProvider(
                         name = "Nordea success",
                         methodIsPost = false,
-                        url =
-                            "/kuntalainen/maksut/onnistunut",
+                        url = params.redirectUrls?.success ?: "/kuntalainen/maksut/onnistunut",
                         icon = "https://www.nordea.fi/icon.png",
                         svg = "https://www.nordea.fi/icon.svg",
                         id = "nordea-success",
@@ -153,7 +152,7 @@ class PaytrailMock : PaytrailInterface {
                     PaytrailProvider(
                         name = "Nordea failed",
                         methodIsPost = false,
-                        url = "/kuntalainen/maksut/peruuntunut",
+                        url = params.redirectUrls?.cancel ?: "/kuntalainen/maksut/peruuntunut",
                         icon = "https://www.nordea.fi/icon.png",
                         svg = "https://www.nordea.fi/icon.svg",
                         id = "nordea-fail",
