@@ -127,19 +127,13 @@ export default function initialFormState(
   organizations: Organization[]
 ): StateOf<OrganizationForm> {
   const selectionOptions: StateOf<OrganizationSelectionForm> = {
-    domValue: '',
+    domValue: organizations[0]?.id || '',
     options: organizations.map((organization) => ({
       domValue: organization.id,
       label: organization.name,
       value: organization
     }))
   }
-  if (selectionOptions.options.length > 0)
-    selectionOptions.options.push({
-      domValue: '',
-      label: 'Uusi yhteisö',
-      value: null
-    })
 
   return {
     organization: {
