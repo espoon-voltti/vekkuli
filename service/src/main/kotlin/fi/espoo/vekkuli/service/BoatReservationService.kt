@@ -89,7 +89,8 @@ class BoatReservationService(
     private val permissionService: PermissionService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val organizationService: OrganizationService
+    private val organizationService: OrganizationService,
+    private val paymentRepository: PaymentRepository
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -481,6 +482,48 @@ class BoatReservationService(
             throw IllegalArgumentException("Reservation has no payment")
         }
         paymentService.updatePayment(reservation.paymentId, true, paymentDate)
+    }
+
+    @Transactional
+    fun updateReservationStatus(
+        reservationId: Int,
+        reservationStatus: ReservationStatus,
+        paymentDate: LocalDate,
+        paymentStatusText: String
+    ) {
+        val reservation =
+            boatSpaceReservationRepo.updateReservationStatus(reservationId, reservationStatus)
+                ?: throw RuntimeException("Reservation $reservationId missing")
+
+        if (reservationStatus == ReservationStatus.Confirmed || reservationStatus == ReservationStatus.Invoiced) {
+            val payment = paymentRepository.getPaymentForReservation(reservationId)
+            if (payment != null) {
+                paymentService.updatePayment(
+                    payment.copy(
+                        status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
+                        paid = paymentDate.atStartOfDay(),
+                        reference = paymentStatusText
+                    )
+                )
+            } else {
+                if (reservation.reserverId == null) {
+                    throw RuntimeException(
+                        "Cannot create payment for reservation $reservationId: reserverId is null"
+                    )
+                }
+                val paymentParams =
+                    CreatePaymentParams(
+                        reserverId = reservation.reserverId,
+                        reference = paymentStatusText,
+                        totalCents = 0,
+                        vatPercentage = 0.0,
+                        productCode = "?",
+                        status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
+                        paid = paymentDate.atStartOfDay(),
+                    )
+                paymentService.insertPayment(paymentParams, reservationId)
+            }
+        }
     }
 
     fun getEmailRecipientForReservation(reservationId: Int): Recipient? {

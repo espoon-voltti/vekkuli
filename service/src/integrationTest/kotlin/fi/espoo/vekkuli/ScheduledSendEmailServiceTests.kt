@@ -163,8 +163,8 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
 
         assertEquals(2, capturedRecipients.size)
         assertEquals(
-            listOf(recipients[0].id, recipients[1].id),
-            capturedRecipients,
+            setOf(recipients[0].id, recipients[1].id),
+            capturedRecipients.toSet(),
             "Should contain all recipients but one"
         )
     }

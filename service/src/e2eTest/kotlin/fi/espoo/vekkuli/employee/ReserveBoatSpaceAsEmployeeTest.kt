@@ -5,12 +5,10 @@ import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.*
-import fi.espoo.vekkuli.utils.formatAsFullDate
-import fi.espoo.vekkuli.utils.formatAsTestDate
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
-import java.time.LocalDate
 import kotlin.test.assertContains
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
@@ -153,21 +151,28 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
 
-            citizenDetailsPage.invoicePaidButton.click()
-            val info = "invoice has been paid"
-            citizenDetailsPage.invoicePaidInfo.fill(info)
-            val testDate = LocalDate.of(2024, 7, 22)
-
-            citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
-
-            citizenDetailsPage.invoiceModalConfirm.click()
-            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
+            updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
-            assertThat(page.getByText(info)).isVisible()
+            assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    fun updateReservationToConfirmed(citizenDetailsPage: CitizenDetailsPage) {
+        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoiced: due date: 22.04.2024") }
+        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
+        citizenDetailsPage.updatePaymentStatusLink.click()
+
+        assertEquals("100000", citizenDetailsPage.paymentStatusUpdateModalInfoTextInput.inputValue())
+        assertEquals("2024-04-22", citizenDetailsPage.paymentStatusUpdateModalDateInput.inputValue())
+
+        citizenDetailsPage.paymentStatusUpdateModalConfirmed.click()
+        citizenDetailsPage.paymentStatusUpdateModalSubmit.click()
+
+        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Confirmed, 22.04.2024") }
+        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
     }
 
     @Test
@@ -200,7 +205,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalCancel.click()
             assertThat(invoicePreviewPage.header).isVisible()
-
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
 
@@ -211,8 +215,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             assertThat(citizenDetailsPage.invoicePaidButton).isHidden()
 
-            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(timeProvider.getCurrentDate()))
-        } catch (e: AssertionError) {
+            page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Confirmed, 01.04.2024") }
+            page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
+        } catch (
+            e: AssertionError
+        ) {
             handleError(e)
         }
     }
@@ -262,18 +269,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
 
-            citizenDetailsPage.invoicePaidButton.click()
-            val info = "invoice has been paid"
-            citizenDetailsPage.invoicePaidInfo.fill(info)
-            val testDate = LocalDate.of(2024, 7, 22)
-
-            citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
-
-            citizenDetailsPage.invoiceModalConfirm.click()
-            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
+            updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
-            assertThat(page.getByText(info)).isVisible()
+            assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -326,17 +325,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 31.08.2024")
 
-            citizenDetailsPage.invoicePaidButton.click()
-            val info = "invoice has been paid"
-            citizenDetailsPage.invoicePaidInfo.fill(info)
-            val testDate = LocalDate.of(2024, 7, 22)
-            citizenDetailsPage.invoicePaymentDate.fill(formatAsTestDate(testDate))
-
-            citizenDetailsPage.invoiceModalConfirm.click()
-            assertThat(citizenDetailsPage.paidFieldInfo).hasText(formatAsFullDate(testDate))
+            updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
-            assertThat(page.getByText(info)).isVisible()
+            assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }

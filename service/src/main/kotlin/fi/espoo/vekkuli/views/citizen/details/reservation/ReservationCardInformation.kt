@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Component
@@ -39,6 +40,46 @@ class ReservationCardInformation : BaseView() {
             """ 
             <label class="label">$amenityLabel</label>
             <p>$amenity</p>
+            """.trimIndent()
+
+        val paymentStatus =
+            when (reservation.status) {
+                ReservationStatus.Confirmed ->
+                    """
+                    <div class="payment-status">
+                        <span>${t(
+                        "citizenDetails.reservationStatus.Confirmed"
+                    )}, ${reservation.paymentDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
+                        <span>${t("citizenDetails.reservationStatus.infoText")}: ${reservation.paymentReference}</span>
+                    </div>    
+                    """.trimIndent()
+                ReservationStatus.Invoiced ->
+                    """
+                    <div class="payment-status">
+                        <span>${t(
+                        "citizenDetails.reservationStatus.InvoicedStatusText"
+                    )}: ${reservation.invoiceDueDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
+                        <span>${t("citizenDetails.reservationStatus.infoText")}: ${reservation.paymentReference}</span>
+                    </div>    
+                    """.trimIndent()
+                ReservationStatus.Payment, ReservationStatus.Info -> t("citizenDetails.reservationStatus.NotPaid")
+                ReservationStatus.Cancelled -> t("citizenDetails.reservationStatus.Cancelled")
+            }
+
+        val paymentEditLink =
+            """
+            <div>
+                <a class="is-link is-icon-link payment-status-edit-link"
+                    id="update-payment-status-link"
+                    data-testid="update-payment-status-link"
+                    hx-get="/reservation/modal/update-payment-status/${reservation.id}/$reserverId"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML">
+                    <span class="icon">
+                        ${icons.edit}
+                    </span>
+                </a>
+            </div>
             """.trimIndent()
 
         // language=HTML
@@ -91,8 +132,13 @@ class ReservationCardInformation : BaseView() {
                          $amenityWrapper
                      </div>
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.paid")}</label>
-                         <p id="paidFieldInfo">${formatAsFullDate(reservation.paymentDate)}</p> 
+                         <div class="payment-status-label">
+                           <label class="label">${t("citizenDetails.reservationStatus.paymentStatus")}</label>
+                           $paymentEditLink
+                         </div>
+                         <div data-testid="payment-status">
+                            $paymentStatus
+                         </div>    
                      </div>
                  </div>
                  

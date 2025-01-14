@@ -25,6 +25,8 @@ class PaymentService(
         paidDate: LocalDateTime?
     ): Payment? = paymentRepo.updatePaymentStatus(id, success, paidDate)
 
+    fun updatePayment(payment: Payment): Payment? = paymentRepo.updatePayment(payment)
+
     fun insertPayment(
         params: CreatePaymentParams,
         reservationId: Int

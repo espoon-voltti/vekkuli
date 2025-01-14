@@ -23,7 +23,6 @@ class EmployeeCardButtons(
         return """
             <div class="buttons">
                 ${createRenewPlaceButton(reservation)}
-                ${createInvoicePaidModalButton(reservation, reserverId)}
                 ${createTerminateReservationModalButton(reservation)}
             </div>
             """.trimIndent()
@@ -46,22 +45,6 @@ class EmployeeCardButtons(
                 ${t("boatSpaceReservation.${UserType.EMPLOYEE}.button.renewPlace")}
             </button>
             """.trimIndent()
-    }
-
-    fun createInvoicePaidModalButton(
-        reservation: BoatSpaceReservationDetails,
-        reserverId: UUID
-    ): String {
-        if (reservation.status == ReservationStatus.Invoiced) {
-            return modal
-                .createOpenModalBuilder()
-                .addAttribute("id", "invoice-paid-button")
-                .setText(t("citizenDetails.markInvoicePaid"))
-                .setPath("/reservation/modal/mark-invoice-paid/${reservation.id}/$reserverId")
-                .setStyle(ModalButtonStyle.Primary)
-                .build()
-        }
-        return ""
     }
 
     fun createTerminateReservationModalButton(reservation: BoatSpaceReservationDetails): String =

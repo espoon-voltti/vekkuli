@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
+import fi.espoo.vekkuli.config.getAuthenticatedEmployee
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
 import fi.espoo.vekkuli.domain.*
@@ -30,7 +31,6 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 @Controller
@@ -824,28 +824,41 @@ class CitizenUserController(
         )
     )!!
 
-    @PostMapping("/virkailija/venepaikat/varaukset/merkitse-maksu-suoritetuksi")
-    fun markPaymentDone(
+    fun reservationStatusToText(reservationStatus: ReservationStatus): String {
+        return when (reservationStatus) {
+            ReservationStatus.Info -> "Info"
+            ReservationStatus.Payment -> "Maksettavana"
+            ReservationStatus.Confirmed -> "Maksettu"
+            ReservationStatus.Invoiced -> "Laskutettavana"
+            ReservationStatus.Cancelled -> "Peruttu"
+        }
+    }
+
+    @PostMapping("/virkailija/venepaikat/varaukset/status")
+    fun updateReservationStatus(
         @RequestParam reservationId: Int,
+        @RequestParam reservationStatus: ReservationStatus,
         @RequestParam paymentDate: LocalDate,
-        @RequestParam invoicePaidInfo: String,
+        @RequestParam paymentStatusText: String,
         @RequestParam reserverId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<String> {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MARK_PAYMENT_DONE")
-        }
-        val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
-        reservationService.markInvoicePaid(
+        val user = request.getAuthenticatedEmployee()
+        logger.audit(user, "CITIZEN_PROFILE_UPDATE_PAYMENT_STATUS")
+
+        reservationService.updateReservationStatus(
             reservationId,
-            LocalDateTime.of(paymentDate.year, paymentDate.month, paymentDate.dayOfMonth, 0, 0)
+            reservationStatus,
+            paymentDate,
+            paymentStatusText
         )
+
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
 
-        val memoContent = "Maksun tila: merkitty suoritetuksi $paymentDate: $invoicePaidInfo"
+        val memoContent = "Varauksen tila: ${reservationStatusToText(reservationStatus)}  $paymentDate: $paymentStatusText"
 
-        memoService.insertMemo(reserverId, userId, ReservationType.Marine, memoContent)
+        memoService.insertMemo(reserverId, user.id, ReservationType.Marine, memoContent)
 
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
     }

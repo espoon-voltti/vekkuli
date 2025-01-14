@@ -33,7 +33,6 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             organizationDetailsPage.renewReservationButton(reservationId).click()
             assertThat(invoiceDetails.header).isVisible()
             invoiceDetails.sendButton.click()
-            assertThat(organizationDetailsPage.invoicePaidButton).isVisible()
             assertThat(organizationDetailsPage.renewReservationButton(reservationId)).isHidden()
         } catch (e: AssertionError) {
             handleError(e)

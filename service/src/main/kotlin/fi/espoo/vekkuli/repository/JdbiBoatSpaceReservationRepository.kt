@@ -53,6 +53,8 @@ data class BoatSpaceReservationDetailsRow(
     val originalReservationId: Int? = null,
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
+    val paymentReference: String?,
+    val invoiceDueDate: LocalDate?,
     val storageType: StorageType?,
     // Boat
     val boatId: Int?,
@@ -257,6 +259,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN location ON location.id = bs.location_id
                     JOIN price ON bs.price_id = price.id
                     JOIN municipality m ON r.municipality_code = m.code
+                    LEFT JOIN invoice i ON i.reservation_id = bsr.id
                     WHERE p.id = :paymentId              
                     """.trimIndent()
                 )
@@ -308,6 +311,8 @@ class JdbiBoatSpaceReservationRepository(
                 boat = loadBoatForReserver(handle, dbResult.id, dbResult.boatId),
                 trailer = loadTrailerForReserver(handle, dbResult.id, dbResult.trailerId),
                 storageType = dbResult.storageType,
+                paymentReference = dbResult.paymentReference,
+                invoiceDueDate = dbResult.invoiceDueDate
             )
         } else {
             null
@@ -431,7 +436,9 @@ class JdbiBoatSpaceReservationRepository(
                     originalReservationId = it.originalReservationId,
                     paymentDate = it.paymentDate,
                     paymentId = it.paymentId,
-                    storageType = it.storageType
+                    storageType = it.storageType,
+                    paymentReference = it.paymentReference,
+                    invoiceDueDate = it.invoiceDueDate
                 )
             }
         }
@@ -604,7 +611,9 @@ class JdbiBoatSpaceReservationRepository(
                     originalReservationId = it.originalReservationId,
                     paymentDate = it.paymentDate,
                     paymentId = it.paymentId,
-                    storageType = it.storageType
+                    storageType = it.storageType,
+                    paymentReference = it.paymentReference,
+                    invoiceDueDate = it.invoiceDueDate
                 )
             }
         }
@@ -952,6 +961,26 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
+    override fun updateReservationStatus(
+        reservationId: Int,
+        status: ReservationStatus
+    ): BoatSpaceReservation? =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    UPDATE boat_space_reservation
+                    SET status = :status, updated = :updatedTime
+                    WHERE id = :id
+                    RETURNING *
+                    """.trimIndent()
+                )
+            query.bind("id", reservationId)
+            query.bind("status", status)
+            query.bind("updatedTime", timeProvider.getCurrentDateTime())
+            query.mapTo<BoatSpaceReservation>().singleOrNull()
+        }
+
     override fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -1045,7 +1074,10 @@ class JdbiBoatSpaceReservationRepository(
         t.reserver_id AS trailer_reserver_id,
         t.registration_code AS trailer_registration_code,
         t.width_cm AS trailer_width_cm,
-        t.length_cm AS trailer_length_cm
+        t.length_cm AS trailer_length_cm,
+        
+        p.reference AS payment_reference,
+        i.due_date AS invoice_due_date
         """.trimIndent()
 
     private fun buildSqlSelectFromJoinPartForBoatSpaceReservationDetails() =
@@ -1060,6 +1092,7 @@ class JdbiBoatSpaceReservationRepository(
         LEFT JOIN price ON price_id = price.id
         JOIN municipality m ON r.municipality_code = m.code
         LEFT JOIN payment p ON p.reservation_id = bsr.id AND p.status <> 'Failed'
+        LEFT JOIN invoice i ON i.reservation_id = bsr.id
         """.trimIndent()
 
     private fun buildSqlSelectPartForReservationWithDependencies() =

@@ -2,7 +2,7 @@ package fi.espoo.vekkuli.controllers.reservation.modal
 
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.ReserverService
-import fi.espoo.vekkuli.views.citizen.details.reservation.InvoicePaidModal
+import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationStatusUpdateModal
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -14,7 +14,7 @@ import java.util.*
 @Controller
 class InvoicePaidController {
     @Autowired
-    private lateinit var invoicePaidModal: InvoicePaidModal
+    private lateinit var reservationStatusUpdateModal: ReservationStatusUpdateModal
 
     @Autowired
     private lateinit var reservationService: BoatReservationService
@@ -22,7 +22,7 @@ class InvoicePaidController {
     @Autowired
     private lateinit var reserverService: ReserverService
 
-    @GetMapping("/reservation/modal/mark-invoice-paid/{reservationId}/{reserverId}")
+    @GetMapping("/reservation/modal/update-payment-status/{reservationId}/{reserverId}")
     @ResponseBody
     fun citizenProfile(
         @PathVariable reservationId: Int,
@@ -34,7 +34,7 @@ class InvoicePaidController {
         val reserver = reserverService.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
 
         return ResponseEntity.ok(
-            invoicePaidModal.render(reserver.id, reservation)
+            reservationStatusUpdateModal.render(reserver.id, reservation)
         )
     }
 }

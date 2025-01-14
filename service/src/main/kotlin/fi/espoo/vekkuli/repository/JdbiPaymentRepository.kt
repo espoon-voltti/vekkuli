@@ -25,13 +25,31 @@ class JdbiPaymentRepository(
                 handle
                     .createQuery(
                         """
-                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id)
-                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId)
+                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status)
+                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, :status)
                         RETURNING *
                         """
                     ).bindKotlin(params)
                     .bind("id", id)
                     .bind("reservationId", reservationId)
+                    .mapTo<Payment>()
+                    .one()
+            result
+        }
+
+    override fun updatePayment(payment: Payment): Payment =
+        jdbi.withHandleUnchecked { handle ->
+            val id = UUID.randomUUID()
+            val result =
+                handle
+                    .createQuery(
+                        """
+                        UPDATE payment
+                            SET status = :status, updated = :updated, paid = :paid, reference = :reference, total_cents = :totalCents, vat_percentage = :vatPercentage, product_code = :productCode
+                        WHERE id = :id 
+                        RETURNING *
+                        """
+                    ).bindKotlin(payment)
                     .mapTo<Payment>()
                     .one()
             result
@@ -127,4 +145,16 @@ class JdbiPaymentRepository(
                 .execute()
         }
     }
+
+    override fun getPaymentForReservation(reservationId: Int): Payment? =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT * FROM payment WHERE reservation_id = :reservationId
+                    """.trimIndent()
+                ).bind("reservationId", reservationId)
+                .mapTo<Payment>()
+                .firstOrNull()
+        }
 }
