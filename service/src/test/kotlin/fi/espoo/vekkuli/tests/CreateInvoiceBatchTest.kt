@@ -141,7 +141,7 @@ class CreateInvoiceBatchTest {
                                     ytunnus = given.orgId,
                                     street = given.street,
                                     post = given.post,
-                                    contactPerson = "${given.firstnames} ${given.lastname}",
+                                    contactPerson = given.orgRepresentative,
                                     postalCode = given.postalCode,
                                     language = "fi",
                                     mobilePhone = given.mobilePhone,

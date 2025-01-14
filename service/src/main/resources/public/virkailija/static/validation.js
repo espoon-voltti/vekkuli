@@ -151,11 +151,22 @@ const validation = (function () {
       }
     });
 
-    form.addEventListener('submit', function (event) {
+    form.addEventListener('submit', async function (event) {
       const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
-      if(submitButton) {
-        submitButton.setAttribute('disabled', 'disabled');
-        submitButton.classList.add('is-loading');
+      const isFormPost = submitButton.classList.contains('form-submit')
+      if(isFormPost) {
+        event.preventDefault()
+      }
+      const isValid = await validateForm(form);
+      if(isValid){
+        if(isFormPost)
+        {
+          event.target.submit()
+        }
+        if(submitButton) {
+          submitButton.setAttribute('disabled', 'disabled');
+          submitButton.classList.add('is-loading');
+        }
       }
     });
   }

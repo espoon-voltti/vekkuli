@@ -82,7 +82,8 @@ class MockInvoiceClient(
     val timeProvider: TimeProvider
 ) : InvoiceClient {
     override fun sendBatchInvoice(invoiceData: InvoiceData) {
-        println("sending invoice $invoiceData")
+        val invoiceBatch = createInvoiceBatch(invoiceData, timeProvider)
+        println("sending invoice $invoiceBatch")
     }
 }
 
@@ -204,7 +205,7 @@ private fun createInvoiceBatchForOrganization(
                     Client(
                         ytunnus = invoiceData.orgId,
                         lastname = invoiceData.orgName ?: "",
-                        contactPerson = "${invoiceData.firstnames} ${invoiceData.lastname}",
+                        contactPerson = invoiceData.orgRepresentative,
                         street = invoiceData.street,
                         post = invoiceData.post,
                         postalCode = invoiceData.postalCode,
