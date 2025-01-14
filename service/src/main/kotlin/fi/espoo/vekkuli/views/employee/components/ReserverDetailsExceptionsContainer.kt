@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.views.employee.components
 
 import fi.espoo.vekkuli.config.DomainConstants
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +17,7 @@ class ReserverDetailsExceptionsContainer : BaseView() {
         // language=HTML
         return """
             <div class="espoo-rules-applied checkbox">            
-                <input type="checkbox" id="edit-espoorules-applied-checkbox"
+                <input type="checkbox" id="edit-espoorules-applied-checkbox" ${addTestId("edit-espoorules-applied-checkbox")}
                     ${if (reserver.espooRulesApplied) "checked" else "" }
                     hx-patch="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/toggle-espoo-rules-applied")}"
                     hx-trigger="click"
@@ -35,7 +36,8 @@ class ReserverDetailsExceptionsContainer : BaseView() {
         // language=HTML
         return """
             <div class="radio">            
-                <input type="radio" id="reserver_discount_$discount" name="discountPercentage" value='$discount'
+                <input type="radio" id="reserver_discount_$discount" 
+                ${addTestId("reserver_discount_$discount")} name="discountPercentage" value='$discount'
                     ${if (reserver.discountPercentage == discount) "checked" else ""}
                     hx-patch="${reserverDetailsTabs.getTabUrl("${reserver.id}/poikkeukset/discount")}"
                     hx-include="[name='discountPercentage']"
