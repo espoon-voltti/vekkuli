@@ -58,6 +58,7 @@ class ReserveBoatSpacePage(
     ) {
         val harborHeaders = root.locator(".harbor-header")
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
+        val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
     }
 
     class LoginModal(val root: Locator) {
@@ -96,7 +97,7 @@ class ReserveBoatSpacePage(
 
     fun startReservingBoatSpaceB314() {
         filterForBoatSpaceB314()
-        page.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')").click()
+        getSearchResultsSection().b314ReserveButton.click()
     }
 
     fun startReservingBoatSpace012() {
