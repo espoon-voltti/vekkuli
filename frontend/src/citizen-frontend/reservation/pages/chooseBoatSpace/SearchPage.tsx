@@ -1,5 +1,5 @@
 import { Loader } from 'lib-components/Loader'
-import { Column, Columns, Container, Section } from 'lib-components/dom'
+import { Column, Columns, Container, MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -99,7 +99,7 @@ export default React.memo(function SearchPage() {
       {(reservation) =>
         !reservation && (
           <>
-            <Section>
+            <MainSection>
               <StepIndicator step="chooseBoatSpace" />
               <Container>
                 <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
@@ -121,7 +121,7 @@ export default React.memo(function SearchPage() {
                   </Column>
                 </Columns>
               </Container>
-            </Section>
+            </MainSection>
             {isLoginModalOpen && (
               <LoginBeforeReservingModal
                 close={() => setIsLoginModalOpen(false)}

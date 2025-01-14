@@ -1,3 +1,4 @@
+import { MainSection } from 'lib-components/dom'
 import React from 'react'
 
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
@@ -11,7 +12,7 @@ import {
 
 export default React.memo(function HomePage() {
   return (
-    <section className="section">
+    <MainSection>
       <div className="container">
         <h2>Venepaikat</h2>
         <div className="columns">
@@ -59,7 +60,7 @@ export default React.memo(function HomePage() {
           </p>
         </div>
       </div>
-    </section>
+    </MainSection>
   )
 })
 

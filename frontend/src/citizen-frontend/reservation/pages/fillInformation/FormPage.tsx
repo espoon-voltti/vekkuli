@@ -1,5 +1,5 @@
 import { Loader } from 'lib-components/Loader'
-import { Container, Section } from 'lib-components/dom'
+import { Container, MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import {
@@ -24,7 +24,7 @@ export default React.memo(function FormPage() {
   const organizations = useQueryResult(citizenOrganizationsQuery())
 
   return (
-    <Section>
+    <MainSection>
       <Container>
         <Loader
           results={[reservation, citizenBoats, municipalities, organizations]}
@@ -58,6 +58,6 @@ export default React.memo(function FormPage() {
           )}
         </Loader>
       </Container>
-    </Section>
+    </MainSection>
   )
 })
