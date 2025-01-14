@@ -22,9 +22,8 @@ class ReservationController(
     }
 
     @GetMapping("/unfinished-reservation-expiration")
-    fun getUnfinishedReservationExpiration(): Int {
-        return reservationService.getUnfinishedReservationExpirationForCurrentCitizen()?.value ?: throw NotFound()
-    }
+    fun getUnfinishedReservationExpiration(): Int =
+        reservationService.getUnfinishedReservationExpirationForCurrentCitizen()?.value ?: throw NotFound()
 
     @PostMapping("/reserve/{spaceId}")
     fun postStartReservation(
@@ -61,39 +60,30 @@ class ReservationController(
     @PostMapping("/reservation/{reservationId}/payment-information")
     suspend fun getPaymentInformation(
         @PathVariable reservationId: Int,
-    ): PaymentInformationResponse {
-        return reservationService.getPaymentInformation(reservationId).toPaymentInformationResponse()
-    }
+    ): PaymentInformationResponse = reservationService.getPaymentInformation(reservationId).toPaymentInformationResponse()
 
     @GetMapping("/reservation/{reservationId}/validate-boat-type")
     fun validateBoatType(
         @PathVariable reservationId: Int,
         @RequestParam boatType: BoatType,
-    ): Boolean {
-        return reservationService.validateBoatType(reservationId, boatType)
-    }
+    ): Boolean = reservationService.validateBoatType(reservationId, boatType)
 
     @GetMapping("/reservation/{reservationId}/validate-boat-size")
     fun validateBoatSize(
         @PathVariable reservationId: Int,
         @RequestParam width: BigDecimal,
         @RequestParam length: BigDecimal,
-    ): Boolean {
-        return reservationService.validateBoatSize(reservationId, decimalToInt(width), decimalToInt(length))
-    }
+    ): Boolean = reservationService.validateBoatSize(reservationId, decimalToInt(width), decimalToInt(length))
 
     @GetMapping("/reservation/{reservationId}/validate-boat-weight")
     fun validateBoatWeight(
         @PathVariable reservationId: Int,
         @RequestParam weight: Int
-    ): Boolean {
-        return reservationService.validateBoatWeight(reservationId, weight)
-    }
+    ): Boolean = reservationService.validateBoatWeight(reservationId, weight)
 
     @GetMapping("/municipalities")
-    fun getMunicipalities(request: HttpServletRequest): List<MunicipalityResponse> {
-        return reserverService.getMunicipalities().toMunicipalityListResponse()
-    }
+    fun getMunicipalities(request: HttpServletRequest): List<MunicipalityResponse> =
+        reserverService.getMunicipalities().toMunicipalityListResponse()
 
     @PostMapping("/reservation/{reservationId}/terminate")
     fun terminateReservation(
