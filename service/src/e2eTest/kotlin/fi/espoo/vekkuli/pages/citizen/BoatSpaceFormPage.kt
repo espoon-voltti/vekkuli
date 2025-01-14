@@ -16,6 +16,17 @@ class BoatSpaceFormPage(
         val phoneInput = fields.getInput("Puhelinnumero")
     }
 
+    class OrganizationSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val reserveForOrganization = fields.getRadio("Varaan yhteisön puolesta")
+        val nameInput = fields.getInput("Yhteisön nimi")
+        val businessIdInput = fields.getInput("Y-tunnus")
+        val phoneNumberInput = fields.getInput("Puhelinnumero")
+        val emailInput = fields.getInput("Sähköposti")
+
+        fun organization(name: String) = fields.getRadio(name)
+    }
+
     class BoatSection(root: Locator) {
         private val fields = FieldLocator(root)
         val depthError = fields.getInputError("Syväys")
@@ -67,6 +78,7 @@ class BoatSpaceFormPage(
     }
 
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen"))
+    fun getOrganizationSection() = OrganizationSection(getByDataTestId("organization"))
 
     fun getBoatSection() = BoatSection(getByDataTestId("boat"))
 

@@ -333,63 +333,45 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun reservingABoatSpaceAsOrganization() {
         try {
-            page.navigate(baseUrlWithEnglishLangParam)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-            reservationPage.navigateTo()
-            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
-            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
-            reservationPage.widthFilterInput.fill("3")
-            reservationPage.lengthFilterInput.fill("6")
-            reservationPage.lengthFilterInput.blur()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            reservationPage.startReservingBoatSpaceB314()
 
-            reservationPage.firstReserveButton.click()
+            val formPage = BoatSpaceFormPage(page)
+            val organizationSection = formPage.getOrganizationSection()
 
-            // click send to trigger validation
-            val formPage = EmployeeBoatSpaceFormPage(page)
+            organizationSection.reserveForOrganization.click()
+            organizationSection.organization("Espoon Pursiseura").click()
+            organizationSection.nameInput.fill("My Organization")
+            organizationSection.businessIdInput.fill("1234567-8")
+            organizationSection.phoneNumberInput.fill("123456789")
+            organizationSection.emailInput.fill("foo@bar.com")
 
-            formPage.organizationRadioButton.click()
-            formPage.orgNameInput.fill("My Organization")
-            formPage.orgBusinessIdInput.fill("1234567-8")
-            formPage.orgPhoneNumberInput.fill("123456789")
-            formPage.orgEmailInput.fill("foo@bar.com")
+            val boatSection = formPage.getBoatSection()
+            boatSection.depthInput.fill("1.5")
+            boatSection.weightInput.fill("2000")
+            boatSection.nameInput.fill("My Boat")
+            boatSection.otherIdentifierInput.fill("ID12345")
+            boatSection.noRegistrationCheckbox.check()
+            boatSection.ownerRadio.check()
 
-            formPage.depthInput.fill("1.5")
-            formPage.depthInput.blur()
-            assertThat(formPage.depthError).isHidden()
+            val citizenSection = formPage.getCitizenSection()
+            citizenSection.emailInput.fill("test@example.com")
+            citizenSection.phoneInput.fill("123456789")
 
-            formPage.weightInput.fill("2000")
-            formPage.weightInput.blur()
-            assertThat(formPage.weightError).isHidden()
-
-            formPage.boatNameInput.fill("My Boat")
-            formPage.otherIdentification.fill("ID12345")
-            formPage.noRegistrationCheckbox.check()
-            assertThat(formPage.boatRegistrationNumberError).isHidden()
-
-            formPage.ownerRadioButton.check()
-
-            formPage.emailInput.fill("test@example.com")
-            formPage.emailInput.blur()
-            assertThat(formPage.emailError).isHidden()
-
-            formPage.phoneInput.fill("123456789")
-            formPage.phoneInput.blur()
-            assertThat(formPage.phoneError).isHidden()
-
-            formPage.certifyInfoCheckbox.check()
-            formPage.agreementCheckbox.check()
+            val userAgreementSection = formPage.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
 
             formPage.submitButton.click()
 
-            // assert that payment title is shown
-            val paymentPage = EmployeePaymentPage(page)
-            assertThat(paymentPage.paymentPageTitle).hasCount(1)
+            // assert that payment page is shown
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentProviders).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
