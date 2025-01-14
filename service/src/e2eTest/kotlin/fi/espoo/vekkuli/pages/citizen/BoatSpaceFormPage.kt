@@ -77,13 +77,13 @@ class BoatSpaceFormPage(
         val storageTypeField = fields.getField("Säilytystapa")
     }
 
-    class ConfirmCancelReservationModal(root: Locator) {
-        val element = root
+    class ConfirmCancelReservationModal(val root: Locator) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
         val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Jatka").setExact(true))
     }
 
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen"))
+
     fun getOrganizationSection() = OrganizationSection(getByDataTestId("organization"))
 
     fun getBoatSection() = BoatSection(getByDataTestId("boat"))

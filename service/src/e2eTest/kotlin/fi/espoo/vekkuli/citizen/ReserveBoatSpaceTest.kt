@@ -390,42 +390,45 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
         // Cancel, then cancel in modal
         formPage.cancelButton.click()
-        assertThat(confirmCancelReservationModal.element).isVisible()
+        assertThat(confirmCancelReservationModal.root).isVisible()
         confirmCancelReservationModal.cancelButton.click()
-        assertThat(confirmCancelReservationModal.element).isHidden()
+        assertThat(confirmCancelReservationModal.root).isHidden()
 
         // Cancel, then confirm in modal
         formPage.cancelButton.click()
-        assertThat(confirmCancelReservationModal.element).isVisible()
+        assertThat(confirmCancelReservationModal.root).isVisible()
         confirmCancelReservationModal.confirmButton.click()
         assertThat(reservationPage.header).isVisible()
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun authenticationOnReservation() {
-        // go directly to reservation page
-        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-        reservationPage.navigateTo()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
 
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.lengthFilterInput.blur()
-        reservationPage.firstReserveButton.click()
-        assertThat(reservationPage.authModal).isVisible()
+        val filterSection = reservationPage.getFilterSection()
+        filterSection.slipRadio.click()
 
-        reservationPage.authModalCancel.click()
-        assertThat(reservationPage.authModal).isHidden()
-        reservationPage.firstReserveButton.click()
-        reservationPage.authModalContinue.click()
+        val slipFilterSection = filterSection.getSlipFilterSection()
+        slipFilterSection.boatTypeSelect.selectOption("Sailboat")
+        slipFilterSection.widthInput.fill("3")
+        slipFilterSection.lengthInput.fill("6")
+
+        val searchResultsSection = reservationPage.getSearchResultsSection()
+        searchResultsSection.firstReserveButton.click()
+
+        val loginModal = reservationPage.getLoginModal()
+        assertThat(loginModal.root).isVisible()
+
+        loginModal.cancelButton.click()
+        assertThat(loginModal.root).isHidden()
+
+        searchResultsSection.firstReserveButton.click()
+        loginModal.continueButton.click()
         page.getByText("Kirjaudu").click()
-        val formPage = EmployeeBoatSpaceFormPage(page)
-        assertThat(formPage.header).isVisible()
 
-        assertThat(reservationPage.widthFilterInput).hasValue("3")
-        assertThat(reservationPage.lengthFilterInput).hasValue("6")
-
-        formPage.fillFormAndSubmit()
+        assertThat(slipFilterSection.widthInput).hasValue("3")
+        assertThat(slipFilterSection.lengthInput).hasValue("6")
     }
 
     @Test

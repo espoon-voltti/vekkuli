@@ -76,8 +76,7 @@ class CitizenDetailsPage(
         val widthInput = fields.getInput("Leveys")
     }
 
-    inner class TerminateReservationModal(root: Locator) {
-        val element = root
+    inner class TerminateReservationModal(val root: Locator) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
         val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano venepaikka").setExact(true))
 
@@ -86,8 +85,7 @@ class CitizenDetailsPage(
         val amenityText = getByDataTestId("amenity", root)
     }
 
-    class TerminateReservationFailureModal(root: Locator) {
-        val element = root
+    class TerminateReservationFailureModal(val root: Locator) {
         val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
     }
 
