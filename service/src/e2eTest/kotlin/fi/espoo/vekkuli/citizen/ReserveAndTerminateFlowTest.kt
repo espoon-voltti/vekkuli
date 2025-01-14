@@ -5,17 +5,20 @@ import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.ReservationExpiration
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.citizen.PaymentPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
-import fi.espoo.vekkuli.pages.employee.*
+import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
+import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
+import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDetailsPage
+import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage as EmployeeReserveBoatSpacePage
 
 @ActiveProfiles("test")
 class ReserveAndTerminateFlowTest : PlaywrightTest() {
@@ -80,15 +83,14 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `employee can reserve a boat space and terminate to future and allow others to see it after end date`() {
         // We are at the start of reservation period
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
 
         val listingPage = ReservationListPage(page)
-        val citizenDetailsPage = fi.espoo.vekkuli.pages.employee.CitizenDetailsPage(page)
+        val citizenDetailsPage = EmployeeCitizenDetailsPage(page)
         val employeeHome = EmployeeHomePage(page)
-        val reserveBoatSpacePage = ReserveBoatSpacePage(page, userType = UserType.EMPLOYEE)
+        val reserveBoatSpacePage = EmployeeReserveBoatSpacePage(page, userType = UserType.EMPLOYEE)
         val expectedHarbour = "Haukilahti"
         val expectedPlaceId = "B 314"
         val expectedReserverSearch = "Virtanen Mikko"
@@ -167,8 +169,10 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         assertThat(reserveBoatSpacePage.reserveTableB314Row).isVisible()
 
         // Check that the user sees the reservation as expired
-        CitizenHomePage(page).loginAsMikkoVirtanen()
-        citizenDetailsPage.navigateToPage()
+        listingPage.navigateTo()
+        listingPage.reservationExpiration(ReservationExpiration.Expired.toString()).click()
+        assertThat(listingPage.reservationsTableB314Row).isVisible()
+        listingPage.reservationsTableB314Row.click()
 
         assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
         citizenDetailsPage.toggleExpiredReservationsAccordion()

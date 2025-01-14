@@ -67,7 +67,9 @@ class BoatSpaceReservationList : BaseView() {
         val reservationExpirationFilter =
             ReservationExpiration.entries.joinToString("\n") { state ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" ${addTestId(
+                    "filter-reservation-expiration-$state"
+                )}>
                     <input type="radio" name="expiration" value="${state.name}" class="is-hidden" ${if (params.expiration == state) {
                     "checked"
                 } else {
