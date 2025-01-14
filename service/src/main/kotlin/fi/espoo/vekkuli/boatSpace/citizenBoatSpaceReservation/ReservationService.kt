@@ -68,6 +68,7 @@ open class ReservationService(
         val (citizenId) = citizenAccessControl.requireCitizen()
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val result = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+        println("spaceId $spaceId, citizenId $citizenId, result $result")
         if (result is ReservationResult.Failure) {
             throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
         }

@@ -161,6 +161,54 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    fun `reserving a trailer space as a citizen`() {
+        try {
+            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 5, 1, 22, 22, 22))
+
+            CitizenHomePage(page).loginAsLeoKorhonen()
+
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            page.pause()
+            reservationPage.startReservingBoatSpace012()
+
+            val formPage = BoatSpaceFormPage(page)
+            val boatSection = formPage.getBoatSection()
+            val userAgreementSection = formPage.getUserAgreementSection()
+
+            // Fill in the boat information
+            boatSection.typeSelect.selectOption("Sailboat")
+            boatSection.nameInput.fill("My Boat")
+            boatSection.lengthInput.fill("3")
+            boatSection.widthInput.fill("25")
+            boatSection.depthInput.fill("1.5")
+            boatSection.weightInput.fill("2000")
+            boatSection.otherIdentifierInput.fill("ID12345")
+            boatSection.noRegistrationCheckbox.check()
+            boatSection.ownerRadio.click()
+
+            val citizenSection = formPage.getCitizenSection()
+            citizenSection.emailInput.fill("test@example.com")
+            assertThat(citizenSection.emailError).isHidden()
+
+            citizenSection.phoneInput.fill("123456789")
+            assertThat(citizenSection.phoneError).isHidden()
+
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
+
+            formPage.submitButton.click()
+
+            val paymentPage = PaymentPage(page)
+            paymentPage.nordeaSuccessButton.click()
+
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     @Disabled("Waiting for React version")
     fun `reserving a winter storage boat space as a citizen`() {
         try {
