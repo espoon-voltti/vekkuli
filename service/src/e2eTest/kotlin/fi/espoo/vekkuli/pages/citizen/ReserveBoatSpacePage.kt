@@ -20,9 +20,9 @@ class ReserveBoatSpacePage(
         val boatTypeSelect = fields.getSelect("Venetyyppi")
         val widthInput = fields.getInput("Veneen leveys")
         val lengthInput = fields.getInput("Veneen pituus")
-        val amenityBuoyCheckbox = fields.getCheckbox("Poiju")
+        val amenityBuoyCheckbox = fields.getCheckbox("Poiju", true)
         val amenityRearBuoyCheckbox = fields.getCheckbox("Peräpoiju")
-        val amenityBeamCheckbox = fields.getCheckbox("Aisa")
+        val amenityBeamCheckbox = fields.getCheckbox("Aisa", true)
         val amenityWalkBeamCheckbox = fields.getCheckbox("Kävelyaisa")
         val haukilahtiCheckbox = fields.getCheckbox("Haukilahti")
         val kivenlahtiCheckbox = fields.getCheckbox("Kivenlahti")
@@ -31,33 +31,6 @@ class ReserveBoatSpacePage(
     class SearchResultsSection(root: Locator) {
         val harborHeaders = root.locator(".harbor-header")
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
-    }
-
-    class FieldLocator(private val root: Locator) {
-        fun getInput(label: String) =
-            root.locator("label")
-                .getByText(label)
-                .locator("..")
-                .locator("input")
-
-        fun getCheckbox(label: String) =
-            root.locator("label.checkbox span")
-                .getByText(label, Locator.GetByTextOptions().setExact(true))
-                .locator("..")
-                .locator("input[type=checkbox]")
-
-        fun getRadio(label: String) =
-            root.locator("label .body")
-                .getByText(label, Locator.GetByTextOptions().setExact(true))
-                .locator("..")
-                .locator("..")
-                .locator("input[type=radio]")
-
-        fun getSelect(label: String) =
-            root.locator("label")
-                .getByText(label, Locator.GetByTextOptions().setExact(true))
-                .locator("..")
-                .locator("select")
     }
 
     fun navigateToPage() {

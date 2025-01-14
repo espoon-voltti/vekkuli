@@ -9,101 +9,97 @@ import fi.espoo.vekkuli.pages.BasePage
 class CitizenDetailsPage(
     page: Page
 ) : BasePage(page) {
-    inner class BoatSection(locator: Locator) {
-        val editButton = locator.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa veneen tietoja").setExact(true))
-        val saveButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
+    class BoatSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val editButton = root.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa veneen tietoja").setExact(true))
+        val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
 
-        val depthField = getField("Syväys (m)", locator)
-        val depthInput = getInput("Syväys (m) *", locator)
-        val extraInformationField = getField("Lisätiedot", locator)
-        val extraInformationInput = getInput("Lisätiedot", locator)
-        val lengthField = getField("Pituus (m)", locator)
-        val lengthInput = getInput("Pituus (m) *", locator)
-        val nameField = getField("Veneen nimi", locator)
-        val nameInput = getInput("Veneen nimi *", locator)
-        val otherIdentifierField = getField("Muu tunniste", locator)
-        val otherIdentifierInput = getInput("Muu tunniste *", locator)
-        val ownershipField = getField("Omistussuhde", locator)
-        val ownershipSelect = getSelect("Omistussuhde *", locator)
-        val registrationNumberField = getField("Rekisteritunnus", locator)
-        val registrationNumberInput = getInput("Rekisteritunnus", locator)
-        val typeField = getField("Veneen tyyppi", locator)
-        val typeSelect = getSelect("Veneen tyyppi *", locator)
-        val weightField = getField("Paino (kg)", locator)
-        val weightInput = getInput("Paino (kg) *", locator)
-        val widthField = getField("Leveys (m)", locator)
-        val widthInput = getInput("Leveys (m) *", locator)
+        val depthField = fields.getField("Syväys")
+        val depthInput = fields.getInput("Syväys")
+        val extraInformationField = fields.getField("Lisätiedot")
+        val extraInformationInput = fields.getInput("Lisätiedot")
+        val lengthField = fields.getField("Pituus")
+        val lengthInput = fields.getInput("Pituus")
+        val nameField = fields.getField("Veneen nimi")
+        val nameInput = fields.getInput("Veneen nimi")
+        val otherIdentifierField = fields.getField("Muu tunniste")
+        val otherIdentifierInput = fields.getInput("Muu tunniste")
+        val ownershipField = fields.getField("Omistussuhde")
+        val ownershipSelect = fields.getSelect("Omistussuhde")
+        val registrationNumberField = fields.getField("Rekisteritunnus")
+        val registrationNumberInput = fields.getInput("Rekisteritunnus")
+        val typeField = fields.getField("Veneen tyyppi")
+        val typeSelect = fields.getSelect("Veneen tyyppi")
+        val weightField = fields.getField("Paino")
+        val weightInput = fields.getInput("Paino")
+        val widthField = fields.getField("Leveys")
+        val widthInput = fields.getInput("Leveys")
     }
 
-    inner class CitizenSection(locator: Locator) {
-        val editButton = locator.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa").setExact(true))
-        val saveButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
+    class CitizenSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val editButton = root.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa").setExact(true))
+        val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
 
-        val emailError = getInputError("Sähköposti", locator)
-        val emailField = getField("Sähköposti", locator)
-        val emailInput = getInput("Sähköposti", locator)
-        val municipalityField = getField("Kotikunta", locator)
-        val phoneError = getInputError("Puhelinnumero", locator)
-        val phoneField = getField("Puhelinnumero", locator)
-        val phoneInput = getInput("Puhelinnumero", locator)
+        val emailError = fields.getInputError("Sähköposti")
+        val emailField = fields.getField("Sähköposti")
+        val emailInput = fields.getInput("Sähköposti")
+        val municipalityField = fields.getField("Kotikunta")
+        val phoneError = fields.getInputError("Puhelinnumero")
+        val phoneField = fields.getField("Puhelinnumero")
+        val phoneInput = fields.getInput("Puhelinnumero")
     }
 
-    inner class ReservationSection(locator: Locator) {
-        val terminateButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka").setExact(true))
+    inner class ReservationSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val terminateButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka").setExact(true))
 
-        val locationName = getField("Satama", locator)
-        val place = getField("Paikka", locator)
+        val locationName = fields.getField("Satama")
+        val place = fields.getField("Paikka")
 
-        val trailerSection = TrailerSection(getByDataTestId("trailer-information", locator))
+        val trailerSection = TrailerSection(getByDataTestId("trailer-information", root))
     }
 
-    inner class TrailerSection(locator: Locator) {
-        val editButton = locator.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))
-        val saveButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
-        val cancelButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
+    class TrailerSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val editButton = root.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))
+        val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
 
-        val lengthField = getField("Pituus (m)", locator)
-        val lengthInput = getInput("Pituus (m)", locator)
+        val lengthField = fields.getField("Pituus")
+        val lengthInput = fields.getInput("Pituus")
 
-        val registrationCodeField = getField("Rekisterinumero", locator)
-        val registrationCodeInput = getInput("Rekisterinumero", locator)
+        val registrationCodeField = fields.getField("Rekisterinumero")
+        val registrationCodeInput = fields.getInput("Rekisterinumero")
 
-        val widthField = getField("Leveys (m)", locator)
-        val widthInput = getInput("Leveys (m)", locator)
+        val widthField = fields.getField("Leveys")
+        val widthInput = fields.getInput("Leveys")
     }
 
-    inner class TerminateReservationModal(locator: Locator) {
-        val element = locator
-        val cancelButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
-        val confirmButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano venepaikka").setExact(true))
+    inner class TerminateReservationModal(root: Locator) {
+        val element = root
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
+        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano venepaikka").setExact(true))
 
-        val placeIdentifierText = getByDataTestId("place-identifier", locator)
-        val boatSpaceText = getByDataTestId("boat-space", locator)
-        val amenityText = getByDataTestId("amenity", locator)
+        val placeIdentifierText = getByDataTestId("place-identifier", root)
+        val boatSpaceText = getByDataTestId("boat-space", root)
+        val amenityText = getByDataTestId("amenity", root)
     }
 
-    inner class TerminateReservationFailureModal(locator: Locator) {
-        val element = locator
-        val okButton = locator.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
+    class TerminateReservationFailureModal(root: Locator) {
+        val element = root
+        val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
     }
 
     fun navigateToPage() {
         page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
     }
 
-//    fun hideModalWindow() {
-//        modalWindow.click(
-//            Locator
-//                .ClickOptions()
-//                .setPosition(5.0, 5.0)
-//        )
-//    }
-
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen-information"))
 
     fun getBoatSection(id: Int) = BoatSection(getByDataTestId("boat-$id"))
 
-    val showAllBoatsButton = getInput("Näytä myös veneet joita ei ole liitetty venepaikkoihin")
+    val showAllBoatsButton = FieldLocator(page.locator("body")).getInput("Näytä myös veneet joita ei ole liitetty venepaikkoihin")
 
     val reservationList = getByDataTestId("reservation-list")
     val reservationListCards = getByDataTestId("reservation-list-card", reservationList)
@@ -126,38 +122,4 @@ class CitizenDetailsPage(
     fun getTerminateReservationFailureModal() = TerminateReservationFailureModal(getByDataTestId("terminate-reservation-failure-modal"))
 
     val terminateReservationSuccessModal = getByDataTestId("terminate-reservation-success-modal")
-
-    private fun getInput(
-        label: String,
-        locator: Locator? = null
-    ) = getInputWrapper(label, locator).locator("input")
-
-    private fun getSelect(
-        label: String,
-        locator: Locator? = null
-    ) = getInputWrapper(label, locator).locator("select")
-
-    private fun getField(
-        label: String,
-        locator: Locator? = null
-    ) = getInputWrapper(label, locator).locator("p")
-
-    private fun getInputError(
-        label: String,
-        locator: Locator? = null
-    ) = getInputWrapper(label, locator).locator(".help.is-danger")
-
-    private fun getInputWrapper(
-        label: String,
-        locator: Locator? = null
-    ): Locator {
-        val labelElement =
-            if (locator != null) {
-                locator.locator("label", Locator.LocatorOptions().setHasText(label))
-            } else {
-                page.locator("label", Page.LocatorOptions().setHasText(label))
-            }
-
-        return labelElement.locator("..")
-    }
 }
