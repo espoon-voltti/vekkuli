@@ -38,6 +38,7 @@ abstract class IntegrationTestBase {
     val citizenIdOlivia: UUID = UUID.fromString("509edb00-5549-11ef-a1c7-776e76028a49")
     val citizenIdMikko: UUID = UUID.fromString("62d90eed-4ea3-4446-8023-8dad9c01dd34")
     val organizationId: UUID = UUID.fromString("8b220a43-86a0-4054-96f6-d29a5aba17e7")
+    val citizenIdJorma: UUID = UUID.fromString("82722a75-793a-4cbe-a3d9-a3043f2f5731")
 
     val userId: UUID = UUID.fromString("94833b54-132b-4ab8-b841-60df45809b3e")
 

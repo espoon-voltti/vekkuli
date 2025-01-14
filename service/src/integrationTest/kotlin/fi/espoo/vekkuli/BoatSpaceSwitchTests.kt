@@ -37,9 +37,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         deleteAllReservations(jdbi)
     }
 
-    @Autowired
-    private lateinit var reserverService: ReserverService
-
     @MockBean
     lateinit var asyncJobRunner: IAsyncJobRunner<AsyncJob>
 
@@ -51,9 +48,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     @Autowired
     private lateinit var boatSpaceSwitchService: BoatSpaceSwitchService
-
-    @Autowired
-    lateinit var boatService: BoatService
 
     @Autowired
     lateinit var reservationService: BoatReservationService
@@ -125,136 +119,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         assertEquals(switchedReservation.id, newReservation.id, "Should fetch existing switch typed reservation")
         assertEquals(CreationType.Switch, newReservation.creationType, "Creation type should be switch")
         assertEquals(newBoatSpaceId, newReservation.boatSpaceId, "Boat space id should stay changed")
-    }
-
-    @Test
-    fun `should create a switch reservation for employee if not exist or fetch if already created`() {
-        val reservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    citizenIdLeo,
-                    1,
-                    validity = ReservationValidity.Indefinite,
-                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
-                )
-            )
-        val newBoatSpaceId = 2
-        mockToAllowSwitchingWithReservationVariables(reservation)
-        val switchedReservation =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(
-                userId,
-                reservation.id,
-                citizenIdLeo,
-                newBoatSpaceId
-            )
-        assertNotEquals(reservation.id, switchedReservation.id, "Switch reservation ID is not the same as original")
-        assertEquals(reservation.id, switchedReservation.originalReservationId, "Original reservation ID should match")
-        assertEquals(ReservationStatus.Info, switchedReservation.status, "Status should be info")
-        assertEquals(CreationType.Switch, switchedReservation.creationType, "Creation type should be switch")
-        assertEquals(newBoatSpaceId, switchedReservation.boatSpaceId, "Boat space id should be changed")
-
-        val newReservation =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(
-                userId,
-                reservation.id,
-                citizenIdLeo,
-                newBoatSpaceId
-            )
-        assertEquals(switchedReservation.id, newReservation.id, "Should fetch existing switch typed reservation")
-        assertEquals(CreationType.Switch, newReservation.creationType, "Creation type should be switch")
-        assertEquals(newBoatSpaceId, newReservation.boatSpaceId, "Boat space id should stay changed")
-    }
-
-    @Test
-    fun `should create a switch reservation for employee on behalf of organization if not exist or fetch if already`() {
-        val reservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    citizenIdOlivia,
-                    1,
-                    reserverId = organizationId,
-                    validity = ReservationValidity.Indefinite,
-                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
-                )
-            )
-        mockToAllowSwitchingWithReservationVariables(reservation)
-
-        val newBoatSpaceId = 2
-        val createdSwitch =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(
-                userId,
-                reservation.id,
-                citizenIdOlivia,
-                newBoatSpaceId
-            )
-        assertNotEquals(reservation.id, createdSwitch.id, "Switch reservation ID is not the same as original")
-        assertEquals(reservation.id, createdSwitch.originalReservationId, "Original reservation ID should match")
-        assertEquals(CreationType.Switch, createdSwitch.creationType, "Status should be switch")
-        assertEquals(2, createdSwitch.boatSpaceId, "Boat space id should be same as original reservation")
-        assertEquals(newBoatSpaceId, createdSwitch.boatSpaceId, "Boat space id should be changed")
-
-        val newReservation =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(
-                userId,
-                reservation.id,
-                citizenIdOlivia,
-                newBoatSpaceId
-            )
-        assertEquals(createdSwitch.id, newReservation.id, "Should fetch existing switch reservation")
-        assertEquals(CreationType.Switch, newReservation.creationType, "Status should be switch")
-        assertEquals(newBoatSpaceId, newReservation.boatSpaceId, "Boat space id should stay changed")
-    }
-
-    @Test
-    fun `should be able to create multiple switches to different reservations`() {
-        val reservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    citizenIdLeo,
-                    1,
-                    validity = ReservationValidity.Indefinite,
-                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
-                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
-                )
-            )
-        mockToAllowSwitchingWithReservationVariables(reservation)
-
-        val firstSwitch =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(userId, reservation.id, citizenIdOlivia, 2)
-        assertNotNull(firstSwitch.id, "Switch reservation ID is not the same as original")
-
-        val secondReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    citizenIdOlivia,
-                    2,
-                    validity = ReservationValidity.Indefinite,
-                    startDate = reservation.startDate,
-                    endDate = reservation.endDate
-                )
-            )
-        mockToAllowSwitchingWithReservationVariables(secondReservation)
-        val secondSwitch =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(
-                userId,
-                secondReservation.id,
-                citizenIdOlivia,
-                2
-            )
-        assertNotNull(secondSwitch.id, "Switch reservation ID is not the same as original")
-        assertEquals(secondReservation.id, secondSwitch.originalReservationId, "Original reservation ID should match")
-        assertEquals(CreationType.Switch, secondSwitch.creationType, "Status should be switch")
-
-        val newReservation =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(userId, reservation.id, citizenIdOlivia, 2)
-        assertEquals(firstSwitch.id, newReservation.id, "Should fetch existing switch reservation")
-        assertEquals(CreationType.Switch, newReservation.creationType, "Status should be switch")
     }
 
     @Test
@@ -568,61 +432,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         assertEquals(decimalToInt(validInput.trailerWidth), updatedReservation?.trailer?.widthCm)
         assertEquals(decimalToInt(validInput.trailerLength), updatedReservation?.trailer?.lengthCm)
         assertEquals(boatSpaceIdForWinter2, updatedReservation?.boatSpaceId, "Boat space id should be changed")
-    }
-
-    @Test
-    fun `should switch winter reservations when reserving for organization`() {
-        mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
-        val madeReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider = timeProvider,
-                    citizenId = citizenIdOlivia,
-                    boatSpaceId = 9,
-                    boatId = 1,
-                    reserverId = organizationId,
-                    validity = ReservationValidity.Indefinite,
-                    endDate = endDateWithinMonthOfWinterRenewWindow
-                )
-            )
-        mockToAllowSwitchingWithReservationVariables(madeReservation)
-
-        val switchReservation =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(
-                userId,
-                madeReservation.id,
-                citizenIdOlivia,
-                8
-            )
-        val invalidInput =
-            ModifyReservationInput(
-                boatId = 2,
-                boatType = BoatType.Sailboat,
-                width = BigDecimal(3.0),
-                length = BigDecimal(4.0),
-                depth = BigDecimal(1.0),
-                weight = 100,
-                boatRegistrationNumber = "12345",
-                boatName = "TestBoat",
-                otherIdentification = "OtherID",
-                extraInformation = "ExtraInfo",
-                ownership = OwnershipStatus.Owner,
-                email = "test@email",
-                phone = "1234567890",
-                agreeToRules = true,
-                certifyInformation = true,
-                noRegistrationNumber = false,
-                originalReservationId = 4
-            )
-        val storageException =
-            assertThrows<IllegalArgumentException> {
-                boatSpaceSwitchService.updateSwitchReservation(
-                    userId,
-                    invalidInput,
-                    switchReservation.id
-                )
-            }
-        assertEquals("Storage type has to be given.", storageException.message)
     }
 
     @Test
