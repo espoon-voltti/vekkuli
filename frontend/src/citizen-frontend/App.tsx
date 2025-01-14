@@ -1,4 +1,5 @@
 import ScrollToTop from 'lib-components/ScrollToTop'
+import { SkipToContentLink } from 'lib-components/links'
 import React from 'react'
 import { createBrowserRouter, Outlet } from 'react-router'
 
@@ -8,7 +9,8 @@ import CitizenPage from './citizen/CitizenPage'
 import ErrorPage from './errors/ErrorPage'
 import HomePage from './home/HomePage'
 import Navigation from './layout/Navigation'
-import { Localization } from './localization'
+import { Localization, useTranslation } from './localization'
+import OrganizationPage from './organization/OrganizationPage'
 import { queryClient, QueryClientProvider } from './query'
 import ReservationStateRedirect from './reservation/ReservationStateRedirect'
 import SearchPage from './reservation/pages/chooseBoatSpace/SearchPage'
@@ -16,7 +18,6 @@ import ConfirmationPage from './reservation/pages/confirmation/ConfirmationPage'
 import FormPage from './reservation/pages/fillInformation/FormPage'
 import PaymentPage from './reservation/pages/payment/PaymentPage'
 import { ReservationStateContextProvider } from './reservation/state'
-import OrganizationPage from './organization/OrganizationPage'
 
 function App() {
   return (
@@ -32,8 +33,12 @@ function App() {
 }
 
 const Content = React.memo(function Content() {
+  const i18n = useTranslation()
   return (
     <div>
+      <SkipToContentLink target="main">
+        {i18n.header.goToMainContent}
+      </SkipToContentLink>
       <Navigation />
       <Outlet />
     </div>

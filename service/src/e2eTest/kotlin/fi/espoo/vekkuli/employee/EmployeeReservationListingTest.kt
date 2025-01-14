@@ -13,7 +13,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter boat spaces`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 4 }
+        page.waitForCondition { listingPage.reservations.count() == 5 }
         listingPage.boatSpaceTypeFilter("Winter").click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
     }
@@ -21,7 +21,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reserver phone number`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 4 }
+        page.waitForCondition { listingPage.reservations.count() == 5 }
         listingPage.searchInput("phoneSearch").fill("04056")
         listingPage.searchInput("phoneSearch").blur()
         page.waitForCondition { listingPage.reservations.count() == 1 }
@@ -31,7 +31,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reservation validity`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 4 }
+        page.waitForCondition { listingPage.reservations.count() == 5 }
         listingPage.reservationValidityFilter(ReservationValidity.FixedTerm.toString()).click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 003")
@@ -40,22 +40,22 @@ class EmployeeReservationListingTest : PlaywrightTest() {
     @Test
     fun `Employee can filter by reserver exceptions`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 4 }
+        page.waitForCondition { listingPage.reservations.count() == 5 }
         listingPage.exceptionsFilter.click()
-        page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 2 }
-        assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Virtanen Olivia")
+        page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
+        assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Pulkkinen Jorma")
     }
 
     @Test
     fun `Employee can filter by amenity`() {
         val listingPage = reservationListPage()
-        page.waitForCondition { listingPage.reservations.count() == 4 }
+        page.waitForCondition { listingPage.reservations.count() == 5 }
         listingPage.expandingSelectionFilter("amenity").click()
         listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
         listingPage.amenityFilter(BoatSpaceAmenity.Beam.name).click()
-        page.waitForCondition { listingPage.reservations.count() == 4 }
+        page.waitForCondition { listingPage.reservations.count() == 5 }
     }
 
     private fun reservationListPage(): ReservationListPage {

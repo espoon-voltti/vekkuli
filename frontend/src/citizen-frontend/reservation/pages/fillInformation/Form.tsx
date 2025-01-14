@@ -32,6 +32,7 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
+import useStoredSearchState from '../useStoredSearchState'
 
 type FormProperties = {
   reservation: Reservation
@@ -63,6 +64,7 @@ export default React.memo(function Form({
         onOrganizationFormUpdate(prev, next, organizations, municipalities)
     }
   )
+  const [searchState, setSearchState] = useStoredSearchState()
   const formBind = useForm(
     reserveSpaceForm,
     () =>
@@ -70,7 +72,8 @@ export default React.memo(function Form({
         i18n,
         boats,
         reservation.citizen,
-        reservation.boatSpace.type
+        reservation.boatSpace.type,
+        searchState
       ),
     i18n.components.validationErrors,
     {
@@ -87,6 +90,7 @@ export default React.memo(function Form({
     const isValid = formBind.isValid() && organizationFormBind.isValid()
     if (!isValid) setShowAllErrors(true)
     else {
+      setSearchState({})
       await submitForm({
         id: reservation?.id,
         input: { ...formBind.value(), ...organizationFormBind.value() }
@@ -118,7 +122,9 @@ export default React.memo(function Form({
           reserver={updatedReservation.citizen}
           bind={reserver}
         />
-        <OrganizationSection bind={organizationFormBind} />
+        {organizations.length > 0 && (
+          <OrganizationSection bind={organizationFormBind} />
+        )}
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
         <ReservedSpace reservation={updatedReservation} />

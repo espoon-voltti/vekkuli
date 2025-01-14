@@ -1,5 +1,5 @@
 import { Loader } from 'lib-components/Loader'
-import Section from 'lib-components/dom/Section'
+import { MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
@@ -31,7 +31,7 @@ const Content = React.memo(function Content({
   const expiredReservations = useQueryResult(citizenExpiredReservationsQuery())
 
   return (
-    <Section>
+    <MainSection>
       <Loader
         results={[user, organizations, activeReservations, expiredReservations]}
       >
@@ -54,6 +54,6 @@ const Content = React.memo(function Content({
           )
         }
       </Loader>
-    </Section>
+    </MainSection>
   )
 })

@@ -1,4 +1,5 @@
 import { Loader } from 'lib-components/Loader'
+import { MainSection } from 'lib-components/dom'
 import React from 'react'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
@@ -19,12 +20,12 @@ export default React.memo(function ConfirmationPage() {
   )
 
   return (
-    <section className="section">
+    <MainSection>
       <StepIndicator step="confirmation" />
       <div className="container">
         <Content reservation={reservation} />
       </div>
-    </section>
+    </MainSection>
   )
 })
 

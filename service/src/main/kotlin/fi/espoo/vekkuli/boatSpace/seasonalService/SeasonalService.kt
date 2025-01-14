@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getStorageEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getTrailerEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
-import fi.espoo.vekkuli.config.BoatSpaceConfig.isEspooCitizen
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
@@ -158,7 +157,7 @@ class SeasonalService(
         reservations: List<BoatSpaceReservationDetails>,
     ): List<BoatSpaceReservationDetails> {
         val reserver = reserverRepo.getReserverById(reserverID) ?: throw java.lang.IllegalArgumentException("Reserver not found")
-        val isEspooCitizen = isEspooCitizen(reserver.municipalityCode)
+        val isEspooCitizen = reserver.isEspooCitizen()
         if (!isEspooCitizen) {
             // Only Espoo citizens can renew reservations
             return reservations
@@ -200,7 +199,7 @@ class SeasonalService(
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverID, BoatSpaceType.Slip)
         val hasSomePlace = reservations.isNotEmpty()
         val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
-        val isEspooCitizen = isEspooCitizen(reserver.municipalityCode)
+        val isEspooCitizen = reserver.isEspooCitizen()
 
         if (hasSomePlace && !isEspooCitizen) {
             // Non-Espoo citizens can only have one reservation
@@ -259,7 +258,7 @@ class SeasonalService(
             reserverRepo.getReserverById(reserverID) ?: return ReservationResult.Failure(
                 ReservationResultErrorCode.NoReserver
             )
-        val isEspooCitizen = isEspooCitizen(reserver.municipalityCode)
+        val isEspooCitizen = reserver.isEspooCitizen()
 
         if (!isEspooCitizen) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)

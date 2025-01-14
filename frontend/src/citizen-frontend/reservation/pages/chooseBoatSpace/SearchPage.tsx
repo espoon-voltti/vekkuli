@@ -1,5 +1,5 @@
 import { Loader } from 'lib-components/Loader'
-import { Column, Columns, Container, Section } from 'lib-components/dom'
+import { Column, Columns, Container, MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -23,6 +23,7 @@ import {
   searchFreeSpacesForm
 } from './formDefinitions'
 import { freeSpacesQuery, reserveSpaceMutation } from './queries'
+import useStoredSearchState from '../useStoredSearchState'
 
 export default React.memo(function SearchPage() {
   const i18n = useTranslation()
@@ -31,9 +32,11 @@ export default React.memo(function SearchPage() {
   const userLoggedIn = isLoggedIn.getOrElse(false)
   const { reservation } = useContext(ReservationStateContext)
 
+  const [searchState, setSearchState] = useStoredSearchState()
+
   const bind = useForm(
     searchFreeSpacesForm,
-    () => initialFormState(i18n),
+    () => initialFormState(i18n, searchState),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => {
@@ -91,15 +94,23 @@ export default React.memo(function SearchPage() {
         setReserveError(errorType)
       })
   }
-  const onReserveButtonPress = userLoggedIn
-    ? onReserveSpace
-    : () => setIsLoginModalOpen(true)
+  const onReserveButtonPress = (id: number) => {
+    setSearchState({
+      width: bind.value().width.toString(),
+      length: bind.value().length.toString(),
+      amenities: bind.value().amenities,
+      boatType: bind.value().boatType,
+      harbor: bind.value().harbor,
+      spaceType: bind.state.boatSpaceType.domValue
+    })
+    userLoggedIn ? onReserveSpace(id) : setIsLoginModalOpen(true)
+  }
   return (
     <Loader results={[reservation]} allowFailure>
       {(reservation) =>
         !reservation && (
           <>
-            <Section>
+            <MainSection>
               <StepIndicator step="chooseBoatSpace" />
               <Container>
                 <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
@@ -121,7 +132,7 @@ export default React.memo(function SearchPage() {
                   </Column>
                 </Columns>
               </Container>
-            </Section>
+            </MainSection>
             {isLoginModalOpen && (
               <LoginBeforeReservingModal
                 close={() => setIsLoginModalOpen(false)}

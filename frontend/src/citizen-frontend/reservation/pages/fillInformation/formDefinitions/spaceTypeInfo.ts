@@ -7,6 +7,7 @@ import initialWinterStorageFormState, {
   onWinterStorageFormUpdate,
   winterStorageForm
 } from './winterStorage'
+import { StoredSearchState } from '../../useStoredSearchState'
 
 export const spaceTypeInfoUnionForm = union({
   Slip: value<null>(),
@@ -18,7 +19,8 @@ export type SpaceTypeInfoUnionForm = typeof spaceTypeInfoUnionForm
 
 export function initialSpaceTypeInfoFormState(
   i18n: Translations,
-  type: BoatSpaceType
+  type: BoatSpaceType,
+  storedState?: StoredSearchState
 ): StateOf<SpaceTypeInfoUnionForm> {
   switch (type) {
     case 'Slip':
@@ -26,7 +28,10 @@ export function initialSpaceTypeInfoFormState(
     case 'Trailer':
       return { branch: type, state: null }
     case 'Winter':
-      return { branch: type, state: initialWinterStorageFormState(i18n) }
+      return {
+        branch: type,
+        state: initialWinterStorageFormState(i18n, storedState)
+      }
     case 'Storage':
       return { branch: type, state: null }
   }

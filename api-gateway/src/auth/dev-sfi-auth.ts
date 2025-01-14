@@ -65,6 +65,19 @@ const devUsers: CitizenUser[] = [
     municipalityCode: 49,
     postOffice: { fi: 'Espoo', sv: 'Esbo' },
     dataProtection: false
+  },
+  {
+    nationalId: '111275-180K',
+    firstName: 'Jorma',
+    lastName: 'Kääriäinen',
+    postalCode: '15100',
+    address: {
+      fi: 'Businesscity 2B 56',
+      sv: 'Businesscity 2B 56'
+    },
+    municipalityCode: 398,
+    postOffice: { fi: 'Lahti', sv: 'Lahtis' },
+    dataProtection: false
   }
 ]
 

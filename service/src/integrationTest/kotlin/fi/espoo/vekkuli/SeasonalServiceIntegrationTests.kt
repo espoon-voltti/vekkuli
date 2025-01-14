@@ -36,6 +36,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     private lateinit var terminateReservationService: TerminateReservationService
     val espooCitizenId = citizenIdOlivia
     val helsinkiCitizenId = UUID.fromString("1128bd21-fbbc-4e9a-8658-dc2044a64a58")
+    val espooRulesAppliedNonEspooCitizenId = citizenIdJorma
 
     @Autowired
     lateinit var reservationService: BoatReservationService
@@ -49,10 +50,9 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         deleteAllReservations(jdbi)
     }
 
-    @Test
-    fun `first place should be indefinite for Espoo citizens reserving a slip`() {
+    private fun validateIndefiniteSlipReservationFor(reserverId: UUID) {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
-        val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Slip)
+        val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Slip)
         if (result is ReservationResult.Success) {
             assertEquals(LocalDate.of(2025, 1, 31), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
@@ -62,9 +62,18 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `first place should be indefinite for Espoo citizens reserving a winter space`() {
+    fun `first place should be indefinite for Espoo citizens reserving a slip`() {
+        validateIndefiniteSlipReservationFor(espooCitizenId)
+    }
+
+    @Test
+    fun `first place should be indefinite for non Espoo reserver having espooRulesAllowed enabled reserving a slip`() {
+        validateIndefiniteSlipReservationFor(espooRulesAppliedNonEspooCitizenId)
+    }
+
+    private fun validateIndefiniteWinterSpaceFor(reserverId: UUID) {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-        val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Winter)
+        val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
             assertEquals(LocalDate.of(2025, 8, 31), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
@@ -74,11 +83,21 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `second place should be fixed term for Espoo citizens reserving a slip`() {
+    fun `first place should be indefinite for Espoo citizens reserving a winter space`() {
+        validateIndefiniteWinterSpaceFor(espooCitizenId)
+    }
+
+    @Test
+    fun `first place should be indefinite for non Espoo reserver having espooRulesAllowed enabled reserving a winter space`() {
+        validateIndefiniteWinterSpaceFor(espooRulesAppliedNonEspooCitizenId)
+    }
+
+    private fun validateFixedTermForSecondSlipReservationFor(reserverId: UUID) {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
-        val madeReservation = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
+        val madeReservation =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 1)
         formReservationService.processBoatSpaceReservation(
-            espooCitizenId,
+            reserverId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation.id,
                 boatId = null,
@@ -100,7 +119,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Slip)
+        val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Slip)
         if (result is ReservationResult.Success) {
             assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
             assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
@@ -110,11 +129,21 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `second place should be indefinite for Espoo citizens reserving a winter space`() {
+    fun `second place should be fixed term for Espoo citizens reserving a slip`() {
+        validateFixedTermForSecondSlipReservationFor(espooCitizenId)
+    }
+
+    @Test
+    fun `second place should be fixed term for non Espoo reserver having espooRulesAllowed enabled reserving a slip`() {
+        validateFixedTermForSecondSlipReservationFor(espooRulesAppliedNonEspooCitizenId)
+    }
+
+    private fun validateIndefiniteSecondWinterReservationFor(reserverId: UUID) {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-        val madeReservation = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 8)
+        val madeReservation =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 8)
         formReservationService.processBoatSpaceReservation(
-            espooCitizenId,
+            reserverId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation.id,
                 boatId = null,
@@ -137,7 +166,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Winter)
+        val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
             assertEquals(LocalDate.of(2025, 8, 31), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
@@ -147,11 +176,21 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `third place should fail for Espoo citizens reserving a slip`() {
+    fun `second place should be indefinite for Espoo citizens reserving a winter space`() {
+        validateIndefiniteSecondWinterReservationFor(espooCitizenId)
+    }
+
+    @Test
+    fun `second place should be indefinite for non Espoo reserver having espooRulesAllowed enabled reserving a winter space`() {
+        validateIndefiniteSecondWinterReservationFor(espooRulesAppliedNonEspooCitizenId)
+    }
+
+    private fun validateThirdSlipReservationFailsFor(reserverId: UUID) {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
-        val madeReservation1 = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
+        val madeReservation1 =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 1)
         formReservationService.processBoatSpaceReservation(
-            espooCitizenId,
+            reserverId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation1.id,
                 boatId = null,
@@ -173,9 +212,10 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val madeReservation2 = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 1)
+        val madeReservation2 =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 1)
         formReservationService.processBoatSpaceReservation(
-            espooCitizenId,
+            reserverId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation2.id,
                 boatId = null,
@@ -197,7 +237,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Slip)
+        val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Slip)
         if (result is ReservationResult.Failure) {
             assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
         } else {
@@ -206,11 +246,21 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `third place should fail for Espoo citizens reserving a winter space`() {
+    fun `third place should fail for Espoo citizens reserving a slip`() {
+        validateThirdSlipReservationFailsFor(espooCitizenId)
+    }
+
+    @Test
+    fun `third place should fail for non Espoo reserver having espooRulesAllowed enabled reserving a slip`() {
+        validateThirdSlipReservationFailsFor(espooRulesAppliedNonEspooCitizenId)
+    }
+
+    private fun validateThirdWinterSpaceReservationFailsFor(reserverId: UUID) {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-        val madeReservation1 = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 7)
+        val madeReservation1 =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 7)
         formReservationService.processBoatSpaceReservation(
-            espooCitizenId,
+            reserverId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation1.id,
                 boatId = null,
@@ -233,9 +283,10 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val madeReservation2 = testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 8)
+        val madeReservation2 =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 8)
         formReservationService.processBoatSpaceReservation(
-            espooCitizenId,
+            reserverId,
             ReserveBoatSpaceInput(
                 reservationId = madeReservation2.id,
                 boatId = null,
@@ -258,12 +309,22 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate().minusWeeks(1),
             timeProvider.getCurrentDate().plusWeeks(1),
         )
-        val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Winter)
+        val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Failure) {
             assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
         } else {
             throw AssertionError("canReserveANewWinterSpace succeeded, but it should fail")
         }
+    }
+
+    @Test
+    fun `third place should fail for Espoo citizens reserving a winter space`() {
+        validateThirdWinterSpaceReservationFailsFor(espooCitizenId)
+    }
+
+    @Test
+    fun `third place should fail for non Espoo reserver having espooRulesAllowed enabled reserving a winter space`() {
+        validateThirdWinterSpaceReservationFailsFor(espooCitizenId)
     }
 
     @Test
