@@ -322,7 +322,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             val citizenDetailPage = CitizenDetailsPage(page)
             citizenDetailPage.navigateToPage()
 
-            val reservationSection = citizenDetailPage.getReservationSection(0)
+            val reservationSection = citizenDetailPage.getReservationSection(1)
             val trailerSection = reservationSection.getTrailerSection()
             assertThat(trailerSection.widthField).containsText("1,50")
             assertThat(trailerSection.lengthField).containsText("2,50")
