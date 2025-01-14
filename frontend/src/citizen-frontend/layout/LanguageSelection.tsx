@@ -1,39 +1,46 @@
+import { Dropdown } from 'lib-components/dom'
 import React from 'react'
 
+import { Lang } from 'lib-customizations/vekkuli/citizen'
 import { Globe } from 'lib-icons'
 
 import { useLang, useTranslation } from '../localization'
+
+const menuItemData: Lang[] = ['fi', 'sv', 'en']
 
 export default React.memo(function LanguageSelection() {
   const i18n = useTranslation()
   const [lang, setLang] = useLang()
   return (
-    <div className="dropdown is-hoverable" data-testid="language-selection">
-      <div className="dropdown-trigger">
-        <a
-          className="dropdown-title"
-          aria-haspopup="true"
-          aria-controls="dropdown-menu"
-        >
-          <span className="icon is-small">
-            <Globe />
-          </span>
-          <span className="pl-xs">{lang.toUpperCase()}</span>
-        </a>
-      </div>
-      <div className="dropdown-menu" id="dropdown-menu" role="menu">
-        <div className="dropdown-content">
-          <a className="dropdown-item" onClick={() => setLang('fi')}>
-            {i18n.common.unit.languagesShort.fi}
-          </a>
-          <a className="dropdown-item" onClick={() => setLang('sv')}>
-            {i18n.common.unit.languagesShort.sv}
-          </a>
-          <a className="dropdown-item" onClick={() => setLang('en')}>
-            {i18n.common.unit.languagesShort.en}
-          </a>
-        </div>
-      </div>
-    </div>
+    <Dropdown
+      isHoverable
+      id="language-selection"
+      ariaLabel={i18n.header.selectLanguage}
+    >
+      {{
+        label: (
+          <>
+            <span className="icon is-small">
+              <Globe />
+            </span>
+            <span className="pl-xs">{lang.toUpperCase()}</span>
+          </>
+        ),
+        menuItems: (
+          <>
+            {menuItemData.map((lang) => (
+              <button
+                key={lang}
+                role="menuitem"
+                className="dropdown-item"
+                onClick={() => setLang(lang)}
+              >
+                {i18n.common.unit.languagesShort[lang]}
+              </button>
+            ))}
+          </>
+        )
+      }}
+    </Dropdown>
   )
 })

@@ -513,8 +513,10 @@ body > .columns {
   text-transform: initial;
 }
 
-.dropdown-item:hover {
-  background: $white;
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: $bulma-primary;
+  color: $white;
 }
 
 .nav-row{
