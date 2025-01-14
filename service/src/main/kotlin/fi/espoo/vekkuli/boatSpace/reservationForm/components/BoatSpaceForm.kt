@@ -133,7 +133,7 @@ class BoatSpaceForm(
                                     ${t("boatApplication.cancelReservation")}
                                 </button>
                                 <button id="submit-button"
-                                    class="button is-primary"
+                                    class="button is-primary form-submit"
                                     type="submit">
                                     ${t("boatApplication.$userType.continueToPaymentButton")}
                                 </button>
