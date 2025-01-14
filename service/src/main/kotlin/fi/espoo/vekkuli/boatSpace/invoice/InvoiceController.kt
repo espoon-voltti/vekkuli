@@ -121,6 +121,7 @@ class InvoiceController(
         val priceWithTax: BigDecimal,
         val description: String,
         val function: String,
+        val contactPerson: String? = "",
         val markAsPaid: Boolean = false
     )
 
@@ -162,7 +163,14 @@ class InvoiceController(
         val priceWithVat = input.priceWithTax
         val priceWithVatInCents = decimalToInt(priceWithVat)
         val invoiceData =
-            invoiceService.createInvoiceData(reservation.id, reservation.reserverId, priceWithVatInCents, input.description, input.function)
+            invoiceService.createInvoiceData(
+                reservation.id,
+                reservation.reserverId,
+                priceWithVatInCents,
+                input.description,
+                input.function,
+                input.contactPerson
+            )
                 ?: throw InternalError("Failed to create invoice batch")
 
         val invoice =
