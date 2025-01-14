@@ -19,8 +19,6 @@ class BoatSpaceFormPage(
     class OrganizationSection(root: Locator) {
         private val fields = FieldLocator(root)
         val reserveForOrganization = fields.getRadio("Varaan yhteisön puolesta")
-        val nameInput = fields.getInput("Yhteisön nimi")
-        val businessIdInput = fields.getInput("Y-tunnus")
         val phoneNumberInput = fields.getInput("Puhelinnumero")
         val emailInput = fields.getInput("Sähköposti")
 

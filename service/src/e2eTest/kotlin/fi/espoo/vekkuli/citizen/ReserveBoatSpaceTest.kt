@@ -346,8 +346,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             organizationSection.reserveForOrganization.click()
             organizationSection.organization("Espoon Pursiseura").click()
-            organizationSection.nameInput.fill("My Organization")
-            organizationSection.businessIdInput.fill("1234567-8")
             organizationSection.phoneNumberInput.fill("123456789")
             organizationSection.emailInput.fill("foo@bar.com")
 
