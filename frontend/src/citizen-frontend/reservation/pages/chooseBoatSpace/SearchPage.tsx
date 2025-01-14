@@ -23,6 +23,7 @@ import {
   searchFreeSpacesForm
 } from './formDefinitions'
 import { freeSpacesQuery, reserveSpaceMutation } from './queries'
+import useStoredSearchState from '../useStoredSearchState'
 
 export default React.memo(function SearchPage() {
   const i18n = useTranslation()
@@ -31,9 +32,11 @@ export default React.memo(function SearchPage() {
   const userLoggedIn = isLoggedIn.getOrElse(false)
   const { reservation } = useContext(ReservationStateContext)
 
+  const [searchState, setSearchState] = useStoredSearchState()
+
   const bind = useForm(
     searchFreeSpacesForm,
-    () => initialFormState(i18n),
+    () => initialFormState(i18n, searchState),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => {
@@ -91,9 +94,17 @@ export default React.memo(function SearchPage() {
         setReserveError(errorType)
       })
   }
-  const onReserveButtonPress = userLoggedIn
-    ? onReserveSpace
-    : () => setIsLoginModalOpen(true)
+  const onReserveButtonPress = (id: number) => {
+    setSearchState({
+      width: bind.value().width.toString(),
+      length: bind.value().length.toString(),
+      amenities: bind.value().amenities,
+      boatType: bind.value().boatType,
+      harbor: bind.value().harbor,
+      spaceType: bind.state.boatSpaceType.domValue
+    })
+    userLoggedIn ? onReserveSpace(id) : setIsLoginModalOpen(true)
+  }
   return (
     <Loader results={[reservation]} allowFailure>
       {(reservation) =>
