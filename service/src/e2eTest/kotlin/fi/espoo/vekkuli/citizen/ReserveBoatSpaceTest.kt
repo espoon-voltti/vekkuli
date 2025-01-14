@@ -466,26 +466,21 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun paymentSuccess() {
         // login and pick first free space
-        page.navigate(baseUrlWithEnglishLangParam)
-        page.getByTestId("loginButton").click()
-        page.getByText("Kirjaudu").click()
+        CitizenHomePage(page).loginAsOliviaVirtanen()
 
-        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-        reservationPage.navigateTo()
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.lengthFilterInput.blur()
-        reservationPage.firstReserveButton.click()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
 
-        val formPage = EmployeeBoatSpaceFormPage(page)
+        val formPage = BoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()
-        val paymentPage = EmployeePaymentPage(page)
-        assertThat(paymentPage.paymentPageTitle).isVisible()
+
+        val paymentPage = PaymentPage(page)
         paymentPage.nordeaSuccessButton.click()
-        assertThat(paymentPage.confirmationPageContainer).isVisible()
+
+        assertThat(paymentPage.reservationSuccessNotification).isVisible()
     }
 
     @Test

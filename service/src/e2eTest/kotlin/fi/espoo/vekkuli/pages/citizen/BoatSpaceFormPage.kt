@@ -99,4 +99,24 @@ class BoatSpaceFormPage(
     val validationWarning = page.locator(".form-validation-message").getByText("Pakollisia tietoja puuttuu")
     val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
     val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
+
+    fun fillFormAndSubmit() {
+        val citizenSection = getCitizenSection()
+        citizenSection.emailInput.fill("test@example.com")
+        citizenSection.phoneInput.fill("123456789")
+
+        val boatSection = getBoatSection()
+        boatSection.depthInput.fill("1.5")
+        boatSection.weightInput.fill("2000")
+        boatSection.nameInput.fill("My Boat")
+        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.noRegistrationCheckbox.check()
+        boatSection.ownerRadio.check()
+
+        val userAgreementSection = getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+
+        submitButton.click()
+    }
 }
