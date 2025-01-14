@@ -134,11 +134,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userPaymentsShowsInfoIfThereIsNoPayments() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.paymentsNavi.click()
