@@ -16,13 +16,13 @@ export default React.memo(function Boat({
   const { boatInfo, boatSelection, ownership } = useFormFields(bind)
 
   return (
-    <>
+    <div data-testid="boat">
       <div className="form-section">
         <h3 className="header">Veneen tiedot</h3>
         <ExistingBoat bind={boatSelection} />
         <BoatInfo bind={boatInfo} />
       </div>
       <BoatOwnershipStatus bind={ownership} />
-    </>
+    </div>
   )
 })

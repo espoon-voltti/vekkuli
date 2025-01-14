@@ -6,7 +6,9 @@ import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.pages.citizen.PaymentPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -15,6 +17,8 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
+import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
@@ -46,23 +50,23 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             val filterSection = reservationPage.getFilterSection()
             filterSection.slipRadio.click()
 
-            val slipFilter = filterSection.getSlipFilterSection()
-            slipFilter.boatTypeSelect.selectOption("Sailboat")
-            slipFilter.widthInput.fill("3")
-            slipFilter.lengthInput.fill("6")
-            slipFilter.amenityBuoyCheckbox.check()
-            slipFilter.amenityRearBuoyCheckbox.check()
-            slipFilter.amenityBeamCheckbox.check()
-            slipFilter.amenityWalkBeamCheckbox.check()
+            val slipFilterSection = filterSection.getSlipFilterSection()
+            slipFilterSection.boatTypeSelect.selectOption("Sailboat")
+            slipFilterSection.widthInput.fill("3")
+            slipFilterSection.lengthInput.fill("6")
+            slipFilterSection.amenityBuoyCheckbox.check()
+            slipFilterSection.amenityRearBuoyCheckbox.check()
+            slipFilterSection.amenityBeamCheckbox.check()
+            slipFilterSection.amenityWalkBeamCheckbox.check()
 
-            val searchResults = reservationPage.getSearchResultsSection()
-            assertThat(searchResults.harborHeaders).hasCount(3)
+            val searchResultsSection = reservationPage.getSearchResultsSection()
+            assertThat(searchResultsSection.harborHeaders).hasCount(3)
 
-            slipFilter.haukilahtiCheckbox.check()
-            slipFilter.kivenlahtiCheckbox.check()
-            assertThat(searchResults.harborHeaders).hasCount(2)
+            slipFilterSection.haukilahtiCheckbox.check()
+            slipFilterSection.kivenlahtiCheckbox.check()
+            assertThat(searchResultsSection.harborHeaders).hasCount(2)
 
-            searchResults.firstReserveButton.click()
+            searchResultsSection.firstReserveButton.click()
             assertThat(page.locator("body")).containsText("Varaaminen ei ole mahdollista")
         } catch (e: AssertionError) {
             handleError(e)
@@ -70,122 +74,87 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
     fun `reserving a boat space slip as a citizen`() {
         try {
-            page.navigate(baseUrlWithEnglishLangParam)
-            page.getByTestId("loginButton").click()
-            page.getByText("Kirjaudu").click()
+            CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
-            reservationPage.navigateTo()
-            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
-            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
-            reservationPage.widthFilterInput.fill("3")
-            reservationPage.lengthFilterInput.fill("6")
-            reservationPage.lengthFilterInput.blur()
-            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
-            reservationPage.amenityBuoyCheckbox.check()
-            reservationPage.amenityRearBuoyCheckbox.check()
-            reservationPage.amenityBeamCheckbox.check()
-            reservationPage.amenityWalkBeamCheckbox.check()
-
-            assertThat(reservationPage.harborHeaders).hasCount(3)
-            reservationPage.haukilahtiCheckbox.check()
-            reservationPage.kivenlahtiCheckbox.check()
-            assertThat(reservationPage.harborHeaders).hasCount(2)
-
-            reservationPage.firstReserveButton.click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            reservationPage.startReservingBoatSpaceB314()
 
             // click send to trigger validation
             val formPage = BoatSpaceFormPage(page)
             formPage.submitButton.click()
 
-            assertThat(formPage.widthError).isHidden()
-            assertThat(formPage.lengthError).isHidden()
-            assertThat(formPage.depthError).isVisible()
-            assertThat(formPage.weightError).isVisible()
-            assertThat(formPage.boatRegistrationNumberError).isVisible()
-            assertThat(formPage.certifyInfoError).isVisible()
-            assertThat(formPage.agreementError).isVisible()
+            val boatSection = formPage.getBoatSection()
+            assertThat(boatSection.widthError).not().isVisible()
+            assertThat(boatSection.lengthError).not().isVisible()
+            assertThat(boatSection.depthError).isVisible()
+            assertThat(boatSection.weightError).isVisible()
+            assertThat(boatSection.registrationNumberError).isVisible()
+
+            val userAgreementSection = formPage.getUserAgreementSection()
+            assertThat(userAgreementSection.certifyInfoError).isVisible()
+            assertThat(userAgreementSection.agreementError).isVisible()
 
             assertThat(formPage.validationWarning).isVisible()
 
             // Fill in the boat information
-            formPage.boatTypeSelect.selectOption("Sailboat")
+            boatSection.typeSelect.selectOption("Sailboat")
 
-            formPage.widthInput.clear()
-            formPage.widthInput.blur()
-            assertThat(formPage.widthError).isVisible()
+            boatSection.widthInput.clear()
+            assertThat(boatSection.widthError).isVisible()
 
-            formPage.lengthInput.clear()
-            formPage.lengthInput.blur()
-            assertThat(formPage.lengthError).isVisible()
+            boatSection.lengthInput.clear()
+            assertThat(boatSection.lengthError).isVisible()
 
-            formPage.widthInput.fill("-1")
-            formPage.widthInput.blur()
-            assertThat(formPage.widthInput).hasValue("0.1")
-            // warning for boat size
-            formPage.widthInput.fill("10")
-            formPage.widthInput.blur()
-            assertThat(formPage.boatSizeWarning).isVisible()
+            boatSection.widthInput.fill("-1")
+            assertThat(boatSection.widthError).isVisible()
+            assertThat(boatSection.widthError).hasText("Anna positiivinen luku")
 
-            formPage.widthInput.fill("3")
-            formPage.widthInput.blur()
-            assertThat(formPage.boatSizeWarning).isHidden()
+            boatSection.nameInput.fill("My Boat")
+            assertThat(boatSection.nameError).isHidden()
 
-            formPage.lengthInput.fill("20")
-            formPage.lengthInput.blur()
-            assertThat(formPage.boatSizeWarning).isVisible()
+            boatSection.lengthInput.fill("3")
+            assertThat(boatSection.lengthError).isHidden()
 
-            formPage.lengthInput.fill("5")
-            formPage.lengthInput.blur()
-            assertThat(formPage.boatSizeWarning).isHidden()
+            boatSection.widthInput.fill("25")
+            assertThat(boatSection.widthError).isHidden()
 
-            formPage.lengthInput.fill("25")
-            formPage.lengthInput.blur()
-            assertThat(formPage.boatSizeWarning).isVisible()
-            formPage.lengthInput.fill("60")
-            formPage.lengthInput.blur()
+            boatSection.depthInput.fill("1.5")
+            assertThat(boatSection.depthError).isHidden()
 
-            formPage.depthInput.fill("1.5")
-            formPage.depthInput.blur()
-            assertThat(formPage.depthError).isHidden()
+            boatSection.weightInput.fill("2000")
+            assertThat(boatSection.weightError).isHidden()
 
-            formPage.weightInput.fill("2000")
-            formPage.weightInput.blur()
-            assertThat(formPage.weightError).isHidden()
+            boatSection.otherIdentifierInput.fill("ID12345")
+            assertThat(boatSection.otherIdentifierError).isHidden()
 
-            formPage.boatNameInput.fill("My Boat")
-            formPage.otherIdentification.fill("ID12345")
-            formPage.noRegistrationCheckbox.check()
-            assertThat(formPage.boatRegistrationNumberError).isHidden()
+            boatSection.noRegistrationCheckbox.check()
+            assertThat(boatSection.registrationNumberError).isHidden()
 
-            formPage.ownerRadioButton.check()
+            boatSection.ownerRadio.click()
 
-            formPage.emailInput.fill("test@example.com")
-            formPage.emailInput.blur()
-            assertThat(formPage.emailError).isHidden()
+            val citizenSection = formPage.getCitizenSection()
+            citizenSection.emailInput.fill("test@example.com")
+            assertThat(citizenSection.emailError).isHidden()
 
-            formPage.phoneInput.fill("123456789")
-            formPage.phoneInput.blur()
-            assertThat(formPage.phoneError).isHidden()
+            citizenSection.phoneInput.fill("123456789")
+            assertThat(citizenSection.phoneError).isHidden()
 
-            formPage.certifyInfoCheckbox.check()
-            formPage.agreementCheckbox.check()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
 
-            assertThat(formPage.validationWarning).isHidden()
             formPage.submitButton.click()
 
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
-            assertThat(paymentPage.paymentPageTitle).hasCount(1)
             // Cancel the payment at first
             paymentPage.nordeaFailedButton.click()
             // Then go through the payment
             paymentPage.nordeaSuccessButton.click()
-            // Now we should be on the confirmation page and can go back to the home page
-            paymentPage.backToHomePageButton.click()
+            // Now we should be on the confirmation page
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -211,7 +180,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             reservationPage.firstReserveButton.click()
 
             // click send to trigger validation
-            val formPage = BoatSpaceFormPage(page)
+            val formPage = EmployeeBoatSpaceFormPage(page)
             formPage.submitButton.click()
             assertThat(formPage.widthError).isVisible()
             assertThat(formPage.lengthError).isVisible()
@@ -291,7 +260,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             formPage.submitButton.click()
 
             // assert that payment title is shown
-            val paymentPage = PaymentPage(page)
+            val paymentPage = EmployeePaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)
             // Cancel the payment at first
             paymentPage.nordeaFailedButton.click()
@@ -332,7 +301,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             reservationPage.firstReserveButton.click()
 
             // click send to trigger validation
-            val formPage = BoatSpaceFormPage(page)
+            val formPage = EmployeeBoatSpaceFormPage(page)
 
             formPage.organizationRadioButton.click()
             formPage.orgNameInput.fill("My Organization")
@@ -369,7 +338,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             formPage.submitButton.click()
 
             // assert that payment title is shown
-            val paymentPage = PaymentPage(page)
+            val paymentPage = EmployeePaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)
         } catch (e: AssertionError) {
             handleError(e)
@@ -391,7 +360,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         reservationPage.lengthFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceFormPage(page)
+        val formPage = EmployeeBoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
         // Cancel, then cancel in modal
         formPage.cancelButton.click()
@@ -424,7 +393,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         reservationPage.firstReserveButton.click()
         reservationPage.authModalContinue.click()
         page.getByText("Kirjaudu").click()
-        val formPage = BoatSpaceFormPage(page)
+        val formPage = EmployeeBoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
 
         assertThat(reservationPage.widthFilterInput).hasValue("3")
@@ -447,11 +416,11 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         reservationPage.lengthFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceFormPage(page)
+        val formPage = EmployeeBoatSpaceFormPage(page)
         assertThat(formPage.header).isVisible()
         formPage.fillFormAndSubmit()
 
-        val paymentPage = PaymentPage(page)
+        val paymentPage = EmployeePaymentPage(page)
         assertThat(paymentPage.paymentPageTitle).hasCount(1)
         paymentPage.backButtonOnPaymentPage.click()
 
@@ -482,9 +451,9 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         reservationPage.lengthFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceFormPage(page)
+        val formPage = EmployeeBoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()
-        val paymentPage = PaymentPage(page)
+        val paymentPage = EmployeePaymentPage(page)
         assertThat(paymentPage.paymentPageTitle).isVisible()
         paymentPage.nordeaSuccessButton.click()
         assertThat(paymentPage.confirmationPageContainer).isVisible()
@@ -505,10 +474,10 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         reservationPage.lengthFilterInput.blur()
         reservationPage.firstReserveButton.click()
 
-        val formPage = BoatSpaceFormPage(page)
+        val formPage = EmployeeBoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()
 
-        val paymentPage = PaymentPage(page)
+        val paymentPage = EmployeePaymentPage(page)
         assertThat(paymentPage.paymentPageTitle).isVisible()
         paymentPage.nordeaFailedButton.click()
         assertThat(paymentPage.paymentErrorMessage).isVisible()

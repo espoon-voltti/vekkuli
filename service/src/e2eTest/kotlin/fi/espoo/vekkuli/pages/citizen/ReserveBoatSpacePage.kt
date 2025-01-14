@@ -8,50 +8,53 @@ import fi.espoo.vekkuli.pages.BasePage
 class ReserveBoatSpacePage(
     page: Page
 ) : BasePage(page) {
-    class FilterSection(private val locator: ElementLocator) {
-        val slipRadio = locator.getRadio("Laituripaikka")
-        fun getSlipFilterSection() = SlipFilterSection(locator)
+    class FilterSection(private val root: Locator) {
+        private val fields = FieldLocator(root)
+        val slipRadio = fields.getRadio("Laituripaikka")
+
+        fun getSlipFilterSection() = SlipFilterSection(root)
     }
 
-    class SlipFilterSection(locator: ElementLocator) {
-        val boatTypeSelect = locator.getSelect("Venetyyppi")
-        val widthInput = locator.getInput("Veneen leveys")
-        val lengthInput = locator.getInput("Veneen pituus")
-        val amenityBuoyCheckbox = locator.getCheckbox("Poiju")
-        val amenityRearBuoyCheckbox = locator.getCheckbox("Peräpoiju")
-        val amenityBeamCheckbox = locator.getCheckbox("Aisa")
-        val amenityWalkBeamCheckbox = locator.getCheckbox("Kävelyaisa")
-        val haukilahtiCheckbox = locator.getCheckbox("Haukilahti")
-        val kivenlahtiCheckbox = locator.getCheckbox("Kivenlahti")
+    class SlipFilterSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val boatTypeSelect = fields.getSelect("Venetyyppi")
+        val widthInput = fields.getInput("Veneen leveys")
+        val lengthInput = fields.getInput("Veneen pituus")
+        val amenityBuoyCheckbox = fields.getCheckbox("Poiju")
+        val amenityRearBuoyCheckbox = fields.getCheckbox("Peräpoiju")
+        val amenityBeamCheckbox = fields.getCheckbox("Aisa")
+        val amenityWalkBeamCheckbox = fields.getCheckbox("Kävelyaisa")
+        val haukilahtiCheckbox = fields.getCheckbox("Haukilahti")
+        val kivenlahtiCheckbox = fields.getCheckbox("Kivenlahti")
     }
 
-    class SearchResultsSection(locator: Locator) {
-        val harborHeaders = locator.locator(".harbor-header")
-        val firstReserveButton = locator.locator("button:has-text('Varaa')").first()
+    class SearchResultsSection(root: Locator) {
+        val harborHeaders = root.locator(".harbor-header")
+        val firstReserveButton = root.locator("button:has-text('Varaa')").first()
     }
 
-    class ElementLocator(private val locator: Locator) {
+    class FieldLocator(private val root: Locator) {
         fun getInput(label: String) =
-            locator.locator("label")
+            root.locator("label")
                 .getByText(label)
                 .locator("..")
                 .locator("input")
 
         fun getCheckbox(label: String) =
-            locator.locator("label.checkbox span")
+            root.locator("label.checkbox span")
                 .getByText(label, Locator.GetByTextOptions().setExact(true))
                 .locator("..")
                 .locator("input[type=checkbox]")
 
         fun getRadio(label: String) =
-            locator.locator("label .body")
+            root.locator("label .body")
                 .getByText(label, Locator.GetByTextOptions().setExact(true))
                 .locator("..")
                 .locator("..")
                 .locator("input[type=radio]")
 
         fun getSelect(label: String) =
-            locator.locator("label")
+            root.locator("label")
                 .getByText(label, Locator.GetByTextOptions().setExact(true))
                 .locator("..")
                 .locator("select")
@@ -61,7 +64,22 @@ class ReserveBoatSpacePage(
         page.navigate("$baseUrl/kuntalainen/venepaikka")
     }
 
-    fun getFilterSection() = FilterSection(ElementLocator(getByDataTestId("boat-space-filter")))
+    fun getFilterSection() = FilterSection(getByDataTestId("boat-space-filter"))
 
     fun getSearchResultsSection() = SearchResultsSection(getByDataTestId("boat-space-results"))
+
+    fun filterForBoatSpaceB314() {
+        val filterSection = getFilterSection()
+        filterSection.slipRadio.click()
+
+        val slipFilterSection = filterSection.getSlipFilterSection()
+        slipFilterSection.boatTypeSelect.selectOption("Sailboat")
+        slipFilterSection.widthInput.fill("3")
+        slipFilterSection.lengthInput.fill("6")
+    }
+
+    fun startReservingBoatSpaceB314() {
+        filterForBoatSpaceB314()
+        page.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')").click()
+    }
 }

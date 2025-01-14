@@ -18,7 +18,7 @@ export default React.memo(function Reserver({
 
   const { email, phone } = useFormFields(bind)
   return (
-    <div className="form-section">
+    <div className="form-section" data-testid="citizen">
       <h3 className="header">Varaaja</h3>
       <div className="columns">
         <div className="column is-one-quarter">
