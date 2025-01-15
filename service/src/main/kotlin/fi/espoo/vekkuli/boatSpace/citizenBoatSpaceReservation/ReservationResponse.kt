@@ -102,7 +102,7 @@ class ReservationResponseMapper(
 ) {
     fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse {
         val reservationWithDependencies = spaceReservationService.getReservationWithDependencies(reservation.id) ?: throw NotFound()
-        val citizen = if (reservationWithDependencies.reserverType == ReserverType.Citizen) getCitizen(reservation) else null
+        val citizen = if (reservationWithDependencies.reserverType == ReserverType.Citizen) getCitizen(reservation.reserverId) else null
         val organization =
             if (reservationWithDependencies.reserverType ==
                 ReserverType.Organization
@@ -118,48 +118,6 @@ class ReservationResponseMapper(
         return ReservationResponse(
             id = reservation.id,
             reserverType = reservationWithDependencies.reserverType ?: ReserverType.Citizen,
-            citizen = formatCitizen(citizen),
-            organization = formatOrganization(organization),
-            boat = formatBoat(boat),
-            boatSpace = formatBoatSpace(boatSpace),
-            status = status,
-            created = created,
-            startDate = startDate,
-            validity = validity,
-            endDate = endDate,
-            totalPrice = reservationWithDependencies.priceInEuro,
-            vatValue = reservationWithDependencies.vatPriceInEuro,
-            netPrice = reservationWithDependencies.priceWithoutVatInEuro,
-            storageType = reservationWithDependencies.storageType,
-            trailer = formatTrailer(trailer),
-            paymentDate = paymentDate,
-            creationType = reservationWithDependencies.creationType,
-            switchPriceDifference = switchPriceDifference
-        )
-    }
-
-    private fun switchReservationResponse(
-        reservationId: Int,
-        actingCitizenId: UUID?,
-        reserverId: UUID?,
-        status: ReservationStatus,
-        created: LocalDateTime,
-        startDate: LocalDate,
-        validity: ReservationValidity,
-        endDate: LocalDate,
-        paymentDate: LocalDate?,
-        switchPriceDifference: Int
-    ): ReservationResponse {
-        val reservationWithDependencies =
-            spaceReservationService.getReservationWithDependencies(reservationId) ?: throw NotFound()
-        val citizen = getCitizen(actingCitizenId, reserverId)
-        val organization = getOrganization(reservationWithDependencies)
-        val boat = getBoat(reservationWithDependencies)
-        val boatSpace = getBoatSpace(reservationId)
-        val trailer = getTrailer(reservationWithDependencies)
-
-        return ReservationResponse(
-            id = reservationId,
             citizen = formatCitizen(citizen),
             organization = formatOrganization(organization),
             boat = formatBoat(boat),
@@ -210,6 +168,7 @@ class ReservationResponseMapper(
             municipalityCode = citizen.municipalityCode,
             birthDate = citizen.birthdayAsDate
         )
+    }
 
     private fun getOrganization(reservation: ReservationWithDependencies): Organization? {
         if (reservation.reserverType != ReserverType.Organization) {

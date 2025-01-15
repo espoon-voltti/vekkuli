@@ -1,19 +1,16 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
-import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.decimalToInt
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
-import java.util.*
 
 @RestController
 @RequestMapping("/api/citizen")
@@ -21,9 +18,8 @@ class ReservationController(
     private val reservationService: ReservationService,
     private val reservationResponseMapper: ReservationResponseMapper,
     private val reserverService: ReserverService,
-    private val permissionService: PermissionService,
-    private val seasonalService: SeasonalService,
     private val switchService: BoatSpaceSwitchService,
+    private val canReserveResponseMapper: CanReserveResponseMapper
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -72,7 +68,10 @@ class ReservationController(
     @GetMapping("/can-reserve/{spaceId}")
     fun canReserveSpace(
         @PathVariable spaceId: Int,
-    ): Boolean = reservationService.canReserveANewSpaceForCurrentCitizen(spaceId)
+    ): CanReserveResponse {
+        val canReserve = reservationService.checkReservationAvailabilityForCurrentCitizen(spaceId)
+        return canReserveResponseMapper.toCanReserveResponse(canReserve)
+    }
 
     @GetMapping("/reservation/{reservationId}")
     fun getReservation(

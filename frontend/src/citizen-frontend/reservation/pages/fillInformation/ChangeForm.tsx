@@ -35,7 +35,6 @@ import {
 import ReserverSection from './sections/Reserver'
 import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
-import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
 
 type ChangeFormProperties = {

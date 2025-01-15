@@ -39,8 +39,29 @@ export type BoatSpaceReservation = {
   switchPriceDifference?: number
 }
 
-export type SwitchInformation = {
-  priceDifference: number
+export type CanReserveResultStatus =
+  | 'CanReserve'
+  | 'CanNotReserve'
+  | 'CanReserveOnlyForOrganization'
+
+export type SwitchableBoatSpace = {
+  id: number
+  type: string
+  section: string
+  locationName: string | null
+  width: string
+  length: string
+  amenity: string
+}
+export type SwitchableReservation = {
+  id: number
+  boatSpace: SwitchableBoatSpace
+  totalPrice: string
+  vatValue: string
+}
+export type CanReserveReservation = {
+  status: CanReserveResultStatus
+  switchableReservations: SwitchableReservation[]
 }
 
 export type BoatSpaceReservationResponse = {

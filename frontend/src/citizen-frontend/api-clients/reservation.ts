@@ -6,6 +6,7 @@ import { client } from '../api-client'
 import {
   BoatSpaceReservation,
   BoatSpaceReservationResponse,
+  CanReserveReservation,
   FillBoatSpaceReservationInput,
   Municipality,
   PaymentInformationResponse,
@@ -20,6 +21,16 @@ export async function reserveSpace(
     method: 'POST'
   })
   return json
+}
+
+export async function canReserveSpace(
+  spaceId: number
+): Promise<CanReserveReservation> {
+  const { data } = await client.request<CanReserveReservation>({
+    url: uri`/can-reserve/${spaceId}`.toString(),
+    method: 'GET'
+  })
+  return data
 }
 
 export async function startToSwitchBoatSpace(input: {
@@ -53,23 +64,6 @@ export async function getSwitchReservation(
     method: 'GET'
   })
   return json
-}
-export async function canReserveSpace(spaceId: number): Promise<boolean> {
-  const { data } = await client.request<boolean>({
-    url: uri`/can-reserve/${spaceId}`.toString(),
-    method: 'GET'
-  })
-  return data
-}
-
-export async function getReservationForReserver(): Promise<
-  BoatSpaceReservation[]
-> {
-  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
-    url: uri`/current/active-reservations`.toString(),
-    method: 'GET'
-  })
-  return deserializeJsonBoatSpaceReservationListResponse(json)
 }
 
 export async function unfinishedReservation(): Promise<BoatSpaceReservation> {

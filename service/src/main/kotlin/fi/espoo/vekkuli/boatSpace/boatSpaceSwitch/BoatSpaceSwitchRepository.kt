@@ -1,7 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -60,7 +59,6 @@ class BoatSpaceSwitchRepository(
 
     fun createSwitchRow(
         originalReservationId: Int,
-        userType: UserType,
         userId: UUID,
         boatSpaceId: Int,
         endDate: LocalDate,
@@ -96,7 +94,6 @@ class BoatSpaceSwitchRepository(
                              'Info' as status, 
                              :validity as validity, 
                              boat_id, 
-                             :employeeId as employee_id,
                              id as original_reservation_id,
                              storage_type,
                              trailer_id,
@@ -108,8 +105,7 @@ class BoatSpaceSwitchRepository(
                     """.trimIndent()
                 ).bind("created", timeProvider.getCurrentDateTime())
                 .bind("reservationId", originalReservationId)
-                .bind("actingCitizenId", if (userType == UserType.CITIZEN) userId else null)
-                .bind("employeeId", if (userType == UserType.EMPLOYEE) userId else null)
+                .bind("actingCitizenId", userId)
                 .bind("boatSpaceId", boatSpaceId)
                 .bind("endDate", endDate)
                 .bind("validity", validity)

@@ -313,7 +313,7 @@ class JdbiBoatSpaceReservationRepository(
                 trailer = loadTrailerForReserver(handle, dbResult.id, dbResult.trailerId),
                 storageType = dbResult.storageType,
                 paymentReference = dbResult.paymentReference,
-                invoiceDueDate = dbResult.invoiceDueDate
+                invoiceDueDate = dbResult.invoiceDueDate,
                 creationType = dbResult.creationType
             )
         } else {
@@ -512,7 +512,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentId = it.paymentId,
                     storageType = it.storageType,
                     paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate
+                    invoiceDueDate = it.invoiceDueDate,
+                    creationType = it.creationType
                 )
             }
         }
@@ -579,7 +580,7 @@ class JdbiBoatSpaceReservationRepository(
                     paymentId = it.paymentId,
                     storageType = it.storageType,
                     paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate
+                    invoiceDueDate = it.invoiceDueDate,
                     creationType = it.creationType
                 )
             }
@@ -755,7 +756,7 @@ class JdbiBoatSpaceReservationRepository(
                     paymentId = it.paymentId,
                     storageType = it.storageType,
                     paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate
+                    invoiceDueDate = it.invoiceDueDate,
                     creationType = it.creationType
                 )
             }

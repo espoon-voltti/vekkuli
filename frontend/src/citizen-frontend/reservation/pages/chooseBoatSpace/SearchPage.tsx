@@ -37,8 +37,6 @@ export default React.memo(function SearchPage() {
   const navigate = useNavigate()
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
-  const activeReservations = useQueryResult(citizenActiveReservationsQuery())
-  const fetchedUserReservations = activeReservations.getOrElse([])
   const { reservation } = useContext(ReservationStateContext)
 
   const [searchState, setSearchState] = useStoredSearchState()
@@ -122,27 +120,8 @@ export default React.memo(function SearchPage() {
         setReserveError(errorType)
       })
   }
-
   const selectBoatSpace = (spaceId: number) => {
-    if (
-      fetchedUserReservations.filter(
-        (r) => r.boatSpace.type === bind.state.boatSpaceType.domValue
-      ).length === 0
-    ) {
-      onReserveSpace(spaceId)
-    } else {
-      const searchResults = searchResult.places.find(
-        (p) => p.spaces.some((s) => s.id === spaceId) // Check if the space exists in the place
-      )
-
-      const selectedBoatSpace: PlaceWithSpaces | undefined = searchResults
-        ? {
-            place: searchResults.place,
-            spaces: searchResults.spaces.filter((s) => s.id === spaceId) // Return the specific space in an array
-          }
-        : undefined
-      setSelectedBoatSpace(selectedBoatSpace)
-    }
+    // TODO: check if reservation is reservable
   }
 
   const onReserveButtonPress = (spaceId: number) => {

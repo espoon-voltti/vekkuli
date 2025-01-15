@@ -9,6 +9,8 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.NotFound
+import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.PAYTRAIL_PRODUCT_CODE
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
@@ -35,8 +37,7 @@ class BoatSpaceSwitchService(
     private val boatSpaceSwitchRepository: BoatSpaceSwitchRepository,
     private val reservationService: ReservationFormService,
     private val boatSpaceRepository: BoatSpaceRepository,
-    private val citizenAccessControl: ContextCitizenAccessControl,
-    private val paymentService: PaymentService,
+    private val citizenAccessControl: ContextCitizenAccessControl
 ) {
     fun getOrCreateSwitchReservationForCitizen(
         reserverId: UUID,
@@ -47,16 +48,14 @@ class BoatSpaceSwitchService(
         val original = boatSpaceSwitchRepository.getSwitchReservationForCitizen(reserverId, originalReservationId)
         if (original != null) return original
 
-        val originalReservation =
+        val switchReservation =
             createSwitchReservation(
                 originalReservationId,
                 reserverId,
-                UserType.CITIZEN,
-                reserver.isEspooCitizen(),
                 boatSpaceId
             )
                 ?: throw IllegalStateException("Reservation not found")
-        return originalReservation
+        return switchReservation
     }
 
     @Transactional
@@ -111,16 +110,34 @@ class BoatSpaceSwitchService(
             reservation.endDate
         )
         if (priceDifference <= 0) {
-            if (reservation.paymentId != null) {
-                boatReservationService.handleReservationPaymentResult(
-                    reservation.paymentId,
-                    true
-                )
-            }
+            addCompletedPaymentToReservation(reservationId, reserverId)
             // mark the original reservation as ended if the payment is skipped
             boatReservationService.markReservationEnded(reservation.originalReservationId)
         }
         return reservation
+    }
+
+    private fun addCompletedPaymentToReservation(
+        reservationId: Int,
+        reserverId: UUID,
+    ) {
+        val payment =
+            boatReservationService.addPaymentToReservation(
+                reservationId,
+                CreatePaymentParams(
+                    reserverId = reserverId,
+                    reference = "",
+                    totalCents = 0,
+                    vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
+                    productCode = PAYTRAIL_PRODUCT_CODE,
+                    paymentType = PaymentType.Other
+                )
+            )
+
+        boatReservationService.handleReservationPaymentResult(
+            payment.id,
+            true
+        )
     }
 
     fun updateReserver(
@@ -173,33 +190,22 @@ class BoatSpaceSwitchService(
 
     fun createSwitchReservation(
         originalReservationId: Int,
-        userId: UUID,
-        userType: UserType,
-        isEspooCitizen: Boolean,
+        reserverId: UUID,
         boatSpaceId: Int
     ): ReservationWithDependencies? {
-        val originalReservation =
-            boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
-                ?: throw BadRequest("Reservation to switch not found")
-
         if (seasonalService.isBoatSpaceReserved(boatSpaceId)) {
             throw BadRequest("Boat space is already reserved")
         }
         val boatSpace =
             boatSpaceRepository.getBoatSpace(boatSpaceId)
                 ?: throw BadRequest("Boat space not found")
-        if (originalReservation.type !== boatSpace.type) {
-            throw BadRequest("Boat space type does not match")
-        }
 
         val reservationResult =
             seasonalService
                 .canSwitchReservation(
-                    originalReservation.type,
-                    originalReservation.startDate,
-                    originalReservation.endDate,
-                    originalReservation.validity,
-                    isEspooCitizen
+                    reserverId,
+                    boatSpace.type,
+                    originalReservationId
                 )
         if (!reservationResult.success
         ) {
@@ -210,8 +216,7 @@ class BoatSpaceSwitchService(
         val newId =
             boatSpaceSwitchRepository.createSwitchRow(
                 originalReservationId,
-                userType,
-                userId,
+                reserverId,
                 boatSpaceId,
                 reservationResultSuccessData.endDate,
                 reservationResultSuccessData.reservationValidity

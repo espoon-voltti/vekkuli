@@ -1,7 +1,6 @@
 import { getFreeSpaces } from 'citizen-frontend/api-clients/free-spaces'
 import {
   canReserveSpace,
-  getSwitchReservation,
   reserveSpace,
   startToSwitchBoatSpace,
   switchBoatSpace
@@ -44,10 +43,6 @@ export const switchSpaceMutation = mutation({
     queryKeys.unfinishedReservation(),
     queryKeys.unfinishedReservationExpiration()
   ]
-})
-
-export const getSwitchReservationMutation = mutation({
-  api: getSwitchReservation
 })
 
 export const canReserveSpaceQuery = query({

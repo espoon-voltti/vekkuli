@@ -31,7 +31,8 @@ open class ReservationService(
     private val citizenAccessControl: CitizenAccessControl,
     private val reservationPaymentService: ReservationPaymentService,
     private val terminateService: TerminateReservationService,
-    private val switchService: BoatSpaceSwitchService
+    private val switchService: BoatSpaceSwitchService,
+    private val organizationService: OrganizationService
 ) {
     fun getUnfinishedReservationForCurrentCitizen(): BoatSpaceReservation? {
         val (citizenId) = citizenAccessControl.requireCitizen()
@@ -72,13 +73,14 @@ open class ReservationService(
         }
 
     fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservation(reservationId).toBoatSpaceReservation()
-    fun getReservationDetails(reservationId: Int): BoatSpaceReservationDetails = accessReservation(reservationId)
-
-    @Transactional
-    open fun startReservation(spaceId: Int): BoatSpaceReservation {
+    fun startReservation(spaceId: Int): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()
+
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val result = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+
+        val today = timeProvider.getCurrentDate()
+
         if (result is ReservationResult.Failure) {
             throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
         }
@@ -87,7 +89,6 @@ open class ReservationService(
             throw Forbidden("Citizen can not have multiple reservations open")
         }
 
-        val today = timeProvider.getCurrentDate()
         return boatReservationService.insertBoatSpaceReservation(
             citizenId,
             citizenId,
@@ -95,6 +96,46 @@ open class ReservationService(
             CreationType.New,
             today,
             getEndDate(result),
+        )
+    }
+
+    fun checkReservationAvailabilityForCurrentCitizen(spaceId: Int): CanReserveResult {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        return checkReservationAvailability(citizenId, spaceId)
+    }
+
+    fun checkReservationAvailability(
+        citizenId: UUID,
+        spaceId: Int
+    ): CanReserveResult {
+        val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
+        val reservations = boatReservationService.getBoatSpaceReservationsForCitizen(citizenId)
+
+        val canReserveSpaceResult = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+
+        val switchableReservations =
+            reservations.filter {
+                seasonalService.canSwitchReservation(citizenId, boatSpace.type, it.id) is ReservationResult.Success
+            }
+
+        if (canReserveSpaceResult is ReservationResult.Failure) {
+            if (organizationService.getCitizenOrganizations(citizenId).isNotEmpty()) {
+                // Can not reserve for reserver, but can reserve for organization
+                return CanReserveResult(
+                    status = CanReserveResultStatus.CanReserveOnlyForOrganization,
+                    switchableReservations = switchableReservations
+                )
+            }
+            // Can not reserve but might be able to switch
+            return CanReserveResult(
+                status = CanReserveResultStatus.CanNotReserve,
+                switchableReservations = switchableReservations
+            )
+        }
+        // Can reserve and switch if previous reservations
+        return CanReserveResult(
+            status = CanReserveResultStatus.CanReserve,
+            switchableReservations = switchableReservations
         )
     }
 
