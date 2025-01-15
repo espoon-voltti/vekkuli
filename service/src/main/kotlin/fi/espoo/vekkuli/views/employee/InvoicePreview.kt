@@ -77,7 +77,7 @@ class InvoicePreview(
                 "invoice.description",
                 "description",
                 model.description,
-                attributes = """maxlength="35"""",
+                attributes = """maxlength="70"""",
             )
 
         val contactPersonInput =
@@ -85,7 +85,8 @@ class InvoicePreview(
                 "invoice.contactPerson",
                 "contactPerson",
                 model.contactPerson,
-                compact = true
+                compact = true,
+                attributes = """maxlength="35"""",
             )
 
         val contactPerson =
