@@ -52,10 +52,7 @@ class CanReserveResponseMapper(
             status = canReserveResult.status,
             switchableReservations =
                 canReserveResult.switchableReservations.map {
-                    val boatSpace =
-                        spaceReservationService.getBoatSpaceRelatedToReservation(it.id)
-                            ?: throw NotFound("Boat space not found")
-
+                    val boatSpace = getBoatSpace(it.boatSpaceId)
                     CanReserveResponse.SwitchableReservation(
                         id = it.id,
                         boatSpace = formatBoatSpace(boatSpace),
@@ -64,6 +61,10 @@ class CanReserveResponseMapper(
                     )
                 }
         )
+
+    private fun getBoatSpace(boatSpaceId: Int): BoatSpace =
+        spaceReservationService.getBoatSpaceRelatedToReservation(boatSpaceId)
+            ?: throw NotFound("Boat space not found")
 
     private fun formatBoatSpace(boatSpace: BoatSpace): CanReserveResponse.BoatSpace =
         CanReserveResponse.BoatSpace(
