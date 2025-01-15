@@ -5,6 +5,8 @@ import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.boatSpaceTypeToText
+import fi.espoo.vekkuli.service.paymentStatusToText
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
@@ -14,6 +16,7 @@ import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.collections.isNotEmpty
 
 @Component
 class ReserverDetailsReservationsContainer(
@@ -385,12 +388,64 @@ class ReserverDetailsReservationsContainer(
             """.trimIndent()
     }
 
-    fun paymentTabContent(reserver: ReserverWithDetails): String {
+    // TODO
+    fun paymentTabContent(
+        reserver: ReserverWithDetails,
+        paymentHistory: List<PaymentHistory>
+    ): String {
+        val paymentHistoryRowsHtml =
+            paymentHistory.joinToString("\n") { p ->
+                // language=HTML
+                """
+                <tr>
+                    <td>${paymentStatusToText(p.paymentStatus.toString())}</td>
+                    <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
+                    <td>${formatInt(p.totalCents)}</td>
+                    <td>${p.harborName} ${p.place}</td>
+                    <td>${boatSpaceTypeToText(p.boatSpaceType.toString())}</td>
+                    <td>${p.paymentReference}</td>
+                    <td>${p.invoiceDueDate?.let { t("citizenDetails.payments.type.Invoice") } ?: t("citizenDetails.payments.type.Direct")}</td>
+                    <td>${p.invoiceReference}</td>
+                    <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
+                </tr>
+                """.trimIndent()
+            }
+
+        val paymentsTableHtml =
+            if (paymentHistory.isNotEmpty()) {
+                // language=HTML
+                """
+                <div class="payment-list">
+                    <table id="payments-table">
+                      <thead>
+                        <tr>
+                          <th>${t("citizenDetails.payments.status")}</th>
+                          <th>${t("citizenDetails.payments.paidDate")}</th>
+                          <th>${t("citizenDetails.payments.totalCents")}</th>
+                          <th>${t("citizenDetails.payments.place")}</th>
+                          <th>${t("citizenDetails.payments.placeType")}</th>
+                          <th>${t("citizenDetails.payments.paymentReference")}</th>
+                          <th>${t("citizenDetails.payments.type")}</th>
+                          <th>${t("citizenDetails.payments.invoiceReference")}</th>
+                          <th>${t("citizenDetails.payments.invoiceDueDate")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          $paymentHistoryRowsHtml
+                      </tbody>
+                    </table>
+                </div>
+                """.trimIndent()
+            } else {
+                "<h2>${t("citizenDetails.payments.noPayments")}</h2>"
+            }
+
         // language=HTML
         return """
             <div id="tab-content" class="container block">
               ${renderTabNavi(reserver, SubTab.Payments)}
-              <h3>PAYMENTS</h3>
+              <h3>${t("citizenDetails.payments.title")}</h3>
+              $paymentsTableHtml
             </div>
             """.trimIndent()
     }

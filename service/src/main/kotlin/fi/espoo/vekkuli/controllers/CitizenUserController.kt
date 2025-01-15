@@ -50,6 +50,7 @@ class CitizenUserController(
     private val reserverRepository: JdbiReserverRepository,
     private val trailerCard: TrailerCard,
     private val editCitizen: EditCitizen,
+    private val paymentService: PaymentService
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -261,6 +262,7 @@ class CitizenUserController(
         return reserverDetailsReservationsContainer.memoContent(memo, false)
     }
 
+    // TODO
     @GetMapping("/virkailija/kayttaja/{citizenId}/maksut")
     @ResponseBody
     fun boatSpacePaymentContent(
@@ -271,7 +273,8 @@ class CitizenUserController(
             logger.audit(it, "CITIZEN_PROFILE_PAYMENTS")
         }
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
-        return reserverDetailsReservationsContainer.paymentTabContent(reserver)
+        val history = paymentService.getReserverPaymentHistory(reserver.id)
+        return reserverDetailsReservationsContainer.paymentTabContent(reserver, history)
     }
 
     @GetMapping("/virkailija/kayttaja/{reserverId}/poikkeukset")

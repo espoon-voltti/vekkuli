@@ -50,3 +50,21 @@ data class CreateInvoiceParams(
     val reserverId: UUID,
     val paymentId: UUID,
 )
+
+enum class PaymentMethod {
+    Paytrail,
+    Invoice
+}
+
+data class PaymentHistory(
+    val paymentStatus: PaymentStatus,
+    val paidDate: LocalDate?,
+    val totalCents: Int,
+    val harborName: String,
+    val place: String,
+    val boatSpaceType: BoatSpaceType,
+    val paymentReference: String,
+    val invoiceReference: String,
+    // val paymentMethod: PaymentMethod,
+    val invoiceDueDate: LocalDate?
+)

@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
+import fi.espoo.vekkuli.domain.PaymentHistory
 import fi.espoo.vekkuli.repository.PaymentRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -37,4 +38,6 @@ class PaymentService(
     fun getInvoice(invoiceId: UUID): Invoice? = paymentRepo.getInvoice(invoiceId)
 
     fun getInvoiceForReservation(reservationId: Int): Invoice? = paymentRepo.getInvoice(reservationId)
+
+    fun getReserverPaymentHistory(reserverId: UUID): List<PaymentHistory> = paymentRepo.getReserverPaymentHistory(reserverId)
 }
