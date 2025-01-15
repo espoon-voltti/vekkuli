@@ -84,11 +84,12 @@ class BoatSpaceInvoiceService(
                 ),
                 reservationId
             )
+
         val invoice =
             paymentService.insertInvoice(
                 CreateInvoiceParams(
                     dueDate = invoiceData.dueDate,
-                    reference = invoiceData.invoiceNumber.toString(),
+                    reference = invoiceData.description,
                     reserverId = reserverId,
                     reservationId = reservationId,
                     paymentId = payment.id

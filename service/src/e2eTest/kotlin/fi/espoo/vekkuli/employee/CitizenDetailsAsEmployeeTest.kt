@@ -147,6 +147,23 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
+    fun userPaymentsShowsInfoIfThereIsNoPayments() {
+        try {
+            val employeeHome = EmployeeHomePage(page)
+            employeeHome.employeeLogin()
+
+            val listingPage = ReservationListPage(page)
+            listingPage.navigateTo()
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.paymentsNavi.click()
+            assertThat(citizenDetails.noPaymentsIndicator).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun editBoat() {
         try {
             val employeeHome = EmployeeHomePage(page)

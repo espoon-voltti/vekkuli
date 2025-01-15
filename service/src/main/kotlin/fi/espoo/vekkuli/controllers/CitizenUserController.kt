@@ -262,7 +262,6 @@ class CitizenUserController(
         return reserverDetailsReservationsContainer.memoContent(memo, false)
     }
 
-    // TODO
     @GetMapping("/virkailija/kayttaja/{citizenId}/maksut")
     @ResponseBody
     fun boatSpacePaymentContent(

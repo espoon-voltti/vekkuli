@@ -388,7 +388,6 @@ class ReserverDetailsReservationsContainer(
             """.trimIndent()
     }
 
-    // TODO
     fun paymentTabContent(
         reserver: ReserverWithDetails,
         paymentHistory: List<PaymentHistory>
@@ -399,14 +398,15 @@ class ReserverDetailsReservationsContainer(
                 """
                 <tr>
                     <td>${paymentStatusToText(p.paymentStatus.toString())}</td>
-                    <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
-                    <td>${formatInt(p.totalCents)}</td>
                     <td>${p.harborName} ${p.place}</td>
                     <td>${boatSpaceTypeToText(p.boatSpaceType.toString())}</td>
                     <td>${p.paymentReference}</td>
                     <td>${p.invoiceDueDate?.let { t("citizenDetails.payments.type.Invoice") } ?: t("citizenDetails.payments.type.Direct")}</td>
-                    <td>${p.invoiceReference}</td>
+                    <td>${p.invoiceReference ?: ""}</td>
                     <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
+                    <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
+                    <td>${formatInt(p.totalCents)}</td>
+                    <td>${p.paymentCreated.format(fullDateTimeFormat)}</td>
                 </tr>
                 """.trimIndent()
             }
@@ -420,14 +420,15 @@ class ReserverDetailsReservationsContainer(
                       <thead>
                         <tr>
                           <th>${t("citizenDetails.payments.status")}</th>
-                          <th>${t("citizenDetails.payments.paidDate")}</th>
-                          <th>${t("citizenDetails.payments.totalCents")}</th>
                           <th>${t("citizenDetails.payments.place")}</th>
                           <th>${t("citizenDetails.payments.placeType")}</th>
                           <th>${t("citizenDetails.payments.paymentReference")}</th>
                           <th>${t("citizenDetails.payments.type")}</th>
                           <th>${t("citizenDetails.payments.invoiceReference")}</th>
                           <th>${t("citizenDetails.payments.invoiceDueDate")}</th>
+                          <th>${t("citizenDetails.payments.paidDate")}</th>
+                          <th>${t("citizenDetails.payments.totalCents")}</th>
+                          <th>${t("citizenDetails.payments.paymentCreated")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -437,7 +438,7 @@ class ReserverDetailsReservationsContainer(
                 </div>
                 """.trimIndent()
             } else {
-                "<h2>${t("citizenDetails.payments.noPayments")}</h2>"
+                "<h2 data-testid='no-payments-indicator'>${t("citizenDetails.payments.noPayments")}</h2>"
             }
 
         // language=HTML

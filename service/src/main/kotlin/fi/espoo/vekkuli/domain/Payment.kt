@@ -64,7 +64,8 @@ data class PaymentHistory(
     val place: String,
     val boatSpaceType: BoatSpaceType,
     val paymentReference: String,
-    val invoiceReference: String,
+    val invoiceReference: String?,
     // val paymentMethod: PaymentMethod,
-    val invoiceDueDate: LocalDate?
+    val invoiceDueDate: LocalDate?,
+    val paymentCreated: LocalDateTime
 )
