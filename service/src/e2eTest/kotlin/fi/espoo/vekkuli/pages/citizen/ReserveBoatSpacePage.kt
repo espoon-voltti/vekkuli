@@ -14,10 +14,13 @@ class ReserveBoatSpacePage(
         private val fields = FieldLocator(root)
         val slipRadio = fields.getRadio("Laituripaikka")
         val trailerRadio = fields.getRadio("Traileripaikka")
+        val storageRadio = fields.getRadio("Säilytyspaikka Ämmäsmäessä (ympärivuotinen)")
 
         fun getSlipFilterSection() = SlipFilterSection(root)
 
         fun getTrailerFilterSection() = TrailerFilterSection(root)
+
+        fun getStorageFilterSection() = StorageFilterSection(root)
     }
 
     class SlipFilterSection(
@@ -41,6 +44,14 @@ class ReserveBoatSpacePage(
         private val fields = FieldLocator(root)
         val widthInput = fields.getInput("Trailerin leveys")
         val lengthInput = fields.getInput("Trailerin pituus")
+    }
+
+    class StorageFilterSection(
+        root: Locator
+    ) {
+        private val fields = FieldLocator(root)
+        val widthInput = fields.getInput("Säilytyspaikan leveys (m)")
+        val lengthInput = fields.getInput("Säilytyspaikan pituus (m)")
     }
 
     class SearchResultsSection(
@@ -67,10 +78,18 @@ class ReserveBoatSpacePage(
         slipFilterSection.lengthInput.fill("6")
     }
 
-    fun filterForBoatSpace012() {
+    fun filterForTrailerSpace012() {
         val filterSection = getFilterSection()
         filterSection.trailerRadio.click()
         val slipFilterSection = filterSection.getTrailerFilterSection()
+        slipFilterSection.widthInput.fill("2")
+        slipFilterSection.lengthInput.fill("4")
+    }
+
+    fun filterForStorageSpaceB007() {
+        val filterSection = getFilterSection()
+        filterSection.storageRadio.click()
+        val slipFilterSection = filterSection.getStorageFilterSection()
         slipFilterSection.widthInput.fill("2")
         slipFilterSection.lengthInput.fill("4")
     }
@@ -81,7 +100,12 @@ class ReserveBoatSpacePage(
     }
 
     fun startReservingBoatSpace012() {
-        filterForBoatSpace012()
+        filterForTrailerSpace012()
         page.locator("tr:has-text('TRAILERI 012')").locator("button:has-text('Varaa')").click()
+    }
+
+    fun startReservingStorageSpaceB007() {
+        filterForStorageSpaceB007()
+        page.locator("tr:has-text('B 007')").locator("button:has-text('Varaa')").click()
     }
 }

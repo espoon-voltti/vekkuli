@@ -496,7 +496,7 @@ VALUES
     (true, 'Winter', 'Renew',  8, 1, 8, 31),
     (true, 'Winter', 'Change',  8, 1, 12, 31),
     (true, 'Winter', 'SecondNew',  9, 1, 12, 31),
-    (true, 'Storage', 'New', 9, 1, 31, 7),
+    (true, 'Storage', 'New', 9, 1, 7, 31),
     (true, 'Storage', 'Renew',  8, 1, 8, 31),
     (true, 'Storage', 'Change',  8, 1, 7, 31),
 
