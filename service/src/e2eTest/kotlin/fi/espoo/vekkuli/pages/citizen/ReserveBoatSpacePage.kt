@@ -20,11 +20,9 @@ class ReserveBoatSpacePage(
 
         val winterRadio = fields.getRadio("Talvipaikka")
 
-
         fun getSlipFilterSection() = SlipFilterSection(root)
 
         fun getTrailerFilterSection() = TrailerFilterSection(root)
-
 
         fun getStorageFilterSection() = StorageFilterSection(root)
 
@@ -60,12 +58,14 @@ class ReserveBoatSpacePage(
         private val fields = FieldLocator(root)
         val widthInput = fields.getInput("Säilytyspaikan leveys (m)")
         val lengthInput = fields.getInput("Säilytyspaikan pituus (m)")
+    }
 
-    class WinterFilterSection(root: Locator) {
+    class WinterFilterSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val widthInput = fields.getInput("Säilytyspaikan leveys")
         val lengthInput = fields.getInput("Säilytyspaikan pituus")
-
     }
 
     class SearchResultsSection(
@@ -76,7 +76,9 @@ class ReserveBoatSpacePage(
         val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
     }
 
-    class LoginModal(val root: Locator) {
+    class LoginModal(
+        val root: Locator
+    ) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
         val continueButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Jatka tunnistautumiseen").setExact(true))
     }
