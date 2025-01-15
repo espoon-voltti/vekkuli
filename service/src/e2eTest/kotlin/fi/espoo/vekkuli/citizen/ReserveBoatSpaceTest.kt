@@ -207,6 +207,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         }
     }
 
+    @Test
     fun `reserving a storage space as a citizen`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 9, 1, 22, 22, 22))
