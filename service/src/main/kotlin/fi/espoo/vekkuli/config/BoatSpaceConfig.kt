@@ -175,7 +175,7 @@ object BoatSpaceConfig {
 
     fun getWinterEndDate(now: LocalDate) = getNextDate(now, 8, 31)
 
-    fun getStorageEndDate(now: LocalDate) = getNextDate(now, 8, 31)
+    fun getStorageEndDate(now: LocalDate) = getNextDate(now, 9, 14)
 
     fun getTrailerEndDate(
         now: LocalDate,

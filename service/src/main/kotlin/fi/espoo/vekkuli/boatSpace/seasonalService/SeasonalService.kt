@@ -189,8 +189,58 @@ class SeasonalService(
             BoatSpaceType.Slip -> canReserveANewSlip(reserverID)
             BoatSpaceType.Winter -> canReserveANewWinterSpace(reserverID)
             BoatSpaceType.Trailer -> canReserveANewTrailerSpace(reserverID)
+            BoatSpaceType.Storage -> canReserveANewStorageSpace(reserverID)
             else -> ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
+
+    private fun canReserveANewStorageSpace(reserverId: UUID): ReservationResult {
+        val reserver =
+            reserverRepo.getReserverById(reserverId) ?: return ReservationResult.Failure(
+                ReservationResultErrorCode.NoReserver
+            )
+        val isEspooCitizen = reserver.isEspooCitizen()
+
+        if (!isEspooCitizen) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
+        }
+
+        val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverId, BoatSpaceType.Storage)
+        val hasSomePlace = reservations.isNotEmpty()
+
+        val periods = seasonalRepository.getReservationPeriods()
+
+        if (reservations.size >= 2) {
+            // Only two reservations are allowed
+            return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
+        }
+
+        val now = timeProvider.getCurrentDate()
+
+        val hasActivePeriod =
+            hasActiveReservationPeriod(
+                periods,
+                now,
+                isEspooCitizen,
+                BoatSpaceType.Storage,
+                if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
+            )
+
+        if (!hasActivePeriod) {
+            // If no period found, reservation is not possible
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
+        val endDate = getStorageEndDate(now)
+        val validity = if (!isEspooCitizen || reservations.isNotEmpty()) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+
+        return ReservationResult.Success(
+            ReservationResultSuccess(
+                now,
+                endDate,
+                validity
+            )
+        )
+    }
 
     private fun canReserveANewTrailerSpace(reserverId: UUID): ReservationResult {
         val reserver =
