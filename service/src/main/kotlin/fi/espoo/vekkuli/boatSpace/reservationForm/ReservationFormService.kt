@@ -272,7 +272,12 @@ class ReservationFormService(
         formInput: ReservationInput,
         requestURI: String,
     ): String {
-        val citizen = formInput.citizenId?.let { reserverService.getCitizen(formInput.citizenId) }
+        val citizen =
+            if (formInput.citizenSelection == "newCitizen") {
+                null
+            } else {
+                formInput.citizenId?.let { reserverService.getCitizen(formInput.citizenId) }
+            }
 
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
