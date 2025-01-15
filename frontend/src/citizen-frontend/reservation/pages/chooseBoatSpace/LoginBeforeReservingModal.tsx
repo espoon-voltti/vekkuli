@@ -22,7 +22,7 @@ export default React.memo(function LoginBeforeReservingModal({
   ]
 
   return (
-    <Modal close={close} buttons={buttons}>
+    <Modal close={close} buttons={buttons} data-testid="login-before-reserving">
       <p>Olet varaamassa paikkaa:</p>
       <p>Venepaikan varaaminen vaatii vahvan tunnistautumisen.</p>
     </Modal>

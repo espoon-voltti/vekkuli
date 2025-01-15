@@ -20,7 +20,7 @@ export default React.memo(function PaymentProviders({
   return (
     <Loader results={[paymentProviders]}>
       {({ providers }) => (
-        <div className="columns is-multiline">
+        <div className="columns is-multiline" data-testid="payment-providers">
           {providers.map((provider) => (
             <PaymentButton
               key={`payment-provider-${provider.id}-${provider.name}`}
