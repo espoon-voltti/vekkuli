@@ -111,7 +111,8 @@ const en: Translations = {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     goToHomepage: 'Go to homepage',
-    goToMainContent: 'Skip to main content'
+    goToMainContent: 'Skip to main content',
+    selectLanguage: 'Select language'
   },
   components: componentTranslations,
   reservation: {
