@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
 
@@ -14,10 +15,13 @@ class ReserveBoatSpacePage(
         private val fields = FieldLocator(root)
         val slipRadio = fields.getRadio("Laituripaikka")
         val trailerRadio = fields.getRadio("Traileripaikka")
+        val winterRadio = fields.getRadio("Talvipaikka")
 
         fun getSlipFilterSection() = SlipFilterSection(root)
 
         fun getTrailerFilterSection() = TrailerFilterSection(root)
+
+        fun getWinterFilterSection() = WinterFilterSection(root)
     }
 
     class SlipFilterSection(
@@ -43,12 +47,26 @@ class ReserveBoatSpacePage(
         val lengthInput = fields.getInput("Trailerin pituus")
     }
 
+    class WinterFilterSection(root: Locator) {
+        private val fields = FieldLocator(root)
+        val widthInput = fields.getInput("Säilytyspaikan leveys")
+        val lengthInput = fields.getInput("Säilytyspaikan pituus")
+    }
+
     class SearchResultsSection(
         root: Locator
     ) {
         val harborHeaders = root.locator(".harbor-header")
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
+        val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
     }
+
+    class LoginModal(val root: Locator) {
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
+        val continueButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Jatka tunnistautumiseen").setExact(true))
+    }
+
+    val header = page.getByText("Espoon kaupungin venepaikkojen vuokraus")
 
     fun navigateToPage() {
         page.navigate("$baseUrl/kuntalainen/venepaikka")
@@ -57,6 +75,8 @@ class ReserveBoatSpacePage(
     fun getFilterSection() = FilterSection(getByDataTestId("boat-space-filter"))
 
     fun getSearchResultsSection() = SearchResultsSection(getByDataTestId("boat-space-results"))
+
+    fun getLoginModal() = LoginModal(getByDataTestId("login-before-reserving"))
 
     fun filterForBoatSpaceB314() {
         val filterSection = getFilterSection()
@@ -77,7 +97,7 @@ class ReserveBoatSpacePage(
 
     fun startReservingBoatSpaceB314() {
         filterForBoatSpaceB314()
-        page.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')").click()
+        getSearchResultsSection().b314ReserveButton.click()
     }
 
     fun startReservingBoatSpace012() {

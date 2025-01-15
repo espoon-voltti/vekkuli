@@ -20,7 +20,7 @@ export default React.memo(function Organization({
   const { branch, form } = useFormUnion(organization)
 
   return (
-    <FormSection>
+    <FormSection data-testid="organization">
       <h3 className="header">Vuokralainen</h3>
       <Columns>
         <Column>
