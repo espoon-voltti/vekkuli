@@ -3,9 +3,7 @@ import { Column, Columns, Container, MainSection } from 'lib-components/dom'
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { PlaceWithSpaces } from 'citizen-frontend/api-types/free-spaces'
 import { AuthContext } from 'citizen-frontend/auth/state'
-import { citizenActiveReservationsQuery } from 'citizen-frontend/citizen/queries'
 import SwitchModal from 'citizen-frontend/citizen/sections/reservations/SwitchModal'
 import { useTranslation } from 'citizen-frontend/localization'
 import { useForm } from 'lib-common/form/hooks'
@@ -26,6 +24,7 @@ import {
   searchFreeSpacesForm
 } from './formDefinitions'
 import {
+  canReserveSpaceQuery,
   freeSpacesQuery,
   reserveSpaceMutation,
   starSwitchSpaceMutation
@@ -41,9 +40,18 @@ export default React.memo(function SearchPage() {
 
   const [searchState, setSearchState] = useStoredSearchState()
 
+  const { mutateAsync: reserveSpace } = useMutation(reserveSpaceMutation)
   const [selectedBoatSpace, setSelectedBoatSpace] = useState<
-    PlaceWithSpaces | undefined
+    number | undefined
   >(undefined)
+
+  const canReserveResult = useQueryResult(
+    canReserveSpaceQuery(selectedBoatSpace ?? 0),
+    {
+      enabled: selectedBoatSpace !== undefined
+    }
+  )
+
   const bind = useForm(
     searchFreeSpacesForm,
     () => initialFormState(i18n, searchState),
@@ -91,9 +99,8 @@ export default React.memo(function SearchPage() {
         count: 0
       }
 
-  const { mutateAsync: reserveSpace } = useMutation(reserveSpaceMutation)
   const onReserveSpace = (spaceId: number) => {
-    setSelectedBoatSpace(undefined)
+    //setSelectedBoatSpace(undefined)
     reserveSpace(spaceId)
       .then((response) => {
         console.error('got response', response)
@@ -120,9 +127,6 @@ export default React.memo(function SearchPage() {
         setReserveError(errorType)
       })
   }
-  const selectBoatSpace = (spaceId: number) => {
-    // TODO: check if reservation is reservable
-  }
 
   const onReserveButtonPress = (spaceId: number) => {
     setSearchState({
@@ -133,7 +137,9 @@ export default React.memo(function SearchPage() {
       harbor: bind.value().harbor,
       spaceType: bind.state.boatSpaceType.domValue
     })
-    return userLoggedIn ? selectBoatSpace(spaceId) : setIsLoginModalOpen(true)
+    return userLoggedIn
+      ? setSelectedBoatSpace(spaceId)
+      : setIsLoginModalOpen(true)
   }
 
   return (
@@ -175,13 +181,13 @@ export default React.memo(function SearchPage() {
                 close={() => setReserveError(undefined)}
               />
             )}
-            {selectedBoatSpace !== undefined && (
+            {selectedBoatSpace !== undefined && canReserveResult.isSuccess && (
               <SwitchModal
                 close={() => setSelectedBoatSpace(undefined)}
                 currentSpace={selectedBoatSpace}
                 onSwitch={onSwitch}
                 onReserveSpace={onReserveSpace}
-                reservations={fetchedUserReservations}
+                reservations={canReserveResult.value.switchableReservations}
               />
             )}
           </>
