@@ -83,7 +83,7 @@ class BoatSpaceReservationList : BaseView() {
                 """.trimIndent()
             }
 
-        val paymentOptions = listOf(PaymentFilter.PAID, PaymentFilter.UNPAID)
+        val paymentOptions = listOf(PaymentFilter.CONFIRMED, PaymentFilter.INVOICED, PaymentFilter.PAYMENT, PaymentFilter.CANCELLED)
         val paymentFilters =
             paymentOptions.joinToString("\n") { paymentOption ->
                 """
