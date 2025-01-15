@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
@@ -23,18 +22,24 @@ import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : PlaywrightTest() {
     @Test
-    @Disabled("Feature is not working")
-    fun `employee can change the language`() {
-        page.navigate("$baseUrl?lang=fi")
-        assertThat(page.getByText("Venepaikat").first()).isVisible()
-        val listingPage = ReservationListPage(page)
-        listingPage.navigateTo()
-        page.getByTestId("language-selection").click()
-        page.getByText("Englanti").click()
-        assertThat(page.getByText("Boat spaces").first()).isVisible()
-        page.getByTestId("language-selection").click()
-        page.getByText("Swedish").click()
-        assertThat(page.getByText("Båtplats").first()).isVisible()
+    fun `citizen can change the language`() {
+        val citizenHomePage = CitizenHomePage(page)
+        citizenHomePage.navigateToPage()
+
+        assertThat(citizenHomePage.languageSelector).isVisible()
+        assertThat(citizenHomePage.finnishTitle).isVisible()
+
+        citizenHomePage.languageSelector.click()
+        citizenHomePage.languageSelector.getByText("English").click()
+        assertThat(citizenHomePage.englishTitle).isVisible()
+
+        citizenHomePage.languageSelector.click()
+        citizenHomePage.languageSelector.getByText("Svenska").click()
+        assertThat(citizenHomePage.swedishTitle).isVisible()
+
+        citizenHomePage.languageSelector.click()
+        citizenHomePage.languageSelector.getByText("Suomi").click()
+        assertThat(citizenHomePage.finnishTitle).isVisible()
     }
 
     @Test

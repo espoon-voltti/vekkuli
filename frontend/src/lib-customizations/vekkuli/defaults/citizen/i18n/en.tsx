@@ -49,8 +49,8 @@ const en: Translations = {
         en: 'English'
       },
       languagesShort: {
-        fi: 'Finnish',
-        sv: 'Swedish',
+        fi: 'Suomi',
+        sv: 'Svenska',
         en: 'English'
       }
     },
