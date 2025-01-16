@@ -558,7 +558,7 @@ class CitizenUserController(
                 extraInformation = input.extraInformation,
                 ownership = input.ownership,
             )
-        boatService.updateBoat(updatedBoat, checkReservationWarnings = false)
+        boatService.updateBoatAsEmployee(updatedBoat)
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
@@ -622,7 +622,7 @@ class CitizenUserController(
                 extraInformation = input.extraInformation,
                 ownership = input.ownership,
             )
-        boatService.updateBoat(updatedBoat)
+        boatService.updateBoatAsCitizen(updatedBoat)
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 

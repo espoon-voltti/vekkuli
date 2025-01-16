@@ -16,18 +16,13 @@ class BoatService(
 
     fun getBoat(boatId: Int): Boat? = boatRepository.getBoat(boatId)
 
-    fun updateBoat(
-        boat: Boat,
-        checkReservationWarnings: Boolean = true
-    ): Boat {
+    fun updateBoatAsCitizen(boat: Boat): Boat {
         val result = boatRepository.updateBoat(boat)
-
-        if (checkReservationWarnings) {
-            boatReservationService.addBoatWarningsToReservations(boat)
-        }
-
+        boatReservationService.addBoatWarningsToReservations(result)
         return result
     }
+
+    fun updateBoatAsEmployee(boat: Boat) = boatRepository.updateBoat(boat)
 
     fun insertBoat(
         citizenId: UUID,

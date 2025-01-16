@@ -54,7 +54,7 @@ class OrganizationControllerService(
                 extraInformation = input.extraInformation,
                 ownership = input.ownership,
             )
-        boatService.updateBoat(updatedBoat, checkReservationWarnings = false)
+        boatService.updateBoatAsEmployee(updatedBoat)
 
         val organizationReservations = boatReservationService.getBoatSpaceReservationsForReserver(reserverId)
         val updatedBoats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, organizationReservations) }

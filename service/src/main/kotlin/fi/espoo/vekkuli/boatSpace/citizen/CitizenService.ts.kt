@@ -30,7 +30,7 @@ open class CitizenService(
     open fun updateBoat(boat: UpdateBoatInformationInput) {
         val (citizenId) = citizenAccessControl.requireCitizen()
         if (!permissionService.canEditBoat(citizenId, boat.id)) throw Unauthorized()
-        boatService.updateBoat(boat.toBoatInput(citizenId))
+        boatService.updateBoatAsCitizen(boat.toBoatInput(citizenId))
     }
 
     @Transactional
