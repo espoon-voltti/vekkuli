@@ -100,11 +100,13 @@ class InvoiceController(
                 costCenter = "",
                 invoiceType = "",
                 priceWithTax = intToDecimal(reservation.priceCents),
+                discountedPriceWithTax = intToDecimal(reservation.discountedPriceCents),
                 description =
                     "${t("shared.title.boatSpace.${reservation.type}")}, ${reservation.locationName} ${reservation.place}, " +
                         "${reservation.startDate.year}",
                 contactPerson = invoiceData.orgRepresentative ?: "",
                 orgId = invoiceData.orgId ?: "",
+                discountPercentage = reservation.discountPercentage ?: 0
             )
         return model
     }

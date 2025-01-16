@@ -1098,7 +1098,7 @@ class JdbiBoatSpaceReservationRepository(
 
     private fun buildSqlSelectPartForReservationWithDependencies() =
         """
-        SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
+        SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, r.discount_percentage,
           location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
           bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
           bs.description,

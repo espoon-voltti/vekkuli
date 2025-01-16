@@ -21,3 +21,13 @@ fun intToDecimal(cents: Int?): BigDecimal? = if (cents != null) intToDecimal(cen
 fun decimalToInt(wholes: BigDecimal): Int = wholes.multiply(BigDecimal(100)).setScale(0, RoundingMode.HALF_UP).toInt()
 
 fun decimalToInt(wholes: BigDecimal?): Int? = if (wholes != null) decimalToInt(wholes) else null
+
+fun discountedPriceInCents(
+    priceCents: Int,
+    discountPercentage: Int?
+): Int =
+    if (discountPercentage != null && discountPercentage > 0) {
+        priceCents - (priceCents * discountPercentage / 100)
+    } else {
+        priceCents
+    }
