@@ -47,7 +47,7 @@ class BoatSpaceReservationController {
         model: Model
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "EMPLOYEE_RESERVATION_SEARCH")
+            logger.audit(it, "EMPLOYEE_RESERVATION_SEARCH", mapOf("params" to params.toString()))
         }
         val reservations =
             reservationService.getBoatSpaceReservations(params)

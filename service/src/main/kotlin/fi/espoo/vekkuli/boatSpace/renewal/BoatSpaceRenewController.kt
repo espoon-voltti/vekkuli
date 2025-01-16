@@ -111,7 +111,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE")
+            logger.audit(it, "RENEW_BOAT_SPACE", mapOf("originalReservationId" to originalReservationId.toString()))
         }
         val citizenId = request.ensureCitizenId()
 
@@ -136,7 +136,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE_INVOICE")
+            logger.audit(it, "RENEW_BOAT_SPACE_INVOICE", mapOf("originalReservationId" to originalReservationId.toString()))
         }
         val employeeId = request.ensureEmployeeId()
         try {
@@ -170,7 +170,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL")
+            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL", mapOf("renewedReservationId" to renewedReservationId.toString()))
         }
         val employeeId = request.ensureEmployeeId()
         boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, employeeId)
@@ -183,7 +183,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL")
+            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL", mapOf("renewedReservationId" to renewedReservationId.toString()))
         }
         val citizenId = request.ensureCitizenId()
         boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, citizenId)

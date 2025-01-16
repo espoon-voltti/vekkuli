@@ -43,7 +43,7 @@ class InvoiceController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "INVOICE_VIEW")
+            logger.audit(it, "INVOICE_VIEW", mapOf("reservationId" to reservationId.toString()))
         }
         val reservation = reservationService.getReservationWithReserver(reservationId)
         if (reservation?.reserverId == null) {
@@ -132,7 +132,7 @@ class InvoiceController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "SEND_INVOICE")
+            logger.audit(it, "SEND_INVOICE", mapOf("reservationId" to reservationId.toString()))
         }
         // send the invoice, update reservation status
         val reservation = reservationService.getReservationWithReserver(reservationId)
@@ -195,7 +195,7 @@ class InvoiceController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "INVOICE_CANCEL")
+            logger.audit(it, "INVOICE_CANCEL", mapOf("reservationId" to reservationId.toString()))
         }
         val employeeId = request.ensureEmployeeId()
         boatSpaceReservationRepo.removeBoatSpaceReservation(reservationId)

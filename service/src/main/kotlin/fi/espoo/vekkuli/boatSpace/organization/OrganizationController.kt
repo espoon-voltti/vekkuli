@@ -149,7 +149,14 @@ class OrganizationUserController(
         request: HttpServletRequest
     ) {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "UNLINK_CITIZEN_FROM_ORGANIZATION")
+            logger.audit(
+                it,
+                "UNLINK_CITIZEN_FROM_ORGANIZATION",
+                mapOf(
+                    "citizenId" to citizenId.toString(),
+                    "organizationId" to organizationId.toString()
+                )
+            )
         }
         request.ensureEmployeeId()
         organizationService.removeCitizenFromOrganization(organizationId, citizenId)
@@ -222,7 +229,14 @@ class OrganizationUserController(
     ): String {
         request.ensureEmployeeId()
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "ADD_ORGANIZATION_MEMBERS")
+            logger.audit(
+                it,
+                "ADD_ORGANIZATION_MEMBERS",
+                mapOf(
+                    "citizenId" to citizenId.toString(),
+                    "organizationId" to organizationId.toString()
+                )
+            )
         }
         organizationService.addCitizenToOrganization(organizationId, citizenId)
         val organizationMembers = organizationService.getOrganizationMembers(organizationId)
@@ -237,7 +251,14 @@ class OrganizationUserController(
         @RequestParam nameParameter: String,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "SEARCH_ORGANIZATION_MEMBERS")
+            logger.audit(
+                it,
+                "SEARCH_ORGANIZATION_MEMBERS",
+                mapOf(
+                    "organizationId" to organizationId.toString(),
+                    "nameParameter" to nameParameter
+                )
+            )
         }
         reserverService.getCitizens(nameParameter).let {
             return organizationMemberAdd.organizationAddMemberSearchContent(it, organizationId)
