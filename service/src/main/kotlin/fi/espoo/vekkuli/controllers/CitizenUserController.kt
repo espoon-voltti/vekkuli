@@ -558,7 +558,7 @@ class CitizenUserController(
                 extraInformation = input.extraInformation,
                 ownership = input.ownership,
             )
-        boatService.updateBoat(updatedBoat)
+        boatService.updateBoat(updatedBoat, checkReservationWarnings = false)
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
@@ -628,28 +628,6 @@ class CitizenUserController(
 
         val updatedBoats =
             boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
-
-        val reservationForBoat = boatSpaceReservations.find { it.boat?.id == boatId }
-
-        if (reservationForBoat != null) {
-            val boatSpace =
-                reservationService.getBoatSpaceRelatedToReservation(reservationForBoat.id)
-                    ?: throw IllegalArgumentException("Reservation not found")
-
-            reservationService.addReservationWarnings(
-                reservationForBoat.id,
-                boatId,
-                reservationForBoat.boatSpaceWidthCm,
-                reservationForBoat.boatSpaceLengthCm,
-                reservationForBoat.amenity,
-                updatedBoat.widthCm,
-                updatedBoat.lengthCm,
-                updatedBoat.ownership,
-                updatedBoat.weightKg,
-                updatedBoat.type,
-                boatSpace.excludedBoatTypes ?: listOf(),
-            )
-        }
 
         return citizenDetails.citizenPage(
             citizen,

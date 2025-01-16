@@ -54,7 +54,8 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     fun `should update boat`() {
         val boat = insertNewBoat()
         boatService.updateBoat(
-            boat.copy(name = "UpdatedTestBoat")
+            boat.copy(name = "UpdatedTestBoat"),
+            checkReservationWarnings = false
         )
         val updatedBoat = boatService.getBoat(boat.id)
         assertEquals("UpdatedTestBoat", updatedBoat?.name, "Boat is updated")
