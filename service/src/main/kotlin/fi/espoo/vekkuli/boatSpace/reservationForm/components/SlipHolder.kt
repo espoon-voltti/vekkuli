@@ -31,7 +31,7 @@ class SlipHolder(
                hx-swap="outerHTML"
                ${if (selectedOrganizationId == org.id) "checked" else ""}
             />
-            <label for="${org.id}">${org.name}</label>
+            <label for="org-${org.id}-radio">${org.name}</label>
         </div>
         """.trimIndent()
 
