@@ -49,8 +49,8 @@ const en: Translations = {
         en: 'English'
       },
       languagesShort: {
-        fi: 'Finnish',
-        sv: 'Swedish',
+        fi: 'Suomi',
+        sv: 'Svenska',
         en: 'English'
       }
     },
@@ -111,7 +111,8 @@ const en: Translations = {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     goToHomepage: 'Go to homepage',
-    goToMainContent: 'Skip to main content'
+    goToMainContent: 'Skip to main content',
+    selectLanguage: 'Select language'
   },
   components: componentTranslations,
   reservation: {

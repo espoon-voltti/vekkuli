@@ -152,8 +152,10 @@ enum class BoatSpaceFilterColumn {
 }
 
 enum class PaymentFilter {
-    PAID,
-    UNPAID,
+    CONFIRMED,
+    INVOICED,
+    PAYMENT,
+    CANCELLED
 }
 
 enum class ReservationExpiration {

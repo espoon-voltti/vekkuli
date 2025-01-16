@@ -29,7 +29,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.navigateToPage()
 
             val firstReservationSection = citizenDetails.getReservationSection(1)
-            val trailerSection = firstReservationSection.trailerSection
+            val trailerSection = firstReservationSection.getTrailerSection()
 
             trailerSection.editButton.click()
             trailerSection.registrationCodeInput.fill("FOO-123")
@@ -71,7 +71,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun `citizen can renew slip reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
@@ -106,7 +106,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun `citizen can renew winter storage reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
@@ -152,7 +152,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun `citizen cannot renew reservation if it is not time to renew`() {
         try {
             // Set time over month before the reservation ends. Renewal should not be possible.
@@ -255,7 +255,7 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun `citizen can delete their boat when it's without active reservation`() {
         // TODO delete the boat
         // page.getByTestId("delete-boat-3").click()

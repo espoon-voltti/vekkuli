@@ -49,8 +49,8 @@ export default {
       },
       languagesShort: {
         fi: 'Suomi',
-        sv: 'Ruotsi',
-        en: 'Englanti'
+        sv: 'Svenska',
+        en: 'English'
       }
     },
     openExpandingInfo: 'Avaa lisätietokenttä',
@@ -110,7 +110,8 @@ export default {
     openMenu: 'Avaa valikko',
     closeMenu: 'Sulje valikko',
     goToHomepage: 'Siirry etusivulle',
-    goToMainContent: 'Siirry pääsisältöön'
+    goToMainContent: 'Siirry pääsisältöön',
+    selectLanguage: 'Valitse kieli'
   },
   components: componentTranslations,
   reservation: {

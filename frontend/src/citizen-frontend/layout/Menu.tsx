@@ -1,18 +1,20 @@
-import classNames from 'classnames'
+import { Dropdown } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { ChevronDown } from 'lib-icons'
 
 import { AuthContext, User } from '../auth/state'
 import { getLoginUri, getLogoutUri } from '../config'
 
 export default React.memo(function Menu() {
+  const i18n = useTranslation()
   const { user } = useContext(AuthContext)
   const currentUser = user.getOrElse(undefined)
 
   return currentUser === undefined ? (
     <a data-testid="loginButton" className="link" href={getLoginUri()}>
-      Kirjaudu sisään
+      {i18n.header.login}
     </a>
   ) : (
     <UserMenu user={currentUser} />
@@ -20,35 +22,26 @@ export default React.memo(function Menu() {
 })
 
 const UserMenu = React.memo(function UserMenu({ user }: { user: User }) {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const toggleOpen = () => setIsOpen(!isOpen)
+  const i18n = useTranslation()
   return (
-    <div>
-      <div className={classNames('dropdown', { 'is-active': isOpen })}>
-        <div className="dropdown-trigger" onClick={toggleOpen}>
-          <a
-            aria-haspopup="true"
-            aria-controls="dropdown-menu"
-            className="is-icon-link is-reverse"
-          >
+    <Dropdown id="user-menu">
+      {{
+        label: (
+          <>
             <span>
               {user.firstName} {user.lastName}
             </span>
             <span className="icon is-small">
               <ChevronDown />
             </span>
+          </>
+        ),
+        menuItems: (
+          <a href={getLogoutUri()} role="menuitem" className="dropdown-item">
+            {i18n.header.logout}
           </a>
-        </div>
-        {!isOpen ? null : (
-          <div className="dropdown-menu" id="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              <a href={getLogoutUri()} className="dropdown-item">
-                Kirjaudu ulos
-              </a>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+        )
+      }}
+    </Dropdown>
   )
 })

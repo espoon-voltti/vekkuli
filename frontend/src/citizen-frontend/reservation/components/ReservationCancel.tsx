@@ -60,7 +60,11 @@ export default React.memo(function ReservationCancel({
     <>
       {button}
       {modalOpen && (
-        <Modal close={() => setModalOpen(false)} buttons={buttons}>
+        <Modal
+          close={() => setModalOpen(false)}
+          buttons={buttons}
+          data-testid="confirm-cancel-reservation-modal"
+        >
           <Columns isMultiline>
             <Column>
               <p>

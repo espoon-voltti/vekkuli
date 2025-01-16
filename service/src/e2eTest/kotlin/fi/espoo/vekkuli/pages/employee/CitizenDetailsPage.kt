@@ -116,6 +116,10 @@ class CitizenDetailsPage(
     val messagesNavi: Locator = page.getByTestId("messages-tab-navi")
     val messages: Locator = page.getByTestId("messages-table").locator("tbody tr")
 
+    val paymentsNavi: Locator = page.getByTestId("payments-tab-navi")
+    val noPaymentsIndicator: Locator = getByDataTestId("no-payments-indicator")
+    val paymentsTable: Locator = page.getByTestId("payments-table")
+
     val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
 
     val invoicePaidButton = page.getByTestId("invoice-paid-button")

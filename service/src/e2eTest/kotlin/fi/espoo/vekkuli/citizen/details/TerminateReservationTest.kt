@@ -33,7 +33,7 @@ class TerminateReservationTest : PlaywrightTest() {
             firstReservationSection.terminateButton.click()
 
             val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
-            assertThat(terminateReservationModal.element).isVisible()
+            assertThat(terminateReservationModal.root).isVisible()
             assertThat(terminateReservationModal.confirmButton).isVisible()
             assertThat(terminateReservationModal.cancelButton).isVisible()
             assertThat(terminateReservationModal.placeIdentifierText).hasText("Haukilahti B 001")
@@ -41,7 +41,7 @@ class TerminateReservationTest : PlaywrightTest() {
             assertThat(terminateReservationModal.amenityText).hasText("Aisa")
 
             terminateReservationModal.cancelButton.click()
-            assertThat(terminateReservationModal.element).not().isVisible()
+            assertThat(terminateReservationModal.root).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -66,13 +66,13 @@ class TerminateReservationTest : PlaywrightTest() {
             firstReservationSection.terminateButton.click()
 
             val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
-            assertThat(terminateReservationModal.element).isVisible()
+            assertThat(terminateReservationModal.root).isVisible()
             assertThat(terminateReservationModal.placeIdentifierText).hasText("Haukilahti B 001")
 
             terminateReservationModal.confirmButton.click()
             // TODO assertThat(citizenDetailsPage.terminateReservationSuccessModal).isVisible()
 
-            assertThat(terminateReservationModal.element).not().isVisible()
+            assertThat(terminateReservationModal.root).not().isVisible()
 
             citizenDetailsPage.showExpiredReservationsToggle.click()
 
@@ -120,13 +120,13 @@ class TerminateReservationTest : PlaywrightTest() {
             }
 
             terminateReservationModal.confirmButton.click()
-            assertThat(terminateReservationModal.element).not().isVisible()
+            assertThat(terminateReservationModal.root).not().isVisible()
 
             val terminateReservationFailureModal = citizenDetailsPage.getTerminateReservationFailureModal()
-            assertThat(terminateReservationFailureModal.element).isVisible()
+            assertThat(terminateReservationFailureModal.root).isVisible()
 
             terminateReservationFailureModal.okButton.click()
-            assertThat(terminateReservationFailureModal.element).not().isVisible()
+            assertThat(terminateReservationFailureModal.root).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }

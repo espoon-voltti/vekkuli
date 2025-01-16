@@ -17,7 +17,7 @@ export default React.memo(function Organization({
   const { storageType, trailerInfo } = useFormFields(bind)
   const { branch, form } = useFormUnion(trailerInfo)
   return (
-    <FormSection>
+    <FormSection data-testid="winter-storage-type">
       <h3 className="header">Säilytystapa</h3>
       <Columns>
         <Column>

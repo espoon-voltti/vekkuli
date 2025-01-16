@@ -51,7 +51,7 @@ const sv: Translations = {
       languagesShort: {
         fi: 'Suomi',
         sv: 'Svenska',
-        en: 'Engelska'
+        en: 'English'
       }
     },
     openExpandingInfo: 'Öppna detaljer',
@@ -111,7 +111,8 @@ const sv: Translations = {
     openMenu: 'Öppna menyn',
     closeMenu: 'Stäng menyn',
     goToHomepage: 'Gå till hemsidan',
-    goToMainContent: 'Hoppa till innehållet'
+    goToMainContent: 'Hoppa till innehållet',
+    selectLanguage: 'Välj språk'
   },
   components: componentTranslations,
   reservation: {

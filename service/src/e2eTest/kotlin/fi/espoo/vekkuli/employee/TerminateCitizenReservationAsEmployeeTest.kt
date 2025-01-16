@@ -145,7 +145,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Waiting for React version")
+    @Disabled("Feature is not working")
     fun `Employee can terminate reservation to end in the future`() {
         try {
             val listingPage = ReservationListPage(page)

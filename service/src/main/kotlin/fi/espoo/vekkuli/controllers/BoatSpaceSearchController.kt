@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.isAuthenticated
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceService
 import fi.espoo.vekkuli.service.ReserverService
@@ -88,7 +89,13 @@ class BoatSpaceSearchController {
             val reservation = reservationService.getUnfinishedReservationForEmployee(user.id)
             if (reservation != null) {
                 val headers = org.springframework.http.HttpHeaders()
-                headers.location = URI(getServiceUrl("/${userType.path}/venepaikka/varaus/${reservation.id}"))
+                val url =
+                    if (reservation.status == ReservationStatus.Payment) {
+                        "/${userType.path}/venepaikka/varaus/${reservation.id}/lasku"
+                    } else {
+                        "/${userType.path}/venepaikka/varaus/${reservation.id}"
+                    }
+                headers.location = URI(getServiceUrl(url))
                 return ResponseEntity(headers, HttpStatus.FOUND)
             }
             val locations = reservationService.getHarbors()
