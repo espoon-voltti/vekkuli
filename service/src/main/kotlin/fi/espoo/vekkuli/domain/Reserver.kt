@@ -40,9 +40,10 @@ data class ReserverWithDetails(
     val postOffice: String,
     val postOfficeSv: String,
     val postalCode: String,
-    val espooRulesApplied: Boolean
+    val espooRulesApplied: Boolean,
+    val discountPercentage: Int
 ) {
-    fun hasExceptions() = espooRulesApplied
+    fun hasExceptions() = espooRulesApplied || discountPercentage > 0
 
     fun isEspooCitizen() = espooRulesApplied || municipalityCode == ESPOO_MUNICIPALITY_CODE
 }

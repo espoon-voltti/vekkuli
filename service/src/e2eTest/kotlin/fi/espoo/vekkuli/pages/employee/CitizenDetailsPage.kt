@@ -113,7 +113,7 @@ class CitizenDetailsPage(
     val newMemoContent: Locator = page.getByTestId("new-memo-content")
     val newMemoSaveBtn: Locator = page.getByTestId("new-memo-save-button")
 
-    val messagesNavi: Locator = page.getByTestId("messages-tab-navi")
+    val messagesNavi: Locator = getByDataTestId("messages-tab-navi")
     val messages: Locator = page.getByTestId("messages-table").locator("tbody tr")
 
     val paymentsNavi: Locator = page.getByTestId("payments-tab-navi")
@@ -218,4 +218,5 @@ class CitizenDetailsPage(
     val trailerWidthInput = page.getByTestId("trailerWidth")
     val trailerLengthInput = page.getByTestId("trailerLength")
     val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
+    val exceptionsNavi: Locator = getByDataTestId("exceptions-tab-navi")
 }

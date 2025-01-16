@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
@@ -16,11 +17,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun listingReservations() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             assertThat(listingPage.boatSpace1).isVisible()
             assertThat(listingPage.boatSpace2).isVisible()
             listingPage.boatSpace1.click()
@@ -34,11 +31,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editCitizen() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -95,11 +88,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMemos() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.memoNavi.click()
@@ -132,11 +121,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMessages() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.messagesNavi.click()
@@ -166,11 +151,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editBoat() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -209,11 +190,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun deleteBoat() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -231,11 +208,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     fun `employee can renew a boat space reservation`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
 
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
@@ -253,5 +226,72 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `employee can set the reserver to be treated as Espoo citizen`() {
+        try {
+            val listingPage = reservationListPage()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
+            val jorma = listingPage.getByDataTestId("reserver-name").first()
+            assertThat(jorma).containsText("Pulkkinen Jorma")
+            jorma.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenLastNameField).hasText("Pulkkinen")
+            citizenDetails.exceptionsNavi.click()
+            val espooRulesAppliedCheckbox = page.getByTestId("edit-espoorules-applied-checkbox")
+            assertThat(espooRulesAppliedCheckbox).isChecked()
+            espooRulesAppliedCheckbox.click()
+            assertFalse((espooRulesAppliedCheckbox).isChecked)
+            listingPage.navigateTo()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.reservations.count() == 0 }
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `employee can set the reserver to have a discount`() {
+        try {
+            val listingPage = reservationListPage()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
+            assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Pulkkinen Jorma")
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 5 }
+            listingPage
+                .getByDataTestId("reserver-name")
+                .getByText("Korhonen")
+                .click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenLastNameField).hasText("Korhonen")
+            citizenDetails.exceptionsNavi.click()
+            val discount0 = page.getByTestId("reserver_discount_0")
+            assertThat(discount0).isChecked()
+            assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention")
+            page.getByTestId("reserver_discount_50").check()
+            assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention on")
+            listingPage.navigateTo()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.reservations.count() == 2 }
+            assertThat(
+                listingPage
+                    .getByDataTestId("reserver-name")
+                    .getByText("Korhonen")
+            ).containsText("Korhonen Leo")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun reservationListPage(): ReservationListPage {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        return listingPage
     }
 }
