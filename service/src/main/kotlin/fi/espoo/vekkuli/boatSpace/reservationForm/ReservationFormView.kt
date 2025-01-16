@@ -142,6 +142,7 @@ class ReservationFormView(
             userType,
             titleText = t("boatApplication.title.reservation.winter"),
             formContent = storageContent,
+            reserverPriceInfo = input.reserverPriceInfo,
         )
     }
 
@@ -220,6 +221,7 @@ class ReservationFormView(
             userType,
             titleText = t("boatApplication.title.reservation.slip"),
             formContent = slipContent,
+            reserverPriceInfo = input.reserverPriceInfo,
         )
     }
 

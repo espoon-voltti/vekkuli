@@ -628,7 +628,38 @@ class ReservationFormService(
 
         val municipalities = reserverService.getMunicipalities()
 
+        input =
+            input.copy(
+                reserverPriceInfo = constructReserverPriceInfo(formInput, citizen, reservation, organizations)
+            )
+
         return buildApplicationForm(reservation, boats, citizen, organizations, input, userType, municipalities)
+    }
+
+    private fun constructReserverPriceInfo(
+        formInput: ReservationInput,
+        citizen: CitizenWithDetails?,
+        reservation: ReservationForApplicationForm,
+        organizations: List<Organization>
+    ): ReserverPriceInfo? {
+        if (formInput.isOrganization != false) {
+            val organizationId = formInput.organizationId
+            val organization = organizations.find { it.id == organizationId }
+            if (organization != null) {
+                return ReserverPriceInfo(
+                    discountPercentage = organization.discountPercentage,
+                    originalPriceInCents = reservation.priceCents,
+                    reserverName = organization.name
+                )
+            }
+        } else if (citizen != null && citizen.discountPercentage > 0) {
+            return ReserverPriceInfo(
+                discountPercentage = citizen.discountPercentage,
+                originalPriceInCents = reservation.priceCents,
+                reserverName = citizen.fullName
+            )
+        }
+        return null
     }
 
     private fun buildApplicationForm(
@@ -708,6 +739,15 @@ class ReservationFormService(
     }
 }
 
+data class ReserverPriceInfo(
+    val discountPercentage: Int?,
+    val originalPriceInCents: Int?,
+    val reserverName: String?,
+) {
+    val discountedPriceInEuro: String
+        get() = formatInt(discountedPriceInCents(originalPriceInCents ?: 0, discountPercentage))
+}
+
 @ValidBoatRegistration
 data class ReservationInput(
     @field:NotNull(message = "{validation.required}")
@@ -771,5 +811,6 @@ data class ReservationInput(
     override val trailerRegistrationNumber: String?,
     override val trailerWidth: BigDecimal?,
     override val trailerLength: BigDecimal?,
-    override val reservationValidity: ReservationValidity = ReservationValidity.Indefinite
+    val reserverPriceInfo: ReserverPriceInfo? = null,
+    override val reservationValidity: ReservationValidity = ReservationValidity.Indefinite,
 ) : BoatRegistrationBaseInput

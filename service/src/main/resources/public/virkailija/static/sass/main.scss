@@ -377,7 +377,7 @@ body > .columns {
 }
 
 
-.reservation-info {
+.reservation-info, .reservation-price-info {
   padding: $spacing-medium;
   border: 1px solid $bulma-primary;
   border-radius: 4px;
@@ -393,6 +393,10 @@ body > .columns {
     flex: 1;
     margin-left: $spacing-medium;
   }
+}
+
+.reservation-price-info {
+  align-items: center;
 }
 
 .ack-info {
@@ -1082,4 +1086,8 @@ ul {
   &.on {
     display: inline-block;
   }
+}
+
+.discount-info {
+  font-size: 13px;
 }
