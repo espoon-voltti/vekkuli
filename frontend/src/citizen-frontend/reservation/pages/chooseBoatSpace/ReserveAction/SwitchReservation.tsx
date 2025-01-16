@@ -9,28 +9,32 @@ import { useMutation } from 'lib-common/query'
 import BoatSpaceInformation from '../../../components/BoatSpaceInformation'
 import { startSwitchSpaceMutation } from '../queries'
 
+import { useReserveActionContext } from './state'
+
 export type SwitchReservationProps = {
   reservation: SwitchableReservation
-  reserveSpaceId: number
-  setLoading: (loading: boolean) => void
 }
 
 export default React.memo(function SwitchReservation({
-  reservation,
-  reserveSpaceId,
-  setLoading
+  reservation
 }: SwitchReservationProps) {
   const i18n = useTranslation()
+  const { targetSpaceId, isLoading, setIsLoading } = useReserveActionContext()
   const { mutateAsync: switchPlace, isPending } = useMutation(
     startSwitchSpaceMutation
   )
+
+  useEffect(() => {
+    setIsLoading(isPending)
+  }, [setIsLoading, isPending])
+
   const navigate = useNavigate()
   const onSwitch = () => {
     // eslint-disable-next-line no-console
-    console.log(`switching ${reservation.id} to ${reserveSpaceId}`)
+    console.log(`switching ${reservation.id} to ${targetSpaceId}`)
     switchPlace({
       reservationId: reservation.id,
-      spaceId: reserveSpaceId
+      spaceId: targetSpaceId
     })
       .then((response) => {
         console.info('switch place response', response)
@@ -44,10 +48,6 @@ export default React.memo(function SwitchReservation({
       })
   }
 
-  useEffect(() => {
-    setLoading(isPending)
-  }, [setLoading, isPending])
-
   return (
     <Column isFull>
       <Columns>
@@ -55,7 +55,7 @@ export default React.memo(function SwitchReservation({
           <BoatSpaceInformation boatSpace={reservation.boatSpace} />
         </Column>
         <Column isNarrow>
-          <Button type="primary" action={onSwitch} loading={isPending}>
+          <Button type="primary" action={onSwitch} loading={isLoading}>
             {i18n.reservation.searchPage.modal.switchCurrentPlace}
           </Button>
         </Column>

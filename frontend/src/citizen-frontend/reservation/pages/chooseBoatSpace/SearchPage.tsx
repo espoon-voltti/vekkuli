@@ -11,10 +11,10 @@ import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 import StepIndicator from '../../StepIndicator'
 import { ReservationStateContext } from '../../state'
 
-import ErrorModal, { ErrorCode } from './ErrorModal'
 import LoginBeforeReservingModal from './LoginBeforeReservingModal'
 import ReservationSeasons from './ReservationSeasons'
 import ReserveAction from './ReserveAction/ReserveAction'
+import { ReserveActionProvider } from './ReserveAction/state'
 import SearchFilters from './SearchFilters'
 import SearchResult from './SearchResults'
 import {
@@ -72,9 +72,7 @@ export default React.memo(function SearchPage() {
   )
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false)
-  const [reserveError, setReserveError] = React.useState<
-    ErrorCode | undefined
-  >()
+
   const freeSpaces = useQueryResult(
     freeSpacesQuery(bind.isValid() ? bind.value() : undefined),
     {
@@ -139,14 +137,13 @@ export default React.memo(function SearchPage() {
                 close={() => setIsLoginModalOpen(false)}
               />
             )}
-            {!!reserveError && (
-              <ErrorModal
-                error={reserveError}
-                close={() => setReserveError(undefined)}
-              />
-            )}
             {selectedBoatSpace !== undefined && (
-              <ReserveAction reserveSpaceId={selectedBoatSpace} />
+              <ReserveActionProvider
+                spaceId={selectedBoatSpace}
+                onClose={() => setSelectedBoatSpace(undefined)}
+              >
+                <ReserveAction />
+              </ReserveActionProvider>
             )}
           </>
         )
@@ -154,16 +151,3 @@ export default React.memo(function SearchPage() {
     </Loader>
   )
 })
-
-/*
-const mapErrorCode = (errorCode: string): ErrorCode => {
-  switch (errorCode) {
-    case 'MaxReservations':
-      return 'MAX_RESERVATIONS'
-    case 'NotPossible':
-      return 'NOT_POSSIBLE'
-    default:
-      return 'SERVER_ERROR'
-  }
-}
-*/

@@ -1,3 +1,4 @@
+import { Loader } from 'lib-components/Loader'
 import { Column, Columns } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
 import { ModalButton } from 'lib-components/modal/ModalButtons'
@@ -6,28 +7,24 @@ import React from 'react'
 import { CanReserveReservation } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import BoatSpaceInformation from 'citizen-frontend/reservation/components/BoatSpaceInformation'
-
-import { useQueryResult } from '../../../../../lib-common/query'
-import { Loader } from '../../../../../lib-components/Loader'
+import { useQueryResult } from 'lib-common/query'
 
 import SwitchReservation from './SwitchReservation'
 import { boatSpaceQuery } from './queries'
+import { useReserveActionContext } from './state'
 
 export type SwitchModalProps = {
   canReserveResult: CanReserveReservation
-  reserveSpaceId: number
   reserveSpace: () => void
-  closeModal: () => void
 }
 
 export default React.memo(function ReserveModal({
   canReserveResult,
-  reserveSpaceId,
-  reserveSpace,
-  closeModal
+  reserveSpace
 }: SwitchModalProps) {
+  const { targetSpaceId, onClose } = useReserveActionContext()
   const i18n = useTranslation()
-  const boatSpaceResult = useQueryResult(boatSpaceQuery(reserveSpaceId))
+  const boatSpaceResult = useQueryResult(boatSpaceQuery(targetSpaceId))
   const modalButtons: ModalButton[] = [
     {
       label: i18n.common.cancel
@@ -48,7 +45,7 @@ export default React.memo(function ReserveModal({
       {(loadedBoatSpaceResult) => (
         <Modal
           title={i18n.reservation.searchPage.modal.reservingBoatSpace}
-          close={closeModal}
+          close={onClose}
           buttons={modalButtons}
         >
           <Columns isMultiline>
@@ -62,8 +59,6 @@ export default React.memo(function ReserveModal({
               <SwitchReservation
                 key={reservation.id}
                 reservation={reservation}
-                reserveSpaceId={reserveSpaceId}
-                setLoading={() => null}
               />
             ))}
           </Columns>

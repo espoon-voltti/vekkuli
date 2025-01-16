@@ -7,21 +7,17 @@ import { useMutation, useQueryResult } from 'lib-common/query'
 import { canReserveSpaceQuery, reserveSpaceMutation } from '../queries'
 
 import CanReserveResult from './CanReserveResult'
+import { useReserveActionContext } from './state'
 
-export type SwitchModalProps = {
-  reserveSpaceId: number
-}
-
-export default React.memo(function ReserveAction({
-  reserveSpaceId
-}: SwitchModalProps) {
+export default React.memo(function ReserveAction() {
+  const { targetSpaceId } = useReserveActionContext()
   const navigate = useNavigate()
-  const canReserveResult = useQueryResult(canReserveSpaceQuery(reserveSpaceId))
+  const canReserveResult = useQueryResult(canReserveSpaceQuery(targetSpaceId))
   const { mutateAsync: reserveSpace } = useMutation(reserveSpaceMutation)
 
   const onReserveSpace = () => {
-    reserveSpace(reserveSpaceId)
-      .then((response) => {
+    reserveSpace(targetSpaceId)
+      .then(() => {
         return navigate('/kuntalainen/venepaikka/varaa')
       })
       .catch((error) => {
@@ -37,7 +33,6 @@ export default React.memo(function ReserveAction({
       {(loadedCanReserveResult) => (
         <CanReserveResult
           canReserveResult={loadedCanReserveResult}
-          reserveSpaceId={reserveSpaceId}
           reserveSpace={onReserveSpace}
         />
       )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import { CanReserveReservation } from 'citizen-frontend/api-types/reservation'
 
@@ -6,36 +6,29 @@ import ReserveModal from './ReserveModal'
 
 export type CanReserveResultProps = {
   canReserveResult: CanReserveReservation
-  reserveSpaceId: number
   reserveSpace: () => void
 }
 
 export default React.memo(function CanReserveResult({
   canReserveResult,
-  reserveSpaceId,
   reserveSpace
 }: CanReserveResultProps) {
-  const hasReserved = useRef(false)
+  const hasStartedReservation = useRef(false)
   const shouldReserveDirectly =
     canReserveResult.status === 'CanReserve' &&
     !canReserveResult.switchableReservations.length
-  const [showModal, setShowModal] = useState(!shouldReserveDirectly)
   useEffect(() => {
-    if (shouldReserveDirectly && !hasReserved.current) {
-      hasReserved.current = true
+    if (shouldReserveDirectly && !hasStartedReservation.current) {
+      hasStartedReservation.current = true
       reserveSpace()
     }
-  }, [reserveSpace, shouldReserveDirectly, hasReserved])
+  }, [reserveSpace, shouldReserveDirectly, hasStartedReservation])
 
   return (
-    showModal && (
+    !shouldReserveDirectly && (
       <ReserveModal
         canReserveResult={canReserveResult}
-        reserveSpaceId={reserveSpaceId}
         reserveSpace={reserveSpace}
-        closeModal={() => {
-          setShowModal(false)
-        }}
       />
     )
   )
