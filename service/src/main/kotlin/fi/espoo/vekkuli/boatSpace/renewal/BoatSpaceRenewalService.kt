@@ -159,10 +159,12 @@ class BoatSpaceRenewalService(
             costCenter = "?",
             invoiceType = "?",
             priceWithTax = intToDecimal(reservation.priceCents),
+            discountedPriceWithTax = intToDecimal(reservation.discountedPriceCents),
             description = invoiceData.description,
             contactPerson = "",
             orgId = invoiceData.orgId ?: "",
             function = getDefaultFunction(reservation.type),
+            discountPercentage = reservation.discountPercentage ?: 0
         )
     }
 
