@@ -108,7 +108,7 @@ class InvoicePreview(
             if (model.hasDiscount) {
                 """
                 <div class="discount-info">
-                <span>${t("invoice.discountInfo", listOf(model.priceWithTax.toString(), model.discountPercentage.toString()))}</span>
+                <span>${t("invoice.discountInfo", listOf(model.discountPercentage.toString(), model.priceWithTax.toString()))}</span>
                 </div>    
                 """.trimIndent()
             } else {
