@@ -24,6 +24,7 @@ const en: Translations = {
   common: {
     title: "Espoo's boat space reservation",
     cancel: 'Cancel',
+    continue: 'Continue',
     return: 'Return',
     download: 'Download',
     print: 'Print',
@@ -205,7 +206,16 @@ const en: Translations = {
         MAX_PERSONAL_RESERVATIONS:
           'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.'
       }
-    }
+    },
+    auth: {
+      reservingBoatSpace: 'Reserving boat space:',
+      reservingRequiresAuth:
+        'Reserving a boat space requires strong authentication.',
+      continue: 'Continue'
+    },
+    cancelConfirmation:
+      'You are about to leave the reservation form. Please note that the space reservation or entered information will not be saved.',
+    cancelConfirmation2: 'Do you want to continue?'
   },
   boatSpace: {
     renterType: {

@@ -24,6 +24,7 @@ const sv: Translations = {
   common: {
     title: 'Bokning av båtplats i Esbo',
     cancel: 'Gå tillbaka',
+    continue: 'Fortsätt',
     return: 'Tillbaka',
     download: 'Ladda ner',
     print: 'Skriva ut',
@@ -204,7 +205,16 @@ const sv: Translations = {
         MAX_PERSONAL_RESERVATIONS:
           'Du har redan det maximala antalet platser av denna typ. Om du agerar på uppdrag av en organisation kan du fortsätta att boka.'
       }
-    }
+    },
+    auth: {
+      reservingBoatSpace: 'Bokar båtplats:',
+      reservingRequiresAuth:
+        'För att boka en båtplats krävs stark autentisering.',
+      continue: 'Fortsätt'
+    },
+    cancelConfirmation:
+      'Du är på väg att lämna bokningsformuläret. Observera att platsbokningen eller inmatad information inte kommer att sparas.',
+    cancelConfirmation2: 'Vill du fortsätta?'
   },
   boatSpace: {
     boatSpaceType: {

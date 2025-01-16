@@ -9,7 +9,12 @@ export default React.memo(function ModalContent({
   ...rest
 }: ModalContentProps) {
   return (
-    <div className="modal-content mv-m" {...rest}>
+    <div
+      className="modal-content mv-m"
+      role="dialog"
+      aria-modal="true"
+      {...rest}
+    >
       {children}
     </div>
   )
