@@ -47,6 +47,8 @@ class BoatSpaceFormPage(
         val weightInput = fields.getInput("Paino")
         val widthError = fields.getInputError("Leveys")
         val widthInput = fields.getInput("Leveys")
+
+        fun existingBoat(name: String) = fields.getRadio(name)
     }
 
     class WinterStorageTypeSection(root: Locator) {
@@ -98,7 +100,7 @@ class BoatSpaceFormPage(
     val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
     val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
 
-    fun fillFormAndSubmit() {
+    fun fillFormAndSubmit(overrides: (BoatSpaceFormPage.() -> Unit)? = null) {
         val citizenSection = getCitizenSection()
         citizenSection.emailInput.fill("test@example.com")
         citizenSection.phoneInput.fill("123456789")
@@ -114,6 +116,8 @@ class BoatSpaceFormPage(
         val userAgreementSection = getUserAgreementSection()
         userAgreementSection.certifyInfoCheckbox.check()
         userAgreementSection.agreementCheckbox.check()
+
+        overrides?.invoke(this)
 
         submitButton.click()
     }

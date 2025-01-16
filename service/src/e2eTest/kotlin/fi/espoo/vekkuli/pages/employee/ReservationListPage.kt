@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.pages.employee
 
+import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
 
@@ -30,4 +32,9 @@ class ReservationListPage(
     val exceptionsFilter = filterLocator("exceptions")
     val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
     val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
+
+    fun boatSpace(customer: String) =
+        getByDataTestId("reserver-name")
+            .getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName(customer).setExact(true))
+            .first()
 }

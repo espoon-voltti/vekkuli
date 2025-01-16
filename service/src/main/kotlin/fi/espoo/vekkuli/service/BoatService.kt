@@ -59,26 +59,25 @@ class BoatService(
     fun deleteBoat(boatId: Int): Boolean = boatRepository.deleteBoat(boatId)
 
     private fun setReservationWarnings(boat: Boat) {
-        val reservations = boatReservationService.getBoatSpaceReservationsForReserver(boat.reserverId)
-        val reservation = reservations.find { it.boat?.id == boat.id }
-        if (reservation != null) {
-            val boatSpace =
-                boatReservationService.getBoatSpaceRelatedToReservation(reservation.id)
-                    ?: throw IllegalArgumentException("Reservation not found")
+        boatReservationService.getBoatSpaceReservationsForReserver(boat.reserverId)
+            .forEach { reservation ->
+                val boatSpace =
+                    boatReservationService.getBoatSpaceRelatedToReservation(reservation.id)
+                        ?: throw IllegalArgumentException("Reservation not found")
 
-            boatReservationService.addReservationWarnings(
-                reservation.id,
-                boat.id,
-                reservation.boatSpaceWidthCm,
-                reservation.boatSpaceLengthCm,
-                reservation.amenity,
-                boat.widthCm,
-                boat.lengthCm,
-                boat.ownership,
-                boat.weightKg,
-                boat.type,
-                boatSpace.excludedBoatTypes ?: listOf(),
-            )
-        }
+                boatReservationService.addReservationWarnings(
+                    reservation.id,
+                    boat.id,
+                    reservation.boatSpaceWidthCm,
+                    reservation.boatSpaceLengthCm,
+                    reservation.amenity,
+                    boat.widthCm,
+                    boat.lengthCm,
+                    boat.ownership,
+                    boat.weightKg,
+                    boat.type,
+                    boatSpace.excludedBoatTypes ?: listOf(),
+                )
+            }
     }
 }

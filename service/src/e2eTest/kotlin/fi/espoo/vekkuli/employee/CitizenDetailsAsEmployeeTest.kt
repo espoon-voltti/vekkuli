@@ -2,15 +2,21 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage as CitizenBoatSpaceFormPage
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage as CitizenCitizenDetailsPage
+import fi.espoo.vekkuli.pages.citizen.PaymentPage as CitizenPaymentPage
+import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage as CitizenReserveBoatSpacePage
 
 @ActiveProfiles("test")
 class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
@@ -206,6 +212,54 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
 
         page.reload() // warnings show only after full reload
         assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
+    }
+
+    @Test
+    fun `editing a boat considers all reservations for warnings`() {
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
+        val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
+        val paymentPage = CitizenPaymentPage(page)
+
+        // create a reservation for TRAILERI 012
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpace012()
+        boatSpaceFormPage.fillFormAndSubmit {
+            getBoatSection().nameInput.fill("The Boat")
+            getBoatSection().widthInput.fill("1")
+            getBoatSection().lengthInput.fill("1")
+        }
+        paymentPage.payReservation()
+
+        // create a reservation for B 314
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        boatSpaceFormPage.fillFormAndSubmit {
+            getBoatSection().existingBoat("The Boat").click()
+        }
+        paymentPage.payReservation()
+
+        // modify boat to fit in B 314 but not in TRAILERI 012
+        val boatId = 8
+        val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
+        citizenCitizenDetails.navigateToPage()
+        val boat = citizenCitizenDetails.getBoatSection(boatId)
+        boat.editButton.click()
+        boat.lengthInput.fill("7.25")
+        boat.saveButton.click()
+
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace("Virtanen Mikko").click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).isVisible()
     }
 
     @Test
