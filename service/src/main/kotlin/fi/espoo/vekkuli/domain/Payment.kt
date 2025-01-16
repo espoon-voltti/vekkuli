@@ -8,11 +8,19 @@ enum class PaymentStatus {
     Created,
     Success,
     Failed,
+    Refunded
+}
+
+enum class PaymentType {
+    OnlinePayment,
+    Invoice,
+    Other
 }
 
 data class Payment(
     val id: UUID,
     val reserverId: UUID,
+    val paymentType: PaymentType,
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: PaymentStatus,
@@ -39,6 +47,7 @@ data class CreatePaymentParams(
     val totalCents: Int,
     val vatPercentage: Double,
     val productCode: String,
+    val paymentType: PaymentType,
     val status: PaymentStatus? = PaymentStatus.Created,
     val paid: LocalDateTime? = null
 )

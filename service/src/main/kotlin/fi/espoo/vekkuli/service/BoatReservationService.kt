@@ -530,6 +530,7 @@ class BoatReservationService(
                         productCode = "?",
                         status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
                         paid = paymentDate.atStartOfDay(),
+                        paymentType = PaymentType.Invoice
                     )
                 paymentService.insertPayment(paymentParams, reservationId)
             }

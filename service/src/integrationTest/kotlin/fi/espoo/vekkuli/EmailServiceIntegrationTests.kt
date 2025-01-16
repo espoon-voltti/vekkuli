@@ -46,6 +46,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
                     totalCents = 1,
                     vatPercentage = 24.0,
                     productCode = "1",
+                    PaymentType.OnlinePayment
                 )
             )
 
@@ -83,6 +84,7 @@ class EmailTemplateServiceIntegrationTests : IntegrationTestBase() {
                     totalCents = 1,
                     vatPercentage = 24.0,
                     productCode = "1",
+                    PaymentType.OnlinePayment
                 )
             )
 
@@ -178,6 +180,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
                     totalCents = 1,
                     vatPercentage = 24.0,
                     productCode = "1",
+                    PaymentType.OnlinePayment
                 )
             )
 
@@ -209,6 +212,7 @@ class EmailServiceIntegrationTests : IntegrationTestBase() {
                     totalCents = 1,
                     vatPercentage = 24.0,
                     productCode = "1",
+                    PaymentType.OnlinePayment
                 )
             )
 

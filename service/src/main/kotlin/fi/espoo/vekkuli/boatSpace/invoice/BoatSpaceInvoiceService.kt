@@ -71,7 +71,7 @@ class BoatSpaceInvoiceService(
     fun createInvoice(
         invoiceData: InvoiceData,
         reserverId: UUID,
-        reservationId: Int,
+        reservationId: Int
     ): Pair<Invoice, Payment> {
         val payment =
             paymentService.insertPayment(
@@ -80,7 +80,8 @@ class BoatSpaceInvoiceService(
                     invoiceData.invoiceNumber?.toString() ?: "",
                     invoiceData.priceCents,
                     BOAT_RESERVATION_ALV_PERCENTAGE,
-                    reservationId.toString()
+                    reservationId.toString(),
+                    PaymentType.Invoice
                 ),
                 reservationId
             )

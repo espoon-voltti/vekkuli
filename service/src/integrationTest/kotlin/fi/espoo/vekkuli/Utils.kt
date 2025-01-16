@@ -107,7 +107,7 @@ class TestUtils(
         val payment =
             reservationService.addPaymentToReservation(
                 madeReservation.id,
-                CreatePaymentParams(params.citizenId, "1", 1, 24.0, "1")
+                CreatePaymentParams(params.citizenId, "1", 1, 24.0, "1", PaymentType.OnlinePayment)
             )
         reservationService.handleReservationPaymentResult(payment.id, true)
         return reservationService.getBoatSpaceReservation(madeReservation.id) ?: throw IllegalStateException("Reservation not found")
