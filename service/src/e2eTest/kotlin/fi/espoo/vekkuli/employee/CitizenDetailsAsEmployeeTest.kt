@@ -218,6 +218,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     fun `editing a boat considers all reservations for warnings`() {
         val boatId =
             createReservationWarningsForMikkoVirtanen { boat ->
+                // modify boat to fit in B 314 but not in TRAILERI 012
                 boat.lengthInput.fill("7.25")
             }
 
@@ -236,6 +237,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     fun `warnings are acknowledged from each reservation`() {
         val boatId =
             createReservationWarningsForMikkoVirtanen { boat ->
+                // modify boat to add warnings to both reservations
                 boat.weightInput.fill("16000")
             }
 
@@ -391,7 +393,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         }
         paymentPage.payReservation()
 
-        // modify boat to fit in B 314 but not in TRAILERI 012
+        // modify boat
         val boatId = 8
         val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
         citizenCitizenDetails.navigateToPage()
