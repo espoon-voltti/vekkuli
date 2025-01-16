@@ -1,12 +1,17 @@
 package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
 
 class CitizenHomePage(
     page: Page
 ) : BasePage(page) {
+    fun navigateToPage() {
+        page.navigate(baseUrl)
+    }
+
     fun loginAsOliviaVirtanen() {
         loginAsCitizen("031298-988S")
     }
@@ -25,4 +30,9 @@ class CitizenHomePage(
         getByDataTestId(ssn).click()
         page.getByText("Kirjaudu").click()
     }
+
+    val languageSelector = page.locator("#language-selection")
+    val finnishTitle = page.getByRole(AriaRole.HEADING, Page.GetByRoleOptions().setName("venepaikkavaraus"))
+    val englishTitle = page.getByRole(AriaRole.HEADING, Page.GetByRoleOptions().setName("boat space reservation"))
+    val swedishTitle = page.getByRole(AriaRole.HEADING, Page.GetByRoleOptions().setName("Bokning av båtplats"))
 }

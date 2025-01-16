@@ -49,8 +49,8 @@ export default {
       },
       languagesShort: {
         fi: 'Suomi',
-        sv: 'Ruotsi',
-        en: 'Englanti'
+        sv: 'Svenska',
+        en: 'English'
       }
     },
     openExpandingInfo: 'Avaa lisätietokenttä',

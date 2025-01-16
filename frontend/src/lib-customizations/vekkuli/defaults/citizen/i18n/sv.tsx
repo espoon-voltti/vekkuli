@@ -51,7 +51,7 @@ const sv: Translations = {
       languagesShort: {
         fi: 'Suomi',
         sv: 'Svenska',
-        en: 'Engelska'
+        en: 'English'
       }
     },
     openExpandingInfo: 'Öppna detaljer',

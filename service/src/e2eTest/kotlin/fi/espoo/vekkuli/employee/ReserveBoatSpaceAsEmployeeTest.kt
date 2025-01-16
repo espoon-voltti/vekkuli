@@ -18,12 +18,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin("fi")
         assertThat(page.getByText("Varaukset").first()).isVisible()
-        val listingPage = ReservationListPage(page)
         page.getByTestId("language-selection").click()
-        page.getByText("Englanti").click()
+        page.getByText("English").click()
         assertThat(page.getByText("Reservations").first()).isVisible()
         page.getByTestId("language-selection").click()
-        page.getByText("Swedish").click()
+        page.getByText("Svenska").click()
         assertThat(page.getByText("Reservationer").first()).isVisible()
     }
 
