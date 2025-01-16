@@ -163,7 +163,8 @@ class JdbiPaymentRepository(
             handle
                 .createQuery(
                     """
-                    SELECT 
+                    SELECT
+                        p.id AS paymentId,
                         p.status AS paymentStatus,
                         p.paid AS paid_date, 
                         p.total_cents,

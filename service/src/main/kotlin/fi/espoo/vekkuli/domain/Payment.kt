@@ -61,6 +61,7 @@ data class CreateInvoiceParams(
 )
 
 data class PaymentHistory(
+    val paymentId: UUID,
     val paymentStatus: PaymentStatus,
     val paidDate: LocalDate?,
     val totalCents: Int,

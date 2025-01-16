@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedEmployee
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Routes.Companion.USERTYPE
+import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.JdbiReserverRepository
 import fi.espoo.vekkuli.repository.UpdateCitizenParams
@@ -927,6 +928,24 @@ class CitizenUserController(
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
+    }
+
+    @PostMapping("/virkailija/kayttaja/{citizenId}/maksut/{paymentId}/hyvita")
+    @ResponseBody
+    fun markPaymentAsRefunded(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable paymentId: UUID
+    ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PAYMENT_MARK_AS_REFUNDED", mapOf("targetId" to paymentId.toString()))
+        }
+
+        paymentService.getPayment(paymentId)?.let {
+            paymentService.updatePayment(it.copy(status = PaymentStatus.Refunded))
+        } ?: throw RuntimeException("Payment not found")
+
+        return redirectUrl("/virkailija/kayttaja/$citizenId")
     }
 
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-traileri-varoitus")
