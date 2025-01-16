@@ -212,7 +212,9 @@ export default {
     },
     cancelConfirmation:
       'Olet poistumassa varauslomakkeelta. Huomioi, että paikkavarausta tai syötettyjä tietoja ei tallenneta.',
-    cancelConfirmation2: 'Haluatko jatkaa?'
+    cancelConfirmation2: 'Haluatko jatkaa?',
+    cancelReservation: 'Peruuta varaus',
+    continueToPaymentButton: 'Jatka maksamaan'
   },
   boatSpace: {
     renterType: {

@@ -134,10 +134,10 @@ export default React.memo(function Form({
 
       <Buttons>
         <ReservationCancel reservationId={reservation.id} type="button">
-          Peruuta varaus
+          {i18n.reservation.cancelReservation}
         </ReservationCancel>
         <Button id="submit-button" type="primary" action={onSubmit}>
-          Jatka maksamaan
+          {i18n.reservation.continueToPaymentButton}
         </Button>
       </Buttons>
     </form>

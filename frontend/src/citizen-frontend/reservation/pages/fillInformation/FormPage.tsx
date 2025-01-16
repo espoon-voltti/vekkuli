@@ -2,6 +2,7 @@ import { Loader } from 'lib-components/Loader'
 import { Container, MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import {
   citizenBoatsQuery,
   citizenOrganizationsQuery
@@ -22,7 +23,7 @@ export default React.memo(function FormPage() {
   const citizenBoats = useQueryResult(citizenBoatsQuery())
   const municipalities = useQueryResult(getMunicipalitiesQuery())
   const organizations = useQueryResult(citizenOrganizationsQuery())
-
+  const i18n = useTranslation()
   return (
     <MainSection>
       <Container>
@@ -41,7 +42,7 @@ export default React.memo(function FormPage() {
                   reservationId={loadedReservation.id}
                   type="link"
                 >
-                  Takaisin
+                  {i18n.components.links.goBack}
                 </ReservationCancel>
               </Container>
               <StepIndicator step="fillInformation" />
