@@ -359,10 +359,20 @@ class BoatReservationService(
                 params.payment
                     .flatMap {
                         when (it) {
-                            PaymentFilter.PAID -> listOf(ReservationStatus.Confirmed, ReservationStatus.Cancelled)
-                            PaymentFilter.UNPAID -> listOf(ReservationStatus.Invoiced)
+                            PaymentFilter.CONFIRMED -> listOf(ReservationStatus.Confirmed)
+                            PaymentFilter.INVOICED -> listOf(ReservationStatus.Invoiced)
+                            PaymentFilter.PAYMENT -> listOf(ReservationStatus.Payment, ReservationStatus.Info)
+                            PaymentFilter.CANCELLED -> listOf(ReservationStatus.Cancelled)
                         }
-                    }.ifEmpty { listOf(ReservationStatus.Confirmed, ReservationStatus.Invoiced, ReservationStatus.Cancelled) }
+                    }.ifEmpty {
+                        listOf(
+                            ReservationStatus.Confirmed,
+                            ReservationStatus.Invoiced,
+                            ReservationStatus.Payment,
+                            ReservationStatus.Info,
+                            ReservationStatus.Cancelled
+                        )
+                    }
             )
         )
 

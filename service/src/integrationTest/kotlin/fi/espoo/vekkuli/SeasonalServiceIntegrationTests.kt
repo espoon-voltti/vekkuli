@@ -22,6 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
+import kotlin.collections.listOf
 import kotlin.test.assertContains
 
 @ExtendWith(SpringExtension::class)
@@ -548,7 +549,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             reservationService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     harbor = listOf(1, 2),
-                    amenity = listOf(BoatSpaceAmenity.Beam, BoatSpaceAmenity.WalkBeam)
+                    amenity = listOf(BoatSpaceAmenity.Beam, BoatSpaceAmenity.WalkBeam),
+                    payment = listOf(PaymentFilter.CONFIRMED)
                 )
             )
 
@@ -571,14 +573,14 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         val unpaidReservations =
             reservationService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
-                    payment = listOf(PaymentFilter.UNPAID)
+                    payment = listOf(PaymentFilter.PAYMENT, PaymentFilter.INVOICED)
                 )
             )
 
         val paidReservations =
             reservationService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
-                    payment = listOf(PaymentFilter.PAID)
+                    payment = listOf(PaymentFilter.CONFIRMED)
                 )
             )
         assertEquals(2, unfilteredReservations.size, "reservations are filtered correctly")
@@ -620,7 +622,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         val reservationsByLastName =
             reservationService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
-                    nameSearch = "VIRTA"
+                    nameSearch = "VIRTA",
+                    payment = listOf(PaymentFilter.CONFIRMED)
                 )
             )
 
