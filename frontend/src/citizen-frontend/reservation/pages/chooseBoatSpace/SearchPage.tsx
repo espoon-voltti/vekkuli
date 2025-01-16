@@ -1,11 +1,10 @@
 import { Loader } from 'lib-components/Loader'
 import { Column, Columns, Container, MainSection } from 'lib-components/dom'
 import React, { useContext, useState } from 'react'
-import { useNavigate } from 'react-router'
 
 import { AuthContext } from 'citizen-frontend/auth/state'
-import SwitchModal from 'citizen-frontend/citizen/sections/reservations/SwitchModal'
 import { useTranslation } from 'citizen-frontend/localization'
+import SwitchModal from 'citizen-frontend/reservation/pages/chooseBoatSpace/ReserveAction/ReserveModal'
 import { useForm } from 'lib-common/form/hooks'
 import { useMutation, useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
@@ -24,7 +23,6 @@ import {
   searchFreeSpacesForm
 } from './formDefinitions'
 import {
-  canReserveSpaceQuery,
   freeSpacesQuery,
   reserveSpaceMutation,
   starSwitchSpaceMutation
@@ -33,7 +31,7 @@ import useStoredSearchState from '../useStoredSearchState'
 
 export default React.memo(function SearchPage() {
   const i18n = useTranslation()
-  const navigate = useNavigate()
+
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
   const { reservation } = useContext(ReservationStateContext)
@@ -44,13 +42,6 @@ export default React.memo(function SearchPage() {
   const [selectedBoatSpace, setSelectedBoatSpace] = useState<
     number | undefined
   >(undefined)
-
-  const canReserveResult = useQueryResult(
-    canReserveSpaceQuery(selectedBoatSpace ?? 0),
-    {
-      enabled: selectedBoatSpace !== undefined
-    }
-  )
 
   const bind = useForm(
     searchFreeSpacesForm,
@@ -98,35 +89,6 @@ export default React.memo(function SearchPage() {
         places: [],
         count: 0
       }
-
-  const onReserveSpace = (spaceId: number) => {
-    //setSelectedBoatSpace(undefined)
-    reserveSpace(spaceId)
-      .then((response) => {
-        console.error('got response', response)
-        return navigate('/kuntalainen/venepaikka/varaa')
-      })
-      .catch((error) => {
-        const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
-        const errorType = mapErrorCode(errorCode)
-        setReserveError(errorType)
-      })
-  }
-  const { mutateAsync: switchPlace } = useMutation(starSwitchSpaceMutation)
-  const onSwitch = (spaceId: number, reservationId: number) => {
-    // eslint-disable-next-line no-console
-    console.log(`switching ${reservationId} to ${spaceId}`)
-    switchPlace({ reservationId, spaceId })
-      .then((response) => {
-        console.error('got response', response)
-        return navigate('/kuntalainen/venepaikka/vaihda')
-      })
-      .catch((error) => {
-        const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
-        const errorType = mapErrorCode(errorCode)
-        setReserveError(errorType)
-      })
-  }
 
   const onReserveButtonPress = (spaceId: number) => {
     setSearchState({
@@ -181,7 +143,7 @@ export default React.memo(function SearchPage() {
                 close={() => setReserveError(undefined)}
               />
             )}
-            {selectedBoatSpace !== undefined && canReserveResult.isSuccess && (
+            {selectedBoatSpace !== undefined && (
               <SwitchModal
                 close={() => setSelectedBoatSpace(undefined)}
                 currentSpace={selectedBoatSpace}

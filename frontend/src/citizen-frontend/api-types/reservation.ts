@@ -1,10 +1,10 @@
 import LocalDate from 'lib-common/date/local-date'
 
 import HelsinkiDateTime from '../../lib-common/date/helsinki-date-time'
-import { number } from '../../lib-common/form/fields'
 import {
   Boat,
   BoatSpace,
+  BoatSpaceAmenity,
   Citizen,
   CreationType,
   NewBoat,
@@ -49,9 +49,10 @@ export type SwitchableBoatSpace = {
   type: string
   section: string
   locationName: string | null
-  width: string
-  length: string
-  amenity: string
+  placeNumber: number
+  width: number
+  length: number
+  amenity: BoatSpaceAmenity
 }
 export type SwitchableReservation = {
   id: number
