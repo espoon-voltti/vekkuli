@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.boatSpaceTypeToText
 import fi.espoo.vekkuli.service.paymentStatusToText
+import fi.espoo.vekkuli.service.paymentTypeToText
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
@@ -402,7 +403,7 @@ class ReserverDetailsReservationsContainer(
                     <td>${p.harborName} ${p.place}</td>
                     <td>${boatSpaceTypeToText(p.boatSpaceType.toString())}</td>
                     <td>${p.paymentReference}</td>
-                    <td>${p.invoiceDueDate?.let { t("citizenDetails.payments.type.Invoice") } ?: t("citizenDetails.payments.type.Direct")}</td>
+                    <td>${paymentTypeToText(p.paymentType.toString())}</td>
                     <td>${p.invoiceReference ?: ""}</td>
                     <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
                     <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>

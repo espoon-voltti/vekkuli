@@ -158,7 +158,6 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    // TODO add payment type to payment -table and use it
     override fun getReserverPaymentHistory(reserverId: UUID): List<PaymentHistory> =
         jdbi.withHandleUnchecked { handle ->
             handle
@@ -174,7 +173,8 @@ class JdbiPaymentRepository(
                         p.reference AS paymentReference, 
                         i.reference AS invoiceReference,
                         i.due_date AS invoiceDueDate,
-                        p.created AS paymentCreated
+                        p.created AS paymentCreated,
+                        p.payment_type AS paymentType
                     FROM boat_space_reservation bsr
                         JOIN boat_space bs ON bsr.boat_space_id = bs.id
                         JOIN location ON bs.location_id = location.id

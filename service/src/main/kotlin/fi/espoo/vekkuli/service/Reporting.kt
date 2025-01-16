@@ -365,7 +365,17 @@ fun paymentStatusToText(paymentStatus: String?): String {
         "Created" -> "Luotu"
         "Success" -> "Maksettu"
         "Failed" -> "Keskeytynyt"
+        "Refunded" -> "Hyvitetty"
         else -> paymentStatus ?: ""
+    }
+}
+
+fun paymentTypeToText(paymentType: String?): String {
+    return when (paymentType) {
+        "OnlinePayment" -> "Kortti"
+        "Invoice" -> "Lasku"
+        "Other" -> "Muu"
+        else -> paymentType ?: ""
     }
 }
 
