@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm.components
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationForApplicationForm
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReserverPriceInfo
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.service.MarkDownService
@@ -39,6 +40,7 @@ class BoatSpaceForm(
         userType: UserType,
         titleText: String = "",
         formContent: String = "",
+        reserverPriceInfo: ReserverPriceInfo? = null,
         urls: ReservationUrls =
             ReservationUrls(
                 submitUrl = "/${userType.path}/venepaikka/varaus/${reservation.id}",
@@ -55,6 +57,28 @@ class BoatSpaceForm(
                             <span >${t("boatSpaces.goBack")}</span>
                         </button>
                     </div> """
+
+        // language=HTML
+        val reserverPriceInfoContent =
+            if (reserverPriceInfo != null) {
+                """
+                <div class="reservation-price-info">
+                        <span class="icon">${icons.info}</span>
+                        <span class="info-content">${
+                    t(
+                        "boatSpaceReservation.reserverPriceInfo",
+                        listOf(
+                            reserverPriceInfo.reserverName ?: "",
+                            reserverPriceInfo.discountPercentage?.toString() ?: "",
+                            reserverPriceInfo.discountedPriceInEuro,
+                        )
+                    )
+                }</span>
+                </div>    
+                """.trimIndent()
+            } else {
+                ""
+            }
 
         // language=HTML
         return (
@@ -86,7 +110,7 @@ class BoatSpaceForm(
                         </h1>
                         <div id="form-inputs" class="block">
                            $formContent
-                               
+                           $reserverPriceInfoContent
                             <div class="block">
                                 <div id="certify-control" class="field">
                                     <label class="checkbox">
