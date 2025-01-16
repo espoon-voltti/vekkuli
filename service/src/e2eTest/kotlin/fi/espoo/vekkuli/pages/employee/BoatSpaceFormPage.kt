@@ -63,6 +63,7 @@ class BoatSpaceFormPage(
     val citizenSearchOption2 = page.locator("#option-1")
     val citizenEmptyInput = page.locator("#citizen-empty-input")
     val existingCitizenSelector = page.locator("#existing-citizen-selector")
+    val newCitizenSelector = page.locator("#new-citizen-selector")
     val citizenIdError = page.getByTestId("citizenId-error")
 
     val organizationRadioButton = page.getByTestId("reseverTypeOrg")

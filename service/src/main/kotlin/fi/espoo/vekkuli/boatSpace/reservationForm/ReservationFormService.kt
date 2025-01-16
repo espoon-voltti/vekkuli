@@ -272,7 +272,14 @@ class ReservationFormService(
         formInput: ReservationInput,
         requestURI: String,
     ): String {
-        val citizen = formInput.citizenId?.let { reserverService.getCitizen(formInput.citizenId) }
+        val input =
+            if (formInput.citizenSelection == "newCitizen") {
+                formInput.copy(citizenId = null, organizationId = null)
+            } else {
+                formInput
+            }
+
+        val citizen = input.citizenId?.let { reserverService.getCitizen(input.citizenId) }
 
         val reservation =
             reservationRepository.getReservationForApplicationForm(reservationId)
@@ -282,7 +289,7 @@ class ReservationFormService(
             employeeLayout.render(
                 true,
                 requestURI,
-                createBodyContent(formInput, citizen, reservation, UserType.EMPLOYEE)
+                createBodyContent(input, citizen, reservation, UserType.EMPLOYEE)
             )
         )
     }
