@@ -156,7 +156,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.showAllBoatsButton.click()
-            page.getByTestId("edit-boat-3").click()
+            citizenDetails.editBoatButton(3).click()
             assertThat(page.getByTestId("form")).isVisible()
 
             citizenDetails.nameInput.fill("New Boat Name")
@@ -185,6 +185,27 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `Employee editing a boat do not trigger weight warning`() {
+        EmployeeHomePage(page).employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace1.click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        val boatId = 1
+        citizenDetails.editBoatButton(boatId).click()
+        assertThat(page.getByTestId("form")).isVisible()
+
+        citizenDetails.weightInput.fill("16000")
+        citizenDetails.submitButton.click()
+        assertThat(citizenDetails.weightText(boatId)).hasText("16000")
+
+        page.reload() // warnings show only after full reload
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
     }
 
     @Test
