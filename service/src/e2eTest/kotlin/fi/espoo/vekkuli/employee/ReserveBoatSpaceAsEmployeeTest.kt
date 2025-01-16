@@ -154,6 +154,16 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
+
+            citizenDetailsPage.paymentsNavi.click()
+
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Maksettu") }
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Haukilahti D013") }
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Laituri") }
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("100000") }
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Lasku") }
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("22.04.2024") }
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("418,00") }
         } catch (e: AssertionError) {
             handleError(e)
         }

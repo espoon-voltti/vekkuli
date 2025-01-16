@@ -350,6 +350,25 @@ fun terminationReasonToText(terminationReason: String?): String {
     }
 }
 
+fun boatSpaceTypeToText(boatSpaceType: String?): String {
+    return when (boatSpaceType) {
+        "Slip" -> "Laituri"
+        "Storage" -> "Säilytys"
+        "Trailer" -> "Traileri"
+        "Winter" -> "Talvi"
+        else -> boatSpaceType ?: ""
+    }
+}
+
+fun paymentStatusToText(paymentStatus: String?): String {
+    return when (paymentStatus) {
+        "Created" -> "Luotu"
+        "Success" -> "Maksettu"
+        "Failed" -> "Keskeytynyt"
+        else -> paymentStatus ?: ""
+    }
+}
+
 val localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
 fun localDateTimeToText(theDate: LocalDateTime?): String {
