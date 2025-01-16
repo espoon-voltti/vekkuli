@@ -372,7 +372,7 @@ fun paymentStatusToText(paymentStatus: String?): String {
 
 fun paymentTypeToText(paymentType: String?): String {
     return when (paymentType) {
-        "OnlinePayment" -> "Kortti"
+        "OnlinePayment" -> "Verkkomaksu"
         "Invoice" -> "Lasku"
         "Other" -> "Muu"
         else -> paymentType ?: ""

@@ -404,7 +404,8 @@ class ReserverDetailsReservationsContainer(
             """
             <div class="column" x-data="{refundModal: false}">
                 <a class="is-link has-text-danger"
-                    id='refund-payment-$paymentId'
+                    id="refund-payment-button-$paymentId"
+                    data-testid="refund-payment-button"
                    x-on:click="refundModal = true">
                     <span class="icon ml-s">
                         ${icons.edit}
@@ -418,11 +419,12 @@ class ReserverDetailsReservationsContainer(
                             <div class="has-text-centered is-1">
                                 <p class='mb-m'>${t("citizenDetails.payments.refund.long")}</p>
                                 <div class="buttons is-centered">
-                                    <a class="button is-secondary" id="refund-modal-cancel-$paymentId" x-on:click="refundModal = false">
+                                    <a class="button is-secondary" id="refund-payment-modal-cancel" x-on:click="refundModal = false">
                                         ${t("cancel")}
                                     </a>
                                     <a class="button is-danger" 
-                                        id="refund-modal-confirm-$paymentId" 
+                                        id="refund-modal-confirm"
+                                        data-testid="refund-payment-modal-confirm" 
                                         hx-post="${"/virkailija/kayttaja/${reserver.id}/maksut/$paymentId/hyvita"}"
                                         hx-select="#reserver-details"
                                         hx-target="#reserver-details">

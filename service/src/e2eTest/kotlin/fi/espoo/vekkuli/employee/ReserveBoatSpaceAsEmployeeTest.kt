@@ -164,6 +164,12 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Lasku") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("22.04.2024") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("418,00") }
+
+            citizenDetailsPage.refundPaymentButton.click()
+            citizenDetailsPage.refundPaymentModalConfirm.click()
+
+            citizenDetailsPage.paymentsNavi.click()
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Hyvitetty") }
         } catch (e: AssertionError) {
             handleError(e)
         }
