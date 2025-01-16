@@ -216,40 +216,10 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `editing a boat considers all reservations for warnings`() {
-        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-
-        CitizenHomePage(page).loginAsMikkoVirtanen()
-
-        val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
-        val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
-        val paymentPage = CitizenPaymentPage(page)
-
-        // create a reservation for TRAILERI 012
-        reserveBoatSpacePage.navigateToPage()
-        reserveBoatSpacePage.startReservingBoatSpace012()
-        boatSpaceFormPage.fillFormAndSubmit {
-            getBoatSection().nameInput.fill("The Boat")
-            getBoatSection().widthInput.fill("1")
-            getBoatSection().lengthInput.fill("1")
-        }
-        paymentPage.payReservation()
-
-        // create a reservation for B 314
-        reserveBoatSpacePage.navigateToPage()
-        reserveBoatSpacePage.startReservingBoatSpaceB314()
-        boatSpaceFormPage.fillFormAndSubmit {
-            getBoatSection().existingBoat("The Boat").click()
-        }
-        paymentPage.payReservation()
-
-        // modify boat to fit in B 314 but not in TRAILERI 012
-        val boatId = 8
-        val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
-        citizenCitizenDetails.navigateToPage()
-        val boat = citizenCitizenDetails.getBoatSection(boatId)
-        boat.editButton.click()
-        boat.lengthInput.fill("7.25")
-        boat.saveButton.click()
+        val boatId =
+            createReservationWarningsForMikkoVirtanen { boat ->
+                boat.lengthInput.fill("7.25")
+            }
 
         val employeeHomePage = EmployeeHomePage(page)
         employeeHomePage.employeeLogin()
@@ -260,6 +230,30 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
 
         val citizenDetails = CitizenDetailsPage(page)
         assertThat(citizenDetails.acknowledgeWarningButton(boatId)).isVisible()
+    }
+
+    @Test
+    fun `warnings are acknowledged from each reservation`() {
+        val boatId =
+            createReservationWarningsForMikkoVirtanen { boat ->
+                boat.weightInput.fill("16000")
+            }
+
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace("Virtanen Mikko").click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.acknowledgeWarningButton(boatId).click()
+        assertThat(citizenDetails.boatWarningModalWeightInput).isVisible()
+        citizenDetails.boatWarningModalWeightInput.click()
+        citizenDetails.boatWarningModalInfoInput.fill("some text")
+        citizenDetails.boatWarningModalConfirmButton.click()
+
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
     }
 
     @Test
@@ -368,5 +362,44 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
         return listingPage
+    }
+
+    private fun createReservationWarningsForMikkoVirtanen(callback: (boatSection: CitizenCitizenDetailsPage.BoatSection) -> Unit): Int {
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
+        val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
+        val paymentPage = CitizenPaymentPage(page)
+
+        // create a reservation for TRAILERI 012
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpace012()
+        boatSpaceFormPage.fillFormAndSubmit {
+            getBoatSection().nameInput.fill("The Boat")
+            getBoatSection().widthInput.fill("1")
+            getBoatSection().lengthInput.fill("1")
+        }
+        paymentPage.payReservation()
+
+        // create a reservation for B 314
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        boatSpaceFormPage.fillFormAndSubmit {
+            getBoatSection().existingBoat("The Boat").click()
+        }
+        paymentPage.payReservation()
+
+        // modify boat to fit in B 314 but not in TRAILERI 012
+        val boatId = 8
+        val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
+        citizenCitizenDetails.navigateToPage()
+        val boat = citizenCitizenDetails.getBoatSection(boatId)
+        boat.editButton.click()
+        callback(boat)
+        boat.saveButton.click()
+
+        return boatId
     }
 }

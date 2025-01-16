@@ -890,7 +890,6 @@ class CitizenUserController(
 
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
     fun ackWarning(
-        @RequestParam("reservationId") reservationId: Int,
         @RequestParam("boatId") boatId: Int,
         @RequestParam("key") key: List<String>,
         @RequestParam("infoText") infoText: String,
@@ -901,7 +900,7 @@ class CitizenUserController(
             logger.audit(it, "CITIZEN_PROFILE_ACK_WARNING")
         }
         val userId = request.ensureEmployeeId()
-        reservationService.acknowledgeWarnings(reservationId, userId, boatId, key, infoText)
+        reservationService.acknowledgeWarningForBoat(boatId, userId, key, infoText)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
