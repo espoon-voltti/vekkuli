@@ -4,7 +4,6 @@ import HelsinkiDateTime from '../../lib-common/date/helsinki-date-time'
 import {
   Boat,
   BoatSpace,
-  BoatSpaceAmenity,
   Citizen,
   CreationType,
   NewBoat,
@@ -44,19 +43,9 @@ export type CanReserveResultStatus =
   | 'CanNotReserve'
   | 'CanReserveOnlyForOrganization'
 
-export type SwitchableBoatSpace = {
-  id: number
-  type: string
-  section: string
-  locationName: string | null
-  placeNumber: number
-  width: number
-  length: number
-  amenity: BoatSpaceAmenity
-}
 export type SwitchableReservation = {
   id: number
-  boatSpace: SwitchableBoatSpace
+  boatSpace: BoatSpace
   totalPrice: string
   vatValue: string
 }

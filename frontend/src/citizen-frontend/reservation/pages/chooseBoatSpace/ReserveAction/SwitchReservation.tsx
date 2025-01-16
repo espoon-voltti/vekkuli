@@ -1,29 +1,28 @@
 import { Button, Column, Columns } from 'lib-components/dom'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 
 import { SwitchableReservation } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
-import {
-  formatDimensions,
-  formatPlaceIdentifier
-} from 'citizen-frontend/shared/formatters'
 import { useMutation } from 'lib-common/query'
 
-import { starSwitchSpaceMutation } from '../queries'
+import BoatSpaceInformation from '../../../components/BoatSpaceInformation'
+import { startSwitchSpaceMutation } from '../queries'
 
 export type SwitchReservationProps = {
   reservation: SwitchableReservation
   reserveSpaceId: number
+  setLoading: (loading: boolean) => void
 }
 
 export default React.memo(function SwitchReservation({
   reservation,
-  reserveSpaceId
+  reserveSpaceId,
+  setLoading
 }: SwitchReservationProps) {
   const i18n = useTranslation()
   const { mutateAsync: switchPlace, isPending } = useMutation(
-    starSwitchSpaceMutation
+    startSwitchSpaceMutation
   )
   const navigate = useNavigate()
   const onSwitch = () => {
@@ -45,28 +44,15 @@ export default React.memo(function SwitchReservation({
       })
   }
 
+  useEffect(() => {
+    setLoading(isPending)
+  }, [setLoading, isPending])
+
   return (
-    <Column isFull key={reservation.id}>
+    <Column isFull>
       <Columns>
         <Column isHalf>
-          <ul className="no-bullets">
-            <li>
-              {formatPlaceIdentifier(
-                reservation.boatSpace.section,
-                reservation.boatSpace.placeNumber,
-                reservation.boatSpace.locationName
-              )}
-            </li>
-            <li>
-              {formatDimensions({
-                width: reservation.boatSpace.width,
-                length: reservation.boatSpace.length
-              })}
-            </li>
-            {reservation.boatSpace.amenity && (
-              <li>{i18n.boatSpace.amenities[reservation.boatSpace.amenity]}</li>
-            )}
-          </ul>
+          <BoatSpaceInformation boatSpace={reservation.boatSpace} />
         </Column>
         <Column isNarrow>
           <Button type="primary" action={onSwitch} loading={isPending}>

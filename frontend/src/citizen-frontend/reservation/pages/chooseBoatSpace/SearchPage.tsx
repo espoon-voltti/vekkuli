@@ -4,7 +4,6 @@ import React, { useContext, useState } from 'react'
 
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
-import SwitchModal from 'citizen-frontend/reservation/pages/chooseBoatSpace/ReserveAction/ReserveModal'
 import { useForm } from 'lib-common/form/hooks'
 import { useMutation, useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
@@ -15,6 +14,7 @@ import { ReservationStateContext } from '../../state'
 import ErrorModal, { ErrorCode } from './ErrorModal'
 import LoginBeforeReservingModal from './LoginBeforeReservingModal'
 import ReservationSeasons from './ReservationSeasons'
+import ReserveAction from './ReserveAction/ReserveAction'
 import SearchFilters from './SearchFilters'
 import SearchResult from './SearchResults'
 import {
@@ -34,7 +34,9 @@ export default React.memo(function SearchPage() {
 
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
-  const { reservation } = useContext(ReservationStateContext)
+  const { reservation: unfinishedReservation } = useContext(
+    ReservationStateContext
+  )
 
   const [searchState, setSearchState] = useStoredSearchState()
 
@@ -105,7 +107,7 @@ export default React.memo(function SearchPage() {
   }
 
   return (
-    <Loader results={[reservation]} allowFailure>
+    <Loader results={[unfinishedReservation]} allowFailure>
       {(reservation) =>
         !reservation && (
           <>
@@ -144,13 +146,7 @@ export default React.memo(function SearchPage() {
               />
             )}
             {selectedBoatSpace !== undefined && (
-              <SwitchModal
-                close={() => setSelectedBoatSpace(undefined)}
-                currentSpace={selectedBoatSpace}
-                onSwitch={onSwitch}
-                onReserveSpace={onReserveSpace}
-                reservations={canReserveResult.value.switchableReservations}
-              />
+              <ReserveAction reserveSpaceId={selectedBoatSpace} />
             )}
           </>
         )
@@ -159,6 +155,7 @@ export default React.memo(function SearchPage() {
   )
 })
 
+/*
 const mapErrorCode = (errorCode: string): ErrorCode => {
   switch (errorCode) {
     case 'MaxReservations':
@@ -169,3 +166,4 @@ const mapErrorCode = (errorCode: string): ErrorCode => {
       return 'SERVER_ERROR'
   }
 }
+*/

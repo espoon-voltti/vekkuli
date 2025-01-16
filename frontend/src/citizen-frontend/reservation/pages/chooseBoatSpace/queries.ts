@@ -31,7 +31,7 @@ export const reserveSpaceMutation = mutation({
   invalidateQueryKeys: () => [reservationQueryKeys.allSearchesToFreeSpaces()]
 })
 
-export const starSwitchSpaceMutation = mutation({
+export const startSwitchSpaceMutation = mutation({
   api: startToSwitchBoatSpace,
   invalidateQueryKeys: () => [reservationQueryKeys.allSearchesToFreeSpaces()]
 })

@@ -35,6 +35,7 @@ data class CanReserveResponse(
     data class BoatSpace(
         val id: Int,
         val type: BoatSpaceType,
+        val placeNumber: Int,
         val section: String,
         val locationName: String?,
         val width: BigDecimal,
@@ -71,6 +72,7 @@ class CanReserveResponseMapper(
             id = boatSpace.id,
             type = boatSpace.type,
             section = boatSpace.section,
+            placeNumber = boatSpace.placeNumber,
             locationName = boatSpace.locationName,
             width = intToDecimal(boatSpace.widthCm),
             length = intToDecimal(boatSpace.lengthCm),

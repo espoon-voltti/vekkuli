@@ -1,11 +1,12 @@
 import { Loader } from 'lib-components/Loader'
 import React from 'react'
+import { useNavigate } from 'react-router'
 
 import { useMutation, useQueryResult } from 'lib-common/query'
 
 import { canReserveSpaceQuery, reserveSpaceMutation } from '../queries'
 
-import ReserveModal from './ReserveModal'
+import CanReserveResult from './CanReserveResult'
 
 export type SwitchModalProps = {
   reserveSpaceId: number
@@ -14,28 +15,29 @@ export type SwitchModalProps = {
 export default React.memo(function ReserveAction({
   reserveSpaceId
 }: SwitchModalProps) {
+  const navigate = useNavigate()
   const canReserveResult = useQueryResult(canReserveSpaceQuery(reserveSpaceId))
   const { mutateAsync: reserveSpace } = useMutation(reserveSpaceMutation)
 
-  const onReserveSpace = (spaceId: number) => {
-    //setSelectedBoatSpace(undefined)
-    reserveSpace(spaceId)
+  const onReserveSpace = () => {
+    reserveSpace(reserveSpaceId)
       .then((response) => {
-        console.error('got response', response)
         return navigate('/kuntalainen/venepaikka/varaa')
       })
       .catch((error) => {
         const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
-        const errorType = mapErrorCode(errorCode)
-        setReserveError(errorType)
+        console.error(errorCode)
+        //const errorType = mapErrorCode(errorCode)
+        //setReserveError(errorType)
       })
   }
 
   return (
     <Loader results={[canReserveResult]}>
       {(loadedCanReserveResult) => (
-        <ReserveModal
+        <CanReserveResult
           canReserveResult={loadedCanReserveResult}
+          reserveSpaceId={reserveSpaceId}
           reserveSpace={onReserveSpace}
         />
       )}

@@ -156,7 +156,7 @@ export default {
         reservingBoatSpace: 'Olet varaamassa venepaikkaa:',
         cannotReserveNewPlace:
           'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
-        currentPlace: 'Nykyinen paikkasi',
+        currentPlaces: 'Paikkasi:',
         switchCurrentPlace: 'Vaihdan nykyisen paikan'
       }
     },

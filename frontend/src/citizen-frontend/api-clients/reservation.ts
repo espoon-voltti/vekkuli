@@ -9,8 +9,7 @@ import {
   CanReserveReservation,
   FillBoatSpaceReservationInput,
   Municipality,
-  PaymentInformationResponse,
-  SwitchInformation
+  PaymentInformationResponse
 } from '../api-types/reservation'
 
 export async function reserveSpace(
@@ -36,34 +35,22 @@ export async function canReserveSpace(
 export async function startToSwitchBoatSpace(input: {
   reservationId: number
   spaceId: number
-}): Promise<SwitchInformation> {
-  const { data: json } = await client.request<SwitchInformation>({
+}): Promise<void> {
+  await client.request<void>({
     url: uri`/reservation/${input.reservationId}/switch/${input.spaceId}`.toString(),
     method: 'POST'
   })
-  return json
 }
 
 export async function switchBoatSpace(
   reservationId: number,
   input: FillBoatSpaceReservationInput
-): Promise<SwitchInformation> {
-  const { data: json } = await client.request<SwitchInformation>({
+): Promise<void> {
+  await client.request<void>({
     url: uri`/reservation/${reservationId}/switch`.toString(),
     method: 'POST',
     data: input
   })
-  return json
-}
-
-export async function getSwitchReservation(
-  reservationId: number
-): Promise<SwitchInformation> {
-  const { data: json } = await client.request<SwitchInformation>({
-    url: uri`/current/switch/reservation/${reservationId}`.toString(),
-    method: 'GET'
-  })
-  return json
 }
 
 export async function unfinishedReservation(): Promise<BoatSpaceReservation> {
