@@ -54,5 +54,13 @@ class BoatService(
             ownership
         )
 
-    fun deleteBoat(boatId: Int): Boolean = boatRepository.deleteBoat(boatId)
+    fun deleteBoat(boatId: Int): Boolean {
+        val reservations = boatReservationService.getActiveReservationsForBoat(boatId)
+
+        if (reservations.isNotEmpty()) {
+            throw IllegalStateException("Cannot delete boat with active reservations")
+        }
+
+        return boatRepository.deleteBoat(boatId)
+    }
 }

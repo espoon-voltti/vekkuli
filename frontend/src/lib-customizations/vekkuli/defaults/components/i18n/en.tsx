@@ -110,6 +110,7 @@ const components: Translations = {
   },
   links: {
     goBack: 'Back',
+    delete: 'Delete',
     edit: 'Edit'
   }
 }

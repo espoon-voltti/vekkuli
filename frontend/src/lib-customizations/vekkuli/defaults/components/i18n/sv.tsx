@@ -110,6 +110,7 @@ const components: Translations = {
   },
   links: {
     goBack: 'Tillbaka',
+    delete: 'Ta bort',
     edit: 'Redigera'
   }
 }
