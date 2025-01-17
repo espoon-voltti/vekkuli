@@ -25,8 +25,8 @@ class JdbiPaymentRepository(
                 handle
                     .createQuery(
                         """
-                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status)
-                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, :status)
+                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status, payment_type)
+                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, :status, :paymentType)
                         RETURNING *
                         """
                     ).bindKotlin(params)
@@ -45,7 +45,7 @@ class JdbiPaymentRepository(
                     .createQuery(
                         """
                         UPDATE payment
-                            SET status = :status, updated = :updated, paid = :paid, reference = :reference, total_cents = :totalCents, vat_percentage = :vatPercentage, product_code = :productCode
+                            SET status = :status, updated = :updated, paid = :paid, reference = :reference, total_cents = :totalCents, vat_percentage = :vatPercentage, product_code = :productCode, payment_type = :paymentType
                         WHERE id = :id 
                         RETURNING *
                         """
@@ -158,13 +158,13 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    // TODO add payment type to payment -table and use it
     override fun getReserverPaymentHistory(reserverId: UUID): List<PaymentHistory> =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
                     """
-                    SELECT 
+                    SELECT
+                        p.id AS paymentId,
                         p.status AS paymentStatus,
                         p.paid AS paid_date, 
                         p.total_cents,
@@ -174,7 +174,8 @@ class JdbiPaymentRepository(
                         p.reference AS paymentReference, 
                         i.reference AS invoiceReference,
                         i.due_date AS invoiceDueDate,
-                        p.created AS paymentCreated
+                        p.created AS paymentCreated,
+                        p.payment_type AS paymentType
                     FROM boat_space_reservation bsr
                         JOIN boat_space bs ON bsr.boat_space_id = bs.id
                         JOIN location ON bs.location_id = location.id

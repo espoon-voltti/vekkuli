@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.boatSpaceTypeToText
 import fi.espoo.vekkuli.service.paymentStatusToText
+import fi.espoo.vekkuli.service.paymentTypeToText
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
@@ -246,7 +247,12 @@ class ReserverDetailsReservationsContainer(
                             "boatSpaceReservation.title.boatType"
                         )
 
-                    val depth = boatInfo("boat-depth-text-${boat.id}", formatDecimal(boat.depth), "boatSpaceReservation.title.draft",)
+                    val depth =
+                        boatInfo(
+                            "boat-depth-text-${boat.id}",
+                            formatDecimal(boat.depth),
+                            "boatSpaceReservation.title.draft",
+                        )
                     val width =
                         boatInfo(
                             "boat-width-text-${boat.id}",
@@ -334,7 +340,8 @@ class ReserverDetailsReservationsContainer(
                     """.trimIndent()
                 }.joinToString("\n")
 
-        val boatsWithNoReservation = getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)
+        val boatsWithNoReservation =
+            getBoatsList(boats.filter { it.reservationId == null }, userType == UserType.EMPLOYEE)
 
         // language=HTML
         val showAllBoatsCheckbox =
@@ -392,6 +399,41 @@ class ReserverDetailsReservationsContainer(
         reserver: ReserverWithDetails,
         paymentHistory: List<PaymentHistory>
     ): String {
+        fun createRefundButton(paymentId: UUID): String =
+            """
+            <div class="column" x-data="{refundModal: false}">
+                <a class="is-link has-text-danger"
+                    id="refund-payment-button-$paymentId"
+                    data-testid="refund-payment-button"
+                   x-on:click="refundModal = true">
+                    <span>${t("citizenDetails.payments.refund")}</span>
+                </a>
+                <div class="modal" x-show="refundModal" style="display:none;">
+                    <div class="modal-underlay" @click="refundModal = false"></div>
+                    <div class="modal-content">
+                        <div class="container">
+                            <div class="has-text-centered is-1">
+                                <p class='mb-m'>${t("citizenDetails.payments.refund.long")}</p>
+                                <div class="buttons is-centered">
+                                    <a class="button is-secondary" id="refund-payment-modal-cancel" x-on:click="refundModal = false">
+                                        ${t("cancel")}
+                                    </a>
+                                    <a class="button is-danger" 
+                                        id="refund-modal-confirm"
+                                        data-testid="refund-payment-modal-confirm" 
+                                        hx-post="${"/virkailija/kayttaja/${reserver.id}/maksut/$paymentId/hyvita"}"
+                                        hx-select="#reserver-details"
+                                        hx-target="#reserver-details">
+                                        ${t("confirm")}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """.trimIndent()
+
         val paymentHistoryRowsHtml =
             paymentHistory.joinToString("\n") { p ->
                 // language=HTML
@@ -401,12 +443,13 @@ class ReserverDetailsReservationsContainer(
                     <td>${p.harborName} ${p.place}</td>
                     <td>${boatSpaceTypeToText(p.boatSpaceType.toString())}</td>
                     <td>${p.paymentReference}</td>
-                    <td>${p.invoiceDueDate?.let { t("citizenDetails.payments.type.Invoice") } ?: t("citizenDetails.payments.type.Direct")}</td>
+                    <td>${paymentTypeToText(p.paymentType.toString())}</td>
                     <td>${p.invoiceReference ?: ""}</td>
                     <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
                     <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
                     <td>${formatInt(p.totalCents)}</td>
                     <td>${p.paymentCreated.format(fullDateTimeFormat)}</td>
+                    <td>${if (p.paymentStatus != PaymentStatus.Refunded) createRefundButton(p.paymentId) else ""}</td>
                 </tr>
                 """.trimIndent()
             }
@@ -429,6 +472,7 @@ class ReserverDetailsReservationsContainer(
                           <th>${t("citizenDetails.payments.paidDate")}</th>
                           <th>${t("citizenDetails.payments.totalCents")}</th>
                           <th>${t("citizenDetails.payments.paymentCreated")}</th>
+                          <th>${t("citizenDetails.payments.actions")}</th>
                         </tr>
                       </thead>
                       <tbody>

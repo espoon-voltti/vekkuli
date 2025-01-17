@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.CreatePaymentParams
+import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.formatAsShortDate
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,8 @@ class ReservationPaymentService(
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        productCode = productCode
+                        productCode = productCode,
+                        paymentType = PaymentType.OnlinePayment
                     )
                 )
             }

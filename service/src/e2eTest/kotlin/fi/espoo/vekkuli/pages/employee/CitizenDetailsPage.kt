@@ -121,6 +121,8 @@ class CitizenDetailsPage(
     val paymentsNavi: Locator = page.getByTestId("payments-tab-navi")
     val noPaymentsIndicator: Locator = getByDataTestId("no-payments-indicator")
     val paymentsTable: Locator = page.getByTestId("payments-table")
+    val refundPaymentButton: Locator = getByDataTestId("refund-payment-button")
+    val refundPaymentModalConfirm: Locator = getByDataTestId("refund-payment-modal-confirm")
 
     val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
 

@@ -63,20 +63,40 @@ class ReservationStatusUpdateModal : BaseView() {
                         >
                         <div class="form-section" x-data="{ reservationStatus: '${reservation.status}' }">
                             $reservationStatusInput
-                            <div x-show="reservationStatus === 'Invoiced' || reservationStatus === 'Confirmed'" >
-                                ${formComponents.textInput(
+                            <template x-if="reservationStatus === 'Invoiced'">
+
+                                <div>
+                                    ${formComponents.textInput(
                     "citizenDetails.reservationStatus.infoText",
                     "paymentStatusText",
                     reservation.paymentReference ?: ""
                 )}
-                                ${formComponents.dateInput(
+                                    ${formComponents.dateInput(
                     DateInputOptions(
-                        labelKey = if (reservation.status == ReservationStatus.Invoiced) "citizenDetails.dueDate" else "citizenDetails.paymentDate",
+                        labelKey = "citizenDetails.dueDate",
                         id = "paymentDate",
                         value = defaultDate
                     )
                 )}
-                            </div>
+                                </div>
+                            </template>
+                            <template x-if="reservationStatus === 'Confirmed'">
+
+                                <div>
+                                    ${formComponents.textInput(
+                    "citizenDetails.reservationStatus.infoText",
+                    "paymentStatusText",
+                    reservation.paymentReference ?: ""
+                )}
+                                    ${formComponents.dateInput(
+                    DateInputOptions(
+                        labelKey = "citizenDetails.paymentDate",
+                        id = "paymentDate",
+                        value = defaultDate
+                    )
+                )}
+                                </div>
+                            </template>
                             <input hidden name="reservationId" value="${reservation.id}" />
                             <input hidden name="reserverId" value="$reserverId" />
                         </div>
