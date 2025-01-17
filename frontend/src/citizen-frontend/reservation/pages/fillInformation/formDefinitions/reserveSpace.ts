@@ -102,18 +102,16 @@ export const onReserveSpaceUpdate = (
   i18n: Translations,
   boats: Boat[],
   organizationBoats: Record<string, Boat[]>,
-
   municipalities: Municipality[],
   organizations: Organization[]
 ): StateOf<ReserveSpaceForm> => {
   return {
     ...next,
     boat: onBoatFormUpdate({
-      prev: prev.boat,
-      next: next.boat,
+      prev: prev,
+      next: next,
       i18n,
-      citizenBoats: boats,
-      organizationBoats
+      boats: getBoatsSelection(next, organizationBoats, boats)
     }),
     spaceTypeInfo: onSpaceTypeInfoUpdate({
       prev: prev.spaceTypeInfo,
@@ -126,6 +124,15 @@ export const onReserveSpaceUpdate = (
       municipalities
     )
   }
+}
+const getBoatsSelection = (
+  next: StateOf<ReserveSpaceForm>,
+  organizationBoats: Record<string, Boat[]>,
+  citizenBoats: Boat[]
+) => {
+  return next.organization.renterType.type.domValue === 'Organization'
+    ? organizationBoats[next.organization.organizationSelection.domValue]
+    : citizenBoats
 }
 
 /*

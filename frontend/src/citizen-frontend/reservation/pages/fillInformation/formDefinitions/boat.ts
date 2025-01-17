@@ -20,6 +20,8 @@ import {
 } from '../../../../shared/types'
 import { StoredSearchState } from '../../useStoredSearchState'
 
+import { ReserveSpaceForm } from './reserveSpace'
+
 export const boatInfoForm = object({
   id: string(),
   name: required(string()),
@@ -137,10 +139,11 @@ const initialOwnershipState = (
 })
 
 const initialBoatSelectionState = (
-  boats: Boat[]
+  boats: Boat[],
+  selectedBoat?: Boat
 ): StateOf<BoatSelectionForm> => {
   const initialBoatSelection: StateOf<BoatSelectionForm> = {
-    domValue: '',
+    domValue: selectedBoat?.id ?? '',
     options: boats.map((boat) => ({
       domValue: boat.id,
       label: boat.name,
@@ -193,45 +196,44 @@ const transformBoatToFormBoat = (
 })
 
 type BoatFormUpdateProps = {
-  prev: StateOf<BoatForm>
-  next: StateOf<BoatForm>
-  citizenBoats: Boat[]
-  organizationBoats: Record<string, Boat[]>
+  prev: StateOf<ReserveSpaceForm>
+  next: StateOf<ReserveSpaceForm>
+  boats: Boat[]
   i18n: Translations
 }
 
 export function onBoatFormUpdate({
   prev,
   next,
-  citizenBoats,
-  i18n,
-  organizationBoats
+  boats,
+  i18n
 }: BoatFormUpdateProps): StateOf<BoatForm> {
-  const prevBoatId = prev.boatSelection.domValue
-  const nextBoatId = next.boatSelection.domValue
+  const prevBoatId = prev.boat.boatSelection.domValue
+  const nextBoatId = next.boat.boatSelection.domValue
+  const selectedBoat = boats.find((boat) => boat.id === nextBoatId)
   // Boat has been changed, we need to update the form values
   if (prevBoatId !== nextBoatId) {
-    const selectedBoat = citizenBoats.find((boat) => boat.id === nextBoatId)
-    const cache = !prevBoatId ? prev.boatInfo : prev.newBoatCache
+    const cache = !prevBoatId ? prev.boat.boatInfo : prev.boat.newBoatCache
 
     if (!nextBoatId) {
       return {
-        ...next,
-        ...{
-          boatInfo: cache
-        }
+        ...next.boat,
+        boatInfo: cache,
+        boatSelection: initialBoatSelectionState(boats)
       }
     }
     if (selectedBoat) {
       return {
-        ...next,
-        ...{
-          boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
-          newBoatCache: cache
-        }
+        ...next.boat,
+        boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
+        newBoatCache: cache,
+        boatSelection: initialBoatSelectionState(boats, selectedBoat)
       }
     }
   }
 
-  return next
+  return {
+    ...next.boat,
+    boatSelection: initialBoatSelectionState(boats, selectedBoat)
+  }
 }
