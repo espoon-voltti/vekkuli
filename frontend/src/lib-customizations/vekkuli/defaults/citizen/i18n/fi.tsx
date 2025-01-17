@@ -7,7 +7,8 @@ import type { Translations as ComponentTranslations } from 'lib-components/i18n'
 import {
   BoatSpaceType,
   OwnershipStatus,
-  ReservationValidity
+  ReservationValidity,
+  ReserverType
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
 import components from 'lib-customizations/vekkuli/defaults/components/i18n/fi'
@@ -188,6 +189,10 @@ export default {
               return 'Toistaiseksi, jatko vuosittain huhtikuussa'
           }
       }
+    },
+    reserverDiscountInfo: (type: ReserverType, reserverName: string, discountPercentage: number, discountedPrice: string)=> {
+        const name = type === 'Organization' ? `Yhteisölle ${reserverName}` : `Sinulle`
+        return `${name} on määritelty ${discountPercentage} % alennus. Alennuksen jälkeen paikan hinnaksi jää ${discountedPrice} €`
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'

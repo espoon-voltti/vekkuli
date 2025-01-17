@@ -7,7 +7,7 @@ import { Translations as ComponentTranslations } from 'lib-components/i18n'
 import {
   BoatSpaceType,
   OwnershipStatus,
-  ReservationValidity
+  ReservationValidity, ReserverType
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
@@ -189,6 +189,10 @@ const en: Translations = {
               return 'For now, resume annually in April'
           }
       }
+    },
+    reserverDiscountInfo: (type: ReserverType, reserverName: string, discountPercentage: number, discountedPrice: string)=> {
+      const name = type === 'Organization' ? `Organization ${reserverName} has` : `You have `
+      return `${name} a discount of ${discountPercentage} %. After the discount, price of the boat space is ${discountedPrice} €`
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Paid ${paymentDate.format()}` : '-'

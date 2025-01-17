@@ -33,6 +33,7 @@ export type BoatSpaceReservation = {
   storageType?: StorageType
   trailer?: Trailer
   boat: Boat
+  totalPriceInCents: number
 }
 
 export type BoatSpaceReservationResponse = {
@@ -53,6 +54,7 @@ export type BoatSpaceReservationResponse = {
   storageType: StorageType | null
   trailer: Trailer | null
   boat: Boat
+  totalPriceInCents: number
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

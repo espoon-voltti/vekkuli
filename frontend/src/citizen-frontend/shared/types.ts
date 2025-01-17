@@ -70,6 +70,7 @@ export type Citizen = {
   city: string
   municipalityCode: number
   birthDate: LocalDate
+  discountPercentage: number
 }
 
 export type Organization = {
@@ -83,6 +84,7 @@ export type Organization = {
   streetAddress: string | null
   postalCode: string | null
   postOffice: string | null
+  discountPercentage: number
 }
 
 export type NewOrganization = Omit<Organization, 'id'>

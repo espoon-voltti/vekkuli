@@ -28,6 +28,7 @@ data class ReservationResponse(
     val netPrice: String,
     val storageType: StorageType?,
     val trailer: Trailer? = null,
+    val totalPriceInCents: Int,
 ) {
     data class Citizen(
         val id: UUID,
@@ -41,6 +42,7 @@ data class ReservationResponse(
         val city: String,
         val municipalityCode: Int,
         val birthDate: LocalDate,
+        val discountPercentage: Int,
     )
 
     data class Organization(
@@ -53,6 +55,7 @@ data class ReservationResponse(
         val address: String? = null,
         val postalCode: String? = null,
         val city: String? = null,
+        val discountPercentage: Int,
     )
 
     data class Boat(
@@ -131,6 +134,7 @@ class ReservationResponseMapper(
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
             paymentDate = reservation.paymentDate,
+            totalPriceInCents = reservationWithDependencies.priceCents
         )
     }
 
@@ -159,7 +163,8 @@ class ReservationResponseMapper(
             postalOffice = citizen.postOffice,
             city = citizen.municipalityName,
             municipalityCode = citizen.municipalityCode,
-            birthDate = citizen.birthdayAsDate
+            birthDate = citizen.birthdayAsDate,
+            discountPercentage = citizen.discountPercentage,
         )
     }
 
@@ -190,6 +195,7 @@ class ReservationResponseMapper(
             address = organization.streetAddress,
             postalCode = organization.postalCode,
             city = organization.postOffice,
+            discountPercentage = organization.discountPercentage,
         )
     }
 
