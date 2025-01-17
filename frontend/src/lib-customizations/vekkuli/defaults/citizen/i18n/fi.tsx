@@ -190,9 +190,15 @@ export default {
           }
       }
     },
-    reserverDiscountInfo: (type: ReserverType, reserverName: string, discountPercentage: number, discountedPrice: string)=> {
-        const name = type === 'Organization' ? `Yhteisölle ${reserverName}` : `Sinulle`
-        return `${name} on määritelty ${discountPercentage} % alennus. Alennuksen jälkeen paikan hinnaksi jää ${discountedPrice} €`
+    reserverDiscountInfo: (
+      type: ReserverType,
+      reserverName: string,
+      discountPercentage: number,
+      discountedPrice: string
+    ) => {
+      const name =
+        type === 'Organization' ? `Yhteisölle ${reserverName}` : `Sinulle`
+      return `${name} on määritelty ${discountPercentage} % alennus. Alennuksen jälkeen paikan hinnaksi jää ${discountedPrice} €`
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'

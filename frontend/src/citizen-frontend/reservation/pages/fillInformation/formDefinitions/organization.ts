@@ -5,7 +5,7 @@ import {
   ReserverType,
   reserverTypes
 } from 'citizen-frontend/shared/types'
-import {number, string} from 'lib-common/form/fields'
+import { number, string } from 'lib-common/form/fields'
 import {
   mapped,
   object,

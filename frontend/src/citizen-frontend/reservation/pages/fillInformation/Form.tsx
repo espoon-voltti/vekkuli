@@ -6,7 +6,12 @@ import { Municipality } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 import { Boat, Organization, StorageType } from 'citizen-frontend/shared/types'
-import { BoundForm, useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
+import {
+  BoundForm,
+  useForm,
+  useFormFields,
+  useFormUnion
+} from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
 import { StateOf } from 'lib-common/form/types'
 import { useMutation } from 'lib-common/query'
@@ -14,7 +19,9 @@ import { WarningExclamation } from 'lib-icons'
 
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
+import ReserverPriceInfo from '../../components/ReserverPriceInfo'
 import { Reservation } from '../../state'
+import useStoredSearchState from '../useStoredSearchState'
 
 import initialOrganizationFormState, {
   onOrganizationFormUpdate,
@@ -32,8 +39,6 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
-import useStoredSearchState from '../useStoredSearchState'
-import ReserverPriceInfo from "../../components/ReserverPriceInfo"
 
 type FormProperties = {
   reservation: Reservation
@@ -107,8 +112,12 @@ export default React.memo(function Form({
       | undefined
   }
 
-  const getSelectedOrganization = (organizationForm: BoundForm<OrganizationForm>) =>
-    organizationForm.isValid() ? organizationFormBind.value().organization : null
+  const getSelectedOrganization = (
+    organizationForm: BoundForm<OrganizationForm>
+  ) =>
+    organizationForm.isValid()
+      ? organizationFormBind.value().organization
+      : null
 
   return (
     <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
@@ -132,8 +141,10 @@ export default React.memo(function Form({
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
         <ReservedSpace reservation={updatedReservation} />
-        <ReserverPriceInfo reservation={updatedReservation}
-                           organization={getSelectedOrganization(organizationFormBind)}/>
+        <ReserverPriceInfo
+          reservation={updatedReservation}
+          organization={getSelectedOrganization(organizationFormBind)}
+        />
         <UserAgreementsSection bind={userAgreement} />
         {showAllErrors && <ValidationWarning />}
       </div>

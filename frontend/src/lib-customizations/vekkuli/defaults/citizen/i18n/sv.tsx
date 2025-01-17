@@ -190,7 +190,12 @@ const sv: Translations = {
           }
       }
     },
-    reserverDiscountInfo: (type: ReserverType, reserverName: string, discountPercentage: number, discountedPrice: string)=> {
+    reserverDiscountInfo: (
+      type: ReserverType,
+      reserverName: string,
+      discountPercentage: number,
+      discountedPrice: string
+    ) => {
       const name = type === 'Organization' ? `${reserverName}` : `dig `
       return `En rabatt på ${discountPercentage} % har definierats för ${name}. Efter rabatten förblir priset på platsen ${discountedPrice} €`
     },
