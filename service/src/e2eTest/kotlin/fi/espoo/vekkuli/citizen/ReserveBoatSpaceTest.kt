@@ -396,12 +396,24 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             val formPage = BoatSpaceFormPage(page)
             val organizationSection = formPage.getOrganizationSection()
 
+            assertThat(page.getByText("Olivian vene")).isVisible()
             organizationSection.reserveForOrganization.click()
             organizationSection.organization("Espoon Pursiseura").click()
+
             organizationSection.phoneNumberInput.fill("123456789")
             organizationSection.emailInput.fill("foo@bar.com")
 
             val boatSection = formPage.getBoatSection()
+            assertThat(page.getByText("Espoon lohi")).isVisible()
+            assertThat(page.getByText("Espoon kuha")).isVisible()
+            assertThat(page.getByText("Olivian vene")).isHidden()
+
+            page.getByText("Espoon lohi").click()
+            assertThat(boatSection.nameInput).hasValue("Espoon lohi")
+            assertThat(boatSection.lengthInput).hasValue("4")
+
+            boatSection.newBoatSelection.click()
+
             boatSection.depthInput.fill("1.5")
             boatSection.weightInput.fill("2000")
             boatSection.nameInput.fill("My Boat")
