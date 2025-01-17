@@ -88,7 +88,7 @@ export type Organization = {
 export type NewOrganization = Omit<Organization, 'id'>
 
 export type Boat = {
-  id: string
+  id: number
   name: string
   type: BoatType
   width: number
