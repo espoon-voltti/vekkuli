@@ -837,6 +837,10 @@ label.filter-button:has(input:checked) .icon {
     text-align: left;
     padding: $spacing-small;
     vertical-align: middle;
+
+    &.description {
+      max-width: 50px;
+    }
   }
 
   th {
