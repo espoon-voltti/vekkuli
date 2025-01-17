@@ -216,6 +216,7 @@ const sv: Translations = {
       'Du är på väg att lämna bokningsformuläret. Observera att platsbokningen eller inmatad information inte kommer att sparas.',
     cancelConfirmation2: 'Vill du fortsätta?',
     cancelReservation: 'Avbryt reservation',
+    cancelAndGoBack: 'Avbryt och gå tillbaka',
     continueToPaymentButton: 'Fortsätt till betalning'
   },
   boatSpace: {

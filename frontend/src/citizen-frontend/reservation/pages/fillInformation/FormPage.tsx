@@ -41,6 +41,7 @@ export default React.memo(function FormPage() {
                 <ReservationCancel
                   reservationId={loadedReservation.id}
                   type="link"
+                  buttonAriaLabel={i18n.reservation.cancelAndGoBack}
                 >
                   {i18n.components.links.goBack}
                 </ReservationCancel>
