@@ -51,15 +51,6 @@ export default React.memo(function Form({
     fillBoatSpaceReservationMutation
   )
 
-  // const organizationFormBind = useForm(
-  //   organizationForm,
-  //   () => initialOrganizationFormState(i18n, municipalities, organizations),
-  //   i18n.components.validationErrors,
-  //   {
-  //     onUpdate: (prev, next): StateOf<OrganizationForm> =>
-  //       onOrganizationFormUpdate(prev, next, organizations, municipalities)
-  //   }
-  // )
   const [searchState, setSearchState] = useStoredSearchState()
   const formBind = useForm(
     reserveSpaceForm,

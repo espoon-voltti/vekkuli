@@ -61,7 +61,7 @@ class JdbiBoatRepository(
         """
             handle
                 .createQuery(query)
-                .bind("reserverId", reserverId) // Bind the reserverId parameter
+                .bind("reserverId", reserverId)
                 .mapTo<Boat>()
                 .list()
                 .groupBy { it.reserverId.toString() }
