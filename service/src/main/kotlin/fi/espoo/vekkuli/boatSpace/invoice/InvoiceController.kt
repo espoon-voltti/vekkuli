@@ -100,9 +100,7 @@ class InvoiceController(
                 costCenter = "",
                 invoiceType = "",
                 priceWithTax = intToDecimal(reservation.priceCents),
-                description =
-                    "${t("shared.title.boatSpace.${reservation.type}")}, ${reservation.locationName} ${reservation.place}, " +
-                        "${reservation.startDate.year}",
+                description = invoiceData.description,
                 contactPerson = invoiceData.orgRepresentative ?: "",
                 orgId = invoiceData.orgId ?: "",
             )
