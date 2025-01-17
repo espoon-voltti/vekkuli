@@ -73,6 +73,8 @@ interface ReservationWarningRepository {
         boatIdOrTrailerId: Int,
         keys: List<String>,
     ): Unit
+
+    fun deleteReservationWarningsForReservation(reservationId: Int)
 }
 
 @Service

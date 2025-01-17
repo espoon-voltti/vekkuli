@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
@@ -255,6 +256,52 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         citizenDetails.boatWarningModalInfoInput.fill("some text")
         citizenDetails.boatWarningModalConfirmButton.click()
 
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
+    }
+
+    @Test
+    fun `warnings are deleted when reservation is terminated`() {
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
+        val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
+        val paymentPage = CitizenPaymentPage(page)
+
+        // create a reservation for B 314
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        boatSpaceFormPage.fillFormAndSubmit()
+        paymentPage.payReservation()
+
+        // create warning
+        val boatId = 8
+        val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
+        citizenCitizenDetails.navigateToPage()
+        val boat = citizenCitizenDetails.getBoatSection(boatId)
+        boat.editButton.click()
+        boat.weightInput.fill("16000")
+        boat.saveButton.click()
+
+        // check warning
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace("Virtanen Mikko").click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).isVisible()
+
+        // terminate reservation
+        citizenDetails.terminateReservationAsEmployeeButton.click()
+        citizenDetails.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.PaymentViolation.toString())
+        citizenDetails.terminateReservationModalConfirm.click()
+        assertThat(citizenDetails.terminateReservationSuccess).isVisible()
+        citizenDetails.hideModalWindow()
+
+        // check warning is removed
+        citizenDetails.showAllBoatsButton.click()
         assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
     }
 
