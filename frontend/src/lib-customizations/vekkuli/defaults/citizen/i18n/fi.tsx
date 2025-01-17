@@ -93,7 +93,9 @@ export default {
       past: 'Päättynyt',
       present: 'Voimassa',
       future: 'Tuleva'
-    }
+    },
+    showMore: 'Näytä lisää',
+    showLess: 'Näytä vähemmän'
   },
   header: {
     lang: {

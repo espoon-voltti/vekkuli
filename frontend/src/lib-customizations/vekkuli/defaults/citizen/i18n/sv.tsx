@@ -94,7 +94,9 @@ const sv: Translations = {
       past: 'Päättynyt (sv)',
       present: 'Voimassa (sv)',
       future: 'Tuleva (sv)'
-    }
+    },
+    showMore: 'Visa mer',
+    showLess: 'Visa mindre'
   },
   header: {
     lang: {
