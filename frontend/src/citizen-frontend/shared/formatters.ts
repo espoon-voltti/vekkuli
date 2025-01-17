@@ -1,4 +1,4 @@
-import Decimal from "decimal.js";
+import Decimal from 'decimal.js'
 
 export function formatPlaceIdentifier(
   section: string,
@@ -54,6 +54,6 @@ export function formatMToString(value: number): string {
 
 export function formatCentsToEuros(cents: number): string {
   const decimals = new Decimal(cents)
-  const euros = decimals.dividedBy(100).toFixed(2);
+  const euros = decimals.dividedBy(100).toFixed(2)
   return euros.replace('.', ',')
 }
