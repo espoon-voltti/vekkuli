@@ -198,7 +198,7 @@ export default {
     ) => {
       const name =
         type === 'Organization' ? `Yhteisölle ${reserverName}` : `Sinulle`
-      return `${name} on määritelty ${discountPercentage} % alennus. Alennuksen jälkeen paikan hinnaksi jää ${discountedPrice} €`
+      return `${name} on myönnetty ${discountPercentage} % alennus. Alennuksen jälkeen paikan hinnaksi jää ${discountedPrice} €`
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'
