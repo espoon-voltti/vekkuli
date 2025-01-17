@@ -19,7 +19,6 @@ import { WarningExclamation } from 'lib-icons'
 
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
-import ReserverPriceInfo from '../../components/ReserverPriceInfo'
 import { Reservation } from '../../state'
 import useStoredSearchState from '../useStoredSearchState'
 
@@ -140,10 +139,9 @@ export default React.memo(function Form({
         )}
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
-        <ReservedSpace reservation={updatedReservation} />
-        <ReserverPriceInfo
-          reservation={updatedReservation}
-          organization={getSelectedOrganization(organizationFormBind)}
+        <ReservedSpace
+            reservation={updatedReservation}
+            organization={getSelectedOrganization(organizationFormBind)}
         />
         <UserAgreementsSection bind={userAgreement} />
         {showAllErrors && <ValidationWarning />}

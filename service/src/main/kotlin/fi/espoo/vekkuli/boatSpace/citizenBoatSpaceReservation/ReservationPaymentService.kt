@@ -25,7 +25,7 @@ class ReservationPaymentService(
     ): PaytrailPaymentResponse {
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
-        val amount = reservation.priceCents
+        val amount = reservation.discountedPriceCents
         val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         // TODO must this be configurable?
         val productCode = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"

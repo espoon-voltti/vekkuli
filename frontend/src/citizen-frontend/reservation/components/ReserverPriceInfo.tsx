@@ -15,7 +15,7 @@ const discountedPrice = (priceInCents: number, discountPercentage: number) => {
 
 const getReservationDiscountInfo = (
   citizen: Citizen | undefined,
-  organization: Organization | NewOrganization | null,
+  organization: Organization | NewOrganization | null | undefined,
   totalPriceInCents: number
 ): string | null => {
   const i18n = useTranslation()
@@ -45,7 +45,7 @@ export default React.memo(function ReserverPriceInfo({
   organization
 }: {
   reservation: BoatSpaceReservation
-  organization: Organization | NewOrganization | null
+  organization: Organization | NewOrganization | null | undefined
 }) {
   const { citizen, totalPriceInCents } = reservation
   const discountInfo = getReservationDiscountInfo(
