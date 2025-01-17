@@ -407,9 +407,6 @@ class ReserverDetailsReservationsContainer(
                     id="refund-payment-button-$paymentId"
                     data-testid="refund-payment-button"
                    x-on:click="refundModal = true">
-                    <span class="icon ml-s">
-                        ${icons.edit}
-                    </span>
                     <span>${t("citizenDetails.payments.refund")}</span>
                 </a>
                 <div class="modal" x-show="refundModal" style="display:none;">
