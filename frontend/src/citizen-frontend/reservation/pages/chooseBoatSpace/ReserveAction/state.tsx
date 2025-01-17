@@ -62,8 +62,8 @@ export const ReserveActionProvider = ({
     </ReserveActionContext.Provider>
   )
 }
-/*
-const mapErrorCode = (errorCode: string): ErrorCode => {
+
+export const mapErrorCode = (errorCode: string): ErrorCode => {
   switch (errorCode) {
     case 'MaxReservations':
       return 'MAX_RESERVATIONS'
@@ -73,4 +73,3 @@ const mapErrorCode = (errorCode: string): ErrorCode => {
       return 'SERVER_ERROR'
   }
 }
-*/

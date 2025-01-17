@@ -87,6 +87,11 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             reservationPage.navigateToPage()
             reservationPage.startReservingBoatSpaceB314()
 
+            val reserveModal = reservationPage.getReserveModal()
+            assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.reserveAnotherButton).isVisible()
+            reserveModal.reserveAnotherButton.click()
+
             // click send to trigger validation
             val formPage = BoatSpaceFormPage(page)
             formPage.submitButton.click()
@@ -393,6 +398,11 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             reservationPage.navigateToPage()
             reservationPage.startReservingBoatSpaceB314()
 
+            val reserveModal = reservationPage.getReserveModal()
+            assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.reserveAnotherButton).isVisible()
+            reserveModal.reserveAnotherButton.click()
+
             val formPage = BoatSpaceFormPage(page)
             val organizationSection = formPage.getOrganizationSection()
 
@@ -446,6 +456,11 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateToPage()
         reservationPage.startReservingBoatSpaceB314()
+
+        val reserveModal = reservationPage.getReserveModal()
+        assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.reserveAnotherButton).isVisible()
+        reserveModal.reserveAnotherButton.click()
 
         val formPage = BoatSpaceFormPage(page)
         val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
@@ -535,6 +550,11 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateToPage()
         reservationPage.startReservingBoatSpaceB314()
+
+        val reserveModal = reservationPage.getReserveModal()
+        assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.reserveAnotherButton).isVisible()
+        reserveModal.reserveAnotherButton.click()
 
         val formPage = BoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()

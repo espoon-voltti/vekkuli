@@ -7,10 +7,10 @@ import { useMutation, useQueryResult } from 'lib-common/query'
 import { canReserveSpaceQuery, reserveSpaceMutation } from '../queries'
 
 import CanReserveResult from './CanReserveResult'
-import { useReserveActionContext } from './state'
+import { mapErrorCode, useReserveActionContext } from './state'
 
 export default React.memo(function ReserveAction() {
-  const { targetSpaceId } = useReserveActionContext()
+  const { targetSpaceId, setError } = useReserveActionContext()
   const navigate = useNavigate()
   const canReserveResult = useQueryResult(canReserveSpaceQuery(targetSpaceId))
   const { mutateAsync: reserveSpace } = useMutation(reserveSpaceMutation)
@@ -23,8 +23,8 @@ export default React.memo(function ReserveAction() {
       .catch((error) => {
         const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
         console.error(errorCode)
-        //const errorType = mapErrorCode(errorCode)
-        //setReserveError(errorType)
+        const errorType = mapErrorCode(errorCode)
+        setError(errorType)
       })
   }
 

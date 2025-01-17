@@ -10,6 +10,7 @@ import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
 import StepIndicator from '../../StepIndicator'
 import { ReservationStateContext } from '../../state'
+import useStoredSearchState from '../useStoredSearchState'
 
 import LoginBeforeReservingModal from './LoginBeforeReservingModal'
 import ReservationSeasons from './ReservationSeasons'
@@ -22,12 +23,7 @@ import {
   SearchFormBranches,
   searchFreeSpacesForm
 } from './formDefinitions'
-import {
-  freeSpacesQuery,
-  reserveSpaceMutation,
-  starSwitchSpaceMutation
-} from './queries'
-import useStoredSearchState from '../useStoredSearchState'
+import { freeSpacesQuery, reserveSpaceMutation } from './queries'
 
 export default React.memo(function SearchPage() {
   const i18n = useTranslation()

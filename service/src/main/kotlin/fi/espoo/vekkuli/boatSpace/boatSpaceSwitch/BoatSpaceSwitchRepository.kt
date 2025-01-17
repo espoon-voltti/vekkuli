@@ -78,7 +78,6 @@ class BoatSpaceSwitchRepository(
                       status, 
                       validity, 
                       boat_id, 
-                      employee_id,
                       original_reservation_id,
                       storage_type,
                       trailer_id,

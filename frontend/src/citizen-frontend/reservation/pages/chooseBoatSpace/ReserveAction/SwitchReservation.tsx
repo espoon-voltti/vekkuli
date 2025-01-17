@@ -9,7 +9,7 @@ import { useMutation } from 'lib-common/query'
 import BoatSpaceInformation from '../../../components/BoatSpaceInformation'
 import { startSwitchSpaceMutation } from '../queries'
 
-import { useReserveActionContext } from './state'
+import { mapErrorCode, useReserveActionContext } from './state'
 
 export type SwitchReservationProps = {
   reservation: SwitchableReservation
@@ -19,7 +19,8 @@ export default React.memo(function SwitchReservation({
   reservation
 }: SwitchReservationProps) {
   const i18n = useTranslation()
-  const { targetSpaceId, isLoading, setIsLoading } = useReserveActionContext()
+  const { targetSpaceId, isLoading, setIsLoading, setError } =
+    useReserveActionContext()
   const { mutateAsync: switchPlace, isPending } = useMutation(
     startSwitchSpaceMutation
   )
@@ -43,8 +44,8 @@ export default React.memo(function SwitchReservation({
       .catch((error) => {
         const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
         console.error(errorCode)
-        //const errorType = mapErrorCode(errorCode)
-        //setReserveError(errorType)
+        const errorType = mapErrorCode(errorCode)
+        setError(errorType)
       })
   }
 
@@ -55,7 +56,12 @@ export default React.memo(function SwitchReservation({
           <BoatSpaceInformation boatSpace={reservation.boatSpace} />
         </Column>
         <Column isNarrow>
-          <Button type="primary" action={onSwitch} loading={isLoading}>
+          <Button
+            type="primary"
+            data-testid={`switch-button-${reservation.id}`}
+            action={onSwitch}
+            loading={isLoading}
+          >
             {i18n.reservation.searchPage.modal.switchCurrentPlace}
           </Button>
         </Column>

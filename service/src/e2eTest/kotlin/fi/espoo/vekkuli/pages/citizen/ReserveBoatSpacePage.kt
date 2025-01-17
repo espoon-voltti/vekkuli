@@ -76,6 +76,24 @@ class ReserveBoatSpacePage(
         val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
     }
 
+    class ReserveModal(
+        val root: Locator
+    ) {
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
+        val reserveAnotherButton =
+            root.getByRole(
+                AriaRole.BUTTON,
+                Locator.GetByRoleOptions().setName("Varaan toisen paikan").setExact(true)
+            )
+        val switchReservationButtons =
+            root
+                .getByRole(
+                    AriaRole.BUTTON,
+                    Locator.GetByRoleOptions().setName("Vaihdan nykyisen paikan").setExact(true)
+                )
+        val firstSwitchReservationButton = switchReservationButtons.first()
+    }
+
     class LoginModal(
         val root: Locator
     ) {
@@ -94,6 +112,8 @@ class ReserveBoatSpacePage(
     fun getSearchResultsSection() = SearchResultsSection(getByDataTestId("boat-space-results"))
 
     fun getLoginModal() = LoginModal(getByDataTestId("login-before-reserving"))
+
+    fun getReserveModal() = ReserveModal(getByDataTestId("reserve-modal"))
 
     fun filterForBoatSpaceB314() {
         val filterSection = getFilterSection()

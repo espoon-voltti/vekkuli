@@ -5,7 +5,7 @@ import com.microsoft.playwright.Page
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.pages.BasePage
 
-class BoatSpaceFormPage(
+open class BoatSpaceFormPage(
     page: Page
 ) : BasePage(page) {
     class CitizenSection(
@@ -114,6 +114,7 @@ class BoatSpaceFormPage(
     val validationWarning = page.locator(".form-validation-message").getByText("Pakollisia tietoja puuttuu")
     val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
     val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
+    val header = page.getByText("Veneen säilytyspaikan varaus")
 
     fun fillFormAndSubmit(overrides: (BoatSpaceFormPage.() -> Unit)? = null) {
         val citizenSection = getCitizenSection()

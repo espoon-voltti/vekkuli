@@ -8,6 +8,7 @@ export interface ModalButton {
   action?: () => void
   type?: ButtonType
   loading?: boolean
+  id: string
 }
 
 type ModalButtonsProps = {
@@ -31,6 +32,7 @@ export default React.memo(function ModalButtons({
             key={`modal-button-${i}`}
             action={b.action || close}
             type={b.type}
+            id={b.id}
             loading={b.loading}
             disabled={disableAllButtons}
           >
