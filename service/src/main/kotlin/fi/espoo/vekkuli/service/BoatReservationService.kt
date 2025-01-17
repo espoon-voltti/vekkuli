@@ -185,6 +185,29 @@ class BoatReservationService(
         return paymentService.insertPayment(params, reservationId)
     }
 
+    fun addBoatWarningsToReservations(boat: Boat) {
+        getReservationsForBoat(boat.id)
+            .forEach { reservation ->
+                val boatSpace =
+                    getBoatSpaceRelatedToReservation(reservation.id)
+                        ?: throw IllegalArgumentException("Boat space not found")
+
+                addReservationWarnings(
+                    reservation.id,
+                    boat.id,
+                    reservation.boatSpaceWidthCm,
+                    reservation.boatSpaceLengthCm,
+                    reservation.amenity,
+                    boat.widthCm,
+                    boat.lengthCm,
+                    boat.ownership,
+                    boat.weightKg,
+                    boat.type,
+                    boatSpace.excludedBoatTypes ?: listOf(),
+                )
+            }
+    }
+
     fun addTrailerWarningsToReservations(
         trailerId: Int,
         trailerWidthCm: Int,
@@ -209,6 +232,8 @@ class BoatReservationService(
             }
         }
     }
+
+    fun getReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> = boatSpaceReservationRepo.getReservationsForBoat(boatId)
 
     fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
@@ -467,6 +492,18 @@ class BoatReservationService(
             throw IllegalArgumentException("No reservation or reservation has no reserver")
         }
         memoService.insertMemo(reservation.reserverId, userId, ReservationType.Marine, infoText)
+    }
+
+    fun acknowledgeWarningForBoat(
+        boatId: Int,
+        userId: UUID,
+        keys: List<String>,
+        infoText: String
+    ) {
+        if (keys.isEmpty()) return
+        getReservationsForBoat(boatId).forEach {
+            acknowledgeWarnings(it.id, userId, boatId, keys, infoText)
+        }
     }
 
     fun acknowledgeWarningForTrailer(

@@ -76,7 +76,6 @@ class ReserverDetailsReservationsContainer(
                                  >
                                 <input type="hidden" name="boatId" value="${boat.id}" />
                                 <input type="hidden" name="reserverId" value="$reserverId" />
-                                <input type="hidden" name="reservationId" value="${boat.reservationId}" />
                                 <div class="block">
                                     <div class="field">
                                         <h1 class="label">${t("citizenDetails.warnings.ackSelect")}</h1>

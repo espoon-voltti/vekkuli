@@ -89,6 +89,8 @@ class OrganizationDetailsPage(
 
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 
+    fun editBoatButton(id: Int) = page.getByTestId("edit-boat-$id")
+
     val nameInput: Locator = page.getByTestId("name")
     val weightInput: Locator = page.getByTestId("weight")
     val typeSelect: Locator = page.getByTestId("type")

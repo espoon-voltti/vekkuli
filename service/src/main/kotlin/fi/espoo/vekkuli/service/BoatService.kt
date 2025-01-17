@@ -9,13 +9,20 @@ import java.util.*
 
 @Service
 class BoatService(
-    private val boatRepository: BoatRepository
+    private val boatRepository: BoatRepository,
+    private val boatReservationService: BoatReservationService
 ) {
     fun getBoatsForReserver(reserverId: UUID): List<Boat> = boatRepository.getBoatsForReserver(reserverId)
 
     fun getBoat(boatId: Int): Boat? = boatRepository.getBoat(boatId)
 
-    fun updateBoat(boat: Boat): Boat = boatRepository.updateBoat(boat)
+    fun updateBoatAsCitizen(boat: Boat): Boat {
+        val result = boatRepository.updateBoat(boat)
+        boatReservationService.addBoatWarningsToReservations(result)
+        return result
+    }
+
+    fun updateBoatAsEmployee(boat: Boat) = boatRepository.updateBoat(boat)
 
     fun insertBoat(
         citizenId: UUID,

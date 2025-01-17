@@ -558,7 +558,7 @@ class CitizenUserController(
                 extraInformation = input.extraInformation,
                 ownership = input.ownership,
             )
-        boatService.updateBoat(updatedBoat)
+        boatService.updateBoatAsEmployee(updatedBoat)
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
@@ -622,34 +622,12 @@ class CitizenUserController(
                 extraInformation = input.extraInformation,
                 ownership = input.ownership,
             )
-        boatService.updateBoat(updatedBoat)
+        boatService.updateBoatAsCitizen(updatedBoat)
 
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
 
         val updatedBoats =
             boatService.getBoatsForReserver(citizenId).map { toBoatUpdateForm(it, boatSpaceReservations) }
-
-        val reservationForBoat = boatSpaceReservations.find { it.boat?.id == boatId }
-
-        if (reservationForBoat != null) {
-            val boatSpace =
-                reservationService.getBoatSpaceRelatedToReservation(reservationForBoat.id)
-                    ?: throw IllegalArgumentException("Reservation not found")
-
-            reservationService.addReservationWarnings(
-                reservationForBoat.id,
-                boatId,
-                reservationForBoat.boatSpaceWidthCm,
-                reservationForBoat.boatSpaceLengthCm,
-                reservationForBoat.amenity,
-                updatedBoat.widthCm,
-                updatedBoat.lengthCm,
-                updatedBoat.ownership,
-                updatedBoat.weightKg,
-                updatedBoat.type,
-                boatSpace.excludedBoatTypes ?: listOf(),
-            )
-        }
 
         return citizenDetails.citizenPage(
             citizen,
@@ -912,7 +890,6 @@ class CitizenUserController(
 
     @PostMapping("/virkailija/venepaikat/varaukset/kuittaa-varoitus")
     fun ackWarning(
-        @RequestParam("reservationId") reservationId: Int,
         @RequestParam("boatId") boatId: Int,
         @RequestParam("key") key: List<String>,
         @RequestParam("infoText") infoText: String,
@@ -923,7 +900,7 @@ class CitizenUserController(
             logger.audit(it, "CITIZEN_PROFILE_ACK_WARNING")
         }
         val userId = request.ensureEmployeeId()
-        reservationService.acknowledgeWarnings(reservationId, userId, boatId, key, infoText)
+        reservationService.acknowledgeWarningForBoat(boatId, userId, key, infoText)
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(reserverId)
         val boats = boatService.getBoatsForReserver(reserverId).map { toBoatUpdateForm(it, boatSpaceReservations) }
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))

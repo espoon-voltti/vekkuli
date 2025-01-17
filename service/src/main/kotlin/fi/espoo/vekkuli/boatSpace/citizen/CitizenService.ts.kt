@@ -1,17 +1,13 @@
 package fi.espoo.vekkuli.boatSpace.citizen
 
 import fi.espoo.vekkuli.common.Unauthorized
-import fi.espoo.vekkuli.repository.BoatRepository
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.CitizenAccessControl
-import fi.espoo.vekkuli.service.PermissionService
-import fi.espoo.vekkuli.service.ReserverService
+import fi.espoo.vekkuli.service.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 open class CitizenService(
-    private val boatRepository: BoatRepository,
+    private val boatService: BoatService,
     private val citizenAccessControl: CitizenAccessControl,
     private val boatReservationService: BoatReservationService,
     private val reserverService: ReserverService,
@@ -34,7 +30,7 @@ open class CitizenService(
     open fun updateBoat(boat: UpdateBoatInformationInput) {
         val (citizenId) = citizenAccessControl.requireCitizen()
         if (!permissionService.canEditBoat(citizenId, boat.id)) throw Unauthorized()
-        boatRepository.updateBoat(boat.toBoatInput(citizenId))
+        boatService.updateBoatAsCitizen(boat.toBoatInput(citizenId))
     }
 
     @Transactional

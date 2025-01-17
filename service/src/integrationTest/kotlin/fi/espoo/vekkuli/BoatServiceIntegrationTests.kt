@@ -53,7 +53,7 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should update boat`() {
         val boat = insertNewBoat()
-        boatService.updateBoat(
+        boatService.updateBoatAsEmployee(
             boat.copy(name = "UpdatedTestBoat")
         )
         val updatedBoat = boatService.getBoat(boat.id)
