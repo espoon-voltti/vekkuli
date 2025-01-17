@@ -23,17 +23,9 @@ data class BoatSpaceResponse(
 class BoatSpaceResponseMapper(
     private val boatSpaceRepository: BoatSpaceRepository,
 ) {
-    fun toBoatSpaceResponse(
-        spaceId: Int
-    ): BoatSpaceResponse =
-        boatSpaceResponse(
-            spaceId
-        )
+    fun toBoatSpaceResponse(spaceId: Int): BoatSpaceResponse = boatSpaceResponse(spaceId)
 
-    private fun boatSpaceResponse(
-        spaceId: Int,
-    ): BoatSpaceResponse {
-
+    private fun boatSpaceResponse(spaceId: Int): BoatSpaceResponse {
         val boatSpace = getBoatSpace(spaceId)
 
         return formatBoatSpace(
@@ -41,8 +33,7 @@ class BoatSpaceResponseMapper(
         )
     }
 
-    private fun getBoatSpace(spaceId: Int): BoatSpace =
-        boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound()
+    private fun getBoatSpace(spaceId: Int): BoatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound()
 
     private fun formatBoatSpace(boatSpace: BoatSpace): BoatSpaceResponse =
         BoatSpaceResponse(

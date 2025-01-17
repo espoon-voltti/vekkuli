@@ -73,6 +73,7 @@ open class ReservationService(
         }
 
     fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservation(reservationId).toBoatSpaceReservation()
+
     fun startReservation(spaceId: Int): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()
 
@@ -109,7 +110,7 @@ open class ReservationService(
         spaceId: Int
     ): CanReserveResult {
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
-        val reservations = boatReservationService.getBoatSpaceReservationsForCitizen(citizenId)
+        val reservations = boatReservationService.getBoatSpaceReservationsForReserver(citizenId)
 
         val canReserveSpaceResult = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
 

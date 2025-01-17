@@ -11,7 +11,7 @@ class BoatSpaceController(
     private val boatSpaceResponseMapper: BoatSpaceResponseMapper
 ) {
     @GetMapping("/boat-space/{spaceId}")
-    fun getBoatSpace(@PathVariable spaceId: Int): BoatSpaceResponse {
-        return boatSpaceResponseMapper.toBoatSpaceResponse(spaceId)
-    }
+    fun getBoatSpace(
+        @PathVariable spaceId: Int
+    ): BoatSpaceResponse = boatSpaceResponseMapper.toBoatSpaceResponse(spaceId)
 }

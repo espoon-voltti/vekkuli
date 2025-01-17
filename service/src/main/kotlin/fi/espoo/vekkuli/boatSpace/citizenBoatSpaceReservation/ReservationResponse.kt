@@ -100,9 +100,45 @@ class ReservationResponseMapper(
     private val reserverService: ReserverService,
     private val organizationService: OrganizationService
 ) {
-    fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse {
-        val reservationWithDependencies = spaceReservationService.getReservationWithDependencies(reservation.id) ?: throw NotFound()
-        val citizen = if (reservationWithDependencies.reserverType == ReserverType.Citizen) getCitizen(reservation.reserverId) else null
+    fun toReservationResponse(
+        reservation: BoatSpaceReservation,
+        switchPriceDifference: Int? = null
+    ): ReservationResponse =
+        reservationResponse(
+            reservation.id,
+            reservation.actingCitizenId,
+            reservation.reserverId,
+            reservation.status,
+            reservation.created,
+            reservation.startDate,
+            reservation.validity,
+            reservation.endDate,
+            reservation.paymentDate,
+            switchPriceDifference
+        )
+
+    private fun reservationResponse(
+        reservationId: Int,
+        actingCitizenId: UUID?,
+        reserverId: UUID?,
+        status: ReservationStatus,
+        created: LocalDateTime,
+        startDate: LocalDate,
+        validity: ReservationValidity,
+        endDate: LocalDate,
+        paymentDate: LocalDate?,
+        switchPriceDifference: Int?
+    ): ReservationResponse {
+        val reservationWithDependencies =
+            spaceReservationService.getReservationWithDependencies(reservationId) ?: throw NotFound()
+        val citizen =
+            if (reservationWithDependencies.reserverType ==
+                ReserverType.Citizen
+            ) {
+                getCitizen(actingCitizenId, reserverId)
+            } else {
+                null
+            }
         val organization =
             if (reservationWithDependencies.reserverType ==
                 ReserverType.Organization
@@ -112,11 +148,11 @@ class ReservationResponseMapper(
                 null
             }
         val boat = getBoat(reservationWithDependencies)
-        val boatSpace = getBoatSpace(reservationId)
+        val boatSpace = getBoatSpace(reservationWithDependencies)
         val trailer = getTrailer(reservationWithDependencies)
 
         return ReservationResponse(
-            id = reservation.id,
+            id = reservationId,
             reserverType = reservationWithDependencies.reserverType ?: ReserverType.Citizen,
             citizen = formatCitizen(citizen),
             organization = formatOrganization(organization),
@@ -229,7 +265,7 @@ class ReservationResponseMapper(
         )
     }
 
-    private fun getBoatSpace(reservation: BoatSpaceReservation): BoatSpace =
+    private fun getBoatSpace(reservation: ReservationWithDependencies): BoatSpace =
         spaceReservationService.getBoatSpaceRelatedToReservation(reservation.id) ?: throw NotFound()
 
     private fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
