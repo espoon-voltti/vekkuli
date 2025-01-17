@@ -55,7 +55,7 @@ const Content = React.memo(function Content({
               </li>
             </ul>
           </div>
-          <ReservedSpace reservation={loadedReservation} />
+          <ReservedSpace reservation={loadedReservation} organization={loadedReservation.organization} />
         </>
       )}
     </Loader>

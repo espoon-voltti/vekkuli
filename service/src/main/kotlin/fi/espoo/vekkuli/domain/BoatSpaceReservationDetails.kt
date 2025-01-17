@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.domain
 
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
+import fi.espoo.vekkuli.utils.discountedPriceInCents
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import java.math.BigDecimal
@@ -50,6 +51,7 @@ data class BoatSpaceReservationDetails(
     val paymentId: UUID?,
     val paymentReference: String?,
     val invoiceDueDate: LocalDate?,
+    val discountPercentage: Int,
     val creationType: CreationType
 ) {
     val boatSpaceLengthInM: BigDecimal
@@ -62,6 +64,9 @@ data class BoatSpaceReservationDetails(
         get() = formatInt(vatCents)
     val priceWithoutVatInEuro: String
         get() = formatInt(netPriceCents)
+
+    val discountedPriceCents: Int
+        get() = discountedPriceInCents(priceCents, discountPercentage)
 }
 
 fun BoatSpaceReservationDetails.toBoatSpaceReservation() =
