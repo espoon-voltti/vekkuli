@@ -23,6 +23,7 @@ export default {
   common: {
     title: 'Espoon venepaikkavaraus',
     cancel: 'Peruuta',
+    continue: 'Jatka',
     return: 'Palaa',
     download: 'Lataa',
     print: 'Tulosta',
@@ -202,7 +203,18 @@ export default {
         MAX_PERSONAL_RESERVATIONS:
           'Sinulla on jo maksimimäärä tämän tyypin paikkoja. Jos asioit yhteisön puolesta, voit jatkaa varaamista. '
       }
-    }
+    },
+    auth: {
+      reservingBoatSpace: 'Olet varaamassa paikkaa:',
+      reservingRequiresAuth:
+        'Venepaikan varaaminen vaatii vahvan tunnistautumisen.',
+      continue: 'Jatka tunnistautumiseen'
+    },
+    cancelConfirmation:
+      'Olet poistumassa varauslomakkeelta. Huomioi, että paikkavarausta tai syötettyjä tietoja ei tallenneta.',
+    cancelConfirmation2: 'Haluatko jatkaa?',
+    cancelReservation: 'Peruuta varaus',
+    continueToPaymentButton: 'Jatka maksamaan'
   },
   boatSpace: {
     renterType: {

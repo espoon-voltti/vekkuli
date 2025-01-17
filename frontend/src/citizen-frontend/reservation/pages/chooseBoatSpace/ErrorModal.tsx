@@ -1,4 +1,4 @@
-import { Column, Columns } from 'lib-components/dom'
+import { Column, Columns, ScreenReaderOnly } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
@@ -24,19 +24,25 @@ export default React.memo(function ErrorModal({
     }
   ]
 
+  const title = i18n.reservation.errors.startReservation.title
+  const body = i18n.reservation.errors.startReservation[error]
+
   return (
     <Modal close={close} buttons={buttons} buttonsCentered>
+      <ScreenReaderOnly>
+        {title}
+        {'. '}
+        {body}
+      </ScreenReaderOnly>
       <Columns isVCentered isMultiline>
         <Column isFull textCentered>
           <ErrorGeneric />
         </Column>
         <Column isFull textCentered>
-          <h2 className="has-text-centered mb-none">
-            {i18n.reservation.errors.startReservation.title}
-          </h2>
+          <h2 className="has-text-centered mb-none">{title}</h2>
         </Column>
         <Column isFull textCentered>
-          <p>{i18n.reservation.errors.startReservation[error]}</p>
+          <p>{body}</p>
         </Column>
       </Columns>
     </Modal>

@@ -4,6 +4,7 @@ import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 import { useNavigate } from 'react-router'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { useMutation } from 'lib-common/query'
 
 import { cancelReservationMutation } from '../queries'
@@ -17,6 +18,7 @@ export default React.memo(function ReservationCancel({
   type: 'link' | 'button'
   children: React.ReactNode
 }) {
+  const i18n = useTranslation()
   const [modalOpen, setModalOpen] = React.useState(false)
 
   const navigate = useNavigate()
@@ -36,11 +38,11 @@ export default React.memo(function ReservationCancel({
 
   const buttons = [
     {
-      label: 'Peruuta',
+      label: i18n.common.cancel,
       loading: isPending
     },
     {
-      label: 'Jatka',
+      label: i18n.common.continue,
       type: 'primary' as const,
       loading: isPending,
       action: () => {
@@ -67,10 +69,8 @@ export default React.memo(function ReservationCancel({
         >
           <Columns isMultiline>
             <Column>
-              <p>
-                Olet poistumassa varauslomakkeelta. Huomioi, että paikkavarausta
-                tai syötettyjä tietoja ei tallenneta.
-              </p>
+              <p>{i18n.reservation.cancelConfirmation}</p>
+              <p>{i18n.reservation.cancelConfirmation2}</p>
             </Column>
           </Columns>
         </Modal>
