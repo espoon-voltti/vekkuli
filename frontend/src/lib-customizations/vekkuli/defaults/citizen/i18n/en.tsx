@@ -94,7 +94,9 @@ const en: Translations = {
       past: 'Past',
       present: 'Active',
       future: 'Future'
-    }
+    },
+    showMore: 'Show more',
+    showLess: 'Show less'
   },
   header: {
     lang: {
