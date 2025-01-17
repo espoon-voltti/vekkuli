@@ -5,28 +5,39 @@ export type IconLinkProps = {
   icon: React.ReactNode
   action?: () => void
   href?: string
+  ariaLabel?: string
 }
 
 export default React.memo(function IconLink({
   children,
   icon,
   action,
-  href
+  href,
+  ariaLabel
 }: IconLinkProps) {
-  const props: React.AnchorHTMLAttributes<HTMLAnchorElement> = {
-    className: 'is-link is-icon-link'
-  }
-  if (action) {
-    props.onClick = action
-  }
   if (href) {
-    props.href = href
+    return (
+      <a
+        href={href}
+        className="is-link is-icon-link"
+        aria-label={ariaLabel}
+        role="link"
+      >
+        <span className="icon">{icon}</span>
+        <span>{children}</span>
+      </a>
+    )
   }
 
   return (
-    <a role="link" {...props}>
+    <button
+      onClick={action}
+      className="has-text-link is-link is-icon-link"
+      aria-label={ariaLabel}
+      role="button"
+    >
       <span className="icon">{icon}</span>
       <span>{children}</span>
-    </a>
+    </button>
   )
 })

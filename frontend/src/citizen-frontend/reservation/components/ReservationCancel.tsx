@@ -12,11 +12,13 @@ import { cancelReservationMutation } from '../queries'
 export default React.memo(function ReservationCancel({
   reservationId,
   type,
-  children
+  children,
+  buttonAriaLabel
 }: {
   reservationId: number
   type: 'link' | 'button'
   children: React.ReactNode
+  buttonAriaLabel?: string
 }) {
   const i18n = useTranslation()
   const [modalOpen, setModalOpen] = React.useState(false)
@@ -53,9 +55,13 @@ export default React.memo(function ReservationCancel({
 
   const button =
     type === 'link' ? (
-      <GoBackLink action={() => setModalOpen(true)}>{children}</GoBackLink>
+      <GoBackLink action={() => setModalOpen(true)} ariaLabel={buttonAriaLabel}>
+        {children}
+      </GoBackLink>
     ) : (
-      <Button action={() => setModalOpen(true)}>{children}</Button>
+      <Button ariaLabel={buttonAriaLabel} action={() => setModalOpen(true)}>
+        {children}
+      </Button>
     )
 
   return (
