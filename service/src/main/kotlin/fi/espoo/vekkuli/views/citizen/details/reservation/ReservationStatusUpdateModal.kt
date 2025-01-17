@@ -63,7 +63,7 @@ class ReservationStatusUpdateModal : BaseView() {
                         >
                         <div class="form-section" x-data="{ reservationStatus: '${reservation.status}' }">
                             $reservationStatusInput
-                            <div x-show="reservationStatus === 'Invoiced' || reservationStatus === 'Confirmed'" >
+                            <div x-show="reservationStatus === 'Invoiced'" >
                                 ${formComponents.textInput(
                     "citizenDetails.reservationStatus.infoText",
                     "paymentStatusText",
@@ -71,12 +71,28 @@ class ReservationStatusUpdateModal : BaseView() {
                 )}
                                 ${formComponents.dateInput(
                     DateInputOptions(
-                        labelKey = if (reservation.status == ReservationStatus.Invoiced) "citizenDetails.dueDate" else "citizenDetails.paymentDate",
+                        labelKey = "citizenDetails.dueDate",
                         id = "paymentDate",
                         value = defaultDate
                     )
                 )}
                             </div>
+                            
+                            <div x-show="reservationStatus === 'Confirmed'" >
+                                ${formComponents.textInput(
+                    "citizenDetails.reservationStatus.infoText",
+                    "paymentStatusText",
+                    reservation.paymentReference ?: ""
+                )}
+                                ${formComponents.dateInput(
+                    DateInputOptions(
+                        labelKey = "citizenDetails.paymentDate",
+                        id = "paymentDate",
+                        value = defaultDate
+                    )
+                )}
+                            </div>
+                            
                             <input hidden name="reservationId" value="${reservation.id}" />
                             <input hidden name="reserverId" value="$reserverId" />
                         </div>
