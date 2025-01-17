@@ -5,9 +5,10 @@
 import { Translations as ComponentTranslations } from 'lib-components/i18n'
 
 import {
+  ReservationValidity,
   BoatSpaceType,
   OwnershipStatus,
-  ReservationValidity
+  ReserverType
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
@@ -207,6 +208,10 @@ const sv: Translations = {
               return 'Tills vidare, förnyas årligen i april'
           }
       }
+    },
+    reserverDiscountInfo: (type: ReserverType, reserverName: string, discountPercentage: number, discountedPrice: string)=> {
+      const name = type === 'Organization' ? `${reserverName}` : `dig `
+      return `En rabatt på ${discountPercentage} % har definierats för ${name}. Efter rabatten förblir priset på platsen ${discountedPrice} €`
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Betald ${paymentDate.format()}` : '-'

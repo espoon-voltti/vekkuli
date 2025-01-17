@@ -47,6 +47,7 @@ export type BoatSpaceReservation = {
   storageType?: StorageType
   trailer?: Trailer
   boat: Boat
+  totalPriceInCents: number
   creationType: CreationType
   allowedReservationOperations: ReservationOperation[]
 }
@@ -87,6 +88,7 @@ export type BoatSpaceReservationResponse = {
   trailer: Trailer | null
   boat: Boat
   creationType: CreationType
+  totalPriceInCents: number
   canRenew: boolean
   canSwitch: boolean
 }

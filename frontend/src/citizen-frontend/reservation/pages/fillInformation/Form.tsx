@@ -34,6 +34,7 @@ import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
 
+
 type FormProperties = {
   reservation: Reservation
 }

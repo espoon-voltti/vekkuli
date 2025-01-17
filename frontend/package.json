@@ -25,6 +25,7 @@
     "core-js": "^3.38.0",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
+    "decimal.js": "10.4.3",
     "esbuild-sass-plugin": "^3.3.1",
     "history": "^5.3.0",
     "lodash": "^4.17.21",
