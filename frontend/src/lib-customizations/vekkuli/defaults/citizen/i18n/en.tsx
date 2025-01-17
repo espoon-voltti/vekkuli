@@ -217,6 +217,7 @@ const en: Translations = {
       'You are about to leave the reservation form. Please note that the space reservation or entered information will not be saved.',
     cancelConfirmation2: 'Do you want to continue?',
     cancelReservation: 'Cancel reservation',
+    cancelAndGoBack: 'Cancel and go back',
     continueToPaymentButton: 'Continue to payment'
   },
   boatSpace: {
