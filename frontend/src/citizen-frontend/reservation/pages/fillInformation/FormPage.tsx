@@ -5,7 +5,8 @@ import React, { useContext } from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import {
   citizenBoatsQuery,
-  citizenOrganizationsQuery
+  citizenOrganizationsQuery,
+  citizenOrganizationsBoatsQuery
 } from 'citizen-frontend/shared/queries'
 import { FormErrorProvider } from 'lib-common/form/state'
 import { useQueryResult } from 'lib-common/query'
@@ -23,18 +24,26 @@ export default React.memo(function FormPage() {
   const citizenBoats = useQueryResult(citizenBoatsQuery())
   const municipalities = useQueryResult(getMunicipalitiesQuery())
   const organizations = useQueryResult(citizenOrganizationsQuery())
+  const organizationBoats = useQueryResult(citizenOrganizationsBoatsQuery())
   const i18n = useTranslation()
   return (
     <MainSection>
       <Container>
         <Loader
-          results={[reservation, citizenBoats, municipalities, organizations]}
+          results={[
+            reservation,
+            citizenBoats,
+            municipalities,
+            organizations,
+            organizationBoats
+          ]}
         >
           {(
             loadedReservation,
             loadedBoats,
             loadedMunicipalities,
-            organizations
+            organizations,
+            organizationBoats
           ) => (
             <>
               <Container>
@@ -53,6 +62,7 @@ export default React.memo(function FormPage() {
                   boats={loadedBoats}
                   municipalities={loadedMunicipalities}
                   organizations={organizations}
+                  organizationBoats={organizationBoats}
                 />
               </FormErrorProvider>
             </>
