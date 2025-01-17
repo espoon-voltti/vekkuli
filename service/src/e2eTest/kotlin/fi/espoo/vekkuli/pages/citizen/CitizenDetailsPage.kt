@@ -11,8 +11,9 @@ class CitizenDetailsPage(
 ) : BasePage(page) {
     class BoatSection(root: Locator) {
         private val fields = FieldLocator(root)
-        val editButton = root.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa veneen tietoja").setExact(true))
+        val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa veneen tietoja").setExact(true))
         val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
+        val deleteButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Poista vene").setExact(true))
 
         val depthField = fields.getField("Syväys")
         val depthInput = fields.getInput("Syväys")
@@ -38,7 +39,7 @@ class CitizenDetailsPage(
 
     class CitizenSection(root: Locator) {
         private val fields = FieldLocator(root)
-        val editButton = root.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa").setExact(true))
+        val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa").setExact(true))
         val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
 
         val emailError = fields.getInputError("Sähköposti")
@@ -62,7 +63,7 @@ class CitizenDetailsPage(
 
     class TrailerSection(root: Locator) {
         private val fields = FieldLocator(root)
-        val editButton = root.getByRole(AriaRole.LINK, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))
+        val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))
         val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
 
