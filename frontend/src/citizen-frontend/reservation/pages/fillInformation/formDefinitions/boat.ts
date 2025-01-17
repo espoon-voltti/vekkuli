@@ -196,6 +196,7 @@ type BoatFormUpdateProps = {
   prev: StateOf<BoatForm>
   next: StateOf<BoatForm>
   citizenBoats: Boat[]
+  organizationBoats: Record<string, Boat[]>
   i18n: Translations
 }
 
@@ -203,7 +204,8 @@ export function onBoatFormUpdate({
   prev,
   next,
   citizenBoats,
-  i18n
+  i18n,
+  organizationBoats
 }: BoatFormUpdateProps): StateOf<BoatForm> {
   const prevBoatId = prev.boatSelection.domValue
   const nextBoatId = next.boatSelection.domValue
