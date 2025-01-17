@@ -22,6 +22,7 @@ export default React.memo(function ModalButtons({
   centered
 }: ModalButtonsProps) {
   if (!buttons || buttons.length === 0) return null
+  const disableAllButtons = buttons.some((b) => !!b.loading)
   return (
     <div className="mt-l">
       <Buttons centered={centered}>
@@ -30,6 +31,8 @@ export default React.memo(function ModalButtons({
             key={`modal-button-${i}`}
             action={b.action || close}
             type={b.type}
+            loading={b.loading}
+            disabled={disableAllButtons}
           >
             {b.label}
           </Button>
