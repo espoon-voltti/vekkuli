@@ -8,7 +8,9 @@ import fi.espoo.vekkuli.pages.BasePage
 class BoatSpaceFormPage(
     page: Page
 ) : BasePage(page) {
-    class CitizenSection(root: Locator) {
+    class CitizenSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val emailError = fields.getInputError("Sähköposti")
         val emailInput = fields.getInput("Sähköposti")
@@ -16,7 +18,9 @@ class BoatSpaceFormPage(
         val phoneInput = fields.getInput("Puhelinnumero")
     }
 
-    class OrganizationSection(root: Locator) {
+    class OrganizationSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val reserveForOrganization = fields.getRadio("Varaan yhteisön puolesta")
         val phoneNumberInput = fields.getInput("Puhelinnumero")
@@ -25,7 +29,9 @@ class BoatSpaceFormPage(
         fun organization(name: String) = fields.getRadio(name)
     }
 
-    class BoatSection(root: Locator) {
+    class BoatSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val depthError = fields.getInputError("Syväys")
         val depthInput = fields.getInput("Syväys")
@@ -47,11 +53,14 @@ class BoatSpaceFormPage(
         val weightInput = fields.getInput("Paino")
         val widthError = fields.getInputError("Leveys")
         val widthInput = fields.getInput("Leveys")
+        val newBoatSelection = fields.getRadio("Uusi vene")
 
         fun existingBoat(name: String) = fields.getRadio(name)
     }
 
-    class WinterStorageTypeSection(root: Locator) {
+    class WinterStorageTypeSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val buckStorageTypeRadio = fields.getRadio("Pukkisäilytys", true)
         val buckWithTentStorageTypeRadio = fields.getRadio("Pukkisäilytys suojateltalla")
@@ -64,7 +73,9 @@ class BoatSpaceFormPage(
         val trailerWidthInput = fields.getInput("Leveys")
     }
 
-    class UserAgreementSection(root: Locator) {
+    class UserAgreementSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val certifyInfoCheckbox = fields.getCheckbox("Vakuutan antamani tiedot oikeiksi")
         val certifyInfoError = fields.getCheckboxError("Vakuutan antamani tiedot oikeiksi")
@@ -72,12 +83,16 @@ class BoatSpaceFormPage(
         val agreementError = fields.getCheckboxError("Olen lukenut venesatamasäännöt")
     }
 
-    class ReservedSpaceSection(root: Locator) {
+    class ReservedSpaceSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val storageTypeField = fields.getField("Säilytystapa")
     }
 
-    class ConfirmCancelReservationModal(val root: Locator) {
+    class ConfirmCancelReservationModal(
+        val root: Locator
+    ) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
         val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Jatka").setExact(true))
     }

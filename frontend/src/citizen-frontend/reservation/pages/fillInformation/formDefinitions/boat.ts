@@ -137,10 +137,11 @@ const initialOwnershipState = (
 })
 
 const initialBoatSelectionState = (
-  boats: Boat[]
+  boats: Boat[],
+  selectedBoat?: Boat
 ): StateOf<BoatSelectionForm> => {
   const initialBoatSelection: StateOf<BoatSelectionForm> = {
-    domValue: '',
+    domValue: selectedBoat?.id ?? '',
     options: boats.map((boat) => ({
       domValue: boat.id,
       label: boat.name,
@@ -195,41 +196,42 @@ const transformBoatToFormBoat = (
 type BoatFormUpdateProps = {
   prev: StateOf<BoatForm>
   next: StateOf<BoatForm>
-  citizenBoats: Boat[]
+  boats: Boat[]
   i18n: Translations
 }
 
 export function onBoatFormUpdate({
   prev,
   next,
-  citizenBoats,
+  boats,
   i18n
 }: BoatFormUpdateProps): StateOf<BoatForm> {
   const prevBoatId = prev.boatSelection.domValue
   const nextBoatId = next.boatSelection.domValue
+  const selectedBoat = boats.find((boat) => boat.id === nextBoatId)
   // Boat has been changed, we need to update the form values
   if (prevBoatId !== nextBoatId) {
-    const selectedBoat = citizenBoats.find((boat) => boat.id === nextBoatId)
     const cache = !prevBoatId ? prev.boatInfo : prev.newBoatCache
 
     if (!nextBoatId) {
       return {
         ...next,
-        ...{
-          boatInfo: cache
-        }
+        boatInfo: cache,
+        boatSelection: initialBoatSelectionState(boats)
       }
     }
     if (selectedBoat) {
       return {
         ...next,
-        ...{
-          boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
-          newBoatCache: cache
-        }
+        boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
+        newBoatCache: cache,
+        boatSelection: initialBoatSelectionState(boats, selectedBoat)
       }
     }
   }
 
-  return next
+  return {
+    ...next,
+    boatSelection: initialBoatSelectionState(boats, selectedBoat)
+  }
 }
