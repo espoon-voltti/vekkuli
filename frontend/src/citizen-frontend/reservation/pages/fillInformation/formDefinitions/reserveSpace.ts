@@ -108,8 +108,8 @@ export const onReserveSpaceUpdate = (
   return {
     ...next,
     boat: onBoatFormUpdate({
-      prev: prev,
-      next: next,
+      prev: prev.boat,
+      next: next.boat,
       i18n,
       boats: getBoatsSelection(next, organizationBoats, boats)
     }),

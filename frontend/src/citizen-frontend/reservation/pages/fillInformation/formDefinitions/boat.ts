@@ -20,8 +20,6 @@ import {
 } from '../../../../shared/types'
 import { StoredSearchState } from '../../useStoredSearchState'
 
-import { ReserveSpaceForm } from './reserveSpace'
-
 export const boatInfoForm = object({
   id: string(),
   name: required(string()),
@@ -196,8 +194,8 @@ const transformBoatToFormBoat = (
 })
 
 type BoatFormUpdateProps = {
-  prev: StateOf<ReserveSpaceForm>
-  next: StateOf<ReserveSpaceForm>
+  prev: StateOf<BoatForm>
+  next: StateOf<BoatForm>
   boats: Boat[]
   i18n: Translations
 }
@@ -208,23 +206,23 @@ export function onBoatFormUpdate({
   boats,
   i18n
 }: BoatFormUpdateProps): StateOf<BoatForm> {
-  const prevBoatId = prev.boat.boatSelection.domValue
-  const nextBoatId = next.boat.boatSelection.domValue
+  const prevBoatId = prev.boatSelection.domValue
+  const nextBoatId = next.boatSelection.domValue
   const selectedBoat = boats.find((boat) => boat.id === nextBoatId)
   // Boat has been changed, we need to update the form values
   if (prevBoatId !== nextBoatId) {
-    const cache = !prevBoatId ? prev.boat.boatInfo : prev.boat.newBoatCache
+    const cache = !prevBoatId ? prev.boatInfo : prev.newBoatCache
 
     if (!nextBoatId) {
       return {
-        ...next.boat,
+        ...next,
         boatInfo: cache,
         boatSelection: initialBoatSelectionState(boats)
       }
     }
     if (selectedBoat) {
       return {
-        ...next.boat,
+        ...next,
         boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
         newBoatCache: cache,
         boatSelection: initialBoatSelectionState(boats, selectedBoat)
@@ -233,7 +231,7 @@ export function onBoatFormUpdate({
   }
 
   return {
-    ...next.boat,
+    ...next,
     boatSelection: initialBoatSelectionState(boats, selectedBoat)
   }
 }
