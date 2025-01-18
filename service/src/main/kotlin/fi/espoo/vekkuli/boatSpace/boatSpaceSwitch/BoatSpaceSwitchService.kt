@@ -36,6 +36,7 @@ class BoatSpaceSwitchService(
     private val reservationService: ReservationFormService,
     private val boatSpaceRepository: BoatSpaceRepository,
     private val citizenAccessControl: ContextCitizenAccessControl,
+    private val paymentService: PaymentService,
 ) {
     fun getOrCreateSwitchReservationForCitizen(
         reserverId: UUID,
@@ -75,7 +76,7 @@ class BoatSpaceSwitchService(
     fun fillReservationInformation(
         reservationId: Int,
         input: FillReservationInformationInput
-    ): ReservationWithDependencies {
+    ): BoatSpaceReservationDetails {
         val citizen = citizenAccessControl.requireCitizen()
         // @TODO - Make sure the citizen can fill the reservation
         val result = processSwitchInformation(citizen.id, input, reservationId)
@@ -83,13 +84,13 @@ class BoatSpaceSwitchService(
     }
 
     fun processSwitchInformation(
-        citizenId: UUID,
+        reserverId: UUID,
         input: FillReservationInformationInput,
         reservationId: Int,
-    ): ReservationWithDependencies {
+    ): BoatSpaceReservationDetails {
         // val priceDifference = getPriceDifference(reservationId)
         val reservation =
-            boatReservationService.getReservationWithReserver(reservationId)
+            boatReservationService.getBoatSpaceReservation(reservationId)
                 ?: throw NotFound("Reservation not found")
         if (reservation.originalReservationId == null) {
             throw BadRequest("Original reservation not found")
@@ -110,6 +111,12 @@ class BoatSpaceSwitchService(
             reservation.endDate
         )
         if (priceDifference <= 0) {
+            if (reservation.paymentId != null) {
+                boatReservationService.handleReservationPaymentResult(
+                    reservation.paymentId,
+                    true
+                )
+            }
             // mark the original reservation as ended if the payment is skipped
             boatReservationService.markReservationEnded(reservation.originalReservationId)
         }

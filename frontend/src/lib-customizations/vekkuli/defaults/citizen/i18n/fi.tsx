@@ -150,6 +150,14 @@ export default {
             length: 'Säilytyspaikan pituus (m)'
           }
         }
+      },
+      modal: {
+        reserveAnotherPlace: 'Varaan toisen paikan',
+        reservingBoatSpace: 'Olet varaamassa venepaikkaa:',
+        cannotReserveNewPlace:
+          'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
+        currentPlace: 'Nykyinen paikkasi',
+        switchCurrentPlace: 'Vaihdan nykyisen paikan'
       }
     },
     formPage: {
@@ -163,6 +171,10 @@ export default {
       info: {
         switch:
           'Olet vaihtamassa venepaikkaa. Venepaikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
+      },
+      submit: {
+        continueToPayment: 'Jatka maksamaan',
+        confirmReservation: 'Vahvista varaus'
       }
     },
     noRegistererNumber: 'Ei rekisterinumeroa',
@@ -184,6 +196,7 @@ export default {
       equal:
         'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
     },
+
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,

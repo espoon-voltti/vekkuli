@@ -75,7 +75,11 @@ export default function initialFormState(
       selectedBoat
     ),
     boatSelection: initialBoatSelectionState(boats, selectedBoat),
-    ownership: initialOwnershipState(i18n, boatSpaceType),
+    ownership: initialOwnershipState(
+      i18n,
+      boatSpaceType,
+      selectedBoat?.ownership
+    ),
     newBoatCache: initialBoatInfoFormState(
       i18n,
       boatSpaceType,
@@ -133,9 +137,10 @@ function initialBoatInfoFormState(
 
 const initialOwnershipState = (
   i18n: Translations,
-  boatSpaceType: BoatSpaceType
+  boatSpaceType: BoatSpaceType,
+  initialValue?: OwnershipStatus
 ) => ({
-  domValue: 'Owner',
+  domValue: initialValue || 'Owner',
   options: ownershipStatuses.map((type) => ({
     domValue: type,
     label: i18n.boatSpace.ownershipStatus[type],

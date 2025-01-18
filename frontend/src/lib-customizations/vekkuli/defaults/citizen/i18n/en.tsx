@@ -151,6 +151,14 @@ const en: Translations = {
             length: 'Storage space length (m)'
           }
         }
+      },
+      modal: {
+        reserveAnotherPlace: 'Reserve another place',
+        reservingBoatSpace: 'You are reserving a boat space:',
+        cannotReserveNewPlace:
+          'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
+        currentPlace: 'Your current space',
+        switchCurrentPlace: 'Switch my current space'
       }
     },
     formPage: {
@@ -164,6 +172,10 @@ const en: Translations = {
       info: {
         switch:
           'You are switching your boat place. The reservation period for your boat place remains unchanged. At the same time, your old place will be canceled and made available for others to reserve.'
+      },
+      submit: {
+        continueToPayment: 'Continue to payment',
+        confirmReservation: 'Confirm reservation'
       }
     },
     noRegistererNumber: 'No registration number',
@@ -177,62 +189,50 @@ const en: Translations = {
     },
     paymentInfo: {
       moreExpensive: (amount: string) =>
-        `Note that the new place is more expensive than your current one. The price takes into account the payment you have already made, and you only need to pay the difference of ${amount} €.`,
+        `Note that the new place is more expensive than your current place. The price already accounts for the payment you have made, and you only need to pay the difference of ${amount} €.`,
       lessExpensive:
-        'Note that the new place is cheaper than your current one. The price difference will not be refunded.',
+        'Note that the new place is cheaper than your current place. No refund will be issued.',
       equal:
-        'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
-    },
-    totalPrice: (totalPrice: string, vatValue: string) =>
-      `${totalPrice} € (incl. vat ${vatValue} €)`,
-    validity: (
-      endDate: LocalDate,
-      validity: ReservationValidity,
-      boatSpaceType: BoatSpaceType
-    ) => {
-      switch (validity) {
-        case 'FixedTerm':
-          return `until ${endDate.format()}`
-        case 'Indefinite':
-          switch (boatSpaceType) {
-            case 'Slip':
-              return 'For now, resume annually in January'
-            case 'Winter':
-            case 'Storage':
-              return 'For now, resume annually in August'
-            case 'Trailer':
-              return 'For now, resume annually in April'
-          }
-      }
-    },
-    paymentState: (paymentDate?: LocalDate) => {
-      return paymentDate ? `Paid ${paymentDate.format()}` : '-'
-    },
-    errors: {
-      startReservation: {
-        title: 'Reservation is not possible',
-        MAX_RESERVATIONS:
-          'You already have the maximum number of spaces of this type.',
-        NOT_POSSIBLE:
-          'The reservation period is not open. Check the search times on the homepage.',
-        SERVER_ERROR:
-          'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
-        MAX_PERSONAL_RESERVATIONS:
-          'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.'
-      }
-    },
-    auth: {
-      reservingBoatSpace: 'Reserving boat space:',
-      reservingRequiresAuth:
-        'Reserving a boat space requires strong authentication.',
-      continue: 'Continue'
-    },
-    cancelConfirmation:
-      'You are about to leave the reservation form. Please note that the space reservation or entered information will not be saved.',
-    cancelConfirmation2: 'Do you want to continue?',
-    cancelReservation: 'Cancel reservation',
-    cancelAndGoBack: 'Cancel and go back',
-    continueToPaymentButton: 'Continue to payment'
+        'The place costs the same as your previous one. You do not need to pay again.'
+    }
+  },
+  totalPrice: (totalPrice: string, vatValue: string) =>
+    `${totalPrice} € (incl. vat ${vatValue} €)`,
+  validity: (
+    endDate: LocalDate,
+    validity: ReservationValidity,
+    boatSpaceType: BoatSpaceType
+  ) => {
+    switch (validity) {
+      case 'FixedTerm':
+        return `until ${endDate.format()}`
+      case 'Indefinite':
+        switch (boatSpaceType) {
+          case 'Slip':
+            return 'For now, resume annually in January'
+          case 'Winter':
+          case 'Storage':
+            return 'For now, resume annually in August'
+          case 'Trailer':
+            return 'For now, resume annually in April'
+        }
+    }
+  },
+  paymentState: (paymentDate?: LocalDate) => {
+    return paymentDate ? `Paid ${paymentDate.format()}` : '-'
+  },
+  errors: {
+    startReservation: {
+      title: 'Reservation is not possible',
+      MAX_RESERVATIONS:
+        'You already have the maximum number of spaces of this type.',
+      NOT_POSSIBLE:
+        'The reservation period is not open. Check the search times on the homepage.',
+      SERVER_ERROR:
+        'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
+      MAX_PERSONAL_RESERVATIONS:
+        'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.'
+    }
   },
   boat: {
     delete: 'Delete boat',

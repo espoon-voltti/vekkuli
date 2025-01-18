@@ -145,6 +145,14 @@ const sv: Translations = {
             length: 'Förvaringsplatsens längd (m)'
           }
         }
+      },
+      modal: {
+        reserveAnotherPlace: 'Boka en annan plats',
+        reservingBoatSpace: 'Du håller på att boka en båtplats:',
+        cannotReserveNewPlace:
+          'Du har redan två båtplatser. Du kan inte boka en ny plats, men du kan byta din nuvarande plats.',
+        currentPlace: 'Din nuvarande plats',
+        switchCurrentPlace: 'Byt min nuvarande plats'
       }
     },
     formPage: {
@@ -158,6 +166,10 @@ const sv: Translations = {
       info: {
         switch:
           'Du håller på att byta båtplats. Bokningstiden för din båtplats förblir oförändrad. Samtidigt sägs din gamla plats upp och görs tillgänglig för andra att boka.'
+      },
+      submit: {
+        continueToPayment: 'Fortsätt till betalning',
+        confirmReservation: 'Bekräfta bokning'
       }
     },
     steps: {
@@ -214,11 +226,11 @@ const sv: Translations = {
     },
     paymentInfo: {
       moreExpensive: (amount: string) =>
-        `Observera att den nya platsen är dyrare än din nuvarande. Priset tar hänsyn till den betalning du redan har gjort, och du behöver endast betala mellanskillnaden på ${amount} €.`,
+        `Observera att den nya platsen är dyrare än din nuvarande plats. Priset tar redan hänsyn till den betalning du har gjort, och du behöver bara betala mellanskillnaden på ${amount} €.`,
       lessExpensive:
-        'Observera att den nya platsen är billigare än din nuvarande. Prisskillnaden återbetalas inte.',
+        'Observera att den nya platsen är billigare än din nuvarande plats. Ingen återbetalning ges.',
       equal:
-        'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
+        'Platsen kostar lika mycket som den tidigare. Du behöver inte betala igen.'
     },
     auth: {
       reservingBoatSpace: 'Bokar båtplats:',

@@ -5,9 +5,7 @@ import ModalTitle from 'lib-components/modal/ModalTitle'
 import React from 'react'
 
 import { PlaceWithSpaces } from 'citizen-frontend/api-types/free-spaces'
-import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
-import { reserveSpaceMutation } from 'citizen-frontend/reservation/pages/chooseBoatSpace/queries'
 import { Reservation } from 'citizen-frontend/reservation/state'
 import {
   formatDimensions,
@@ -32,12 +30,12 @@ export default React.memo(function SwitchModal({
   const i18n = useTranslation()
   const buttons: ModalButton[] = [
     {
-      label: 'Peruuta'
+      label: i18n.common.cancel
     }
   ]
   if (reservations.length === 1)
     buttons.push({
-      label: 'Varaan toisen paikan',
+      label: i18n.reservation.searchPage.modal.reserveAnotherPlace,
       type: 'primary',
       loading: false,
       action: () => {
@@ -46,7 +44,11 @@ export default React.memo(function SwitchModal({
     })
 
   return (
-    <Modal title="Olet varaamassa venepaikkaa:" close={close} buttons={buttons}>
+    <Modal
+      title={i18n.reservation.searchPage.modal.reservingBoatSpace}
+      close={close}
+      buttons={buttons}
+    >
       <Columns isMultiline>
         <Column isFull>
           <ul className="no-bullets">
@@ -63,17 +65,14 @@ export default React.memo(function SwitchModal({
                 length: currentSpace.spaces[0].size.length
               })}
             </li>
-            <li>
-              {/* {i18n.boatSpace.amenities[placeWithSpaces.spaces[0].amenity]} */}
-            </li>
           </ul>
         </Column>
         <Column noBottomPadding>
           <ModalTitle
             title={
               reservations.length > 1
-                ? 'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.'
-                : 'Nykyinen paikkasi'
+                ? i18n.reservation.searchPage.modal.cannotReserveNewPlace
+                : i18n.reservation.searchPage.modal.currentPlace
             }
           />
         </Column>
@@ -105,7 +104,7 @@ export default React.memo(function SwitchModal({
                   type="primary"
                   action={() => onSwitch(currentSpace.place.id, reservation.id)}
                 >
-                  Vaihdan nykyisen paikan
+                  {i18n.reservation.searchPage.modal.switchCurrentPlace}
                 </Button>
               </Column>
             </Columns>

@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.PAYTRAIL_PRODUCT_CODE
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.config.audit
@@ -72,7 +73,7 @@ class PaymentController(
         val amount = reservation.priceCents
         val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         // TODO must this be configurable?
-        val productCode = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
+        val productCode = PAYTRAIL_PRODUCT_CODE
 
         val category = "MYY255"
 

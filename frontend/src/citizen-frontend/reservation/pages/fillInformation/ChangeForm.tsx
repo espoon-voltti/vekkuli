@@ -1,4 +1,5 @@
 import { Button, Buttons } from 'lib-components/dom'
+import { FormSection } from 'lib-components/form'
 import React from 'react'
 import { useNavigate } from 'react-router'
 
@@ -18,7 +19,9 @@ import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
 import { Reservation } from '../../state'
 import { InfoBox } from '../chooseBoatSpace/SearchResults/InfoBox'
+import { switchSpaceMutation } from '../chooseBoatSpace/queries'
 
+import { ValidationWarning } from './Form'
 import initialOrganizationFormState, {
   onOrganizationFormUpdate,
   OrganizationForm,
@@ -34,9 +37,6 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
-import { switchSpaceMutation } from '../chooseBoatSpace/queries'
-import { ValidationWarning } from './Form'
-import { FormSection } from 'lib-components/form'
 
 type ChangeFormProperties = {
   reservation: Reservation
@@ -68,14 +68,7 @@ export default React.memo(function ChangeForm({
   )
   const formBind = useForm(
     reserveSpaceForm,
-    () =>
-      initialFormState(
-        i18n,
-        boats,
-        reservation.citizen,
-        reservation.boatSpace.type,
-        reservation
-      ),
+    () => initialFormState(i18n, boats, reservation),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => onReserveSpaceUpdate(prev, next, i18n, boats)
@@ -125,7 +118,6 @@ export default React.memo(function ChangeForm({
           reserver={updatedReservation.citizen}
           bind={reserver}
         />
-        <OrganizationSection bind={organizationFormBind} />
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
         <FormSection>
@@ -140,10 +132,13 @@ export default React.memo(function ChangeForm({
 
       <Buttons>
         <ReservationCancel reservationId={reservation.id} type="button">
-          Peruuta varaus
+          {i18n.common.cancel}
         </ReservationCancel>
         <Button id="submit-button" type="primary" action={onSubmit}>
-          Jatka maksamaan
+          {reservation.switchPriceDifference == undefined ||
+          reservation.switchPriceDifference > 0
+            ? i18n.reservation.formPage.submit.continueToPayment
+            : i18n.reservation.formPage.submit.confirmReservation}
         </Button>
       </Buttons>
     </form>
