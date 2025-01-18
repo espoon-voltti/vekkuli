@@ -216,7 +216,9 @@ const sv: Translations = {
       moreExpensive: (amount: string) =>
         `Observera att den nya platsen är dyrare än din nuvarande. Priset tar hänsyn till den betalning du redan har gjort, och du behöver endast betala mellanskillnaden på ${amount} €.`,
       lessExpensive:
-        'Observera att den nya platsen är billigare än din nuvarande. Prisskillnaden återbetalas inte.'
+        'Observera att den nya platsen är billigare än din nuvarande. Prisskillnaden återbetalas inte.',
+      equal:
+        'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
     },
     auth: {
       reservingBoatSpace: 'Bokar båtplats:',

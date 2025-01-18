@@ -56,6 +56,7 @@ data class BoatSpaceReservationDetailsRow(
     val paymentReference: String?,
     val invoiceDueDate: LocalDate?,
     val storageType: StorageType?,
+    val creationType: CreationType,
     // Boat
     val boatId: Int?,
     val boatRegistrationCode: String?,
@@ -313,6 +314,7 @@ class JdbiBoatSpaceReservationRepository(
                 storageType = dbResult.storageType,
                 paymentReference = dbResult.paymentReference,
                 invoiceDueDate = dbResult.invoiceDueDate
+                creationType = dbResult.creationType
             )
         } else {
             null
@@ -578,6 +580,7 @@ class JdbiBoatSpaceReservationRepository(
                     storageType = it.storageType,
                     paymentReference = it.paymentReference,
                     invoiceDueDate = it.invoiceDueDate
+                    creationType = it.creationType
                 )
             }
         }
@@ -753,6 +756,7 @@ class JdbiBoatSpaceReservationRepository(
                     storageType = it.storageType,
                     paymentReference = it.paymentReference,
                     invoiceDueDate = it.invoiceDueDate
+                    creationType = it.creationType
                 )
             }
         }
@@ -1175,6 +1179,7 @@ class JdbiBoatSpaceReservationRepository(
         bsr.termination_timestamp,
         bsr.storage_type,
         bsr.acting_citizen_id,
+        bsr.creation_type,
         p.id as payment_id,
         p.paid as payment_date,
         r.id as reserver_id,

@@ -99,31 +99,6 @@ open class ReservationService(
     }
 
     @Transactional
-    fun startSwitchReservation(
-        spaceId: Int,
-        reservationId: Int
-    ): ReservationWithDependencies {
-        val (citizenId) = citizenAccessControl.requireCitizen()
-        boatReservationService.getBoatSpaceReservation(reservationId)
-            ?: throw NotFound("Reservation not found")
-        val result = switchService.getOrCreateSwitchReservationForCitizen(citizenId, reservationId, spaceId)
-        return result
-    }
-
-    @Transactional
-    fun switchReservation(
-        reservationId: Int,
-        input: FillReservationInformationInput
-    ): ReservationWithDependencies {
-        val (citizenId) = citizenAccessControl.requireCitizen()
-        val reservation =
-            boatReservationService.getBoatSpaceReservation(reservationId)
-                ?: throw NotFound("Reservation not found")
-        val result = switchService.updateSwitchReservation(citizenId, input, reservationId)
-        return result
-    }
-
-    @Transactional
     open fun fillReservationInformation(
         reservationId: Int,
         information: ReservationInformation
@@ -157,7 +132,7 @@ open class ReservationService(
             throw Conflict("Reservation is not filled")
         }
 
-        return reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation, givenPrice)
+        return reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation)
     }
 
     @Transactional

@@ -3,7 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.asyncJob.AsyncJob
 import fi.espoo.vekkuli.asyncJob.IAsyncJobRunner
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
-import fi.espoo.vekkuli.boatSpace.renewal.ModifyReservationInput
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.domain.*
@@ -23,7 +23,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
-import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
@@ -186,7 +185,62 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should update switch reservation details based on input`() {
+    fun `should update switch reservation details and set status to confirmed when reservation costs the same`() {
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    citizenIdLeo,
+                    1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = startOfSlipSwitchPeriodForOthers.minusYears(1).toLocalDate(),
+                    endDate = startOfSlipSwitchPeriodForOthers.plusDays(10).toLocalDate()
+                )
+            )
+        mockToAllowSwitchingWithReservationVariables(reservation)
+        val switchReservation =
+            boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, reservation.id, 2)
+
+        val switchInput =
+            FillReservationInformationInput(
+                citizen =
+                    FillReservationInformationInput.Citizen(
+                        phone = "1234567890",
+                        email = "test@gmail.com",
+                    ),
+                boat =
+                    FillReservationInformationInput.Boat(
+                        id = 2,
+                        type = BoatType.Sailboat,
+                        width = BigDecimal(3.0),
+                        length = BigDecimal(4.0),
+                        depth = BigDecimal(1.0),
+                        weight = 100,
+                        registrationNumber = "12345",
+                        name = "TestBoat",
+                        otherIdentification = "OtherID",
+                        extraInformation = "ExtraInfo",
+                        ownership = OwnershipStatus.Owner,
+                    ),
+                organization = null,
+                certifyInformation = true,
+                agreeToRules = true,
+                storageType = null,
+                trailer = null
+            )
+        boatSpaceSwitchService.processSwitchInformation(citizenIdLeo, switchInput, switchReservation.id)
+        val updatedReservation = reservationService.getReservationWithDependencies(switchReservation.id)
+
+        assertEquals(switchInput.boat.id, updatedReservation?.boatId, "Boat ID should be updated")
+        assertEquals(switchInput.citizen.email, updatedReservation?.email, "User email should be updated")
+        assertEquals(switchInput.citizen.phone, updatedReservation?.phone, "User phone should be updated")
+
+        // Should be in payment state after sending the switch request, will redirect to payment page
+        assertEquals(ReservationStatus.Confirmed, updatedReservation?.status, "Status should be set to Confirmed")
+    }
+
+    @Test
+    fun `should update switch reservation details when price is greater`() {
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -201,35 +255,41 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         mockToAllowSwitchingWithReservationVariables(reservation)
 
         val switchReservation =
-            boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, reservation.id, 2)
+            boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, reservation.id, 50)
 
         val switchInput =
-            ModifyReservationInput(
-                boatId = 2,
-                boatType = BoatType.Sailboat,
-                width = BigDecimal(3.0),
-                length = BigDecimal(4.0),
-                depth = BigDecimal(1.0),
-                weight = 100,
-                boatRegistrationNumber = "12345",
-                boatName = "TestBoat",
-                otherIdentification = "OtherID",
-                extraInformation = "ExtraInfo",
-                ownership = OwnershipStatus.Owner,
-                email = "citizen@example.com",
-                phone = "1234567890",
-                agreeToRules = true,
+            FillReservationInformationInput(
+                citizen =
+                    FillReservationInformationInput.Citizen(
+                        phone = "1234567890",
+                        email = "test@gmail.com",
+                    ),
+                boat =
+                    FillReservationInformationInput.Boat(
+                        id = 2,
+                        type = BoatType.Sailboat,
+                        width = BigDecimal(3.0),
+                        length = BigDecimal(4.0),
+                        depth = BigDecimal(1.0),
+                        weight = 100,
+                        registrationNumber = "12345",
+                        name = "TestBoat",
+                        otherIdentification = "OtherID",
+                        extraInformation = "ExtraInfo",
+                        ownership = OwnershipStatus.Owner,
+                    ),
+                organization = null,
                 certifyInformation = true,
-                noRegistrationNumber = false,
-                originalReservationId = reservation.id
+                agreeToRules = true,
+                storageType = null,
+                trailer = null
             )
-
-        boatSpaceSwitchService.updateSwitchReservation(citizenIdLeo, switchInput, switchReservation.id)
+        boatSpaceSwitchService.processSwitchInformation(citizenIdLeo, switchInput, switchReservation.id)
         val updatedReservation = reservationService.getReservationWithReserver(switchReservation.id)
 
-        assertEquals(switchInput.boatId, updatedReservation?.boatId, "Boat ID should be updated")
-        assertEquals(switchInput.email, updatedReservation?.email, "User email should be updated")
-        assertEquals(switchInput.phone, updatedReservation?.phone, "User phone should be updated")
+        assertEquals(switchInput.boat.id, updatedReservation?.boatId, "Boat ID should be updated")
+        assertEquals(switchInput.citizen.email, updatedReservation?.email, "User email should be updated")
+        assertEquals(switchInput.citizen.phone, updatedReservation?.phone, "User phone should be updated")
 
         // Should be in payment state after sending the switch request, will redirect to payment page
         assertEquals(ReservationStatus.Payment, updatedReservation?.status, "Status should be set to Payment")
@@ -456,20 +516,75 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     }
 
 //    @Test
-//    fun `should prefill switch application with customer information`() {
-//        val reservation =
+//    fun `should send invoice, set switch to invoice state and set old reservation as expired`() {
+//        val oldReservation =
 //            testUtils.createReservationInConfirmedState(
 //                CreateReservationParams(
 //                    timeProvider,
 //                    citizenIdLeo,
 //                    1,
-//                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate(),
-//                    validity = ReservationValidity.Indefinite
+//                    validity = ReservationValidity.Indefinite,
+//                    startDate = startOfSlipRenewPeriod.minusYears(1).toLocalDate(),
+//                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
 //                )
 //            )
-//        val switchInput =
+//        mockToAllowSwitchingWithReservationVariables(oldReservation)
+//
+//        val switchReservation =
+//            boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, oldReservation.id, 2)
+//
+//        boatSpaceSwitchService.fillReservationInformation(
+//            switchReservation.id,
+//            switchReservation.reserverId,
+//            switchReservation.originalReservationId,
+//            100,
+//            200
+//        )
+//
+//        val updatedOldReservation = reservationService.getBoatSpaceReservation(oldReservation.id)
+//        val updatedSwitchReservation = reservationService.getBoatSpaceReservation(switchReservation.id)
+//        val invoice = paymentService.getInvoiceForReservation(switchReservation.id)
+//        assertNotNull(invoice, "Invoice should exist")
+//
+//        val payment = paymentService.getPayment(invoice!!.paymentId)
+//        assertNotNull(payment, "Payment should exist")
+//        assertEquals(100, payment.totalCents, "Payment amount should match")
+//
+//        assertNotNull(updatedSwitchReservation, "Switch reservation should exist")
+//        assertEquals(
+//            ReservationStatus.Invoiced,
+//            updatedSwitchReservation?.status,
+//            "Switch reservation should be invoiced"
+//        )
+//
+//        assertNotNull(updatedOldReservation, "Old reservation should exist")
+//        assertEquals(
+//            timeProvider.getCurrentDate().minusDays(1),
+//            updatedOldReservation?.endDate,
+//            "Old reservation should be marked as ended"
+//        )
+//    }
+//
+//    @Test
+//    fun `should give an error if switching winter reservation without storage types`() {
+//        val madeReservation =
+//            testUtils.createReservationInConfirmedState(
+//                CreateReservationParams(
+//                    timeProvider = timeProvider,
+//                    citizenId = citizenIdLeo,
+//                    boatSpaceId = 9,
+//                    boatId = 1,
+//                    validity = ReservationValidity.Indefinite,
+//                    endDate = endDateWithinMonthOfWinterRenewWindow
+//                )
+//            )
+//        mockToAllowSwitchingWithReservationVariables(madeReservation)
+//
+//        val switchReservation =
+//            boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, madeReservation.id, boatSpaceIdForWinter)
+//        val invalidInput =
 //            ModifyReservationInput(
-//                boatId = 0,
+//                boatId = 2,
 //                boatType = BoatType.Sailboat,
 //                width = BigDecimal(3.0),
 //                length = BigDecimal(4.0),
@@ -480,68 +595,159 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 //                otherIdentification = "OtherID",
 //                extraInformation = "ExtraInfo",
 //                ownership = OwnershipStatus.Owner,
-//                email = "citizen@example.com",
+//                email = "test@email.com",
+//                phone = "1234567890",
+//                agreeToRules = true,
+//                certifyInformation = true,
+//                noRegistrationNumber = false,
+//                originalReservationId = 4,
+//            )
+//        val storageException =
+//            assertThrows<IllegalArgumentException> {
+//                boatSpaceSwitchService.processSwitchInformation(
+//                    citizenIdLeo,
+//                    invalidInput,
+//                    switchReservation.id
+//                )
+//            }
+//        assertEquals("Storage type has to be given.", storageException.message)
+//
+//        val trailerExpection =
+//            assertThrows<IllegalArgumentException> {
+//                boatSpaceSwitchService.processSwitchInformation(
+//                    citizenIdLeo,
+//                    invalidInput.copy(storageType = StorageType.Trailer),
+//                    switchReservation.id
+//                )
+//            }
+//
+//        assertEquals("Trailer information can not be empty.", trailerExpection.message)
+//    }
+//
+//    @Test
+//    fun `should switch winter reservations`() {
+//        val madeReservation =
+//            testUtils.createReservationInConfirmedState(
+//                CreateReservationParams(
+//                    timeProvider = timeProvider,
+//                    citizenId = citizenIdLeo,
+//                    boatSpaceId = boatSpaceIdForWinter,
+//                    boatId = 1,
+//                    validity = ReservationValidity.Indefinite,
+//                    endDate = endDateWithinMonthOfWinterRenewWindow
+//                )
+//            )
+//        mockToAllowSwitchingWithReservationVariables(madeReservation)
+//
+//        val switchReservation =
+//            boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, madeReservation.id, boatSpaceIdForWinter2)
+//
+//        mockToAllowSwitchingWithReservationVariables(madeReservation)
+//        val validInput =
+//            ModifyReservationInput(
+//                boatId = 2,
+//                boatType = BoatType.Sailboat,
+//                width = BigDecimal(3.0),
+//                length = BigDecimal(4.0),
+//                depth = BigDecimal(1.0),
+//                weight = 100,
+//                boatRegistrationNumber = "12345",
+//                boatName = "TestBoat",
+//                otherIdentification = "OtherID",
+//                extraInformation = "ExtraInfo",
+//                ownership = OwnershipStatus.Owner,
+//                email = "test@email.com",
+//                phone = "1234567890",
+//                agreeToRules = true,
+//                certifyInformation = true,
+//                noRegistrationNumber = false,
+//                originalReservationId = 4,
+//                storageType = StorageType.Trailer,
+//                trailerRegistrationNumber = "12345",
+//                trailerWidth = BigDecimal(3.0),
+//                trailerLength = BigDecimal(4.0)
+//            )
+//
+//        boatSpaceSwitchService.processSwitchInformation(citizenIdLeo, validInput, switchReservation.id)
+//        val updatedReservation = reservationService.getBoatSpaceReservation(switchReservation.id)
+//        assertEquals(validInput.trailerRegistrationNumber, updatedReservation?.trailer?.registrationCode)
+//        assertEquals(decimalToInt(validInput.trailerWidth), updatedReservation?.trailer?.widthCm)
+//        assertEquals(decimalToInt(validInput.trailerLength), updatedReservation?.trailer?.lengthCm)
+//        assertEquals(boatSpaceIdForWinter2, updatedReservation?.boatSpaceId, "Boat space id should be changed")
+//    }
+//
+//    @Test
+//    fun `should switch winter reservations when reserving for organization`() {
+//        mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
+//        val madeReservation =
+//            testUtils.createReservationInConfirmedState(
+//                CreateReservationParams(
+//                    timeProvider = timeProvider,
+//                    citizenId = citizenIdOlivia,
+//                    boatSpaceId = 9,
+//                    boatId = 1,
+//                    reserverId = organizationId,
+//                    validity = ReservationValidity.Indefinite,
+//                    endDate = endDateWithinMonthOfWinterRenewWindow
+//                )
+//            )
+//        mockToAllowSwitchingWithReservationVariables(madeReservation)
+//
+//        val switchReservation =
+//            boatSpaceSwitchService.getOrCreateSwitchReservationForEmployee(
+//                userId,
+//                madeReservation.id,
+//                citizenIdOlivia,
+//                8
+//            )
+//        val invalidInput =
+//            ModifyReservationInput(
+//                boatId = 2,
+//                boatType = BoatType.Sailboat,
+//                width = BigDecimal(3.0),
+//                length = BigDecimal(4.0),
+//                depth = BigDecimal(1.0),
+//                weight = 100,
+//                boatRegistrationNumber = "12345",
+//                boatName = "TestBoat",
+//                otherIdentification = "OtherID",
+//                extraInformation = "ExtraInfo",
+//                ownership = OwnershipStatus.Owner,
+//                email = "test@email",
 //                phone = "1234567890",
 //                agreeToRules = true,
 //                certifyInformation = true,
 //                noRegistrationNumber = false,
 //                originalReservationId = 4
 //            )
-//
-//        val citizen = reserverService.getCitizen(citizenIdLeo)
-//        val switchedReservation = boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, reservation.id)
-//
-//        val viewParams = boatSpaceSwitchService.buildBoatSpaceSwitchViewParams(citizenIdLeo, switchedReservation, switchInput)
-//
-//        assertEquals(citizenIdLeo, viewParams.citizen?.id, "Citizen ID should match")
-//        assertEquals(citizen?.email, viewParams.input.email, "Email should have been updated")
+//        val storageException =
+//            assertThrows<IllegalArgumentException> {
+//                boatSpaceSwitchService.processSwitchInformation(
+//                    userId,
+//                    invalidInput,
+//                    switchReservation.id
+//                )
+//            }
+//        assertEquals("Storage type has to be given.", storageException.message)
 //    }
-
+//
 //    @Test
-//    fun `should prefill switch application with boat information`() {
-//        val reservation =
+//    fun `should not be able switch slip reservation with winter reservation`() {
+//        val madeReservation =
 //            testUtils.createReservationInConfirmedState(
 //                CreateReservationParams(
-//                    timeProvider,
-//                    citizenIdLeo,
-//                    1,
-//                    endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate(),
-//                    validity = ReservationValidity.Indefinite
+//                    timeProvider = timeProvider,
+//                    citizenId = citizenIdLeo,
+//                    boatSpaceId = boatSpaceIdForSlip,
+//                    boatId = 1,
+//                    validity = ReservationValidity.Indefinite,
+//                    endDate = endDateWithinMonthOfWinterRenewWindow
 //                )
 //            )
-//        val switchInput =
-//            ModifyReservationInput(
-//                boatId = 0,
-//                boatType = BoatType.Sailboat,
-//                width = BigDecimal(3.0),
-//                length = BigDecimal(4.0),
-//                depth = BigDecimal(1.0),
-//                weight = 100,
-//                boatRegistrationNumber = "12345",
-//                boatName = "TestBoat",
-//                otherIdentification = "OtherID",
-//                extraInformation = "ExtraInfo",
-//                ownership = OwnershipStatus.Owner,
-//                email = "citizen@example.com",
-//                phone = "1234567890",
-//                agreeToRules = true,
-//                certifyInformation = true,
-//                noRegistrationNumber = false,
-//                originalReservationId = 4,
-//                storageType = StorageType.None
-//            )
-//
-//        val switchedReservation = boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, reservation.id)
-//
-//        val viewParams = boatSpaceSwitchService.buildBoatSpaceSwitchViewParams(citizenIdLeo, switchedReservation, switchInput)
-//
-//        assertEquals(switchInput.boatName, viewParams.input.boatName, "Boat name should have been updated")
-//        assertEquals(switchInput.boatId, viewParams.input.boatId, "Boat ID should have been updated")
-//        assertEquals(switchInput.boatType, viewParams.input.boatType, "Boat type should have been updated")
-//        assertEquals(switchInput.extraInformation, viewParams.input.extraInformation, "Extra information should have been updated")
-//        assertEquals(switchInput.weight, viewParams.input.weight, "Weight should have been updated")
-//        assertEquals(switchInput.width, viewParams.input.width, "Width should have been updated")
-//        assertEquals(switchInput.length, viewParams.input.length, "Length should have been updated")
-//        assertEquals(switchInput.depth, viewParams.input.depth, "Depth should have been updated")
+//        mockToAllowSwitchingWithReservationVariables(madeReservation)
+//        val boatSpaceTypeExpection =
+//            assertThrows<BadRequest> {
+//                boatSpaceSwitchService.getOrCreateSwitchReservationForCitizen(citizenIdLeo, madeReservation.id, boatSpaceIdForWinter)
+//            }
+//        assertEquals("Boat space type does not match", boatSpaceTypeExpection.message)
 //    }
-}

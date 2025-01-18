@@ -179,7 +179,9 @@ const en: Translations = {
       moreExpensive: (amount: string) =>
         `Note that the new place is more expensive than your current one. The price takes into account the payment you have already made, and you only need to pay the difference of ${amount} €.`,
       lessExpensive:
-        'Note that the new place is cheaper than your current one. The price difference will not be refunded.'
+        'Note that the new place is cheaper than your current one. The price difference will not be refunded.',
+      equal:
+        'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
     },
     totalPrice: (totalPrice: string, vatValue: string) =>
       `${totalPrice} € (incl. vat ${vatValue} €)`,

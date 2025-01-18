@@ -97,7 +97,7 @@ export default React.memo(function ChangeForm({
       })
       return (reservation.switchPriceDifference || 0) > 0
         ? navigate('/kuntalainen/venepaikka/maksa')
-        : navigate(`/kuntalainen/venepaikka/${reservation.id}/vahvistus`)
+        : navigate(`/kuntalainen/venepaikka/vahvistus/${reservation.id}`)
     }
   }
 

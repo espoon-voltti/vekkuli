@@ -7,15 +7,14 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/citizen")
 class BoatSpaceSwitchController(
     private val reservationService: ReservationService,
-    private val reservationResponseMapper: ReservationResponseMapper,
+    private val switchService: BoatSpaceSwitchService,
 ) {
     @PostMapping("/reservation/{originalReservationId}/switch/{spaceId}")
     fun postStartSwitch(
         @PathVariable originalReservationId: Int,
         @PathVariable spaceId: Int,
     ) {
-        val originalReservation = reservationService.getReservationDetails(originalReservationId)
-        val reservation = reservationService.startSwitchReservation(spaceId, originalReservationId)
+        switchService.startReservation(spaceId, originalReservationId)
     }
 
     @PostMapping("/reservation/{reservationId}/switch")
@@ -23,7 +22,6 @@ class BoatSpaceSwitchController(
         @PathVariable reservationId: Int,
         @RequestBody input: FillReservationInformationInput,
     ) {
-        val information = input.toReservationInformation()
-        reservationService.switchReservation(reservationId, input)
+        switchService.fillReservationInformation(reservationId, input)
     }
 }

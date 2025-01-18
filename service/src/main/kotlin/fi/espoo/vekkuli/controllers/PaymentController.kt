@@ -40,7 +40,8 @@ class PaymentController(
     private val messageUtil: MessageUtil,
     private val reserverService: ReserverService,
     private val paytrailEnv: PaytrailEnv,
-    private val timeProvider: TimeProvider
+    private val timeProvider: TimeProvider,
+    private val boatReservationService: BoatReservationService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -134,9 +135,15 @@ class PaymentController(
             reservationService.handlePaymentResult(params, true)
 
         when (result) {
-            is PaymentProcessResult.Success -> return redirectUrlThymeleaf(
-                "/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus"
-            )
+            is PaymentProcessResult.Success -> {
+                // End the original reservation
+                if (result.reservation.originalReservationId != null) {
+                    boatReservationService.markReservationEnded(result.reservation.originalReservationId)
+                }
+                return redirectUrlThymeleaf(
+                    "/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus"
+                )
+            }
             is PaymentProcessResult.Failure -> return redirectUrlThymeleaf("/")
             is PaymentProcessResult.HandledAlready -> return redirectUrlThymeleaf("/")
         }
