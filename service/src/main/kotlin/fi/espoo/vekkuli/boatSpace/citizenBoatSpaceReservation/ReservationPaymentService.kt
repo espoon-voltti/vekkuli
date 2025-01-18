@@ -22,11 +22,12 @@ class ReservationPaymentService(
 ) {
     suspend fun createPaymentForBoatSpaceReservation(
         citizen: CitizenWithDetails,
-        reservation: BoatSpaceReservationDetails
+        reservation: BoatSpaceReservationDetails,
+        givenPrice: Int?
     ): PaytrailPaymentResponse {
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
-        val amount = reservation.priceCents
+        val amount = givenPrice ?: reservation.priceCents
         val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         // TODO must this be configurable?
         val productCode = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
@@ -77,8 +78,8 @@ class ReservationPaymentService(
         )
     }
 
-    fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult {
-        return when (val result = boatReservationService.handlePaymentResult(params, true)) {
+    fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult =
+        when (val result = boatReservationService.handlePaymentResult(params, true)) {
             is PaymentProcessResult.Success ->
                 PaymentHandleResult(
                     processResult = result,
@@ -97,10 +98,9 @@ class ReservationPaymentService(
                     redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
                 )
         }
-    }
 
-    fun handlePaymentCancel(params: Map<String, String>): PaymentHandleResult {
-        return when (val result = boatReservationService.handlePaymentResult(params, false)) {
+    fun handlePaymentCancel(params: Map<String, String>): PaymentHandleResult =
+        when (val result = boatReservationService.handlePaymentResult(params, false)) {
             is PaymentProcessResult.Success ->
                 PaymentHandleResult(
                     processResult = result,
@@ -119,7 +119,6 @@ class ReservationPaymentService(
                     redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
                 )
         }
-    }
 
     private fun createReference(
         balanceAccount: String,

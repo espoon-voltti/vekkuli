@@ -154,6 +154,10 @@ const sv: Translations = {
         Renew: (name: string) => `Förnyelse av plats: ${name}`,
         Winter: (name: string) => `Vinterplatsreservation: ${name}`,
         Storage: (name: string) => `Förvaringsplatsreservation: ${name}`
+      },
+      info: {
+        switch:
+          'Du håller på att byta båtplats. Bokningstiden för din båtplats förblir oförändrad. Samtidigt sägs din gamla plats upp och görs tillgänglig för andra att boka.'
       }
     },
     steps: {
@@ -207,6 +211,12 @@ const sv: Translations = {
         MAX_PERSONAL_RESERVATIONS:
           'Du har redan det maximala antalet platser av denna typ. Om du agerar på uppdrag av en organisation kan du fortsätta att boka.'
       }
+    },
+    paymentInfo: {
+      moreExpensive: (amount: string) =>
+        `Observera att den nya platsen är dyrare än din nuvarande. Priset tar hänsyn till den betalning du redan har gjort, och du behöver endast betala mellanskillnaden på ${amount} €.`,
+      lessExpensive:
+        'Observera att den nya platsen är billigare än din nuvarande. Prisskillnaden återbetalas inte.'
     },
     auth: {
       reservingBoatSpace: 'Bokar båtplats:',

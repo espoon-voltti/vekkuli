@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
@@ -404,6 +405,30 @@ class ReservationFormService(
         trailerRegistrationNumber = input.trailerRegistrationNumber,
         trailerLengthInM = input.trailerLength,
         trailerWidthInM = input.trailerWidth,
+    )
+
+    fun buildReserveBoatSpaceInput(
+        reservationId: Int,
+        input: FillReservationInformationInput
+    ) = ReserveBoatSpaceInput(
+        reservationId = reservationId,
+        boatId = input.boat.id,
+        boatType = input.boat.type,
+        width = input.boat.width,
+        length = input.boat.length,
+        depth = input.boat.depth,
+        weight = input.boat.weight,
+        boatRegistrationNumber = input.boat.registrationNumber ?: "",
+        boatName = input.boat.name ?: "",
+        otherIdentification = input.boat.otherIdentification ?: "",
+        extraInformation = input.boat.extraInformation ?: "",
+        ownerShip = input.boat.ownership,
+        email = input.citizen.email,
+        phone = input.citizen.phone,
+        storageType = input.storageType,
+        trailerRegistrationNumber = input.trailer?.registrationNumber,
+        trailerLengthInM = input.trailer?.length,
+        trailerWidthInM = input.trailer?.width,
     )
 
     @Transactional

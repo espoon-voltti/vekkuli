@@ -1,31 +1,56 @@
 import { getFreeSpaces } from 'citizen-frontend/api-clients/free-spaces'
 import {
+  canReserveSpace,
+  getSwitchReservation,
   reserveSpace,
+  startToSwitchBoatSpace,
   switchBoatSpace
 } from 'citizen-frontend/api-clients/reservation'
 import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces'
+import { FillBoatSpaceReservationInput } from 'citizen-frontend/api-types/reservation'
 import { createQueryKeys } from 'citizen-frontend/query'
 import { mutation, query } from 'lib-common/query'
 
-const queryKeys = createQueryKeys('free-spaces', {
+import { queryKeys } from '../../queries'
+
+const reservationQueryKeys = createQueryKeys('free-spaces', {
   allSearchesToFreeSpaces: () => ['searchFreeSpaces'],
   searchFreeSpaces: (params: SearchFreeSpacesParams | undefined) => [
     'searchFreeSpaces',
     params
-  ]
+  ],
+  canReserveSpace: (spaceId: number) => ['canReserveSpace', spaceId]
 })
 
 export const freeSpacesQuery = query({
   api: getFreeSpaces,
-  queryKey: queryKeys.searchFreeSpaces
+  queryKey: reservationQueryKeys.searchFreeSpaces
 })
 
 export const reserveSpaceMutation = mutation({
   api: reserveSpace,
-  invalidateQueryKeys: () => [queryKeys.allSearchesToFreeSpaces()]
+  invalidateQueryKeys: () => [reservationQueryKeys.allSearchesToFreeSpaces()]
+})
+
+export const starSwitchSpaceMutation = mutation({
+  api: startToSwitchBoatSpace,
+  invalidateQueryKeys: () => [reservationQueryKeys.allSearchesToFreeSpaces()]
 })
 
 export const switchSpaceMutation = mutation({
-  api: switchBoatSpace,
-  invalidateQueryKeys: () => [queryKeys.allSearchesToFreeSpaces()]
+  api: ({ id, input }: { id: number; input: FillBoatSpaceReservationInput }) =>
+    switchBoatSpace(id, input),
+  invalidateQueryKeys: () => [
+    queryKeys.unfinishedReservation(),
+    queryKeys.unfinishedReservationExpiration()
+  ]
+})
+
+export const getSwitchReservationMutation = mutation({
+  api: getSwitchReservation
+})
+
+export const canReserveSpaceQuery = query({
+  api: canReserveSpace,
+  queryKey: reservationQueryKeys.canReserveSpace
 })

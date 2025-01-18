@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { PlaceWithSpaces } from 'citizen-frontend/api-types/free-spaces'
+import { useTranslation } from 'citizen-frontend/localization'
 
 import { InfoBox } from './InfoBox'
 import { ResultGroup } from './ResultGroup'
@@ -16,12 +17,16 @@ export default React.memo(function SearchResults({
   showInfoBox: boolean
   onReserveSpace: (spaceId: number) => void
 }) {
+  const i18n = useTranslation()
+
   return (
     <div className="block loaded-content" data-testid="boat-space-results">
       <h3>
         <span>Hakuehtoihin sopivat vapaat paikat</span> <span>({count})</span>
       </h3>
-      {!showInfoBox ? null : <InfoBox />}
+      {!showInfoBox ? null : (
+        <InfoBox text={i18n.reservation.searchPage.missingFieldsInfoBox} />
+      )}
       {placesWithSpaces.map((placeWithSpaces) => (
         <ResultGroup
           place={placeWithSpaces.place}

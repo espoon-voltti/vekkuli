@@ -92,7 +92,7 @@ export default React.memo(function Form({
         id: reservation?.id,
         input: formBind.value()
       })
-      return navigate('/kuntalainen/venepaikka/maksu')
+      return navigate('/kuntalainen/venepaikka/maksa')
     }
   }
 

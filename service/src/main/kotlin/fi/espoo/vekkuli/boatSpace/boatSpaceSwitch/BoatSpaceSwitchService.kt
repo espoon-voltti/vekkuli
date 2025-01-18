@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.renewal.ModifyReservationInput
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalReservationForApplicationForm
@@ -85,9 +86,9 @@ class BoatSpaceSwitchService(
 
     fun updateSwitchReservation(
         citizenId: UUID,
-        input: ModifyReservationInput,
+        input: FillReservationInformationInput,
         reservationId: Int
-    ) {
+    ): ReservationWithDependencies {
         val reservation =
             boatReservationService.getReservationWithReserver(reservationId)
                 ?: throw NotFound("Reservation not found")
@@ -105,27 +106,28 @@ class BoatSpaceSwitchService(
             reservation.startDate,
             reservation.endDate
         )
+        return reservation
     }
 
     fun updateReserver(
         reserverType: ReserverType?,
         reserverId: UUID,
-        input: ModifyReservationInput,
+        input: FillReservationInformationInput,
     ) {
         if (reserverType == ReserverType.Organization) {
             organizationService.updateOrganization(
                 UpdateOrganizationParams(
                     id = reserverId,
-                    phone = input.orgPhone,
-                    email = input.orgEmail
+                    phone = input.organization?.phone,
+                    email = input.organization?.email
                 )
             )
         } else {
             reserverService.updateCitizen(
                 UpdateCitizenParams(
                     id = reserverId,
-                    phone = input.phone,
-                    email = input.email,
+                    phone = input.citizen.phone,
+                    email = input.citizen.email,
                 )
             )
         }
@@ -172,6 +174,22 @@ class BoatSpaceSwitchService(
             BoatSpaceType.Storage -> "T1276"
             BoatSpaceType.Trailer -> "T1270"
         }
+
+    fun getPriceDifference(reservationId: Int): Int? {
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw BadRequest("Reservation not found")
+        if (reservation.originalReservationId == null) {
+            return null
+        }
+        val originalReservationPrice =
+            boatReservationService
+                .getBoatSpaceReservation(reservation.originalReservationId)
+                ?.priceCents
+
+        val priceDifference = calculatePriceDifference(originalReservationPrice ?: reservation.priceCents, reservation.priceCents)
+        return priceDifference
+    }
 
     fun calculatePriceDifference(
         originalPriceCents: Int,
@@ -252,119 +270,4 @@ class BoatSpaceSwitchService(
             )
         return boatSpaceReservationRepo.getReservationWithReserverInInfoPaymentRenewalStateWithinSessionTime(newId)
     }
-
-    /**
-
-     fun buildBoatSpaceSwitchViewParams(
-     citizenId: UUID,
-     renewedReservation: ReservationWithDependencies,
-     formInput: RenewalReservationInput,
-     ): BoatSpaceSwitchViewParams {
-     val citizen = reserverService.getCitizen(citizenId)
-     if (citizen == null || renewedReservation.reserverId != citizenId) {
-     throw UnauthorizedException()
-     }
-
-     var input =
-     formInput.copy(
-     email = formInput.email ?: citizen?.email,
-     phone = formInput.phone ?: citizen?.phone,
-     storageType =
-     renewedReservation.storageType ?: StorageType.None,
-     )
-     if (renewedReservation.trailerId != null) {
-     val trailer = jdbiTrailerRepository.getTrailer(renewedReservation.trailerId) ?: throw BadRequest("Trailer not found")
-     input =
-     input.copy(
-     trailerLength = intToDecimal(trailer?.lengthCm),
-     trailerWidth = intToDecimal(trailer?.widthCm),
-     trailerRegistrationNumber = trailer?.registrationCode,
-     )
-     }
-
-     val usedBoatId = formInput.boatId ?: renewedReservation.boatId // use boat id from reservation if it exists
-     if (usedBoatId != null && usedBoatId != 0) {
-     val boat = boatService.getBoat(usedBoatId)
-
-     if (boat != null) {
-     input =
-     input.copy(
-     boatId = boat.id,
-     depth = intToDecimal(boat.depthCm),
-     boatName = boat.name,
-     weight = boat.weightKg,
-     width = intToDecimal(boat.widthCm),
-     length = intToDecimal(boat.lengthCm),
-     otherIdentification = boat.otherIdentification,
-     extraInformation = boat.extraInformation,
-     ownership = boat.ownership,
-     boatType = boat.type,
-     boatRegistrationNumber = boat.registrationCode,
-     noRegistrationNumber = boat.registrationCode.isNullOrEmpty()
-     )
-     }
-     } else {
-     input = input.copy(boatId = 0)
-     }
-
-     val reserverId = renewedReservation.reserverId
-
-     val boats =
-     reserverId?.let {
-     boatService
-     .getBoatsForReserver(reserverId)
-     .map { boat -> boat.updateBoatDisplayName(messageUtil) }
-     } ?: emptyList()
-
-     val renewedReservationForApplicationForm = buildReservationForApplicationForm(renewedReservation)
-     return BoatSpaceSwitchViewParams(
-     renewedReservationForApplicationForm,
-     boats,
-     citizen,
-     input,
-     UserType.CITIZEN,
-     )
-     }
-
-     private fun buildReservationForApplicationForm(reservationWithDependencies: ReservationWithDependencies) =
-     SwitchReservationForApplicationForm(
-     reservationWithDependencies.id,
-     reservationWithDependencies.reserverId,
-     reservationWithDependencies.boatId,
-     reservationWithDependencies.lengthCm,
-     reservationWithDependencies.widthCm,
-     reservationWithDependencies.amenity,
-     reservationWithDependencies.type,
-     reservationWithDependencies.place,
-     reservationWithDependencies.locationName,
-     reservationWithDependencies.validity,
-     reservationWithDependencies.startDate,
-     reservationWithDependencies.endDate,
-     reservationWithDependencies.priceCents,
-     reservationWithDependencies.vatCents,
-     reservationWithDependencies.netPriceCents,
-     reservationWithDependencies.created,
-     reservationWithDependencies.excludedBoatTypes,
-     reservationWithDependencies.section,
-     reservationWithDependencies.storageType,
-     reservationWithDependencies.originalReservationId.toString(),
-     )
-
-     fun buildRenewForm(
-     citizenId: UUID,
-     renewedReservation: ReservationWithDependencies,
-     formInput: RenewalReservationInput,
-     ): String {
-     val htmlParams =
-     buildBoatSpaceSwitchViewParams(citizenId, renewedReservation, formInput)
-     if (renewedReservation.type == BoatSpaceType.Winter) {
-     return boatSpaceSwitchForm.boatSpaceSwitchFormForWinterStorage(
-     htmlParams
-     )
-     }
-     return boatSpaceSwitchForm.boatSpaceRenewFormForSlip(
-     htmlParams
-     )
-     }
-     **/
 }

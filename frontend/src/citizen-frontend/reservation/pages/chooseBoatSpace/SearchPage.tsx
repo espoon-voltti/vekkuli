@@ -28,7 +28,7 @@ import {
 import {
   freeSpacesQuery,
   reserveSpaceMutation,
-  switchSpaceMutation
+  starSwitchSpaceMutation
 } from './queries'
 import useStoredSearchState from '../useStoredSearchState'
 
@@ -39,7 +39,6 @@ export default React.memo(function SearchPage() {
   const userLoggedIn = isLoggedIn.getOrElse(false)
   const activeReservations = useQueryResult(citizenActiveReservationsQuery())
   const fetchedUserReservations = activeReservations.getOrElse([])
-
   const { reservation } = useContext(ReservationStateContext)
 
   const [searchState, setSearchState] = useStoredSearchState()
@@ -108,11 +107,20 @@ export default React.memo(function SearchPage() {
         setReserveError(errorType)
       })
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { mutateAsync: switchPlace } = useMutation(switchSpaceMutation)
+  const { mutateAsync: switchPlace } = useMutation(starSwitchSpaceMutation)
   const onSwitch = (spaceId: number, reservationId: number) => {
     // eslint-disable-next-line no-console
     console.log(`switching ${reservationId} to ${spaceId}`)
+    switchPlace({ reservationId, spaceId })
+      .then((response) => {
+        console.error('got response', response)
+        return navigate('/kuntalainen/venepaikka/vaihda')
+      })
+      .catch((error) => {
+        const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
+        const errorType = mapErrorCode(errorCode)
+        setReserveError(errorType)
+      })
   }
 
   const selectBoatSpace = (spaceId: number) => {

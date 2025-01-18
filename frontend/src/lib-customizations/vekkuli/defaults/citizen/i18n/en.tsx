@@ -160,6 +160,10 @@ const en: Translations = {
         Renew: (name: string) => `Renew reservation: ${name}`,
         Winter: (name: string) => `Winter space reservation: ${name}`,
         Storage: (name: string) => `Storage space reservation: ${name}`
+      },
+      info: {
+        switch:
+          'You are switching your boat place. The reservation period for your boat place remains unchanged. At the same time, your old place will be canceled and made available for others to reserve.'
       }
     },
     noRegistererNumber: 'No registration number',
@@ -170,6 +174,12 @@ const en: Translations = {
       totalPrice: (amount: string) => `Total: ${amount} €`,
       vatValue: (amount: string) => `VAT: ${amount} €`,
       netPrice: (amount: string) => `Net price: ${amount} €`
+    },
+    paymentInfo: {
+      moreExpensive: (amount: string) =>
+        `Note that the new place is more expensive than your current one. The price takes into account the payment you have already made, and you only need to pay the difference of ${amount} €.`,
+      lessExpensive:
+        'Note that the new place is cheaper than your current one. The price difference will not be refunded.'
     },
     totalPrice: (totalPrice: string, vatValue: string) =>
       `${totalPrice} € (incl. vat ${vatValue} €)`,

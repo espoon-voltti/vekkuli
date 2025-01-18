@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router'
 
 import { Municipality } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
-import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
+import {
+  formatCentsToEuros,
+  formatPlaceIdentifier
+} from 'citizen-frontend/shared/formatters'
 import { Boat, Organization, StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -14,6 +17,7 @@ import { useMutation } from 'lib-common/query'
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
 import { Reservation } from '../../state'
+import { InfoBox } from '../chooseBoatSpace/SearchResults/InfoBox'
 
 import initialOrganizationFormState, {
   onOrganizationFormUpdate,
@@ -25,33 +29,32 @@ import {
   onReserveSpaceUpdate,
   reserveSpaceForm
 } from './formDefinitions/reserveSpace'
-import { fillBoatSpaceReservationMutation } from './queries'
 import ReserverSection from './sections/Reserver'
 import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
+import { switchSpaceMutation } from '../chooseBoatSpace/queries'
+import { formatCmToM } from '../../../shared/formatters'
 
-type FormProperties = {
+type ChangeFormProperties = {
   reservation: Reservation
   boats: Boat[]
   municipalities: Municipality[]
   organizations: Organization[]
 }
 
-export default React.memo(function Form({
+export default React.memo(function ChangeForm({
   reservation,
   boats,
   municipalities,
   organizations
-}: FormProperties) {
+}: ChangeFormProperties) {
   const i18n = useTranslation()
   const navigate = useNavigate()
   const { showAllErrors, setShowAllErrors } = useFormErrorContext()
 
-  const { mutateAsync: submitForm } = useMutation(
-    fillBoatSpaceReservationMutation
-  )
+  const { mutateAsync: submitForm } = useMutation(switchSpaceMutation)
 
   const organizationFormBind = useForm(
     organizationForm,
@@ -90,7 +93,7 @@ export default React.memo(function Form({
         id: reservation?.id,
         input: { ...formBind.value(), ...organizationFormBind.value() }
       })
-      return navigate('/kuntalainen/venepaikka/maksu')
+      return navigate('/kuntalainen/venepaikka/maksa')
     }
   }
 
@@ -113,6 +116,7 @@ export default React.memo(function Form({
         )}
       </h1>
       <div id="form-inputs" className="block">
+        <InfoBox text={i18n.reservation.formPage.info.switch} />
         <ReserverSection
           reserver={updatedReservation.citizen}
           bind={reserver}
@@ -120,7 +124,12 @@ export default React.memo(function Form({
         <OrganizationSection bind={organizationFormBind} />
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
-        <ReservedSpace reservation={updatedReservation} />
+        <div className="form-section">
+          <ReservedSpace reservation={updatedReservation} />
+          <SwitchPriceInfo
+            priceDifference={reservation.switchPriceDifference}
+          />
+        </div>
         <UserAgreementsSection bind={userAgreement} />
       </div>
 
@@ -135,3 +144,20 @@ export default React.memo(function Form({
     </form>
   )
 })
+
+function SwitchPriceInfo({ priceDifference }: { priceDifference?: number }) {
+  const i18n = useTranslation()
+
+  if (priceDifference === undefined) {
+    return null
+  }
+
+  const text =
+    priceDifference > 0
+      ? i18n.reservation.paymentInfo.moreExpensive(
+          formatCentsToEuros(priceDifference)
+        )
+      : i18n.reservation.paymentInfo.lessExpensive
+
+  return <InfoBox text={text} />
+}

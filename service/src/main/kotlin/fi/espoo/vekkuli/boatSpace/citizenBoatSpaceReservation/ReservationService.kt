@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Conflict
@@ -30,10 +31,19 @@ open class ReservationService(
     private val citizenAccessControl: CitizenAccessControl,
     private val reservationPaymentService: ReservationPaymentService,
     private val terminateService: TerminateReservationService,
+    private val switchService: BoatSpaceSwitchService
 ) {
     fun getUnfinishedReservationForCurrentCitizen(): BoatSpaceReservation? {
         val (citizenId) = citizenAccessControl.requireCitizen()
-        return boatReservationService.getUnfinishedReservationForCitizen(citizenId)?.toBoatSpaceReservation()
+        val reservation = boatReservationService.getUnfinishedReservationForCitizen(citizenId)?.toBoatSpaceReservation() ?: return null
+        return reservation
+    }
+
+    fun canReserveANewSpaceForCurrentCitizen(spaceId: Int): Boolean {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
+        val result = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+        return result is ReservationResult.Success
     }
 
     fun getUnfinishedReservationExpirationForCurrentCitizen(): SecondsRemaining? {
@@ -62,6 +72,7 @@ open class ReservationService(
         }
 
     fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservation(reservationId).toBoatSpaceReservation()
+    fun getReservationDetails(reservationId: Int): BoatSpaceReservationDetails = accessReservation(reservationId)
 
     @Transactional
     open fun startReservation(spaceId: Int): BoatSpaceReservation {
@@ -88,6 +99,31 @@ open class ReservationService(
     }
 
     @Transactional
+    fun startSwitchReservation(
+        spaceId: Int,
+        reservationId: Int
+    ): ReservationWithDependencies {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        boatReservationService.getBoatSpaceReservation(reservationId)
+            ?: throw NotFound("Reservation not found")
+        val result = switchService.getOrCreateSwitchReservationForCitizen(citizenId, reservationId, spaceId)
+        return result
+    }
+
+    @Transactional
+    fun switchReservation(
+        reservationId: Int,
+        input: FillReservationInformationInput
+    ): ReservationWithDependencies {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw NotFound("Reservation not found")
+        val result = switchService.updateSwitchReservation(citizenId, input, reservationId)
+        return result
+    }
+
+    @Transactional
     open fun fillReservationInformation(
         reservationId: Int,
         information: ReservationInformation
@@ -110,7 +146,10 @@ open class ReservationService(
     }
 
     @Transactional
-    open suspend fun getPaymentInformation(reservationId: Int): PaytrailPaymentResponse {
+    open suspend fun getPaymentInformation(
+        reservationId: Int,
+        givenPrice: Int? = null
+    ): PaytrailPaymentResponse {
         val citizen = citizenAccessControl.requireCitizen()
         val reservation = accessReservation(reservationId)
 
@@ -118,7 +157,7 @@ open class ReservationService(
             throw Conflict("Reservation is not filled")
         }
 
-        return reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation)
+        return reservationPaymentService.createPaymentForBoatSpaceReservation(citizen, reservation, givenPrice)
     }
 
     @Transactional

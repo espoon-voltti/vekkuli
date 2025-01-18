@@ -159,6 +159,10 @@ export default {
         Renew: (name: string) => `Paikan uusinta: ${name}`,
         Winter: (name: string) => `Talvipaikan varaus: ${name}`,
         Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
+      },
+      info: {
+        switch:
+          'Olet vaihtamassa venepaikkaa. Venepaikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
       }
     },
     noRegistererNumber: 'Ei rekisterinumeroa',
@@ -172,6 +176,12 @@ export default {
     },
     totalPrice: (totalPrice: string, vatValue: string) =>
       `${totalPrice} € (sis. alv ${vatValue} €)`,
+    paymentInfo: {
+      moreExpensive: (amount: string) =>
+        `Huomaa, että uusi paikka on kalliimpi kuin nykyinen paikkasi. Hinnassa on huomioitu jo suorittamasi maksu ja sinun täytyy maksaa ainoastaan paikkojen hinnan välinen erotus ${amount} €.`,
+      lessExpensive:
+        'Huomaa, että uusi paikka on halvempi kuin nykyinen paikkasi. Hintaa ei palauteta.'
+    },
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,

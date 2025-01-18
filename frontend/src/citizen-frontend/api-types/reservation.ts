@@ -1,6 +1,7 @@
 import LocalDate from 'lib-common/date/local-date'
 
 import HelsinkiDateTime from '../../lib-common/date/helsinki-date-time'
+import { number } from '../../lib-common/form/fields'
 import {
   Boat,
   BoatSpace,
@@ -35,6 +36,11 @@ export type BoatSpaceReservation = {
   trailer?: Trailer
   boat: Boat
   creationType: CreationType
+  switchPriceDifference?: number
+}
+
+export type SwitchInformation = {
+  priceDifference: number
 }
 
 export type BoatSpaceReservationResponse = {
@@ -56,6 +62,7 @@ export type BoatSpaceReservationResponse = {
   trailer: Trailer | null
   boat: Boat
   creationType: CreationType
+  switchPriceDifference?: number
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }
