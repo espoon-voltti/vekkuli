@@ -196,7 +196,6 @@ export default {
       equal:
         'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
     },
-
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,

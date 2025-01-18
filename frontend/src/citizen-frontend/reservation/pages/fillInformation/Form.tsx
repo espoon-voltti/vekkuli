@@ -50,7 +50,6 @@ export default React.memo(function Form({
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
   )
-
   const [searchState, setSearchState] = useStoredSearchState()
   const formBind = useForm(
     reserveSpaceForm,
