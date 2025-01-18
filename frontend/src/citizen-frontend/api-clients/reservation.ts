@@ -140,8 +140,7 @@ export async function paymentInformation(
 ): Promise<PaymentInformationResponse> {
   const { data } = await client.request<PaymentInformationResponse>({
     url: uri`/reservation/${reservationId}/payment-information`.toString(),
-    method: 'POST',
-    params: { amount }
+    method: 'POST'
   })
 
   return data

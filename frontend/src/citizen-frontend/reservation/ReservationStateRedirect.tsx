@@ -20,21 +20,23 @@ export default React.memo(function ReservationStateRedirect({
     switch (currentReservation.status) {
       case 'Info':
         switch (currentReservation.creationType) {
+          case 'Renew':
           case 'New':
             equalOrRedirect('/kuntalainen/venepaikka/varaa', pathname)
             break
           case 'Switch':
             equalOrRedirect('/kuntalainen/venepaikka/vaihda', pathname)
             break
-          case 'Renew':
-            equalOrRedirect('/kuntalainen/venepaikka/uusinta', pathname)
         }
         break
       case 'Payment':
         equalOrRedirect('/kuntalainen/venepaikka/maksa', pathname)
         break
       case 'Confirmed':
-        equalOrRedirect('/kuntalainen/venepaikka/vahvistus', pathname)
+        equalOrRedirect(
+          `/kuntalainen/venepaikka/${currentReservation.id}/vahvistus`,
+          pathname
+        )
         break
     }
   }

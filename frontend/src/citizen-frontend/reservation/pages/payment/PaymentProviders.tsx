@@ -8,15 +8,13 @@ import { paymentInformationQuery } from './queries'
 
 type PaymentProvidersProps = {
   reservationId: number
-  amount?: number
 }
 
 export default React.memo(function PaymentProviders({
-  reservationId,
-  amount
+  reservationId
 }: PaymentProvidersProps) {
   const paymentProviders = useQueryResult(
-    paymentInformationQuery(reservationId, amount)
+    paymentInformationQuery(reservationId)
   )
 
   return (

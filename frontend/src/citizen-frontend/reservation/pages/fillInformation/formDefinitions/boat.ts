@@ -64,11 +64,17 @@ export default function initialFormState(
   i18n: Translations,
   boats: Boat[],
   boatSpaceType: BoatSpaceType,
-  storedSearchState?: StoredSearchState
+  storedSearchState?: StoredSearchState,
+  selectedBoat?: Boat
 ): StateOf<BoatForm> {
   return {
-    boatInfo: initialBoatInfoFormState(i18n, boatSpaceType, storedSearchState),
-    boatSelection: initialBoatSelectionState(boats),
+    boatInfo: initialBoatInfoFormState(
+      i18n,
+      boatSpaceType,
+      storedSearchState,
+      selectedBoat
+    ),
+    boatSelection: initialBoatSelectionState(boats, selectedBoat),
     ownership: initialOwnershipState(i18n, boatSpaceType),
     newBoatCache: initialBoatInfoFormState(
       i18n,
@@ -81,8 +87,10 @@ export default function initialFormState(
 function initialBoatInfoFormState(
   i18n: Translations,
   boatSpaceType: BoatSpaceType,
-  storedSearchState?: StoredSearchState
+  storedSearchState?: StoredSearchState,
+  defaultBoat?: Boat
 ) {
+  if (defaultBoat) return transformBoatToFormBoat(defaultBoat, i18n)
   let width = positiveNumber.empty().value
   let length = positiveNumber.empty().value
   if (boatSpaceType !== 'Winter') {

@@ -141,7 +141,7 @@ export default React.memo(function Form({
   )
 })
 
-const ValidationWarning = React.memo(function ValidationWarning() {
+export const ValidationWarning = React.memo(function ValidationWarning() {
   return (
     <div className="warning block form-validation-message">
       <span className="icon">

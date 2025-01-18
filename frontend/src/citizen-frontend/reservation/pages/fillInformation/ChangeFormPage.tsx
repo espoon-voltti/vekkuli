@@ -19,6 +19,7 @@ import ChangeForm from './ChangeForm'
 
 export default React.memo(function ChangeFormPage() {
   const { reservation } = useContext(ReservationStateContext)
+
   const citizenBoats = useQueryResult(citizenBoatsQuery())
   const municipalities = useQueryResult(getMunicipalitiesQuery())
   const organizations = useQueryResult(citizenOrganizationsQuery())

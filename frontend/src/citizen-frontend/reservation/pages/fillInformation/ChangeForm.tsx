@@ -35,7 +35,8 @@ import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
 import { switchSpaceMutation } from '../chooseBoatSpace/queries'
-import { formatCmToM } from '../../../shared/formatters'
+import { ValidationWarning } from './Form'
+import { FormSection } from 'lib-components/form'
 
 type ChangeFormProperties = {
   reservation: Reservation
@@ -72,7 +73,8 @@ export default React.memo(function ChangeForm({
         i18n,
         boats,
         reservation.citizen,
-        reservation.boatSpace.type
+        reservation.boatSpace.type,
+        reservation
       ),
     i18n.components.validationErrors,
     {
@@ -93,7 +95,9 @@ export default React.memo(function ChangeForm({
         id: reservation?.id,
         input: { ...formBind.value(), ...organizationFormBind.value() }
       })
-      return navigate('/kuntalainen/venepaikka/maksa')
+      return (reservation.switchPriceDifference || 0) > 0
+        ? navigate('/kuntalainen/venepaikka/maksa')
+        : navigate(`/kuntalainen/venepaikka/${reservation.id}/vahvistus`)
     }
   }
 
@@ -105,7 +109,7 @@ export default React.memo(function ChangeForm({
   }
 
   return (
-    <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
+    <form className="column" onSubmit={(e) => e.preventDefault()}>
       <h1 className="title pb-l" id="boat-space-form-header">
         {i18n.reservation.formPage.title[updatedReservation.boatSpace.type](
           formatPlaceIdentifier(
@@ -115,7 +119,7 @@ export default React.memo(function ChangeForm({
           )
         )}
       </h1>
-      <div id="form-inputs" className="block">
+      <div className="block">
         <InfoBox text={i18n.reservation.formPage.info.switch} />
         <ReserverSection
           reserver={updatedReservation.citizen}
@@ -124,13 +128,14 @@ export default React.memo(function ChangeForm({
         <OrganizationSection bind={organizationFormBind} />
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
-        <div className="form-section">
+        <FormSection>
           <ReservedSpace reservation={updatedReservation} />
           <SwitchPriceInfo
             priceDifference={reservation.switchPriceDifference}
           />
-        </div>
+        </FormSection>
         <UserAgreementsSection bind={userAgreement} />
+        {showAllErrors && <ValidationWarning />}
       </div>
 
       <Buttons>
@@ -152,12 +157,15 @@ function SwitchPriceInfo({ priceDifference }: { priceDifference?: number }) {
     return null
   }
 
-  const text =
-    priceDifference > 0
-      ? i18n.reservation.paymentInfo.moreExpensive(
-          formatCentsToEuros(priceDifference)
-        )
-      : i18n.reservation.paymentInfo.lessExpensive
+  const text = () => {
+    if (priceDifference > 0)
+      return i18n.reservation.paymentInfo.moreExpensive(
+        formatCentsToEuros(priceDifference)
+      )
+    else if (priceDifference < 0)
+      return i18n.reservation.paymentInfo.lessExpensive
+    return i18n.reservation.paymentInfo.equal
+  }
 
-  return <InfoBox text={text} />
+  return <InfoBox text={text()} />
 }
