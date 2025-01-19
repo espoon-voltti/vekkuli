@@ -79,8 +79,7 @@ class ReservationPaymentService(
 
     private fun calculatePrice(reservation: BoatSpaceReservationDetails): Int {
         if (switchService.isSwitchedReservation(reservation)) {
-            val priceDifference = switchService.getPriceDifference(reservation.id)
-            return priceDifference
+            return switchService.getRevisedPrice(reservation)
         }
         return reservation.priceCents
     }

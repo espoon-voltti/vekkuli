@@ -31,11 +31,11 @@ export type BoatSpaceReservation = {
   totalPrice: string
   vatValue: string
   netPrice: string
+  revisedPrice: string
   storageType?: StorageType
   trailer?: Trailer
   boat: Boat
   creationType: CreationType
-  switchPriceDifference?: number
 }
 
 export type CanReserveResultStatus =
@@ -66,6 +66,7 @@ export type BoatSpaceReservationResponse = {
   endDate: string
   validity: ReservationValidity
   paymentDate: string | null
+  revisedPrice: string
   totalPrice: string
   vatValue: string
   netPrice: string
@@ -73,7 +74,6 @@ export type BoatSpaceReservationResponse = {
   trailer: Trailer | null
   boat: Boat
   creationType: CreationType
-  switchPriceDifference?: number
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

@@ -26,6 +26,7 @@ data class ReservationResponse(
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
+    val revisedPrice: String,
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
