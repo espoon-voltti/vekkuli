@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.service.BoatReservationService
+import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -46,7 +47,8 @@ data class CanReserveResponse(
 
 @Service
 class CanReserveResponseMapper(
-    private val spaceReservationService: BoatReservationService
+    private val spaceReservationService: BoatReservationService,
+    private val boatSpaceRepository: BoatSpaceRepository
 ) {
     fun toCanReserveResponse(canReserveResult: CanReserveResult): CanReserveResponse =
         CanReserveResponse(
@@ -64,7 +66,7 @@ class CanReserveResponseMapper(
         )
 
     private fun getBoatSpace(boatSpaceId: Int): BoatSpace =
-        spaceReservationService.getBoatSpaceRelatedToReservation(boatSpaceId)
+        boatSpaceRepository.getBoatSpace(boatSpaceId)
             ?: throw NotFound("Boat space not found")
 
     private fun formatBoatSpace(boatSpace: BoatSpace): CanReserveResponse.BoatSpace =

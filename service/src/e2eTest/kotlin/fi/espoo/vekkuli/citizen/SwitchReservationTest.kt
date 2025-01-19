@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.citizen
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
-import fi.espoo.vekkuli.pages.*
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod

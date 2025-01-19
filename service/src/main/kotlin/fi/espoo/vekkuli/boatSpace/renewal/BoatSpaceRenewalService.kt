@@ -288,6 +288,7 @@ class BoatSpaceRenewalService(
             reservationWithDependencies.excludedBoatTypes,
             reservationWithDependencies.section,
             reservationWithDependencies.storageType,
+            reservationWithDependencies.creationType,
             reservationWithDependencies.originalReservationId.toString(),
         )
 
@@ -297,7 +298,7 @@ class BoatSpaceRenewalService(
         userType: UserType
     ): ReservationWithDependencies? {
         val reservation =
-            boatSpaceReservationRepo.getBoatSpaceReservation(originalReservationId)
+            boatSpaceReservationRepo.getBoatSpaceReservationDetails(originalReservationId)
                 ?: throw BadRequest("Reservation to renew not found")
         if (!seasonalService.canRenewAReservation(reservation.validity, reservation.endDate, reservation.type).success) {
             throw Conflict("Reservation cannot be renewed")

@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
-import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
@@ -18,7 +17,6 @@ class ReservationController(
     private val reservationService: ReservationService,
     private val reservationResponseMapper: ReservationResponseMapper,
     private val reserverService: ReserverService,
-    private val switchService: BoatSpaceSwitchService,
     private val canReserveResponseMapper: CanReserveResponseMapper
 ) {
     private val logger = KotlinLogging.logger {}
@@ -32,8 +30,7 @@ class ReservationController(
             )
         }
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
-        val priceDifference = switchService.getPriceDifference(reservation.id)
-        return reservationResponseMapper.toReservationResponse(reservation, priceDifference)
+        return reservationResponseMapper.toReservationResponse(reservation)
     }
 
     @GetMapping("/unfinished-reservation-expiration")

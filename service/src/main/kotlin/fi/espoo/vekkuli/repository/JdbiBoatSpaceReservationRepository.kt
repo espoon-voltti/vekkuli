@@ -762,7 +762,7 @@ class JdbiBoatSpaceReservationRepository(
             }
         }
 
-    override fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails? =
+    override fun getBoatSpaceReservationDetails(reservationId: Int): BoatSpaceReservationDetails? =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(

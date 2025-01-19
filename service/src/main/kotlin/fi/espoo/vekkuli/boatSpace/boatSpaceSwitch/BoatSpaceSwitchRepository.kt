@@ -1,14 +1,11 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 
-import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.domain.ReservationWithDependencies
+import fi.espoo.vekkuli.domain.BoatSpaceReservation
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
-import java.time.LocalDate
 import java.util.*
 
 @Repository
@@ -16,54 +13,11 @@ class BoatSpaceSwitchRepository(
     private val jdbi: Jdbi,
     private val timeProvider: TimeProvider
 ) {
-    fun getSwitchReservationForCitizen(
-        id: UUID,
-        reservationId: Int
-    ): ReservationWithDependencies? =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.acting_citizen_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND bsr.status = 'Info'
-                    AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
-                    """.trimIndent()
-                )
-            query.bind("id", id)
-            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.bind("reservationId", reservationId)
-            query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
-        }
-
-    fun getSwitchReservationForEmployee(
-        employeeId: UUID,
-        originalReservationId: Int
-    ): ReservationWithDependencies? =
-        jdbi.withHandleUnchecked { handle ->
-            val query =
-                handle.createQuery(
-                    """
-                    ${buildSelectForReservationWithDependencies()}
-                    WHERE bsr.employee_id = :id AND bsr.original_reservation_id = :reservationId AND bsr.creation_type = 'Switch' AND 
-                    bsr.status = 'Info' 
-                        AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)
-                    """.trimIndent()
-                )
-            query.bind("id", employeeId)
-            query.bind("sessionTimeInSeconds", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
-            query.bind("currentTime", timeProvider.getCurrentDateTime())
-            query.bind("reservationId", originalReservationId)
-            query.mapTo<ReservationWithDependencies>().findOne()?.orElse(null)
-        }
-
-    fun createSwitchRow(
+    fun copyReservationToSwitchReservation(
         originalReservationId: Int,
-        userId: UUID,
+        actingCitizenId: UUID,
         boatSpaceId: Int,
-        endDate: LocalDate,
-        validity: ReservationValidity
-    ): Int =
+    ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
@@ -89,9 +43,9 @@ class BoatSpaceSwitchRepository(
                              :actingCitizenId as acting_citizen_id, 
                              :boatSpaceId as boat_space_id, 
                              start_date, 
-                             :endDate as end_date, 
+                             end_date, 
                              'Info' as status, 
-                             :validity as validity, 
+                             validity, 
                              boat_id, 
                              id as original_reservation_id,
                              storage_type,
@@ -100,27 +54,13 @@ class BoatSpaceSwitchRepository(
                       FROM boat_space_reservation
                       WHERE id = :reservationId
                     )
-                    RETURNING id
+                    RETURNING *
                     """.trimIndent()
                 ).bind("created", timeProvider.getCurrentDateTime())
                 .bind("reservationId", originalReservationId)
-                .bind("actingCitizenId", userId)
+                .bind("actingCitizenId", actingCitizenId)
                 .bind("boatSpaceId", boatSpaceId)
-                .bind("endDate", endDate)
-                .bind("validity", validity)
-                .mapTo<Int>()
+                .mapTo<BoatSpaceReservation>()
                 .one()
         }
-
-    private fun buildSelectForReservationWithDependencies() =
-        """SELECT bsr.*, r.name,  r.email, r.phone, r.type as reserver_type,
-                location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
-                bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
-                  bs.description,
-                  CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place
-            FROM boat_space_reservation bsr
-            JOIN reserver r ON bsr.reserver_id = r.id
-            JOIN boat_space bs ON bsr.boat_space_id = bs.id
-            JOIN location ON location_id = location.id
-            JOIN price ON price_id = price.id"""
 }

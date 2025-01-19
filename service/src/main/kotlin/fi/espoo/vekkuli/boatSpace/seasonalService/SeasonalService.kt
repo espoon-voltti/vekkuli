@@ -103,7 +103,8 @@ class SeasonalService(
     ): ReservationResult {
         val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
         val reservation =
-            boatSpaceReservationRepo.getBoatSpaceReservation(reservationId) ?: throw IllegalArgumentException("Reservation not found")
+            boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
+                ?: throw IllegalArgumentException("Reservation not found")
         if (reservation.type != type) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
@@ -113,6 +114,20 @@ class SeasonalService(
             reservation.endDate,
             reservation.validity,
             reserver.isEspooCitizen()
+        )
+    }
+
+    fun isReservationSwitchPeriodActive(
+        reserverID: UUID,
+        type: BoatSpaceType
+    ): Boolean {
+        val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
+        return hasActiveReservationPeriod(
+            seasonalRepository.getReservationPeriods(),
+            timeProvider.getCurrentDate(),
+            reserver.isEspooCitizen(),
+            type,
+            ReservationOperation.Change
         )
     }
 

@@ -44,7 +44,7 @@ interface BoatSpaceReservationRepository {
         spaceType: BoatSpaceType?
     ): List<BoatSpaceReservationDetails>
 
-    fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails?
+    fun getBoatSpaceReservationDetails(reservationId: Int): BoatSpaceReservationDetails?
 
     fun getBoatSpaceReservations(
         filter: SqlExpr,

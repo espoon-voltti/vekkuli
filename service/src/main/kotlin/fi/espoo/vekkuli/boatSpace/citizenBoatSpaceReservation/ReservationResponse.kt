@@ -1,8 +1,10 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -30,7 +32,6 @@ data class ReservationResponse(
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
-    val switchPriceDifference: Int?
 ) {
     data class Citizen(
         val id: UUID,
@@ -99,12 +100,10 @@ class ReservationResponseMapper(
     private val boatService: BoatService,
     private val spaceReservationService: BoatReservationService,
     private val reserverService: ReserverService,
-    private val organizationService: OrganizationService
+    private val organizationService: OrganizationService,
+    private val boatSpaceSwitchService: BoatSpaceSwitchService
 ) {
-    fun toReservationResponse(
-        reservation: BoatSpaceReservation,
-        switchPriceDifference: Int? = null
-    ): ReservationResponse =
+    fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse =
         reservationResponse(
             reservation.id,
             reservation.actingCitizenId,
@@ -115,7 +114,6 @@ class ReservationResponseMapper(
             reservation.validity,
             reservation.endDate,
             reservation.paymentDate,
-            switchPriceDifference
         )
 
     private fun reservationResponse(
@@ -127,8 +125,7 @@ class ReservationResponseMapper(
         startDate: LocalDate,
         validity: ReservationValidity,
         endDate: LocalDate,
-        paymentDate: LocalDate?,
-        switchPriceDifference: Int?
+        paymentDate: LocalDate?
     ): ReservationResponse {
         val reservationWithDependencies =
             spaceReservationService.getReservationWithDependencies(reservationId) ?: throw NotFound()
@@ -151,6 +148,7 @@ class ReservationResponseMapper(
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservationWithDependencies)
         val trailer = getTrailer(reservationWithDependencies)
+        val revisedPrice = getRevisedPrice(reservationWithDependencies)
 
         return ReservationResponse(
             id = reservationId,
@@ -167,11 +165,11 @@ class ReservationResponseMapper(
             totalPrice = reservationWithDependencies.priceInEuro,
             vatValue = reservationWithDependencies.vatPriceInEuro,
             netPrice = reservationWithDependencies.priceWithoutVatInEuro,
+            revisedPrice = revisedPrice,
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
             paymentDate = paymentDate,
-            creationType = reservationWithDependencies.creationType,
-            switchPriceDifference = switchPriceDifference
+            creationType = reservationWithDependencies.creationType
         )
     }
 
@@ -300,5 +298,18 @@ class ReservationResponseMapper(
             width = intToDecimal(trailer.widthCm),
             length = intToDecimal(trailer.lengthCm),
         )
+    }
+
+    // This can be a function to get the revised price of a reservation, eg. for switch or because of discounts
+    private fun getRevisedPrice(reservation: ReservationWithDependencies): String {
+        return when (reservation.creationType) {
+            CreationType.Switch -> {
+                formatInt(boatSpaceSwitchService.getRevisedPrice(reservation))
+            }
+
+            else -> {
+                reservation.priceInEuro
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
@@ -67,6 +68,7 @@ class ReservationFormService(
     private val emailService: TemplateEmailService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
+    private val boatSpaceSwitchService: BoatSpaceSwitchService
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
@@ -80,7 +82,12 @@ class ReservationFormService(
             reserverId = addOrUpdateOrganization(citizenId, input)
         }
         updateCitizenReserverContactInfo(citizenId, input.phone ?: "", input.email ?: "")
-        reserveSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
+
+        when (reservation.creationType) {
+            CreationType.New -> reserveNewSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
+            CreationType.Switch -> reserveSwitchedSpaceByCitizen(reservationId, reserverId, input)
+            else -> throw BadRequest("Invalid creation type for reservation")
+        }
     }
 
     fun getOrCreateReservationForCitizen(
@@ -212,8 +219,7 @@ class ReservationFormService(
         )
     }
 
-    @Transactional
-    fun reserveSpaceByCitizen(
+    private fun reserveNewSpaceByCitizen(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
@@ -238,6 +244,47 @@ class ReservationFormService(
             reserveSlipResult.data.startDate,
             reserveSlipResult.data.endDate
         )
+    }
+
+    private fun reserveSwitchedSpaceByCitizen(
+        reservationId: Int,
+        actingCitizenId: UUID,
+        input: ReservationInput
+    ) {
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw BadRequest("Reservation not found")
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
+                ?: throw BadRequest("Original reservation not found")
+
+        if (!boatSpaceSwitchService.validateCitizenCanSwitchReservation(actingCitizenId, reservation.boatSpaceId, originalReservation.id)) {
+            throw Forbidden("Citizen can not switch reservation")
+        }
+
+        val revisedPrice = boatSpaceSwitchService.getRevisedPrice(reservation)
+
+        val status = if (revisedPrice > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
+
+        processBoatSpaceReservation(
+            originalReservation.reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            status,
+            originalReservation.validity,
+            originalReservation.startDate,
+            originalReservation.endDate
+        )
+
+        if (status == ReservationStatus.Confirmed) {
+            boatReservationService.updateReservationStatus(
+                reservationId,
+                status,
+                timeProvider.getCurrentDate(),
+                "",
+                PaymentType.Other
+            )
+            boatReservationService.markReservationEnded(reservation.originalReservationId)
+        }
     }
 
     fun getReservationForApplicationForm(reservationId: Int) = reservationRepository.getReservationForApplicationForm(reservationId)
