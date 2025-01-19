@@ -219,6 +219,11 @@ export default {
     cancelAndGoBack: 'Peruuta varaus ja palaa takaisin',
     continueToPaymentButton: 'Jatka maksamaan'
   },
+  boat: {
+    delete: 'Poista vene',
+    confirmDelete: (boatName: string) =>
+      `Olet poistamassa veneen ${boatName} tietoja`
+  },
   boatSpace: {
     renterType: {
       Citizen: 'Varaan yksityishenkilönä',

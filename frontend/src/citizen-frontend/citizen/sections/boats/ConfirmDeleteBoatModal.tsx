@@ -1,4 +1,4 @@
-import { Column, Columns } from 'lib-components/dom'
+import { Column, Columns, ScreenReaderOnly } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
@@ -21,11 +21,11 @@ export default React.memo(function ConfirmDeleteBoatModal({
   const i18n = useTranslation()
   const buttons = [
     {
-      label: 'Peruuta',
+      label: i18n.common.cancel,
       action: onCancel
     },
     {
-      label: 'Vahvista poisto',
+      label: i18n.boat.delete,
       type: 'danger' as const,
       loading: isPending,
       action: onConfirm
@@ -33,29 +33,11 @@ export default React.memo(function ConfirmDeleteBoatModal({
   ]
 
   return (
-    <Modal
-      title="Olet poistamassa venettäsi:"
-      close={close}
-      buttons={buttons}
-      data-testid="delete-boat-modal"
-    >
+    <Modal close={close} buttons={buttons} data-testid="delete-boat-modal">
+      <ScreenReaderOnly>{i18n.boat.confirmDelete(boat.name)}</ScreenReaderOnly>
       <Columns isMultiline>
         <Column isFull>
-          <ul className="no-bullets">
-            <li data-testid="boat-name">{boat.name}</li>
-            {boat.hasNoRegistrationNumber === false && (
-              <li data-testid="boat-registration">{boat.registrationNumber}</li>
-            )}
-            <li data-testid="boat-identification">
-              {boat.otherIdentification}
-            </li>
-          </ul>
-        </Column>
-        <Column isFull>
-          <p>Oletko varma, että haluat poistaa veneen?</p>
-        </Column>
-        <Column isFull>
-          <p>Poistamista ei voi peruuttaa.</p>
+          <p>{i18n.boat.confirmDelete(boat.name)}</p>
         </Column>
       </Columns>
     </Modal>

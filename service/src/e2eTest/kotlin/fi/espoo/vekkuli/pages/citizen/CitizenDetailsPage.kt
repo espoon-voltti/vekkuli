@@ -39,7 +39,7 @@ class CitizenDetailsPage(
 
     class DeleteBoatModal(val root: Locator) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
-        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Vahvista poisto").setExact(true))
+        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Poista vene").setExact(true))
     }
 
     class DeleteBoatSuccessModal(val root: Locator)

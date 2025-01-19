@@ -281,8 +281,6 @@ class CitizenDetailsTest : PlaywrightTest() {
         val deleteBoatModal = citizenDetails.getDeleteBoatModal()
         assertThat(deleteBoatModal.root).isVisible()
         assertThat(deleteBoatModal.root).containsText("Leon toinen liian iso vene")
-        assertThat(deleteBoatModal.root).containsText("C1234")
-        assertThat(deleteBoatModal.root).containsText("Ismo 400")
 
         deleteBoatModal.confirmButton.click()
         assertThat(deleteBoatModal.root).not().isVisible()
