@@ -91,12 +91,13 @@ export async function municipalities(): Promise<Municipality[]> {
 export async function fillReservation(
   reservationId: number,
   input: FillBoatSpaceReservationInput
-): Promise<void> {
-  await client.request<BoatSpaceReservation>({
+): Promise<BoatSpaceReservation> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse>({
     url: uri`/reservation/${reservationId}/fill`.toString(),
     method: 'POST',
     data: input
   })
+  return deserializeJsonBoatSpaceReservationResponse(json)
 }
 
 export async function cancelReservation(reservationId: number): Promise<void> {
