@@ -222,6 +222,11 @@ const sv: Translations = {
           'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.',
         MAX_PERSONAL_RESERVATIONS:
           'Du har redan det maximala antalet platser av denna typ. Om du agerar på uppdrag av en organisation kan du fortsätta att boka.'
+      },
+      fillInformation: {
+        title: 'Reservering misslyckades',
+        SERVER_ERROR:
+          'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.'
       }
     },
     paymentInfo: {

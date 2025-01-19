@@ -228,6 +228,11 @@ export default {
           'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.',
         MAX_PERSONAL_RESERVATIONS:
           'Sinulla on jo maksimimäärä tämän tyypin paikkoja. Jos asioit yhteisön puolesta, voit jatkaa varaamista. '
+      },
+      fillInformation: {
+        title: 'Varaaminen ei onnistunut',
+        SERVER_ERROR:
+          'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.'
       }
     },
     auth: {

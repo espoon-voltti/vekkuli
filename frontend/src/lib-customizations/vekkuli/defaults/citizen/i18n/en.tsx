@@ -231,6 +231,11 @@ const en: Translations = {
           'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
         MAX_PERSONAL_RESERVATIONS:
           'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.'
+      },
+      fillInformation: {
+        title: 'Reserving failed',
+        SERVER_ERROR:
+          'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.'
       }
     },
     auth: {
