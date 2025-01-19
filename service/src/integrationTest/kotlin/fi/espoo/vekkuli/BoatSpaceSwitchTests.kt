@@ -64,7 +64,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     fun mockSeasonalService() {
         // We live in the starting period of reservation switch for espoo citizen
         mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
-        //mockLoggedInUser()
+        // mockLoggedInUser()
 
         // pass through the return values
         Mockito
@@ -77,28 +77,29 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
                 it.getArgument(1)
             }
 
-        Mockito.`when`(seasonalService.isReservationSwitchPeriodActive(any(),any())).thenReturn(true)
+        Mockito.`when`(seasonalService.isReservationSwitchPeriodActive(any(), any())).thenReturn(true)
     }
 
     @BeforeEach
     fun mockLoggedInUser() {
-        val loggedInCitizen = CitizenWithDetails(
-            id = citizenIdMikko,
-            email = "test@example.com",
-            phone = "123456789",
-            municipalityCode = 123,
-            municipalityName = "Espoo",
-            streetAddress = "Test Street 1",
-            streetAddressSv = "Testgatan 1",
-            postOffice = "Helsinki",
-            postOfficeSv = "Helsingfors",
-            postalCode = "00100",
-            espooRulesApplied = true,
-            discountPercentage = 10,
-            nationalId = "123456-789A",
-            firstName = "Mikko",
-            lastName = "Testinen"
-        )
+        val loggedInCitizen =
+            CitizenWithDetails(
+                id = citizenIdMikko,
+                email = "test@example.com",
+                phone = "123456789",
+                municipalityCode = 123,
+                municipalityName = "Espoo",
+                streetAddress = "Test Street 1",
+                streetAddressSv = "Testgatan 1",
+                postOffice = "Helsinki",
+                postOfficeSv = "Helsingfors",
+                postalCode = "00100",
+                espooRulesApplied = true,
+                discountPercentage = 10,
+                nationalId = "123456-789A",
+                firstName = "Mikko",
+                lastName = "Testinen"
+            )
 
         // Let's not tes
         Mockito.`when`(citizenContextProvider.getCurrentCitizen()).thenReturn(loggedInCitizen)
@@ -106,7 +107,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     @Test
     fun `should create a switch reservation for citizen retaining information from the original reservation`() {
-
         val originalReservation = createTestReservationForEspooCitizen()
         val newBoatSpaceId = 2
         val switchedReservationId =
