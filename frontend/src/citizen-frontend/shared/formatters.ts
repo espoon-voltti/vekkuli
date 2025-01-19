@@ -34,6 +34,10 @@ export function formatPrice(value: number): string {
   return value.toFixed(2).replace('.', ',')
 }
 
+export function parsePrice(price: string): number {
+  return parseFloat(price.replace(',', '.'))
+}
+
 export function formatCmToM(value: number): number {
   return value / 100
 }
