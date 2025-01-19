@@ -106,4 +106,19 @@ class PermissionService(
         editorId: UUID,
         boatId: Int
     ): Boolean = canEditBoat(editorId, boatId)
+
+    fun canSwitchReservation(
+        reserver: ReserverWithDetails,
+        boatSpace: BoatSpace,
+        reservation: BoatSpaceReservationDetails
+    ): Boolean {
+        return when {
+            userService.isAppUser(reserver.id) -> true
+            reserver.id == reservation.reserverId -> true
+            reservation.reserverType == ReserverType.Organization -> {
+                reserver.id in organizationService.getOrganizationMembers(reservation.reserverId).map { it.id }
+            }
+            else -> false
+        }
+    }
 }
