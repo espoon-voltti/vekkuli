@@ -3,7 +3,8 @@ import React from 'react'
 import { PlaceWithSpaces } from 'citizen-frontend/api-types/free-spaces'
 import { useTranslation } from 'citizen-frontend/localization'
 
-import { InfoBox } from './InfoBox'
+import { InfoBox } from '../../../components/InfoBox'
+
 import { ResultGroup } from './ResultGroup'
 
 export default React.memo(function SearchResults({

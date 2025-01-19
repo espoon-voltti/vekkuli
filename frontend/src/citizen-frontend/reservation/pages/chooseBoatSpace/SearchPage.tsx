@@ -5,7 +5,7 @@ import React, { useContext, useState } from 'react'
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
 import { useForm } from 'lib-common/form/hooks'
-import { useMutation, useQueryResult } from 'lib-common/query'
+import { useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
 import StepIndicator from '../../StepIndicator'
@@ -23,7 +23,7 @@ import {
   SearchFormBranches,
   searchFreeSpacesForm
 } from './formDefinitions'
-import { freeSpacesQuery, reserveSpaceMutation } from './queries'
+import { freeSpacesQuery } from './queries'
 
 export default React.memo(function SearchPage() {
   const i18n = useTranslation()
@@ -35,8 +35,6 @@ export default React.memo(function SearchPage() {
   )
 
   const [searchState, setSearchState] = useStoredSearchState()
-
-  const { mutateAsync: reserveSpace } = useMutation(reserveSpaceMutation)
   const [selectedBoatSpace, setSelectedBoatSpace] = useState<
     number | undefined
   >(undefined)
