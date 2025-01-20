@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.FINNISH_NATIONAL_ID_REGEX
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.citizen.ReservationConfirmation
 import jakarta.servlet.http.HttpServletRequest
@@ -60,12 +61,19 @@ class BoatFormValidator(
         @RequestBody request: Map<String, String>
     ): ResponseEntity<Map<String, Any>> {
         val ssn = request["value"]
-        val isValid = ssn?.let { reserverService.getCitizenBySsn(ssn) == null } ?: false
+        val isValid = ssn?.matches(FINNISH_NATIONAL_ID_REGEX.toRegex()) ?: false
+        val isUnique = ssn?.let { reserverService.getCitizenBySsn(ssn) == null } ?: false
 
-        return if (isValid) {
+        return if (isValid && isUnique) {
             ResponseEntity.ok(mapOf("isValid" to true))
         } else {
-            ResponseEntity.ok(mapOf("isValid" to false, "message" to messageUtil.getMessage("validation.uniqueSsn")))
+            val message =
+                if (!isValid) {
+                    messageUtil.getMessage("validation.nationalId")
+                } else {
+                    messageUtil.getMessage("validation.uniqueSsn")
+                }
+            ResponseEntity.ok(mapOf("isValid" to false, "message" to message))
         }
     }
 
