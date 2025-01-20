@@ -240,6 +240,46 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
+    fun `When employee cancels the reservation from invoice page, the reservation is deleted`() {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+
+        reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
+
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        val place = page.getByTestId("place").innerText()
+        fillAndTestForm(formPage)
+        formPage.submitButton.click()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.header).isVisible()
+        // cancel the reservation
+        invoicePreviewPage.cancelButton.click()
+        assertThat(listingPage.header).isVisible()
+
+        // check that the place is available for new reservations
+        reservationPage.navigateTo()
+        reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
+
+        assertThat(page.getByText(place)).isVisible()
+    }
+
+    @Test
     fun `Employee can reserve a winter space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
         try {
             val employeeHome = EmployeeHomePage(page)
