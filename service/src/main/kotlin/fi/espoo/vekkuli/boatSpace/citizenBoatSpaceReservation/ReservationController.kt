@@ -90,7 +90,7 @@ class ReservationController(
         @PathVariable reservationId: Int,
         @RequestBody input: FillReservationInformationInput,
         request: HttpServletRequest
-    ): ReservationResponse  {
+    ): ReservationResponse {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,

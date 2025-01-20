@@ -27,8 +27,7 @@ export default React.memo(function ReserveModal({
   const boatSpaceResult = useQueryResult(boatSpaceQuery(targetSpaceId))
   const modalButtons: ModalButton[] = [
     {
-      label: i18n.common.cancel,
-      id: 'cancel'
+      label: i18n.common.cancel
     }
   ]
 
@@ -36,7 +35,6 @@ export default React.memo(function ReserveModal({
     modalButtons.push({
       label: i18n.reservation.searchPage.modal.reserveAnotherPlace,
       type: 'primary',
-      id: 'reserve-another',
       action: () => {
         return reserveSpace()
       }

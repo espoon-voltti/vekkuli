@@ -445,7 +445,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentId = it.paymentId,
                     storageType = it.storageType,
                     paymentReference = it.paymentReference,
-                    invoiceDueDate = it.invoiceDueDate
+                    invoiceDueDate = it.invoiceDueDate,
+                    creationType = it.creationType
                 )
             }
         }
