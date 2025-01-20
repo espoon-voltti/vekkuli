@@ -22,7 +22,7 @@ export const unfinishedReservationQuery = query({
 
 export const cancelReservationMutation = mutation({
   api: cancelReservation,
-  invalidateQueryKeys: () => [
+  resetQueryKeys: () => [
     queryKeys.unfinishedReservation(),
     queryKeys.unfinishedReservationExpiration()
   ]
