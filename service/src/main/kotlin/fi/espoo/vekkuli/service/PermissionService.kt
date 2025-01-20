@@ -101,4 +101,9 @@ class PermissionService(
             else -> false
         }
     }
+
+    fun canDeleteBoat(
+        editorId: UUID,
+        boatId: Int
+    ): Boolean = canEditBoat(editorId, boatId)
 }

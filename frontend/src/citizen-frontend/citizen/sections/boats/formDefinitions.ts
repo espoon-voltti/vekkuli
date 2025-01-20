@@ -5,7 +5,7 @@ import {
   OwnershipStatus,
   ownershipStatuses
 } from 'citizen-frontend/shared/types'
-import { positiveNumber, string } from 'lib-common/form/fields'
+import { number, positiveNumber, string } from 'lib-common/form/fields'
 import {
   mapped,
   multiSelect,
@@ -20,7 +20,7 @@ import { UpdateCitizenBoatInput } from '../../../api-types/boat'
 
 export const boatForm = mapped(
   object({
-    id: string(),
+    id: number(),
     name: required(string()),
     type: required(oneOf<BoatType>()),
     width: required(positiveNumber()),
@@ -53,7 +53,7 @@ export const transformBoatToFormBoat = (
   boat: Boat,
   i18n: Translations
 ): StateOf<BoatForm> => ({
-  id: boat.id.toString(),
+  id: boat.id,
   name: boat.name || '-',
   depth: boat.depth.toString(),
   length: boat.length.toString(),

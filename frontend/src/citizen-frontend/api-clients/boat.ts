@@ -11,3 +11,10 @@ export async function updateCitizenBoat(
     data: input
   })
 }
+
+export async function deleteBoat(boatId: number): Promise<void> {
+  await client.request({
+    url: uri`/current/boats/${boatId}`.toString(),
+    method: 'DELETE'
+  })
+}

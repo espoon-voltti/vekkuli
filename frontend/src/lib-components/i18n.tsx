@@ -12,6 +12,7 @@ export interface Translations {
   }
   links: {
     goBack: string
+    delete: string
     edit: string
   }
   common: {

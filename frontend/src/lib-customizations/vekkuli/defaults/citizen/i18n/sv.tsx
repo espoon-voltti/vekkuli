@@ -5,9 +5,9 @@
 import { Translations as ComponentTranslations } from 'lib-components/i18n'
 
 import {
-  ReservationValidity,
   BoatSpaceType,
-  OwnershipStatus
+  OwnershipStatus,
+  ReservationValidity
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
@@ -220,6 +220,14 @@ const sv: Translations = {
     cancelReservation: 'Avbryt reservation',
     cancelAndGoBack: 'Avbryt och gå tillbaka',
     continueToPaymentButton: 'Fortsätt till betalning'
+  },
+  boat: {
+    delete: 'Ta bort båt',
+    deleteFailed:
+      'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
+    deleteSuccess: 'Båten har tagits bort',
+    confirmDelete: (boatName: string) =>
+      `Du håller på att ta bort informationen för båten ${boatName}`
   },
   boatSpace: {
     boatSpaceType: {

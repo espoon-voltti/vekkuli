@@ -1,4 +1,7 @@
+import classNames from 'classnames'
 import React from 'react'
+
+export type IconLinkType = 'primary' | 'danger'
 
 export type IconLinkProps = {
   children: React.ReactNode
@@ -6,6 +9,7 @@ export type IconLinkProps = {
   action?: () => void
   href?: string
   ariaLabel?: string
+  type?: IconLinkType
 }
 
 export default React.memo(function IconLink({
@@ -13,13 +17,14 @@ export default React.memo(function IconLink({
   icon,
   action,
   href,
-  ariaLabel
+  ariaLabel,
+  type
 }: IconLinkProps) {
   if (href) {
     return (
       <a
         href={href}
-        className="is-link is-icon-link"
+        className={iconLinkClasses(type)}
         aria-label={ariaLabel}
         role="link"
       >
@@ -32,7 +37,7 @@ export default React.memo(function IconLink({
   return (
     <button
       onClick={action}
-      className="has-text-link is-link is-icon-link"
+      className={iconLinkClasses(type, 'has-text-link')}
       aria-label={ariaLabel}
       role="button"
     >
@@ -41,3 +46,18 @@ export default React.memo(function IconLink({
     </button>
   )
 })
+
+function iconLinkClasses(type?: IconLinkType, ...extra: string[]): string {
+  const classes = ['is-link', 'is-icon-link', ...extra]
+
+  switch (type) {
+    case 'primary':
+      classes.push('has-text-primary')
+      break
+    case 'danger':
+      classes.push('has-text-danger')
+      break
+  }
+
+  return classNames(classes)
+}

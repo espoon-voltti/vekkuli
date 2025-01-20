@@ -10,6 +10,7 @@ export type ButtonProps = {
   action?: () => void
   loading?: boolean
   ariaLabel?: string
+  disabled?: boolean
 }
 
 export default React.memo(function Button({
@@ -18,7 +19,8 @@ export default React.memo(function Button({
   id,
   type,
   loading,
-  ariaLabel
+  ariaLabel,
+  disabled
 }: ButtonProps) {
   const classes = ['button']
   switch (type) {
@@ -39,10 +41,11 @@ export default React.memo(function Button({
   }
 
   const props: React.ButtonHTMLAttributes<HTMLButtonElement> = {
-    className: classNames(classes)
+    className: classNames(classes),
+    disabled: !!disabled
   }
 
-  if (action && !loading) {
+  if (action && !loading && !disabled) {
     props.onClick = action
   }
 

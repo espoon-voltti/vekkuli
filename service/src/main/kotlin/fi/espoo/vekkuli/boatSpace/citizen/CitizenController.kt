@@ -13,12 +13,7 @@ import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
 import jakarta.servlet.http.HttpServletRequest
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
@@ -43,6 +38,16 @@ class CitizenController(
         val citizenId = request.ensureCitizenId()
         val boats = boatService.getBoatsForReserver(citizenId)
         return boats.toCitizenBoatListResponse()
+    }
+
+    @DeleteMapping("/current/boats/{boatId}")
+    fun deleteBoatById(
+        @PathVariable boatId: Int,
+        request: HttpServletRequest
+    ) {
+        val citizenId = request.ensureCitizenId()
+        if (!permissionService.canDeleteBoat(citizenId, boatId)) throw Forbidden()
+        boatService.deleteBoat(boatId)
     }
 
     @GetMapping("/current/organization-boats/{orgId}")

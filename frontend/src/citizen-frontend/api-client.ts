@@ -22,7 +22,7 @@ export const client = axios.create({
 })
 client.defaults.headers.common['x-vekkuli-csrf'] = '1'
 
-client.interceptors.response.use(undefined, async (err: AxiosError) => {
+client.interceptors.response.use(undefined, (err: AxiosError) => {
   if (err.response && err.response.status == 401) {
     window.location.replace('/')
   }

@@ -255,12 +255,40 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
+    fun `citizen can not delete their boat when it's in active reservation`() {
+        CitizenHomePage(page).loginAsLeoKorhonen()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        val boat = citizenDetails.getBoatSection(1)
+        assertThat(boat.deleteButton).not().isVisible()
+    }
+
+    @Test
     fun `citizen can delete their boat when it's without active reservation`() {
-        // TODO delete the boat
-        // page.getByTestId("delete-boat-3").click()
-        // page.getByTestId("delete-modal-confirm-3").click()
-        // assertThat(page.getByTestId("boat-3")).isHidden()
+        CitizenHomePage(page).loginAsLeoKorhonen()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        citizenDetails.showAllBoatsButton.click()
+
+        val boat = citizenDetails.getBoatSection(3)
+        assertThat(boat.deleteButton).isVisible()
+
+        boat.deleteButton.click()
+        val deleteBoatModal = citizenDetails.getDeleteBoatModal()
+        assertThat(deleteBoatModal.root).isVisible()
+        assertThat(deleteBoatModal.root).containsText("Leon toinen liian iso vene")
+
+        deleteBoatModal.confirmButton.click()
+        assertThat(deleteBoatModal.root).not().isVisible()
+
+        val deleteBoatSuccessModal = citizenDetails.getDeleteBoatSuccessModal()
+        assertThat(deleteBoatSuccessModal.root).isVisible()
+
+        assertThat(boat.root).not().isVisible()
     }
 
     @Test

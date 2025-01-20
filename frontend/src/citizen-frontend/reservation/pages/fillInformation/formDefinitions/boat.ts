@@ -1,4 +1,4 @@
-import { positiveNumber, string } from 'lib-common/form/fields'
+import { number, positiveNumber, string } from 'lib-common/form/fields'
 import {
   multiSelect,
   object,
@@ -21,7 +21,7 @@ import {
 import { StoredSearchState } from '../../useStoredSearchState'
 
 export const boatInfoForm = object({
-  id: string(),
+  id: number(),
   name: required(string()),
   type: required(oneOf<BoatType>()),
   width: required(positiveNumber()),
@@ -91,7 +91,7 @@ function initialBoatInfoFormState(
   }
 
   return {
-    id: '',
+    id: 0,
     name: '',
     type: {
       domValue: storedSearchState?.boatType ?? 'OutboardMotor',
@@ -141,9 +141,9 @@ const initialBoatSelectionState = (
   selectedBoat?: Boat
 ): StateOf<BoatSelectionForm> => {
   const initialBoatSelection: StateOf<BoatSelectionForm> = {
-    domValue: selectedBoat?.id ?? '',
+    domValue: selectedBoat?.id?.toString() ?? '',
     options: boats.map((boat) => ({
-      domValue: boat.id,
+      domValue: boat.id.toString(),
       label: boat.name,
       value: boat
     }))
@@ -161,7 +161,7 @@ const transformBoatToFormBoat = (
   boat: Boat,
   i18n: Translations
 ): StateOf<BoatInfoForm> => ({
-  id: boat.id.toString(),
+  id: boat.id,
   name: boat.name,
   depth: boat.depth.toString(),
   length: boat.length.toString(),
@@ -208,7 +208,9 @@ export function onBoatFormUpdate({
 }: BoatFormUpdateProps): StateOf<BoatForm> {
   const prevBoatId = prev.boatSelection.domValue
   const nextBoatId = next.boatSelection.domValue
-  const selectedBoat = boats.find((boat) => boat.id === nextBoatId)
+  const selectedBoat = boats.find(
+    (boat) => boat.id === parseInt(nextBoatId, 10)
+  )
   // Boat has been changed, we need to update the form values
   if (prevBoatId !== nextBoatId) {
     const cache = !prevBoatId ? prev.boatInfo : prev.newBoatCache

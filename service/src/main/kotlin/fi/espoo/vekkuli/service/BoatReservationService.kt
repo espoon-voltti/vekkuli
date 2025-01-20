@@ -237,6 +237,11 @@ class BoatReservationService(
 
     fun getReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> = boatSpaceReservationRepo.getReservationsForBoat(boatId)
 
+    fun getActiveReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getActiveReservationsForBoat(
+            boatId
+        )
+
     fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
 

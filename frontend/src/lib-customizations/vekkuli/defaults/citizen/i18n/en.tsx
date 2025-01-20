@@ -222,6 +222,14 @@ const en: Translations = {
     cancelAndGoBack: 'Cancel and go back',
     continueToPaymentButton: 'Continue to payment'
   },
+  boat: {
+    delete: 'Delete boat',
+    deleteFailed:
+      'An error occurred while deleting the boat. Please contact customer support.',
+    deleteSuccess: 'The boat has been deleted',
+    confirmDelete: (boatName: string) =>
+      `You are about to delete the information for the boat ${boatName}`
+  },
   boatSpace: {
     renterType: {
       Citizen: 'I am reserving as an individual',
