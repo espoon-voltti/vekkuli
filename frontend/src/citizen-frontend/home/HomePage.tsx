@@ -1,5 +1,6 @@
 import { MainSection } from 'lib-components/dom'
 import React from 'react'
+import { Link } from 'react-router'
 
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 import {
@@ -43,9 +44,9 @@ export default React.memo(function HomePage() {
           </div>
         </div>
         <div className="block">
-          <a className="button is-primary" href="/kuntalainen/venepaikka">
+          <Link className="button is-primary" to="/kuntalainen/venepaikka">
             Selaile vapaita venepaikkoja
-          </a>
+          </Link>
         </div>
       </div>
       <div className="container">
