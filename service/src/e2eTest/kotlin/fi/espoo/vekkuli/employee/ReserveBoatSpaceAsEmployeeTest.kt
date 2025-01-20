@@ -106,11 +106,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `Employee can reserve a boat space on behalf of a citizen, send the invoice and set the reservation as paid on citizen page`() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
 
             listingPage.createReservation.click()
 
@@ -176,7 +172,9 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     }
 
     fun updateReservationToConfirmed(citizenDetailsPage: CitizenDetailsPage) {
-        page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoiced: due date: 22.04.2024") }
+        page.waitForCondition {
+            citizenDetailsPage.paymentStatus.textContent().contains("Invoiced: due date: 22.04.2024")
+        }
         page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
         citizenDetailsPage.updatePaymentStatusLink.click()
 
@@ -193,11 +191,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `Employee can reserve a boat space on behalf of a citizen and to set the invoice as paid`() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
 
             listingPage.createReservation.click()
 
@@ -242,11 +236,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `Employee can reserve a winter space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
 
             listingPage.boatSpaceTypeFilter("Winter").click()
 
@@ -296,11 +286,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `Employee can reserve a winter space on behalf of a citizen, and change the reservation validity to fixed time`() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
 
             listingPage.boatSpaceTypeFilter("Winter").click()
 
@@ -324,7 +310,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             fillWinterBoatSpaceForm(formPage)
             formPage.reservationValidityFixedTermRadioButton.click()
-            assertContains(formPage.reservationSummeryReservationValidityFixedTerm.first().textContent(), "01.04.2024 - 31.12.2024")
+            assertContains(
+                formPage.reservationSummeryReservationValidityFixedTerm.first().textContent(),
+                "01.04.2024 - 31.12.2024"
+            )
             assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
             formPage.submitButton.click()
 
@@ -400,11 +389,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     @Test
     fun `Employee can reserve a boat space on behalf of a citizen and change the reservation validity type`() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
 
             listingPage.createReservation.click()
 
@@ -442,10 +427,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `existing citizens can be searched`() {
-        val employeeHome = EmployeeHomePage(page)
-        employeeHome.employeeLogin()
-        val listingPage = ReservationListPage(page)
-        listingPage.navigateTo()
+        val listingPage = reservationListPage()
         listingPage.createReservation.click()
 
         val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
@@ -473,10 +455,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `Employee can reserve a boat space on behalf of an existing citizen`() {
-        val employeeHome = EmployeeHomePage(page)
-        employeeHome.employeeLogin()
-        val listingPage = ReservationListPage(page)
-        listingPage.navigateTo()
+        val listingPage = reservationListPage()
         listingPage.createReservation.click()
 
         val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
@@ -500,28 +479,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertThat(page.getByTestId("firstName")).containsText("Mikko")
         assertThat(page.getByTestId("lastName")).containsText("Virtanen")
         // Fill in the boat information
-        formPage.boatTypeSelect.selectOption("Sailboat")
-
-        formPage.widthInput.fill("3")
-        formPage.widthInput.blur()
-
-        formPage.lengthInput.fill("5")
-        formPage.lengthInput.blur()
-
-        formPage.depthInput.fill("1.5")
-        formPage.depthInput.blur()
-
-        formPage.weightInput.fill("2000")
-        formPage.weightInput.blur()
-
-        formPage.boatNameInput.fill("My Boat")
-        formPage.otherIdentification.fill("ID12345")
-        formPage.noRegistrationCheckbox.check()
-
-        formPage.ownerRadioButton.check()
-
-        formPage.certifyInfoCheckbox.check()
-        formPage.agreementCheckbox.check()
+        fillBoatAndOtherDetails(formPage)
         formPage.submitButton.click()
 
         val invoicePage = InvoicePreviewPage(page)
@@ -541,10 +499,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
     @Test
     fun `After reselecting "new citizen", the previously selected citizen is no longer selected`() {
-        val employeeHome = EmployeeHomePage(page)
-        employeeHome.employeeLogin()
-        val listingPage = ReservationListPage(page)
-        listingPage.navigateTo()
+        val listingPage = reservationListPage()
         listingPage.createReservation.click()
 
         val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
@@ -673,5 +628,121 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         formPage.organizationRadioButton.click()
 
         assertThat(page.getByText("Olivian vene")).isHidden()
+    }
+
+    @Test
+    fun `Employee can reserve a boat space on behalf of an existing citizen with a discount taken into account`() {
+        val reserverLastName = "Korhonen"
+        val reserverFirstName = "Leo"
+        val discountPercentage = 50
+        val priveWithtax = "418,00"
+        val discountedPrice = "209,00"
+
+        val listingPage = reservationListPage()
+        setDiscountFor(listingPage, reserverLastName, discountPercentage)
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.navigateTo()
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        assertThat(formPage.boatSpacePriceInEuro).containsText("$priveWithtax €")
+
+        formPage.existingCitizenSelector.click()
+        assertThat(formPage.citizenSearchContainer).isVisible()
+
+        formPage.submitButton.click()
+
+        assertThat(formPage.citizenIdError).isVisible()
+
+        typeText(formPage.citizenSearchInput, reserverLastName)
+
+        formPage.citizenSearchOption1.click()
+        assertThat(page.getByTestId("firstName")).containsText(reserverFirstName)
+        assertThat(page.getByTestId("lastName")).containsText(reserverLastName)
+
+        val reservationPriceInfo = formPage.getByDataTestId("reservation-price-info")
+        page.waitForCondition { reservationPriceInfo.isVisible }
+        assertThat(reservationPriceInfo)
+            .hasText(
+                "Reserver Leo Korhonen has a 50 % discount. After the discount, price of the boat space is $discountedPrice €"
+            )
+
+        // Fill in the boat information
+        fillBoatAndOtherDetails(formPage)
+
+        formPage.submitButton.click()
+
+        val invoicePage = InvoicePreviewPage(page)
+        page.waitForCondition { invoicePage.header.isVisible }
+
+        assertThat(page.getByTestId("reserverName")).containsText("$reserverFirstName $reserverLastName")
+        val price = invoicePage.getByDataTestId("priceWithTax").inputValue()
+        assertEquals(discountedPrice.replace(",", "."), price)
+        val discountInfo = invoicePage.getByDataTestId("invoice-discount-info")
+        assertEquals(
+            discountInfo.innerText(),
+            "Customer discount of $discountPercentage% taken into account.\nOriginal price of the boat space ${
+                priveWithtax.replace(
+                    ",",
+                    "."
+                )
+            } €."
+        )
+    }
+
+    private fun fillBoatAndOtherDetails(formPage: BoatSpaceFormPage) {
+        formPage.boatTypeSelect.selectOption("Sailboat")
+
+        formPage.widthInput.fill("3")
+        formPage.widthInput.blur()
+
+        formPage.lengthInput.fill("5")
+        formPage.lengthInput.blur()
+
+        formPage.depthInput.fill("1.5")
+        formPage.depthInput.blur()
+
+        formPage.weightInput.fill("2000")
+        formPage.weightInput.blur()
+
+        formPage.boatNameInput.fill("My Boat")
+        formPage.otherIdentification.fill("ID12345")
+        formPage.noRegistrationCheckbox.check()
+
+        formPage.ownerRadioButton.check()
+
+        formPage.certifyInfoCheckbox.check()
+        formPage.agreementCheckbox.check()
+    }
+
+    private fun setDiscountFor(
+        listingPage: ReservationListPage,
+        reserverName: String,
+        discount: Int
+    ) {
+        listingPage
+            .getByDataTestId("reserver-name")
+            .getByText(reserverName)
+            .click()
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.citizenLastNameField).hasText(reserverName)
+        citizenDetails.exceptionsNavi.click()
+        val discount0 = page.getByTestId("reserver_discount_0")
+        assertThat(discount0).isChecked()
+        page.getByTestId("reserver_discount_$discount").check()
+        assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention on")
+    }
+
+    private fun reservationListPage(): ReservationListPage {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        return listingPage
     }
 }

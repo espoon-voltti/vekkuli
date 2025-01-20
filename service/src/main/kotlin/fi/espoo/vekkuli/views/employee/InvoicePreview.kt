@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.MarkAsPaidConfirmModal
@@ -107,7 +108,7 @@ class InvoicePreview(
         val discountInfo =
             if (model.hasDiscount) {
                 """
-                <div class="discount-info">
+                <div class="discount-info" ${addTestId("invoice-discount-info")}>
                 <span>${t("invoice.discountInfo", listOf(model.discountPercentage.toString(), model.priceWithTax.toString()))}</span>
                 </div>    
                 """.trimIndent()

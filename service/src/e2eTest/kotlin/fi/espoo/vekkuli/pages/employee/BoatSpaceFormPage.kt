@@ -86,6 +86,7 @@ class BoatSpaceFormPage(
     val reservationSummeryReservationValidityIndefinite = page.getByTestId("reservation-validity-indefinite")
 
     val reservationValidityInformation = getByDataTestId("reservation-validity-information")
+    val boatSpacePriceInEuro = getByDataTestId("boat-space-price-in-euro")
 
     fun fillFormAndSubmit() {
         boatTypeSelect.selectOption("Sailboat")

@@ -49,7 +49,8 @@ class FormComponents {
                         id="$id"
                         name="$name"
                         ${if (value != null) "value=\"$value\"" else ""}
-                        $attributes />
+                        $attributes 
+                        ${addTestId(id)}/>
                     $errorContainer
                 </div>
             </div>

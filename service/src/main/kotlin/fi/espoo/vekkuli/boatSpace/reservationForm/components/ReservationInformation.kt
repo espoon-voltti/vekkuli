@@ -108,7 +108,9 @@ class ReservationInformation(
                 "price",
                 """ <p>${t("boatApplication.boatSpaceFee")}: ${reservation.priceWithoutVatInEuro} &euro;</p>
                 <p>${t("boatApplication.boatSpaceFeeAlv")}: ${reservation.vatPriceInEuro} &euro;</p>
-                <p>${t("boatApplication.boatSpaceFeeTotal")}: ${reservation.priceInEuro} &euro;</p>""",
+                <p ${addTestId(
+                    "boat-space-price-in-euro"
+                )}>${t("boatApplication.boatSpaceFeeTotal")}: ${reservation.priceInEuro} &euro;</p>""",
             )
         return ReservationInformationParams(
             harborField,

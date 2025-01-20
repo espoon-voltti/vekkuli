@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.service.MarkDownService
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.SessionTimer
 import fi.espoo.vekkuli.views.citizen.StepIndicator
@@ -62,7 +63,9 @@ class BoatSpaceForm(
         val reserverPriceInfoContent =
             if (reserverPriceInfo != null) {
                 """
-                <div class="reservation-price-info">
+                <div class="reservation-price-info" ${addTestId(
+                    "reservation-price-info"
+                )}>
                         <span class="icon">${icons.info}</span>
                         <span class="info-content">${
                     t(
