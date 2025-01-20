@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
+import fi.espoo.vekkuli.utils.FINNISH_NATIONAL_ID_REGEX
 import fi.espoo.vekkuli.utils.PHONE_NUMBER_REGEX
 import fi.espoo.vekkuli.views.common.CommonComponents
 import org.springframework.beans.factory.annotation.Autowired
@@ -65,7 +66,7 @@ class EditCitizen {
                     required = true,
                     pattern =
                         Pair(
-                            "^(0[1-9]|[12][0-9]|3[01])(0[1-9]|1[0-2])\\d{2}[\\+\\-A]\\d{3}[0-9A-FHJ-NPR-Y]\$",
+                            FINNISH_NATIONAL_ID_REGEX,
                             "validation.nationalId"
                         )
                 )
