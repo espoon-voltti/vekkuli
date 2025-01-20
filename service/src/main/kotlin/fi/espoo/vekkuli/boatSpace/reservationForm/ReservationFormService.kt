@@ -598,9 +598,8 @@ class ReservationFormService(
                 startDate,
                 endDate
             )
-        if (reservationStatus == ReservationStatus.Invoiced) {
-            sendReservationConfirmationEmail(input, reserverId, boatSpace, reservation)
-        }
+
+        sendReservationConfirmationEmail(input, reserverId, boatSpace, reservation)
     }
 
     private fun updateReservationWithStorageTypeRelatedInformation(
