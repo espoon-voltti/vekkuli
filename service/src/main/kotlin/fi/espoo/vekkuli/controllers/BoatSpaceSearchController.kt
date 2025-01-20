@@ -145,7 +145,10 @@ class BoatSpaceSearchController {
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "BOAT_SPACE_SEARCH_RESULTS")
+            logger.audit(
+                it,
+                "BOAT_SPACE_SEARCH_RESULTS"
+            )
         }
         val userType = UserType.fromPath(usertype)
 

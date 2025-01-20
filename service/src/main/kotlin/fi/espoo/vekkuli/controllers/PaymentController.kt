@@ -53,7 +53,15 @@ class PaymentController(
         request: HttpServletRequest,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "PAYMENT_VIEW")
+            logger.audit(
+                it,
+                "PAYMENT_VIEW",
+                mapOf(
+                    "targetId" to id.toString(),
+                    "type" to type.toString(),
+                    "cancelled" to cancelled.toString()
+                )
+            )
         }
         val locale = LocaleContextHolder.getLocale()
         val citizen = getCitizen(request, reserverService) ?: return redirectUrlThymeleaf("/")
@@ -120,7 +128,7 @@ class PaymentController(
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "PAYMENT_SUCCESS_VIEW")
+            logger.audit(it, "PAYMENT_SUCCESS_VIEW", mapOf("params" to params.toString()))
         }
         val result =
             reservationService.handlePaymentResult(params, true)
@@ -140,7 +148,7 @@ class PaymentController(
         request: HttpServletRequest
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "PAYMENT_CANCEL_VIEW")
+            logger.audit(it, "PAYMENT_CANCEL_VIEW", mapOf("params" to params.toString()))
         }
 
         return when (val result = reservationService.handlePaymentResult(params, false)) {

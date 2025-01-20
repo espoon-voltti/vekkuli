@@ -31,7 +31,7 @@ class PaymentApiController {
         request: HttpServletRequest
     ): ResponseEntity<Void> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "PAYMENT_SUCCESS")
+            logger.audit(it, "PAYMENT_SUCCESS", mapOf("params" to params.toString()))
         }
         reservationService.handlePaymentResult(params, true)
         return ResponseEntity(HttpStatus.NO_CONTENT)
@@ -43,7 +43,7 @@ class PaymentApiController {
         request: HttpServletRequest
     ): ResponseEntity<Void> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "PAYMENT_CANCEL")
+            logger.audit(it, "PAYMENT_CANCEL", mapOf("params" to params.toString()))
         }
         reservationService.handlePaymentResult(params, false)
         return ResponseEntity(HttpStatus.NO_CONTENT)

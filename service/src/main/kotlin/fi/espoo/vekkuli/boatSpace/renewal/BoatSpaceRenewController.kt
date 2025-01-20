@@ -49,6 +49,15 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
         response: HttpServletResponse,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_RENEW_BOAT_SPACE_PAGE",
+                mapOf(
+                    "targetId" to originalReservationId.toString()
+                )
+            )
+        }
         val citizenId = request.ensureCitizenId()
         try {
             val renewedReservation =
@@ -77,6 +86,15 @@ class BoatSpaceRenewController(
         @PathVariable originalReservationId: Int,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_RENEW_BOAT_SPACE_INVOICE_PAGE",
+                mapOf(
+                    "targetId" to originalReservationId.toString()
+                )
+            )
+        }
         val userId = request.ensureEmployeeId()
         try {
             val renewedReservation =
@@ -111,7 +129,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE")
+            logger.audit(it, "RENEW_BOAT_SPACE", mapOf("targetId" to originalReservationId.toString()))
         }
         val citizenId = request.ensureCitizenId()
 
@@ -136,7 +154,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE_INVOICE")
+            logger.audit(it, "RENEW_BOAT_SPACE_INVOICE", mapOf("targetId" to originalReservationId.toString()))
         }
         val employeeId = request.ensureEmployeeId()
         try {
@@ -170,7 +188,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL")
+            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL", mapOf("targetId" to renewedReservationId.toString()))
         }
         val employeeId = request.ensureEmployeeId()
         boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, employeeId)
@@ -183,7 +201,7 @@ class BoatSpaceRenewController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL")
+            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL", mapOf("targetId" to renewedReservationId.toString()))
         }
         val citizenId = request.ensureCitizenId()
         boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, citizenId)

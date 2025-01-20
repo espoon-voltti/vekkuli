@@ -60,7 +60,7 @@ class ReservationFormController(
         response: HttpServletResponse,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "GET_BOAT_SPACE_APPLICATION_FORM")
+            logger.audit(it, "GET_BOAT_SPACE_APPLICATION_FORM", mapOf("targetId" to reservationId.toString()))
         }
 
         val citizenId = request.ensureCitizenId()
@@ -86,7 +86,7 @@ class ReservationFormController(
         response: HttpServletResponse,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "GET_BOAT_SPACE_APPLICATION_FORM")
+            logger.audit(it, "GET_BOAT_SPACE_APPLICATION_FORM", mapOf("targetId" to reservationId.toString()))
         }
         try {
             val page = reservationService.getBoatSpaceFormForEmployee(reservationId, formInput, request.requestURI)
@@ -110,7 +110,7 @@ class ReservationFormController(
         request: HttpServletRequest,
     ): ResponseEntity<Void> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "REMOVE_BOAT_SPACE_RESERVATION")
+            logger.audit(it, "REMOVE_BOAT_SPACE_RESERVATION", mapOf("targetId" to reservationId.toString()))
         }
         val citizenId = request.ensureCitizenId()
         reservationService.removeBoatSpaceReservation(reservationId, citizenId)
@@ -123,7 +123,7 @@ class ReservationFormController(
         request: HttpServletRequest,
     ): ResponseEntity<Void> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "REMOVE_BOAT_SPACE_RESERVATION")
+            logger.audit(it, "REMOVE_BOAT_SPACE_RESERVATION", mapOf("targetId" to reservationId.toString()))
         }
         val user = request.getAuthenticatedUser() ?: throw Unauthorized()
         reservationService.removeBoatSpaceReservation(reservationId, user.id)
@@ -139,7 +139,7 @@ class ReservationFormController(
         @PathVariable reservationId: Int
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "SEARCH_CITIZENS")
+            logger.audit(it, "SEARCH_CITIZENS", mapOf("targetId" to reservationId.toString(), "nameParameter" to nameParameter))
         }
         reserverService.getCitizens(nameParameter).let {
             return citizenContainerForEmployee.reservationFormCitizenSearchContent(it, reservationId)
@@ -155,7 +155,7 @@ class ReservationFormController(
     ): String {
         val citizen = reserverService.getCitizen(citizenIdOption)
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "SEARCH_CITIZENS_RESULTS")
+            logger.audit(it, "SEARCH_CITIZENS_RESULTS", mapOf("targetId" to citizenIdOption.toString()))
         }
         return if (citizen != null) {
             commonComponents.citizenDetails(citizen, reserverService.getMunicipalities())
@@ -178,7 +178,7 @@ class ReservationFormController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "BOAT_FORM_CITIZEN")
+            logger.audit(it, "BOAT_FORM_CITIZEN", mapOf("targetId" to reservationId.toString()))
         }
         val citizen = getCitizen(request, reserverService)
 
@@ -214,7 +214,7 @@ class ReservationFormController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "BOAT_FORM_EMPLOYEE")
+            logger.audit(it, "BOAT_FORM_EMPLOYEE", mapOf("targetId" to reservationId.toString(), "citizenId" to citizenId.toString()))
         }
         if (citizenId == null) return ResponseEntity.badRequest().build()
 
@@ -242,7 +242,7 @@ class ReservationFormController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RESERVE_BOAT_SPACE_CITIZEN")
+            logger.audit(it, "RESERVE_BOAT_SPACE_CITIZEN", mapOf("targetId" to reservationId.toString()))
         }
 
         val citizenId = request.ensureCitizenId()
@@ -274,7 +274,7 @@ class ReservationFormController(
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RESERVE_BOAT_SPACE_EMPLOYEE")
+            logger.audit(it, "RESERVE_BOAT_SPACE_EMPLOYEE", mapOf("targetId" to reservationId.toString()))
         }
         request.ensureEmployeeId()
 
@@ -297,6 +297,15 @@ class ReservationFormController(
         @RequestParam boatType: BoatType,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "BOAT_TYPE_WARNING",
+                mapOf(
+                    "targetId" to reservationId.toString()
+                )
+            )
+        }
         val reservation = reservationService.getReservationForApplicationForm(reservationId)
         val excludedBoatTypes = reservation?.excludedBoatTypes
         if (excludedBoatTypes != null && excludedBoatTypes.contains(boatType)) {
@@ -312,6 +321,15 @@ class ReservationFormController(
         @RequestParam length: BigDecimal?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "BOAT_SIZE_WARNING",
+                mapOf(
+                    "targetId" to reservationId.toString()
+                )
+            )
+        }
         val reservation = reservationService.getReservationForApplicationForm(reservationId)
 
         if (reservation == null) {
@@ -350,6 +368,15 @@ class ReservationFormController(
         @RequestParam weight: Int?,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "BOAT_WEIGHT_WARNING",
+                mapOf(
+                    "targetId" to reservationId.toString()
+                )
+            )
+        }
         if (weight != null && weight > BoatSpaceConfig.BOAT_WEIGHT_THRESHOLD_KG) {
             return ResponseEntity.ok(warnings.boatWeightWarning())
         }
@@ -367,7 +394,7 @@ class ReservationFormController(
         model: Model,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "INITIAL_BOAT_SPACE_RESERVATION")
+            logger.audit(it, "INITIAL_BOAT_SPACE_RESERVATION", mapOf("targetId" to spaceId.toString()))
         }
         val citizen = getCitizen(request, reserverService)
         if (citizen?.id == null) {
@@ -402,7 +429,7 @@ class ReservationFormController(
         model: Model,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "INITIAL_BOAT_SPACE_RESERVATION")
+            logger.audit(it, "INITIAL_BOAT_SPACE_RESERVATION", mapOf("targetId" to spaceId.toString()))
         }
         val employeeId = request.ensureEmployeeId()
 
