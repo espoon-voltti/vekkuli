@@ -51,6 +51,7 @@ data class BoatSpaceReservationDetails(
     val paymentId: UUID?,
     val paymentReference: String?,
     val invoiceDueDate: LocalDate?,
+    val creationType: CreationType,
     val discountPercentage: Int,
     val creationType: CreationType
 ) {

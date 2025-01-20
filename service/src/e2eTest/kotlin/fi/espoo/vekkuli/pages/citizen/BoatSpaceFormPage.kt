@@ -135,10 +135,6 @@ open class BoatSpaceFormPage(
 
         overrides?.invoke(this)
 
-        resolveSubmitButton().click()
-    }
-
-    protected open fun resolveSubmitButton(): Locator {
-        return submitButton
+        submitButton.click()
     }
 }
