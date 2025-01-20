@@ -63,7 +63,7 @@ class InvoiceController(
                 model,
                 submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
                 backUrl = "/virkailija/venepaikat/varaukset",
-                deleteUrl = "",
+                deleteUrl = "/virkailija/venepaikka/varaus/$reservationId/lasku",
                 isOrganization
             )
         val page = employeeLayout.render(true, request.requestURI, content)
