@@ -21,16 +21,24 @@ interface SendEmailInterface {
 @Service
 @Profile("test")
 class SendEmailServiceMock : SendEmailInterface {
+    companion object {
+        val emails = mutableListOf<String>()
+
+        fun resetEmails() {
+            emails.clear()
+        }
+    }
+
     override fun sendEmail(
         senderAddress: String?,
         emailAddress: String,
         subject: String,
         body: String
     ): String? {
-        println(
-            "Email from $senderAddress to $emailAddress with subject $subject and content $body"
-        )
-        return "Test-${UUID.randomUUID()}"
+        val email = "Email from $senderAddress to $emailAddress with subject $subject and content $body"
+        println(email)
+        emails.add(email)
+        return email
     }
 }
 
@@ -48,6 +56,7 @@ class SendEmailService(
         subject: String,
         body: String
     ): String? {
+        println("DDBEUG 2")
         if (!emailEnv.enabled) {
             println(
                 "Email from $senderAddress (arn ${emailEnv.senderArn}, " +

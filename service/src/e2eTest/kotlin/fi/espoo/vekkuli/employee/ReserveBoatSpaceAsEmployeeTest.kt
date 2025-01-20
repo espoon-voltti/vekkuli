@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.employee.*
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertContains
@@ -137,6 +138,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
