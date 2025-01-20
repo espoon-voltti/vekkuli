@@ -65,7 +65,7 @@ export default [
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-redundant-type-constituents': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      'no-console': ['error', { allow: ['warn', 'error'] }],
+      'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
       'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
       'arrow-body-style': ['error', 'as-needed'],
       'no-constant-binary-expression': ['error']

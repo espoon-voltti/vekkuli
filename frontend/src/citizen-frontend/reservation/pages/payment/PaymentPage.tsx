@@ -9,7 +9,6 @@ import PaymentProviders from './PaymentProviders'
 
 export default React.memo(function PaymentPage() {
   const { reservation } = useContext(ReservationStateContext)
-
   return (
     <MainSection>
       <Loader results={[reservation]}>

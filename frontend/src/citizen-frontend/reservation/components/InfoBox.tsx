@@ -1,10 +1,8 @@
 import React from 'react'
 
-import { useTranslation } from 'citizen-frontend/localization'
 import { BlueInfoCircle } from 'lib-icons'
 
-export const InfoBox = React.memo(function InfoBox() {
-  const i18n = useTranslation()
+export const InfoBox = React.memo(function InfoBox({ text }: { text: string }) {
   return (
     <div
       id="empty-dimensions-warning"
@@ -15,9 +13,7 @@ export const InfoBox = React.memo(function InfoBox() {
           <BlueInfoCircle />
         </span>
       </div>
-      <p className="column">
-        {i18n.reservation.searchPage.missingFieldsInfoBox}
-      </p>
+      <p className="column">{text}</p>
     </div>
   )
 })

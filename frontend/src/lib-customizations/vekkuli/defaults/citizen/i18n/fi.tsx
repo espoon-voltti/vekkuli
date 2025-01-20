@@ -150,6 +150,14 @@ export default {
             length: 'Säilytyspaikan pituus (m)'
           }
         }
+      },
+      modal: {
+        reserveAnotherPlace: 'Varaan toisen paikan',
+        reservingBoatSpace: 'Olet varaamassa venepaikkaa:',
+        cannotReserveNewPlace:
+          'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
+        currentPlaces: 'Paikkasi:',
+        switchCurrentPlace: 'Vaihdan nykyisen paikan'
       }
     },
     formPage: {
@@ -159,6 +167,14 @@ export default {
         Renew: (name: string) => `Paikan uusinta: ${name}`,
         Winter: (name: string) => `Talvipaikan varaus: ${name}`,
         Storage: (name: string) => `Säilytyspaikan varaus: ${name}`
+      },
+      info: {
+        switch:
+          'Olet vaihtamassa venepaikkaa. Venepaikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
+      },
+      submit: {
+        continueToPayment: 'Jatka maksamaan',
+        confirmReservation: 'Vahvista varaus'
       }
     },
     noRegistererNumber: 'Ei rekisterinumeroa',
@@ -172,6 +188,14 @@ export default {
     },
     totalPrice: (totalPrice: string, vatValue: string) =>
       `${totalPrice} € (sis. alv ${vatValue} €)`,
+    paymentInfo: {
+      moreExpensive: (amount: string) =>
+        `Huomaa, että uusi paikka on kalliimpi kuin nykyinen paikkasi. Hinnassa on huomioitu jo suorittamasi maksu ja sinun täytyy maksaa ainoastaan paikkojen hinnan välinen erotus ${amount} €.`,
+      lessExpensive:
+        'Huomaa, että uusi paikka on halvempi kuin nykyinen paikkasi. Hintaa ei palauteta.',
+      equal:
+        'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
+    },
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
@@ -204,6 +228,11 @@ export default {
           'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.',
         MAX_PERSONAL_RESERVATIONS:
           'Sinulla on jo maksimimäärä tämän tyypin paikkoja. Jos asioit yhteisön puolesta, voit jatkaa varaamista. '
+      },
+      fillInformation: {
+        title: 'Varaaminen ei onnistunut',
+        SERVER_ERROR:
+          'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.'
       }
     },
     auth: {
@@ -291,6 +320,29 @@ export default {
       Trailer: 'Trailerisäilytys',
       Buck: 'Pukkisäilytys',
       BuckWithTent: 'Pukkisäilytys suojateltalla'
+    }
+  },
+  citizen: {
+    firstName: 'Etunimi',
+    lastName: 'Sukunimi',
+    email: 'Sähköposti',
+    phoneNumber: 'Puhelinnumero',
+    address: 'Osoite',
+    nationalId: 'Henkilötunnus',
+    postalCode: 'Postinumero',
+    postOffice: 'Postitoimipaikka',
+    municipality: 'Kotikunta'
+  },
+  citizenPage: {
+    title: 'Omat tiedot',
+    reservation: {
+      title: 'Varaukset',
+      noReservations: 'Ei varauksia',
+      actions: {
+        cancel: 'Irtisano paikka',
+        renew: 'Uusi paikka',
+        change: 'Vaihda paikka'
+      }
     }
   }
 }

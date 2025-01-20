@@ -32,6 +32,7 @@ open class ReservationForApplicationForm(
     val excludedBoatTypes: List<BoatType>?,
     val section: String,
     val storageType: StorageType?,
+    val creationType: CreationType
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)
@@ -67,6 +68,7 @@ class ReservationFormRepository(
                         bsr.start_date,
                         bsr.end_date,
                         bsr.created,
+                        bsr.creation_type,
                         price.price_cents, 
                         price.vat_cents, 
                         price.net_price_cents,

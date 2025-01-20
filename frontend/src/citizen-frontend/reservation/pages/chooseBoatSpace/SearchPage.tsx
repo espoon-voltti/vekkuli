@@ -1,20 +1,21 @@
 import { Loader } from 'lib-components/Loader'
 import { Column, Columns, Container, MainSection } from 'lib-components/dom'
-import React, { useContext } from 'react'
-import { useNavigate } from 'react-router'
+import React, { useContext, useState } from 'react'
 
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
 import { useForm } from 'lib-common/form/hooks'
-import { useMutation, useQueryResult } from 'lib-common/query'
+import { useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
 import StepIndicator from '../../StepIndicator'
 import { ReservationStateContext } from '../../state'
+import useStoredSearchState from '../useStoredSearchState'
 
-import ErrorModal, { ErrorCode } from './ErrorModal'
 import LoginBeforeReservingModal from './LoginBeforeReservingModal'
 import ReservationSeasons from './ReservationSeasons'
+import ReserveAction from './ReserveAction/ReserveAction'
+import { ReserveActionProvider } from './ReserveAction/state'
 import SearchFilters from './SearchFilters'
 import SearchResult from './SearchResults'
 import {
@@ -22,17 +23,21 @@ import {
   SearchFormBranches,
   searchFreeSpacesForm
 } from './formDefinitions'
-import { freeSpacesQuery, reserveSpaceMutation } from './queries'
-import useStoredSearchState from '../useStoredSearchState'
+import { freeSpacesQuery } from './queries'
 
 export default React.memo(function SearchPage() {
   const i18n = useTranslation()
-  const navigate = useNavigate()
+
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
-  const { reservation } = useContext(ReservationStateContext)
+  const { reservation: unfinishedReservation } = useContext(
+    ReservationStateContext
+  )
 
   const [searchState, setSearchState] = useStoredSearchState()
+  const [selectedBoatSpace, setSelectedBoatSpace] = useState<
+    number | undefined
+  >(undefined)
 
   const bind = useForm(
     searchFreeSpacesForm,
@@ -61,9 +66,7 @@ export default React.memo(function SearchPage() {
   )
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false)
-  const [reserveError, setReserveError] = React.useState<
-    ErrorCode | undefined
-  >()
+
   const freeSpaces = useQueryResult(
     freeSpacesQuery(bind.isValid() ? bind.value() : undefined),
     {
@@ -81,20 +84,7 @@ export default React.memo(function SearchPage() {
         count: 0
       }
 
-  const { mutateAsync: reserveSpace } = useMutation(reserveSpaceMutation)
-  const onReserveSpace = (spaceId: number) => {
-    reserveSpace(spaceId)
-      .then((response) => {
-        console.error('got response', response)
-        return navigate('/kuntalainen/venepaikka/varaa')
-      })
-      .catch((error) => {
-        const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
-        const errorType = mapErrorCode(errorCode)
-        setReserveError(errorType)
-      })
-  }
-  const onReserveButtonPress = (id: number) => {
+  const onReserveButtonPress = (spaceId: number) => {
     setSearchState({
       width: bind.value().width.toString(),
       length: bind.value().length.toString(),
@@ -103,10 +93,13 @@ export default React.memo(function SearchPage() {
       harbor: bind.value().harbor,
       spaceType: bind.state.boatSpaceType.domValue
     })
-    userLoggedIn ? onReserveSpace(id) : setIsLoginModalOpen(true)
+    return userLoggedIn
+      ? setSelectedBoatSpace(spaceId)
+      : setIsLoginModalOpen(true)
   }
+
   return (
-    <Loader results={[reservation]} allowFailure>
+    <Loader results={[unfinishedReservation]} allowFailure>
       {(reservation) =>
         !reservation && (
           <>
@@ -138,11 +131,13 @@ export default React.memo(function SearchPage() {
                 close={() => setIsLoginModalOpen(false)}
               />
             )}
-            {!!reserveError && (
-              <ErrorModal
-                error={reserveError}
-                close={() => setReserveError(undefined)}
-              />
+            {selectedBoatSpace !== undefined && (
+              <ReserveActionProvider
+                spaceId={selectedBoatSpace}
+                onClose={() => setSelectedBoatSpace(undefined)}
+              >
+                <ReserveAction />
+              </ReserveActionProvider>
             )}
           </>
         )
@@ -150,14 +145,3 @@ export default React.memo(function SearchPage() {
     </Loader>
   )
 })
-
-const mapErrorCode = (errorCode: string): ErrorCode => {
-  switch (errorCode) {
-    case 'MaxReservations':
-      return 'MAX_RESERVATIONS'
-    case 'NotPossible':
-      return 'NOT_POSSIBLE'
-    default:
-      return 'SERVER_ERROR'
-  }
-}

@@ -151,6 +151,14 @@ const en: Translations = {
             length: 'Storage space length (m)'
           }
         }
+      },
+      modal: {
+        reserveAnotherPlace: 'Reserve another place',
+        reservingBoatSpace: 'You are reserving a boat space:',
+        cannotReserveNewPlace:
+          'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
+        currentPlaces: 'Your current space',
+        switchCurrentPlace: 'Switch my current space'
       }
     },
     formPage: {
@@ -160,6 +168,14 @@ const en: Translations = {
         Renew: (name: string) => `Renew reservation: ${name}`,
         Winter: (name: string) => `Winter space reservation: ${name}`,
         Storage: (name: string) => `Storage space reservation: ${name}`
+      },
+      info: {
+        switch:
+          'You are switching your boat place. The reservation period for your boat place remains unchanged. At the same time, your old place will be canceled and made available for others to reserve.'
+      },
+      submit: {
+        continueToPayment: 'Continue to payment',
+        confirmReservation: 'Confirm reservation'
       }
     },
     noRegistererNumber: 'No registration number',
@@ -173,6 +189,14 @@ const en: Translations = {
     },
     totalPrice: (totalPrice: string, vatValue: string) =>
       `${totalPrice} € (incl. vat ${vatValue} €)`,
+    paymentInfo: {
+      moreExpensive: (amount: string) =>
+        `Note that the new place is more expensive than your current place. The price already accounts for the payment you have made, and you only need to pay the difference of ${amount} €.`,
+      lessExpensive:
+        'Note that the new place is cheaper than your current place. No refund will be issued.',
+      equal:
+        'The place costs the same as your previous one. You do not need to pay again.'
+    },
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
@@ -207,19 +231,24 @@ const en: Translations = {
           'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
         MAX_PERSONAL_RESERVATIONS:
           'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.'
+      },
+      fillInformation: {
+        title: 'Reserving failed',
+        SERVER_ERROR:
+          'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.'
       }
     },
     auth: {
-      reservingBoatSpace: 'Reserving boat space:',
+      reservingBoatSpace: 'You are reserving a spot:',
       reservingRequiresAuth:
         'Reserving a boat space requires strong authentication.',
-      continue: 'Continue'
+      continue: 'Continue to authentication'
     },
     cancelConfirmation:
-      'You are about to leave the reservation form. Please note that the space reservation or entered information will not be saved.',
+      'You are leaving the reservation form. Note that the reservation or entered information will not be saved.',
     cancelConfirmation2: 'Do you want to continue?',
     cancelReservation: 'Cancel reservation',
-    cancelAndGoBack: 'Cancel and go back',
+    cancelAndGoBack: 'Cancel reservation and go back',
     continueToPaymentButton: 'Continue to payment'
   },
   boat: {
@@ -290,6 +319,29 @@ const en: Translations = {
       Trailer: 'Trailer storage',
       Buck: 'Stand storage',
       BuckWithTent: 'Stand storage with protective tent'
+    }
+  },
+  citizen: {
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    email: 'Email',
+    phoneNumber: 'Phone Number',
+    address: 'Address',
+    nationalId: 'National ID',
+    postalCode: 'Postal Code',
+    postOffice: 'Post Office',
+    municipality: 'Municipality'
+  },
+  citizenPage: {
+    title: 'My Information',
+    reservation: {
+      title: 'Reservations',
+      noReservations: 'No Reservations',
+      actions: {
+        cancel: 'Cancel Place',
+        renew: 'Renew Place',
+        change: 'Change Place'
+      }
     }
   }
 }

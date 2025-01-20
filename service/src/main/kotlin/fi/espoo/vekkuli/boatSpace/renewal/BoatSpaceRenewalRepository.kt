@@ -33,6 +33,7 @@ class RenewalReservationForApplicationForm(
     excludedBoatTypes: List<BoatType>?,
     section: String,
     storageType: StorageType?,
+    creationType: CreationType,
     val renewdFromReservationId: String
 ) : ReservationForApplicationForm(
         id,
@@ -53,7 +54,8 @@ class RenewalReservationForApplicationForm(
         created,
         excludedBoatTypes,
         section,
-        storageType
+        storageType,
+        creationType
     )
 
 @Repository

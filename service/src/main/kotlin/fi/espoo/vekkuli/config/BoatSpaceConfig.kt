@@ -29,6 +29,7 @@ enum class ReservationWarningType {
 object BoatSpaceConfig {
     const val SESSION_TIME_IN_SECONDS = 20 * 60
     const val BOAT_RESERVATION_ALV_PERCENTAGE = 25.5
+    const val PAYTRAIL_PRODUCT_CODE = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
 
     const val BEAM_MAX_WIDTH_ADJUSTMENT_CM = 40
 

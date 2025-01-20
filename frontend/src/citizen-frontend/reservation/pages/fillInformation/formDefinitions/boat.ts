@@ -64,12 +64,22 @@ export default function initialFormState(
   i18n: Translations,
   boats: Boat[],
   boatSpaceType: BoatSpaceType,
-  storedSearchState?: StoredSearchState
+  storedSearchState?: StoredSearchState,
+  selectedBoat?: Boat
 ): StateOf<BoatForm> {
   return {
-    boatInfo: initialBoatInfoFormState(i18n, boatSpaceType, storedSearchState),
-    boatSelection: initialBoatSelectionState(boats),
-    ownership: initialOwnershipState(i18n, boatSpaceType),
+    boatInfo: initialBoatInfoFormState(
+      i18n,
+      boatSpaceType,
+      storedSearchState,
+      selectedBoat
+    ),
+    boatSelection: initialBoatSelectionState(boats, selectedBoat),
+    ownership: initialOwnershipState(
+      i18n,
+      boatSpaceType,
+      selectedBoat?.ownership
+    ),
     newBoatCache: initialBoatInfoFormState(
       i18n,
       boatSpaceType,
@@ -81,8 +91,10 @@ export default function initialFormState(
 function initialBoatInfoFormState(
   i18n: Translations,
   boatSpaceType: BoatSpaceType,
-  storedSearchState?: StoredSearchState
+  storedSearchState?: StoredSearchState,
+  defaultBoat?: Boat
 ) {
+  if (defaultBoat) return transformBoatToFormBoat(defaultBoat, i18n)
   let width = positiveNumber.empty().value
   let length = positiveNumber.empty().value
   if (boatSpaceType !== 'Winter') {
@@ -125,9 +137,10 @@ function initialBoatInfoFormState(
 
 const initialOwnershipState = (
   i18n: Translations,
-  boatSpaceType: BoatSpaceType
+  boatSpaceType: BoatSpaceType,
+  initialValue?: OwnershipStatus
 ) => ({
-  domValue: 'Owner',
+  domValue: initialValue || 'Owner',
   options: ownershipStatuses.map((type) => ({
     domValue: type,
     label: i18n.boatSpace.ownershipStatus[type],

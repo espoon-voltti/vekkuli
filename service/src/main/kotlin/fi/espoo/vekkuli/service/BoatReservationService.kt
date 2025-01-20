@@ -317,7 +317,7 @@ class BoatReservationService(
     }
 
     fun getBoatSpaceReservation(reservationId: Int): BoatSpaceReservationDetails? =
-        boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)
+        boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace? =
         boatSpaceReservationRepo.getBoatSpaceRelatedToReservation(reservationId)
@@ -531,7 +531,7 @@ class BoatReservationService(
         paymentDate: LocalDateTime
     ) {
         boatSpaceReservationRepo.updateReservationInvoicePaid(reservationId)
-        val reservation = boatSpaceReservationRepo.getBoatSpaceReservation(reservationId)
+        val reservation = boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
         if (reservation?.paymentId == null) {
             throw IllegalArgumentException("Reservation has no payment")
         }
@@ -543,7 +543,8 @@ class BoatReservationService(
         reservationId: Int,
         reservationStatus: ReservationStatus,
         paymentDate: LocalDate,
-        paymentStatusText: String
+        paymentStatusText: String,
+        paymentType: PaymentType = PaymentType.Invoice
     ) {
         val reservation =
             boatSpaceReservationRepo.updateReservationStatus(reservationId, reservationStatus)
@@ -574,7 +575,7 @@ class BoatReservationService(
                         productCode = "?",
                         status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
                         paid = paymentDate.atStartOfDay(),
-                        paymentType = PaymentType.Invoice
+                        paymentType = paymentType
                     )
                 paymentService.insertPayment(paymentParams, reservationId)
             }

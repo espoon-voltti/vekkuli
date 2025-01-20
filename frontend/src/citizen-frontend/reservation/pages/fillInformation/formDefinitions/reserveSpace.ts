@@ -2,6 +2,7 @@ import {
   FillBoatSpaceReservationInput,
   Municipality
 } from 'citizen-frontend/api-types/reservation'
+import { Reservation } from 'citizen-frontend/reservation/state'
 import {
   Boat,
   BoatSpaceType,
@@ -80,7 +81,8 @@ export function initialFormState(
   spaceType: BoatSpaceType,
   municipalities: Municipality[],
   organizations: Organization[],
-  storedState?: StoredSearchState
+  storedState?: StoredSearchState,
+  reservation?: Reservation
 ): StateOf<ReserveSpaceForm> {
   return {
     ...initialReserverFormState(reserver),
@@ -89,7 +91,13 @@ export function initialFormState(
       municipalities,
       organizations
     ),
-    boat: initialBoatFormState(i18n, boats, spaceType, storedState),
+    boat: initialBoatFormState(
+      i18n,
+      boats,
+      spaceType,
+      storedState,
+      reservation?.boat
+    ),
     //winterStorage: initialWinterStorageFormState(i18n),
     spaceTypeInfo: initialSpaceTypeInfoFormState(i18n, spaceType, storedState),
     ...initialUserAgreementFormState(i18n)

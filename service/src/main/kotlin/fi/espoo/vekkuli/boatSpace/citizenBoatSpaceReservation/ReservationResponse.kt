@@ -1,8 +1,10 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -26,8 +28,10 @@ data class ReservationResponse(
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
+    val revisedPrice: String,
     val storageType: StorageType?,
-    val trailer: Trailer? = null,
+    val trailer: Trailer?,
+    val creationType: CreationType,
 ) {
     data class Citizen(
         val id: UUID,
@@ -96,11 +100,43 @@ class ReservationResponseMapper(
     private val boatService: BoatService,
     private val spaceReservationService: BoatReservationService,
     private val reserverService: ReserverService,
-    private val organizationService: OrganizationService
+    private val organizationService: OrganizationService,
+    private val boatSpaceSwitchService: BoatSpaceSwitchService
 ) {
-    fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse {
-        val reservationWithDependencies = spaceReservationService.getReservationWithDependencies(reservation.id) ?: throw NotFound()
-        val citizen = if (reservationWithDependencies.reserverType == ReserverType.Citizen) getCitizen(reservation) else null
+    fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse =
+        reservationResponse(
+            reservation.id,
+            reservation.actingCitizenId,
+            reservation.reserverId,
+            reservation.status,
+            reservation.created,
+            reservation.startDate,
+            reservation.validity,
+            reservation.endDate,
+            reservation.paymentDate,
+        )
+
+    private fun reservationResponse(
+        reservationId: Int,
+        actingCitizenId: UUID?,
+        reserverId: UUID?,
+        status: ReservationStatus,
+        created: LocalDateTime,
+        startDate: LocalDate,
+        validity: ReservationValidity,
+        endDate: LocalDate,
+        paymentDate: LocalDate?
+    ): ReservationResponse {
+        val reservationWithDependencies =
+            spaceReservationService.getReservationWithDependencies(reservationId) ?: throw NotFound()
+        val citizen =
+            if (reservationWithDependencies.reserverType ==
+                ReserverType.Citizen
+            ) {
+                getCitizen(actingCitizenId, reserverId)
+            } else {
+                null
+            }
         val organization =
             if (reservationWithDependencies.reserverType ==
                 ReserverType.Organization
@@ -110,32 +146,38 @@ class ReservationResponseMapper(
                 null
             }
         val boat = getBoat(reservationWithDependencies)
-        val boatSpace = getBoatSpace(reservation)
+        val boatSpace = getBoatSpace(reservationWithDependencies)
         val trailer = getTrailer(reservationWithDependencies)
+        val revisedPrice = getRevisedPrice(reservationWithDependencies)
 
         return ReservationResponse(
-            id = reservation.id,
+            id = reservationId,
             reserverType = reservationWithDependencies.reserverType ?: ReserverType.Citizen,
             citizen = formatCitizen(citizen),
             organization = formatOrganization(organization),
             boat = formatBoat(boat),
             boatSpace = formatBoatSpace(boatSpace),
-            status = reservation.status,
-            created = reservation.created,
-            startDate = reservation.startDate,
-            validity = reservation.validity,
-            endDate = reservation.endDate,
+            status = status,
+            created = created,
+            startDate = startDate,
+            validity = validity,
+            endDate = endDate,
             totalPrice = reservationWithDependencies.priceInEuro,
             vatValue = reservationWithDependencies.vatPriceInEuro,
             netPrice = reservationWithDependencies.priceWithoutVatInEuro,
+            revisedPrice = revisedPrice,
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
-            paymentDate = reservation.paymentDate,
+            paymentDate = paymentDate,
+            creationType = reservationWithDependencies.creationType
         )
     }
 
-    private fun getCitizen(reservation: BoatSpaceReservation): CitizenWithDetails {
-        val citizenId = reservation.actingCitizenId ?: reservation.reserverId
+    private fun getCitizen(
+        actingCitizenId: UUID?,
+        reserverId: UUID?
+    ): CitizenWithDetails {
+        val citizenId = actingCitizenId ?: reserverId
 
         if (citizenId == null) {
             throw NotFound()
@@ -222,7 +264,7 @@ class ReservationResponseMapper(
         )
     }
 
-    private fun getBoatSpace(reservation: BoatSpaceReservation): BoatSpace =
+    private fun getBoatSpace(reservation: ReservationWithDependencies): BoatSpace =
         spaceReservationService.getBoatSpaceRelatedToReservation(reservation.id) ?: throw NotFound()
 
     private fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
@@ -256,5 +298,18 @@ class ReservationResponseMapper(
             width = intToDecimal(trailer.widthCm),
             length = intToDecimal(trailer.lengthCm),
         )
+    }
+
+    // This can be a function to get the revised price of a reservation, eg. for switch or because of discounts
+    private fun getRevisedPrice(reservation: ReservationWithDependencies): String {
+        return when (reservation.creationType) {
+            CreationType.Switch -> {
+                formatInt(boatSpaceSwitchService.getRevisedPrice(reservation))
+            }
+
+            else -> {
+                reservation.priceInEuro
+            }
+        }
     }
 }

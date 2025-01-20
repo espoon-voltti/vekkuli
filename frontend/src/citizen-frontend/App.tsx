@@ -88,6 +88,16 @@ export const appRouter = createBrowserRouter([
             )
           },
           {
+            path: 'vaihda',
+            element: (
+              <RequireAuth>
+                <ScrollToTop>
+                  <FormPage />
+                </ScrollToTop>
+              </RequireAuth>
+            )
+          },
+          {
             path: 'maksa',
             element: (
               <RequireAuth>

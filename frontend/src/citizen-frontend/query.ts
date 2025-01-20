@@ -12,6 +12,7 @@ export type QueryKeyPrefix =
   | 'auth'
   | 'shared'
   | 'citizen'
+  | 'reserve-action'
 
 export const queryClient = new QueryClient({
   defaultOptions: {

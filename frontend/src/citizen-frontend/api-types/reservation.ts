@@ -5,6 +5,7 @@ import {
   Boat,
   BoatSpace,
   Citizen,
+  CreationType,
   NewBoat,
   NewOrganization,
   NewTrailer,
@@ -30,9 +31,27 @@ export type BoatSpaceReservation = {
   totalPrice: string
   vatValue: string
   netPrice: string
+  revisedPrice: string
   storageType?: StorageType
   trailer?: Trailer
   boat: Boat
+  creationType: CreationType
+}
+
+export type CanReserveResultStatus =
+  | 'CanReserve'
+  | 'CanNotReserve'
+  | 'CanReserveOnlyForOrganization'
+
+export type SwitchableReservation = {
+  id: number
+  boatSpace: BoatSpace
+  totalPrice: string
+  vatValue: string
+}
+export type CanReserveReservation = {
+  status: CanReserveResultStatus
+  switchableReservations: SwitchableReservation[]
 }
 
 export type BoatSpaceReservationResponse = {
@@ -47,12 +66,14 @@ export type BoatSpaceReservationResponse = {
   endDate: string
   validity: ReservationValidity
   paymentDate: string | null
+  revisedPrice: string
   totalPrice: string
   vatValue: string
   netPrice: string
   storageType: StorageType | null
   trailer: Trailer | null
   boat: Boat
+  creationType: CreationType
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

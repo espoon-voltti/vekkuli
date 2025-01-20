@@ -97,6 +97,41 @@ class SeasonalService(
     }
 
     fun canSwitchReservation(
+        reserverID: UUID,
+        type: BoatSpaceType,
+        reservationId: Int,
+    ): ReservationResult {
+        val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
+        val reservation =
+            boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
+                ?: throw IllegalArgumentException("Reservation not found")
+        if (reservation.type != type) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+        return canSwitchReservationWithinPeriod(
+            type,
+            reservation.startDate,
+            reservation.endDate,
+            reservation.validity,
+            reserver.isEspooCitizen()
+        )
+    }
+
+    fun isReservationSwitchPeriodActive(
+        reserverID: UUID,
+        type: BoatSpaceType
+    ): Boolean {
+        val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
+        return hasActiveReservationPeriod(
+            seasonalRepository.getReservationPeriods(),
+            timeProvider.getCurrentDate(),
+            reserver.isEspooCitizen(),
+            type,
+            ReservationOperation.Change
+        )
+    }
+
+    private fun canSwitchReservationWithinPeriod(
         type: BoatSpaceType,
         startDate: LocalDate,
         endDate: LocalDate,
@@ -104,25 +139,6 @@ class SeasonalService(
         isEspooCitizen: Boolean
     ): ReservationResult {
         val periods = seasonalRepository.getReservationPeriods()
-
-        return canSwitchReservation(
-            periods,
-            type,
-            startDate,
-            endDate,
-            validity,
-            isEspooCitizen
-        )
-    }
-
-    fun canSwitchReservation(
-        periods: List<ReservationPeriod>,
-        type: BoatSpaceType,
-        startDate: LocalDate,
-        endDate: LocalDate,
-        validity: ReservationValidity,
-        isEspooCitizen: Boolean
-    ): ReservationResult {
         val now = timeProvider.getCurrentDate()
 
         val hasActivePeriod =
@@ -164,10 +180,11 @@ class SeasonalService(
         }
         val periods = getReservationPeriods()
         return reservations.map { reservation ->
+            // @TODO: This should be moved to another place
             val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate, reservation.type)
+            // @TODO: This should be moved to another place
             val canSwitchResult =
-                canSwitchReservation(
-                    periods,
+                canSwitchReservationWithinPeriod(
                     reservation.type,
                     reservation.startDate,
                     reservation.endDate,

@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.PAYTRAIL_PRODUCT_CODE
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.config.audit
@@ -40,7 +41,8 @@ class PaymentController(
     private val messageUtil: MessageUtil,
     private val reserverService: ReserverService,
     private val paytrailEnv: PaytrailEnv,
-    private val timeProvider: TimeProvider
+    private val timeProvider: TimeProvider,
+    private val boatReservationService: BoatReservationService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -71,7 +73,7 @@ class PaymentController(
         val amount = reservation.priceCents
         val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         // TODO must this be configurable?
-        val productCode = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
+        val productCode = PAYTRAIL_PRODUCT_CODE
 
         val category = "MYY255"
 
@@ -134,9 +136,15 @@ class PaymentController(
             reservationService.handlePaymentResult(params, true)
 
         when (result) {
-            is PaymentProcessResult.Success -> return redirectUrlThymeleaf(
-                "/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus"
-            )
+            is PaymentProcessResult.Success -> {
+                // End the original reservation
+                if (result.reservation.originalReservationId != null) {
+                    boatReservationService.markReservationEnded(result.reservation.originalReservationId)
+                }
+                return redirectUrlThymeleaf(
+                    "/kuntalainen/venepaikka/varaus/${result.reservation.id}/vahvistus"
+                )
+            }
             is PaymentProcessResult.Failure -> return redirectUrlThymeleaf("/")
             is PaymentProcessResult.HandledAlready -> return redirectUrlThymeleaf("/")
         }

@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.PAYTRAIL_PRODUCT_CODE
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.CitizenWithDetails
@@ -19,6 +21,7 @@ class ReservationPaymentService(
     private val boatReservationService: BoatReservationService,
     private val paytrail: PaytrailInterface,
     private val paytrailEnv: PaytrailEnv,
+    private val switchService: BoatSpaceSwitchService,
 ) {
     suspend fun createPaymentForBoatSpaceReservation(
         citizen: CitizenWithDetails,
@@ -26,12 +29,9 @@ class ReservationPaymentService(
     ): PaytrailPaymentResponse {
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
-        val amount = reservation.priceCents
+        val amount = calculatePrice(reservation)
         val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
-        // TODO must this be configurable?
-        val productCode = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
         val category = "MYY255"
-
         val payment =
             withContext(Dispatchers.IO) {
                 boatReservationService.addPaymentToReservation(
@@ -41,7 +41,7 @@ class ReservationPaymentService(
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        productCode = productCode,
+                        productCode = PAYTRAIL_PRODUCT_CODE,
                         paymentType = PaymentType.OnlinePayment
                     )
                 )
@@ -66,7 +66,7 @@ class ReservationPaymentService(
                             amount,
                             1,
                             BOAT_RESERVATION_ALV_PERCENTAGE,
-                            productCode,
+                            PAYTRAIL_PRODUCT_CODE,
                             description,
                             category
                         )
@@ -77,8 +77,15 @@ class ReservationPaymentService(
         )
     }
 
-    fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult {
-        return when (val result = boatReservationService.handlePaymentResult(params, true)) {
+    private fun calculatePrice(reservation: BoatSpaceReservationDetails): Int {
+        if (switchService.isSwitchedReservation(reservation)) {
+            return switchService.getRevisedPrice(reservation)
+        }
+        return reservation.priceCents
+    }
+
+    fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult =
+        when (val result = boatReservationService.handlePaymentResult(params, true)) {
             is PaymentProcessResult.Success ->
                 PaymentHandleResult(
                     processResult = result,
@@ -97,10 +104,9 @@ class ReservationPaymentService(
                     redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
                 )
         }
-    }
 
-    fun handlePaymentCancel(params: Map<String, String>): PaymentHandleResult {
-        return when (val result = boatReservationService.handlePaymentResult(params, false)) {
+    fun handlePaymentCancel(params: Map<String, String>): PaymentHandleResult =
+        when (val result = boatReservationService.handlePaymentResult(params, false)) {
             is PaymentProcessResult.Success ->
                 PaymentHandleResult(
                     processResult = result,
@@ -119,7 +125,6 @@ class ReservationPaymentService(
                     redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
                 )
         }
-    }
 
     private fun createReference(
         balanceAccount: String,

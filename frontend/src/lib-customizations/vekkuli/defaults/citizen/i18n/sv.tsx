@@ -145,6 +145,14 @@ const sv: Translations = {
             length: 'Förvaringsplatsens längd (m)'
           }
         }
+      },
+      modal: {
+        reserveAnotherPlace: 'Boka en annan plats',
+        reservingBoatSpace: 'Du håller på att boka en båtplats:',
+        cannotReserveNewPlace:
+          'Du har redan två båtplatser. Du kan inte boka en ny plats, men du kan byta din nuvarande plats.',
+        currentPlaces: 'Din nuvarande plats',
+        switchCurrentPlace: 'Byt min nuvarande plats'
       }
     },
     formPage: {
@@ -154,6 +162,14 @@ const sv: Translations = {
         Renew: (name: string) => `Förnyelse av plats: ${name}`,
         Winter: (name: string) => `Vinterplatsreservation: ${name}`,
         Storage: (name: string) => `Förvaringsplatsreservation: ${name}`
+      },
+      info: {
+        switch:
+          'Du håller på att byta båtplats. Bokningstiden för din båtplats förblir oförändrad. Samtidigt sägs din gamla plats upp och görs tillgänglig för andra att boka.'
+      },
+      submit: {
+        continueToPayment: 'Fortsätt till betalning',
+        confirmReservation: 'Bekräfta bokning'
       }
     },
     steps: {
@@ -206,7 +222,20 @@ const sv: Translations = {
           'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.',
         MAX_PERSONAL_RESERVATIONS:
           'Du har redan det maximala antalet platser av denna typ. Om du agerar på uppdrag av en organisation kan du fortsätta att boka.'
+      },
+      fillInformation: {
+        title: 'Reservering misslyckades',
+        SERVER_ERROR:
+          'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.'
       }
+    },
+    paymentInfo: {
+      moreExpensive: (amount: string) =>
+        `Observera att den nya platsen är dyrare än din nuvarande plats. Priset tar redan hänsyn till den betalning du har gjort, och du behöver bara betala mellanskillnaden på ${amount} €.`,
+      lessExpensive:
+        'Observera att den nya platsen är billigare än din nuvarande plats. Ingen återbetalning ges.',
+      equal:
+        'Platsen kostar lika mycket som den tidigare. Du behöver inte betala igen.'
     },
     auth: {
       reservingBoatSpace: 'Bokar båtplats:',
@@ -294,6 +323,29 @@ const sv: Translations = {
       Trailer: 'Trailerförvaring',
       Buck: 'Förvaring på bock',
       BuckWithTent: 'Förvaring på bock med skyddstält'
+    }
+  },
+  citizen: {
+    firstName: 'Förnamn',
+    lastName: 'Efternamn',
+    email: 'E-post',
+    phoneNumber: 'Telefonnummer',
+    address: 'Adress',
+    nationalId: 'Personnummer',
+    postalCode: 'Postnummer',
+    postOffice: 'Postort',
+    municipality: 'Kommun'
+  },
+  citizenPage: {
+    title: 'Mina uppgifter',
+    reservation: {
+      title: 'Bokningar',
+      noReservations: 'Inga bokningar',
+      actions: {
+        cancel: 'Avboka plats',
+        renew: 'Förnya plats',
+        change: 'Byt plats'
+      }
     }
   }
 }

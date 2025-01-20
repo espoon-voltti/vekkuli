@@ -1,23 +1,38 @@
 import { getFreeSpaces } from 'citizen-frontend/api-clients/free-spaces'
-import { reserveSpace } from 'citizen-frontend/api-clients/reservation'
+import {
+  canReserveSpace,
+  reserveSpace,
+  startToSwitchBoatSpace
+} from 'citizen-frontend/api-clients/reservation'
 import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces'
 import { createQueryKeys } from 'citizen-frontend/query'
 import { mutation, query } from 'lib-common/query'
 
-const queryKeys = createQueryKeys('free-spaces', {
+const reservationQueryKeys = createQueryKeys('free-spaces', {
   allSearchesToFreeSpaces: () => ['searchFreeSpaces'],
   searchFreeSpaces: (params: SearchFreeSpacesParams | undefined) => [
     'searchFreeSpaces',
     params
-  ]
+  ],
+  canReserveSpace: (spaceId: number) => ['canReserveSpace', spaceId]
 })
 
 export const freeSpacesQuery = query({
   api: getFreeSpaces,
-  queryKey: queryKeys.searchFreeSpaces
+  queryKey: reservationQueryKeys.searchFreeSpaces
 })
 
 export const reserveSpaceMutation = mutation({
   api: reserveSpace,
-  invalidateQueryKeys: () => [queryKeys.allSearchesToFreeSpaces()]
+  invalidateQueryKeys: () => [reservationQueryKeys.allSearchesToFreeSpaces()]
+})
+
+export const startSwitchSpaceMutation = mutation({
+  api: startToSwitchBoatSpace,
+  invalidateQueryKeys: () => [reservationQueryKeys.allSearchesToFreeSpaces()]
+})
+
+export const canReserveSpaceQuery = query({
+  api: canReserveSpace,
+  queryKey: reservationQueryKeys.canReserveSpace
 })

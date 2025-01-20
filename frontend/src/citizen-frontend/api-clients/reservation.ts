@@ -6,6 +6,7 @@ import { client } from '../api-client'
 import {
   BoatSpaceReservation,
   BoatSpaceReservationResponse,
+  CanReserveReservation,
   FillBoatSpaceReservationInput,
   Municipality,
   PaymentInformationResponse
@@ -19,6 +20,37 @@ export async function reserveSpace(
     method: 'POST'
   })
   return json
+}
+
+export async function canReserveSpace(
+  spaceId: number
+): Promise<CanReserveReservation> {
+  const { data } = await client.request<CanReserveReservation>({
+    url: uri`/can-reserve/${spaceId}`.toString(),
+    method: 'GET'
+  })
+  return data
+}
+
+export async function startToSwitchBoatSpace(input: {
+  reservationId: number
+  spaceId: number
+}): Promise<void> {
+  await client.request<void>({
+    url: uri`/reservation/${input.reservationId}/switch/${input.spaceId}`.toString(),
+    method: 'POST'
+  })
+}
+
+export async function switchBoatSpace(
+  reservationId: number,
+  input: FillBoatSpaceReservationInput
+): Promise<void> {
+  await client.request<void>({
+    url: uri`/reservation/${reservationId}/switch`.toString(),
+    method: 'POST',
+    data: input
+  })
 }
 
 export async function unfinishedReservation(): Promise<BoatSpaceReservation> {
@@ -59,12 +91,13 @@ export async function municipalities(): Promise<Municipality[]> {
 export async function fillReservation(
   reservationId: number,
   input: FillBoatSpaceReservationInput
-): Promise<void> {
-  await client.request<BoatSpaceReservation>({
+): Promise<BoatSpaceReservation> {
+  const { data: json } = await client.request<BoatSpaceReservationResponse>({
     url: uri`/reservation/${reservationId}/fill`.toString(),
     method: 'POST',
     data: input
   })
+  return deserializeJsonBoatSpaceReservationResponse(json)
 }
 
 export async function cancelReservation(reservationId: number): Promise<void> {
@@ -84,7 +117,8 @@ export async function terminateReservation(
 }
 
 export async function paymentInformation(
-  reservationId: number
+  reservationId: number,
+  amount?: number
 ): Promise<PaymentInformationResponse> {
   const { data } = await client.request<PaymentInformationResponse>({
     url: uri`/reservation/${reservationId}/payment-information`.toString(),
@@ -92,6 +126,12 @@ export async function paymentInformation(
   })
 
   return data
+}
+
+export function deserializeJsonBoatSpaceReservationListResponse(
+  json: BoatSpaceReservationResponse[]
+): BoatSpaceReservation[] {
+  return json.map((j) => deserializeJsonBoatSpaceReservationResponse(j))
 }
 
 export function deserializeJsonBoatSpaceReservationResponse(
@@ -117,8 +157,10 @@ export function deserializeJsonBoatSpaceReservationResponse(
     totalPrice: json.totalPrice,
     vatValue: json.vatValue,
     netPrice: json.netPrice,
+    revisedPrice: json.revisedPrice,
     boat: json.boat,
     storageType: json.storageType ?? undefined,
-    trailer: json.trailer ?? undefined
+    trailer: json.trailer ?? undefined,
+    creationType: json.creationType
   }
 }

@@ -489,6 +489,7 @@ VALUES
     (true, 'Slip', 'SecondNew', 4, 1, 9, 30),
     (true, 'Slip', 'Renew', 1, 7, 1, 31),
     (true, 'Slip', 'Change', 1, 7, 1, 31),
+    (true, 'Slip', 'Change', 3, 1, 9, 30),
     (true, 'Trailer', 'New', 5, 1, 12, 31),
     (true, 'Trailer', 'Renew', 4, 1, 4, 30),
     (true, 'Trailer', 'Change',  4, 1, 12, 31),

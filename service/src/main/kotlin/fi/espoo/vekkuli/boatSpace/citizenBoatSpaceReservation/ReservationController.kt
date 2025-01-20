@@ -17,6 +17,7 @@ class ReservationController(
     private val reservationService: ReservationService,
     private val reservationResponseMapper: ReservationResponseMapper,
     private val reserverService: ReserverService,
+    private val canReserveResponseMapper: CanReserveResponseMapper
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -61,6 +62,14 @@ class ReservationController(
         return reservationResponseMapper.toReservationResponse(reservation)
     }
 
+    @GetMapping("/can-reserve/{spaceId}")
+    fun canReserveSpace(
+        @PathVariable spaceId: Int,
+    ): CanReserveResponse {
+        val canReserve = reservationService.checkReservationAvailabilityForCurrentCitizen(spaceId)
+        return canReserveResponseMapper.toCanReserveResponse(canReserve)
+    }
+
     @GetMapping("/reservation/{reservationId}")
     fun getReservation(
         @PathVariable reservationId: Int,
@@ -81,7 +90,7 @@ class ReservationController(
         @PathVariable reservationId: Int,
         @RequestBody input: FillReservationInformationInput,
         request: HttpServletRequest
-    ) {
+    ): ReservationResponse {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
@@ -89,7 +98,9 @@ class ReservationController(
             )
         }
         val information = input.toReservationInformation()
-        reservationService.fillReservationInformation(reservationId, information)
+        return reservationResponseMapper.toReservationResponse(
+            reservationService.fillReservationInformation(reservationId, information)
+        )
     }
 
     @DeleteMapping("/reservation/{reservationId}/cancel")
