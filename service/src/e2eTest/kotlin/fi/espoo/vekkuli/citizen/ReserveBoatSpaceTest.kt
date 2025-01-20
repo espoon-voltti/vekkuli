@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import kotlin.concurrent.thread
 import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 
@@ -381,6 +382,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val reservationSection = citizenDetailPage.getReservationSection(1)
             val trailerSection = reservationSection.getTrailerSection()
+
+            page.waitForCondition { trailerSection.widthField.isVisible }
             assertThat(trailerSection.widthField).containsText("1,50")
             assertThat(trailerSection.lengthField).containsText("2,50")
             assertThat(trailerSection.registrationCodeField).containsText(trailerRegistrationCode)
