@@ -118,7 +118,9 @@ open class ReservationService(
             }
 
         if (canReserveSpaceResult is ReservationResult.Failure) {
-            if (organizationService.getCitizenOrganizations(citizenId).isNotEmpty()) {
+            if (organizationService.getCitizenOrganizations(citizenId).isNotEmpty() &&
+                canReserveSpaceResult.errorCode == ReservationResultErrorCode.MaxReservations
+            ) {
                 // Can not reserve for reserver, but can reserve for organization
                 return CanReserveResult(
                     status = CanReserveResultStatus.CanReserveOnlyForOrganization,
@@ -161,10 +163,7 @@ open class ReservationService(
     }
 
     @Transactional
-    open suspend fun getPaymentInformation(
-        reservationId: Int,
-        givenPrice: Int? = null
-    ): PaytrailPaymentResponse {
+    open suspend fun getPaymentInformation(reservationId: Int): PaytrailPaymentResponse {
         val citizen = citizenAccessControl.requireCitizen()
         val reservation = accessReservation(reservationId)
 
