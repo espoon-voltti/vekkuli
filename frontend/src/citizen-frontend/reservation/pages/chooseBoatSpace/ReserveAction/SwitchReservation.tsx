@@ -31,8 +31,6 @@ export default React.memo(function SwitchReservation({
 
   const navigate = useNavigate()
   const onSwitch = () => {
-    // eslint-disable-next-line no-console
-    console.log(`switching ${reservation.id} to ${targetSpaceId}`)
     switchPlace({
       reservationId: reservation.id,
       spaceId: targetSpaceId

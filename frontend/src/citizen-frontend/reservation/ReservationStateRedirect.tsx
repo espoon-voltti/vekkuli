@@ -34,7 +34,7 @@ export default React.memo(function ReservationStateRedirect({
         break
       case 'Confirmed':
         equalOrRedirect(
-          `/kuntalainen/venepaikka/${currentReservation.id}/vahvistus`,
+          `/kuntalainen/venepaikka/vahvistus/${currentReservation.id}`,
           pathname
         )
         break

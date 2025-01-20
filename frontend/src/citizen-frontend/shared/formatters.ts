@@ -49,7 +49,3 @@ export function formatMToCm(value: number): number {
 export function formatMToString(value: number): string {
   return value.toFixed(2).replace('.', ',')
 }
-
-export function formatCentsToEuros(value: number): string {
-  return (value / 100).toFixed(1)
-}
