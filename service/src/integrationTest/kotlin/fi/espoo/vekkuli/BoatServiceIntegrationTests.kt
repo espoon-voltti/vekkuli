@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -88,9 +89,12 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
                 newBoat.id
             )
         )
-        val boatDeleted = boatService.deleteBoat(newBoat.id)
+
+        assertThrows<IllegalStateException> {
+            boatService.deleteBoat(newBoat.id)
+        }
+
         val boat = boatService.getBoat(newBoat.id)
-        assertEquals(false, boatDeleted, "Boat is not deleted according to return value")
         assertEquals(newBoat, boat, "Boat is not deleted")
     }
 
@@ -105,10 +109,10 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
                 newBoat.id
             )
         )
-        // go forth a year, the previous reservation has now expired
+        // go forth a year and one day, the previous reservation has now expired
         mockTimeProvider(
             timeProvider,
-            timeProvider.getCurrentDateTime().plusYears(1),
+            timeProvider.getCurrentDateTime().plusYears(1).plusDays(1),
         )
         val boatDeleted = boatService.deleteBoat(newBoat.id)
         val boat = boatService.getBoat(newBoat.id)
