@@ -57,7 +57,7 @@ class PaymentController(
                 it,
                 "PAYMENT_VIEW",
                 mapOf(
-                    "reservationId" to id.toString(),
+                    "targetId" to id.toString(),
                     "type" to type.toString(),
                     "cancelled" to cancelled.toString()
                 )

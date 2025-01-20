@@ -70,7 +70,15 @@ class OrganizationUserController(
     fun citizenProfile(
         request: HttpServletRequest,
         @PathVariable organizationId: UUID,
+        map: MutableMap<Any?, Any?>,
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_ORGANIZATION_PROFILE",
+                mapOf("targetId" to organizationId.toString())
+            )
+        }
         val page = organizationControllerService.buildOrganizationPage(organizationId)
         return employeeLayout.render(
             true,
@@ -87,6 +95,15 @@ class OrganizationUserController(
         @PathVariable boatId: Int,
         model: Model
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_BOAT_EDIT_PAGE",
+                mapOf(
+                    "targetId" to boatId.toString()
+                )
+            )
+        }
         val boats = boatService.getBoatsForReserver(reserverId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
         return editBoat.editBoatForm(
@@ -110,6 +127,15 @@ class OrganizationUserController(
         input: BoatUpdateForm,
         response: HttpServletResponse
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "UPDATE_BOAT",
+                mapOf(
+                    "targetId" to boatId.toString()
+                )
+            )
+        }
         val errors = citizenUserController.validateBoatUpdateInput(input)
 
         if (errors.isNotEmpty()) {
@@ -130,8 +156,18 @@ class OrganizationUserController(
     @GetMapping("/yhteiso/kayttaja/{organizationId}/muokkaa")
     @ResponseBody
     fun editOrganizationInformation(
-        @PathVariable organizationId: UUID
+        @PathVariable organizationId: UUID,
+        request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_ORGANIZATION_EDIT_PAGE",
+                mapOf(
+                    "targetId" to organizationId.toString()
+                )
+            )
+        }
         val organization =
             organizationService.getOrganizationById(organizationId)
                 ?: throw IllegalArgumentException("Organization not found")
@@ -154,7 +190,7 @@ class OrganizationUserController(
                 "UNLINK_CITIZEN_FROM_ORGANIZATION",
                 mapOf(
                     "citizenId" to citizenId.toString(),
-                    "organizationId" to organizationId.toString()
+                    "targetId" to organizationId.toString()
                 )
             )
         }
@@ -180,6 +216,15 @@ class OrganizationUserController(
         @RequestParam billingPostOffice: String,
         request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "UPDATE_ORGANIZATION",
+                mapOf(
+                    "targetId" to organizationId.toString()
+                )
+            )
+        }
         organizationService.updateOrganization(
             UpdateOrganizationParams(
                 id = organizationId,
@@ -212,6 +257,15 @@ class OrganizationUserController(
         @RequestParam citizenId: UUID?,
         request: HttpServletRequest
     ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_ADD_ORGANIZATION_MEMBERS_PAGE",
+                mapOf(
+                    "targetId" to organizationId.toString()
+                )
+            )
+        }
         var citizen: CitizenWithDetails? = null
         if (citizenId != null) {
             citizen = reserverService.getCitizen(citizenId)
@@ -227,17 +281,17 @@ class OrganizationUserController(
         @RequestParam citizenId: UUID,
         request: HttpServletRequest
     ): String {
-        request.ensureEmployeeId()
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
                 "ADD_ORGANIZATION_MEMBERS",
                 mapOf(
-                    "citizenId" to citizenId.toString(),
-                    "organizationId" to organizationId.toString()
+                    "targetId" to organizationId.toString(),
+                    "citizenId" to citizenId.toString()
                 )
             )
         }
+        request.ensureEmployeeId()
         organizationService.addCitizenToOrganization(organizationId, citizenId)
         val organizationMembers = organizationService.getOrganizationMembers(organizationId)
         return organizationMembersContainer.render(organizationId, organizationMembers)
@@ -255,7 +309,7 @@ class OrganizationUserController(
                 it,
                 "SEARCH_ORGANIZATION_MEMBERS",
                 mapOf(
-                    "organizationId" to organizationId.toString(),
+                    "targetId" to organizationId.toString(),
                     "nameParameter" to nameParameter
                 )
             )

@@ -61,7 +61,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE", mapOf("targetId" to citizenId.toString()))
         }
         val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
 
@@ -125,7 +125,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_RESERVATIONS", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_RESERVATIONS", mapOf("targetId" to citizenId.toString()))
         }
         val reserver = reserverService.getReserverById(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
@@ -140,7 +140,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MESSAGES", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MESSAGES", mapOf("targetId" to citizenId.toString()))
         }
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val messages = reserverService.getMessages(citizenId)
@@ -154,7 +154,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MEMOS", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS", mapOf("targetId" to citizenId.toString()))
         }
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val memos = memoService.getMemos(citizenId, ReservationType.Marine)
@@ -169,7 +169,7 @@ class CitizenUserController(
         @PathVariable memoId: Int,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MEMOS_EDIT", mapOf("citizenId" to citizenId.toString(), "memoId" to memoId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_EDIT", mapOf("targetId" to citizenId.toString(), "memoId" to memoId.toString()))
         }
         val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
         return reserverDetailsReservationsContainer.memoContent(memo, true)
@@ -182,7 +182,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ADD_NEW_FORM", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ADD_NEW_FORM", mapOf("targetId" to citizenId.toString()))
         }
         return reserverDetailsReservationsContainer.newMemoContent(citizenId, true)
     }
@@ -194,7 +194,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MEMOS_CANCEL", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_CANCEL", mapOf("targetId" to citizenId.toString()))
         }
         return reserverDetailsReservationsContainer.newMemoContent(citizenId, false)
     }
@@ -207,7 +207,7 @@ class CitizenUserController(
         @RequestParam content: String,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ADD_NEW", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ADD_NEW", mapOf("targetId" to citizenId.toString()))
         }
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
@@ -224,7 +224,7 @@ class CitizenUserController(
         @PathVariable memoId: Int,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MEMOS_DELETE", mapOf("citizenId" to citizenId.toString(), "memoId" to memoId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_DELETE", mapOf("targetId" to citizenId.toString(), "memoId" to memoId.toString()))
         }
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         memoService.removeMemo(memoId)
@@ -245,7 +245,7 @@ class CitizenUserController(
                 it,
                 "CITIZEN_PROFILE_MEMOS_UPDATE",
                 mapOf(
-                    "citizenId" to citizenId.toString(),
+                    "targetId" to citizenId.toString(),
                     "memoId" to memoId.toString(),
                     "content" to content
                 )
@@ -264,7 +264,7 @@ class CitizenUserController(
         @PathVariable memoId: Int,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ITEM", mapOf("citizenId" to citizenId.toString(), "memoId" to memoId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_MEMOS_ITEM", mapOf("targetId" to citizenId.toString(), "memoId" to memoId.toString()))
         }
         val memo = memoService.getMemo(memoId) ?: throw IllegalArgumentException("Memo not found")
         return reserverDetailsReservationsContainer.memoContent(memo, false)
@@ -277,7 +277,7 @@ class CitizenUserController(
         @PathVariable citizenId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_PAYMENTS", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_PAYMENTS", mapOf("targetId" to citizenId.toString()))
         }
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val history = paymentService.getReserverPaymentHistory(reserver.id)
@@ -291,7 +291,7 @@ class CitizenUserController(
         @PathVariable reserverId: UUID
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RESERVER_PROFILE_EXEPTIONS", mapOf("reserverId" to reserverId.toString()))
+            logger.audit(it, "RESERVER_PROFILE_EXEPTIONS", mapOf("targetId" to reserverId.toString()))
         }
         val reserver = reserverRepository.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
         return reserverDetailsReservationsContainer.exceptionsTabContent(reserver)
@@ -304,7 +304,7 @@ class CitizenUserController(
         @PathVariable reserverId: UUID,
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE", mapOf("reserverId" to reserverId.toString()))
+            logger.audit(it, "RESERVER_PROFILE_ESPOO_RULES_APPLIED__UPDATE", mapOf("targetId" to reserverId.toString()))
         }
         val reserver = reserverService.toggleEspooRulesApplied(reserverId) ?: throw IllegalArgumentException("Reserver not found")
         return reserverDetailsReservationsContainer.exceptionsTabContent(reserver)
@@ -319,7 +319,7 @@ class CitizenUserController(
         model: Model
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_FORM", mapOf("citizenId" to citizenId.toString(), "boatId" to boatId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_FORM", mapOf("targetId" to citizenId.toString(), "boatId" to boatId.toString()))
         }
         val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
@@ -343,7 +343,7 @@ class CitizenUserController(
         model: Model
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_FORM", mapOf("boatId" to boatId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_FORM", mapOf("targetId" to boatId.toString()))
         }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
@@ -374,7 +374,7 @@ class CitizenUserController(
                 it,
                 "CITIZEN_PROFILE_EDIT_TRAILER_FORM",
                 mapOf(
-                    "citizenId" to citizenId.toString(),
+                    "targetId" to citizenId.toString(),
                     "trailerId" to trailerId.toString()
                 )
             )
@@ -403,7 +403,7 @@ class CitizenUserController(
                 it,
                 "CITIZEN_PROFILE_EDIT_TRAILER_SAVE",
                 mapOf(
-                    "citizenId" to citizenId.toString(),
+                    "targetId" to citizenId.toString(),
                     "trailerId" to trailerId.toString()
                 )
             )
@@ -500,7 +500,7 @@ class CitizenUserController(
         response: HttpServletResponse
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_SAVE", mapOf("citizenId" to citizenId.toString(), "boatId" to boatId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_SAVE", mapOf("targetId" to citizenId.toString(), "boatId" to boatId.toString()))
         }
         val boats = boatService.getBoatsForReserver(citizenId)
         val boat = boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
@@ -563,7 +563,7 @@ class CitizenUserController(
         response: HttpServletResponse
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_SAVE", mapOf("boatId" to boatId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_BOAT_SAVE", mapOf("targetId" to boatId.toString()))
         }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
@@ -648,7 +648,7 @@ class CitizenUserController(
         response: HttpServletResponse
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_DELETE_BOAT", mapOf("citizenId" to citizenId.toString(), "boatId" to boatId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_DELETE_BOAT", mapOf("targetId" to citizenId.toString(), "boatId" to boatId.toString()))
         }
         val boats = boatService.getBoatsForReserver(citizenId)
         boats.find { it.id == boatId } ?: throw IllegalArgumentException("Boat not found")
@@ -707,7 +707,7 @@ class CitizenUserController(
         response: HttpServletResponse
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_TRAILER_SAVE", mapOf("boatId" to boatId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_TRAILER_SAVE", mapOf("targetId" to boatId.toString()))
         }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
@@ -744,7 +744,7 @@ class CitizenUserController(
         model: Model
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_FORM", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_FORM", mapOf("targetId" to citizenId.toString()))
         }
         val citizen = reserverService.getCitizen(citizenId) ?: throw IllegalArgumentException("Citizen not found")
         val municipalities = reserverService.getMunicipalities()
@@ -774,7 +774,7 @@ class CitizenUserController(
         model: Model
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_SAVE", mapOf("citizenId" to citizenId.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_SAVE", mapOf("targetId" to citizenId.toString()))
         }
         val boatSpaceReservations = reservationService.getBoatSpaceReservationsForReserver(citizenId)
         val organizations = organizationService.getCitizenOrganizations(citizenId)
@@ -804,7 +804,7 @@ class CitizenUserController(
         model: Model
     ): String {
         request.getAuthenticatedUser()?.let {
-            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_SAVE", mapOf("citizenId" to it.id.toString()))
+            logger.audit(it, "CITIZEN_PROFILE_EDIT_CITIZEN_SAVE", mapOf("targetId" to it.id.toString()))
         }
         val citizen = getAuthenticatedCitizen(request)
         val citizenId = citizen.id
@@ -910,10 +910,9 @@ class CitizenUserController(
                 it,
                 "CITIZEN_PROFILE_ACK_WARNING",
                 mapOf(
-                    "reservationId" to reservationId.toString(),
+                    "targetId" to reservationId.toString(),
                     "boatId" to boatId.toString(),
                     "key" to key.toString(),
-                    "infoText" to infoText,
                     "reserverId" to reserverId.toString()
                 )
             )
@@ -938,7 +937,7 @@ class CitizenUserController(
                 it,
                 "CITIZEN_PROFILE_ACK_WARNING",
                 mapOf(
-                    "reserverId" to reserverId.toString(),
+                    "targetId" to reserverId.toString(),
                     "trailerId" to trailerId.toString(),
                     "key" to key.toString(),
                     "infoText" to infoText

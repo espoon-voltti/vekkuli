@@ -1,11 +1,14 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.config.audit
+import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.BoatSpaceService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.Min
+import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 
@@ -19,6 +22,8 @@ data class FreeSpacesResponse(
 class FreeSpacesController(
     private val boatSpaceService: BoatSpaceService,
 ) {
+    private val logger = KotlinLogging.logger {}
+
     @GetMapping("/public/free-spaces/search")
     fun getFreeSpaces(
         @RequestParam boatType: BoatType?,
@@ -30,6 +35,12 @@ class FreeSpacesController(
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest,
     ): FreeSpacesResponse {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_FREE_SPACES",
+            )
+        }
         val freeSpacesByHarbor =
             boatSpaceService.getUnreservedBoatSpaceOptions(
                 boatType,

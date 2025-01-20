@@ -147,16 +147,7 @@ class BoatSpaceSearchController {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
-                "BOAT_SPACE_SEARCH_RESULTS",
-                mapOf(
-                    "boatType" to boatType.toString(),
-                    "width" to width.toString(),
-                    "length" to length.toString(),
-                    "amenities" to amenities.toString(),
-                    "storageType" to storageType.toString(),
-                    "boatSpaceType" to boatSpaceType.toString(),
-                    "harbor" to harbor.toString()
-                )
+                "BOAT_SPACE_SEARCH_RESULTS"
             )
         }
         val userType = UserType.fromPath(usertype)
