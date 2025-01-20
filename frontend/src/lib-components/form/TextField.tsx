@@ -49,6 +49,8 @@ export default React.memo(function TextField({
               id={id}
               name={name}
               value={state}
+              aria-required={required}
+              aria-invalid={showError}
               onChange={(e) => set(e.target.value)}
               onBlur={() => setTouched(true)}
             />

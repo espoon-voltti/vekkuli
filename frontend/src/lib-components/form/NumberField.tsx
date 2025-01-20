@@ -59,6 +59,8 @@ function NumberFieldR({
               max={max}
               name={name}
               value={state}
+              aria-required={required}
+              aria-invalid={showError}
               onChange={(e) => set(e.target.value)}
               onBlur={() => setTouched(true)}
             />

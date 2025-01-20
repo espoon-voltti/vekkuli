@@ -70,6 +70,7 @@ function CheckboxFieldR<T>({
                 value={option.domValue}
                 label={option.label}
                 isFullWidth={isFullWidth}
+                ariaInvalid={showError}
               />
             ))}
             {showError && (
@@ -106,7 +107,8 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
   label,
   selected,
   onChange,
-  isFullWidth
+  isFullWidth,
+  ariaInvalid
 }: CheckboxFieldInputProps) {
   return (
     <Column isFull={isFullWidth} isHalf={!isFullWidth} noBottomPadding>
@@ -117,6 +119,7 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
           value={value}
           checked={selected}
           type="checkbox"
+          aria-invalid={ariaInvalid}
           onChange={(e) => {
             e.stopPropagation()
             onChange?.(e.target.checked)
