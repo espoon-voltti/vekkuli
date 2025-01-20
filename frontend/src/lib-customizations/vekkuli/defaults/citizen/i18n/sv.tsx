@@ -5,9 +5,9 @@
 import { Translations as ComponentTranslations } from 'lib-components/i18n'
 
 import {
-  ReservationValidity,
   BoatSpaceType,
   OwnershipStatus,
+  ReservationValidity,
   ReserverType
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
