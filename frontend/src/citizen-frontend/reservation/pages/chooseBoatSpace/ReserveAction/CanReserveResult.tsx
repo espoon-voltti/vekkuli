@@ -26,7 +26,7 @@ export default React.memo(function CanReserveResult({
       reserveSpace()
     }
     if (canReserveResult.status === 'CanNotReserve') {
-      setError('NotPossible')
+      setError('NOT_POSSIBLE')
     }
   }, [
     reserveSpace,
