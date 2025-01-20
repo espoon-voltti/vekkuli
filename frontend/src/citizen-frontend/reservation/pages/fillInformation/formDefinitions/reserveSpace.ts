@@ -139,7 +139,7 @@ const getBoatsSelection = (
   citizenBoats: Boat[]
 ) => {
   return next.organization.renterType.type.domValue === 'Organization'
-    ? organizationBoats[next.organization.organizationSelection.domValue]
+    ? organizationBoats[next.organization.organizationSelection.domValue] || []
     : citizenBoats
 }
 
