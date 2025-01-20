@@ -116,6 +116,8 @@ class CitizenDetailsPage(
 
     fun getReservationSection(nth: Int) = ReservationSection(reservationListCards.nth(nth))
 
+    fun getReservationSection(text: String) = ReservationSection(reservationListCards.filter(Locator.FilterOptions().setHasText(text)))
+
     fun getFirstReservationSection() = getReservationSection(0)
 
     val expiredReservationList = getByDataTestId("expired-reservation-list")
