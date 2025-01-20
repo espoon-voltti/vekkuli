@@ -8,6 +8,7 @@ $darkGray: #536076;
 $gainsboro: #dddddd;
 $warning: #FF8E31;
 $error: #FF3D3D;
+$bulma-danger: #EB002F;
 $spacing-extrasmall: 4px;
 $spacing-small: 8px;
 $spacing-medium: 16px;
@@ -50,6 +51,7 @@ $help-min-height: 18px;
   $subtitle-size: 20px,
   $subtitle-weight: 600,
   $subtitle-line-height: 24px,
+  $danger: $bulma-danger,
 );
 
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
