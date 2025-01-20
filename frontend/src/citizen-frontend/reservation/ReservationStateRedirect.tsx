@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import { useLocation } from 'react-router'
 
 import { ReservationStateContext } from './state'
 
@@ -11,39 +10,46 @@ export default React.memo(function ReservationStateRedirect({
   children
 }: Props) {
   const { reservation } = useContext(ReservationStateContext)
-  const { pathname } = useLocation()
-  const currentReservation = reservation.getOrElse(undefined)
-  if (reservation.isLoading) return null
-  if (reservation.isFailure || currentReservation === undefined) {
-    equalOrRedirect('/kuntalainen/venepaikka', pathname)
-  } else if (reservation.isSuccess) {
-    switch (currentReservation.status) {
-      case 'Info':
-        switch (currentReservation.creationType) {
-          case 'Renew':
-          case 'New':
-            equalOrRedirect('/kuntalainen/venepaikka/varaa', pathname)
-            break
-          case 'Switch':
-            equalOrRedirect('/kuntalainen/venepaikka/vaihda', pathname)
-            break
-        }
-        break
-      case 'Payment':
-        equalOrRedirect('/kuntalainen/venepaikka/maksa', pathname)
-        break
-      case 'Confirmed':
-        equalOrRedirect(
-          `/kuntalainen/venepaikka/vahvistus/${currentReservation.id}`,
-          pathname
-        )
-        break
+
+  return reservation.mapAll({
+    loading: () => null,
+    failure: () => {
+      equalOrRedirect('/kuntalainen/venepaikka')
+      return children
+    },
+    success: (reservation, isReloading) => {
+      if (isReloading) {
+        return null
+      }
+
+      switch (reservation.status) {
+        case 'Info':
+          switch (reservation.creationType) {
+            case 'Renew':
+            case 'New':
+              equalOrRedirect('/kuntalainen/venepaikka/varaa')
+              break
+            case 'Switch':
+              equalOrRedirect('/kuntalainen/venepaikka/vaihda')
+              break
+          }
+          break
+        case 'Payment':
+          equalOrRedirect('/kuntalainen/venepaikka/maksa')
+          break
+        case 'Confirmed':
+          equalOrRedirect(`/kuntalainen/venepaikka/vahvistus/${reservation.id}`)
+          break
+      }
+
+      return children
     }
-  }
-  return <>{children}</>
+  })
 })
 
-function equalOrRedirect(uri: string, pathname: string) {
-  if (pathname !== uri) window.location.replace(uri)
+function equalOrRedirect(uri: string) {
+  if (window.location.pathname !== uri) {
+    window.location.replace(uri)
+  }
   return null
 }
