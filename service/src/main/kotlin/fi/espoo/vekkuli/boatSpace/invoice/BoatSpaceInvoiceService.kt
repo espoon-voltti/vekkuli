@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.service.ReserverService
+import fi.espoo.vekkuli.service.placeTypeToText
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -121,7 +122,13 @@ class BoatSpaceInvoiceService(
         }
 
         val price = priceWithVatInCents ?: reservation.priceCents
-        val description = description ?: "${reservation.locationName} ${reservation.startDate.year}"
+        val description =
+            description
+                ?: (
+                    placeTypeToText(reservation.type.toString()) +
+                        " " + reservation.locationName + " " + reservation.place + " " +
+                        timeProvider.getCurrentDate().year + "-" + reservation.endDate.year
+                )
 
         if (reservation.reserverType == ReserverType.Citizen) {
             val citizen = reserverService.getCitizen(reserverId)

@@ -444,7 +444,7 @@ class ReserverDetailsReservationsContainer(
                     <td>${boatSpaceTypeToText(p.boatSpaceType.toString())}</td>
                     <td>${p.paymentReference}</td>
                     <td>${paymentTypeToText(p.paymentType.toString())}</td>
-                    <td>${p.invoiceReference ?: ""}</td>
+                    <td class='description'>${p.invoiceReference ?: ""}</td>
                     <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
                     <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
                     <td>${formatInt(p.totalCents)}</td>
