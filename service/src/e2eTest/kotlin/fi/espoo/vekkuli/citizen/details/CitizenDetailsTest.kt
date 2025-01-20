@@ -255,16 +255,43 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
-    fun `citizen can delete their boat when it's without active reservation`() {
-        // TODO delete the boat
-        // page.getByTestId("delete-boat-3").click()
-        // page.getByTestId("delete-modal-confirm-3").click()
-        // assertThat(page.getByTestId("boat-3")).isHidden()
+    fun `citizen can not delete their boat when it's in active reservation`() {
+        CitizenHomePage(page).loginAsLeoKorhonen()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        val boat = citizenDetails.getBoatSection(1)
+        assertThat(boat.deleteButton).not().isVisible()
     }
 
     @Test
-    @Disabled("Feature is not working")
+    fun `citizen can delete their boat when it's without active reservation`() {
+        CitizenHomePage(page).loginAsLeoKorhonen()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        citizenDetails.showAllBoatsButton.click()
+
+        val boat = citizenDetails.getBoatSection(3)
+        assertThat(boat.deleteButton).isVisible()
+
+        boat.deleteButton.click()
+        val deleteBoatModal = citizenDetails.getDeleteBoatModal()
+        assertThat(deleteBoatModal.root).isVisible()
+        assertThat(deleteBoatModal.root).containsText("Leon toinen liian iso vene")
+
+        deleteBoatModal.confirmButton.click()
+        assertThat(deleteBoatModal.root).not().isVisible()
+
+        val deleteBoatSuccessModal = citizenDetails.getDeleteBoatSuccessModal()
+        assertThat(deleteBoatSuccessModal.root).isVisible()
+
+        assertThat(boat.root).not().isVisible()
+    }
+
+    @Test
     fun `should add warning when citizen edits boat to be too heavy`() {
         try {
             CitizenHomePage(page).loginAsLeoKorhonen()
@@ -272,22 +299,9 @@ class CitizenDetailsTest : PlaywrightTest() {
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
-            citizenDetails.showAllBoatsButton.click()
-
-            val boat = citizenDetails.getBoatSection(3)
+            val boat = citizenDetails.getBoatSection(1)
             boat.editButton.click()
-
-            boat.nameInput.fill("New Boat Name")
             boat.weightInput.fill("16000")
-            boat.typeSelect.selectOption("Sailboat")
-            boat.depthInput.fill("1.5")
-            boat.widthInput.fill("2")
-            boat.registrationNumberInput.fill("ABC123")
-            boat.lengthInput.fill("5")
-            boat.ownershipSelect.selectOption("Owner")
-            boat.otherIdentifierInput.fill("ID12345")
-            boat.extraInformationInput.fill("Extra info")
-
             boat.saveButton.click()
 
             val employeeHomePage = EmployeeHomePage(page)
@@ -295,7 +309,6 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             val listingPage = ReservationListPage(page)
             listingPage.navigateTo()
-
             assertThat(listingPage.warningIcon).isVisible()
 
             listingPage.boatSpace1.click()

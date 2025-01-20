@@ -75,8 +75,6 @@ class CreateInvoiceBatchTest {
                                     Row(
                                         productGroup = "25600001",
                                         function = "T1270",
-                                        periodStartDate = given.startDate.toString(),
-                                        periodEndDate = given.endDate.toString(),
                                         unitCount = 100,
                                         amount = given.priceCents.toLong(),
                                         description = given.description,
@@ -152,8 +150,6 @@ class CreateInvoiceBatchTest {
                                     Row(
                                         productGroup = "25600001",
                                         function = "T1270",
-                                        periodStartDate = given.startDate.toString(),
-                                        periodEndDate = given.endDate.toString(),
                                         unitCount = 100,
                                         amount = given.priceCents.toLong(),
                                         description = given.description,

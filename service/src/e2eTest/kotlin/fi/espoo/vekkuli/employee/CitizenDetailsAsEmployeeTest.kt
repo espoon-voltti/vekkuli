@@ -2,25 +2,29 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage as CitizenBoatSpaceFormPage
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage as CitizenCitizenDetailsPage
+import fi.espoo.vekkuli.pages.citizen.PaymentPage as CitizenPaymentPage
+import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage as CitizenReserveBoatSpacePage
 
 @ActiveProfiles("test")
 class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun listingReservations() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             assertThat(listingPage.boatSpace1).isVisible()
             assertThat(listingPage.boatSpace2).isVisible()
             listingPage.boatSpace1.click()
@@ -34,11 +38,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editCitizen() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -95,11 +95,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMemos() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.memoNavi.click()
@@ -132,11 +128,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun userMessages() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.messagesNavi.click()
@@ -166,16 +158,12 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     @Test
     fun editBoat() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.showAllBoatsButton.click()
-            page.getByTestId("edit-boat-3").click()
+            citizenDetails.editBoatButton(3).click()
             assertThat(page.getByTestId("form")).isVisible()
 
             citizenDetails.nameInput.fill("New Boat Name")
@@ -207,13 +195,120 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Employee editing a boat do not trigger weight warning`() {
+        EmployeeHomePage(page).employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace1.click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        val boatId = 1
+        citizenDetails.editBoatButton(boatId).click()
+        assertThat(page.getByTestId("form")).isVisible()
+
+        citizenDetails.weightInput.fill("16000")
+        citizenDetails.submitButton.click()
+        assertThat(citizenDetails.weightText(boatId)).hasText("16000")
+
+        page.reload() // warnings show only after full reload
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
+    }
+
+    @Test
+    fun `editing a boat considers all reservations for warnings`() {
+        val boatId =
+            createReservationWarningsForMikkoVirtanen { boat ->
+                // modify boat to fit in B 314 but not in TRAILERI 012
+                boat.lengthInput.fill("7.25")
+            }
+
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace("Virtanen Mikko").click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).isVisible()
+    }
+
+    @Test
+    fun `warnings are acknowledged from each reservation`() {
+        val boatId =
+            createReservationWarningsForMikkoVirtanen { boat ->
+                // modify boat to add warnings to both reservations
+                boat.weightInput.fill("16000")
+            }
+
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace("Virtanen Mikko").click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.acknowledgeWarningButton(boatId).click()
+        assertThat(citizenDetails.boatWarningModalWeightInput).isVisible()
+        citizenDetails.boatWarningModalWeightInput.click()
+        citizenDetails.boatWarningModalInfoInput.fill("some text")
+        citizenDetails.boatWarningModalConfirmButton.click()
+
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
+    }
+
+    @Test
+    fun `warnings are deleted when reservation is terminated`() {
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
+        val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
+        val paymentPage = CitizenPaymentPage(page)
+
+        // create a reservation for B 314
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        boatSpaceFormPage.fillFormAndSubmit()
+        paymentPage.payReservation()
+
+        // create warning
+        val boatId = 8
+        val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
+        citizenCitizenDetails.navigateToPage()
+        val boat = citizenCitizenDetails.getBoatSection(boatId)
+        boat.editButton.click()
+        boat.weightInput.fill("16000")
+        boat.saveButton.click()
+
+        // check warning
+        val employeeHomePage = EmployeeHomePage(page)
+        employeeHomePage.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.boatSpace("Virtanen Mikko").click()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).isVisible()
+
+        // terminate reservation
+        citizenDetails.terminateReservationAsEmployeeButton.click()
+        citizenDetails.terminateReservationReason.selectOption(ReservationTerminationReasonOptions.PaymentViolation.toString())
+        citizenDetails.terminateReservationModalConfirm.click()
+        assertThat(citizenDetails.terminateReservationSuccess).isVisible()
+        citizenDetails.hideModalWindow()
+
+        // check warning is removed
+        citizenDetails.showAllBoatsButton.click()
+        assertThat(citizenDetails.acknowledgeWarningButton(boatId)).not().isVisible()
+    }
+
+    @Test
     fun deleteBoat() {
         try {
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
@@ -231,11 +326,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
     fun `employee can renew a boat space reservation`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
-            val employeeHome = EmployeeHomePage(page)
-            employeeHome.employeeLogin()
-
-            val listingPage = ReservationListPage(page)
-            listingPage.navigateTo()
+            val listingPage = reservationListPage()
 
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
@@ -253,5 +344,111 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `employee can set the reserver to be treated as Espoo citizen`() {
+        try {
+            val listingPage = reservationListPage()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
+            val jorma = listingPage.getByDataTestId("reserver-name").first()
+            assertThat(jorma).containsText("Pulkkinen Jorma")
+            jorma.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenLastNameField).hasText("Pulkkinen")
+            citizenDetails.exceptionsNavi.click()
+            val espooRulesAppliedCheckbox = page.getByTestId("edit-espoorules-applied-checkbox")
+            assertThat(espooRulesAppliedCheckbox).isChecked()
+            espooRulesAppliedCheckbox.click()
+            assertFalse((espooRulesAppliedCheckbox).isChecked)
+            listingPage.navigateTo()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.reservations.count() == 0 }
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `employee can set the reserver to have a discount`() {
+        try {
+            val listingPage = reservationListPage()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 1 }
+            assertThat(listingPage.getByDataTestId("reserver-name").first()).containsText("Pulkkinen Jorma")
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.getByDataTestId("reserver-name").count() == 5 }
+            listingPage
+                .getByDataTestId("reserver-name")
+                .getByText("Korhonen")
+                .click()
+            val citizenDetails = CitizenDetailsPage(page)
+            assertThat(citizenDetails.citizenLastNameField).hasText("Korhonen")
+            citizenDetails.exceptionsNavi.click()
+            val discount0 = page.getByTestId("reserver_discount_0")
+            assertThat(discount0).isChecked()
+            assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention")
+            page.getByTestId("reserver_discount_50").check()
+            assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention on")
+            listingPage.navigateTo()
+            listingPage.exceptionsFilter.click()
+            page.waitForCondition { listingPage.reservations.count() == 2 }
+            assertThat(
+                listingPage
+                    .getByDataTestId("reserver-name")
+                    .getByText("Korhonen")
+            ).containsText("Korhonen Leo")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun reservationListPage(): ReservationListPage {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        return listingPage
+    }
+
+    private fun createReservationWarningsForMikkoVirtanen(callback: (boatSection: CitizenCitizenDetailsPage.BoatSection) -> Unit): Int {
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
+        val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
+        val paymentPage = CitizenPaymentPage(page)
+
+        // create a reservation for TRAILERI 012
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpace012()
+        boatSpaceFormPage.fillFormAndSubmit {
+            getBoatSection().nameInput.fill("The Boat")
+            getBoatSection().widthInput.fill("1")
+            getBoatSection().lengthInput.fill("1")
+        }
+        paymentPage.payReservation()
+
+        // create a reservation for B 314
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        boatSpaceFormPage.fillFormAndSubmit {
+            getBoatSection().existingBoat("The Boat").click()
+        }
+        paymentPage.payReservation()
+
+        // modify boat
+        val boatId = 8
+        val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
+        citizenCitizenDetails.navigateToPage()
+        val boat = citizenCitizenDetails.getBoatSection(boatId)
+        boat.editButton.click()
+        callback(boat)
+        boat.saveButton.click()
+
+        return boatId
     }
 }

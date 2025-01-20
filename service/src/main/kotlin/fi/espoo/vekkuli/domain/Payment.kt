@@ -8,11 +8,19 @@ enum class PaymentStatus {
     Created,
     Success,
     Failed,
+    Refunded
+}
+
+enum class PaymentType {
+    OnlinePayment,
+    Invoice,
+    Other
 }
 
 data class Payment(
     val id: UUID,
     val reserverId: UUID,
+    val paymentType: PaymentType,
     val created: LocalDateTime,
     val updated: LocalDateTime,
     val status: PaymentStatus,
@@ -39,6 +47,7 @@ data class CreatePaymentParams(
     val totalCents: Int,
     val vatPercentage: Double,
     val productCode: String,
+    val paymentType: PaymentType,
     val status: PaymentStatus? = PaymentStatus.Created,
     val paid: LocalDateTime? = null
 )
@@ -51,12 +60,8 @@ data class CreateInvoiceParams(
     val paymentId: UUID,
 )
 
-enum class PaymentMethod {
-    Paytrail,
-    Invoice
-}
-
 data class PaymentHistory(
+    val paymentId: UUID,
     val paymentStatus: PaymentStatus,
     val paidDate: LocalDate?,
     val totalCents: Int,
@@ -65,7 +70,7 @@ data class PaymentHistory(
     val boatSpaceType: BoatSpaceType,
     val paymentReference: String,
     val invoiceReference: String?,
-    // val paymentMethod: PaymentMethod,
+    val paymentType: PaymentType,
     val invoiceDueDate: LocalDate?,
     val paymentCreated: LocalDateTime
 )

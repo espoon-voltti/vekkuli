@@ -8,19 +8,14 @@ import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 import { Boat, Organization, StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
-import { StateOf } from 'lib-common/form/types'
 import { useMutation } from 'lib-common/query'
 import { WarningExclamation } from 'lib-icons'
 
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
 import { Reservation } from '../../state'
+import useStoredSearchState from '../useStoredSearchState'
 
-import initialOrganizationFormState, {
-  onOrganizationFormUpdate,
-  OrganizationForm,
-  organizationForm
-} from './formDefinitions/organization'
 import {
   initialFormState,
   onReserveSpaceUpdate,
@@ -32,20 +27,21 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
-import useStoredSearchState from '../useStoredSearchState'
 
 type FormProperties = {
   reservation: Reservation
   boats: Boat[]
   municipalities: Municipality[]
   organizations: Organization[]
+  organizationBoats: Record<string, Boat[]>
 }
 
 export default React.memo(function Form({
   reservation,
   boats,
   municipalities,
-  organizations
+  organizations,
+  organizationBoats
 }: FormProperties) {
   const i18n = useTranslation()
   const navigate = useNavigate()
@@ -55,15 +51,6 @@ export default React.memo(function Form({
     fillBoatSpaceReservationMutation
   )
 
-  const organizationFormBind = useForm(
-    organizationForm,
-    () => initialOrganizationFormState(i18n, municipalities, organizations),
-    i18n.components.validationErrors,
-    {
-      onUpdate: (prev, next): StateOf<OrganizationForm> =>
-        onOrganizationFormUpdate(prev, next, organizations, municipalities)
-    }
-  )
   const [searchState, setSearchState] = useStoredSearchState()
   const formBind = useForm(
     reserveSpaceForm,
@@ -73,27 +60,37 @@ export default React.memo(function Form({
         boats,
         reservation.citizen,
         reservation.boatSpace.type,
+        municipalities,
+        organizations,
         searchState
       ),
     i18n.components.validationErrors,
     {
-      onUpdate: (prev, next) => onReserveSpaceUpdate(prev, next, i18n, boats)
+      onUpdate: (prev, next) =>
+        onReserveSpaceUpdate(
+          prev,
+          next,
+          i18n,
+          boats,
+          organizationBoats,
+          municipalities,
+          organizations
+        )
     }
   )
 
-  const { reserver, boat, userAgreement, spaceTypeInfo } =
+  const { reserver, boat, userAgreement, spaceTypeInfo, organization } =
     useFormFields(formBind)
 
   const { branch, form: winterStorageFom } = useFormUnion(spaceTypeInfo)
 
   const onSubmit = async () => {
-    const isValid = formBind.isValid() && organizationFormBind.isValid()
-    if (!isValid) setShowAllErrors(true)
+    if (!formBind.isValid()) setShowAllErrors(true)
     else {
       setSearchState({})
       await submitForm({
         id: reservation?.id,
-        input: { ...formBind.value(), ...organizationFormBind.value() }
+        input: formBind.value()
       })
       return navigate('/kuntalainen/venepaikka/maksu')
     }
@@ -123,7 +120,7 @@ export default React.memo(function Form({
           bind={reserver}
         />
         {organizations.length > 0 && (
-          <OrganizationSection bind={organizationFormBind} />
+          <OrganizationSection bind={organization} />
         )}
         <BoatSection bind={boat} />
         {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
@@ -134,17 +131,17 @@ export default React.memo(function Form({
 
       <Buttons>
         <ReservationCancel reservationId={reservation.id} type="button">
-          Peruuta varaus
+          {i18n.reservation.cancelReservation}
         </ReservationCancel>
         <Button id="submit-button" type="primary" action={onSubmit}>
-          Jatka maksamaan
+          {i18n.reservation.continueToPaymentButton}
         </Button>
       </Buttons>
     </form>
   )
 })
 
-const ValidationWarning = React.memo(function ValidationWarning({}) {
+const ValidationWarning = React.memo(function ValidationWarning() {
   return (
     <div className="warning block form-validation-message">
       <span className="icon">

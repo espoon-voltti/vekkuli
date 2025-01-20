@@ -107,8 +107,8 @@ export default React.memo(function CitizenInformation({
           </Column>
           <Column isOneEight>
             <TextField
-              label="Henkilötunnus"
-              value="210281-9988"
+              label="Syntymäaika"
+              value={user.birthday}
               readonly={true}
             />
           </Column>

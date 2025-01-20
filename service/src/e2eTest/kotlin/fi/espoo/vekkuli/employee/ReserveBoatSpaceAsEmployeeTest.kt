@@ -164,6 +164,12 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Lasku") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("22.04.2024") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("418,00") }
+
+            citizenDetailsPage.refundPaymentButton.click()
+            citizenDetailsPage.refundPaymentModalConfirm.click()
+
+            citizenDetailsPage.paymentsNavi.click()
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Hyvitetty") }
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -531,6 +537,45 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
+    }
+
+    @Test
+    fun `After reselecting "new citizen", the previously selected citizen is no longer selected`() {
+        val employeeHome = EmployeeHomePage(page)
+        employeeHome.employeeLogin()
+        val listingPage = ReservationListPage(page)
+        listingPage.navigateTo()
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.existingCitizenSelector.click()
+        assertThat(formPage.citizenSearchContainer).isVisible()
+
+        typeText(formPage.citizenSearchInput, "olivia")
+
+        formPage.citizenSearchOption1.click()
+        assertThat(page.getByTestId("firstName")).containsText("Olivia")
+        assertThat(page.getByTestId("lastName")).containsText("Virtanen")
+        assertThat(page.getByText("Olivian vene")).isVisible()
+        formPage.organizationRadioButton.click()
+
+        page.getByText("Espoon Pursiseura").click()
+
+        assertThat(page.getByText("Espoon lohi")).isVisible()
+        assertThat(page.getByText("Espoon kuha")).isVisible()
+        assertThat(page.getByText("Olivian vene")).isHidden()
+        formPage.newCitizenSelector.click()
+
+        assertThat(page.getByText("Espoon lohi")).isHidden()
+        assertThat(page.getByText("Espoon kuha")).isHidden()
+        assertThat(page.getByText("Olivian vene")).isHidden()
+        assertThat(page.getByText("Espoon Pursiseura")).isHidden()
     }
 
     @Test

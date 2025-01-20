@@ -73,4 +73,17 @@ class JdbiReservationWarningRepository(
                 .bind("boatIdOrTrailerId", boatIdOrTrailerId)
                 .execute()
         }
+
+    override fun deleteReservationWarningsForReservation(reservationId: Int) {
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createUpdate(
+                    """
+                    DELETE from reservation_warning
+                    WHERE reservation_id = :reservationId
+                    """
+                ).bind("reservationId", reservationId)
+                .execute()
+        }
+    }
 }

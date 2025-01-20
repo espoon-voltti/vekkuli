@@ -12,6 +12,7 @@ const components: Translations = {
   },
   links: {
     goBack: 'Takaisin',
+    delete: 'Poista',
     edit: 'Muokkaa'
   },
   common: {

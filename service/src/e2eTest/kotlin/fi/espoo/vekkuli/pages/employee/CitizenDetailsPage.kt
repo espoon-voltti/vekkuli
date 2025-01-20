@@ -94,6 +94,8 @@ class CitizenDetailsPage(
 
     fun userMemo(id: Int): Locator = page.getByTestId("memo-$id")
 
+    fun editBoatButton(id: Int) = page.getByTestId("edit-boat-$id")
+
     val nameInput: Locator = page.getByTestId("name")
     val weightInput: Locator = page.getByTestId("weight")
     val typeSelect: Locator = page.getByTestId("type")
@@ -113,12 +115,14 @@ class CitizenDetailsPage(
     val newMemoContent: Locator = page.getByTestId("new-memo-content")
     val newMemoSaveBtn: Locator = page.getByTestId("new-memo-save-button")
 
-    val messagesNavi: Locator = page.getByTestId("messages-tab-navi")
+    val messagesNavi: Locator = getByDataTestId("messages-tab-navi")
     val messages: Locator = page.getByTestId("messages-table").locator("tbody tr")
 
     val paymentsNavi: Locator = page.getByTestId("payments-tab-navi")
     val noPaymentsIndicator: Locator = getByDataTestId("no-payments-indicator")
     val paymentsTable: Locator = page.getByTestId("payments-table")
+    val refundPaymentButton: Locator = getByDataTestId("refund-payment-button")
+    val refundPaymentModalConfirm: Locator = getByDataTestId("refund-payment-modal-confirm")
 
     val showAllBoatsButton: Locator = page.getByTestId("showAllBoats")
 
@@ -218,4 +222,5 @@ class CitizenDetailsPage(
     val trailerWidthInput = page.getByTestId("trailerWidth")
     val trailerLengthInput = page.getByTestId("trailerLength")
     val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
+    val exceptionsNavi: Locator = getByDataTestId("exceptions-tab-navi")
 }

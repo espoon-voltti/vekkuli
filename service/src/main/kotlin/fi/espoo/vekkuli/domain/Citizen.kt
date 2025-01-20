@@ -37,6 +37,7 @@ data class CitizenWithDetails(
     val postOfficeSv: String,
     val postalCode: String,
     val espooRulesApplied: Boolean,
+    val discountPercentage: Int,
     // Fields for Citizen
     val nationalId: String,
     val firstName: String,
@@ -113,5 +114,6 @@ fun CitizenWithDetails.toReserverDetails() =
         postalCode = postalCode,
         name = fullName,
         type = ReserverType.Citizen,
-        espooRulesApplied = espooRulesApplied
+        espooRulesApplied = espooRulesApplied,
+        discountPercentage = discountPercentage
     )

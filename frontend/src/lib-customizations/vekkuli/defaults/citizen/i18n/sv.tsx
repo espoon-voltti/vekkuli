@@ -5,9 +5,9 @@
 import { Translations as ComponentTranslations } from 'lib-components/i18n'
 
 import {
-  ReservationValidity,
   BoatSpaceType,
-  OwnershipStatus
+  OwnershipStatus,
+  ReservationValidity
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
@@ -24,6 +24,7 @@ const sv: Translations = {
   common: {
     title: 'Bokning av båtplats i Esbo',
     cancel: 'Gå tillbaka',
+    continue: 'Fortsätt',
     return: 'Tillbaka',
     download: 'Ladda ner',
     print: 'Skriva ut',
@@ -93,7 +94,9 @@ const sv: Translations = {
       past: 'Päättynyt (sv)',
       present: 'Voimassa (sv)',
       future: 'Tuleva (sv)'
-    }
+    },
+    showMore: 'Visa mer',
+    showLess: 'Visa mindre'
   },
   header: {
     lang: {
@@ -204,7 +207,27 @@ const sv: Translations = {
         MAX_PERSONAL_RESERVATIONS:
           'Du har redan det maximala antalet platser av denna typ. Om du agerar på uppdrag av en organisation kan du fortsätta att boka.'
       }
-    }
+    },
+    auth: {
+      reservingBoatSpace: 'Bokar båtplats:',
+      reservingRequiresAuth:
+        'För att boka en båtplats krävs stark autentisering.',
+      continue: 'Fortsätt'
+    },
+    cancelConfirmation:
+      'Du är på väg att lämna bokningsformuläret. Observera att platsbokningen eller inmatad information inte kommer att sparas.',
+    cancelConfirmation2: 'Vill du fortsätta?',
+    cancelReservation: 'Avbryt reservation',
+    cancelAndGoBack: 'Avbryt och gå tillbaka',
+    continueToPaymentButton: 'Fortsätt till betalning'
+  },
+  boat: {
+    delete: 'Ta bort båt',
+    deleteFailed:
+      'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
+    deleteSuccess: 'Båten har tagits bort',
+    confirmDelete: (boatName: string) =>
+      `Du håller på att ta bort informationen för båten ${boatName}`
   },
   boatSpace: {
     boatSpaceType: {

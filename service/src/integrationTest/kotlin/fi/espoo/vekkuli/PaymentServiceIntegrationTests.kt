@@ -36,7 +36,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
 
     private fun insertNewPayment(ref: String = "1"): Payment =
         paymentService.insertPayment(
-            CreatePaymentParams(this.citizenIdLeo, ref, 1, 24.0, "1"),
+            CreatePaymentParams(this.citizenIdLeo, ref, 1, 24.0, "1", PaymentType.OnlinePayment),
             reservationId = 1
         )
 
@@ -67,6 +67,7 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                     totalCents = 1,
                     vatPercentage = 24.0,
                     productCode = "1",
+                    PaymentType.OnlinePayment
                 )
             )
         assertEquals(madeReservation.reserverId, payment.reserverId, "payment is added for correct citizen")

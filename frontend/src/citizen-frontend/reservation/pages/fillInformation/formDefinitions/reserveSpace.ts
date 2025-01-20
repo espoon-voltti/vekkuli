@@ -1,10 +1,24 @@
-import { FillBoatSpaceReservationInput } from 'citizen-frontend/api-types/reservation'
-import { Boat, BoatSpaceType, Citizen } from 'citizen-frontend/shared/types'
+import {
+  FillBoatSpaceReservationInput,
+  Municipality
+} from 'citizen-frontend/api-types/reservation'
+import {
+  Boat,
+  BoatSpaceType,
+  Citizen,
+  Organization
+} from 'citizen-frontend/shared/types'
 import { mapped, object } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
+import { StoredSearchState } from '../../useStoredSearchState'
+
 import initialBoatFormState, { boatForm, onBoatFormUpdate } from './boat'
+import initialOrganizationFormState, {
+  onOrganizationFormUpdate,
+  organizationForm
+} from './organization'
 import initialReserverFormState, { reserverForm } from './reserver'
 import {
   initialSpaceTypeInfoFormState,
@@ -14,24 +28,25 @@ import {
 import initialUserAgreementFormState, {
   userAgreementForm
 } from './userAgreement'
-import { StoredSearchState } from '../../useStoredSearchState'
 
 export const reserveSpaceForm = mapped(
   object({
     reserver: reserverForm,
     boat: boatForm,
     spaceTypeInfo: spaceTypeInfoUnionForm,
-    userAgreement: userAgreementForm
+    userAgreement: userAgreementForm,
+    organization: organizationForm
   }),
   ({
     reserver,
     boat,
     userAgreement,
-    spaceTypeInfo
+    spaceTypeInfo,
+    organization
   }): FillBoatSpaceReservationInput => {
     return {
       citizen: { ...reserver },
-      organization: null,
+      organization: organization.organization,
       boat: {
         id: boat.boatInfo.id || undefined,
         name: boat.boatInfo.name,
@@ -63,10 +78,17 @@ export function initialFormState(
   boats: Boat[],
   reserver: Citizen | undefined,
   spaceType: BoatSpaceType,
+  municipalities: Municipality[],
+  organizations: Organization[],
   storedState?: StoredSearchState
 ): StateOf<ReserveSpaceForm> {
   return {
     ...initialReserverFormState(reserver),
+    organization: initialOrganizationFormState(
+      i18n,
+      municipalities,
+      organizations
+    ),
     boat: initialBoatFormState(i18n, boats, spaceType, storedState),
     //winterStorage: initialWinterStorageFormState(i18n),
     spaceTypeInfo: initialSpaceTypeInfoFormState(i18n, spaceType, storedState),
@@ -78,7 +100,10 @@ export const onReserveSpaceUpdate = (
   prev: StateOf<ReserveSpaceForm>,
   next: StateOf<ReserveSpaceForm>,
   i18n: Translations,
-  boats: Boat[]
+  boats: Boat[],
+  organizationBoats: Record<string, Boat[]>,
+  municipalities: Municipality[],
+  organizations: Organization[]
 ): StateOf<ReserveSpaceForm> => {
   return {
     ...next,
@@ -86,14 +111,30 @@ export const onReserveSpaceUpdate = (
       prev: prev.boat,
       next: next.boat,
       i18n,
-      citizenBoats: boats
+      boats: getBoatsSelection(next, organizationBoats, boats)
     }),
     spaceTypeInfo: onSpaceTypeInfoUpdate({
       prev: prev.spaceTypeInfo,
       next: next.spaceTypeInfo
-    })
+    }),
+    organization: onOrganizationFormUpdate(
+      prev.organization,
+      next.organization,
+      organizations,
+      municipalities
+    )
   }
 }
+const getBoatsSelection = (
+  next: StateOf<ReserveSpaceForm>,
+  organizationBoats: Record<string, Boat[]>,
+  citizenBoats: Boat[]
+) => {
+  return next.organization.renterType.type.domValue === 'Organization'
+    ? organizationBoats[next.organization.organizationSelection.domValue]
+    : citizenBoats
+}
+
 /*
 winterStorage: onWinterStorageFormUpdate({
   prev: prev.winterStorage,

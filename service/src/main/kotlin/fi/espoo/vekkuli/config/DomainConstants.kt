@@ -5,4 +5,5 @@ object DomainConstants {
     const val FAILED_MESSAGE_RETRY_LIMIT = 5
     const val DEFAULT_EMAIL_BATCH_SIZE = 100
     const val INVOICE_PAYMENT_PERIOD = 21
+    val DISCOUNTS = listOf(0, 50, 100)
 }

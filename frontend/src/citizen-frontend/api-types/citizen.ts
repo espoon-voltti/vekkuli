@@ -1,7 +1,7 @@
 import { BoatType, Organization, OwnershipStatus } from '../shared/types'
 
 export type CitizenBoatsResponse = {
-  id: string
+  id: number
   registrationCode: string
   name: string
   widthCm: number

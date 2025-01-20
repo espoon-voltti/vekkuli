@@ -2,7 +2,7 @@ import { Button, Buttons, Column, Columns } from 'lib-components/dom'
 import { NumberField } from 'lib-components/form/NumberField'
 import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
-import { EditLink } from 'lib-components/links'
+import { DeleteLink, EditLink } from 'lib-components/links'
 import React from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
@@ -14,7 +14,13 @@ import { updateBoatInformationMutation } from '../../queries'
 
 import { boatForm, transformBoatToFormBoat } from './formDefinitions'
 
-export default React.memo(function Boat({ boat }: { boat: Boat }) {
+export default React.memo(function Boat({
+  boat,
+  onDelete
+}: {
+  boat: Boat
+  onDelete?: () => void
+}) {
   const i18n = useTranslation()
   const bind = useForm(
     boatForm,
@@ -57,6 +63,11 @@ export default React.memo(function Boat({ boat }: { boat: Boat }) {
         </Column>
         <Column>
           <Columns>
+            {onDelete && (
+              <Column isNarrow>
+                <DeleteLink action={onDelete}>Poista vene</DeleteLink>
+              </Column>
+            )}
             <Column isNarrow toRight>
               <EditLink action={() => setEditMode(true)}>
                 Muokkaa veneen tietoja

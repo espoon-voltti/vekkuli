@@ -263,7 +263,7 @@ class ReservationFormController(
             )
         }
         // redirect to payments page with reservation id and slip type
-        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=${PaymentType.BoatSpaceReservation}")
+        return redirectUrl("/kuntalainen/maksut/maksa?id=$reservationId&type=BoatSpaceReservation")
     }
 
     @PostMapping("/virkailija/venepaikka/varaus/{reservationId}")

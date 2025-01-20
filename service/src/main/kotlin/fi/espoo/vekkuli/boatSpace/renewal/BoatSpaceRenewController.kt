@@ -142,7 +142,7 @@ class BoatSpaceRenewController(
             boatSpaceRenewalService.updateRenewReservation(citizenId, input, renewedReservation.id)
 
             // redirect to payments page with reservation id and slip type
-            return redirectUrl("/kuntalainen/maksut/maksa?id=${renewedReservation.id}&type=${PaymentType.BoatSpaceReservation}")
+            return redirectUrl("/kuntalainen/maksut/maksa?id=${renewedReservation.id}&type=BoatSpaceReservation")
         } catch (e: Exception) {
             return badRequest(e.message ?: "Failed to renew boat space")
         }

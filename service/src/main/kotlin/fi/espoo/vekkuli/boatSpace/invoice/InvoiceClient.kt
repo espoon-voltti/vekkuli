@@ -16,8 +16,6 @@ import java.util.*
 @Serializable
 data class Row(
     val productGroup: String? = null,
-    val periodStartDate: String,
-    val periodEndDate: String? = null,
     val unitCount: Long? = null,
     val unitPrice: Long? = null,
     val amount: Long,
@@ -171,8 +169,6 @@ private fun createInvoiceBatchForPerson(
                     listOf(
                         Row(
                             productGroup = PRODUCT_GROUP,
-                            periodStartDate = invoiceData.startDate.toString(),
-                            periodEndDate = invoiceData.endDate.toString(),
                             unitCount = 100,
                             amount = invoiceData.priceCents.toLong(),
                             description = invoiceData.description,
@@ -218,8 +214,6 @@ private fun createInvoiceBatchForOrganization(
                         Row(
                             productGroup = PRODUCT_GROUP,
                             function = invoiceData.function,
-                            periodStartDate = invoiceData.startDate.toString(),
-                            periodEndDate = invoiceData.endDate.toString(),
                             unitCount = 100,
                             amount = invoiceData.priceCents.toLong(),
                             description = invoiceData.description,

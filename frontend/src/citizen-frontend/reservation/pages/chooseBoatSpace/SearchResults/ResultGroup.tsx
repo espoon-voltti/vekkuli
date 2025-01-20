@@ -50,6 +50,7 @@ export const ResultGroup = React.memo(function ResultGroup({
         resultCount={spacesCount}
         showMoreState={showMore}
         setShowMoreState={setShowMore}
+        ariaLabel={place.name}
       />
     </div>
   )

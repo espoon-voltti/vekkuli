@@ -1,32 +1,63 @@
+import classNames from 'classnames'
 import React from 'react'
+
+export type IconLinkType = 'primary' | 'danger'
 
 export type IconLinkProps = {
   children: React.ReactNode
   icon: React.ReactNode
   action?: () => void
   href?: string
+  ariaLabel?: string
+  type?: IconLinkType
 }
 
 export default React.memo(function IconLink({
   children,
   icon,
   action,
-  href
+  href,
+  ariaLabel,
+  type
 }: IconLinkProps) {
-  const props: React.AnchorHTMLAttributes<HTMLAnchorElement> = {
-    className: 'is-link is-icon-link'
-  }
-  if (action) {
-    props.onClick = action
-  }
   if (href) {
-    props.href = href
+    return (
+      <a
+        href={href}
+        className={iconLinkClasses(type)}
+        aria-label={ariaLabel}
+        role="link"
+      >
+        <span className="icon">{icon}</span>
+        <span>{children}</span>
+      </a>
+    )
   }
 
   return (
-    <a role="link" {...props}>
+    <button
+      onClick={action}
+      className={iconLinkClasses(type, 'has-text-link')}
+      aria-label={ariaLabel}
+      role="button"
+    >
       <span className="icon">{icon}</span>
       <span>{children}</span>
-    </a>
+    </button>
   )
 })
+
+function iconLinkClasses(type?: IconLinkType, ...extra: string[]): string {
+  const classes = ['is-link', 'is-icon-link', ...extra]
+
+  switch (type) {
+    case 'primary':
+      classes.push('has-text-primary')
+      break
+    case 'danger':
+      classes.push('has-text-danger')
+      break
+  }
+
+  return classNames(classes)
+}

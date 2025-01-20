@@ -1,4 +1,4 @@
-import { positiveNumber, string } from 'lib-common/form/fields'
+import { number, positiveNumber, string } from 'lib-common/form/fields'
 import {
   multiSelect,
   object,
@@ -21,7 +21,7 @@ import {
 import { StoredSearchState } from '../../useStoredSearchState'
 
 export const boatInfoForm = object({
-  id: string(),
+  id: number(),
   name: required(string()),
   type: required(oneOf<BoatType>()),
   width: required(positiveNumber()),
@@ -91,7 +91,7 @@ function initialBoatInfoFormState(
   }
 
   return {
-    id: '',
+    id: 0,
     name: '',
     type: {
       domValue: storedSearchState?.boatType ?? 'OutboardMotor',
@@ -137,12 +137,13 @@ const initialOwnershipState = (
 })
 
 const initialBoatSelectionState = (
-  boats: Boat[]
+  boats: Boat[],
+  selectedBoat?: Boat
 ): StateOf<BoatSelectionForm> => {
   const initialBoatSelection: StateOf<BoatSelectionForm> = {
-    domValue: '',
+    domValue: selectedBoat?.id?.toString() ?? '',
     options: boats.map((boat) => ({
-      domValue: boat.id,
+      domValue: boat.id.toString(),
       label: boat.name,
       value: boat
     }))
@@ -160,7 +161,7 @@ const transformBoatToFormBoat = (
   boat: Boat,
   i18n: Translations
 ): StateOf<BoatInfoForm> => ({
-  id: boat.id.toString(),
+  id: boat.id,
   name: boat.name,
   depth: boat.depth.toString(),
   length: boat.length.toString(),
@@ -195,41 +196,44 @@ const transformBoatToFormBoat = (
 type BoatFormUpdateProps = {
   prev: StateOf<BoatForm>
   next: StateOf<BoatForm>
-  citizenBoats: Boat[]
+  boats: Boat[]
   i18n: Translations
 }
 
 export function onBoatFormUpdate({
   prev,
   next,
-  citizenBoats,
+  boats,
   i18n
 }: BoatFormUpdateProps): StateOf<BoatForm> {
   const prevBoatId = prev.boatSelection.domValue
   const nextBoatId = next.boatSelection.domValue
+  const selectedBoat = boats.find(
+    (boat) => boat.id === parseInt(nextBoatId, 10)
+  )
   // Boat has been changed, we need to update the form values
   if (prevBoatId !== nextBoatId) {
-    const selectedBoat = citizenBoats.find((boat) => boat.id === nextBoatId)
     const cache = !prevBoatId ? prev.boatInfo : prev.newBoatCache
 
     if (!nextBoatId) {
       return {
         ...next,
-        ...{
-          boatInfo: cache
-        }
+        boatInfo: cache,
+        boatSelection: initialBoatSelectionState(boats)
       }
     }
     if (selectedBoat) {
       return {
         ...next,
-        ...{
-          boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
-          newBoatCache: cache
-        }
+        boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
+        newBoatCache: cache,
+        boatSelection: initialBoatSelectionState(boats, selectedBoat)
       }
     }
   }
 
-  return next
+  return {
+    ...next,
+    boatSelection: initialBoatSelectionState(boats, selectedBoat)
+  }
 }

@@ -376,6 +376,145 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<ReservationWithDependencies>().findOne().orElse(null)
         }
 
+    override fun getActiveReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
+                    WHERE boat_id = :boatId AND 
+                        (
+                            ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut) OR
+                             (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut) 
+                        )
+                    """.trimIndent()
+                )
+            query.bind("boatId", boatId)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+
+            // read warnings that are associated with the reservation
+            val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
+            reservations.map {
+                val warningQuery =
+                    handle.createQuery(
+                        """
+                        SELECT key
+                        FROM reservation_warning
+                        WHERE reservation_id = :reservationId
+                        """.trimIndent()
+                    )
+                warningQuery.bind("reservationId", it.id)
+                BoatSpaceReservationDetails(
+                    id = it.id,
+                    created = it.created,
+                    updated = it.updated,
+                    priceCents = it.priceCents,
+                    vatCents = it.vatCents,
+                    netPriceCents = it.netPriceCents,
+                    boatSpaceId = it.boatSpaceId,
+                    startDate = it.startDate,
+                    endDate = it.endDate,
+                    status = it.status,
+                    terminationReason = it.terminationReason,
+                    terminationComment = it.terminationComment,
+                    terminationTimestamp = it.terminationTimestamp,
+                    reserverType = it.reserverType,
+                    reserverId = it.reserverId,
+                    actingCitizenId = it.actingCitizenId,
+                    name = it.name,
+                    email = it.email,
+                    phone = it.phone,
+                    streetAddress = it.streetAddress,
+                    postalCode = it.postalCode,
+                    municipalityCode = it.municipalityCode,
+                    municipalityName = it.municipalityName,
+                    type = it.type,
+                    place = it.place,
+                    locationName = it.locationName,
+                    boat = loadBoatForReserver(handle, it.id, it.boatId),
+                    trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
+                    boatSpaceLengthCm = it.boatSpaceLengthCm,
+                    boatSpaceWidthCm = it.boatSpaceWidthCm,
+                    amenity = it.amenity,
+                    validity = it.validity,
+                    excludedBoatTypes = emptyList(),
+                    originalReservationId = it.originalReservationId,
+                    paymentDate = it.paymentDate,
+                    paymentId = it.paymentId,
+                    storageType = it.storageType,
+                    paymentReference = it.paymentReference,
+                    invoiceDueDate = it.invoiceDueDate
+                )
+            }
+        }
+
+    override fun getReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
+                    WHERE boat_id = :boatId
+                    """.trimIndent()
+                )
+            query.bind("boatId", boatId)
+
+            // read warnings that are associated with the reservation
+            val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
+            reservations.map {
+                val warningQuery =
+                    handle.createQuery(
+                        """
+                        SELECT key
+                        FROM reservation_warning
+                        WHERE reservation_id = :reservationId
+                        """.trimIndent()
+                    )
+                warningQuery.bind("reservationId", it.id)
+                BoatSpaceReservationDetails(
+                    id = it.id,
+                    created = it.created,
+                    updated = it.updated,
+                    priceCents = it.priceCents,
+                    vatCents = it.vatCents,
+                    netPriceCents = it.netPriceCents,
+                    boatSpaceId = it.boatSpaceId,
+                    startDate = it.startDate,
+                    endDate = it.endDate,
+                    status = it.status,
+                    terminationReason = it.terminationReason,
+                    terminationComment = it.terminationComment,
+                    terminationTimestamp = it.terminationTimestamp,
+                    reserverType = it.reserverType,
+                    reserverId = it.reserverId,
+                    actingCitizenId = it.actingCitizenId,
+                    name = it.name,
+                    email = it.email,
+                    phone = it.phone,
+                    streetAddress = it.streetAddress,
+                    postalCode = it.postalCode,
+                    municipalityCode = it.municipalityCode,
+                    municipalityName = it.municipalityName,
+                    type = it.type,
+                    place = it.place,
+                    locationName = it.locationName,
+                    boat = loadBoatForReserver(handle, it.id, it.boatId),
+                    trailer = loadTrailerForReserver(handle, it.id, it.trailerId),
+                    boatSpaceLengthCm = it.boatSpaceLengthCm,
+                    boatSpaceWidthCm = it.boatSpaceWidthCm,
+                    amenity = it.amenity,
+                    validity = it.validity,
+                    excludedBoatTypes = emptyList(),
+                    originalReservationId = it.originalReservationId,
+                    paymentDate = it.paymentDate,
+                    paymentId = it.paymentId,
+                    storageType = it.storageType,
+                    paymentReference = it.paymentReference,
+                    invoiceDueDate = it.invoiceDueDate
+                )
+            }
+        }
+
     override fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
         jdbi.withHandleUnchecked { handle ->
             val query =

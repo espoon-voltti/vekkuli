@@ -16,6 +16,7 @@ import java.util.*
 class TerminateReservationService(
     private val emailService: TemplateEmailService,
     private val reservationService: BoatReservationService,
+    private val reservationWarningRepository: ReservationWarningRepository,
     private val emailEnv: EmailEnv,
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
@@ -42,6 +43,8 @@ class TerminateReservationService(
         if (reservation == null) {
             throw BadRequest("Reservation not found")
         }
+
+        reservationWarningRepository.deleteReservationWarningsForReservation(reservation.id)
 
         sendTerminationNotice(reservation, terminatorId)
     }
@@ -70,6 +73,8 @@ class TerminateReservationService(
         if (reservation == null) {
             throw BadRequest("Reservation not found")
         }
+
+        reservationWarningRepository.deleteReservationWarningsForReservation(reservation.id)
 
         sendCustomTerminationNotice(reservation, terminatorId, messageTitle, messageContent)
     }

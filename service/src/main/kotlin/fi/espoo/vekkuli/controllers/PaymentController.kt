@@ -84,7 +84,8 @@ class PaymentController(
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        productCode = productCode
+                        productCode = productCode,
+                        paymentType = PaymentType.OnlinePayment
                     )
                 )
             }

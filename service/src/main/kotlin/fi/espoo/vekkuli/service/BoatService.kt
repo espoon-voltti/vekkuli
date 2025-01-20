@@ -9,13 +9,23 @@ import java.util.*
 
 @Service
 class BoatService(
-    private val boatRepository: BoatRepository
+    private val boatRepository: BoatRepository,
+    private val boatReservationService: BoatReservationService
 ) {
     fun getBoatsForReserver(reserverId: UUID): List<Boat> = boatRepository.getBoatsForReserver(reserverId)
 
+    fun getBoatsForReserversOrganizations(reserverId: UUID): Map<String, List<Boat>> =
+        boatRepository.getBoatsForReserversOrganizations(reserverId)
+
     fun getBoat(boatId: Int): Boat? = boatRepository.getBoat(boatId)
 
-    fun updateBoat(boat: Boat): Boat = boatRepository.updateBoat(boat)
+    fun updateBoatAsCitizen(boat: Boat): Boat {
+        val result = boatRepository.updateBoat(boat)
+        boatReservationService.addBoatWarningsToReservations(result)
+        return result
+    }
+
+    fun updateBoatAsEmployee(boat: Boat) = boatRepository.updateBoat(boat)
 
     fun insertBoat(
         citizenId: UUID,
@@ -44,5 +54,13 @@ class BoatService(
             ownership
         )
 
-    fun deleteBoat(boatId: Int): Boolean = boatRepository.deleteBoat(boatId)
+    fun deleteBoat(boatId: Int): Boolean {
+        val reservations = boatReservationService.getActiveReservationsForBoat(boatId)
+
+        if (reservations.isNotEmpty()) {
+            throw IllegalStateException("Cannot delete boat with active reservations")
+        }
+
+        return boatRepository.deleteBoat(boatId)
+    }
 }

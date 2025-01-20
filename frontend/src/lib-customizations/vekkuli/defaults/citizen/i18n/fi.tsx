@@ -23,6 +23,7 @@ export default {
   common: {
     title: 'Espoon venepaikkavaraus',
     cancel: 'Peruuta',
+    continue: 'Jatka',
     return: 'Palaa',
     download: 'Lataa',
     print: 'Tulosta',
@@ -92,7 +93,9 @@ export default {
       past: 'Päättynyt',
       present: 'Voimassa',
       future: 'Tuleva'
-    }
+    },
+    showMore: 'Näytä lisää',
+    showLess: 'Näytä vähemmän'
   },
   header: {
     lang: {
@@ -202,7 +205,27 @@ export default {
         MAX_PERSONAL_RESERVATIONS:
           'Sinulla on jo maksimimäärä tämän tyypin paikkoja. Jos asioit yhteisön puolesta, voit jatkaa varaamista. '
       }
-    }
+    },
+    auth: {
+      reservingBoatSpace: 'Olet varaamassa paikkaa:',
+      reservingRequiresAuth:
+        'Venepaikan varaaminen vaatii vahvan tunnistautumisen.',
+      continue: 'Jatka tunnistautumiseen'
+    },
+    cancelConfirmation:
+      'Olet poistumassa varauslomakkeelta. Huomioi, että paikkavarausta tai syötettyjä tietoja ei tallenneta.',
+    cancelConfirmation2: 'Haluatko jatkaa?',
+    cancelReservation: 'Peruuta varaus',
+    cancelAndGoBack: 'Peruuta varaus ja palaa takaisin',
+    continueToPaymentButton: 'Jatka maksamaan'
+  },
+  boat: {
+    delete: 'Poista vene',
+    deleteFailed:
+      'Veneen poistamisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
+    deleteSuccess: 'Vene on poistettu',
+    confirmDelete: (boatName: string) =>
+      `Olet poistamassa veneen ${boatName} tietoja`
   },
   boatSpace: {
     renterType: {

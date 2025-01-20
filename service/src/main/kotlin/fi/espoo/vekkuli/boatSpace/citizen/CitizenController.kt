@@ -8,12 +8,14 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
+import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -60,6 +62,16 @@ class CitizenController(
         return boats.toCitizenBoatListResponse()
     }
 
+    @DeleteMapping("/current/boats/{boatId}")
+    fun deleteBoatById(
+        @PathVariable boatId: Int,
+        request: HttpServletRequest
+    ) {
+        val citizenId = request.ensureCitizenId()
+        if (!permissionService.canDeleteBoat(citizenId, boatId)) throw Forbidden()
+        boatService.deleteBoat(boatId)
+    }
+
     @GetMapping("/current/organization-boats/{orgId}")
     fun getOrganizationBoats(
         @PathVariable orgId: UUID,
@@ -76,6 +88,13 @@ class CitizenController(
         if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
         val boats = boatService.getBoatsForReserver(orgId)
         return boats.toCitizenBoatListResponse()
+    }
+
+    @GetMapping("/current/citizen-organizations-boats")
+    fun getCitizenOrganizationsBoats(request: HttpServletRequest): Map<String, List<Boat>> {
+        val citizenId = request.ensureCitizenId()
+        val boats = boatService.getBoatsForReserversOrganizations(citizenId)
+        return boats
     }
 
     @GetMapping("/current/organizations")

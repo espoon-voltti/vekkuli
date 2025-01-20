@@ -73,6 +73,8 @@ interface ReservationWarningRepository {
         boatIdOrTrailerId: Int,
         keys: List<String>,
     ): Unit
+
+    fun deleteReservationWarningsForReservation(reservationId: Int)
 }
 
 @Service
@@ -185,6 +187,29 @@ class BoatReservationService(
         return paymentService.insertPayment(params, reservationId)
     }
 
+    fun addBoatWarningsToReservations(boat: Boat) {
+        getReservationsForBoat(boat.id)
+            .forEach { reservation ->
+                val boatSpace =
+                    getBoatSpaceRelatedToReservation(reservation.id)
+                        ?: throw IllegalArgumentException("Boat space not found")
+
+                addReservationWarnings(
+                    reservation.id,
+                    boat.id,
+                    reservation.boatSpaceWidthCm,
+                    reservation.boatSpaceLengthCm,
+                    reservation.amenity,
+                    boat.widthCm,
+                    boat.lengthCm,
+                    boat.ownership,
+                    boat.weightKg,
+                    boat.type,
+                    boatSpace.excludedBoatTypes ?: listOf(),
+                )
+            }
+    }
+
     fun addTrailerWarningsToReservations(
         trailerId: Int,
         trailerWidthCm: Int,
@@ -209,6 +234,13 @@ class BoatReservationService(
             }
         }
     }
+
+    fun getReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> = boatSpaceReservationRepo.getReservationsForBoat(boatId)
+
+    fun getActiveReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails> =
+        boatSpaceReservationRepo.getActiveReservationsForBoat(
+            boatId
+        )
 
     fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getReservationsForTrailer(trailerId)
@@ -469,6 +501,18 @@ class BoatReservationService(
         memoService.insertMemo(reservation.reserverId, userId, ReservationType.Marine, infoText)
     }
 
+    fun acknowledgeWarningForBoat(
+        boatId: Int,
+        userId: UUID,
+        keys: List<String>,
+        infoText: String
+    ) {
+        if (keys.isEmpty()) return
+        getReservationsForBoat(boatId).forEach {
+            acknowledgeWarnings(it.id, userId, boatId, keys, infoText)
+        }
+    }
+
     fun acknowledgeWarningForTrailer(
         trailerId: Int,
         userId: UUID,
@@ -530,6 +574,7 @@ class BoatReservationService(
                         productCode = "?",
                         status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
                         paid = paymentDate.atStartOfDay(),
+                        paymentType = PaymentType.Invoice
                     )
                 paymentService.insertPayment(paymentParams, reservationId)
             }

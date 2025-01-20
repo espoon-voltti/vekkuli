@@ -21,7 +21,7 @@ class ReservationController(
     private val logger = KotlinLogging.logger {}
 
     @GetMapping("/unfinished-reservation")
-    fun getUnfinishedReservation(request: HttpServletRequest,): ReservationResponse {
+    fun getUnfinishedReservation(request: HttpServletRequest): ReservationResponse {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
@@ -33,7 +33,7 @@ class ReservationController(
     }
 
     @GetMapping("/unfinished-reservation-expiration")
-    fun getUnfinishedReservationExpiration(request: HttpServletRequest,): Int {
+    fun getUnfinishedReservationExpiration(request: HttpServletRequest): Int {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
