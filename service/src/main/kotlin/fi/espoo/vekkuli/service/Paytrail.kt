@@ -89,11 +89,17 @@ data class PaytrailProvider(
 )
 
 @Serializable
+data class PaymentResponse(
+    val paytrailPaymentResponse: PaytrailPaymentResponse?,
+    val paymentRequired: Boolean
+)
+
+@Serializable
 data class PaytrailPaymentResponse(
     val transactionId: String,
     val reference: String,
     val terms: String,
-    val providers: List<PaytrailProvider>,
+    val providers: List<PaytrailProvider>
 )
 
 const val BASE_URL = "https://services.paytrail.com"
