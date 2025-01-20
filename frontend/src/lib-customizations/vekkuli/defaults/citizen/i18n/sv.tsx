@@ -223,6 +223,9 @@ const sv: Translations = {
   },
   boat: {
     delete: 'Ta bort båt',
+    deleteFailed:
+      'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
+    deleteSuccess: 'Båten har tagits bort',
     confirmDelete: (boatName: string) =>
       `Du håller på att ta bort informationen för båten ${boatName}`
   },

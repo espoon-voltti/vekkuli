@@ -221,6 +221,9 @@ export default {
   },
   boat: {
     delete: 'Poista vene',
+    deleteFailed:
+      'Veneen poistamisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
+    deleteSuccess: 'Vene on poistettu',
     confirmDelete: (boatName: string) =>
       `Olet poistamassa veneen ${boatName} tietoja`
   },
