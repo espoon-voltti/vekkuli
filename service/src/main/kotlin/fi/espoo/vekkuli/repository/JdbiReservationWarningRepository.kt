@@ -60,17 +60,17 @@ class JdbiReservationWarningRepository(
         keys: List<String>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
-            val keysStr = keys.joinToString(", ") { "'$it'" }
             handle
                 .createUpdate(
                     """
-                    DELETE from reservation_warning
-                    WHERE reservation_id = :reservationId AND 
-                      (boat_id = :boatIdOrTrailerId OR trailer_id = :boatIdOrTrailerId) AND 
-                      key IN ($keysStr)
-                    """
+                DELETE FROM reservation_warning
+                WHERE reservation_id = :reservationId AND 
+                  (boat_id = :boatIdOrTrailerId OR trailer_id = :boatIdOrTrailerId) AND 
+                  key IN (<keys>)
+                """
                 ).bind("reservationId", reservationId)
                 .bind("boatIdOrTrailerId", boatIdOrTrailerId)
+                .bindList("keys", keys)
                 .execute()
         }
 
