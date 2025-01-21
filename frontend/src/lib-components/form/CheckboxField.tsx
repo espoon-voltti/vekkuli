@@ -48,6 +48,7 @@ function CheckboxFieldR<T>({
     }
   }
   const readOnlyValue = state !== undefined ? state.domValues[0] : value
+  const errorFieldId = id && `error-${id}`
   return (
     <div>
       {!label ? null : (
@@ -71,6 +72,7 @@ function CheckboxFieldR<T>({
                 label={option.label}
                 isFullWidth={isFullWidth}
                 ariaInvalid={showError}
+                ariaDescribedBy={errorFieldId}
               />
             ))}
             {showError && (
@@ -79,6 +81,7 @@ function CheckboxFieldR<T>({
                   showError={showError}
                   error={validationError()}
                   translateError={translateError}
+                  id={errorFieldId}
                 />
               </div>
             )}
@@ -108,7 +111,8 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
   selected,
   onChange,
   isFullWidth,
-  ariaInvalid
+  ariaInvalid,
+  ariaDescribedBy
 }: CheckboxFieldInputProps) {
   return (
     <Column isFull={isFullWidth} isHalf={!isFullWidth} noBottomPadding>
@@ -120,6 +124,7 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
           checked={selected}
           type="checkbox"
           aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
           onChange={(e) => {
             e.stopPropagation()
             onChange?.(e.target.checked)

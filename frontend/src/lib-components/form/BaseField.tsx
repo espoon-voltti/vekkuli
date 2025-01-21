@@ -17,4 +17,5 @@ export interface BaseFieldProps<TValue = string> {
   showErrorsBeforeTouched?: boolean
   ariaRequired?: boolean
   ariaInvalid?: boolean
+  ariaDescribedBy?: string
 }
