@@ -63,9 +63,7 @@ export const appRouter = createBrowserRouter([
         path: 'kuntalainen/venepaikka',
         element: (
           <ReservationStateContextProvider>
-            <ReservationStateRedirect>
-              <Outlet />
-            </ReservationStateRedirect>
+            <Outlet />
           </ReservationStateContextProvider>
         ),
         children: [
@@ -73,6 +71,7 @@ export const appRouter = createBrowserRouter([
             index: true,
             element: (
               <ScrollToTop>
+                <ReservationStateRedirect />
                 <SearchPage />
               </ScrollToTop>
             )
@@ -82,6 +81,7 @@ export const appRouter = createBrowserRouter([
             element: (
               <RequireAuth>
                 <ScrollToTop>
+                  <ReservationStateRedirect />
                   <FormPage />
                 </ScrollToTop>
               </RequireAuth>
@@ -92,6 +92,7 @@ export const appRouter = createBrowserRouter([
             element: (
               <RequireAuth>
                 <ScrollToTop>
+                  <ReservationStateRedirect />
                   <FormPage />
                 </ScrollToTop>
               </RequireAuth>
@@ -102,6 +103,7 @@ export const appRouter = createBrowserRouter([
             element: (
               <RequireAuth>
                 <ScrollToTop>
+                  <ReservationStateRedirect />
                   <PaymentPage />
                 </ScrollToTop>
               </RequireAuth>

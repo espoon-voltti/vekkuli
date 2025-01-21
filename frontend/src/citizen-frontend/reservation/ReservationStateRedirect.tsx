@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
 import { Reservation, ReservationStateContext } from './state'
@@ -13,14 +13,21 @@ export default React.memo(function ReservationStateRedirect({
   const { reservation } = useContext(ReservationStateContext)
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const [done, setDone] = useState(false)
 
   useEffect(() => {
+    if (done) {
+      return
+    }
+
     reservation.mapAll({
       loading: () => null,
       failure: () => {
+        setDone(true)
         equalOrNavigate(getExpectedPath(null, pathname), pathname, navigate)
       },
       success: (reservation, isReloading) => {
+        setDone(true)
         if (!isReloading) {
           equalOrNavigate(
             getExpectedPath(reservation, pathname),
@@ -30,7 +37,7 @@ export default React.memo(function ReservationStateRedirect({
         }
       }
     })
-  }, [reservation, pathname, navigate])
+  }, [done, reservation, pathname, navigate])
 
   return reservation.mapAll({
     loading: () => null,
@@ -40,12 +47,12 @@ export default React.memo(function ReservationStateRedirect({
 })
 
 function equalOrNavigate(
-  uri: string | null,
-  pathname: string,
+  expected: string | null,
+  current: string,
   navigate: ReturnType<typeof useNavigate>
 ) {
-  if (uri !== null && pathname !== uri) {
-    Promise.resolve(navigate(uri)).catch(() => {
+  if (expected !== null && current !== expected) {
+    Promise.resolve(navigate(expected)).catch(() => {
       console.error(
         'failed to redirect to a page matching the reservation state'
       )
