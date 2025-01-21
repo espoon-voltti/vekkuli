@@ -30,17 +30,19 @@ class AdminReservationController {
             return ""
         }
 
+        val nameSearch = "%$reserverName%"
         val query =
             when (user) {
-                UserColumn.Reserver -> """SELECT id FROM reserver WHERE (name ILIKE '%$reserverName%')"""
-                UserColumn.ActingUser -> """SELECT id FROM reserver WHERE (name ILIKE '%$reserverName%')"""
-                UserColumn.Employee -> """SELECT id FROM app_user WHERE (CONCAT(last_name, ' ', first_name) ILIKE '%$reserverName%')"""
+                UserColumn.Reserver -> """SELECT id FROM reserver WHERE (name ILIKE :reserverName)"""
+                UserColumn.ActingUser -> """SELECT id FROM reserver WHERE (name ILIKE :reserverName)"""
+                UserColumn.Employee -> """SELECT id FROM app_user WHERE (CONCAT(last_name, ' ', first_name) ILIKE :reserverName)"""
             }
 
         val reservers =
             jdbi.withHandleUnchecked { handle ->
                 handle
                     .createQuery(query)
+                    .bind("reserverName", nameSearch)
                     .mapTo<UUID>()
                     .list()
             }
