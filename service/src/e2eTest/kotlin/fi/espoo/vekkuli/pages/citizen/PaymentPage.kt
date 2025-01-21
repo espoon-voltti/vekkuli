@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.pages.BasePage
 class PaymentPage(
     page: Page
 ) : BasePage(page) {
+    val header = page.getByText("Espoon resurssivarausjärjestelmä")
     val nordeaSuccessButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Nordea success"))
     val nordeaFailedButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Nordea failed"))
     val paymentProviders = getByDataTestId("payment-providers")

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 
 import { ReservationStateContext } from './state'
 
@@ -10,10 +10,16 @@ export default React.memo(function ReservationStateRedirect({
   children
 }: Props) {
   const { reservation } = useContext(ReservationStateContext)
+  const [redirectCheckDone, setRedirectCheckDone] = useState(false)
+
+  if (redirectCheckDone) {
+    return children
+  }
 
   return reservation.mapAll({
     loading: () => null,
     failure: () => {
+      setRedirectCheckDone(true)
       equalOrRedirect('/kuntalainen/venepaikka')
       return children
     },
@@ -22,6 +28,7 @@ export default React.memo(function ReservationStateRedirect({
         return null
       }
 
+      setRedirectCheckDone(true)
       switch (reservation.status) {
         case 'Info':
           switch (reservation.creationType) {
