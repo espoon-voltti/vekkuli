@@ -1,6 +1,7 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router'
 
-import { ReservationStateContext } from './state'
+import { Reservation, ReservationStateContext } from './state'
 
 interface Props {
   children?: React.ReactNode
@@ -10,53 +11,77 @@ export default React.memo(function ReservationStateRedirect({
   children
 }: Props) {
   const { reservation } = useContext(ReservationStateContext)
-  const [redirectCheckDone, setRedirectCheckDone] = useState(false)
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
 
-  if (redirectCheckDone) {
-    return children
-  }
+  useEffect(() => {
+    reservation.mapAll({
+      loading: () => null,
+      failure: () => {
+        equalOrNavigate(getExpectedPath(null, pathname), pathname, navigate)
+      },
+      success: (reservation, isReloading) => {
+        if (!isReloading) {
+          equalOrNavigate(
+            getExpectedPath(reservation, pathname),
+            pathname,
+            navigate
+          )
+        }
+      }
+    })
+  }, [reservation, pathname, navigate])
 
   return reservation.mapAll({
     loading: () => null,
-    failure: () => {
-      setRedirectCheckDone(true)
-      equalOrRedirect('/kuntalainen/venepaikka')
-      return children
-    },
-    success: (reservation, isReloading) => {
-      if (isReloading) {
-        return null
-      }
-
-      setRedirectCheckDone(true)
-      switch (reservation.status) {
-        case 'Info':
-          switch (reservation.creationType) {
-            case 'Renew':
-            case 'New':
-              equalOrRedirect('/kuntalainen/venepaikka/varaa')
-              break
-            case 'Switch':
-              equalOrRedirect('/kuntalainen/venepaikka/vaihda')
-              break
-          }
-          break
-        case 'Payment':
-          equalOrRedirect('/kuntalainen/venepaikka/maksa')
-          break
-        case 'Confirmed':
-          equalOrRedirect(`/kuntalainen/venepaikka/vahvistus/${reservation.id}`)
-          break
-      }
-
-      return children
-    }
+    failure: () => children,
+    success: (_reservation, isReloading) => (isReloading ? null : children)
   })
 })
 
-function equalOrRedirect(uri: string) {
-  if (window.location.pathname !== uri) {
-    window.location.replace(uri)
+function equalOrNavigate(
+  uri: string,
+  pathname: string,
+  navigate: ReturnType<typeof useNavigate>
+) {
+  if (pathname !== uri) {
+    Promise.resolve(navigate(uri)).catch(() => {
+      console.error(
+        'failed to redirect to a page matching the reservation state'
+      )
+    })
   }
-  return null
+}
+
+function getExpectedPath(
+  reservation: Reservation | null,
+  current: string
+): string {
+  if (reservation !== null) {
+    return getExpectedPathForReservation(reservation)
+  }
+
+  if (current.startsWith('/kuntalainen/venepaikka/vahvistus')) {
+    return current
+  }
+
+  return '/kuntalainen/venepaikka'
+}
+
+function getExpectedPathForReservation(reservation: Reservation): string {
+  switch (reservation.status) {
+    case 'Info':
+      switch (reservation.creationType) {
+        case 'Renew':
+        case 'New':
+          return '/kuntalainen/venepaikka/varaa'
+        case 'Switch':
+          return '/kuntalainen/venepaikka/vaihda'
+      }
+      break
+    case 'Payment':
+      return '/kuntalainen/venepaikka/maksa'
+    case 'Confirmed':
+      return `/kuntalainen/venepaikka/vahvistus/${reservation.id}`
+  }
 }

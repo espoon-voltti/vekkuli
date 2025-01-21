@@ -126,8 +126,22 @@ class ReservationFormNavigationTest : PlaywrightTest() {
 
         assertThat(BoatSpaceFormPage(page).header).isVisible()
 
-        assertFullPageReload {
-            reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.navigateToPage()
+        assertThat(BoatSpaceFormPage(page).header).isVisible()
+    }
+
+    @Test
+    fun `navigating to boat space search should redirect to unfilled reservation`() {
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+
+        assertThat(BoatSpaceFormPage(page).header).isVisible()
+
+        assertNoFullPageReload {
+            CitizenHomePage(page).boatSearchLink.click()
             assertThat(BoatSpaceFormPage(page).header).isVisible()
         }
     }
@@ -143,10 +157,8 @@ class ReservationFormNavigationTest : PlaywrightTest() {
         BoatSpaceFormPage(page).fillFormAndSubmit()
         assertThat(PaymentPage(page).header).isVisible()
 
-        assertFullPageReload {
-            reserveBoatSpacePage.navigateToPage()
-            assertThat(PaymentPage(page).header).isVisible()
-        }
+        reserveBoatSpacePage.navigateToPage()
+        assertThat(PaymentPage(page).header).isVisible()
     }
 
     private fun assertFullPageReload(operation: () -> Unit) {
