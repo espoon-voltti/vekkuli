@@ -15,4 +15,7 @@ export interface BaseFieldProps<TValue = string> {
   onKeyPress?: (e: React.KeyboardEvent) => void
   readonly?: boolean
   showErrorsBeforeTouched?: boolean
+  ariaRequired?: boolean
+  ariaInvalid?: boolean
+  ariaDescribedBy?: string
 }

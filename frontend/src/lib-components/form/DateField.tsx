@@ -21,7 +21,8 @@ export default React.memo(function DateField({
   bind,
   readonly,
   value,
-  showErrorsBeforeTouched
+  showErrorsBeforeTouched,
+  required
 }: TextFieldProps) {
   const { state, set, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
@@ -45,6 +46,8 @@ export default React.memo(function DateField({
               id={id}
               name={name}
               value={state}
+              aria-invalid={showError}
+              aria-required={required}
               onBlur={() => setTouched(true)}
               onChange={(e) => set(e.target.value)}
             />

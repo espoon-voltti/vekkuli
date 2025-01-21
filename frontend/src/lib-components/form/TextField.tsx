@@ -31,6 +31,7 @@ export default React.memo(function TextField({
     (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
 
   const readOnlyValue = state !== undefined ? state : value
+  const errorFieldId = id && `error-${id}`
 
   return (
     <div className="field">
@@ -49,6 +50,9 @@ export default React.memo(function TextField({
               id={id}
               name={name}
               value={state}
+              aria-required={required}
+              aria-invalid={showError}
+              aria-describedby={errorFieldId}
               onChange={(e) => set(e.target.value)}
               onBlur={() => setTouched(true)}
             />
@@ -56,6 +60,7 @@ export default React.memo(function TextField({
               showError={showError}
               error={validationError()}
               translateError={translateError}
+              id={errorFieldId}
             />
           </>
         )}

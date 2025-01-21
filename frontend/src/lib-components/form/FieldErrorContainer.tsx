@@ -6,15 +6,21 @@ type FieldErrorContainerProps = {
   showError: boolean
   error: string | FieldErrors<string> | undefined
   translateError: (error: string) => string
+  id?: string
 }
 
 export default React.memo(function FieldErrorContainer({
   showError,
   error,
-  translateError
+  translateError,
+  id
 }: FieldErrorContainerProps) {
   const errorMessage =
     showError && typeof error == 'string' ? translateError(error) : null
 
-  return <p className="help is-danger">{errorMessage}</p>
+  return (
+    <p className="help is-danger" aria-live="polite" id={id}>
+      {errorMessage}
+    </p>
+  )
 })

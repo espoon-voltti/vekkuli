@@ -56,10 +56,10 @@ export default React.memo(function Reserver({
       </div>
       <div className="columns">
         <div className="column is-one-quarter">
-          <TextField id="email" label="Sähköposti *" bind={email} />
+          <TextField id="email" label="Sähköposti" bind={email} required />
         </div>
         <div className="column is-one-quarter">
-          <TextField id="phone" label="Puhelinnumero *" bind={phone} />
+          <TextField id="phone" label="Puhelinnumero" bind={phone} required />
         </div>
         <div className="column is-half">
           <TextField

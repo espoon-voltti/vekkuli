@@ -39,6 +39,7 @@ function NumberFieldR({
   const showError =
     (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
   const readOnlyValue = state !== undefined ? state : value
+  const errorFieldId = id && `error-${id}`
   return (
     <div className="field">
       <div className="control">
@@ -59,6 +60,9 @@ function NumberFieldR({
               max={max}
               name={name}
               value={state}
+              aria-required={required}
+              aria-invalid={showError}
+              aria-describedby={errorFieldId}
               onChange={(e) => set(e.target.value)}
               onBlur={() => setTouched(true)}
             />
@@ -66,6 +70,7 @@ function NumberFieldR({
               showError={showError}
               error={validationError()}
               translateError={translateError}
+              id={errorFieldId}
             />
           </>
         )}

@@ -180,7 +180,7 @@ export default React.memo(function Form({
 
 export const ValidationWarning = React.memo(function ValidationWarning() {
   return (
-    <div className="warning block form-validation-message">
+    <div className="warning block form-validation-message" role="alert">
       <span className="icon">
         <WarningExclamation isError={false} />
       </span>

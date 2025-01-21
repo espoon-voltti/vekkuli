@@ -100,10 +100,16 @@ export default React.memo(function CitizenInformation({
               label="Puhelinnumero"
               bind={phone}
               readonly={!editMode}
+              required={true}
             />
           </Column>
           <Column isOneQuarter>
-            <TextField label="Sähköposti" bind={email} readonly={!editMode} />
+            <TextField
+              label="Sähköposti"
+              bind={email}
+              readonly={!editMode}
+              required={true}
+            />
           </Column>
           <Column isOneEight>
             <TextField

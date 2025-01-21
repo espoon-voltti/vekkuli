@@ -52,6 +52,7 @@ function SelectField_<T>({
                 name={name}
                 required={required}
                 value={state?.domValue}
+                aria-invalid={showError}
                 onBlur={() => setTouched(true)}
                 onChange={(e) => {
                   e.preventDefault()
