@@ -222,6 +222,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
 
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            // TODO should have sent an email about winter place reservation
+            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()
@@ -311,6 +316,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()
@@ -365,6 +374,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
@@ -458,6 +471,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()
@@ -534,6 +551,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertContains(description, place)
 
         invoicePage.sendButton.click()
+
+        messageService.sendScheduledEmails()
+        assertEquals(1, SendEmailServiceMock.emails.size)
+        assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
 
         val reservationListPage = ReservationListPage(page)
         assertThat(reservationListPage.header).isVisible()
@@ -640,6 +661,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertThat(invoicePreviewPage.header).isVisible()
         invoicePreviewPage.sendButton.click()
 
+        messageService.sendScheduledEmails()
+        // TODO should send emails to organization and all representatives
+        assertEquals(1, SendEmailServiceMock.emails.size)
+        assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+
         val reservationListPage = ReservationListPage(page)
         assertThat(reservationListPage.header).isVisible()
     }
@@ -662,6 +688,7 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         val formPage = BoatSpaceFormPage(page)
 
         formPage.submitButton.click()
+
         formPage.existingCitizenSelector.click()
         "olivia".forEach { character ->
             formPage.citizenSearchInput.press("$character")
