@@ -521,7 +521,6 @@ class JdbiBoatSpaceReservationRepository(
                     invoiceDueDate = it.invoiceDueDate,
                     creationType = it.creationType,
                     discountPercentage = it.discountPercentage
-
                 )
             }
         }

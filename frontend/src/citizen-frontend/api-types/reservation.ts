@@ -129,7 +129,6 @@ export type PaymentInformation = {
 
 export type PaymentInformationResponse = {
   providers: PaymentInformation[]
-  paymentRequired: boolean
 }
 
 export type Municipality = {
