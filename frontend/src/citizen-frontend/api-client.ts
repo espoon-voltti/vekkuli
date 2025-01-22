@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 
 export const API_URL = '/api/citizen'
 
@@ -21,11 +21,3 @@ export const client = axios.create({
   }
 })
 client.defaults.headers.common['x-vekkuli-csrf'] = '1'
-
-client.interceptors.response.use(undefined, (err: AxiosError) => {
-  if (err.response && err.response.status == 401) {
-    window.location.replace('/')
-  }
-
-  return Promise.reject(err)
-})

@@ -27,7 +27,16 @@ export function createEmployeeRouter(
   router.get('/virkailija/static/*splat', proxy)
   router.get('/ext/*splat', proxy)
 
-  router.use(requireAuthentication('user'))
+  router.use(
+    requireAuthentication('user', (req, res, next) => {
+      const loginPath = '/virkailija'
+      if (req.path !== loginPath) {
+        res.redirect(loginPath)
+      } else {
+        next()
+      }
+    })
+  )
   router.use('/admin', proxy)
   router.use('/boat-space', proxy)
   router.use('/reservation', proxy)

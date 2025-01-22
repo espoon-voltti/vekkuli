@@ -7,16 +7,18 @@ import { logInfo } from '../logging/index.js'
 import { fromCallback } from '../utils/promise-utils.js'
 import { Sessions } from './session.js'
 
-export function requireAuthentication(userType: UserType) {
+export function requireAuthentication(
+  userType: UserType,
+  unauthorizedHandler: (req: Request, res: Response, next: NextFunction) => void
+) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !req.user.id || req.user.type !== userType) {
       logInfo('Could not find user', req)
-      if (req.path !== '/virkailija') {
-        res.redirect('/')
-        return
-      }
+      unauthorizedHandler(req, res, next)
+      return
     }
-    return next()
+
+    next()
   }
 }
 
