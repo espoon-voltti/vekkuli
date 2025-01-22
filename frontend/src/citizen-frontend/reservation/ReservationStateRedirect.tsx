@@ -81,7 +81,7 @@ function getExpectedPathForReservation(
   switch (reservation.status) {
     case 'Info':
       switch (reservation.creationType) {
-        case 'Renew':
+        case 'Renewal':
           return '/kuntalainen/venepaikka/jatka'
         case 'New':
           return '/kuntalainen/venepaikka/varaa'

@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.controllers.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
@@ -248,6 +249,32 @@ class ReservationFormService(
         )
     }
 
+    fun validateCitizenCanRenewReservation(
+        actingCitizenId: UUID,
+        reservation: BoatSpaceReservationDetails
+    ): Boolean {
+        if (reservation.originalReservationId == null) {
+            throw BadRequest("Original reservation not found")
+        }
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId)
+                ?: throw BadRequest("Reservation not found")
+        // mandatory information, otherwise the request is malformed
+        val reserver = reserverService.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
+
+        // Can renew only from an active reservation
+        if (!validateReservationIsActive(originalReservation, timeProvider.getCurrentDateTime())) {
+            return false
+        }
+
+        // User has rights to renew the reservation
+        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
+            return false
+        }
+
+        return true
+    }
+
     @Transactional
     fun reserveRenewedSpaceByCitizen(
         reservationId: Int,
@@ -261,7 +288,7 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
                 ?: throw BadRequest("Original reservation not found")
 
-        if (!boatSpaceSwitchService.validateCitizenCanRenewReservation(actingCitizenId, reservation)) {
+        if (!validateCitizenCanRenewReservation(actingCitizenId, reservation)) {
             throw Forbidden("Citizen can not renew reservation")
         }
 

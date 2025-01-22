@@ -46,32 +46,6 @@ class BoatSpaceSwitchService(
         )
     }
 
-    fun validateCitizenCanRenewReservation(
-        actingCitizenId: UUID,
-        reservation: BoatSpaceReservationDetails
-    ): Boolean {
-        if (reservation.originalReservationId == null) {
-            throw BadRequest("Original reservation not found")
-        }
-        val originalReservation =
-            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId)
-                ?: throw BadRequest("Reservation not found")
-        // mandatory information, otherwise the request is malformed
-        val reserver = reserverRepo.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
-
-        // Can renew only from an active reservation
-        if (!validateReservationIsActive(originalReservation, timeProvider.getCurrentDateTime())) {
-            return false
-        }
-
-        // User has rights to renew the reservation
-        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
-            return false
-        }
-
-        return true
-    }
-
     fun validateCitizenCanSwitchReservation(
         actingCitizenId: UUID,
         targetSpaceId: Int,
