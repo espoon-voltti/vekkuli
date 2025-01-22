@@ -81,7 +81,7 @@ dependencies {
     implementation("org.springframework.ws:spring-ws-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0")
-    implementation("com.zaxxer:HikariCP:6.0.0")
+    implementation("com.zaxxer:HikariCP:6.2.1")
     implementation("org.flywaydb:flyway-core:10.20.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.20.0")
     implementation("org.postgresql:postgresql:42.7.1")
