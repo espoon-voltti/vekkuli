@@ -23,6 +23,7 @@ export type UnfinishedBoatSpaceReservation = {
   reservation: BoatSpaceReservation
   boats: Boat[]
   municipalities: Municipality[]
+  organizations: Organization[]
 }
 
 export type BoatSpaceReservation = {

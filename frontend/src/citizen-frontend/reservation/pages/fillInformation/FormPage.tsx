@@ -3,39 +3,26 @@ import { Container, MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import {
-  citizenOrganizationsQuery,
-  citizenOrganizationsBoatsQuery
-} from 'citizen-frontend/shared/queries'
+import { citizenOrganizationsBoatsQuery } from 'citizen-frontend/shared/queries'
 import { FormErrorProvider } from 'lib-common/form/state'
 import { useQueryResult } from 'lib-common/query'
 
 import StepIndicator from '../../StepIndicator'
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservationTimer from '../../components/ReservationTimer'
-import { getMunicipalitiesQuery } from '../../queries'
 import { ReservationStateContext } from '../../state'
 
 import Form from './Form'
 
 export default React.memo(function FormPage() {
   const { reservation } = useContext(ReservationStateContext)
-  const municipalities = useQueryResult(getMunicipalitiesQuery())
-  const organizations = useQueryResult(citizenOrganizationsQuery())
   const organizationBoats = useQueryResult(citizenOrganizationsBoatsQuery())
   const i18n = useTranslation()
   return (
     <MainSection>
       <Container>
-        <Loader
-          results={[
-            reservation,
-            municipalities,
-            organizations,
-            organizationBoats
-          ]}
-        >
-          {(loadedReservation, organizations, organizationBoats) => (
+        <Loader results={[reservation, organizationBoats]}>
+          {(loadedReservation, organizationBoats) => (
             <>
               <Container>
                 <ReservationCancel
@@ -51,8 +38,6 @@ export default React.memo(function FormPage() {
               <FormErrorProvider>
                 <Form
                   reservation={loadedReservation}
-                  municipalities={loadedMunicipalities}
-                  organizations={organizations}
                   organizationBoats={organizationBoats}
                 />
               </FormErrorProvider>

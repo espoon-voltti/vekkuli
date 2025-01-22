@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.citizen.CitizenBoatResponse
+import fi.espoo.vekkuli.boatSpace.citizen.CitizenOrganizationResponse
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -16,7 +17,8 @@ import java.util.*
 data class UnfinishedReservationResponse(
     val reservation: ReservationResponse,
     val boats: List<CitizenBoatResponse>,
-    val municipalities: List<MunicipalityResponse>
+    val municipalities: List<MunicipalityResponse>,
+    val organization: List<CitizenOrganizationResponse>
 )
 
 data class ReservationResponse(
