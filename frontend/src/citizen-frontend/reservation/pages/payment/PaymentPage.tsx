@@ -17,7 +17,9 @@ export default React.memo(function PaymentPage() {
             <StepIndicator step="payment" />
             <div className="container">
               <h2>Espoon resurssivarausjärjestelmä</h2>
-              <PaymentProviders reservationId={unfinishedReservation.id} />
+              <PaymentProviders
+                reservationId={unfinishedReservation.reservation.id}
+              />
             </div>
           </>
         )}

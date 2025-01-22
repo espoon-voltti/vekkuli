@@ -9,7 +9,9 @@ import {
   CanReserveReservation,
   FillBoatSpaceReservationInput,
   Municipality,
-  PaymentInformationResponse
+  PaymentInformationResponse,
+  UnfinishedBoatSpaceReservation,
+  UnfinishedBoatSpaceReservationResponse
 } from '../api-types/reservation'
 
 export async function reserveSpace(
@@ -53,12 +55,15 @@ export async function switchBoatSpace(
   })
 }
 
-export async function unfinishedReservation(): Promise<BoatSpaceReservation> {
-  const { data: json } = await client.request<BoatSpaceReservationResponse>({
-    url: uri`/unfinished-reservation`.toString(),
-    method: 'GET'
-  })
-  return deserializeJsonBoatSpaceReservationResponse(json)
+export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReservation> {
+  const { data: json } =
+    await client.request<UnfinishedBoatSpaceReservationResponse>({
+      url: uri`/unfinished-reservation`.toString(),
+      method: 'GET'
+    })
+  return {
+    reservation: deserializeJsonBoatSpaceReservationResponse(json.reservation)
+  }
 }
 
 export async function unfinishedReservationExpiration(): Promise<number> {

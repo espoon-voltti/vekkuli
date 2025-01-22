@@ -12,6 +12,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
+data class UnfinishedReservationResponse(
+    val reservation: ReservationResponse
+)
+
 data class ReservationResponse(
     val id: Int,
     val reserverType: ReserverType,
@@ -301,8 +305,8 @@ class ReservationResponseMapper(
     }
 
     // This can be a function to get the revised price of a reservation, eg. for switch or because of discounts
-    private fun getRevisedPrice(reservation: ReservationWithDependencies): String {
-        return when (reservation.creationType) {
+    private fun getRevisedPrice(reservation: ReservationWithDependencies): String =
+        when (reservation.creationType) {
             CreationType.Switch -> {
                 formatInt(boatSpaceSwitchService.getRevisedPrice(reservation))
             }
@@ -311,5 +315,4 @@ class ReservationResponseMapper(
                 reservation.priceInEuro
             }
         }
-    }
 }

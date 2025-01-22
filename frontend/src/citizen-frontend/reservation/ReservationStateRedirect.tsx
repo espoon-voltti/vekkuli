@@ -17,9 +17,9 @@ export default React.memo(function ReservationStateRedirect({
   if (reservation.isFailure || currentReservation === undefined) {
     equalOrRedirect('/kuntalainen/venepaikka', pathname)
   } else if (reservation.isSuccess) {
-    switch (currentReservation.status) {
+    switch (currentReservation.reservation.status) {
       case 'Info':
-        switch (currentReservation.creationType) {
+        switch (currentReservation.reservation.creationType) {
           case 'Renew':
           case 'New':
             equalOrRedirect('/kuntalainen/venepaikka/varaa', pathname)
@@ -34,7 +34,7 @@ export default React.memo(function ReservationStateRedirect({
         break
       case 'Confirmed':
         equalOrRedirect(
-          `/kuntalainen/venepaikka/vahvistus/${currentReservation.id}`,
+          `/kuntalainen/venepaikka/vahvistus/${currentReservation.reservation.id}`,
           pathname
         )
         break

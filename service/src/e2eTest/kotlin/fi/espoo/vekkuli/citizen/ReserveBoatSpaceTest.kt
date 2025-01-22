@@ -369,6 +369,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
+            page.pause()
             // Cancel the payment at first
             paymentPage.nordeaFailedButton.click()
             // Then go through the payment
@@ -444,6 +445,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             // assert that payment page is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentProviders).isVisible()
+            paymentPage.nordeaSuccessButton.click()
+            page.pause()
         } catch (e: AssertionError) {
             handleError(e)
         }

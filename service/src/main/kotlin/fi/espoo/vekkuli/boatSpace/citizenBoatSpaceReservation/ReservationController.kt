@@ -22,7 +22,7 @@ class ReservationController(
     private val logger = KotlinLogging.logger {}
 
     @GetMapping("/unfinished-reservation")
-    fun getUnfinishedReservation(request: HttpServletRequest): ReservationResponse {
+    fun getUnfinishedReservation(request: HttpServletRequest): UnfinishedReservationResponse {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
@@ -30,7 +30,7 @@ class ReservationController(
             )
         }
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
-        return reservationResponseMapper.toReservationResponse(reservation)
+        return UnfinishedReservationResponse(reservationResponseMapper.toReservationResponse(reservation))
     }
 
     @GetMapping("/unfinished-reservation-expiration")

@@ -8,14 +8,14 @@ import React, { createContext, ReactNode, useCallback, useMemo } from 'react'
 import { Loading, Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
-import { BoatSpaceReservation } from '../api-types/reservation'
+import { UnfinishedBoatSpaceReservation } from '../api-types/reservation'
 
 import { unfinishedReservationQuery } from './queries'
 
-export interface Reservation extends BoatSpaceReservation {}
+export interface Reservation extends UnfinishedBoatSpaceReservation {}
 
 type ReservationState = {
-  reservation: Result<Reservation>
+  reservation: Result<UnfinishedBoatSpaceReservation>
   refreshReservationStatus: () => void
 }
 

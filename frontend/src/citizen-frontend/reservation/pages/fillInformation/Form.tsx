@@ -67,8 +67,8 @@ export default React.memo(function Form({
       initialFormState(
         i18n,
         boats,
-        reservation.citizen,
-        reservation.boatSpace.type,
+        reservation.reservation.citizen,
+        reservation.reservation.boatSpace.type,
         municipalities,
         organizations,
         searchState,
@@ -99,7 +99,7 @@ export default React.memo(function Form({
     else {
       try {
         const updatedReservation = await submitForm({
-          id: reservation?.id,
+          id: reservation?.reservation.id,
           input: formBind.value()
         })
 
@@ -118,7 +118,7 @@ export default React.memo(function Form({
   }
 
   const updatedReservation = {
-    ...reservation,
+    ...reservation.reservation,
     storageType: winterStorageFom?.state?.storageType.domValue as
       | StorageType
       | undefined
@@ -137,7 +137,7 @@ export default React.memo(function Form({
           )}
         </h1>
         <Block>
-          {reservation.creationType === 'Switch' && (
+          {reservation.reservation.creationType === 'Switch' && (
             <InfoBox text={i18n.reservation.formPage.info.switch} />
           )}
           <ReserverSection
@@ -145,15 +145,17 @@ export default React.memo(function Form({
             bind={reserver}
           />
           {organizations.length > 0 &&
-            reservation.creationType !== 'Switch' && (
+            reservation.reservation.creationType !== 'Switch' && (
               <OrganizationSection bind={organization} />
             )}
           <BoatSection bind={boat} />
           {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
           <FormSection>
             <ReservedSpace reservation={updatedReservation} />
-            {reservation.creationType === 'Switch' && (
-              <SwitchPriceInfoBox priceDifference={reservation.revisedPrice} />
+            {reservation.reservation.creationType === 'Switch' && (
+              <SwitchPriceInfoBox
+                priceDifference={reservation.reservation.revisedPrice}
+              />
             )}
           </FormSection>
           <UserAgreementsSection bind={userAgreement} />
@@ -161,11 +163,14 @@ export default React.memo(function Form({
         </Block>
 
         <Buttons>
-          <ReservationCancel reservationId={reservation.id} type="button">
+          <ReservationCancel
+            reservationId={reservation.reservation.id}
+            type="button"
+          >
             {i18n.reservation.cancelReservation}
           </ReservationCancel>
           <Button type="primary" action={onSubmit}>
-            {parsePrice(reservation.revisedPrice) > 0
+            {parsePrice(reservation.reservation.revisedPrice) > 0
               ? i18n.reservation.formPage.submit.continueToPayment
               : i18n.reservation.formPage.submit.confirmReservation}
           </Button>
