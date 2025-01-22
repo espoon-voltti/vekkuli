@@ -107,6 +107,6 @@ export type PaymentInformationResponse = {
 }
 
 export type Municipality = {
-  code: string
+  code: number
   name: string
 }
