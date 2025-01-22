@@ -116,6 +116,19 @@ class ReservationResponseMapper(
             reservation.paymentDate,
         )
 
+    fun toReservationResponse(reservation: ReservationWithDependencies): ReservationResponse =
+        reservationResponse(
+            reservation.id,
+            reservation.actingCitizenId,
+            reservation.reserverId,
+            reservation.status,
+            reservation.created,
+            reservation.startDate,
+            reservation.validity,
+            reservation.endDate,
+            null
+        )
+
     private fun reservationResponse(
         reservationId: Int,
         actingCitizenId: UUID?,
@@ -301,8 +314,8 @@ class ReservationResponseMapper(
     }
 
     // This can be a function to get the revised price of a reservation, eg. for switch or because of discounts
-    private fun getRevisedPrice(reservation: ReservationWithDependencies): String {
-        return when (reservation.creationType) {
+    private fun getRevisedPrice(reservation: ReservationWithDependencies): String =
+        when (reservation.creationType) {
             CreationType.Switch -> {
                 formatInt(boatSpaceSwitchService.getRevisedPrice(reservation))
             }
@@ -311,5 +324,4 @@ class ReservationResponseMapper(
                 reservation.priceInEuro
             }
         }
-    }
 }

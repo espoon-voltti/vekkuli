@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from 'react'
-
 import ErrorModal, { ErrorCode } from './ErrorModal'
 
 interface ReserveActionContextType {

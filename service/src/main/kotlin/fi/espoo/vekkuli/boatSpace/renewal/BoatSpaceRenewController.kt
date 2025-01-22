@@ -4,12 +4,10 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.BoatRegistrationBaseInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.ValidBoatRegistration
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.config.audit
-import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.*
 import fi.espoo.vekkuli.controllers.Utils.Companion.badRequest
-import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.controllers.Utils.Companion.redirectUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
@@ -17,17 +15,13 @@ import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
 import jakarta.validation.constraints.*
 import mu.KotlinLogging
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
-import java.net.URI
 import java.util.*
 
 @Controller
@@ -40,45 +34,6 @@ class BoatSpaceRenewController(
     private val boatReservationService: BoatReservationService,
 ) {
     private val logger = KotlinLogging.logger {}
-
-    @RequestMapping("/kuntalainen/venepaikka/jatka/{originalReservationId}")
-    @ResponseBody
-    fun boatSpaceRenewPage(
-        @PathVariable originalReservationId: Int,
-        @ModelAttribute formInput: ModifyReservationInput,
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-    ): ResponseEntity<String> {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "GET_RENEW_BOAT_SPACE_PAGE",
-                mapOf(
-                    "targetId" to originalReservationId.toString()
-                )
-            )
-        }
-        val citizenId = request.ensureCitizenId()
-        try {
-            val renewedReservation =
-                boatSpaceRenewalService.getOrCreateRenewalReservationForCitizen(citizenId, originalReservationId)
-            val boatSpaceRenewForm = boatSpaceRenewalService.buildRenewForm(citizenId, renewedReservation, formInput)
-            val page =
-                layout.render(
-                    true,
-                    renewedReservation.name,
-                    request.requestURI,
-                    boatSpaceRenewForm
-                )
-            return ResponseEntity.ok(page)
-        } catch (e: IllegalStateException) {
-            val headers = org.springframework.http.HttpHeaders()
-            headers.location = URI(getServiceUrl("/${UserType.CITIZEN.path}venepaikat"))
-            return ResponseEntity(headers, HttpStatus.FOUND)
-        } catch (e: Exception) {
-            return ResponseEntity.badRequest().body("Failed to renew boat space")
-        }
-    }
 
     @RequestMapping("/virkailija/venepaikka/jatka/{originalReservationId}/lasku")
     @ResponseBody
@@ -118,33 +73,6 @@ class BoatSpaceRenewController(
             return redirectUrl("/virkailija/venepaikat/varaukset")
         } catch (e: Exception) {
             return badRequest("Unable to renew reservation")
-        }
-    }
-
-    @PostMapping("/kuntalainen/venepaikka/jatka/{originalReservationId}")
-    fun renewBoatSpace(
-        @PathVariable originalReservationId: Int,
-        @Valid @ModelAttribute("input") input: ModifyReservationInput,
-        bindingResult: BindingResult,
-        request: HttpServletRequest,
-    ): ResponseEntity<String> {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE", mapOf("targetId" to originalReservationId.toString()))
-        }
-        val citizenId = request.ensureCitizenId()
-
-        if (bindingResult.hasErrors()) {
-            return badRequest("Invalid input")
-        }
-
-        try {
-            val renewedReservation = boatSpaceRenewalService.getRenewalReservationForCitizen(citizenId, originalReservationId)
-            boatSpaceRenewalService.updateRenewReservation(citizenId, input, renewedReservation.id)
-
-            // redirect to payments page with reservation id and slip type
-            return redirectUrl("/kuntalainen/maksut/maksa?id=${renewedReservation.id}&type=BoatSpaceReservation")
-        } catch (e: Exception) {
-            return badRequest(e.message ?: "Failed to renew boat space")
         }
     }
 
@@ -193,19 +121,6 @@ class BoatSpaceRenewController(
         val employeeId = request.ensureEmployeeId()
         boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, employeeId)
         return ResponseEntity.noContent().build()
-    }
-
-    @DeleteMapping("/kuntalainen/venepaikka/jatka/{renewedReservationId}")
-    fun cancelRenewalCitizen(
-        @PathVariable renewedReservationId: Int,
-        request: HttpServletRequest,
-    ): ResponseEntity<String> {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(it, "RENEW_BOAT_SPACE_CANCEL", mapOf("targetId" to renewedReservationId.toString()))
-        }
-        val citizenId = request.ensureCitizenId()
-        boatSpaceRenewalService.cancelRenewalReservation(renewedReservationId, citizenId)
-        return redirectUrl("/kuntalainen/omat-tiedot")
     }
 }
 

@@ -1,6 +1,6 @@
 import LocalDate from 'lib-common/date/local-date'
 
-export const creationTypes = ['New', 'Renew', 'Switch'] as const
+export const creationTypes = ['New', 'Renewal', 'Switch'] as const
 export type CreationType = (typeof creationTypes)[number]
 
 export const reservationStatuses = [

@@ -204,13 +204,14 @@ class TestUtils(
     fun createReservationInInfoState(
         citizenId: UUID,
         boatSpaceId: Int = 1,
+        creationType: CreationType = CreationType.New
     ): BoatSpaceReservation {
         val madeReservation =
             reservationService.insertBoatSpaceReservation(
                 citizenId,
                 citizenId,
                 boatSpaceId,
-                CreationType.New,
+                creationType,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate().plusDays(365),
             )

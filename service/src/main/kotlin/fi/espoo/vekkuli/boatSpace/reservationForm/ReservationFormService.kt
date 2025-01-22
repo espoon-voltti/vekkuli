@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.controllers.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
@@ -68,7 +69,7 @@ class ReservationFormService(
     private val emailService: TemplateEmailService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val boatSpaceSwitchService: BoatSpaceSwitchService
+    private val boatSpaceSwitchService: BoatSpaceSwitchService,
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
@@ -86,6 +87,7 @@ class ReservationFormService(
         when (reservation.creationType) {
             CreationType.New -> reserveNewSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
             CreationType.Switch -> reserveSwitchedSpaceByCitizen(reservationId, reserverId, input)
+            CreationType.Renewal -> reserveRenewedSpaceByCitizen(reservationId, reserverId, input)
             else -> throw BadRequest("Invalid creation type for reservation")
         }
     }
@@ -219,7 +221,8 @@ class ReservationFormService(
         )
     }
 
-    private fun reserveNewSpaceByCitizen(
+    @Transactional
+    fun reserveNewSpaceByCitizen(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
@@ -246,7 +249,69 @@ class ReservationFormService(
         )
     }
 
-    private fun reserveSwitchedSpaceByCitizen(
+    fun validateCitizenCanRenewReservation(
+        actingCitizenId: UUID,
+        reservation: BoatSpaceReservationDetails
+    ): Boolean {
+        if (reservation.originalReservationId == null) {
+            throw BadRequest("Original reservation not found")
+        }
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId)
+                ?: throw BadRequest("Reservation not found")
+        // mandatory information, otherwise the request is malformed
+        val reserver = reserverService.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
+
+        // Can renew only from an active reservation
+        if (!validateReservationIsActive(originalReservation, timeProvider.getCurrentDateTime())) {
+            return false
+        }
+
+        // User has rights to renew the reservation
+        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
+            return false
+        }
+
+        return true
+    }
+
+    @Transactional
+    fun reserveRenewedSpaceByCitizen(
+        reservationId: Int,
+        actingCitizenId: UUID,
+        input: ReservationInput
+    ) {
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw BadRequest("Reservation not found")
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
+                ?: throw BadRequest("Original reservation not found")
+
+        if (!validateCitizenCanRenewReservation(actingCitizenId, reservation)) {
+            throw Forbidden("Citizen can not renew reservation")
+        }
+
+        val result = seasonalService.canRenewAReservation(reservation.originalReservationId)
+        if (result is ReservationResult.Failure) {
+            throw Forbidden(
+                "Renewal not allowed"
+            )
+        }
+        val successResultData = (result as ReservationResult.Success).data
+
+        processBoatSpaceReservation(
+            originalReservation.reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            ReservationStatus.Payment,
+            successResultData.reservationValidity,
+            successResultData.startDate,
+            successResultData.endDate
+        )
+    }
+
+    @Transactional
+    fun reserveSwitchedSpaceByCitizen(
         reservationId: Int,
         actingCitizenId: UUID,
         input: ReservationInput

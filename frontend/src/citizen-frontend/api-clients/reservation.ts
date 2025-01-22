@@ -116,9 +116,18 @@ export async function terminateReservation(
   })
 }
 
+export async function startRenewReservation(
+  reservationId: number
+): Promise<BoatSpaceReservation> {
+  const { data } = await client.request<BoatSpaceReservation>({
+    url: uri`/reservation/${reservationId}/renew`.toString(),
+    method: 'POST'
+  })
+  return data
+}
+
 export async function paymentInformation(
-  reservationId: number,
-  amount?: number
+  reservationId: number
 ): Promise<PaymentInformationResponse> {
   const { data } = await client.request<PaymentInformationResponse>({
     url: uri`/reservation/${reservationId}/payment-information`.toString(),

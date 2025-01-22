@@ -55,6 +55,7 @@ class BoatSpaceSwitchService(
         val reserver = reserverRepo.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(originalReservationId) ?: throw BadRequest("Reservation not found")
+
         val boatSpace = boatSpaceRepository.getBoatSpace(targetSpaceId) ?: throw BadRequest("Boat space not found")
 
         // Can only switch to the same type of space
@@ -68,13 +69,15 @@ class BoatSpaceSwitchService(
         }
 
         // User has rights to switch the reservation
-        if (!permissionService.canSwitchReservation(reserver, boatSpace, reservation)) {
+        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
             return false
         }
+
         // Make sure the target space isn't reserved already
         if (boatSpaceRepository.isBoatSpaceReserved(targetSpaceId)) {
             return false
         }
+
         // Make sure the switch period is active
         return seasonalService.isReservationSwitchPeriodActive(reserver.id, boatSpace.type)
     }

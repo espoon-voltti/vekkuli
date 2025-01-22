@@ -9,7 +9,9 @@ import fi.espoo.vekkuli.pages.BasePage
 class CitizenDetailsPage(
     page: Page
 ) : BasePage(page) {
-    class BoatSection(val root: Locator) {
+    class BoatSection(
+        val root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa veneen tietoja").setExact(true))
         val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
@@ -37,14 +39,20 @@ class CitizenDetailsPage(
         val widthInput = fields.getInput("Leveys")
     }
 
-    class DeleteBoatModal(val root: Locator) {
+    class DeleteBoatModal(
+        val root: Locator
+    ) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
         val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Poista vene").setExact(true))
     }
 
-    class DeleteBoatSuccessModal(val root: Locator)
+    class DeleteBoatSuccessModal(
+        val root: Locator
+    )
 
-    class CitizenSection(root: Locator) {
+    class CitizenSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa").setExact(true))
         val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
@@ -58,9 +66,13 @@ class CitizenDetailsPage(
         val phoneInput = fields.getInput("Puhelinnumero")
     }
 
-    inner class ReservationSection(private val root: Locator) {
+    inner class ReservationSection(
+        private val root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val terminateButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka").setExact(true))
+        val renewButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Maksa kausimaksu").setExact(true))
+        val switchSpace = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Vaihda paikka").setExact(true))
 
         val locationName = fields.getField("Satama")
         val place = fields.getField("Paikka")
@@ -68,7 +80,17 @@ class CitizenDetailsPage(
         fun getTrailerSection() = TrailerSection(getByDataTestId("trailer-information", root))
     }
 
-    class TrailerSection(root: Locator) {
+    inner class ErrorModal(
+        private val root: Locator
+    ) {
+        private val fields = FieldLocator(root)
+        val title = root.getByRole(AriaRole.HEADING, Locator.GetByRoleOptions().setName("Varaaminen ei onnistunut").setExact(true))
+        val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
+    }
+
+    class TrailerSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))
         val saveButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Tallenna muutokset").setExact(true))
@@ -84,7 +106,9 @@ class CitizenDetailsPage(
         val widthInput = fields.getInput("Leveys")
     }
 
-    inner class TerminateReservationModal(val root: Locator) {
+    inner class TerminateReservationModal(
+        val root: Locator
+    ) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
         val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano venepaikka").setExact(true))
 
@@ -93,7 +117,9 @@ class CitizenDetailsPage(
         val amenityText = getByDataTestId("amenity", root)
     }
 
-    class TerminateReservationFailureModal(val root: Locator) {
+    class TerminateReservationFailureModal(
+        val root: Locator
+    ) {
         val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
     }
 
@@ -102,6 +128,8 @@ class CitizenDetailsPage(
     }
 
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen-information"))
+
+    fun getErrorModal() = ErrorModal(getByDataTestId("error-modal"))
 
     fun getBoatSection(id: Int) = BoatSection(getByDataTestId("boat-$id"))
 

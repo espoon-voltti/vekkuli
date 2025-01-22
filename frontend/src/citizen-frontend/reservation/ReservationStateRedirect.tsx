@@ -26,15 +26,13 @@ export default React.memo(function ReservationStateRedirect({
         setDone(true)
         equalOrNavigate(getExpectedPath(null, pathname), pathname, navigate)
       },
-      success: (reservation, isReloading) => {
+      success: (reservation) => {
         setDone(true)
-        if (!isReloading) {
-          equalOrNavigate(
-            getExpectedPath(reservation, pathname),
-            pathname,
-            navigate
-          )
-        }
+        equalOrNavigate(
+          getExpectedPath(reservation, pathname),
+          pathname,
+          navigate
+        )
       }
     })
   }, [done, reservation, pathname, navigate])
@@ -81,7 +79,8 @@ function getExpectedPathForReservation(
   switch (reservation.status) {
     case 'Info':
       switch (reservation.creationType) {
-        case 'Renew':
+        case 'Renewal':
+          return '/kuntalainen/venepaikka/jatka'
         case 'New':
           return '/kuntalainen/venepaikka/varaa'
         case 'Switch':

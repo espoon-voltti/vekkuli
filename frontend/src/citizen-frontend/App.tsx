@@ -99,6 +99,17 @@ export const appRouter = createBrowserRouter([
             )
           },
           {
+            path: 'jatka',
+            element: (
+              <RequireAuth>
+                <ScrollToTop>
+                  <ReservationStateRedirect />
+                  <FormPage />
+                </ScrollToTop>
+              </RequireAuth>
+            )
+          },
+          {
             path: 'maksa',
             element: (
               <RequireAuth>
