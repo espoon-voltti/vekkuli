@@ -25,7 +25,10 @@ export default React.memo(function CanReserveResult({
       hasStartedReservation.current = true
       reserveSpace()
     }
-    if (canReserveResult.status === 'CanNotReserve') {
+    if (
+      canReserveResult.status === 'CanNotReserve' &&
+      !canReserveResult.switchableReservations.length
+    ) {
       setError('NOT_POSSIBLE')
     }
   }, [

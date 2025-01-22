@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -32,6 +33,8 @@ data class ReservationResponse(
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
+    val canRenew: Boolean,
+    val canSwitch: Boolean,
 ) {
     data class Citizen(
         val id: UUID,
@@ -101,7 +104,9 @@ class ReservationResponseMapper(
     private val spaceReservationService: BoatReservationService,
     private val reserverService: ReserverService,
     private val organizationService: OrganizationService,
-    private val boatSpaceSwitchService: BoatSpaceSwitchService
+    private val boatSpaceSwitchService: BoatSpaceSwitchService,
+    private val seasonalService: SeasonalService,
+    private val permissionService: PermissionService
 ) {
     fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse =
         reservationResponse(
@@ -182,7 +187,9 @@ class ReservationResponseMapper(
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
             paymentDate = paymentDate,
-            creationType = reservationWithDependencies.creationType
+            creationType = reservationWithDependencies.creationType,
+            canRenew = seasonalService.canRenewAReservation(reservationId).success,
+            canSwitch = seasonalService.canSwitchReservation(reserverId, boatSpace.type, reservationId).success,
         )
     }
 

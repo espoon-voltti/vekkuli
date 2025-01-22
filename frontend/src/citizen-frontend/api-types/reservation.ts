@@ -17,6 +17,8 @@ import {
   Trailer
 } from '../shared/types'
 
+export type ReservationOperation = 'Switch' | 'Renew' | 'Terminate'
+
 export type BoatSpaceReservation = {
   id: number
   citizen?: Citizen
@@ -36,6 +38,7 @@ export type BoatSpaceReservation = {
   trailer?: Trailer
   boat: Boat
   creationType: CreationType
+  allowedReservationOperations: ReservationOperation[]
 }
 
 export type CanReserveResultStatus =
@@ -74,6 +77,8 @@ export type BoatSpaceReservationResponse = {
   trailer: Trailer | null
   boat: Boat
   creationType: CreationType
+  canRenew: boolean
+  canSwitch: boolean
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

@@ -97,10 +97,13 @@ class SeasonalService(
     }
 
     fun canSwitchReservation(
-        reserverID: UUID,
+        reserverID: UUID?,
         type: BoatSpaceType,
         reservationId: Int,
     ): ReservationResult {
+        if (reserverID == null) {
+            throw IllegalArgumentException("Reserver not found")
+        }
         val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)

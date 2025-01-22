@@ -9,7 +9,8 @@ import {
   CanReserveReservation,
   FillBoatSpaceReservationInput,
   Municipality,
-  PaymentInformationResponse
+  PaymentInformationResponse,
+  ReservationOperation
 } from '../api-types/reservation'
 
 export async function reserveSpace(
@@ -150,6 +151,15 @@ export function deserializeJsonBoatSpaceReservationResponse(
     ? { ...json.citizen, birthDate: LocalDate.parseIso(json.citizen.birthDate) }
     : undefined
   const organization = json.organization ? json.organization : undefined
+  const createAllowedOperationsList = (
+    json: BoatSpaceReservationResponse
+  ): ReservationOperation[] => {
+    const operationsList: ReservationOperation[] = []
+    if (json.canRenew) operationsList.push('Renew')
+    if (json.canSwitch) operationsList.push('Switch')
+    return operationsList
+  }
+
   return {
     id: json.id,
     citizen,
@@ -170,6 +180,7 @@ export function deserializeJsonBoatSpaceReservationResponse(
     boat: json.boat,
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,
-    creationType: json.creationType
+    creationType: json.creationType,
+    allowedReservationOperations: createAllowedOperationsList(json)
   }
 }

@@ -51,11 +51,12 @@ class PermissionService(
         }
 
     fun canDeleteBoatSpaceReservation(
-        deleterId: UUID,
+        deleterId: UUID?,
         reservationId: Int
     ): Boolean {
         val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
         return when {
+            deleterId == null -> false
             reservation?.status !in setOf(ReservationStatus.Payment, ReservationStatus.Info) -> false
             userService.isAppUser(deleterId) -> true
             reservation?.reserverId == null -> false

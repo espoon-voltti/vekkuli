@@ -40,6 +40,7 @@ export default React.memo(function Reservation({
   const { boatSpace } = reservation
   const navigate = useNavigate()
   const [error, setError] = useState<ErrorCode | undefined>()
+  console.log(canRenew)
   const reservationStatus = useQueryResult(
     unfinishedReservationQuery()
   ).getOrElse(false)
