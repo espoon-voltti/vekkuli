@@ -26,7 +26,7 @@ export function createCitizenRouter(
 
   router.get('/public/*splat', proxy)
 
-  router.use(requireAuthentication('citizen'))
+  router.use(requireAuthentication)
   router.use(proxy)
   router.use(errorHandler)
 
