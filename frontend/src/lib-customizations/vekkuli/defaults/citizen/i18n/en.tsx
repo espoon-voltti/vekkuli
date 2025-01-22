@@ -235,7 +235,9 @@ const en: Translations = {
       fillInformation: {
         title: 'Reserving failed',
         SERVER_ERROR:
-          'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.'
+          'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
+        UNFINISHED_RESERVATION:
+          'You have an ongoing reservation. Please complete the reservation or cancel it to continue.'
       }
     },
     auth: {
@@ -341,6 +343,9 @@ const en: Translations = {
         terminate: 'Cancel Place',
         renew: 'Renew Place',
         change: 'Change Place'
+      },
+      modal: {
+        goBackToReservation: 'Go to the reservation'
       }
     }
   }
