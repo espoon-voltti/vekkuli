@@ -85,6 +85,10 @@ input:focus-visible, input.input:focus-visible,
   outline: 2px solid $bulma-primary;
   outline-offset: 2px;
   box-shadow: none;
+  &.is-danger {
+    outline-color: $bulma-danger;
+    border-color: $bulma-danger;
+  }
 }
 
 html, body {
