@@ -1,25 +1,23 @@
 import express, { NextFunction, Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
+import { readFileSync } from 'node:fs'
 import passport, { AuthenticateCallback } from 'passport'
+import { jwtKid, jwtPrivateKey } from '../config.js'
+import { logInfo } from '../logging/index.js'
 import { fromCallback } from '../utils/promise-utils.js'
 import { Sessions } from './session.js'
-import { logInfo } from '../logging/index.js'
-import jwt from 'jsonwebtoken'
-import { jwtKid, jwtPrivateKey } from '../config.js'
-import { readFileSync } from 'node:fs'
 
-export function requireAuthentication(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  if (!req.user || !req.user.id) {
-    logInfo('Could not find user', req)
-    if (req.path !== '/virkailija') {
-      res.redirect('/')
-      return
+export function requireAuthentication(userType: UserType) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user || !req.user.id || req.user.type !== userType) {
+      logInfo('Could not find user', req)
+      if (req.path !== '/virkailija') {
+        res.redirect('/')
+        return
+      }
     }
+    return next()
   }
-  return next()
 }
 
 export type UserType = 'user' | 'citizen'

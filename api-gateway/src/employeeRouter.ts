@@ -27,7 +27,7 @@ export function createEmployeeRouter(
   router.get('/virkailija/static/*splat', proxy)
   router.get('/ext/*splat', proxy)
 
-  router.use(requireAuthentication)
+  router.use(requireAuthentication('user'))
   router.use('/admin', proxy)
   router.use('/boat-space', proxy)
   router.use('/reservation', proxy)
