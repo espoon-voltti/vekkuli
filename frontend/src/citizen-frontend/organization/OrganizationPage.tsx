@@ -1,5 +1,5 @@
 import { Loader } from 'lib-components/Loader'
-import Section from 'lib-components/dom/Section'
+import { MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
@@ -40,7 +40,7 @@ const Content = React.memo(function Content({
   const boats = useQueryResult(organizationBoatsQuery(organizationId))
 
   return (
-    <Section>
+    <MainSection>
       <Loader
         results={[
           user,
@@ -73,6 +73,6 @@ const Content = React.memo(function Content({
           )
         }}
       </Loader>
-    </Section>
+    </MainSection>
   )
 })
