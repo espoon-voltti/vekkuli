@@ -1,9 +1,12 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.citizen.toCitizenBoatListResponse
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.audit
+import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.decimalToInt
 import jakarta.servlet.http.HttpServletRequest
@@ -17,7 +20,8 @@ class ReservationController(
     private val reservationService: ReservationService,
     private val reservationResponseMapper: ReservationResponseMapper,
     private val reserverService: ReserverService,
-    private val canReserveResponseMapper: CanReserveResponseMapper
+    private val canReserveResponseMapper: CanReserveResponseMapper,
+    private val boatService: BoatService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -29,8 +33,14 @@ class ReservationController(
                 "GET_UNFINISHED_RESERVATION"
             )
         }
+        val citizenId = request.ensureCitizenId()
+        val boats = boatService.getBoatsForReserver(citizenId)
+
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
-        return UnfinishedReservationResponse(reservationResponseMapper.toReservationResponse(reservation))
+        return UnfinishedReservationResponse(
+            reservationResponseMapper.toReservationResponse(reservation),
+            boats.toCitizenBoatListResponse()
+        )
     }
 
     @GetMapping("/unfinished-reservation-expiration")

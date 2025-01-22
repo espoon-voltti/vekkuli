@@ -37,7 +37,6 @@ import WinterStorageType from './sections/winterStorageType/WinterStorageType'
 
 type FormProperties = {
   reservation: Reservation
-  boats: Boat[]
   municipalities: Municipality[]
   organizations: Organization[]
   organizationBoats: Record<string, Boat[]>
@@ -45,7 +44,6 @@ type FormProperties = {
 
 export default React.memo(function Form({
   reservation,
-  boats,
   municipalities,
   organizations,
   organizationBoats
@@ -56,6 +54,7 @@ export default React.memo(function Form({
   const [submitError, setSubmitError] = React.useState<'SERVER_ERROR' | null>(
     null
   )
+  const { boats } = reservation
 
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation

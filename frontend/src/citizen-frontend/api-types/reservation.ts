@@ -17,8 +17,11 @@ import {
   Trailer
 } from '../shared/types'
 
+import { CitizenBoatsResponse } from './citizen'
+
 export type UnfinishedBoatSpaceReservation = {
   reservation: BoatSpaceReservation
+  boats: Boat[]
 }
 
 export type BoatSpaceReservation = {
@@ -82,6 +85,7 @@ export type BoatSpaceReservationResponse = {
 
 export type UnfinishedBoatSpaceReservationResponse = {
   reservation: BoatSpaceReservationResponse
+  boats: CitizenBoatsResponse
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

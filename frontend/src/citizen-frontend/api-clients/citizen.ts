@@ -54,7 +54,7 @@ function mapResponseToBoatsByOrganization(
   )
 }
 
-function deserializeJsonCitizenBoatsResponse(
+export function deserializeJsonCitizenBoatsResponse(
   json: CitizenBoatsResponse
 ): Boat[] {
   return json.map((boat) => ({

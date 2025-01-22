@@ -14,6 +14,8 @@ import {
   UnfinishedBoatSpaceReservationResponse
 } from '../api-types/reservation'
 
+import { deserializeJsonCitizenBoatsResponse } from './citizen'
+
 export async function reserveSpace(
   spaceId: number
 ): Promise<BoatSpaceReservation> {
@@ -62,7 +64,8 @@ export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReserv
       method: 'GET'
     })
   return {
-    reservation: deserializeJsonBoatSpaceReservationResponse(json.reservation)
+    reservation: deserializeJsonBoatSpaceReservationResponse(json.reservation),
+    boats: deserializeJsonCitizenBoatsResponse(json.boats)
   }
 }
 
