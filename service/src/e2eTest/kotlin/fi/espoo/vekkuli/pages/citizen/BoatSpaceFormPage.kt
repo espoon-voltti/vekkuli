@@ -114,7 +114,7 @@ open class BoatSpaceFormPage(
     val validationWarning = page.locator(".form-validation-message").getByText("Pakollisia tietoja puuttuu")
     val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
     val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
-    val header = page.getByText("Veneen säilytyspaikan varaus")
+    val header = page.getByText("Venepaikan varaus:")
 
     fun fillFormAndSubmit(overrides: (BoatSpaceFormPage.() -> Unit)? = null) {
         val citizenSection = getCitizenSection()
@@ -135,6 +135,10 @@ open class BoatSpaceFormPage(
 
         overrides?.invoke(this)
 
-        submitButton.click()
+        resolveSubmitButton().click()
+    }
+
+    protected open fun resolveSubmitButton(): Locator {
+        return submitButton
     }
 }

@@ -109,7 +109,7 @@ export default React.memo(function Form({
             `/kuntalainen/venepaikka/vahvistus/${updatedReservation.id}`
           )
 
-        return navigate('/kuntalainen/venepaikka')
+        return navigate('/kuntalainen/venepaikka/maksa')
       } catch (e) {
         console.error(e)
         setSubmitError('SERVER_ERROR')

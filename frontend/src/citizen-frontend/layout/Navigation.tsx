@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 
 import Logo from 'lib-customizations/espoo/assets/EspooLogoPrimary.svg'
 
@@ -24,14 +25,14 @@ export default React.memo(function Navigation() {
 
       <div className="nav-row">
         <div>
-          <a className="link" href="/kuntalainen/venepaikka">
+          <Link className="link" to="/kuntalainen/venepaikka">
             Venepaikat
-          </a>
+          </Link>
         </div>
         <div>
-          <a className="link" href="/kuntalainen/omat-tiedot">
+          <Link className="link" to="/kuntalainen/omat-tiedot">
             Omat tiedot
-          </a>
+          </Link>
         </div>
       </div>
     </nav>
