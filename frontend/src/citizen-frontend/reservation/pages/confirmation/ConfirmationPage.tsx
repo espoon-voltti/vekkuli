@@ -8,9 +8,9 @@ import { useQueryResult } from 'lib-common/query'
 import useRouteParams from 'lib-common/useRouteParams'
 
 import StepIndicator from '../../StepIndicator'
-import ReservedSpace from '../../components/ReservedSpace'
-
 import { getReservationQuery } from './queries'
+import ReservedSpace from "../../components/ReservedSpace";
+import {getReservationPriceInfo} from "../fillInformation/helpers";
 
 export default React.memo(function ConfirmationPage() {
   const { reservationId } = useRouteParams(['reservationId'])
@@ -36,7 +36,9 @@ const Content = React.memo(function Content({
 }) {
   return (
     <Loader results={[reservation]}>
-      {(loadedReservation) => (
+      {(loadedReservation) => {
+          const reservationPriceInfo = getReservationPriceInfo(loadedReservation, loadedReservation.organization)
+          return (
         <>
           <h2 className="h1">Venepaikan varaus onnistui</h2>
           <div className="container">
@@ -55,9 +57,11 @@ const Content = React.memo(function Content({
               </li>
             </ul>
           </div>
-          <ReservedSpace reservation={loadedReservation} organization={loadedReservation.organization} />
+          <ReservedSpace
+                reservation={loadedReservation}
+                reservationPriceInfo={reservationPriceInfo} />
         </>
-      )}
+      )}}
     </Loader>
   )
 })

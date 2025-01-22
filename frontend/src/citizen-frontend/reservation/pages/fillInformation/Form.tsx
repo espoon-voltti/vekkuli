@@ -33,21 +33,29 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
-
+import {getReservationPriceInfo} from "./helpers";
 
 type FormProperties = {
   reservation: Reservation
+  boats: Boat[]
+  municipalities: Municipality[]
+  organizations: Organization[]
+  organizationBoats: Record<string, Boat[]>
 }
 
-export default React.memo(function Form({ reservation }: FormProperties) {
+export default React.memo(function Form({
+  reservation,
+  boats,
+  municipalities,
+  organizations,
+  organizationBoats
+}: FormProperties) {
   const i18n = useTranslation()
   const navigate = useNavigate()
   const { showAllErrors, setShowAllErrors } = useFormErrorContext()
   const [submitError, setSubmitError] = React.useState<'SERVER_ERROR' | null>(
     null
   )
-  const { boats, municipalities, organizations, organizationsBoats } =
-    reservation
 
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
@@ -59,8 +67,8 @@ export default React.memo(function Form({ reservation }: FormProperties) {
       initialFormState(
         i18n,
         boats,
-        reservation.reservation.citizen,
-        reservation.reservation.boatSpace.type,
+        reservation.citizen,
+        reservation.boatSpace.type,
         municipalities,
         organizations,
         searchState,
@@ -74,7 +82,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           next,
           i18n,
           boats,
-          organizationsBoats,
+          organizationBoats,
           municipalities,
           organizations
         )
@@ -91,7 +99,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
     else {
       try {
         const updatedReservation = await submitForm({
-          id: reservation?.reservation.id,
+          id: reservation?.id,
           input: formBind.value()
         })
 
@@ -110,11 +118,19 @@ export default React.memo(function Form({ reservation }: FormProperties) {
   }
 
   const updatedReservation = {
-    ...reservation.reservation,
+    ...reservation,
     storageType: winterStorageFom?.state?.storageType.domValue as
       | StorageType
       | undefined
   }
+
+  const getSelectedOrganization = (
+  ) =>
+    organization.isValid()
+      ? organization.value().organization
+      : null
+
+  const reservationPriceInfo = getReservationPriceInfo(updatedReservation, getSelectedOrganization())
 
   return (
     <>
@@ -129,7 +145,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           )}
         </h2>
         <Block>
-          {reservation.reservation.creationType === 'Switch' && (
+          {reservation.creationType === 'Switch' && (
             <InfoBox text={i18n.reservation.formPage.info.switch} />
           )}
           <ReserverSection
@@ -137,32 +153,25 @@ export default React.memo(function Form({ reservation }: FormProperties) {
             bind={reserver}
           />
           {organizations.length > 0 &&
-            reservation.reservation.creationType !== 'Switch' && (
+            reservation.creationType !== 'Switch' && (
               <OrganizationSection bind={organization} />
             )}
           <BoatSection bind={boat} />
           {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
           <FormSection>
-            <ReservedSpace reservation={updatedReservation} />
-            {reservation.reservation.creationType === 'Switch' && (
-              <SwitchPriceInfoBox
-                priceDifference={reservation.reservation.revisedPrice}
-              />
-            )}
+            <ReservedSpace
+                reservation={updatedReservation}
+                reservationPriceInfo={reservationPriceInfo} />
           </FormSection>
           <UserAgreementsSection bind={userAgreement} />
           {showAllErrors && <ValidationWarning />}
         </Block>
-
         <Buttons>
-          <ReservationCancel
-            reservationId={reservation.reservation.id}
-            type="button"
-          >
+          <ReservationCancel reservationId={reservation.id} type="button">
             {i18n.reservation.cancelReservation}
           </ReservationCancel>
           <Button type="primary" action={onSubmit}>
-            {parsePrice(reservation.reservation.revisedPrice) > 0
+            {reservationPriceInfo.discountedPriceInCents > 0
               ? i18n.reservation.formPage.submit.continueToPayment
               : i18n.reservation.formPage.submit.confirmReservation}
           </Button>

@@ -425,6 +425,10 @@ body > .columns {
     flex: 1;
     margin-left: $spacing-medium;
   }
+
+  p.column span {
+    display: block;
+  }
 }
 
 .reservation-price-info {
