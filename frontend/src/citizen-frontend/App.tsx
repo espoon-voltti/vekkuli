@@ -103,6 +103,7 @@ export const appRouter = createBrowserRouter([
             element: (
               <RequireAuth>
                 <ScrollToTop>
+                  <ReservationStateRedirect />
                   <FormPage />
                 </ScrollToTop>
               </RequireAuth>
