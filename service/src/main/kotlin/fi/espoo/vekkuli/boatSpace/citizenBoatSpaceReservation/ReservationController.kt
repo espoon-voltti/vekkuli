@@ -112,9 +112,25 @@ class ReservationController(
             logger.audit(
                 it,
                 "CANCEL_RESERVATION",
+                mapOf("targetId" to reservationId.toString())
             )
         }
         reservationService.cancelUnfinishedReservation(reservationId)
+    }
+
+    @PatchMapping("/reservation/{reservationId}/cancel-payment")
+    fun cancelPayment(
+        @PathVariable reservationId: Int,
+        request: HttpServletRequest
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "CANCEL_PAYMENT",
+                mapOf("targetId" to reservationId.toString())
+            )
+        }
+        reservationService.cancelUnfinishedReservationPaymentState(reservationId)
     }
 
     @PostMapping("/reservation/{reservationId}/payment-information")

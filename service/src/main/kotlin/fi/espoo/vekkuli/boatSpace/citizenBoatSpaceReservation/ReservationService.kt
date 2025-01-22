@@ -180,6 +180,15 @@ open class ReservationService(
         validateCurrentCitizenAccessToReservation(reservationId)
         return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)
     }
+    @Transactional
+    open fun cancelUnfinishedReservationPaymentState(reservationId: Int): BoatSpaceReservation {
+        val citizen = citizenAccessControl.requireCitizen()
+        val reservation = accessReservation(reservationId)
+        if (reservation.status != ReservationStatus.Payment) {
+            throw Conflict("Reservation is not in payment state")
+        }
+        return boatReservationService.setReservationStatusToInfo(reservation.id)
+    }
 
     fun validateBoatType(
         reservationId: Int,

@@ -112,4 +112,6 @@ interface BoatSpaceReservationRepository {
     fun getActiveReservationsForBoat(boatId: Int): List<BoatSpaceReservationDetails>
 
     fun getReservationsForTrailer(trailerId: Int): List<BoatSpaceReservationDetails>
+
+    fun setReservationStatusToInfo(reservationId: Int): BoatSpaceReservation
 }

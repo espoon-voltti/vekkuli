@@ -344,6 +344,9 @@ class BoatReservationService(
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
         boatSpaceReservationRepo.setReservationStatusToInvoiced(reservationId)
 
+    fun setReservationStatusToInfo(reservationId: Int): BoatSpaceReservation =
+        boatSpaceReservationRepo.setReservationStatusToInfo(reservationId)
+
     fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies? =
         boatSpaceReservationRepo.getUnfinishedReservationForCitizen(id)
 
