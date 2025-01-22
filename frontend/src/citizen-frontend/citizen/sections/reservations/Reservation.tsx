@@ -63,9 +63,9 @@ export default React.memo(function Reservation({
         return navigate('/kuntalainen/venepaikka/jatka')
       })
       .catch((error) => {
-        // If reservation is already active, navigate to boat space page
-        if (reservationStatus) return navigate('/kuntalainen/venepaikka')
-        const errorCode = error?.response?.data?.errorCode ?? 'SERVER_ERROR'
+        const errorCode = reservationStatus
+          ? 'UNFINISHED_RESERVATION'
+          : (error?.response?.data?.errorCode ?? 'SERVER_ERROR')
         console.error(errorCode)
         setError(errorCode)
       })

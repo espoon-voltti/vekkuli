@@ -80,6 +80,14 @@ class CitizenDetailsPage(
         fun getTrailerSection() = TrailerSection(getByDataTestId("trailer-information", root))
     }
 
+    inner class ErrorModal(
+        private val root: Locator
+    ) {
+        private val fields = FieldLocator(root)
+        val title = root.getByRole(AriaRole.HEADING, Locator.GetByRoleOptions().setName("Varaaminen ei onnistunut").setExact(true))
+        val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
+    }
+
     class TrailerSection(
         root: Locator
     ) {
@@ -120,6 +128,8 @@ class CitizenDetailsPage(
     }
 
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen-information"))
+
+    fun getErrorModal() = ErrorModal(getByDataTestId("error-modal"))
 
     fun getBoatSection(id: Int) = BoatSection(getByDataTestId("boat-$id"))
 

@@ -232,7 +232,9 @@ export default {
       fillInformation: {
         title: 'Varaaminen ei onnistunut',
         SERVER_ERROR:
-          'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.'
+          'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.',
+        UNFINISHED_RESERVATION:
+          'Sinulla on käynnissä oleva varaus. Ole hyvä ja täytä varaus loppuun tai peruuta se jatkaaksesi.'
       }
     },
     auth: {
@@ -342,6 +344,9 @@ export default {
         terminate: 'Irtisano paikka',
         renew: 'Maksa kausimaksu',
         change: 'Vaihda paikka'
+      },
+      modal: {
+        goBackToReservation: 'Siirry varaukseen'
       }
     }
   }

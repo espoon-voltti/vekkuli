@@ -23,16 +23,20 @@ class RenewReservationTest : PlaywrightTest() {
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
-            page.pause()
             val reservationSection = citizenDetailsPage.getFirstReservationSection()
+
             assertThat(reservationSection.renewButton).isVisible()
             reservationSection.renewButton.click()
-
             // renew form
             val form = BoatSpaceFormPage(page)
+            assertThat(form.header).isVisible()
             // Make sure that citizen is redirected to unfinished reservation switch form
             val reservationPage = ReserveBoatSpacePage(page)
             reservationPage.navigateToPage()
+
+            val citizenSection = form.getCitizenSection()
+            assertThat(citizenSection.emailInput).isVisible()
+            assertThat(citizenSection.phoneInput).isVisible()
 
             val userAgreementSection = form.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()
@@ -42,6 +46,15 @@ class RenewReservationTest : PlaywrightTest() {
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
             assertThat(paymentPage.reservationSuccessNotification).isVisible()
+
+            // Check that the renewed reservation is visible
+            citizenDetailsPage.navigateToPage()
+            assertThat(reservationSection.renewButton).isVisible()
+            reservationSection.renewButton.click()
+
+            val errorModal = citizenDetailsPage.getErrorModal()
+            assertThat(errorModal.title).isVisible()
+            errorModal.title.click()
         } catch (e: AssertionError) {
             handleError(e)
         }
