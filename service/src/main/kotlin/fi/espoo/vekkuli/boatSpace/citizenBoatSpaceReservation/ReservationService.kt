@@ -181,6 +181,7 @@ open class ReservationService(
         validateCurrentCitizenAccessToReservation(reservationId)
         return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)
     }
+
     @Transactional
     open fun cancelUnfinishedReservationPaymentState(reservationId: Int): BoatSpaceReservation {
         citizenAccessControl.requireCitizen()
