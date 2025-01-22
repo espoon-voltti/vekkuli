@@ -39,7 +39,7 @@ data class ReservationResponse(
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
-    val revisedPrice: String,
+    val revisedPrice: Int,
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
@@ -338,15 +338,17 @@ class ReservationResponseMapper(
         )
     }
 
-    // This can be a function to get the revised price of a reservation, eg. for switch or because of discounts
-    private fun getRevisedPrice(reservation: ReservationWithDependencies): String =
-        when (reservation.creationType) {
+    // This can be a function to get the revised price of a reservation. Note that it cannot be used for discount calculation
+    // because reserver can change in UI and organization might have different discount which is not know here
+    private fun getRevisedPrice(reservation: ReservationWithDependencies): Int {
+        return when (reservation.creationType) {
             CreationType.Switch -> {
-                formatInt(boatSpaceSwitchService.getRevisedPrice(reservation))
+                boatSpaceSwitchService.getRevisedPrice(reservation)
             }
 
             else -> {
-                reservation.priceInEuro
+                reservation.priceCents
             }
         }
+    }
 }
