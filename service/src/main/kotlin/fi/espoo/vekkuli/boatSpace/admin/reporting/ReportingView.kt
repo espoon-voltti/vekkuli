@@ -59,7 +59,7 @@ class ReportingView(
                 <div class="container">
                     <form id="form"
                           method="get"
-                          action="/admin/reporting/sticker-report"
+                          action="/virkailija/admin/reporting/sticker-report"
                           class="block"
                     >
                         <h2>${t("reporting.stickerReport")}</h2>
@@ -86,7 +86,7 @@ class ReportingView(
                 <div class="container">
                     <form id="form"
                           method="get"
-                          action="/admin/reporting/boat-space-report"
+                          action="/virkailija/admin/reporting/boat-space-report"
                           class="block"
                     >
                         <h2>${t("reporting.boatSpaceReport")}</h2>
@@ -113,7 +113,7 @@ class ReportingView(
                 <div class="container">
                     <form id="form"
                           method="get"
-                          action="/admin/reporting/boat-space-report/free"
+                          action="/virkailija/admin/reporting/boat-space-report/free"
                           class="block"
                     >
                         <h2>${t("reporting.freeBoatSpaceReport")}</h2>
@@ -140,7 +140,7 @@ class ReportingView(
                 <div class="container">
                     <form id="form"
                           method="get"
-                          action="/admin/reporting/boat-space-report/reserved"
+                          action="/virkailija/admin/reporting/boat-space-report/reserved"
                           class="block"
                     >
                         <h2>${t("reporting.reservedBoatSpaceReport")}</h2>

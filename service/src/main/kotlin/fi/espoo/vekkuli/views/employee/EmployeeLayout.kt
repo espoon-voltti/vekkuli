@@ -1,5 +1,5 @@
 package fi.espoo.vekkuli.views.employee
-import fi.espoo.vekkuli.boatSpace.admin.DebugInfoOverlayView
+import fi.espoo.vekkuli.boatSpace.dev.DebugInfoOverlayView
 import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
@@ -45,7 +45,7 @@ class EmployeeLayout(
                     ${t("menu.boatSpaceReservations")}
                 </a>
                 <a  class="${if (currentUri == "/virkailija/venepaikat/varaukset") "active" else ""}"
-                    href="/admin/reporting">
+                    href="/virkailija/admin/reporting">
                     ${t("menu.reports")}
                 </a>
                 """.trimIndent()

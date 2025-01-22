@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.boatSpace.admin.reservation
+package fi.espoo.vekkuli.boatSpace.dev.reservation
 
 import fi.espoo.vekkuli.controllers.EnvType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/dev")
 class AdminReservationController {
     @Autowired
     lateinit var reservationView: ReservationView

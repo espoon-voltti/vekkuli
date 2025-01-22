@@ -1,22 +1,19 @@
-package fi.espoo.vekkuli.boatSpace.admin
+package fi.espoo.vekkuli.boatSpace.dev
 
-import fi.espoo.vekkuli.boatSpace.admin.reporting.ReportingView
-import fi.espoo.vekkuli.boatSpace.admin.reservation.ReservationView
-import fi.espoo.vekkuli.boatSpace.admin.systemTime.SetCurrentSystemTimeView
+import fi.espoo.vekkuli.boatSpace.dev.reservation.ReservationView
+import fi.espoo.vekkuli.boatSpace.dev.systemTime.SetCurrentSystemTimeView
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
-@Service
-class SettingsView(
+@Service("DevDashboardView")
+class DashboardView(
     private val setCurrentSystemTimeView: SetCurrentSystemTimeView,
-    private val reportingView: ReportingView,
     private val reservationView: ReservationView
 ) {
     fun render(time: LocalDateTime): String {
         // language=HTML
         return """
             ${setCurrentSystemTimeView.render(time)}
-            ${reportingView.render()}
             ${reservationView.render()}
             """.trimIndent()
     }
