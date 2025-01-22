@@ -1,10 +1,11 @@
 package fi.espoo.vekkuli.pages.employee
 
 import com.microsoft.playwright.Page
+import fi.espoo.vekkuli.pages.BasePage
 
 class InvoicePreviewPage(
-    private val page: Page
-) {
+    page: Page
+) : BasePage(page) {
     val header = page.getByTestId("invoice-preview-header")
     val sendButton = page.getByTestId("submit")
     val cancelButton = page.getByTestId("cancel")

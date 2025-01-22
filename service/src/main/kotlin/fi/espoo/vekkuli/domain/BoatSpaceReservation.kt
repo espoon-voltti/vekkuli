@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.utils.discountedPriceInCents
 import fi.espoo.vekkuli.utils.formatInt
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -61,6 +62,7 @@ data class ReservationWithDependencies(
     val status: ReservationStatus,
     val actingCitizenId: UUID?,
     val reserverId: UUID?,
+    val discountPercentage: Int?,
     val employeeId: UUID?,
     val reserverType: ReserverType?,
     val storageType: StorageType?,
@@ -84,6 +86,8 @@ data class ReservationWithDependencies(
     val originalReservationId: Int? = null,
     val creationType: CreationType,
 ) {
+    val discountedPriceCents: Int
+        get() = discountedPriceInCents(priceCents, discountPercentage)
     val priceInEuro: String
         get() = formatInt(priceCents)
     val vatPriceInEuro: String

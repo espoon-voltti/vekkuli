@@ -135,11 +135,12 @@ class BoatSpaceRenewFormView(
         userType,
         titleText = t("boatApplication.title.reservation.renew"),
         formContent = renerFormContent,
-        ReservationUrls(
-            submitUrl = "/${userType.path}/venepaikka/jatka/${reservation.renewdFromReservationId}",
-            deleteUrl = "/${userType.path}/venepaikka/jatka/${reservation.id}",
-            urlToReturnTo = "/kuntalainen/omat-tiedot"
-        )
+        urls =
+            ReservationUrls(
+                submitUrl = "/${userType.path}/venepaikka/jatka/${reservation.renewdFromReservationId}",
+                deleteUrl = "/${userType.path}/venepaikka/jatka/${reservation.id}",
+                urlToReturnTo = "/kuntalainen/omat-tiedot"
+            )
     )
 
     fun invoiceErrorPage() =

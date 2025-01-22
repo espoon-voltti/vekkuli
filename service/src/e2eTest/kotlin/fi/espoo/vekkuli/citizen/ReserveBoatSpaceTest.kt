@@ -381,6 +381,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val reservationSection = citizenDetailPage.getReservationSection("Talvipaikka: Haukilahti B 013")
             val trailerSection = reservationSection.getTrailerSection()
+
+            page.waitForCondition { trailerSection.widthField.isVisible }
             assertThat(trailerSection.widthField).containsText("1,50")
             assertThat(trailerSection.lengthField).containsText("2,50")
             assertThat(trailerSection.registrationCodeField).containsText(trailerRegistrationCode)
