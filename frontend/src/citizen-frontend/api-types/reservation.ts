@@ -22,6 +22,7 @@ import { CitizenBoatsResponse } from './citizen'
 export type UnfinishedBoatSpaceReservation = {
   reservation: BoatSpaceReservation
   boats: Boat[]
+  municipalities: Municipality[]
 }
 
 export type BoatSpaceReservation = {
@@ -86,6 +87,7 @@ export type BoatSpaceReservationResponse = {
 export type UnfinishedBoatSpaceReservationResponse = {
   reservation: BoatSpaceReservationResponse
   boats: CitizenBoatsResponse
+  municipalities: Municipality[]
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

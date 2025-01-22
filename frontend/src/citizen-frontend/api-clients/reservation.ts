@@ -65,7 +65,8 @@ export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReserv
     })
   return {
     reservation: deserializeJsonBoatSpaceReservationResponse(json.reservation),
-    boats: deserializeJsonCitizenBoatsResponse(json.boats)
+    boats: deserializeJsonCitizenBoatsResponse(json.boats),
+    municipalities: json.municipalities
   }
 }
 

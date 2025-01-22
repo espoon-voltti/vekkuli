@@ -15,7 +15,8 @@ import java.util.*
 
 data class UnfinishedReservationResponse(
     val reservation: ReservationResponse,
-    val boats: List<CitizenBoatResponse>
+    val boats: List<CitizenBoatResponse>,
+    val municipalities: List<MunicipalityResponse>
 )
 
 data class ReservationResponse(

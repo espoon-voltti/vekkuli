@@ -35,12 +35,7 @@ export default React.memo(function FormPage() {
             organizationBoats
           ]}
         >
-          {(
-            loadedReservation,
-            loadedMunicipalities,
-            organizations,
-            organizationBoats
-          ) => (
+          {(loadedReservation, organizations, organizationBoats) => (
             <>
               <Container>
                 <ReservationCancel

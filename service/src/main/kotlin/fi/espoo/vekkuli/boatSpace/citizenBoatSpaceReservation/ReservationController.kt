@@ -39,7 +39,8 @@ class ReservationController(
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
         return UnfinishedReservationResponse(
             reservationResponseMapper.toReservationResponse(reservation),
-            boats.toCitizenBoatListResponse()
+            boats.toCitizenBoatListResponse(),
+            reserverService.getMunicipalities().toMunicipalityListResponse()
         )
     }
 
