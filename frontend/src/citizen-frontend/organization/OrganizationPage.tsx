@@ -6,17 +6,18 @@ import { AuthContext, User } from 'citizen-frontend/auth/state'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
-import { citizenOrganizationQuery } from './queries'
-import Reservations from './reservations/Reservations'
-import Boats from './boats/Boats'
-import ExpiredReservations from './reservations/ExpiredReservations'
+import useRouteParams from '../../lib-common/useRouteParams'
 import {
   organizationActiveReservationsQuery,
   organizationExpiredReservationsQuery
 } from '../citizen/queries'
-import OrganizationInformation from './organizationInformation/OrganizationInformation'
 import { organizationBoatsQuery } from '../shared/queries'
-import useRouteParams from '../../lib-common/useRouteParams'
+
+import Boats from './boats/Boats'
+import OrganizationInformation from './organizationInformation/OrganizationInformation'
+import { citizenOrganizationQuery } from './queries'
+import ExpiredReservations from './reservations/ExpiredReservations'
+import Reservations from './reservations/Reservations'
 
 export default function OrganizationPage() {
   const { user } = useContext(AuthContext)
