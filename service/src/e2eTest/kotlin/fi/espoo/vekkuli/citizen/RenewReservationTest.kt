@@ -49,12 +49,7 @@ class RenewReservationTest : PlaywrightTest() {
 
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
-            assertThat(reservationSection.renewButton).isVisible()
-            reservationSection.renewButton.click()
-
-            val errorModal = citizenDetailsPage.getErrorModal()
-            assertThat(errorModal.title).isVisible()
-            errorModal.title.click()
+            assertThat(reservationSection.renewButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }

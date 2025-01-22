@@ -89,6 +89,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val reserveModal = reservationPage.getReserveModal()
             assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.firstSwitchReservationButton).isVisible()
             assertThat(reserveModal.reserveAnotherButton).isVisible()
             reserveModal.reserveAnotherButton.click()
 
@@ -402,6 +403,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val reserveModal = reservationPage.getReserveModal()
             assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.firstSwitchReservationButton).isVisible()
             assertThat(reserveModal.reserveAnotherButton).isVisible()
             reserveModal.reserveAnotherButton.click()
 
@@ -461,6 +463,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
         val reserveModal = reservationPage.getReserveModal()
         assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.firstSwitchReservationButton).isVisible()
         assertThat(reserveModal.reserveAnotherButton).isVisible()
         reserveModal.reserveAnotherButton.click()
 
@@ -555,6 +558,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
         val reserveModal = reservationPage.getReserveModal()
         assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.firstSwitchReservationButton).isVisible()
         assertThat(reserveModal.reserveAnotherButton).isVisible()
         reserveModal.reserveAnotherButton.click()
 
