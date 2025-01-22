@@ -17,7 +17,7 @@ export default React.memo(function PaymentPage() {
         {(unfinishedReservation) => (
           <>
             <Container>
-              <CancelPayment reservationId={unfinishedReservation.id} />
+              <CancelPayment reservation={unfinishedReservation} />
             </Container>
             <StepIndicator step="payment" />
             <div className="container">

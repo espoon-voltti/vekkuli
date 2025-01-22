@@ -18,8 +18,5 @@ export const paymentInformationQuery = query({
 
 export const cancelPaymentMutation = mutation({
   api: cancelPayment,
-  resetQueryKeys: () => [
-    reservationQueryKeys.unfinishedReservation(),
-    queryKeys.paymentInformation()
-  ]
+  invalidateQueryKeys: () => [reservationQueryKeys.unfinishedReservation()]
 })
