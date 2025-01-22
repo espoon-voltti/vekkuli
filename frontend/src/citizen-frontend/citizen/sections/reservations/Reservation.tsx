@@ -10,15 +10,16 @@ import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 import { Result } from 'lib-common/api'
 import { useMutation, useQueryResult } from 'lib-common/query'
 
+import ErrorModal, {
+  ErrorCode
+} from '../../../reservation/pages/fillInformation/ErrorModal'
+import { unfinishedReservationQuery } from '../../../reservation/queries'
+
 import TerminateModal from './TerminateModal'
 import TerminateModalFailure from './TerminateModalFailure'
 import TerminateModalSuccess from './TerminateModalSuccess'
 import TrailerInformation from './TrailerInformation'
 import { startRenewReservationMutation } from './queries'
-import ErrorModal, {
-  ErrorCode
-} from '../../../reservation/pages/fillInformation/ErrorModal'
-import { unfinishedReservationQuery } from '../../../reservation/queries'
 
 type TerminateModalState = 'hidden' | 'visible' | 'success' | 'failure'
 

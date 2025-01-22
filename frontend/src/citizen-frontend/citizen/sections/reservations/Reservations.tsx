@@ -21,8 +21,12 @@ export default React.memo(function Reservations({
             key={reservation.id}
             reservation={reservation}
             canTerminate
-            canSwitch
-            canRenew
+            canSwitch={reservation.allowedReservationOperations.includes(
+              'Switch'
+            )}
+            canRenew={reservation.allowedReservationOperations.includes(
+              'Renew'
+            )}
           />
         ))}
       </div>
