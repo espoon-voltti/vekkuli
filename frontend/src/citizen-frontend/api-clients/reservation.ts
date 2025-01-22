@@ -108,6 +108,13 @@ export async function cancelReservation(reservationId: number): Promise<void> {
   })
 }
 
+export async function cancelPayment(reservationId: number): Promise<void> {
+  await client.request<void>({
+    url: uri`/reservation/${reservationId}/cancel-payment`.toString(),
+    method: 'PATCH'
+  })
+}
+
 export async function terminateReservation(
   reservationId: number
 ): Promise<void> {

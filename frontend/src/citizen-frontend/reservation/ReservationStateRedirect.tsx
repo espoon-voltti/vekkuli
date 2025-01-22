@@ -73,7 +73,7 @@ function getExpectedPath(
   return '/kuntalainen/venepaikka'
 }
 
-function getExpectedPathForReservation(
+export function getExpectedPathForReservation(
   reservation: Reservation
 ): string | null {
   switch (reservation.status) {

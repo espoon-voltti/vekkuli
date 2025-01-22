@@ -238,6 +238,11 @@ const en: Translations = {
           'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
         UNFINISHED_RESERVATION:
           'You have an ongoing reservation. Please complete the reservation or cancel it to continue.'
+      },
+      cancelPayment: {
+        title: 'Returning was unsuccessful',
+        SERVER_ERROR:
+          'Returning to fill in the information was unsuccessful, or another error occurred. Please contact customer service. You can find customer service contact details on the front page.'
       }
     },
     auth: {
@@ -251,6 +256,7 @@ const en: Translations = {
     cancelConfirmation2: 'Do you want to continue?',
     cancelReservation: 'Cancel reservation',
     cancelAndGoBack: 'Cancel reservation and go back',
+    goBack: 'Go back',
     continueToPaymentButton: 'Continue to payment'
   },
   boat: {

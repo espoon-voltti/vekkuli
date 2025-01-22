@@ -235,6 +235,11 @@ export default {
           'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.',
         UNFINISHED_RESERVATION:
           'Sinulla on käynnissä oleva varaus. Ole hyvä ja täytä varaus loppuun tai peruuta se jatkaaksesi.'
+      },
+      cancelPayment: {
+        title: 'Takaisin palaaminen ei onnistunut',
+        SERVER_ERROR:
+          'Palaaminen tietojen täyttöön ei onnistunut, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.'
       }
     },
     auth: {
@@ -248,6 +253,7 @@ export default {
     cancelConfirmation2: 'Haluatko jatkaa?',
     cancelReservation: 'Peruuta varaus',
     cancelAndGoBack: 'Peruuta varaus ja palaa takaisin',
+    goBack: 'Palaa takaisin',
     continueToPaymentButton: 'Jatka maksamaan'
   },
   boat: {

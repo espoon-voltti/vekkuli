@@ -65,7 +65,15 @@ class ReservationController(
     @GetMapping("/can-reserve/{spaceId}")
     fun canReserveSpace(
         @PathVariable spaceId: Int,
+        request: HttpServletRequest
     ): CanReserveResponse {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "CAN_RESERVE_SPACE",
+                mapOf("targetId" to spaceId.toString())
+            )
+        }
         val canReserve = reservationService.checkReservationAvailabilityForCurrentCitizen(spaceId)
         return canReserveResponseMapper.toCanReserveResponse(canReserve)
     }
@@ -79,6 +87,7 @@ class ReservationController(
             logger.audit(
                 it,
                 "GET_RESERVATION",
+                mapOf("targetId" to reservationId.toString())
             )
         }
         val reservation = reservationService.getReservation(reservationId)
@@ -95,6 +104,7 @@ class ReservationController(
             logger.audit(
                 it,
                 "FILL_RESERVATION_INFORMATION",
+                mapOf("targetId" to reservationId.toString())
             )
         }
         val information = input.toReservationInformation()
@@ -112,9 +122,25 @@ class ReservationController(
             logger.audit(
                 it,
                 "CANCEL_RESERVATION",
+                mapOf("targetId" to reservationId.toString())
             )
         }
         reservationService.cancelUnfinishedReservation(reservationId)
+    }
+
+    @PatchMapping("/reservation/{reservationId}/cancel-payment")
+    fun cancelPayment(
+        @PathVariable reservationId: Int,
+        request: HttpServletRequest
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "CANCEL_PAYMENT",
+                mapOf("targetId" to reservationId.toString())
+            )
+        }
+        reservationService.cancelUnfinishedReservationPaymentState(reservationId)
     }
 
     @PostMapping("/reservation/{reservationId}/payment-information")
