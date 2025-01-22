@@ -339,8 +339,8 @@ export default {
       title: 'Varaukset',
       noReservations: 'Ei varauksia',
       actions: {
-        cancel: 'Irtisano paikka',
-        renew: 'Uusi paikka',
+        terminate: 'Irtisano paikka',
+        renew: 'Maksa kausimaksu',
         change: 'Vaihda paikka'
       }
     }

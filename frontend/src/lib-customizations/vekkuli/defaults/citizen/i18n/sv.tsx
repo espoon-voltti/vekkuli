@@ -342,7 +342,7 @@ const sv: Translations = {
       title: 'Bokningar',
       noReservations: 'Inga bokningar',
       actions: {
-        cancel: 'Avboka plats',
+        terminate: 'Avboka plats',
         renew: 'Förnya plats',
         change: 'Byt plats'
       }

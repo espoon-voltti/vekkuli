@@ -46,6 +46,32 @@ class BoatSpaceSwitchService(
         )
     }
 
+    fun validateCitizenCanRenewReservation(
+        actingCitizenId: UUID,
+        reservation: BoatSpaceReservationDetails
+    ): Boolean {
+        if (reservation.originalReservationId == null) {
+            throw BadRequest("Original reservation not found")
+        }
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId)
+                ?: throw BadRequest("Reservation not found")
+        // mandatory information, otherwise the request is malformed
+        val reserver = reserverRepo.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
+
+        // Can renew only from an active reservation
+        if (!validateReservationIsActive(originalReservation, timeProvider.getCurrentDateTime())) {
+            return false
+        }
+
+        // User has rights to renew the reservation
+        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
+            return false
+        }
+
+        return true
+    }
+
     fun validateCitizenCanSwitchReservation(
         actingCitizenId: UUID,
         targetSpaceId: Int,
@@ -55,6 +81,7 @@ class BoatSpaceSwitchService(
         val reserver = reserverRepo.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(originalReservationId) ?: throw BadRequest("Reservation not found")
+
         val boatSpace = boatSpaceRepository.getBoatSpace(targetSpaceId) ?: throw BadRequest("Boat space not found")
 
         // Can only switch to the same type of space
@@ -68,13 +95,15 @@ class BoatSpaceSwitchService(
         }
 
         // User has rights to switch the reservation
-        if (!permissionService.canSwitchReservation(reserver, boatSpace, reservation)) {
+        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
             return false
         }
+
         // Make sure the target space isn't reserved already
         if (boatSpaceRepository.isBoatSpaceReserved(targetSpaceId)) {
             return false
         }
+
         // Make sure the switch period is active
         return seasonalService.isReservationSwitchPeriodActive(reserver.id, boatSpace.type)
     }

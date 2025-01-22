@@ -13,7 +13,7 @@ class PermissionService(
     private val organizationService: OrganizationService,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val trailerRepository: TrailerRepository,
-    private val boatRepository: BoatRepository,
+    private val boatRepository: BoatRepository
 ) {
     fun hasAccessToOrganization(
         userId: UUID,
@@ -107,12 +107,11 @@ class PermissionService(
         boatId: Int
     ): Boolean = canEditBoat(editorId, boatId)
 
-    fun canSwitchReservation(
+    fun canSwitchOrRenewReservation(
         reserver: ReserverWithDetails,
-        boatSpace: BoatSpace,
         reservation: BoatSpaceReservationDetails
-    ): Boolean {
-        return when {
+    ): Boolean =
+        when {
             userService.isAppUser(reserver.id) -> true
             reserver.id == reservation.reserverId -> true
             reservation.reserverType == ReserverType.Organization -> {
@@ -120,5 +119,4 @@ class PermissionService(
             }
             else -> false
         }
-    }
 }

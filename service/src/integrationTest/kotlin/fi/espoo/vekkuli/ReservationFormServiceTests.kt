@@ -1,9 +1,11 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Forbidden
+import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.*
@@ -29,6 +31,9 @@ import kotlin.test.Test
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class ReservationFormServiceTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var boatSpaceRenewalService: BoatSpaceRenewalService
+
     @Autowired
     private lateinit var organizationService: OrganizationService
 
@@ -222,5 +227,32 @@ class ReservationFormServiceTests : IntegrationTestBase() {
             reservation?.trailer?.registrationCode,
             "Trailer registration number should be the same as in the input"
         )
+    }
+
+    @Test
+    fun `should be able to update reservation when the creation type is renew`() {
+        val madeReservation = testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdOlivia))
+
+        Mockito
+            .`when`(seasonalService.canRenewAReservation(madeReservation.id))
+            .thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        startDate = LocalDate.now(),
+                        endDate = LocalDate.now().plusDays(30),
+                        reservationValidity = ReservationValidity.Indefinite
+                    )
+                )
+            )
+        val renewedReservation = boatSpaceRenewalService.createRenewalReservation(madeReservation.id, citizenIdOlivia, UserType.CITIZEN)
+
+        assertNotNull(renewedReservation)
+        reservationService.createOrUpdateReserverAndReservationForCitizen(renewedReservation!!.id, citizenIdOlivia, reservationInput)
+        val reservation = boatReservationService.getReservationWithReserver(renewedReservation.id)
+        assertNotNull(reservation, "Should create reservation")
+        assertEquals(reservation?.reserverId, citizenIdOlivia, "Should update reserver")
+        assertEquals(madeReservation.id, reservation!!.originalReservationId, "Original reservation ID should match")
+        assertEquals(ReservationStatus.Payment, reservation.status, "Status should be renewal")
+        assertEquals(CreationType.Renewal, reservation.creationType, "Status should be renewal")
     }
 }

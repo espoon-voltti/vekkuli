@@ -68,7 +68,7 @@ class ReservationFormService(
     private val emailService: TemplateEmailService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val boatSpaceSwitchService: BoatSpaceSwitchService
+    private val boatSpaceSwitchService: BoatSpaceSwitchService,
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
@@ -86,6 +86,7 @@ class ReservationFormService(
         when (reservation.creationType) {
             CreationType.New -> reserveNewSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
             CreationType.Switch -> reserveSwitchedSpaceByCitizen(reservationId, reserverId, input)
+            CreationType.Renewal -> reserveRenewedSpaceByCitizen(reservationId, reserverId, input)
             else -> throw BadRequest("Invalid creation type for reservation")
         }
     }
@@ -219,7 +220,8 @@ class ReservationFormService(
         )
     }
 
-    private fun reserveNewSpaceByCitizen(
+    @Transactional
+    fun reserveNewSpaceByCitizen(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
@@ -246,7 +248,43 @@ class ReservationFormService(
         )
     }
 
-    private fun reserveSwitchedSpaceByCitizen(
+    @Transactional
+    fun reserveRenewedSpaceByCitizen(
+        reservationId: Int,
+        actingCitizenId: UUID,
+        input: ReservationInput
+    ) {
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw BadRequest("Reservation not found")
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
+                ?: throw BadRequest("Original reservation not found")
+
+        if (!boatSpaceSwitchService.validateCitizenCanRenewReservation(actingCitizenId, reservation)) {
+            throw Forbidden("Citizen can not renew reservation")
+        }
+
+        val result = seasonalService.canRenewAReservation(reservation.originalReservationId)
+        if (result is ReservationResult.Failure) {
+            throw Forbidden(
+                "Renewal not allowed"
+            )
+        }
+        val successResultData = (result as ReservationResult.Success).data
+
+        processBoatSpaceReservation(
+            originalReservation.reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            ReservationStatus.Payment,
+            successResultData.reservationValidity,
+            successResultData.startDate,
+            successResultData.endDate
+        )
+    }
+
+    @Transactional
+    fun reserveSwitchedSpaceByCitizen(
         reservationId: Int,
         actingCitizenId: UUID,
         input: ReservationInput

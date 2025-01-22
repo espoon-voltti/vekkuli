@@ -338,7 +338,7 @@ const en: Translations = {
       title: 'Reservations',
       noReservations: 'No Reservations',
       actions: {
-        cancel: 'Cancel Place',
+        terminate: 'Cancel Place',
         renew: 'Renew Place',
         change: 'Change Place'
       }
