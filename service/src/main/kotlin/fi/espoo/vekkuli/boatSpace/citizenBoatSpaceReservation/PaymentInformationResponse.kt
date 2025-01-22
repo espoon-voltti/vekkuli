@@ -1,10 +1,9 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
-import fi.espoo.vekkuli.service.PaymentResponse
+import fi.espoo.vekkuli.service.PaytrailPaymentResponse
 
 data class PaymentInformationResponse(
-    val providers: List<PaymentProvider>?,
-    val paymentRequired: Boolean,
+    val providers: List<PaymentProvider>,
 ) {
     data class PaymentProvider(
         val name: String,
@@ -23,10 +22,10 @@ data class PaymentInformationResponse(
     )
 }
 
-fun PaymentResponse.toPaymentInformationResponse() =
+fun PaytrailPaymentResponse.toPaymentInformationResponse() =
     PaymentInformationResponse(
         providers =
-            paytrailPaymentResponse?.providers?.map { provider ->
+            providers.map { provider ->
                 PaymentInformationResponse.PaymentProvider(
                     name = provider.name,
                     url = provider.url,
@@ -43,6 +42,5 @@ fun PaymentResponse.toPaymentInformationResponse() =
                             )
                         }
                 )
-            },
-        paymentRequired = paymentRequired
+            }
     )

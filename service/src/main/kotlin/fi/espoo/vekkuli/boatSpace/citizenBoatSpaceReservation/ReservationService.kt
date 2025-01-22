@@ -164,7 +164,7 @@ open class ReservationService(
     }
 
     @Transactional
-    open suspend fun getPaymentInformation(reservationId: Int): PaymentResponse {
+    open suspend fun getPaymentInformation(reservationId: Int): PaytrailPaymentResponse {
         val citizen = citizenAccessControl.requireCitizen()
         val reservation = accessReservation(reservationId)
 

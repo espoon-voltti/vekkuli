@@ -19,7 +19,7 @@ export default React.memo(function PaymentProviders({
 
   return (
     <Loader results={[paymentProviders]}>
-      {({ providers, paymentRequired }) => paymentRequired ? (
+      {({ providers }) => (
         <div className="columns is-multiline" data-testid="payment-providers">
           {providers.map((provider) => (
             <PaymentButton
@@ -28,7 +28,7 @@ export default React.memo(function PaymentProviders({
             />
           ))}
         </div>
-      ) : (<div>Ei tarvitse maksaaa</div>)}
+      )}
     </Loader>
   )
 })
