@@ -2,17 +2,18 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
-import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailDescription
-import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailProductCode
+import fi.espoo.vekkuli.config.BoatSpaceConfig.PAYTRAIL_PRODUCT_CODE
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.discountedPriceInCents
 import fi.espoo.vekkuli.utils.formatAsShortDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.time.LocalDate
@@ -28,9 +29,15 @@ class ReservationPaymentService(
         citizen: CitizenWithDetails,
         reservation: BoatSpaceReservationDetails
     ): PaytrailPaymentResponse {
+        val logger = LoggerFactory.getLogger(ReservationPaymentService::class.java)
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
-        val amount = calculatePrice(reservation)
+        val amount = calculatePriceWithDiscount(reservation)
+        // TODO: throw error?
+        if (amount <= 0) {
+            logger.error("Payment amount must be greater than zero, amount: $amount, reservationId: $reservation.id")
+        }
+        val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         val category = "MYY255"
         val payment =
             withContext(Dispatchers.IO) {
@@ -41,7 +48,7 @@ class ReservationPaymentService(
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        productCode = paytrailProductCode(reservation.type),
+                        productCode = PAYTRAIL_PRODUCT_CODE,
                         paymentType = PaymentType.OnlinePayment
                     )
                 )
@@ -66,8 +73,8 @@ class ReservationPaymentService(
                             amount,
                             1,
                             BOAT_RESERVATION_ALV_PERCENTAGE,
-                            paytrailProductCode(reservation.type),
-                            paytrailDescription(reservation),
+                            PAYTRAIL_PRODUCT_CODE,
+                            description,
                             category
                         )
                     ),
@@ -77,11 +84,14 @@ class ReservationPaymentService(
         )
     }
 
-    private fun calculatePrice(reservation: BoatSpaceReservationDetails): Int {
-        if (switchService.isSwitchedReservation(reservation)) {
-            return switchService.getRevisedPrice(reservation)
-        }
-        return reservation.priceCents
+    fun calculatePriceWithDiscount(reservation: BoatSpaceReservationDetails): Int {
+        val priceCents =
+            if (switchService.isSwitchedReservation(reservation)) {
+                switchService.getRevisedPrice(reservation)
+            } else {
+                reservation.priceCents
+            }
+        return discountedPriceInCents(priceCents, reservation.discountPercentage)
     }
 
     fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult =
