@@ -354,6 +354,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE bsr.acting_citizen_id = :id
                         AND bsr.status IN ('Info', 'Payment') 
                         AND :currentTime BETWEEN bsr.created AND bsr.created + make_interval(secs => :sessionTimeInSeconds)
+                        ORDER BY bsr.created DESC LIMIT 1
                     """.trimIndent()
                 )
             query.bind("id", id)
