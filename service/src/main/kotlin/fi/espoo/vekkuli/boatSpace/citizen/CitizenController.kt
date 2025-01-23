@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getCitizen
-import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.PermissionService
@@ -88,13 +87,6 @@ class CitizenController(
         if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
         val boats = boatService.getBoatsForReserver(orgId)
         return boats.toCitizenBoatListResponse()
-    }
-
-    @GetMapping("/current/citizen-organizations-boats")
-    fun getCitizenOrganizationsBoats(request: HttpServletRequest): Map<String, List<Boat>> {
-        val citizenId = request.ensureCitizenId()
-        val boats = boatService.getBoatsForReserversOrganizations(citizenId)
-        return boats
     }
 
     @GetMapping("/current/organizations")

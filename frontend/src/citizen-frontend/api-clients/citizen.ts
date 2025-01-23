@@ -31,18 +31,6 @@ export async function organizationBoats(orgId: string): Promise<Boat[]> {
   return deserializeJsonCitizenBoatsResponse(json)
 }
 
-export async function citizenOrganizationsBoats(): Promise<
-  Record<string, Boat[]>
-> {
-  const { data: json } = await client.request<
-    Record<string, CitizenBoatsResponse>
-  >({
-    url: uri`/current/citizen-organizations-boats`.toString(),
-    method: 'GET'
-  })
-  return mapResponseToBoatsByOrganization(json)
-}
-
 export function mapResponseToBoatsByOrganization(
   json: Record<string, CitizenBoatsResponse>
 ): Record<string, Boat[]> {

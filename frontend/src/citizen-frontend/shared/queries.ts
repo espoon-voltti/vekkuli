@@ -1,8 +1,6 @@
 import {
   citizenBoats,
-  organizationBoats,
-  citizenOrganizations,
-  citizenOrganizationsBoats
+  organizationBoats
 } from 'citizen-frontend/api-clients/citizen'
 import { query } from 'lib-common/query'
 
@@ -21,18 +19,8 @@ export const citizenBoatsQuery = query({
   options: { retry: false }
 })
 
-export const citizenOrganizationsQuery = query({
-  api: citizenOrganizations,
-  queryKey: queryKeys.organizations
-})
-
 export const organizationBoatsQuery = query({
   api: organizationBoats,
   queryKey: queryKeys.organizationBoats,
-  options: { retry: false }
-})
-export const citizenOrganizationsBoatsQuery = query({
-  api: citizenOrganizationsBoats,
-  queryKey: queryKeys.citizenOrganizationsBoats,
   options: { retry: false }
 })
