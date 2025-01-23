@@ -43,7 +43,7 @@ export async function citizenOrganizationsBoats(): Promise<
   return mapResponseToBoatsByOrganization(json)
 }
 
-function mapResponseToBoatsByOrganization(
+export function mapResponseToBoatsByOrganization(
   json: Record<string, CitizenBoatsResponse>
 ): Record<string, Boat[]> {
   return Object.fromEntries(

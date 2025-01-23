@@ -8,7 +8,7 @@ import {
   formatPlaceIdentifier,
   parsePrice
 } from 'citizen-frontend/shared/formatters'
-import { Boat, StorageType } from 'citizen-frontend/shared/types'
+import { StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
 import { useMutation } from 'lib-common/query'
@@ -36,20 +36,17 @@ import WinterStorageType from './sections/winterStorageType/WinterStorageType'
 
 type FormProperties = {
   reservation: Reservation
-  organizationBoats: Record<string, Boat[]>
 }
 
-export default React.memo(function Form({
-  reservation,
-  organizationBoats
-}: FormProperties) {
+export default React.memo(function Form({ reservation }: FormProperties) {
   const i18n = useTranslation()
   const navigate = useNavigate()
   const { showAllErrors, setShowAllErrors } = useFormErrorContext()
   const [submitError, setSubmitError] = React.useState<'SERVER_ERROR' | null>(
     null
   )
-  const { boats, municipalities, organizations } = reservation
+  const { boats, municipalities, organizations, organizationsBoats } =
+    reservation
 
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
@@ -76,7 +73,7 @@ export default React.memo(function Form({
           next,
           i18n,
           boats,
-          organizationBoats,
+          organizationsBoats,
           municipalities,
           organizations
         )

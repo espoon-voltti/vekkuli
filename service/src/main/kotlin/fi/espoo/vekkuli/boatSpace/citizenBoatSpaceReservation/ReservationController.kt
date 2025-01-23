@@ -42,12 +42,13 @@ class ReservationController(
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
 
         val organizations = organizationService.getCitizenOrganizations(citizenId)
-
+        val orgBoats = boatService.getBoatsForReserversOrganizations(citizenId)
         return UnfinishedReservationResponse(
             reservationResponseMapper.toReservationResponse(reservation),
             boats.toCitizenBoatListResponse(),
             reserverService.getMunicipalities().toMunicipalityListResponse(),
-            organizations.toCitizenOrganizationListResponse()
+            organizations.toCitizenOrganizationListResponse(),
+            orgBoats
         )
     }
 

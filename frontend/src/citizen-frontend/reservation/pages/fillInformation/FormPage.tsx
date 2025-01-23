@@ -3,9 +3,7 @@ import { Container, MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import { citizenOrganizationsBoatsQuery } from 'citizen-frontend/shared/queries'
 import { FormErrorProvider } from 'lib-common/form/state'
-import { useQueryResult } from 'lib-common/query'
 
 import StepIndicator from '../../StepIndicator'
 import ReservationCancel from '../../components/ReservationCancel'
@@ -16,13 +14,12 @@ import Form from './Form'
 
 export default React.memo(function FormPage() {
   const { reservation } = useContext(ReservationStateContext)
-  const organizationBoats = useQueryResult(citizenOrganizationsBoatsQuery())
   const i18n = useTranslation()
   return (
     <MainSection>
       <Container>
-        <Loader results={[reservation, organizationBoats]}>
-          {(loadedReservation, organizationBoats) => (
+        <Loader results={[reservation]}>
+          {(loadedReservation) => (
             <>
               <Container>
                 <ReservationCancel
@@ -36,10 +33,7 @@ export default React.memo(function FormPage() {
               <StepIndicator step="fillInformation" />
               <ReservationTimer />
               <FormErrorProvider>
-                <Form
-                  reservation={loadedReservation}
-                  organizationBoats={organizationBoats}
-                />
+                <Form reservation={loadedReservation} />
               </FormErrorProvider>
             </>
           )}

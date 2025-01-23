@@ -24,6 +24,7 @@ export type UnfinishedBoatSpaceReservation = {
   boats: Boat[]
   municipalities: Municipality[]
   organizations: Organization[]
+  organizationsBoats: Record<string, Boat[]>
 }
 
 export type ReservationOperation = 'Switch' | 'Renew' | 'Terminate'
@@ -95,6 +96,7 @@ export type UnfinishedBoatSpaceReservationResponse = {
   boats: CitizenBoatsResponse
   municipalities: Municipality[]
   organizations: Organization[]
+  organizationsBoats: Record<string, CitizenBoatsResponse>
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }
