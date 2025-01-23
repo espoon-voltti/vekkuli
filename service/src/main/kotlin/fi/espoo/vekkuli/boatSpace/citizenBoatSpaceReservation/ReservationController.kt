@@ -1,9 +1,14 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.citizen.toCitizenBoatListResponse
+import fi.espoo.vekkuli.boatSpace.citizen.toCitizenOrganizationListResponse
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.audit
+import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.service.BoatService
+import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.decimalToInt
 import jakarta.servlet.http.HttpServletRequest
@@ -17,20 +22,34 @@ class ReservationController(
     private val reservationService: ReservationService,
     private val reservationResponseMapper: ReservationResponseMapper,
     private val reserverService: ReserverService,
-    private val canReserveResponseMapper: CanReserveResponseMapper
+    private val canReserveResponseMapper: CanReserveResponseMapper,
+    private val boatService: BoatService,
+    private val organizationService: OrganizationService,
 ) {
     private val logger = KotlinLogging.logger {}
 
     @GetMapping("/unfinished-reservation")
-    fun getUnfinishedReservation(request: HttpServletRequest): ReservationResponse {
+    fun getUnfinishedReservation(request: HttpServletRequest): UnfinishedReservationResponse {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
                 "GET_UNFINISHED_RESERVATION"
             )
         }
+        val citizenId = request.ensureCitizenId()
+        val boats = boatService.getBoatsForReserver(citizenId)
+
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
-        return reservationResponseMapper.toReservationResponse(reservation)
+
+        val organizations = organizationService.getCitizenOrganizations(citizenId)
+        val orgBoats = boatService.getBoatsForReserversOrganizations(citizenId)
+        return UnfinishedReservationResponse(
+            reservationResponseMapper.toReservationResponse(reservation),
+            boats.toCitizenBoatListResponse(),
+            reserverService.getMunicipalities().toMunicipalityListResponse(),
+            organizations.toCitizenOrganizationListResponse(),
+            orgBoats
+        )
     }
 
     @GetMapping("/unfinished-reservation-expiration")

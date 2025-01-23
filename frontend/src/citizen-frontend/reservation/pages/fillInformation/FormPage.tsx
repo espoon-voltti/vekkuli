@@ -3,52 +3,27 @@ import { Container, MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import {
-  citizenBoatsQuery,
-  citizenOrganizationsQuery,
-  citizenOrganizationsBoatsQuery
-} from 'citizen-frontend/shared/queries'
 import { FormErrorProvider } from 'lib-common/form/state'
-import { useQueryResult } from 'lib-common/query'
 
 import StepIndicator from '../../StepIndicator'
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservationTimer from '../../components/ReservationTimer'
-import { getMunicipalitiesQuery } from '../../queries'
 import { ReservationStateContext } from '../../state'
 
 import Form from './Form'
 
 export default React.memo(function FormPage() {
   const { reservation } = useContext(ReservationStateContext)
-  const citizenBoats = useQueryResult(citizenBoatsQuery())
-  const municipalities = useQueryResult(getMunicipalitiesQuery())
-  const organizations = useQueryResult(citizenOrganizationsQuery())
-  const organizationBoats = useQueryResult(citizenOrganizationsBoatsQuery())
   const i18n = useTranslation()
   return (
     <MainSection>
       <Container>
-        <Loader
-          results={[
-            reservation,
-            citizenBoats,
-            municipalities,
-            organizations,
-            organizationBoats
-          ]}
-        >
-          {(
-            loadedReservation,
-            loadedBoats,
-            loadedMunicipalities,
-            organizations,
-            organizationBoats
-          ) => (
+        <Loader results={[reservation]}>
+          {(loadedReservation) => (
             <>
               <Container>
                 <ReservationCancel
-                  reservationId={loadedReservation.id}
+                  reservationId={loadedReservation.reservation.id}
                   type="link"
                   buttonAriaLabel={i18n.reservation.cancelAndGoBack}
                 >
@@ -58,13 +33,7 @@ export default React.memo(function FormPage() {
               <StepIndicator step="fillInformation" />
               <ReservationTimer />
               <FormErrorProvider>
-                <Form
-                  reservation={loadedReservation}
-                  boats={loadedBoats}
-                  municipalities={loadedMunicipalities}
-                  organizations={organizations}
-                  organizationBoats={organizationBoats}
-                />
+                <Form reservation={loadedReservation} />
               </FormErrorProvider>
             </>
           )}

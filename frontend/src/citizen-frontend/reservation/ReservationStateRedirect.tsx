@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
+import { BoatSpaceReservation } from '../api-types/reservation'
+
 import { Reservation, ReservationStateContext } from './state'
 
 interface Props {
@@ -63,7 +65,7 @@ function getExpectedPath(
   current: string
 ): string | null {
   if (reservation !== null) {
-    return getExpectedPathForReservation(reservation)
+    return getExpectedPathForReservation(reservation.reservation)
   }
 
   if (current.startsWith('/kuntalainen/venepaikka/vahvistus')) {
@@ -74,7 +76,7 @@ function getExpectedPath(
 }
 
 export function getExpectedPathForReservation(
-  reservation: Reservation
+  reservation: BoatSpaceReservation
 ): string | null {
   switch (reservation.status) {
     case 'Info':

@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
+import fi.espoo.vekkuli.boatSpace.citizen.CitizenBoatResponse
+import fi.espoo.vekkuli.boatSpace.citizen.CitizenOrganizationResponse
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
@@ -12,6 +14,14 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
+
+data class UnfinishedReservationResponse(
+    val reservation: ReservationResponse,
+    val boats: List<CitizenBoatResponse>,
+    val municipalities: List<MunicipalityResponse>,
+    val organizations: List<CitizenOrganizationResponse>,
+    val organizationsBoats: Map<String, List<Boat>>
+)
 
 data class ReservationResponse(
     val id: Int,

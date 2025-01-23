@@ -96,7 +96,7 @@ export function initialFormState(
       boats,
       spaceType,
       storedState,
-      reservation?.boat
+      reservation?.reservation.boat
     ),
     //winterStorage: initialWinterStorageFormState(i18n),
     spaceTypeInfo: initialSpaceTypeInfoFormState(i18n, spaceType, storedState),

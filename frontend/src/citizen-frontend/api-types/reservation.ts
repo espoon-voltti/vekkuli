@@ -17,6 +17,16 @@ import {
   Trailer
 } from '../shared/types'
 
+import { CitizenBoatsResponse } from './citizen'
+
+export type UnfinishedBoatSpaceReservation = {
+  reservation: BoatSpaceReservation
+  boats: Boat[]
+  municipalities: Municipality[]
+  organizations: Organization[]
+  organizationsBoats: Record<string, Boat[]>
+}
+
 export type ReservationOperation = 'Switch' | 'Renew' | 'Terminate'
 
 export type BoatSpaceReservation = {
@@ -81,6 +91,14 @@ export type BoatSpaceReservationResponse = {
   canSwitch: boolean
 }
 
+export type UnfinishedBoatSpaceReservationResponse = {
+  reservation: BoatSpaceReservationResponse
+  boats: CitizenBoatsResponse
+  municipalities: Municipality[]
+  organizations: Organization[]
+  organizationsBoats: Record<string, CitizenBoatsResponse>
+}
+
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }
 
 export type FillBoatSpaceReservationInput = {
@@ -112,6 +130,6 @@ export type PaymentInformationResponse = {
 }
 
 export type Municipality = {
-  code: number
+  code: string
   name: string
 }

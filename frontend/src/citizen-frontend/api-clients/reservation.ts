@@ -9,9 +9,16 @@ import {
   CanReserveReservation,
   FillBoatSpaceReservationInput,
   Municipality,
+  UnfinishedBoatSpaceReservation,
+  UnfinishedBoatSpaceReservationResponse,
   PaymentInformationResponse,
   ReservationOperation
 } from '../api-types/reservation'
+
+import {
+  deserializeJsonCitizenBoatsResponse,
+  mapResponseToBoatsByOrganization
+} from './citizen'
 
 export async function reserveSpace(
   spaceId: number
@@ -54,12 +61,21 @@ export async function switchBoatSpace(
   })
 }
 
-export async function unfinishedReservation(): Promise<BoatSpaceReservation> {
-  const { data: json } = await client.request<BoatSpaceReservationResponse>({
-    url: uri`/unfinished-reservation`.toString(),
-    method: 'GET'
-  })
-  return deserializeJsonBoatSpaceReservationResponse(json)
+export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReservation> {
+  const { data: json } =
+    await client.request<UnfinishedBoatSpaceReservationResponse>({
+      url: uri`/unfinished-reservation`.toString(),
+      method: 'GET'
+    })
+  return {
+    reservation: deserializeJsonBoatSpaceReservationResponse(json.reservation),
+    boats: deserializeJsonCitizenBoatsResponse(json.boats),
+    municipalities: json.municipalities,
+    organizations: json.organizations,
+    organizationsBoats: mapResponseToBoatsByOrganization(
+      json.organizationsBoats
+    )
+  }
 }
 
 export async function unfinishedReservationExpiration(): Promise<number> {
