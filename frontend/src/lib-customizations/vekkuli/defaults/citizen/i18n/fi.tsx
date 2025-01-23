@@ -355,5 +355,8 @@ export default {
         goBackToReservation: 'Siirry varaukseen'
       }
     }
+  },
+  payment: {
+    title: 'Valitse maksutapa'
   }
 }

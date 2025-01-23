@@ -358,6 +358,9 @@ const sv: Translations = {
         goBackToReservation: 'Gå till bokningen'
       }
     }
+  },
+  payment: {
+    title: 'Välj betalningsmetod'
   }
 }
 

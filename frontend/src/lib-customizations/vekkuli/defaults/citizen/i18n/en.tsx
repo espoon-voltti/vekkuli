@@ -354,6 +354,9 @@ const en: Translations = {
         goBackToReservation: 'Go to the reservation'
       }
     }
+  },
+  payment: {
+    title: 'Choose payment method'
   }
 }
 
