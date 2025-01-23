@@ -9,7 +9,7 @@ import { WinterStorageForm } from '../../formDefinitions/winterStorage'
 import StorageType from './StorageType'
 import { TrailerInfo } from './TrailerInfo'
 
-export default React.memo(function Organization({
+export default React.memo(function WinterStorageType({
   bind
 }: {
   bind: BoundForm<WinterStorageForm>

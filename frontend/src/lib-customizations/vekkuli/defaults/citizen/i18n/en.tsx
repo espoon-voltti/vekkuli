@@ -54,6 +54,10 @@ const en: Translations = {
         fi: 'Suomi',
         sv: 'Svenska',
         en: 'English'
+      },
+      dimensions: {
+        widthInMeters: 'Width (m)',
+        lengthInMeters: 'Length (m)'
       }
     },
     openExpandingInfo: 'Open the details',
@@ -177,6 +181,10 @@ const en: Translations = {
       submit: {
         continueToPayment: 'Continue to payment',
         confirmReservation: 'Confirm reservation'
+      },
+      trailerInfo: {
+        title: 'Trailer information',
+        registrationCode: 'Registration number'
       }
     },
     noRegistererNumber: 'No registration number',

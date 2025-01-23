@@ -4,7 +4,7 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import {formatPlaceIdentifier} from 'citizen-frontend/shared/formatters'
+import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 import { StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -29,7 +29,8 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
-import {getReservationPriceInfo} from "./helpers";
+import TrailerStorageType from './sections/trailerStorageType/TrailerStorageType'
+import { getReservationPriceInfo } from './helpers'
 
 type FormProperties = {
   reservation: Reservation
@@ -80,7 +81,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
   const { reserver, boat, userAgreement, spaceTypeInfo, organization } =
     useFormFields(formBind)
 
-  const { branch, form: winterStorageFom } = useFormUnion(spaceTypeInfo)
+  const { branch, form: spaceTypeInfoForm } = useFormUnion(spaceTypeInfo)
 
   const onSubmit = async () => {
     if (!formBind.isValid()) setShowAllErrors(true)
@@ -107,18 +108,18 @@ export default React.memo(function Form({ reservation }: FormProperties) {
 
   const updatedReservation = {
     ...reservation.reservation,
-    storageType: winterStorageFom?.state?.storageType.domValue as
-      | StorageType
-      | undefined
+    storageType: (branch === 'Winter'
+      ? spaceTypeInfoForm.state.storageType.domValue
+      : undefined) as StorageType | undefined
   }
 
-  const getSelectedOrganization = (
-  ) =>
-    organization.isValid()
-      ? organization.value().organization
-      : null
+  const getSelectedOrganization = () =>
+    organization.isValid() ? organization.value().organization : null
 
-  const reservationPriceInfo = getReservationPriceInfo(updatedReservation, getSelectedOrganization())
+  const reservationPriceInfo = getReservationPriceInfo(
+    updatedReservation,
+    getSelectedOrganization()
+  )
 
   return (
     <>
@@ -145,11 +146,17 @@ export default React.memo(function Form({ reservation }: FormProperties) {
               <OrganizationSection bind={organization} />
             )}
           <BoatSection bind={boat} />
-          {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
+          {branch === 'Winter' && (
+            <WinterStorageType bind={spaceTypeInfoForm} />
+          )}
+          {branch === 'Trailer' && (
+            <TrailerStorageType bind={spaceTypeInfoForm} />
+          )}
           <FormSection>
             <ReservedSpace
-                reservation={updatedReservation}
-                reservationPriceInfo={reservationPriceInfo} />
+              reservation={updatedReservation}
+              reservationPriceInfo={reservationPriceInfo}
+            />
           </FormSection>
           <UserAgreementsSection bind={userAgreement} />
           {showAllErrors && <ValidationWarning />}

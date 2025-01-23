@@ -54,6 +54,10 @@ const sv: Translations = {
         fi: 'Suomi',
         sv: 'Svenska',
         en: 'English'
+      },
+      dimensions: {
+        widthInMeters: 'Bredd (m)',
+        lengthInMeters: 'Längd (m)'
       }
     },
     openExpandingInfo: 'Öppna detaljer',
@@ -171,6 +175,10 @@ const sv: Translations = {
       submit: {
         continueToPayment: 'Fortsätt till betalning',
         confirmReservation: 'Bekräfta bokning'
+      },
+      trailerInfo: {
+        title: 'Information om släpvagnen',
+        registrationCode: 'Registernummer'
       }
     },
     steps: {

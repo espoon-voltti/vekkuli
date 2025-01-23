@@ -1,4 +1,8 @@
-import { StorageType, storageTypes } from 'citizen-frontend/shared/types'
+import {
+  StorageType,
+  storageTypes,
+  Trailer
+} from 'citizen-frontend/shared/types'
 import { positiveNumber, string } from 'lib-common/form/fields'
 import {
   mapped,
@@ -84,23 +88,31 @@ export function onWinterStorageFormUpdate({
 
 export default function initialFormState(
   i18n: Translations,
-  storedState?: StoredSearchState
+  storedState?: StoredSearchState,
+  initialTrailer?: Trailer
 ): StateOf<WinterStorageForm> {
   return {
     storageType: initialStorageTypeState(i18n),
-    trailerInfo: initialTrailerInfoState(storedState)
+    trailerInfo: initialTrailerInfoState(storedState, initialTrailer)
   }
 }
 
 function initialTrailerInfoState(
-  storedState?: StoredSearchState
+  storedState?: StoredSearchState,
+  initialTrailer?: Trailer
 ): StateOf<TrailerInfoUnionForm> {
   return {
     branch: 'Trailer',
     state: {
-      registrationNumber: '',
-      width: storedState?.width ?? positiveNumber.empty().value,
-      length: storedState?.length ?? positiveNumber.empty().value
+      registrationNumber: initialTrailer?.registrationNumber ?? '',
+      width:
+        storedState?.width ??
+        initialTrailer?.registrationNumber ??
+        positiveNumber.empty().value,
+      length:
+        storedState?.length ??
+        initialTrailer?.registrationNumber ??
+        positiveNumber.empty().value
     }
   }
 }

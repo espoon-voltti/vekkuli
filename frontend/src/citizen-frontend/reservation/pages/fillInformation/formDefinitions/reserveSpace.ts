@@ -98,8 +98,12 @@ export function initialFormState(
       storedState,
       reservation?.reservation.boat
     ),
-    //winterStorage: initialWinterStorageFormState(i18n),
-    spaceTypeInfo: initialSpaceTypeInfoFormState(i18n, spaceType, storedState),
+    spaceTypeInfo: initialSpaceTypeInfoFormState(
+      i18n,
+      spaceType,
+      storedState,
+      reservation?.trailer
+    ),
     ...initialUserAgreementFormState(i18n)
   }
 }

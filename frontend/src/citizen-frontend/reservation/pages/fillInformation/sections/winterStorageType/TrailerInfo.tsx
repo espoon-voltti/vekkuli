@@ -2,6 +2,7 @@ import { Column, Columns } from 'lib-components/dom'
 import { FormSection, TextField } from 'lib-components/form'
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
 import { TrailerInfoForm } from '../../formDefinitions/winterStorage'
@@ -11,6 +12,7 @@ export const TrailerInfo = React.memo(function TrailerInfo({
 }: {
   bind: BoundForm<TrailerInfoForm>
 }) {
+  const i18n = useTranslation()
   const { registrationNumber, width, length } = useFormFields(bind)
 
   return (
@@ -19,7 +21,7 @@ export const TrailerInfo = React.memo(function TrailerInfo({
         <Column isOneQuarter>
           <TextField
             id="trailer-registration-number"
-            label="Rekisteritunnus"
+            label={i18n.reservation.formPage.trailerInfo.registrationCode}
             required={true}
             bind={registrationNumber}
           />
@@ -27,7 +29,7 @@ export const TrailerInfo = React.memo(function TrailerInfo({
         <Column isOneQuarter>
           <TextField
             id="trailer-width"
-            label="Leveys (m)"
+            label={i18n.common.unit.dimensions.widthInMeters}
             required={true}
             bind={width}
           />
@@ -35,7 +37,7 @@ export const TrailerInfo = React.memo(function TrailerInfo({
         <Column isOneQuarter>
           <TextField
             id="trailer-length"
-            label="Pituus (m)"
+            label={i18n.common.unit.dimensions.lengthInMeters}
             required={true}
             bind={length}
           />
