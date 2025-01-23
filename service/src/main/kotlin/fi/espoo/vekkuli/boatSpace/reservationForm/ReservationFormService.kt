@@ -214,7 +214,7 @@ class ReservationFormService(
         val data =
             ReservationResultSuccess(
                 timeProvider.getCurrentDate(),
-                seasonalService.getBoatSpaceReservationEndDate(
+                seasonalService.getBoatSpaceReservationEndDateForNew(
                     reservation.boatSpaceType,
                     input.reservationValidity
                 ),
