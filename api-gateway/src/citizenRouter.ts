@@ -26,7 +26,11 @@ export function createCitizenRouter(
 
   router.get('/public/*splat', proxy)
 
-  router.use(requireAuthentication)
+  router.use(
+    requireAuthentication('citizen', (_req, res) => {
+      res.status(401).json({ error: 'Unauthorized' })
+    })
+  )
   router.use(proxy)
   router.use(errorHandler)
 

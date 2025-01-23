@@ -9,9 +9,10 @@ import {
   CanReserveReservation,
   FillBoatSpaceReservationInput,
   Municipality,
-  PaymentInformationResponse,
   UnfinishedBoatSpaceReservation,
-  UnfinishedBoatSpaceReservationResponse
+  UnfinishedBoatSpaceReservationResponse,
+  PaymentInformationResponse,
+  ReservationOperation
 } from '../api-types/reservation'
 
 import { deserializeJsonCitizenBoatsResponse } from './citizen'
@@ -66,7 +67,8 @@ export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReserv
   return {
     reservation: deserializeJsonBoatSpaceReservationResponse(json.reservation),
     boats: deserializeJsonCitizenBoatsResponse(json.boats),
-    municipalities: json.municipalities
+    municipalities: json.municipalities,
+    organizations: json.organizations
   }
 }
 
@@ -116,6 +118,13 @@ export async function cancelReservation(reservationId: number): Promise<void> {
   })
 }
 
+export async function cancelPayment(reservationId: number): Promise<void> {
+  await client.request<void>({
+    url: uri`/reservation/${reservationId}/cancel-payment`.toString(),
+    method: 'PATCH'
+  })
+}
+
 export async function terminateReservation(
   reservationId: number
 ): Promise<void> {
@@ -125,9 +134,18 @@ export async function terminateReservation(
   })
 }
 
+export async function startRenewReservation(
+  reservationId: number
+): Promise<BoatSpaceReservation> {
+  const { data } = await client.request<BoatSpaceReservation>({
+    url: uri`/reservation/${reservationId}/renew`.toString(),
+    method: 'POST'
+  })
+  return data
+}
+
 export async function paymentInformation(
-  reservationId: number,
-  amount?: number
+  reservationId: number
 ): Promise<PaymentInformationResponse> {
   const { data } = await client.request<PaymentInformationResponse>({
     url: uri`/reservation/${reservationId}/payment-information`.toString(),
@@ -150,6 +168,15 @@ export function deserializeJsonBoatSpaceReservationResponse(
     ? { ...json.citizen, birthDate: LocalDate.parseIso(json.citizen.birthDate) }
     : undefined
   const organization = json.organization ? json.organization : undefined
+  const createAllowedOperationsList = (
+    json: BoatSpaceReservationResponse
+  ): ReservationOperation[] => {
+    const operationsList: ReservationOperation[] = []
+    if (json.canRenew) operationsList.push('Renew')
+    if (json.canSwitch) operationsList.push('Switch')
+    return operationsList
+  }
+
   return {
     id: json.id,
     citizen,
@@ -170,6 +197,7 @@ export function deserializeJsonBoatSpaceReservationResponse(
     boat: json.boat,
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,
-    creationType: json.creationType
+    creationType: json.creationType,
+    allowedReservationOperations: createAllowedOperationsList(json)
   }
 }

@@ -226,7 +226,14 @@ const sv: Translations = {
       fillInformation: {
         title: 'Reservering misslyckades',
         SERVER_ERROR:
-          'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.'
+          'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.',
+        UNFINISHED_RESERVATION:
+          'Du har en pågående bokning. Vänligen slutför bokningen eller avbryt den för att fortsätta.'
+      },
+      cancelPayment: {
+        title: 'Återgång misslyckades',
+        SERVER_ERROR:
+          'Återgång för att fylla i informationen misslyckades, eller så inträffade ett annat fel. Vänligen kontakta kundtjänst. Du hittar kontaktuppgifter till kundtjänsten på startsidan.'
       }
     },
     paymentInfo: {
@@ -248,6 +255,7 @@ const sv: Translations = {
     cancelConfirmation2: 'Vill du fortsätta?',
     cancelReservation: 'Avbryt reservation',
     cancelAndGoBack: 'Avbryt och gå tillbaka',
+    goBack: 'Gå tillbaka',
     continueToPaymentButton: 'Fortsätt till betalning'
   },
   boat: {
@@ -342,9 +350,12 @@ const sv: Translations = {
       title: 'Bokningar',
       noReservations: 'Inga bokningar',
       actions: {
-        cancel: 'Avboka plats',
+        terminate: 'Avboka plats',
         renew: 'Förnya plats',
         change: 'Byt plats'
+      },
+      modal: {
+        goBackToReservation: 'Gå till bokningen'
       }
     }
   }

@@ -89,6 +89,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val reserveModal = reservationPage.getReserveModal()
             assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.firstSwitchReservationButton).isVisible()
             assertThat(reserveModal.reserveAnotherButton).isVisible()
             reserveModal.reserveAnotherButton.click()
 
@@ -380,8 +381,10 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             val citizenDetailPage = CitizenDetailsPage(page)
             citizenDetailPage.navigateToPage()
 
-            val reservationSection = citizenDetailPage.getReservationSection(1)
+            val reservationSection = citizenDetailPage.getReservationSection("Talvipaikka: Haukilahti B 013")
             val trailerSection = reservationSection.getTrailerSection()
+
+            page.waitForCondition { trailerSection.widthField.isVisible }
             assertThat(trailerSection.widthField).containsText("1,50")
             assertThat(trailerSection.lengthField).containsText("2,50")
             assertThat(trailerSection.registrationCodeField).containsText(trailerRegistrationCode)
@@ -401,6 +404,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
             val reserveModal = reservationPage.getReserveModal()
             assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.firstSwitchReservationButton).isVisible()
             assertThat(reserveModal.reserveAnotherButton).isVisible()
             reserveModal.reserveAnotherButton.click()
 
@@ -462,6 +466,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
         val reserveModal = reservationPage.getReserveModal()
         assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.firstSwitchReservationButton).isVisible()
         assertThat(reserveModal.reserveAnotherButton).isVisible()
         reserveModal.reserveAnotherButton.click()
 
@@ -556,6 +561,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
         val reserveModal = reservationPage.getReserveModal()
         assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.firstSwitchReservationButton).isVisible()
         assertThat(reserveModal.reserveAnotherButton).isVisible()
         reserveModal.reserveAnotherButton.click()
 

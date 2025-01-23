@@ -26,6 +26,8 @@ export type UnfinishedBoatSpaceReservation = {
   organizations: Organization[]
 }
 
+export type ReservationOperation = 'Switch' | 'Renew' | 'Terminate'
+
 export type BoatSpaceReservation = {
   id: number
   citizen?: Citizen
@@ -45,6 +47,7 @@ export type BoatSpaceReservation = {
   trailer?: Trailer
   boat: Boat
   creationType: CreationType
+  allowedReservationOperations: ReservationOperation[]
 }
 
 export type CanReserveResultStatus =
@@ -83,12 +86,15 @@ export type BoatSpaceReservationResponse = {
   trailer: Trailer | null
   boat: Boat
   creationType: CreationType
+  canRenew: boolean
+  canSwitch: boolean
 }
 
 export type UnfinishedBoatSpaceReservationResponse = {
   reservation: BoatSpaceReservationResponse
   boats: CitizenBoatsResponse
   municipalities: Municipality[]
+  organizations: Organization[]
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

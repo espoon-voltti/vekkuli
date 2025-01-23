@@ -47,16 +47,15 @@ class SeasonalService(
         }
     }
 
-    fun canRenewAReservation(
-        oldValidity: ReservationValidity,
-        oldEndDate: LocalDate,
-        boatSpaceType: BoatSpaceType
-    ): ReservationResult {
+    fun canRenewAReservation(originalReservationId: Int): ReservationResult {
+        val originalReservation =
+            boatSpaceReservationRepo.getBoatSpaceReservationDetails(originalReservationId)
+                ?: throw IllegalArgumentException("Reservation not found")
         val periods = seasonalRepository.getReservationPeriods()
-        return canRenewAReservation(periods, oldValidity, oldEndDate, boatSpaceType)
+        return canRenewAReservation(periods, originalReservation.validity, originalReservation.endDate, originalReservation.type)
     }
 
-    fun canRenewAReservation(
+    private fun canRenewAReservation(
         periods: List<ReservationPeriod>,
         oldValidity: ReservationValidity,
         oldEndDate: LocalDate,
@@ -69,6 +68,7 @@ class SeasonalService(
 
         val now = timeProvider.getCurrentDate()
 
+        // Check if the reservation is within the renewal period and reservation is about to expire
         if (now.isBefore(oldEndDate.minusDays(DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())) || now.isAfter(oldEndDate)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
@@ -97,10 +97,13 @@ class SeasonalService(
     }
 
     fun canSwitchReservation(
-        reserverID: UUID,
+        reserverID: UUID?,
         type: BoatSpaceType,
         reservationId: Int,
     ): ReservationResult {
+        if (reserverID == null) {
+            throw IllegalArgumentException("Reserver not found")
+        }
         val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)

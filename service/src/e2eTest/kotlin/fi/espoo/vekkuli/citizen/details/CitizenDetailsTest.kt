@@ -28,7 +28,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
-            val firstReservationSection = citizenDetails.getReservationSection(1)
+            val firstReservationSection = citizenDetails.getReservationSection("Talvipaikka: Haukilahti B 015")
             val trailerSection = firstReservationSection.getTrailerSection()
 
             trailerSection.editButton.click()

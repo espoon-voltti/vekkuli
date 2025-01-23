@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
+import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.controllers.*
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
@@ -68,7 +69,7 @@ class ReservationFormService(
     private val emailService: TemplateEmailService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
-    private val boatSpaceSwitchService: BoatSpaceSwitchService
+    private val boatSpaceSwitchService: BoatSpaceSwitchService,
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
@@ -86,6 +87,7 @@ class ReservationFormService(
         when (reservation.creationType) {
             CreationType.New -> reserveNewSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
             CreationType.Switch -> reserveSwitchedSpaceByCitizen(reservationId, reserverId, input)
+            CreationType.Renewal -> reserveRenewedSpaceByCitizen(reservationId, reserverId, input)
             else -> throw BadRequest("Invalid creation type for reservation")
         }
     }
@@ -219,7 +221,8 @@ class ReservationFormService(
         )
     }
 
-    private fun reserveNewSpaceByCitizen(
+    @Transactional
+    fun reserveNewSpaceByCitizen(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
@@ -246,7 +249,69 @@ class ReservationFormService(
         )
     }
 
-    private fun reserveSwitchedSpaceByCitizen(
+    fun validateCitizenCanRenewReservation(
+        actingCitizenId: UUID,
+        reservation: BoatSpaceReservationDetails
+    ): Boolean {
+        if (reservation.originalReservationId == null) {
+            throw BadRequest("Original reservation not found")
+        }
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId)
+                ?: throw BadRequest("Reservation not found")
+        // mandatory information, otherwise the request is malformed
+        val reserver = reserverService.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
+
+        // Can renew only from an active reservation
+        if (!validateReservationIsActive(originalReservation, timeProvider.getCurrentDateTime())) {
+            return false
+        }
+
+        // User has rights to renew the reservation
+        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
+            return false
+        }
+
+        return true
+    }
+
+    @Transactional
+    fun reserveRenewedSpaceByCitizen(
+        reservationId: Int,
+        actingCitizenId: UUID,
+        input: ReservationInput
+    ) {
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw BadRequest("Reservation not found")
+        val originalReservation =
+            boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
+                ?: throw BadRequest("Original reservation not found")
+
+        if (!validateCitizenCanRenewReservation(actingCitizenId, reservation)) {
+            throw Forbidden("Citizen can not renew reservation")
+        }
+
+        val result = seasonalService.canRenewAReservation(reservation.originalReservationId)
+        if (result is ReservationResult.Failure) {
+            throw Forbidden(
+                "Renewal not allowed"
+            )
+        }
+        val successResultData = (result as ReservationResult.Success).data
+
+        processBoatSpaceReservation(
+            originalReservation.reserverId,
+            buildReserveBoatSpaceInput(reservationId, input),
+            ReservationStatus.Payment,
+            successResultData.reservationValidity,
+            successResultData.startDate,
+            successResultData.endDate
+        )
+    }
+
+    @Transactional
+    fun reserveSwitchedSpaceByCitizen(
         reservationId: Int,
         actingCitizenId: UUID,
         input: ReservationInput
@@ -700,7 +765,38 @@ class ReservationFormService(
 
         val municipalities = reserverService.getMunicipalities()
 
+        input =
+            input.copy(
+                reserverPriceInfo = constructReserverPriceInfo(formInput, citizen, reservation, organizations)
+            )
+
         return buildApplicationForm(reservation, boats, citizen, organizations, input, userType, municipalities)
+    }
+
+    private fun constructReserverPriceInfo(
+        formInput: ReservationInput,
+        citizen: CitizenWithDetails?,
+        reservation: ReservationForApplicationForm,
+        organizations: List<Organization>
+    ): ReserverPriceInfo? {
+        if (formInput.isOrganization != false) {
+            val organizationId = formInput.organizationId
+            val organization = organizations.find { it.id == organizationId }
+            if (organization != null) {
+                return ReserverPriceInfo(
+                    discountPercentage = organization.discountPercentage,
+                    originalPriceInCents = reservation.priceCents,
+                    reserverName = organization.name
+                )
+            }
+        } else if (citizen != null && citizen.discountPercentage > 0) {
+            return ReserverPriceInfo(
+                discountPercentage = citizen.discountPercentage,
+                originalPriceInCents = reservation.priceCents,
+                reserverName = citizen.fullName
+            )
+        }
+        return null
     }
 
     private fun buildApplicationForm(
@@ -780,6 +876,15 @@ class ReservationFormService(
     }
 }
 
+data class ReserverPriceInfo(
+    val discountPercentage: Int?,
+    val originalPriceInCents: Int?,
+    val reserverName: String?,
+) {
+    val discountedPriceInEuro: String
+        get() = formatInt(discountedPriceInCents(originalPriceInCents ?: 0, discountPercentage))
+}
+
 @ValidBoatRegistration
 data class ReservationInput(
     @field:NotNull(message = "{validation.required}")
@@ -843,5 +948,6 @@ data class ReservationInput(
     override val trailerRegistrationNumber: String?,
     override val trailerWidth: BigDecimal?,
     override val trailerLength: BigDecimal?,
-    override val reservationValidity: ReservationValidity = ReservationValidity.Indefinite
+    val reserverPriceInfo: ReserverPriceInfo? = null,
+    override val reservationValidity: ReservationValidity = ReservationValidity.Indefinite,
 ) : BoatRegistrationBaseInput

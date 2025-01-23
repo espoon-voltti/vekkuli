@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.MarkAsPaidConfirmModal
@@ -23,11 +24,16 @@ data class SendInvoiceModel(
     val costCenter: String,
     val invoiceType: String,
     val priceWithTax: BigDecimal,
+    val discountedPriceWithTax: BigDecimal,
     val description: String,
     val contactPerson: String,
     val orgId: String,
-    val function: String
-)
+    val function: String,
+    val discountPercentage: Int
+) {
+    val hasDiscount: Boolean
+        get() = discountPercentage > 0
+}
 
 @Component
 class InvoicePreview(
@@ -68,7 +74,7 @@ class InvoicePreview(
             formComponents.decimalInput(
                 "invoice.priceWithTax",
                 "priceWithTax",
-                model.priceWithTax,
+                model.discountedPriceWithTax,
                 compact = true,
                 step = 0.01,
             )
@@ -94,6 +100,17 @@ class InvoicePreview(
                 """
                 $contactPersonInput
                 <hr>
+                """.trimIndent()
+            } else {
+                ""
+            }
+
+        val discountInfo =
+            if (model.hasDiscount) {
+                """
+                <div class="discount-info" ${addTestId("invoice-discount-info")}>
+                <span>${t("invoice.discountInfo", listOf(model.discountPercentage.toString(), model.priceWithTax.toString()))}</span>
+                </div>    
                 """.trimIndent()
             } else {
                 ""
@@ -136,6 +153,7 @@ class InvoicePreview(
                         
                         <div class="column">
                             $priceWithTax
+                            $discountInfo
                         </div>
                     </div>
                                 

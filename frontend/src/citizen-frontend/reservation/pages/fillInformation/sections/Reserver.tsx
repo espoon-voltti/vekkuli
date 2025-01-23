@@ -14,9 +14,10 @@ export default React.memo(function Reserver({
   reserver: Citizen | undefined
   bind: BoundForm<ReserverForm>
 }) {
+  const { email, phone } = useFormFields(bind)
+
   if (!reserver) return null
 
-  const { email, phone } = useFormFields(bind)
   return (
     <div className="form-section" data-testid="citizen">
       <h3 className="header">Varaaja</h3>
@@ -49,7 +50,7 @@ export default React.memo(function Reserver({
           <TextField
             id="municipality"
             label="Kotikunta"
-            value="Turku"
+            value={reserver.municipalityName}
             readonly={true}
           />
         </div>

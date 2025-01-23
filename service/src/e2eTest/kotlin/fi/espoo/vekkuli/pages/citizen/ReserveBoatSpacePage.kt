@@ -74,6 +74,7 @@ class ReserveBoatSpacePage(
         val harborHeaders = root.locator(".harbor-header")
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
         val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
+        val b059ReserveButton = root.locator("tr:has-text('B 059')").locator("button:has-text('Varaa')")
     }
 
     class ReserveModal(
@@ -124,6 +125,15 @@ class ReserveBoatSpacePage(
         slipFilterSection.lengthInput.fill("6")
     }
 
+    fun filterForBoatSpaceB059() {
+        val filterSection = getFilterSection()
+        filterSection.slipRadio.click()
+        val slipFilterSection = filterSection.getSlipFilterSection()
+        slipFilterSection.boatTypeSelect.selectOption("Sailboat")
+        slipFilterSection.widthInput.fill("2")
+        slipFilterSection.lengthInput.fill("5")
+    }
+
     fun filterForTrailerSpace012() {
         val filterSection = getFilterSection()
         filterSection.trailerRadio.click()
@@ -143,6 +153,11 @@ class ReserveBoatSpacePage(
     fun startReservingBoatSpaceB314() {
         filterForBoatSpaceB314()
         getSearchResultsSection().b314ReserveButton.click()
+    }
+
+    fun startReservingBoatSpaceB059() {
+        filterForBoatSpaceB059()
+        getSearchResultsSection().b059ReserveButton.click()
     }
 
     fun startReservingBoatSpace012() {

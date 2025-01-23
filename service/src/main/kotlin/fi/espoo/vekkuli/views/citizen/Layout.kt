@@ -103,8 +103,6 @@ class Layout(
                     <div>
                       $boatLink
                     </div>
-                    <!-- <a class="link">Liikuntatilat</a>
-                    <a class="link">Ohjatut ryhmäliikunnat</a> -->
                     <div>
                         $citizenProfileLink
                     </div>

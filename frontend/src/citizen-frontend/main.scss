@@ -78,6 +78,20 @@ $help-min-height: 18px;
   border-color: transparent;
 }
 
+button:focus-visible, .button:focus-visible,
+.link:focus-visible,
+.link:focus-visible .field .control p,
+input:focus-visible, input.input:focus-visible,
+.select select:focus-visible {
+  outline: 2px solid $bulma-primary;
+  outline-offset: 2px;
+  box-shadow: none;
+  &.is-danger {
+    outline-color: $bulma-danger;
+    border-color: $bulma-danger;
+  }
+}
+
 html, body {
   height: 100%;
   background: $light-gray;
@@ -111,7 +125,7 @@ html, body {
   opacity: 1;
 }
 
-h1 {
+h1, h2.h1 {
   font-size: 32px;
   font-weight: 700;
   line-height: 40px;

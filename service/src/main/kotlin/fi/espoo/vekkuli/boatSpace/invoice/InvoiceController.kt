@@ -100,9 +100,11 @@ class InvoiceController(
                 costCenter = "",
                 invoiceType = "",
                 priceWithTax = intToDecimal(reservation.priceCents),
+                discountedPriceWithTax = intToDecimal(reservation.discountedPriceCents),
                 description = invoiceData.description,
                 contactPerson = invoiceData.orgRepresentative ?: "",
                 orgId = invoiceData.orgId ?: "",
+                discountPercentage = reservation.discountPercentage ?: 0
             )
         return model
     }

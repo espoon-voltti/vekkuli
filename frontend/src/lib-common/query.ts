@@ -205,6 +205,7 @@ export function usePagedInfiniteQueryResult<Data, Id>(
 export interface MutationDescription<Arg, Data> {
   api: (arg: Arg) => Promise<Data>
   invalidateQueryKeys?: ((arg: Arg) => QueryKey[]) | undefined
+  resetQueryKeys?: ((arg: Arg) => QueryKey[]) | undefined
 }
 
 export function mutation<Arg, Data>(
@@ -226,6 +227,19 @@ export async function invalidateDependencies<Arg>(
   }
 }
 
+export async function resetDependencies<Arg>(
+  queryClient: QueryClient,
+  mutationDescription: MutationDescription<Arg, unknown>,
+  arg: Arg
+) {
+  const { resetQueryKeys } = mutationDescription
+  if (resetQueryKeys) {
+    for (const key of resetQueryKeys(arg)) {
+      await queryClient.resetQueries({ queryKey: key })
+    }
+  }
+}
+
 export function useMutation<Arg, Data>(
   mutationDescription: MutationDescription<Arg, Data>,
   options?: Omit<UseMutationOptions<Data, unknown, Arg>, 'mutationFn'>
@@ -238,6 +252,7 @@ export function useMutation<Arg, Data>(
     ...options,
     onSuccess: async (data, arg, context) => {
       await options?.onSuccess?.(data, arg, context)
+      await resetDependencies(queryClient, mutationDescription, arg)
       await invalidateDependencies(queryClient, mutationDescription, arg)
     }
   })

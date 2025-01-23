@@ -1,8 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.admin
 
 import fi.espoo.vekkuli.common.NotFound
-import fi.espoo.vekkuli.common.Unauthorized
-import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.controllers.EnvType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
 import jakarta.servlet.http.HttpServletRequest
@@ -14,9 +13,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class AuthControllerAdvice : ResponseEntityExceptionHandler() {
     @ModelAttribute
     fun handleAuth(request: HttpServletRequest) {
-        val authenticatedUser = request.getAuthenticatedUser() ?: throw Unauthorized()
-
-        if (getEnv() == EnvType.Production && !authenticatedUser.isEmployee()) {
+        request.ensureEmployeeId()
+        if (getEnv() == EnvType.Production) {
             throw NotFound()
         }
     }

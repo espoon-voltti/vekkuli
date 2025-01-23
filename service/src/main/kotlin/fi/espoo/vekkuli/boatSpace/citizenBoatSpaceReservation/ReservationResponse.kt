@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.citizen.CitizenBoatResponse
 import fi.espoo.vekkuli.boatSpace.citizen.CitizenOrganizationResponse
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -41,6 +42,8 @@ data class ReservationResponse(
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
+    val canRenew: Boolean,
+    val canSwitch: Boolean,
 ) {
     data class Citizen(
         val id: UUID,
@@ -53,6 +56,7 @@ data class ReservationResponse(
         val postalOffice: String,
         val city: String,
         val municipalityCode: Int,
+        val municipalityName: String,
         val birthDate: LocalDate,
     )
 
@@ -110,7 +114,9 @@ class ReservationResponseMapper(
     private val spaceReservationService: BoatReservationService,
     private val reserverService: ReserverService,
     private val organizationService: OrganizationService,
-    private val boatSpaceSwitchService: BoatSpaceSwitchService
+    private val boatSpaceSwitchService: BoatSpaceSwitchService,
+    private val seasonalService: SeasonalService,
+    private val permissionService: PermissionService
 ) {
     fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse =
         reservationResponse(
@@ -123,6 +129,19 @@ class ReservationResponseMapper(
             reservation.validity,
             reservation.endDate,
             reservation.paymentDate,
+        )
+
+    fun toReservationResponse(reservation: ReservationWithDependencies): ReservationResponse =
+        reservationResponse(
+            reservation.id,
+            reservation.actingCitizenId,
+            reservation.reserverId,
+            reservation.status,
+            reservation.created,
+            reservation.startDate,
+            reservation.validity,
+            reservation.endDate,
+            null
         )
 
     private fun reservationResponse(
@@ -178,7 +197,9 @@ class ReservationResponseMapper(
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
             paymentDate = paymentDate,
-            creationType = reservationWithDependencies.creationType
+            creationType = reservationWithDependencies.creationType,
+            canRenew = seasonalService.canRenewAReservation(reservationId).success,
+            canSwitch = seasonalService.canSwitchReservation(reserverId, boatSpace.type, reservationId).success,
         )
     }
 
@@ -210,6 +231,7 @@ class ReservationResponseMapper(
             postalOffice = citizen.postOffice,
             city = citizen.municipalityName,
             municipalityCode = citizen.municipalityCode,
+            municipalityName = citizen.municipalityName,
             birthDate = citizen.birthdayAsDate
         )
     }

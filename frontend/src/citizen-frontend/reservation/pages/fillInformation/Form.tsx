@@ -103,7 +103,7 @@ export default React.memo(function Form({
             `/kuntalainen/venepaikka/vahvistus/${updatedReservation.id}`
           )
 
-        return navigate('/kuntalainen/venepaikka')
+        return navigate('/kuntalainen/venepaikka/maksa')
       } catch (e) {
         console.error(e)
         setSubmitError('SERVER_ERROR')
@@ -121,7 +121,7 @@ export default React.memo(function Form({
   return (
     <>
       <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
-        <h1 className="title pb-l" id="boat-space-form-header">
+        <h2 className="title pb-l" id="boat-space-form-header">
           {i18n.reservation.formPage.title[updatedReservation.boatSpace.type](
             formatPlaceIdentifier(
               updatedReservation.boatSpace.section,
@@ -129,7 +129,7 @@ export default React.memo(function Form({
               updatedReservation.boatSpace.locationName
             )
           )}
-        </h1>
+        </h2>
         <Block>
           {reservation.reservation.creationType === 'Switch' && (
             <InfoBox text={i18n.reservation.formPage.info.switch} />

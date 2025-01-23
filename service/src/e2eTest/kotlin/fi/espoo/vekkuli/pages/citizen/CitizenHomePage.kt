@@ -35,4 +35,7 @@ class CitizenHomePage(
     val finnishTitle = page.getByRole(AriaRole.HEADING, Page.GetByRoleOptions().setName("venepaikkavaraus"))
     val englishTitle = page.getByRole(AriaRole.HEADING, Page.GetByRoleOptions().setName("boat space reservation"))
     val swedishTitle = page.getByRole(AriaRole.HEADING, Page.GetByRoleOptions().setName("Bokning av båtplats"))
+
+    val boatSearchLink = page.getByRole(AriaRole.LINK, Page.GetByRoleOptions().setName("Venepaikat").setExact(true))
+    val openFormButton = page.getByRole(AriaRole.LINK, Page.GetByRoleOptions().setName("Selaile vapaita venepaikkoja"))
 }

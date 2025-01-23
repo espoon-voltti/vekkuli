@@ -7,7 +7,7 @@ import { queryKeys } from '../../queries'
 export const fillBoatSpaceReservationMutation = mutation({
   api: ({ id, input }: { id: number; input: FillBoatSpaceReservationInput }) =>
     fillReservation(id, input),
-  invalidateQueryKeys: () => [
+  resetQueryKeys: () => [
     queryKeys.unfinishedReservation(),
     queryKeys.unfinishedReservationExpiration()
   ]

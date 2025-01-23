@@ -370,6 +370,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE bsr.employee_id = :id
                         AND bsr.status IN ('Info', 'Payment') 
                         AND :currentTime BETWEEN bsr.created AND bsr.created + make_interval(secs => :sessionTimeInSeconds)
+                        ORDER BY bsr.created DESC LIMIT 1
                     """.trimIndent()
                 )
             query.bind("id", id)
@@ -1039,6 +1040,9 @@ class JdbiBoatSpaceReservationRepository(
     override fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
         setReservationStatus(reservationId, ReservationStatus.Invoiced)
 
+    override fun setReservationStatusToInfo(reservationId: Int): BoatSpaceReservation =
+        setReservationStatus(reservationId, ReservationStatus.Info)
+
     private fun setReservationStatus(
         reservationId: Int,
         status: ReservationStatus,
@@ -1243,7 +1247,7 @@ class JdbiBoatSpaceReservationRepository(
 
     private fun buildSqlSelectPartForReservationWithDependencies() =
         """
-        SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, 
+        SELECT bsr.*, r.name, r.type as reserver_type, r.email, r.phone, r.discount_percentage,
           location.name as location_name, price.price_cents, price.vat_cents, price.net_price_cents, 
           bs.type, bs.section, bs.place_number, bs.amenity, bs.width_cm, bs.length_cm,
           bs.description,
