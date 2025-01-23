@@ -19,7 +19,7 @@ data class UnfinishedReservationResponse(
     val reservation: ReservationResponse,
     val boats: List<CitizenBoatResponse>,
     val municipalities: List<MunicipalityResponse>,
-    val organization: List<CitizenOrganizationResponse>
+    val organizations: List<CitizenOrganizationResponse>
 )
 
 data class ReservationResponse(
