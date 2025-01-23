@@ -47,6 +47,7 @@ data class ReservationResponse(
         val postalOffice: String,
         val city: String,
         val municipalityCode: Int,
+        val municipalityName: String,
         val birthDate: LocalDate,
     )
 
@@ -221,6 +222,7 @@ class ReservationResponseMapper(
             postalOffice = citizen.postOffice,
             city = citizen.municipalityName,
             municipalityCode = citizen.municipalityCode,
+            municipalityName = citizen.municipalityName,
             birthDate = citizen.birthdayAsDate
         )
     }

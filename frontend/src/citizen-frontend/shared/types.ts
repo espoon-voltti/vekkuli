@@ -71,6 +71,7 @@ export type Citizen = {
   postalOffice: string
   city: string
   municipalityCode: number
+  municipalityName: string
   birthDate: LocalDate
 }
 
