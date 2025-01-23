@@ -114,7 +114,7 @@ export const organizationForm = mapped(
       organization: {
         ...organization.value,
         ...{
-          municipalityCode: parseInt(organization.value.municipality.code),
+          municipalityCode: organization.value.municipality.code,
           municipalityName: organization.value.municipality.name,
           discountPercentage: organization.value.discountPercentage
         }
