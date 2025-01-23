@@ -348,7 +348,8 @@ const en: Translations = {
       Trailer: 'Trailer storage',
       Buck: 'Stand storage',
       BuckWithTent: 'Stand storage with protective tent'
-    }
+    },
+    reserve: 'Reserve'
   },
   citizen: {
     firstName: 'First Name',

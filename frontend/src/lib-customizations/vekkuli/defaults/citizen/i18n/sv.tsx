@@ -349,7 +349,8 @@ const sv: Translations = {
       Trailer: 'Trailerförvaring',
       Buck: 'Förvaring på bock',
       BuckWithTent: 'Förvaring på bock med skyddstält'
-    }
+    },
+    reserve: 'Boka'
   },
   citizen: {
     firstName: 'Förnamn',
