@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.pages.citizen
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.options.AriaRole
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.BasePage
 
 open class BoatSpaceFormPage(
@@ -116,18 +117,30 @@ open class BoatSpaceFormPage(
     val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
     val header = page.getByText("Venepaikan varaus:")
 
-    fun fillFormAndSubmit(overrides: (BoatSpaceFormPage.() -> Unit)? = null) {
+    fun fillFormAndSubmit(
+        overrides: (BoatSpaceFormPage.() -> Unit)? = null,
+        boatSpaceType: BoatSpaceType = BoatSpaceType.Slip
+    ) {
         val citizenSection = getCitizenSection()
         citizenSection.emailInput.fill("test@example.com")
         citizenSection.phoneInput.fill("123456789")
 
         val boatSection = getBoatSection()
         boatSection.depthInput.fill("1.5")
+        if (boatSpaceType != BoatSpaceType.Slip) {
+            boatSection.widthInput.fill("2")
+            boatSection.lengthInput.fill("5")
+        }
         boatSection.weightInput.fill("2000")
         boatSection.nameInput.fill("My Boat")
         boatSection.otherIdentifierInput.fill("ID12345")
         boatSection.noRegistrationCheckbox.check()
         boatSection.ownerRadio.check()
+
+        if (boatSpaceType != BoatSpaceType.Slip) {
+            val winterStorageTypeSection = getWinterStorageTypeSection()
+            winterStorageTypeSection.trailerRegistrationNumberInput.fill("ABC-123")
+        }
 
         val userAgreementSection = getUserAgreementSection()
         userAgreementSection.certifyInfoCheckbox.check()
@@ -138,7 +151,5 @@ open class BoatSpaceFormPage(
         resolveSubmitButton().click()
     }
 
-    protected open fun resolveSubmitButton(): Locator {
-        return submitButton
-    }
+    protected open fun resolveSubmitButton(): Locator = submitButton
 }

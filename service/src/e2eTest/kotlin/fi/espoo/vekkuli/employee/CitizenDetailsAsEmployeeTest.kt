@@ -412,7 +412,6 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
 
         CitizenHomePage(page).loginAsMikkoVirtanen()
-
         val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
         val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
         val paymentPage = CitizenPaymentPage(page)
@@ -420,19 +419,20 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         // create a reservation for TRAILERI 012
         reserveBoatSpacePage.navigateToPage()
         reserveBoatSpacePage.startReservingBoatSpace012()
-        boatSpaceFormPage.fillFormAndSubmit {
+        boatSpaceFormPage.fillFormAndSubmit({
             getBoatSection().nameInput.fill("The Boat")
             getBoatSection().widthInput.fill("1")
             getBoatSection().lengthInput.fill("1")
-        }
+            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+        })
         paymentPage.payReservation()
 
         // create a reservation for B 314
         reserveBoatSpacePage.navigateToPage()
         reserveBoatSpacePage.startReservingBoatSpaceB314()
-        boatSpaceFormPage.fillFormAndSubmit {
+        boatSpaceFormPage.fillFormAndSubmit({
             getBoatSection().existingBoat("The Boat").click()
-        }
+        })
         paymentPage.payReservation()
 
         // modify boat

@@ -82,7 +82,7 @@ export function initialFormState(
   municipalities: Municipality[],
   organizations: Organization[],
   storedState?: StoredSearchState,
-  reservation?: Reservation
+  unfinishedReservation?: Reservation
 ): StateOf<ReserveSpaceForm> {
   return {
     ...initialReserverFormState(reserver),
@@ -96,13 +96,13 @@ export function initialFormState(
       boats,
       spaceType,
       storedState,
-      reservation?.reservation.boat
+      unfinishedReservation?.reservation.boat
     ),
     spaceTypeInfo: initialSpaceTypeInfoFormState(
       i18n,
       spaceType,
       storedState,
-      reservation?.trailer
+      unfinishedReservation?.reservation.trailer
     ),
     ...initialUserAgreementFormState(i18n)
   }
