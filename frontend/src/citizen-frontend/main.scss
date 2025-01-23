@@ -80,6 +80,7 @@ $help-min-height: 18px;
 
 button:focus-visible, .button:focus-visible,
 .link:focus-visible,
+.link:focus-visible .field .control p,
 input:focus-visible, input.input:focus-visible,
 .select select:focus-visible {
   outline: 2px solid $bulma-primary;

@@ -16,7 +16,10 @@ export default React.memo(function CitizenInformation({
       {organizations.map((organization) => (
         <Columns key={`organization-${organization.id}`}>
           <Column isOneQuarter>
-            <Link to={`/kuntalainen/yhteiso/${organization.id}`}>
+            <Link
+              className="link"
+              to={`/kuntalainen/yhteiso/${organization.id}`}
+            >
               <TextField
                 label="Nimi"
                 value={organization.name}
