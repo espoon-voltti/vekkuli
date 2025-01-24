@@ -16,8 +16,5 @@ export const terminateReservationMutation = mutation({
 
 export const startRenewReservationMutation = mutation({
   api: startRenewReservation,
-  invalidateQueryKeys: () => [
-    queryKeys.unfinishedReservation(),
-    queryKeys.unfinishedReservationExpiration()
-  ]
+  invalidateQueryKeys: () => [queryKeys.unfinishedReservation()]
 })
