@@ -59,7 +59,6 @@ data class ReservationResponse(
         val municipalityCode: Int,
         val municipalityName: String,
         val birthDate: LocalDate,
-        val canReserveANewSpace: Boolean
     )
 
     data class Organization(
@@ -180,11 +179,10 @@ class ReservationResponseMapper(
         val trailer = getTrailer(reservationWithDependencies)
         val revisedPrice = getRevisedPrice(reservationWithDependencies)
 
-        val citizenCanReserve = if (citizen != null) seasonalService.canReserveANewSpace(citizen.id, boatSpace.type).success else false
         return ReservationResponse(
             id = reservationId,
             reserverType = reservationWithDependencies.reserverType ?: ReserverType.Citizen,
-            citizen = formatCitizen(citizen, citizenCanReserve),
+            citizen = formatCitizen(citizen),
             organization = formatOrganization(organization),
             boat = formatBoat(boat),
             boatSpace = formatBoatSpace(boatSpace),
@@ -219,10 +217,7 @@ class ReservationResponseMapper(
         return reserverService.getCitizen(citizenId) ?: throw NotFound()
     }
 
-    private fun formatCitizen(
-        citizen: CitizenWithDetails?,
-        canReserveANewSpace: Boolean
-    ): ReservationResponse.Citizen? {
+    private fun formatCitizen(citizen: CitizenWithDetails?): ReservationResponse.Citizen? {
         if (citizen == null) {
             return null
         }
@@ -238,8 +233,7 @@ class ReservationResponseMapper(
             city = citizen.municipalityName,
             municipalityCode = citizen.municipalityCode,
             municipalityName = citizen.municipalityName,
-            birthDate = citizen.birthdayAsDate,
-            canReserveANewSpace = canReserveANewSpace
+            birthDate = citizen.birthdayAsDate
         )
     }
 
