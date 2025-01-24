@@ -4,10 +4,7 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import {
-  formatPlaceIdentifier,
-  parsePrice
-} from 'citizen-frontend/shared/formatters'
+import {formatPlaceIdentifier} from 'citizen-frontend/shared/formatters'
 import { StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -21,7 +18,6 @@ import { Reservation } from '../../state'
 import useStoredSearchState from '../useStoredSearchState'
 
 import ErrorModal from './ErrorModal'
-import SwitchPriceInfoBox from './SwitchPriceInfoBox'
 import {
   initialFormState,
   onReserveSpaceUpdate,
@@ -37,25 +33,17 @@ import {getReservationPriceInfo} from "./helpers";
 
 type FormProperties = {
   reservation: Reservation
-  boats: Boat[]
-  municipalities: Municipality[]
-  organizations: Organization[]
-  organizationBoats: Record<string, Boat[]>
 }
 
-export default React.memo(function Form({
-  reservation,
-  boats,
-  municipalities,
-  organizations,
-  organizationBoats
-}: FormProperties) {
+export default React.memo(function Form({ reservation }: FormProperties) {
   const i18n = useTranslation()
   const navigate = useNavigate()
   const { showAllErrors, setShowAllErrors } = useFormErrorContext()
   const [submitError, setSubmitError] = React.useState<'SERVER_ERROR' | null>(
     null
   )
+  const { boats, municipalities, organizations, organizationsBoats } =
+    reservation
 
   const { mutateAsync: submitForm } = useMutation(
     fillBoatSpaceReservationMutation
@@ -67,8 +55,8 @@ export default React.memo(function Form({
       initialFormState(
         i18n,
         boats,
-        reservation.citizen,
-        reservation.boatSpace.type,
+        reservation.reservation.citizen,
+        reservation.reservation.boatSpace.type,
         municipalities,
         organizations,
         searchState,
@@ -82,7 +70,7 @@ export default React.memo(function Form({
           next,
           i18n,
           boats,
-          organizationBoats,
+          organizationsBoats,
           municipalities,
           organizations
         )
@@ -99,7 +87,7 @@ export default React.memo(function Form({
     else {
       try {
         const updatedReservation = await submitForm({
-          id: reservation?.id,
+          id: reservation?.reservation.id,
           input: formBind.value()
         })
 
@@ -118,7 +106,7 @@ export default React.memo(function Form({
   }
 
   const updatedReservation = {
-    ...reservation,
+    ...reservation.reservation,
     storageType: winterStorageFom?.state?.storageType.domValue as
       | StorageType
       | undefined
@@ -145,7 +133,7 @@ export default React.memo(function Form({
           )}
         </h2>
         <Block>
-          {reservation.creationType === 'Switch' && (
+          {reservation.reservation.creationType === 'Switch' && (
             <InfoBox text={i18n.reservation.formPage.info.switch} />
           )}
           <ReserverSection
@@ -153,7 +141,7 @@ export default React.memo(function Form({
             bind={reserver}
           />
           {organizations.length > 0 &&
-            reservation.creationType !== 'Switch' && (
+            reservation.reservation.creationType !== 'Switch' && (
               <OrganizationSection bind={organization} />
             )}
           <BoatSection bind={boat} />
@@ -167,7 +155,10 @@ export default React.memo(function Form({
           {showAllErrors && <ValidationWarning />}
         </Block>
         <Buttons>
-          <ReservationCancel reservationId={reservation.id} type="button">
+          <ReservationCancel
+            reservationId={reservation.reservation.id}
+            type="button"
+          >
             {i18n.reservation.cancelReservation}
           </ReservationCancel>
           <Button type="primary" action={onSubmit}>
