@@ -419,6 +419,24 @@ class ReservationServiceTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `successful reservation`(): Unit =
+        runBlocking {
+            loginAs(citizenIdOlivia)
+            allowReservation(any())
+            val boatSpaceId = insertBoatSpace()
+            val information = createReservationInformation()
+            val (reservationId) = reservationService.startReservation(boatSpaceId)
+            reservationService.fillReservationInformation(reservationId, information)
+            reservationService.getPaymentInformation(reservationId)
+            val paytrailPayments = PaytrailMock.paytrailPayments
+            assertEquals(1, paytrailPayments.size)
+            assertEquals(1, paytrailPayments.get(0).items?.size)
+            val item = paytrailPayments.get(0).items?.get(0)
+            assertEquals("329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100", item?.productCode)
+            assertEquals("Venepaikka 2025 Haukilahti A 001", item?.description)
+        }
+
+    @Test
     fun `should prevent paying reservation for non citizens`(): Unit =
         runBlocking {
             loginAs(citizenIdOlivia)
