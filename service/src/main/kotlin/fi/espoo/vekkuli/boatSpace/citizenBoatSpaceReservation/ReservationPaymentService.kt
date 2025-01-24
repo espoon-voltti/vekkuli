@@ -2,7 +2,8 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
-import fi.espoo.vekkuli.config.BoatSpaceConfig.PAYTRAIL_PRODUCT_CODE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailDescription
+import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailProductCode
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.CitizenWithDetails
@@ -30,7 +31,6 @@ class ReservationPaymentService(
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
         val amount = calculatePrice(reservation)
-        val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         val category = "MYY255"
         val payment =
             withContext(Dispatchers.IO) {
@@ -41,7 +41,7 @@ class ReservationPaymentService(
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        productCode = PAYTRAIL_PRODUCT_CODE,
+                        productCode = paytrailProductCode(reservation.type),
                         paymentType = PaymentType.OnlinePayment
                     )
                 )
@@ -66,8 +66,8 @@ class ReservationPaymentService(
                             amount,
                             1,
                             BOAT_RESERVATION_ALV_PERCENTAGE,
-                            PAYTRAIL_PRODUCT_CODE,
-                            description,
+                            paytrailProductCode(reservation.type),
+                            paytrailDescription(reservation),
                             category
                         )
                     ),
