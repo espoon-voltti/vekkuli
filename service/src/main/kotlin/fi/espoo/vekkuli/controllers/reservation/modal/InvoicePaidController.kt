@@ -1,8 +1,10 @@
 package fi.espoo.vekkuli.controllers.reservation.modal
 
+import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationStatusUpdateModal
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -24,10 +26,13 @@ class InvoicePaidController {
 
     @GetMapping("/reservation/modal/update-payment-status/{reservationId}/{reserverId}")
     @ResponseBody
-    fun citizenProfile(
+    fun updatePaymentStatusModal(
         @PathVariable reservationId: Int,
         @PathVariable reserverId: UUID,
+        request: HttpServletRequest,
     ): ResponseEntity<String> {
+        request.ensureEmployeeId()
+
         val reservation =
             reservationService.getBoatSpaceReservation(reservationId)
                 ?: throw IllegalArgumentException("Reservation not found")
