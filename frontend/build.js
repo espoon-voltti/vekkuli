@@ -4,8 +4,8 @@
 
 const fs = require('fs/promises')
 
-const { sassPlugin } = require('esbuild-sass-plugin')
 const esbuild = require('esbuild')
+const { sassPlugin } = require('esbuild-sass-plugin')
 const express = require('express')
 const proxy = require('express-http-proxy')
 const _ = require('lodash')
@@ -111,10 +111,10 @@ function serve() {
   const app = express()
   app.use(
     [
-      '/admin',
       '/api',
       '/auth',
       '/boat-space',
+      '/dev',
       '/ext',
       '/reservation',
       '/validate',

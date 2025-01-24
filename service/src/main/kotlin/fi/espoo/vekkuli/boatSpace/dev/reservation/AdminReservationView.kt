@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.boatSpace.admin.reservation
+package fi.espoo.vekkuli.boatSpace.dev.reservation
 
 import fi.espoo.vekkuli.FormComponents
 import fi.espoo.vekkuli.RadioOption
@@ -44,7 +44,7 @@ class ReservationView {
             <section class="section" id="reservation-clear">
                 <div class="container">
                    <h2>Varausten poisto</h2>
-                   <form hx-post="/admin/reservations"
+                   <form hx-post="/dev/reservations"
                          hx-target="#reservation-clear">
                       <div class="field">
                         <label class="label">Nimi</label>

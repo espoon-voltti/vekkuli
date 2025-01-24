@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.boatSpace.admin
+package fi.espoo.vekkuli.boatSpace.dev
 
 import fi.espoo.vekkuli.controllers.EnvType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
@@ -36,7 +36,7 @@ class DebugInfoOverlayView(
                             <i class="mr-s">Järjestelmän aika:</i>${timeProvider.getCurrentDateTime().format(fullDateTimeFormat)}
                         </span>
                         <span x-show="showOverlay" class="tag">
-                            <a href="/admin/settings" class="icon is-small">
+                            <a href="/dev/dashboard" class="icon is-small">
                                 ${icons.cog}
                             </a>
                         </span>

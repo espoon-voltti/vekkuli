@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.boatSpace.admin.systemTime
+package fi.espoo.vekkuli.boatSpace.dev.systemTime
 
 import fi.espoo.vekkuli.controllers.EnvType
 import fi.espoo.vekkuli.controllers.Utils.Companion.getEnv
@@ -27,7 +27,7 @@ class SetCurrentSystemTimeView(
                     <form id="set-staging-form"
                       class="is-inline-block"
                       method="post" 
-                      hx-post="/admin/set-system-date"
+                      hx-post="/dev/set-system-date"
                       hx-on-htmx-after-request="window.location.reload()"
                     >
                          <div class="field">

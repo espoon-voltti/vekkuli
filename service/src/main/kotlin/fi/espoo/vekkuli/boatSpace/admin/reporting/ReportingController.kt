@@ -23,7 +23,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @RestController
-@RequestMapping("/admin/reporting")
+@RequestMapping("/virkailija/admin/reporting")
 class ReportingController(
     private val reportingLayout: Layout,
     private val reportingView: ReportingView

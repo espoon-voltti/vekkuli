@@ -9,7 +9,7 @@ import { cacheControl } from './middleware/cache-control.js'
 import { errorHandler } from './middleware/errors.js'
 import { createProxy } from './utils/proxy.js'
 
-export function createEmployeeRouter(
+export function createDevRouter(
   config: Config,
   redisClient: RedisClient
 ): Router {
@@ -24,26 +24,12 @@ export function createEmployeeRouter(
 
   router.use(cacheControl(() => 'forbid-cache'))
 
-  router.get('/virkailija/static/*splat', proxy)
-  router.get('/ext/*splat', proxy)
-
   router.use(
-    requireAuthentication('user', (req, res, next) => {
-      const loginPath = '/virkailija'
-      if (req.path !== loginPath) {
-        res.redirect(loginPath)
-      } else {
-        next()
-      }
+    requireAuthentication(['citizen', 'user'], (_req, res) => {
+      res.redirect('/')
     })
   )
-  router.use('/boat-space', proxy)
-  router.use('/reservation', proxy)
-  router.use('/validate', proxy)
-  router.use('/info', proxy)
-  router.use('/venepaikka', proxy)
-  router.use('/virkailija', proxy)
-  router.use('/yhteiso', proxy)
+  router.use(proxy)
   router.use(errorHandler)
 
   return router
