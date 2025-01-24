@@ -454,6 +454,59 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Organization cannot be selected if it's reservations are full`() {
+        try {
+            CitizenHomePage(page).loginAsOliviaVirtanen()
+            // Olivia has already reserved 2 boat spaces, so we need to terminate a reservation
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            firstReservationSection.terminateButton.click()
+
+            val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
+            terminateReservationModal.confirmButton.click()
+            assertThat(terminateReservationModal.confirmButton).isHidden()
+
+            // Reserve a second boat space for the organization
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            reservationPage.startReservingBoatSpaceB314()
+
+            val formPage = BoatSpaceFormPage(page)
+            val organizationSection = formPage.getOrganizationSection()
+
+            organizationSection.reserveForOrganization.click()
+            organizationSection.organization("Espoon Pursiseura").click()
+            page.getByText("Espoon lohi").click()
+
+            val citizenSection = formPage.getCitizenSection()
+            citizenSection.emailInput.fill("test@example.com")
+            citizenSection.phoneInput.fill("123456789")
+
+            val userAgreementSection = formPage.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
+
+            formPage.submitButton.click()
+
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentProviders).isVisible()
+            paymentPage.nordeaSuccessButton.click()
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+
+            // Go to the form, assert that organization cannot be selected
+            reservationPage.navigateToPage()
+            reservationPage.filterForBoatSpaceB314()
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+
+            assertThat(organizationSection.reserveForOrganization).isHidden()
+            assertThat(page.getByText("Espoon pursiseura")).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun cancelReservationFromForm() {
         CitizenHomePage(page).loginAsOliviaVirtanen()
 
