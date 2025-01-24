@@ -26,7 +26,7 @@ fun discountedPriceInCents(
     priceCents: Int,
     discountPercentage: Int?
 ): Int =
-    if (discountPercentage != null && discountPercentage > 0) {
+    if (discountPercentage != null && discountPercentage > 0 && priceCents > 0) {
         priceCents - (priceCents * discountPercentage / 100)
     } else {
         priceCents

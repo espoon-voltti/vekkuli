@@ -16,6 +16,7 @@ data class CitizenOrganizationResponse(
     val postOfficeSv: String,
     val postalCode: String,
     val businessId: String,
+    val discountPercentage: Int,
 )
 
 fun List<Organization>.toCitizenOrganizationListResponse() = map { it.toCitizenOrganizationResponse() }
@@ -34,4 +35,5 @@ fun Organization.toCitizenOrganizationResponse() =
         postOfficeSv = postOfficeSv,
         postalCode = postalCode,
         businessId = businessId,
+        discountPercentage = discountPercentage,
     )

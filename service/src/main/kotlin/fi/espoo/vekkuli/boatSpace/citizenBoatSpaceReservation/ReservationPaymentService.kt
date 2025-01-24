@@ -10,9 +10,11 @@ import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.discountedPriceInCents
 import fi.espoo.vekkuli.utils.formatAsShortDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.time.LocalDate
@@ -28,9 +30,14 @@ class ReservationPaymentService(
         citizen: CitizenWithDetails,
         reservation: BoatSpaceReservationDetails
     ): PaytrailPaymentResponse {
+        val logger = LoggerFactory.getLogger(ReservationPaymentService::class.java)
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
-        val amount = calculatePrice(reservation)
+        val amount = calculatePriceWithDiscount(reservation)
+        // TODO: throw error?
+        if (amount <= 0) {
+            logger.error("Payment amount must be greater than zero, amount: $amount, reservationId: $reservation.id")
+        }
         val category = "MYY255"
         val payment =
             withContext(Dispatchers.IO) {
@@ -77,11 +84,14 @@ class ReservationPaymentService(
         )
     }
 
-    private fun calculatePrice(reservation: BoatSpaceReservationDetails): Int {
-        if (switchService.isSwitchedReservation(reservation)) {
-            return switchService.getRevisedPrice(reservation)
-        }
-        return reservation.priceCents
+    fun calculatePriceWithDiscount(reservation: BoatSpaceReservationDetails): Int {
+        val priceCents =
+            if (switchService.isSwitchedReservation(reservation)) {
+                switchService.getRevisedPrice(reservation)
+            } else {
+                reservation.priceCents
+            }
+        return discountedPriceInCents(priceCents, reservation.discountPercentage)
     }
 
     fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult =

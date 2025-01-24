@@ -4,10 +4,7 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import {
-  formatPlaceIdentifier,
-  parsePrice
-} from 'citizen-frontend/shared/formatters'
+import {formatPlaceIdentifier} from 'citizen-frontend/shared/formatters'
 import { StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -21,7 +18,6 @@ import { Reservation } from '../../state'
 import useStoredSearchState from '../useStoredSearchState'
 
 import ErrorModal from './ErrorModal'
-import SwitchPriceInfoBox from './SwitchPriceInfoBox'
 import {
   initialFormState,
   onReserveSpaceUpdate,
@@ -33,6 +29,7 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
+import {getReservationPriceInfo} from "./helpers";
 
 type FormProperties = {
   reservation: Reservation
@@ -115,6 +112,14 @@ export default React.memo(function Form({ reservation }: FormProperties) {
       | undefined
   }
 
+  const getSelectedOrganization = (
+  ) =>
+    organization.isValid()
+      ? organization.value().organization
+      : null
+
+  const reservationPriceInfo = getReservationPriceInfo(updatedReservation, getSelectedOrganization())
+
   return (
     <>
       <form id="form" className="column" onSubmit={(e) => e.preventDefault()}>
@@ -142,17 +147,13 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           <BoatSection bind={boat} />
           {branch === 'Winter' && <WinterStorageType bind={winterStorageFom} />}
           <FormSection>
-            <ReservedSpace reservation={updatedReservation} />
-            {reservation.reservation.creationType === 'Switch' && (
-              <SwitchPriceInfoBox
-                priceDifference={reservation.reservation.revisedPrice}
-              />
-            )}
+            <ReservedSpace
+                reservation={updatedReservation}
+                reservationPriceInfo={reservationPriceInfo} />
           </FormSection>
           <UserAgreementsSection bind={userAgreement} />
           {showAllErrors && <ValidationWarning />}
         </Block>
-
         <Buttons>
           <ReservationCancel
             reservationId={reservation.reservation.id}
@@ -161,7 +162,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
             {i18n.reservation.cancelReservation}
           </ReservationCancel>
           <Button type="primary" action={onSubmit}>
-            {parsePrice(reservation.reservation.revisedPrice) > 0
+            {reservationPriceInfo.discountedPriceInCents > 0
               ? i18n.reservation.formPage.submit.continueToPayment
               : i18n.reservation.formPage.submit.confirmReservation}
           </Button>

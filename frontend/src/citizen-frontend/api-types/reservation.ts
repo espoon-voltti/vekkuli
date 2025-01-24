@@ -43,10 +43,11 @@ export type BoatSpaceReservation = {
   totalPrice: string
   vatValue: string
   netPrice: string
-  revisedPrice: string
+  revisedPrice: number
   storageType?: StorageType
   trailer?: Trailer
   boat: Boat
+  totalPriceInCents: number
   creationType: CreationType
   allowedReservationOperations: ReservationOperation[]
 }
@@ -79,7 +80,7 @@ export type BoatSpaceReservationResponse = {
   endDate: string
   validity: ReservationValidity
   paymentDate: string | null
-  revisedPrice: string
+  revisedPrice: number
   totalPrice: string
   vatValue: string
   netPrice: string
@@ -87,6 +88,7 @@ export type BoatSpaceReservationResponse = {
   trailer: Trailer | null
   boat: Boat
   creationType: CreationType
+  totalPriceInCents: number
   canRenew: boolean
   canSwitch: boolean
 }
@@ -130,6 +132,6 @@ export type PaymentInformationResponse = {
 }
 
 export type Municipality = {
-  code: string
+  code: number
   name: string
 }

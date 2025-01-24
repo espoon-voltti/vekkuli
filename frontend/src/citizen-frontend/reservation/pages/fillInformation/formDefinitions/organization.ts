@@ -5,7 +5,7 @@ import {
   ReserverType,
   reserverTypes
 } from 'citizen-frontend/shared/types'
-import { string } from 'lib-common/form/fields'
+import { number, string } from 'lib-common/form/fields'
 import {
   mapped,
   object,
@@ -31,7 +31,8 @@ const organizationInfoForm = object({
   email: required(string()),
   streetAddress: string(),
   postalCode: string(),
-  postOffice: string()
+  postOffice: string(),
+  discountPercentage: number()
 })
 export type OrganizationInfoForm = typeof organizationInfoForm
 
@@ -53,7 +54,8 @@ const initialInfoFormState = (
   email: '',
   streetAddress: '',
   postalCode: '',
-  postOffice: ''
+  postOffice: '',
+  discountPercentage: 0
 })
 
 export type OrganizationUnionBranch = 'noOrganization' | 'existing' | 'new'
@@ -112,8 +114,9 @@ export const organizationForm = mapped(
       organization: {
         ...organization.value,
         ...{
-          municipalityCode: parseInt(organization.value.municipality.code),
-          municipalityName: organization.value.municipality.name
+          municipalityCode: organization.value.municipality.code,
+          municipalityName: organization.value.municipality.name,
+          discountPercentage: organization.value.discountPercentage
         }
       }
     }

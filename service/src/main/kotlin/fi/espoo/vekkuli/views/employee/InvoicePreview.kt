@@ -173,6 +173,7 @@ class InvoicePreview(
                                 class="button is-secondary"
                                 hx-delete="$deleteUrl"
                                 hx-target="body"
+                                hx-params="none"
                                 hx-on-htmx-after-request="window.location = '$backUrl';"
                                 type="button">
                                 ${t("invoice.button.cancel")}
