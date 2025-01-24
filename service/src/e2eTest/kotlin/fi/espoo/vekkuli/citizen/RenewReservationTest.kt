@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
@@ -76,7 +75,11 @@ class RenewReservationTest : PlaywrightTest() {
             reservationPage.getSearchResultsSection().firstReserveButton.click()
 
             val form = BoatSpaceFormPage(page)
-            form.fillFormAndSubmit(boatSpaceType = BoatSpaceType.Winter)
+            form.fillFormAndSubmit {
+                getBoatSection().widthInput.fill("2")
+                getBoatSection().lengthInput.fill("5")
+                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            }
             PaymentPage(page).payReservation()
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
 
@@ -127,7 +130,11 @@ class RenewReservationTest : PlaywrightTest() {
             reservationPage.getSearchResultsSection().firstReserveButton.click()
 
             val form = BoatSpaceFormPage(page)
-            form.fillFormAndSubmit(boatSpaceType = BoatSpaceType.Trailer)
+            form.fillFormAndSubmit {
+                getBoatSection().widthInput.fill("2")
+                getBoatSection().lengthInput.fill("5")
+                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            }
             PaymentPage(page).payReservation()
             mockTimeProvider(timeProvider, startofTrailerRenewPeriod)
             val citizenDetailsPage = CitizenDetailsPage(page)
