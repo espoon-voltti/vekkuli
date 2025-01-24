@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -64,6 +65,7 @@ abstract class IntegrationTestBase {
     @BeforeEach
     fun resetDatabase() {
         // Override this method in subclasses to reset the database before each test
+        PaytrailMock.reset()
     }
 
     data class DevBoatSpace(

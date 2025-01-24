@@ -2,7 +2,8 @@ package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.reservationForm.getReservationTimeInSeconds
 import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
-import fi.espoo.vekkuli.config.BoatSpaceConfig.PAYTRAIL_PRODUCT_CODE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailDescription
+import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailProductCode
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.PaytrailEnv
 import fi.espoo.vekkuli.config.audit
@@ -71,9 +72,7 @@ class PaymentController(
 
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
         val amount = reservation.priceCents
-        val description = "Venepaikka ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
         // TODO must this be configurable?
-        val productCode = PAYTRAIL_PRODUCT_CODE
 
         val category = "MYY255"
 
@@ -86,7 +85,7 @@ class PaymentController(
                         reference = reference,
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
-                        productCode = productCode,
+                        productCode = paytrailProductCode(reservation.type),
                         paymentType = PaymentType.OnlinePayment
                     )
                 )
@@ -106,7 +105,17 @@ class PaymentController(
                             lastName = citizen.lastName.take(50),
                             phone = citizen.phone
                         ),
-                    items = listOf(PaytrailPurchaseItem(amount, 1, BOAT_RESERVATION_ALV_PERCENTAGE, productCode, description, category))
+                    items =
+                        listOf(
+                            PaytrailPurchaseItem(
+                                amount,
+                                1,
+                                BOAT_RESERVATION_ALV_PERCENTAGE,
+                                paytrailProductCode(reservation.type),
+                                paytrailDescription(reservation),
+                                category
+                            )
+                        )
                 )
             )
         val errorMessage = if (cancelled == true) messageUtil.getMessage("payment.cancelled", locale = locale) else null
