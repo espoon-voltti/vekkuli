@@ -123,6 +123,7 @@ open class BoatSpaceFormPage(
 
         val boatSection = getBoatSection()
         boatSection.depthInput.fill("1.5")
+
         boatSection.weightInput.fill("2000")
         boatSection.nameInput.fill("My Boat")
         boatSection.otherIdentifierInput.fill("ID12345")
@@ -138,7 +139,5 @@ open class BoatSpaceFormPage(
         resolveSubmitButton().click()
     }
 
-    protected open fun resolveSubmitButton(): Locator {
-        return submitButton
-    }
+    protected open fun resolveSubmitButton(): Locator = submitButton
 }

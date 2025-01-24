@@ -412,7 +412,6 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
 
         CitizenHomePage(page).loginAsMikkoVirtanen()
-
         val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
         val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
         val paymentPage = CitizenPaymentPage(page)
@@ -424,6 +423,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             getBoatSection().nameInput.fill("The Boat")
             getBoatSection().widthInput.fill("1")
             getBoatSection().lengthInput.fill("1")
+            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
         }
         paymentPage.payReservation()
 

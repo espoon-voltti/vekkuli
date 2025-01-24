@@ -13,7 +13,6 @@ import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.service.ReservationResultErrorCode
 import fi.espoo.vekkuli.service.ReservationResultSuccess
 import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.getLastDayOfNextYearsJanuary
 import fi.espoo.vekkuli.utils.isMonthDayWithinRange
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -87,11 +86,12 @@ class SeasonalService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
+        val endDate = getBoatSpaceReservationEndDateForRenew(boatSpaceType, oldValidity)
         return ReservationResult.Success(
             ReservationResultSuccess(
                 now,
-                getLastDayOfNextYearsJanuary(now.year),
-                ReservationValidity.Indefinite
+                endDate,
+                oldValidity
             )
         )
     }
@@ -360,11 +360,25 @@ class SeasonalService(
         )
     }
 
-    fun getBoatSpaceReservationEndDate(
+    fun getBoatSpaceReservationEndDateForRenew(
         boatSpaceType: BoatSpaceType,
-        reservationValidity: ReservationValidity
+        reservationValidity: ReservationValidity,
+    ): LocalDate {
+        val nowNextYear = timeProvider.getCurrentDate().plusYears(1)
+        return when (boatSpaceType) {
+            BoatSpaceType.Slip -> getSlipEndDate(nowNextYear, reservationValidity)
+            BoatSpaceType.Winter -> getWinterEndDate(nowNextYear)
+            BoatSpaceType.Storage -> getStorageEndDate(nowNextYear)
+            BoatSpaceType.Trailer -> getTrailerEndDate(nowNextYear, reservationValidity)
+        }
+    }
+
+    fun getBoatSpaceReservationEndDateForNew(
+        boatSpaceType: BoatSpaceType,
+        reservationValidity: ReservationValidity,
     ): LocalDate {
         val now = timeProvider.getCurrentDate()
+
         return when (boatSpaceType) {
             BoatSpaceType.Slip -> getSlipEndDate(now, reservationValidity)
             BoatSpaceType.Winter -> getWinterEndDate(now)

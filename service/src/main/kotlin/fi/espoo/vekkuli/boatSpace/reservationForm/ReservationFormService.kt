@@ -214,7 +214,7 @@ class ReservationFormService(
         val data =
             ReservationResultSuccess(
                 timeProvider.getCurrentDate(),
-                seasonalService.getBoatSpaceReservationEndDate(
+                seasonalService.getBoatSpaceReservationEndDateForNew(
                     reservation.boatSpaceType,
                     input.reservationValidity
                 ),
@@ -584,7 +584,7 @@ class ReservationFormService(
 
         addReservationWarnings(input.reservationId, boatSpace, boat)
 
-        if (boatSpace.type == BoatSpaceType.Winter) {
+        if (boatSpace.type == BoatSpaceType.Winter || boatSpace.type == BoatSpaceType.Trailer) {
             updateReservationWithStorageTypeRelatedInformation(input, reserverId)
         }
 

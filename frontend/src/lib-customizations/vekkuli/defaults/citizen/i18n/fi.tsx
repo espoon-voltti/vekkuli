@@ -53,6 +53,10 @@ export default {
         fi: 'Suomi',
         sv: 'Svenska',
         en: 'English'
+      },
+      dimensions: {
+        widthInMeters: 'Leveys (m)',
+        lengthInMeters: 'Pituus (m)'
       }
     },
     openExpandingInfo: 'Avaa lisätietokenttä',
@@ -176,8 +180,13 @@ export default {
       submit: {
         continueToPayment: 'Jatka maksamaan',
         confirmReservation: 'Vahvista varaus'
+      },
+      trailerInfo: {
+        title: 'Trailerin tiedot',
+        registrationCode: 'Rekisteritunnus'
       }
     },
+
     noRegistererNumber: 'Ei rekisterinumeroa',
     certify: 'Vakuutan antamani tiedot oikeiksi',
     agreeToRules:
