@@ -7,14 +7,14 @@ import {
   formatDimensions,
   formatPlaceIdentifier
 } from 'citizen-frontend/shared/formatters'
-import {ReservationPriceInfo} from "../pages/fillInformation/helpers";
+import {RevisedPriceForReservation} from "../RevisedPriceForReservation";
 import ReserverPriceInfo from "./ReserverPriceInfo";
 
 export default React.memo(function ReservedSpace({
-  reservation, reservationPriceInfo
+  reservation, revisedPriceForReservation
 }: {
   reservation: BoatSpaceReservation
-  reservationPriceInfo: ReservationPriceInfo
+  revisedPriceForReservation: RevisedPriceForReservation
 }) {
   const i18n = useTranslation()
   const { netPrice, totalPrice, vatValue, boatSpace } = reservation
@@ -100,7 +100,7 @@ export default React.memo(function ReservedSpace({
           </div>
         </div>
         <ReserverPriceInfo
-            reservationPriceInfo={reservationPriceInfo}
+            revisedPriceForReservation={revisedPriceForReservation}
         />
       </div>
     </>

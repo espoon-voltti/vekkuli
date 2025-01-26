@@ -14,7 +14,6 @@ import fi.espoo.vekkuli.utils.discountedPriceInCents
 import fi.espoo.vekkuli.utils.formatAsShortDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.time.LocalDate
@@ -30,13 +29,11 @@ class ReservationPaymentService(
         citizen: CitizenWithDetails,
         reservation: BoatSpaceReservationDetails
     ): PaytrailPaymentResponse {
-        val logger = LoggerFactory.getLogger(ReservationPaymentService::class.java)
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
         val amount = calculatePriceWithDiscount(reservation)
-        // TODO: throw error?
         if (amount <= 0) {
-            logger.error("Payment amount must be greater than zero, amount: $amount, reservationId: $reservation.id")
+            throw IllegalArgumentException("Payment amount must be greater than zero, reservationId: $reservation.id")
         }
         val category = "MYY255"
         val payment =

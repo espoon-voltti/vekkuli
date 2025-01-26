@@ -49,13 +49,15 @@ class ReservationController(
             )
 
         val boatsByOrganization = boatService.getBoatsForReserversOrganizations(citizenId)
-
+        val reservationResponse = reservationResponseMapper.toReservationResponse(reservation)
+        val revisedPrice = reservationResponse.revisedPrice
         return UnfinishedReservationResponse(
-            reservationResponseMapper.toReservationResponse(reservation),
+            reservationResponse,
             boats.toCitizenBoatListResponse(),
             reserverService.getMunicipalities().toMunicipalityListResponse(),
             organizations.toCitizenOrganizationListResponse(),
-            boatsByOrganization
+            boatsByOrganization,
+            reservationResponseMapper.toOrganizationRevisedPrices(revisedPrice.revisedPriceInCents, organizations),
         )
     }
 
