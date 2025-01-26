@@ -44,7 +44,8 @@ class RenewReservationTest : PlaywrightTest() {
 
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
-            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()

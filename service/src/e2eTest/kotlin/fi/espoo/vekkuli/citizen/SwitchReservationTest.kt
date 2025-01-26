@@ -65,7 +65,8 @@ class SwitchReservationTest : PlaywrightTest() {
 
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
-            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -123,8 +124,8 @@ class SwitchReservationTest : PlaywrightTest() {
             userAgreementSection.agreementCheckbox.check()
             switchSpaceFormPage.reserveButton.click()
 
-            val paymentPage = PaymentPage(page)
-            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }

@@ -20,7 +20,7 @@ export default React.memo(function ConfirmationPage() {
   )
 
   return (
-    <MainSection>
+    <MainSection dataTestId="confirmation-page">
       <StepIndicator step="confirmation" />
       <div className="container">
         <Content reservation={reservation} />

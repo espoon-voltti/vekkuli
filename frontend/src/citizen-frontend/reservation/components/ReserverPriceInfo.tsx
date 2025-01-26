@@ -47,7 +47,7 @@ export default React.memo(function ReserverPriceInfo({
                     <BlueInfoCircle/>
                 </span>
             </div>
-            <p className="column">
+            <p data-testid="reservation-info-text" className="column">
                 {switchText && (<span>{switchText}</span>)}
                 {showDiscountText && (<span>{discountText}</span>)}
             </p>

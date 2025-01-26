@@ -115,7 +115,7 @@ class ReservationFormNavigationTest : PlaywrightTest() {
 
         assertNoFullPageReload {
             SwitchSpaceFormPage(page).fillFormAndSubmit()
-            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+            assertThat(ConfirmationPage(page).reservationSuccessNotification).isVisible()
         }
     }
 
