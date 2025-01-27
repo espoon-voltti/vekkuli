@@ -1,14 +1,10 @@
 package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
-import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
-import fi.espoo.vekkuli.pages.employee.ReservationListPage
-import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage as ReserveBoatSpaceEmployeePage
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Disabled
@@ -16,11 +12,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
-import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
+import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage as ReserveBoatSpaceEmployeePage
 
 @ActiveProfiles("test")
-class ReserveBoatSpaceTest : PlaywrightTest() {
+class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `citizen can change the language`() {
         val citizenHomePage = CitizenHomePage(page)
@@ -517,7 +513,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         val boatSpacePrice = "418,00"
         val expectedPrice = "209,00"
         try {
-            setDiscountForReserver("Virtanen", discount)
+            setDiscountForReserver(page, "Virtanen", discount)
             val formPage = fillReservationInfoAndAssertCorrectDiscount(discount, expectedPrice, boatSpacePrice)
             val submitButton = formPage.submitButton
             submitButton.click()
@@ -530,7 +526,9 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
             val paymentReservedSpaceSection = confirmationPage.getReservedSpaceSection()
-            assertThat(paymentReservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: $boatSpacePrice €")
+            assertThat(
+                paymentReservedSpaceSection.fields.getField("Hinta").last()
+            ).containsText("Yhteensä: $boatSpacePrice €")
 
             val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
             assertThat(paymentDiscountText).containsText("$discount %")
@@ -546,7 +544,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         val expectedPrice = "0,00"
         val boatSpacePrice = "418,00"
         try {
-            setDiscountForReserver("Virtanen", discount)
+            setDiscountForReserver(page, "Virtanen", discount)
             val formPage = fillReservationInfoAndAssertCorrectDiscount(discount, expectedPrice, boatSpacePrice)
             val confirmButton = formPage.confirmButton
             confirmButton.click()
@@ -557,7 +555,9 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
             val paymentReservedSpaceSection = confirmationPage.getReservedSpaceSection()
-            assertThat(paymentReservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: $boatSpacePrice €")
+            assertThat(
+                paymentReservedSpaceSection.fields.getField("Hinta").last()
+            ).containsText("Yhteensä: $boatSpacePrice €")
 
             val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
             assertThat(paymentDiscountText).containsText("$discount %")
@@ -568,17 +568,18 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
-    fun `discountIsAppliedFromSelectedReserver`() {
+    fun discountIsAppliedFromSelectedReserver() {
         val citizenDiscount = 50
         val organizationDiscount = 100
         val boatSpacePrice = "418,00"
         val expectedPriceForCitizen = "209,00"
         val expectedPriceForOrganization = "0,00"
         try {
-            setDiscountForReserver("Virtanen", citizenDiscount)
-            setDiscountForReserver("Espoon Pursiseura", organizationDiscount, false)
+            setDiscountForReserver(page, "Virtanen", citizenDiscount)
+            setDiscountForReserver(page, "Espoon Pursiseura", organizationDiscount, false)
 
-            val formPage = fillReservationInfoAndAssertCorrectDiscount(citizenDiscount, expectedPriceForCitizen, boatSpacePrice)
+            val formPage =
+                fillReservationInfoAndAssertCorrectDiscount(citizenDiscount, expectedPriceForCitizen, boatSpacePrice)
 
             val organizationSection = formPage.getOrganizationSection()
             organizationSection.reserveForOrganization.click()
@@ -591,8 +592,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             handleError(e)
         }
     }
-
-
 
     @Test
     fun cancelReservationFromForm() {
@@ -767,7 +766,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     private fun fillReservationInfoAndAssertCorrectDiscount(
         discount: Int,
         expectedPrice: String,
-        boatSpacePrice: String): BoatSpaceFormPage {
+        boatSpacePrice: String
+    ): BoatSpaceFormPage {
         CitizenHomePage(page).loginAsOliviaVirtanen()
 
         val reservationPage = ReserveBoatSpacePage(page)
@@ -808,51 +808,5 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         assertThat(discountText).containsText("$discount %")
         assertThat(discountText).containsText("$expectedPrice €")
         return formPage
-    }
-
-    private fun setDiscountForReserver(
-        reserverName: String,
-        discount: Int,
-        doLogin: Boolean = true
-    ) {
-        val listingPage = reservationListPage(doLogin)
-        listingPage
-            .getByDataTestId("reserver-name")
-            .getByText(reserverName)
-            .first()
-            .click()
-        val citizenDetails = EmployeeCitizenDetailsPage(page)
-        citizenDetails.exceptionsNavi.click()
-        val discount0 = page.getByTestId("reserver_discount_0")
-        assertThat(discount0).isChecked()
-        assertThat(citizenDetails.getByDataTestId("exceptions-tab-attention")).hasClass("attention")
-        page.getByTestId("reserver_discount_$discount").check()
-    }
-
-    private fun reservationListPage(doLogin: Boolean = true): ReservationListPage {
-        val employeeHome = EmployeeHomePage(page)
-        if (doLogin) {
-            employeeHome.employeeLogin()
-        }
-
-        val listingPage = ReservationListPage(page)
-        listingPage.navigateTo()
-        return listingPage
-    }
-
-    @Test
-    fun `show error message after failed payment`() {
-        CitizenHomePage(page).loginAsMikkoVirtanen()
-
-        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
-        reserveBoatSpacePage.navigateToPage()
-        reserveBoatSpacePage.startReservingBoatSpaceB314()
-
-        BoatSpaceFormPage(page).fillFormAndSubmit()
-
-        val paymentPage = PaymentPage(page)
-        paymentPage.nordeaFailedButton.click()
-
-        assertThat(paymentPage.reservationFailedNotification).isVisible()
     }
 }

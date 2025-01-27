@@ -13,15 +13,15 @@ class CitizenHomePage(
     }
 
     fun loginAsOliviaVirtanen() {
-        loginAsCitizen("031298-988S")
+        loginAsCitizen(oliviaVirtanenSsn)
     }
 
     fun loginAsLeoKorhonen() {
-        loginAsCitizen("150499-911U")
+        loginAsCitizen(leoKorhonenSsn)
     }
 
     fun loginAsMikkoVirtanen() {
-        loginAsCitizen("010106A957V")
+        loginAsCitizen(mikkoVirtanenSsn)
     }
 
     fun loginAsCitizen(ssn: String) {
@@ -38,4 +38,10 @@ class CitizenHomePage(
 
     val boatSearchLink = page.getByRole(AriaRole.LINK, Page.GetByRoleOptions().setName("Venepaikat").setExact(true))
     val openFormButton = page.getByRole(AriaRole.LINK, Page.GetByRoleOptions().setName("Selaile vapaita venepaikkoja"))
+
+    companion object {
+        val oliviaVirtanenSsn = "031298-988S"
+        val leoKorhonenSsn = "150499-911U"
+        val mikkoVirtanenSsn = "010106A957V"
+    }
 }
