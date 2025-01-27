@@ -41,22 +41,21 @@ class ReservationController(
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
         val boatSpace = boatSpaceRepository.getBoatSpace(reservation.boatSpaceId) ?: throw NotFound()
 
-        val organizationsThatCanReserve =
+        val organizations =
             organizationService.getOrganizationsForReservation(
                 citizenId,
                 reservation,
                 boatSpace.type
             )
 
-        val organizationIds = organizationsThatCanReserve.map { it.id }
-        val orgBoats = boatService.getBoatsForOrganizations(organizationIds)
+        val boatsByOrganization = boatService.getBoatsForOrganizations(organizations.map { it.id })
 
         return UnfinishedReservationResponse(
             reservationResponseMapper.toReservationResponse(reservation),
             boats.toCitizenBoatListResponse(),
             reserverService.getMunicipalities().toMunicipalityListResponse(),
-            organizationsThatCanReserve.toCitizenOrganizationListResponse(),
-            orgBoats
+            organizations.toCitizenOrganizationListResponse(),
+            boatsByOrganization
         )
     }
 
