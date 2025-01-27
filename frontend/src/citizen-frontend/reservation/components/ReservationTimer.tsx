@@ -1,8 +1,10 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { Loader } from 'lib-components/Loader'
 import { Container } from 'lib-components/dom'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import { unfinishedReservationQuery } from 'citizen-frontend/reservation/queries'
 import { useQueryResult } from 'lib-common/query'
 
 import { unfinishedReservationExpirationQuery } from '../queries'
@@ -12,53 +14,70 @@ export default React.memo(function ReservationTimer() {
   return (
     <Container>
       <Loader results={[remainingTime]} allowFailure>
-        {(loadedTime) => <TimeRemaining time={loadedTime} />}
+        {(loadedRemainingSeconds) => (
+          <TimeRemaining seconds={loadedRemainingSeconds} />
+        )}
       </Loader>
     </Container>
   )
 })
 
 const TimeRemaining = React.memo(function TimeRemaining({
-  time
+  seconds
 }: {
-  time: number
+  seconds: number
 }) {
   const navigate = useNavigate()
-  const startTime = useRef(new Date().getTime())
-  const [remainingTime, setRemainingTime] = useState(time || 0)
+  const queryClient = useQueryClient()
+  const [remainingTime, setRemainingTime] = useState(seconds || 0)
 
   useEffect(() => {
+    setRemainingTime(seconds)
+  }, [seconds])
+
+  useEffect(() => {
+    const startTime = new Date().getTime()
     const handleNavigation = async () => {
+      await queryClient.resetQueries({
+        queryKey: unfinishedReservationQuery().queryKey
+      })
       return navigate('/kuntalainen/venepaikka')
     }
     const intervalId = setInterval(() => {
-      const elapsedTime = Math.floor(
-        (new Date().getTime() - startTime.current) / 1000
-      )
-      const updatedTime = Math.max(time - elapsedTime, 0)
+      const elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000)
+      const updatedTime = Math.max(remainingTime - elapsedTime, 0)
 
-      setRemainingTime(updatedTime)
       if (updatedTime <= 0) {
+        clearInterval(intervalId)
         handleNavigation().catch((e) => console.error(e))
+      } else {
+        setRemainingTime(updatedTime)
       }
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [navigate, startTime, setRemainingTime, time])
+  }, [queryClient, navigate, setRemainingTime, remainingTime])
 
   if (remainingTime <= 0) {
     return null
   }
 
-  const minutes = Math.floor(remainingTime / 60)
-  const seconds = remainingTime % 60
+  const remainingMinutes: number = Math.floor(remainingTime / 60)
+  const remainingSeconds: number = remainingTime % 60
 
   return (
     <div role="timer" id="timer" className="timer has-text-centered p-3">
       Sinulla on
-      <span className="has-text-weight-bold"> {minutes} minuuttia</span> ja
-      <span className="has-text-weight-bold"> {seconds} sekuntia</span> aikaa
-      vahvistaa venepaikkavaraus maksamalla.
+      <span className="has-text-weight-bold">
+        {' '}
+        {remainingMinutes} minuuttia
+      </span>{' '}
+      ja
+      <span className="has-text-weight-bold">
+        {' '}
+        {remainingSeconds} sekuntia
+      </span>{' '}
+      aikaa vahvistaa venepaikkavaraus maksamalla.
     </div>
   )
 })

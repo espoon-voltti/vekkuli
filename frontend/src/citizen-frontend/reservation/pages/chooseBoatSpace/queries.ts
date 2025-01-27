@@ -7,6 +7,7 @@ import {
 import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces'
 import { createQueryKeys } from 'citizen-frontend/query'
 import { mutation, query } from 'lib-common/query'
+
 import { queryKeys as sharedQueryKeys } from '../../queries'
 
 const reservationQueryKeys = createQueryKeys('free-spaces', {
@@ -27,8 +28,7 @@ export const reserveSpaceMutation = mutation({
   api: reserveSpace,
   invalidateQueryKeys: () => [
     reservationQueryKeys.allSearchesToFreeSpaces(),
-    sharedQueryKeys.unfinishedReservation(),
-    sharedQueryKeys.unfinishedReservationExpiration()
+    sharedQueryKeys.unfinishedReservation()
   ]
 })
 
@@ -36,8 +36,7 @@ export const startSwitchSpaceMutation = mutation({
   api: startToSwitchBoatSpace,
   invalidateQueryKeys: () => [
     reservationQueryKeys.allSearchesToFreeSpaces(),
-    sharedQueryKeys.unfinishedReservation(),
-    sharedQueryKeys.unfinishedReservationExpiration()
+    sharedQueryKeys.unfinishedReservation()
   ]
 })
 

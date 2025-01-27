@@ -2,7 +2,10 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.pages.advanceJSDateTime
 import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertFalse
@@ -159,6 +162,20 @@ class ReservationFormNavigationTest : PlaywrightTest() {
 
         reserveBoatSpacePage.navigateToPage()
         assertThat(PaymentPage(page).header).isVisible()
+    }
+
+    @Test
+    fun `reservation timer running out should redirect back to boat space search`() {
+        val expirationTime = (BoatSpaceConfig.SESSION_TIME_IN_SECONDS + 1).toLong()
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        assertThat(BoatSpaceFormPage(page).header).isVisible()
+        mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusSeconds(expirationTime))
+        page.advanceJSDateTime(expirationTime.toInt())
+        assertThat(reserveBoatSpacePage.header).isVisible()
+        assertThat(BoatSpaceFormPage(page).header).not().isVisible()
     }
 
     private fun assertFullPageReload(operation: () -> Unit) {
