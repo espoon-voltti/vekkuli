@@ -128,10 +128,12 @@ const sv: Translations = {
       missingFieldsInfoBox:
         'Ange först båttyp och mått för att se vilka platser som passar din båt.',
       filters: {
+        title: 'Sök båtplats',
         boatSpaceType: 'Sök plats',
         harbor: 'Hamnen',
         amenities: 'Faciliteter',
         boatType: 'Båttyp',
+        storageTypeAmenities: 'Förråd typ',
         branchSpecific: {
           Slip: {
             width: 'Båtens bredd (m)',

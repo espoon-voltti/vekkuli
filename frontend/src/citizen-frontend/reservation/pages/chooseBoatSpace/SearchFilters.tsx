@@ -1,3 +1,4 @@
+import { Column, Columns } from 'lib-components/dom'
 import { CheckboxField } from 'lib-components/form/CheckboxField'
 import { NumberField } from 'lib-components/form/NumberField'
 import { RadioField } from 'lib-components/form/RadioField'
@@ -17,12 +18,13 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
   const i18n = useTranslation()
   const { boatSpaceType, boatSpaceUnionForm } = useFormFields(bind)
   const { form, branch } = useFormUnion(boatSpaceUnionForm)
-  const { boatType, width, length, amenities, harbor } = useFormFields(form)
+  const { boatType, width, length, amenities, harbor, storageAmenities } =
+    useFormFields(form)
 
   return (
     <form className="block" data-testid="boat-space-filter">
       <h2 className="subtitle" id="search-page-header">
-        Venepaikan hakuehdot
+        {i18n.reservation.searchPage.filters.title}
       </h2>
       <div className="block">
         <RadioField
@@ -42,8 +44,18 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
           />
         </div>
       )}
-      <div className="columns">
-        <div className="column">
+      {storageAmenities.state.options.length !== 0 && (
+        <RadioField
+          id="storage-type-amenities"
+          name="amenities"
+          label={i18n.reservation.searchPage.filters.storageTypeAmenities}
+          bind={storageAmenities}
+          horizontal={true}
+          required={true}
+        />
+      )}
+      <Columns>
+        <Column>
           <NumberField
             id="boat-width"
             required={true}
@@ -57,8 +69,8 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
             max={9999999}
             precision={2}
           />
-        </div>
-        <div className="column">
+        </Column>
+        <Column>
           <NumberField
             id="boat-length"
             label={
@@ -72,8 +84,8 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
             max={9999999}
             precision={2}
           />
-        </div>
-      </div>
+        </Column>
+      </Columns>
       {amenities.state.options.length === 0 ? null : (
         <div className="block">
           <CheckboxField

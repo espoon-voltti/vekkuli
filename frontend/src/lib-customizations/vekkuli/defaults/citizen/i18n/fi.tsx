@@ -133,10 +133,12 @@ export default {
       missingFieldsInfoBox:
         'Anna ensin paikan mitat niin näet veneellesi sopivat paikat.',
       filters: {
+        title: 'Venepaikan haku',
         boatSpaceType: 'Haettava paikka',
         harbor: 'Satama',
         amenities: 'Varusteet',
         boatType: 'Venetyyppi',
+        storageTypeAmenities: 'Säilytystapa',
         branchSpecific: {
           Slip: {
             width: 'Veneen leveys (m)',

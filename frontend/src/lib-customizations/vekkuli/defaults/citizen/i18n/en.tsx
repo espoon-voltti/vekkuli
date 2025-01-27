@@ -134,10 +134,12 @@ const en: Translations = {
       missingFieldsInfoBox:
         'First provide the boat type and dimensions to see suitable spaces for your boat.',
       filters: {
+        title: 'Boat space reservation',
         boatSpaceType: 'Space type',
         harbor: 'Harbor',
         amenities: 'Amenities',
         boatType: 'Boat type',
+        storageTypeAmenities: 'Storage type',
         branchSpecific: {
           Slip: {
             width: 'Boat width (m)',

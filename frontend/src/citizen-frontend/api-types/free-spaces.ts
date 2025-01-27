@@ -32,6 +32,7 @@ export interface SearchFreeSpacesParams {
   boatType?: BoatType
   spaceType: BoatSpaceType
   amenities: BoatSpaceAmenity[]
+  storageAmenity?: string
   harbor: string[]
   width: number
   length: number

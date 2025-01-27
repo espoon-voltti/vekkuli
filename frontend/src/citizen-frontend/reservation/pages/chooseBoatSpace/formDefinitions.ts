@@ -20,6 +20,7 @@ import {
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
+
 import { StoredSearchState } from '../useStoredSearchState'
 
 const searchSpaceParamsForm = object({
@@ -27,6 +28,7 @@ const searchSpaceParamsForm = object({
   width: required(positiveNumber()),
   length: required(positiveNumber()),
   amenities: multiSelect<BoatSpaceAmenity>(),
+  storageAmenities: oneOf<BoatSpaceAmenity>(),
   harbor: multiSelect<Harbor>()
 })
 
@@ -65,7 +67,10 @@ export const searchFreeSpacesForm = mapped(
         output.boatSpaceUnionForm.value.harbor?.map((harbor) => harbor.value) ||
         [],
       width: output.boatSpaceUnionForm.value.width,
-      length: output.boatSpaceUnionForm.value.length
+      length: output.boatSpaceUnionForm.value.length,
+      storageAmenity: output.boatSpaceUnionForm.value.storageAmenities
+        ? output.boatSpaceUnionForm.value.storageAmenities
+        : undefined
     }
     if (boatTypeValue) {
       result.boatType = boatTypeValue
@@ -123,6 +128,7 @@ export const initialUnionFormState = (
   let branchAmenities: BoatSpaceAmenity[] = []
   let branchHarbors: Harbor[] = []
   let branchBoatTypes: BoatType[] = []
+  let storageAmenities: BoatSpaceAmenity[] = []
 
   switch (branch) {
     case 'Slip':
@@ -137,6 +143,9 @@ export const initialUnionFormState = (
       branchHarbors = harbors.filter((h) =>
         ['Laajalahti', 'Otsolahti', 'Suomenoja'].includes(h.label)
       )
+      break
+    case 'Storage':
+      storageAmenities = ['Trailer', 'Buck']
       break
   }
   const selectedHarbors = storedSearchState?.harbor
@@ -173,7 +182,15 @@ export const initialUnionFormState = (
         }))
       },
       width: storedSearchState?.width ?? positiveNumber.empty().value,
-      length: storedSearchState?.length ?? positiveNumber.empty().value
+      length: storedSearchState?.length ?? positiveNumber.empty().value,
+      storageAmenities: {
+        domValue: storedSearchState?.storageAmenity || 'Trailer',
+        options: storageAmenities.map((type) => ({
+          domValue: type,
+          label: i18n.boatSpace.amenities[type],
+          value: type
+        }))
+      }
     }
   }
 }

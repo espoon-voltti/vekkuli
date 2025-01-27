@@ -31,6 +31,7 @@ class FreeSpacesController(
         @RequestParam @Min(0) width: BigDecimal?,
         @RequestParam @Min(0) length: BigDecimal?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
+        @RequestParam storageAmenity: BoatSpaceAmenity?,
         @RequestParam storageType: BoatSpaceAmenity?,
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest,
@@ -41,12 +42,13 @@ class FreeSpacesController(
                 "GET_FREE_SPACES",
             )
         }
+
         val freeSpacesByHarbor =
             boatSpaceService.getUnreservedBoatSpaceOptions(
                 boatType,
                 width,
                 length,
-                amenities,
+                if (storageAmenity !== null) listOf(storageAmenity) else amenities,
                 storageType,
                 spaceType,
                 harbor
