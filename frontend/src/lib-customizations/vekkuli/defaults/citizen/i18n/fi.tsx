@@ -183,6 +183,11 @@ export default {
         continueToPayment: 'Jatka maksamaan',
         confirmReservation: 'Vahvista varaus'
       },
+      storageTypeInfo: {
+        title: 'Säilytyspaikan tiedot',
+        buckWithTentInfo:
+          'Huomioi, että veneen ja pukkin suojatelttoineen tulee mahtua varatun paikan sisään.'
+      },
       trailerInfo: {
         title: 'Trailerin tiedot',
         registrationCode: 'Rekisteritunnus'

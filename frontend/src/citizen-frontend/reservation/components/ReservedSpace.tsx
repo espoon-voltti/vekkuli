@@ -7,17 +7,25 @@ import {
   formatDimensions,
   formatPlaceIdentifier
 } from 'citizen-frontend/shared/formatters'
-import {RevisedPriceForReservation} from "../RevisedPriceForReservation";
-import ReserverPriceInfo from "./ReserverPriceInfo";
+
+import { RevisedPriceForReservation } from '../RevisedPriceForReservation'
+
+import ReserverPriceInfo from './ReserverPriceInfo'
 
 export default React.memo(function ReservedSpace({
-  reservation, revisedPriceForReservation
+  reservation,
+  revisedPriceForReservation
 }: {
   reservation: BoatSpaceReservation
   revisedPriceForReservation: RevisedPriceForReservation
 }) {
   const i18n = useTranslation()
   const { netPrice, totalPrice, vatValue, boatSpace } = reservation
+
+  const hasStorageType =
+    reservation.boatSpace.type === 'Winter' ||
+    reservation.boatSpace.type === 'Storage'
+
   return (
     <>
       <div className="form-section" data-testid="reserved-space">
@@ -57,14 +65,14 @@ export default React.memo(function ReservedSpace({
         </div>
         <div className="columns">
           <div className="column is-one-quarter">
-            {reservation.boatSpace.type !== 'Winter' && (
+            {!hasStorageType && (
               <TextField
                 label="Varuste"
                 value={i18n.boatSpace.amenities[boatSpace.amenity]}
                 readonly={true}
               />
             )}
-            {reservation.boatSpace.type === 'Winter' && (
+            {hasStorageType && (
               <TextField
                 label="Säilytystapa"
                 value={
@@ -100,7 +108,7 @@ export default React.memo(function ReservedSpace({
           </div>
         </div>
         <ReserverPriceInfo
-            revisedPriceForReservation={revisedPriceForReservation}
+          revisedPriceForReservation={revisedPriceForReservation}
         />
       </div>
     </>

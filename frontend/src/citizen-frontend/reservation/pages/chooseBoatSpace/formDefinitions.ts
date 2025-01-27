@@ -67,13 +67,14 @@ export const searchFreeSpacesForm = mapped(
         output.boatSpaceUnionForm.value.harbor?.map((harbor) => harbor.value) ||
         [],
       width: output.boatSpaceUnionForm.value.width,
-      length: output.boatSpaceUnionForm.value.length,
-      storageAmenity: output.boatSpaceUnionForm.value.storageAmenities
-        ? output.boatSpaceUnionForm.value.storageAmenities
-        : undefined
+      length: output.boatSpaceUnionForm.value.length
     }
     if (boatTypeValue) {
       result.boatType = boatTypeValue
+    }
+
+    if (output.boatSpaceUnionForm.value.storageAmenities) {
+      result.storageAmenity = output.boatSpaceUnionForm.value.storageAmenities
     }
 
     return result

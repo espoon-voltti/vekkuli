@@ -31,6 +31,7 @@ import {
 import { fillBoatSpaceReservationMutation } from './queries'
 import ReserverSection from './sections/Reserver'
 import UserAgreementsSection from './sections/UserAgreements'
+import AllYearStorageType from './sections/allYearStorageType/StorageType'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import TrailerStorageType from './sections/trailerStorageType/TrailerStorageType'
@@ -115,11 +116,15 @@ export default React.memo(function Form({ reservation }: FormProperties) {
     }
   }
 
+  // Update storage type based on the form values
   const updatedReservation = {
     ...reservation.reservation,
     storageType: (branch === 'Winter'
       ? spaceTypeInfoForm.state.storageType.domValue
-      : undefined) as StorageType | undefined
+      : branch === 'Storage' &&
+          spaceTypeInfoForm.state.storageInfo.branch === 'Buck'
+        ? spaceTypeInfoForm.state.storageInfo.state.domValue
+        : 'Trailer') as StorageType | undefined
   }
 
   const getSelectedOrganizationId = () => {
@@ -170,6 +175,9 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           )}
           {branch === 'Trailer' && (
             <TrailerStorageType bind={spaceTypeInfoForm} />
+          )}
+          {branch === 'Storage' && (
+            <AllYearStorageType bind={spaceTypeInfoForm} />
           )}
           <FormSection>
             <ReservedSpace

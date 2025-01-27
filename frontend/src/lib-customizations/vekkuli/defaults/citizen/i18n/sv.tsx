@@ -178,6 +178,11 @@ const sv: Translations = {
         continueToPayment: 'Fortsätt till betalning',
         confirmReservation: 'Bekräfta bokning'
       },
+      storageTypeInfo: {
+        title: 'Information om förvaringsplatsen',
+        buckWithTentInfo:
+          'Observera att båten och stöttan, inklusive deras skyddstält, måste rymmas inom det reserverade utrymmet.'
+      },
       trailerInfo: {
         title: 'Information om släpvagnen',
         registrationCode: 'Registernummer'
