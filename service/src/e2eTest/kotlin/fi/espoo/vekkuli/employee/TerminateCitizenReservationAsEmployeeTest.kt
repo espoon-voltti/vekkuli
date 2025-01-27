@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.service.TemplateEmailService
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
@@ -139,6 +142,10 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
             // Check that the message is sent
             assertThat(citizenDetailsPage.messages.first()).containsText(defaultMessageTitle)
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(SendEmailServiceMock.emails.get(0).contains("Venepaikka: Haukilahti B 001 on irtisanottu virkailijan toimesta"))
         } catch (e: AssertionError) {
             handleError(e)
         }
