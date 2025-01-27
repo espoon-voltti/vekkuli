@@ -64,7 +64,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentRepository: PaymentRepository
 
-
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
@@ -518,9 +517,9 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
             agreeToRules = true,
         )
 
-    private fun createExpensiveTestBoatSpace(): Int {
+    private fun createExpensiveTestBoatSpace(id: Int = 999999): Int {
         val currentlyMostExpensiveSpacePriceId = 6
-        val spaceId = 999999
+        val spaceId = id
 
         insertDevBoatSpace(
             DevBoatSpace(
@@ -543,7 +542,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Test
     fun `should set the switched reservation to confirmed state if price is zero and add a payment entry`() {
         val originalReservation = createTestReservationForEspooCitizen()
-        val expensiveSpaceId = createExpensiveTestBoatSpace()
+        val expensiveSpaceId = createExpensiveTestBoatSpace(989898)
 
         reserverRepository.updateDiscount(citizenIdMikko, 100)
 

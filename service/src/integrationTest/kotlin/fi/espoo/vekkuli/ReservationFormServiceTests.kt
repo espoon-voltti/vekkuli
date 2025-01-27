@@ -9,7 +9,6 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
-import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -52,6 +51,11 @@ class ReservationFormServiceTests : IntegrationTestBase() {
 
     @Autowired
     private lateinit var paymentRepository: PaymentRepository
+
+    @BeforeEach
+    fun resetDiscount() {
+        reserverRepository.updateDiscount(citizenIdOlivia, 0)
+    }
 
     @BeforeEach
     override fun resetDatabase() {
