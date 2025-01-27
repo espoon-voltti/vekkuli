@@ -482,6 +482,8 @@ INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sai
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
+DELETE FROM reservation_period;
+
 INSERT INTO reservation_period(is_espoo_citizen, boat_space_type, operation, start_month, start_day, end_month, end_day)
 VALUES
     -- For Espoo citizens
