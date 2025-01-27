@@ -48,7 +48,7 @@ class ReservationController(
                 boatSpace.type
             )
 
-        val boatsByOrganization = boatService.getBoatsForOrganizations(organizations.map { it.id })
+        val boatsByOrganization = boatService.getBoatsForReserversOrganizations(citizenId)
 
         return UnfinishedReservationResponse(
             reservationResponseMapper.toReservationResponse(reservation),

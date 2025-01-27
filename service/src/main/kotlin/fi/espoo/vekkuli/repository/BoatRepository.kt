@@ -8,7 +8,7 @@ import java.util.*
 interface BoatRepository {
     fun getBoatsForReserver(reserverId: UUID): List<Boat>
 
-    fun getBoatsForOrganizations(organizationIds: List<UUID>): Map<String, List<Boat>>
+    fun getBoatsForReserversOrganizations(reserverId: UUID): Map<String, List<Boat>>
 
     fun getBoat(boatId: Int): Boat?
 

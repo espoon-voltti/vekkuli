@@ -44,17 +44,24 @@ class JdbiBoatRepository(
             }
         }
 
-    override fun getBoatsForOrganizations(organizationIds: List<UUID>): Map<String, List<Boat>> =
+    override fun getBoatsForReserversOrganizations(reserverId: UUID): Map<String, List<Boat>> =
         jdbi.withHandleUnchecked { handle ->
             val query = """
+            WITH reserver_organizations AS (
+                SELECT om.organization_id
+                FROM organization_member om
+                WHERE om.member_id = :reserverId
+            )
             SELECT * FROM boat b
             WHERE 
-                b.reserver_id IN (<organizationIds>)
-                AND b.deleted_at IS NULL;
+                b.reserver_id IN (
+                    SELECT organization_id 
+                    FROM reserver_organizations
+                );
         """
             handle
                 .createQuery(query)
-                .bindList("organizationIds", organizationIds)
+                .bind("reserverId", reserverId)
                 .mapTo<Boat>()
                 .list()
                 .groupBy { it.reserverId.toString() }

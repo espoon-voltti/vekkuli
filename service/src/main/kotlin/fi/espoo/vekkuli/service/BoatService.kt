@@ -14,8 +14,8 @@ class BoatService(
 ) {
     fun getBoatsForReserver(reserverId: UUID): List<Boat> = boatRepository.getBoatsForReserver(reserverId)
 
-    fun getBoatsForOrganizations(organizationIds: List<UUID>): Map<String, List<Boat>> =
-        boatRepository.getBoatsForOrganizations(organizationIds)
+    fun getBoatsForReserversOrganizations(reserverId: UUID): Map<String, List<Boat>> =
+        boatRepository.getBoatsForReserversOrganizations(reserverId)
 
     fun getBoat(boatId: Int): Boat? = boatRepository.getBoat(boatId)
 
