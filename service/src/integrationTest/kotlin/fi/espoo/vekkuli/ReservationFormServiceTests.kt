@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.repository.TrailerRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
@@ -47,6 +48,9 @@ class ReservationFormServiceTests : IntegrationTestBase() {
 
     @Autowired
     private lateinit var trailerRepository: TrailerRepository
+
+    @Autowired
+    private lateinit var reserverRepository: ReserverRepository
 
     @BeforeEach
     override fun resetDatabase() {
@@ -254,5 +258,27 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         assertEquals(madeReservation.id, reservation!!.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Payment, reservation.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, reservation.creationType, "Status should be renewal")
+    }
+
+    @Test
+    fun `should set the new reservation to confirmed if price is zero`() {
+        val madeReservation = testUtils.createReservationInInfoState(citizenIdOlivia)
+        reserverRepository.updateDiscount(citizenIdOlivia, 100)
+
+        Mockito
+            .`when`(seasonalService.canReserveANewSpace(citizenIdOlivia, BoatSpaceType.Slip))
+            .thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        startDate = LocalDate.now(),
+                        endDate = LocalDate.now().plusDays(30),
+                        reservationValidity = ReservationValidity.FixedTerm
+                    )
+                )
+            )
+
+        reservationService.createOrUpdateReserverAndReservationForCitizen(madeReservation.id, citizenIdOlivia, reservationInput)
+        val reservation = boatReservationService.getReservationWithDependencies(madeReservation.id)
+        assertEquals(reservation?.status, ReservationStatus.Confirmed, "Status should be confirmed")
     }
 }
