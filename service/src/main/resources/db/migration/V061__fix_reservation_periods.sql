@@ -10,13 +10,12 @@ VALUES
     (true, 'Trailer', 'New', 5, 1, 12, 31),
     (true, 'Trailer', 'Renew', 4, 1, 4, 30),
     (true, 'Trailer', 'Change',  4, 1, 12, 31),
-    (true, 'Winter', 'New', 9, 1, 12, 31),
-    (true, 'Winter', 'Renew',  8, 1, 8, 31),
-    (true, 'Winter', 'Change',  8, 1, 12, 31),
-    -- The following line was changed from previous migrations
-    (true, 'Storage', 'New', 9, 1, 7, 31),
-    (true, 'Storage', 'Renew',  8, 1, 8, 31),
-    (true, 'Storage', 'Change',  8, 1, 7, 31),
+    (true, 'Winter', 'New', 9, 15, 12, 31),
+    (true, 'Winter', 'Renew',  8, 15, 9, 14),
+    (true, 'Winter', 'Change',  8, 15, 12, 31),
+    (true, 'Storage', 'New', 9, 15, 9, 14),
+    (true, 'Storage', 'Renew',  8, 15, 9, 14),
+    (true, 'Storage', 'Change',  8, 15, 8, 14),
 
     -- For non-Espoo citizens
     (false, 'Slip', 'New', 4, 1, 9, 30),
@@ -24,9 +23,9 @@ VALUES
     (false, 'Trailer', 'New', 5, 1, 12, 31),
     (false, 'Trailer', 'Change',  5, 1, 12, 31),
     (false, 'Winter', 'New', 9, 15, 12, 31),
-    (false, 'Winter', 'Change',  9, 15, 12, 31),
-    (false, 'Storage', 'New', 9, 15, 7, 31),
-    (false, 'Storage', 'Renew', 9, 1, 9, 15),
-    (false, 'Storage', 'Change',  9, 1, 7, 31),
+    (false, 'Winter', 'Change',  8, 15, 12, 31),
+    (false, 'Storage', 'New', 9, 15, 9, 14),
+    (false, 'Storage', 'Renew',  8, 15, 9, 14),
+    (false, 'Storage', 'Change',  8, 15, 8, 14),
 
     (true, 'Slip', 'SecondNew', 4, 1, 9, 30);
