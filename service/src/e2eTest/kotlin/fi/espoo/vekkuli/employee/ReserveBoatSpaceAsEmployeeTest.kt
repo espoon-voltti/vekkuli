@@ -328,7 +328,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
-            // TODO should have sent an email about winter place reservation
             assertTrue(
                 SendEmailServiceMock.emails.get(
                     0
@@ -685,8 +684,8 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertThat(reservationListPage.header).isVisible()
 
         messageService.sendScheduledEmails()
-        // TODO should send emails to organization and all representatives
-        assertEquals(1, SendEmailServiceMock.emails.size)
+        // Email is sent to both organization representative and the reserver
+        assertEquals(2, SendEmailServiceMock.emails.size)
         assertTrue(
             SendEmailServiceMock.emails.get(0).contains("foo@bar.com with subject Espoon kaupungin venepaikan varaus")
         )

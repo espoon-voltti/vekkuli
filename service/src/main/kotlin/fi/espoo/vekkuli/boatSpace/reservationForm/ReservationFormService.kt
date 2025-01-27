@@ -353,6 +353,8 @@ class ReservationFormService(
             )
             boatReservationService.markReservationEnded(originalReservation.id)
         }
+
+        sendReservationEmail(reservationId, CreationType.Renewal)
     }
 
     @Transactional
@@ -755,6 +757,14 @@ class ReservationFormService(
         val isInvoiced = reservation.status == ReservationStatus.Invoiced
         val placeName = "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}"
 
+        val placeTypeText =
+            when (reservation.type) {
+                BoatSpaceType.Winter -> "talvipaikka"
+                BoatSpaceType.Storage -> "säilytyspaikka"
+                BoatSpaceType.Slip -> "laituripaikka"
+                BoatSpaceType.Trailer -> "traileripaikka"
+            }
+
         val defaultParams =
             mapOf(
                 "reserverName" to reservation.name,
@@ -773,23 +783,31 @@ class ReservationFormService(
         )
         val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
 
+        val recipients =
+            if (reservation.reserverType == ReserverType.Organization) {
+                organizationService.getOrganizationMembers(reservation.reserverId)
+                    .map { it.email } + listOf(reservation.email)
+            } else {
+                listOf(reservation.email)
+            }
+
         val emailSettings =
             when (creationType) {
                 CreationType.New -> {
                     if (isInvoiced) {
                         EmailSettings(
                             template = "reservation_created_by_employee",
-                            recipients = listOf(reservation.email),
+                            recipients = recipients,
                             params =
                                 defaultParams
-                                    .plus("reservationDescription" to "${boatSpaceTypeToText(reservation.type.toString())} $placeName")
+                                    .plus("reservationDescription" to "$placeTypeText $placeName")
                                     .plus("invoiceAddress" to invoiceAddress)
                                     .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
                         )
                     } else {
                         EmailSettings(
                             template = "reservation_created_by_citizen",
-                            recipients = listOf(reservation.email),
+                            recipients = recipients,
                             params = defaultParams
                         )
                     }
@@ -797,17 +815,17 @@ class ReservationFormService(
                 CreationType.Switch -> {
                     EmailSettings(
                         template = "reservation_renewed_by_citizen",
-                        recipients = listOf(reservation.email),
+                        recipients = recipients,
                         params = defaultParams
                     )
                 }
                 CreationType.Renewal -> {
                     EmailSettings(
                         template = "reservation_renewed_by_employee",
-                        recipients = listOf(reservation.email),
+                        recipients = recipients,
                         params =
                             defaultParams
-                                .plus("reservationDescription" to "${boatSpaceTypeToText(reservation.type.toString())} $placeName")
+                                .plus("reservationDescription" to "$placeTypeText $placeName")
                                 .plus("invoiceAddress" to invoiceAddress)
                                 .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
                     )
