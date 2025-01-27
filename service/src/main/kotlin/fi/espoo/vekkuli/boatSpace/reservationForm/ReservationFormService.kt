@@ -229,8 +229,6 @@ class ReservationFormService(
             data.startDate,
             data.endDate
         )
-
-        sendReservationEmail(reservationId, CreationType.New)
     }
 
     @Transactional
@@ -719,7 +717,7 @@ class ReservationFormService(
         )
     }
 
-    private fun sendReservationEmail(
+    fun sendReservationEmail(
         reservationId: Int,
         creationType: CreationType,
     ) {
@@ -730,9 +728,13 @@ class ReservationFormService(
             boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)
                 ?: throw BadRequest("Boat space ${reservation.boatSpaceId} not found")
         val isInvoiced = reservation.status == ReservationStatus.Invoiced
+        val placeName = "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}"
+
         val defaultParams =
             mapOf(
-                "name" to "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}",
+                "reserverName" to reservation.name,
+                "harborName" to reservation.locationName,
+                "name" to placeName,
                 "width" to intToDecimal(boatSpace.widthCm),
                 "length" to intToDecimal(boatSpace.lengthCm),
                 "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
@@ -744,57 +746,45 @@ class ReservationFormService(
             val recipients: List<String>,
             val params: Map<String, Any>
         )
+        val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
 
         val emailSettings =
             when (creationType) {
                 CreationType.New -> {
-                    if (reservation.reserverType == ReserverType.Organization) {
-                        if (isInvoiced) {
-                            EmailSettings(
-                                template = "reservation_created_for_organization_with_invoice",
-                                recipients = listOf(reservation.email),
-                                params =
-                                    defaultParams
-                                        .plus("organizationName" to reservation.name)
-                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
-                            )
-                        } else {
-                            EmailSettings(
-                                template = "reservation_created_for_organization_online",
-                                recipients = listOf(reservation.email),
-                                params = defaultParams.plus("organizationName" to reservation.name)
-                            )
-                        }
+                    if (isInvoiced) {
+                        EmailSettings(
+                            template = "reservation_created_by_employee",
+                            recipients = listOf(reservation.email),
+                            params =
+                                defaultParams
+                                    .plus("reservationDescription" to "${boatSpaceTypeToText(reservation.type.toString())} $placeName")
+                                    .plus("invoiceAddress" to invoiceAddress)
+                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                        )
                     } else {
-                        if (isInvoiced) {
-                            EmailSettings(
-                                template = "reservation_created_for_citizen_with_invoice",
-                                recipients = listOf(reservation.email),
-                                params =
-                                    defaultParams
-                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
-                            )
-                        } else {
-                            EmailSettings(
-                                template = "reservation_created_for_citizen_online",
-                                recipients = listOf(reservation.email),
-                                params = defaultParams
-                            )
-                        }
+                        EmailSettings(
+                            template = "reservation_created_by_citizen",
+                            recipients = listOf(reservation.email),
+                            params = defaultParams
+                        )
                     }
                 }
                 CreationType.Switch -> {
                     EmailSettings(
-                        template = "reservation_created_for_citizen_online",
+                        template = "reservation_renewed_by_citizen",
                         recipients = listOf(reservation.email),
                         params = defaultParams
                     )
                 }
                 CreationType.Renewal -> {
                     EmailSettings(
-                        template = "reservation_created_for_citizen_online",
+                        template = "reservation_renewed_by_employee",
                         recipients = listOf(reservation.email),
-                        params = defaultParams
+                        params =
+                            defaultParams
+                                .plus("reservationDescription" to "${boatSpaceTypeToText(reservation.type.toString())} $placeName")
+                                .plus("invoiceAddress" to invoiceAddress)
+                                .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
                     )
                 }
             }

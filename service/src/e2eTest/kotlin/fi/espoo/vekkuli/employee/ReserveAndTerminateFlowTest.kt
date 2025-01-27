@@ -52,15 +52,6 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         // Creates a reservation for a citizen, invoices it and returns to the listing page
         reserveBoatSpacePage.reserveB314BoatSpaceToASailboatAsEmployee(expectedReserverSearch)
 
-        messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(
-            SendEmailServiceMock.emails.get(
-                0
-            ).contains("mikko.virtanen@noreplytest.fi with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
-        )
-        SendEmailServiceMock.resetEmails()
-
         // Check that the citizen and boat space is visible in the reservation list
         assertThat(listingPage.reservationsTableB314Row).isVisible()
 
@@ -71,6 +62,15 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         // Check that the boat space is not available for reservation anymore
         reserveBoatSpacePage.revealB314BoatSpace()
         assertThat(reserveBoatSpacePage.reserveTableB314Row).not().isVisible()
+
+        messageService.sendScheduledEmails()
+        assertEquals(1, SendEmailServiceMock.emails.size)
+        assertTrue(
+            SendEmailServiceMock.emails.get(
+                0
+            ).contains("mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
+        )
+        SendEmailServiceMock.resetEmails()
 
         // Terminate the reservation
         listingPage.navigateTo()

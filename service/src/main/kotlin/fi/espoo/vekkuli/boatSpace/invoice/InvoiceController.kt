@@ -1,9 +1,11 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -30,6 +32,7 @@ class InvoiceController(
     private val employeeLayout: EmployeeLayout,
     private val invoicePreview: InvoicePreview,
     private val reservationService: BoatReservationService,
+    private val reservationFormService: ReservationFormService,
     private val invoiceService: BoatSpaceInvoiceService,
     private val timeProvider: TimeProvider,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository
@@ -186,6 +189,7 @@ class InvoiceController(
         }
         if (!input.markAsPaid) {
             reservationService.setReservationStatusToInvoiced(reservation.id)
+            reservationFormService.sendReservationEmail(reservation.id, CreationType.New)
         }
     }
 
