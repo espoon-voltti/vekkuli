@@ -7,9 +7,12 @@ import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.*
 import jakarta.validation.ConstraintViolationException
 import kotlinx.coroutines.runBlocking
+import org.jdbi.v3.core.kotlin.mapTo
+import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -57,8 +60,12 @@ class ReservationServiceTests : IntegrationTestBase() {
     @MockBean
     private lateinit var seasonalService: SeasonalService
 
+    @Autowired
+    private lateinit var reserverRepository: ReserverRepository
+
     @BeforeEach
     override fun resetDatabase() {
+        PaytrailMock.reset()
         deleteAllReservations(jdbi)
         deleteAllBoatSpaces(jdbi)
         deleteAllBoats(jdbi)
@@ -484,6 +491,31 @@ class ReservationServiceTests : IntegrationTestBase() {
             assertEquals("Reservation is not filled", exception.message)
         }
 
+    @Test
+    fun `discount is taken into account in payment`(): Unit =
+        runBlocking {
+            val discountPercentage = 50
+            loginAs(citizenIdOlivia)
+            allowReservation(any())
+            val boatSpaceId = insertBoatSpace()
+            val boatSpacePrice = getBoatSpacePrice(boatSpaceId)
+            assertNotNull(boatSpacePrice)
+            val expectedPriceToBePayed = (boatSpacePrice - (boatSpacePrice * discountPercentage / 100))
+            val information = createReservationInformation()
+            reserverRepository.updateDiscount(citizenIdOlivia, discountPercentage)
+            val (reservationId) = reservationService.startReservation(boatSpaceId)
+            reservationService.fillReservationInformation(reservationId, information)
+            reservationService.getPaymentInformation(reservationId)
+            val paytrailPayments = PaytrailMock.paytrailPayments
+            val amountToBePayed = paytrailPayments.get(0).amount
+            assertEquals(amountToBePayed, expectedPriceToBePayed)
+            assertEquals(1, paytrailPayments.size)
+            assertEquals(1, paytrailPayments.get(0).items?.size)
+            val item = paytrailPayments.get(0).items?.get(0)
+            assertEquals("329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100", item?.productCode)
+            assertEquals("Venepaikka 2025 Haukilahti A 001", item?.description)
+        }
+
     private fun insertBoat(
         citizenId: UUID,
         name: String = "TestBoat"
@@ -598,5 +630,11 @@ class ReservationServiceTests : IntegrationTestBase() {
                 agreeToRules = agreeToRules,
             )
         return information
+    }
+
+    fun getBoatSpacePrice(boatSpaceId: Int): Int = jdbi.withHandleUnchecked { handle ->
+        val query = handle.createQuery("SELECT p.price_cents FROM price p JOIN boat_space s ON s.price_id = p.id AND s.id = :id")
+        query.bind("id", boatSpaceId)
+        query.mapTo<Int>().findOne().orElse(null)
     }
 }
