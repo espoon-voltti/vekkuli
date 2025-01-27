@@ -58,6 +58,8 @@ class ReserveBoatSpacePage(
         private val fields = FieldLocator(root)
         val widthInput = fields.getInput("Säilytyspaikan leveys (m)")
         val lengthInput = fields.getInput("Säilytyspaikan pituus (m)")
+        val trailerRadio = fields.getRadio("Trailerisäilytys")
+        val buckRadio = fields.getRadio("Pukkisäilytys")
     }
 
     class WinterFilterSection(

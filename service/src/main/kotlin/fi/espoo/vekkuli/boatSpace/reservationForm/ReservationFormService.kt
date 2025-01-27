@@ -610,8 +610,9 @@ class ReservationFormService(
         val boat = createOrUpdateBoat(reserverId, input)
 
         addReservationWarnings(input.reservationId, boatSpace, boat)
-
-        if (boatSpace.type == BoatSpaceType.Winter || boatSpace.type == BoatSpaceType.Trailer) {
+        val hasStorageType =
+            boatSpace.type == BoatSpaceType.Winter || boatSpace.type == BoatSpaceType.Trailer || boatSpace.type == BoatSpaceType.Storage
+        if (hasStorageType) {
             updateReservationWithStorageTypeRelatedInformation(input, reserverId)
         }
 
