@@ -7,9 +7,7 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.service.BoatService
-import fi.espoo.vekkuli.service.OrganizationService
-import fi.espoo.vekkuli.service.ReserverService
+import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
@@ -25,6 +23,7 @@ class ReservationController(
     private val canReserveResponseMapper: CanReserveResponseMapper,
     private val boatService: BoatService,
     private val organizationService: OrganizationService,
+    private val boatSpaceRepository: BoatSpaceRepository
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -40,15 +39,23 @@ class ReservationController(
         val boats = boatService.getBoatsForReserver(citizenId)
 
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
+        val boatSpace = boatSpaceRepository.getBoatSpace(reservation.boatSpaceId) ?: throw NotFound()
 
-        val organizations = organizationService.getCitizenOrganizations(citizenId)
-        val orgBoats = boatService.getBoatsForReserversOrganizations(citizenId)
+        val organizations =
+            organizationService.getOrganizationsForReservation(
+                citizenId,
+                reservation,
+                boatSpace.type
+            )
+
+        val boatsByOrganization = boatService.getBoatsForReserversOrganizations(citizenId)
+
         return UnfinishedReservationResponse(
             reservationResponseMapper.toReservationResponse(reservation),
             boats.toCitizenBoatListResponse(),
             reserverService.getMunicipalities().toMunicipalityListResponse(),
             organizations.toCitizenOrganizationListResponse(),
-            orgBoats
+            boatsByOrganization
         )
     }
 

@@ -48,6 +48,7 @@ data class BoatSpaceReservation(
     val reserverId: UUID?,
     val validity: ReservationValidity,
     val paymentDate: LocalDate?,
+    val creationType: CreationType
 )
 
 data class ReservationWithDependencies(
@@ -205,5 +206,6 @@ fun ReservationWithDependencies.toBoatSpaceReservation() =
         actingCitizenId = actingCitizenId,
         reserverId = reserverId,
         validity = validity ?: ReservationValidity.Indefinite,
-        paymentDate = null
+        paymentDate = null,
+        creationType = creationType
     )

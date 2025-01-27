@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.service
 
-import fi.espoo.vekkuli.domain.CitizenWithDetails
-import fi.espoo.vekkuli.domain.Organization
+import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.OrganizationRepository
 import fi.espoo.vekkuli.repository.UpdateOrganizationParams
 import org.springframework.stereotype.Service
@@ -9,9 +9,33 @@ import java.util.*
 
 @Service
 class OrganizationService(
-    private val organizationRepository: OrganizationRepository
+    private val organizationRepository: OrganizationRepository,
+    private val seasonalService: SeasonalService
 ) {
     fun getCitizenOrganizations(citizenId: UUID): List<Organization> = organizationRepository.getCitizenOrganizations(citizenId)
+
+    fun getOrganizationsForReservation(
+        citizenId: UUID,
+        reservation: BoatSpaceReservation,
+        boatSpaceType: BoatSpaceType
+    ): List<Organization> {
+        val organizations = getCitizenOrganizations(citizenId)
+
+        return when (reservation.creationType) {
+            CreationType.New ->
+                organizations.filter {
+                    seasonalService.canReserveANewSpace(it.id, boatSpaceType).success
+                }
+            CreationType.Switch ->
+                organizations.filter {
+                    reservation.reserverId == it.id
+                }
+            CreationType.Renewal ->
+                organizations.filter {
+                    reservation.reserverId == it.id
+                }
+        }
+    }
 
     fun getOrganizationMembers(organizationId: UUID): List<CitizenWithDetails> =
         organizationRepository.getOrganizationMembers(organizationId)
