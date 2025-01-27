@@ -7,7 +7,8 @@ import type { Translations as ComponentTranslations } from 'lib-components/i18n'
 import {
   BoatSpaceType,
   OwnershipStatus,
-  ReservationValidity
+  ReservationValidity,
+  ReserverType
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
 import components from 'lib-customizations/vekkuli/defaults/components/i18n/fi'
@@ -52,6 +53,10 @@ export default {
         fi: 'Suomi',
         sv: 'Svenska',
         en: 'English'
+      },
+      dimensions: {
+        widthInMeters: 'Leveys (m)',
+        lengthInMeters: 'Pituus (m)'
       }
     },
     openExpandingInfo: 'Avaa lisätietokenttä',
@@ -175,8 +180,13 @@ export default {
       submit: {
         continueToPayment: 'Jatka maksamaan',
         confirmReservation: 'Vahvista varaus'
+      },
+      trailerInfo: {
+        title: 'Trailerin tiedot',
+        registrationCode: 'Rekisteritunnus'
       }
     },
+
     noRegistererNumber: 'Ei rekisterinumeroa',
     certify: 'Vakuutan antamani tiedot oikeiksi',
     agreeToRules:
@@ -215,6 +225,16 @@ export default {
               return 'Toistaiseksi, jatko vuosittain huhtikuussa'
           }
       }
+    },
+    reserverDiscountInfo: (
+      type: ReserverType,
+      reserverName: string,
+      discountPercentage: number,
+      discountedPrice: string
+    ) => {
+      const name =
+        type === 'Organization' ? `Yhteisölle ${reserverName}` : `Sinulle`
+      return `${name} on myönnetty ${discountPercentage} % alennus. Alennuksen jälkeen paikan hinnaksi jää ${discountedPrice} €`
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'
@@ -355,5 +375,8 @@ export default {
         goBackToReservation: 'Siirry varaukseen'
       }
     }
+  },
+  payment: {
+    title: 'Valitse maksutapa'
   }
 }

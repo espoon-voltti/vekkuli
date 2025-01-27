@@ -7,94 +7,102 @@ import {
   formatDimensions,
   formatPlaceIdentifier
 } from 'citizen-frontend/shared/formatters'
+import {ReservationPriceInfo} from "../pages/fillInformation/helpers";
+import ReserverPriceInfo from "./ReserverPriceInfo";
 
 export default React.memo(function ReservedSpace({
-  reservation
+  reservation, reservationPriceInfo
 }: {
   reservation: BoatSpaceReservation
+  reservationPriceInfo: ReservationPriceInfo
 }) {
   const i18n = useTranslation()
   const { netPrice, totalPrice, vatValue, boatSpace } = reservation
   return (
-    <div className="form-section" data-testid="reserved-space">
-      <h3 className="header">Varattava paikka</h3>
-      <div className="columns">
-        <div className="column is-one-quarter">
-          <TextField
-            label="Satama"
-            value={boatSpace.locationName ?? '-'}
-            readonly={true}
-          />
-        </div>
-        <div className="column is-one-quarter">
-          <TextField
-            label="Paikka"
-            value={formatPlaceIdentifier(
-              boatSpace.section,
-              boatSpace.placeNumber
-            )}
-            readonly={true}
-          />
-        </div>
-        <div className="column is-one-quarter">
-          <TextField
-            label="Venepaikkatyyppi"
-            value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
-            readonly={true}
-          />
-        </div>
-        <div className="column is-one-quarter">
-          <TextField
-            label="Paikan koko"
-            value={formatDimensions(boatSpace)}
-            readonly={true}
-          />
-        </div>
-      </div>
-      <div className="columns">
-        <div className="column is-one-quarter">
-          {reservation.boatSpace.type !== 'Winter' && (
+    <>
+      <div className="form-section" data-testid="reserved-space">
+        <h3 className="header">Varattava paikka</h3>
+        <div className="columns">
+          <div className="column is-one-quarter">
             <TextField
-              label="Varuste"
-              value={i18n.boatSpace.amenities[boatSpace.amenity]}
+              label="Satama"
+              value={boatSpace.locationName ?? '-'}
               readonly={true}
             />
-          )}
-          {reservation.boatSpace.type === 'Winter' && (
+          </div>
+          <div className="column is-one-quarter">
             <TextField
-              label="Säilytystapa"
-              value={
-                reservation.storageType
-                  ? i18n.boatSpace.winterStorageType[reservation.storageType]
-                  : '-'
-              }
+              label="Paikka"
+              value={formatPlaceIdentifier(
+                boatSpace.section,
+                boatSpace.placeNumber
+              )}
               readonly={true}
             />
-          )}
+          </div>
+          <div className="column is-one-quarter">
+            <TextField
+              label="Venepaikkatyyppi"
+              value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
+              readonly={true}
+            />
+          </div>
+          <div className="column is-one-quarter">
+            <TextField
+              label="Paikan koko"
+              value={formatDimensions(boatSpace)}
+              readonly={true}
+            />
+          </div>
         </div>
-        <div className="column is-one-quarter">
-          <TextField
-            label="Varaus voimassa:"
-            value={i18n.reservation.validity(
-              reservation.endDate,
-              reservation.validity,
-              boatSpace.type
+        <div className="columns">
+          <div className="column is-one-quarter">
+            {reservation.boatSpace.type !== 'Winter' && (
+              <TextField
+                label="Varuste"
+                value={i18n.boatSpace.amenities[boatSpace.amenity]}
+                readonly={true}
+              />
             )}
-            readonly={true}
-          />
+            {reservation.boatSpace.type === 'Winter' && (
+              <TextField
+                label="Säilytystapa"
+                value={
+                  reservation.storageType
+                    ? i18n.boatSpace.winterStorageType[reservation.storageType]
+                    : '-'
+                }
+                readonly={true}
+              />
+            )}
+          </div>
+          <div className="column is-one-quarter">
+            <TextField
+              label="Varaus voimassa:"
+              value={i18n.reservation.validity(
+                reservation.endDate,
+                reservation.validity,
+                boatSpace.type
+              )}
+              readonly={true}
+            />
+          </div>
+          <div className="column is-half">
+            <TextField
+              label="Hinta"
+              value={[
+                i18n.reservation.prices.netPrice(netPrice),
+                i18n.reservation.prices.vatValue(vatValue),
+                i18n.reservation.prices.totalPrice(totalPrice)
+              ]}
+              readonly={true}
+            />
+          </div>
         </div>
-        <div className="column is-half">
-          <TextField
-            label="Hinta"
-            value={[
-              i18n.reservation.prices.netPrice(netPrice),
-              i18n.reservation.prices.vatValue(vatValue),
-              i18n.reservation.prices.totalPrice(totalPrice)
-            ]}
-            readonly={true}
-          />
-        </div>
+        <ReserverPriceInfo
+            reservationPriceInfo={reservationPriceInfo}
+        />
       </div>
-    </div>
+    </>
   )
 })

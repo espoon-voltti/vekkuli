@@ -12,6 +12,7 @@ import { logError, loggingMiddleware } from './logging/index.js'
 import { fallbackErrorHandler } from './middleware/errors.js'
 import { createSystemRouter } from './systemRouter.js'
 import { trustReverseProxy } from './utils/express.js'
+import { createDevRouter } from './devRouter.js'
 
 sourceMapSupport.install()
 const config = configFromEnv()
@@ -52,6 +53,7 @@ passport.deserializeUser<Express.User>((user, done) => done(null, user))
 
 app.use('/auth', createAuthRouter(config, redisClient))
 app.use('/api/citizen', createCitizenRouter(config, redisClient))
+app.use('/dev', createDevRouter(config, redisClient))
 app.use('/', createSystemRouter(config, redisClient))
 app.use('/', createEmployeeRouter(config, redisClient))
 app.use(fallbackErrorHandler)

@@ -29,6 +29,7 @@ export interface QueryOptions {
   refetchOnWindowFocus?: boolean | 'always'
   retry?: boolean | number
   staleTime?: number
+  cacheTime?: number
 }
 
 export function query<Args extends unknown[], Data>(opts: {

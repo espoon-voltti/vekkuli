@@ -93,7 +93,7 @@ data class PaytrailPaymentResponse(
     val transactionId: String,
     val reference: String,
     val terms: String,
-    val providers: List<PaytrailProvider>,
+    val providers: List<PaytrailProvider>
 )
 
 const val BASE_URL = "https://services.paytrail.com"
@@ -129,8 +129,17 @@ public interface PaytrailInterface {
 @Service
 @Profile("test")
 class PaytrailMock : PaytrailInterface {
-    override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse =
-        PaytrailPaymentResponse(
+    companion object {
+        val paytrailPayments = mutableListOf<PaytrailPaymentParams>()
+
+        fun reset() {
+            paytrailPayments.clear()
+        }
+    }
+
+    override fun createPayment(params: PaytrailPaymentParams): PaytrailPaymentResponse {
+        paytrailPayments.add(params)
+        return PaytrailPaymentResponse(
             transactionId = "123",
             reference = params.reference,
             terms = "https://www.paytrail.com",
@@ -164,6 +173,7 @@ class PaytrailMock : PaytrailInterface {
                     )
                 )
         )
+    }
 
     override fun checkSignature(params: Map<String, String>): Boolean = true
 }

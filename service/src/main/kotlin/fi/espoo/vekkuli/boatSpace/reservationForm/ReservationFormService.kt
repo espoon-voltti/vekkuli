@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationPaymentService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
@@ -70,6 +71,7 @@ class ReservationFormService(
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
     private val boatSpaceSwitchService: BoatSpaceSwitchService,
+    private val paymentService: ReservationPaymentService,
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
@@ -85,7 +87,15 @@ class ReservationFormService(
         updateCitizenReserverContactInfo(citizenId, input.phone ?: "", input.email ?: "")
 
         when (reservation.creationType) {
-            CreationType.New -> reserveNewSpaceByCitizen(reservationId, reserverId, input, reservation.boatSpaceType)
+            CreationType.New ->
+                reserveNewSpaceByCitizen(
+                    reservationId,
+                    reserverId,
+                    input,
+                    reservation.boatSpaceType,
+                    reservation.priceCents
+                )
+
             CreationType.Switch -> reserveSwitchedSpaceByCitizen(reservationId, reserverId, input)
             CreationType.Renewal -> reserveRenewedSpaceByCitizen(reservationId, reserverId, input)
             else -> throw BadRequest("Invalid creation type for reservation")
@@ -204,7 +214,7 @@ class ReservationFormService(
         val data =
             ReservationResultSuccess(
                 timeProvider.getCurrentDate(),
-                seasonalService.getBoatSpaceReservationEndDate(
+                seasonalService.getBoatSpaceReservationEndDateForNew(
                     reservation.boatSpaceType,
                     input.reservationValidity
                 ),
@@ -226,26 +236,33 @@ class ReservationFormService(
         reservationId: Int,
         reserverId: UUID,
         input: ReservationInput,
-        boatSpaceType: BoatSpaceType
+        boatSpaceType: BoatSpaceType,
+        priceCents: Int
     ) {
-        val reserveSlipResult = seasonalService.canReserveANewSpace(reserverId, boatSpaceType)
+        val reserveResult = seasonalService.canReserveANewSpace(reserverId, boatSpaceType)
 
-        if (!reserveSlipResult.success || reserveSlipResult !is ReservationResult.Success) {
-            if (reserveSlipResult is ReservationResult.Failure) {
+        if (!reserveResult.success || reserveResult !is ReservationResult.Success) {
+            if (reserveResult is ReservationResult.Failure) {
                 throw Forbidden(
                     "Reservation not allowed",
-                    reserveSlipResult.errorCode.toString()
+                    reserveResult.errorCode.toString()
                 )
             }
             throw BadRequest("Reservation can not be made.")
         }
+
+        val reserver = reserverService.getReserverById(reserverId)
+        val priceWithPossibleDiscount = discountedPriceInCents(priceCents, reserver?.discountPercentage)
+
+        val status = if (priceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
+
         processBoatSpaceReservation(
             reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
-            ReservationStatus.Payment,
-            reserveSlipResult.data.reservationValidity,
-            reserveSlipResult.data.startDate,
-            reserveSlipResult.data.endDate
+            status,
+            reserveResult.data.reservationValidity,
+            reserveResult.data.startDate,
+            reserveResult.data.endDate
         )
     }
 
@@ -299,6 +316,7 @@ class ReservationFormService(
             )
         }
         val successResultData = (result as ReservationResult.Success).data
+// TODO: check discountPrice and confirm if doesn't requite payment
 
         processBoatSpaceReservation(
             originalReservation.reserverId,
@@ -323,13 +341,19 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
                 ?: throw BadRequest("Original reservation not found")
 
-        if (!boatSpaceSwitchService.validateCitizenCanSwitchReservation(actingCitizenId, reservation.boatSpaceId, originalReservation.id)) {
+        if (!boatSpaceSwitchService.validateCitizenCanSwitchReservation(
+                actingCitizenId,
+                reservation.boatSpaceId,
+                originalReservation.id
+            )
+        ) {
             throw Forbidden("Citizen can not switch reservation")
         }
 
-        val revisedPrice = boatSpaceSwitchService.getRevisedPrice(reservation)
+        val revisedPriceWithPossibleDiscount = paymentService.calculatePriceWithDiscount(reservation)
 
-        val status = if (revisedPrice > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
+        val status =
+            if (revisedPriceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
 
         processBoatSpaceReservation(
             originalReservation.reserverId,
@@ -560,7 +584,7 @@ class ReservationFormService(
 
         addReservationWarnings(input.reservationId, boatSpace, boat)
 
-        if (boatSpace.type == BoatSpaceType.Winter) {
+        if (boatSpace.type == BoatSpaceType.Winter || boatSpace.type == BoatSpaceType.Trailer) {
             updateReservationWithStorageTypeRelatedInformation(input, reserverId)
         }
 

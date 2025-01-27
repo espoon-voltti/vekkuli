@@ -5,7 +5,6 @@ import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class OrganizationContactDetails(
@@ -194,7 +193,7 @@ class OrganizationContactDetails(
         return (
             """
                 ${getOrganizationContactDetailsFields(
-                "/yhteiso/kayttaja/${organization.id}/muokkaa",
+                "/virkailija/yhteiso/kayttaja/${organization.id}/muokkaa",
                 null,
                 organizationNameField,
                 organizationBusinessIdField,

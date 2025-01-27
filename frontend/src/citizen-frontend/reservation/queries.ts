@@ -10,7 +10,7 @@ import { createQueryKeys } from '../query'
 
 export const queryKeys = createQueryKeys('reservation', {
   unfinishedReservation: () => ['unfinishedReservation'],
-  unfinishedReservationExpiration: () => ['unfinishedReservationExpiration'],
+  noCache: () => ['noCache'],
   municipalities: () => ['municipalities']
 })
 
@@ -22,10 +22,7 @@ export const unfinishedReservationQuery = query({
 
 export const cancelReservationMutation = mutation({
   api: cancelReservation,
-  resetQueryKeys: () => [
-    queryKeys.unfinishedReservation(),
-    queryKeys.unfinishedReservationExpiration()
-  ]
+  resetQueryKeys: () => [queryKeys.unfinishedReservation()]
 })
 
 export const getMunicipalitiesQuery = query({
@@ -35,6 +32,6 @@ export const getMunicipalitiesQuery = query({
 
 export const unfinishedReservationExpirationQuery = query({
   api: unfinishedReservationExpiration,
-  queryKey: queryKeys.unfinishedReservationExpiration,
-  options: { retry: false }
+  queryKey: queryKeys.noCache,
+  options: { retry: false, staleTime: 0, cacheTime: 0 }
 })

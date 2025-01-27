@@ -2,6 +2,8 @@ package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.config.DomainConstants.INVOICE_PAYMENT_PERIOD
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.utils.SecondsRemaining
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -29,6 +31,29 @@ enum class ReservationWarningType {
 object BoatSpaceConfig {
     const val SESSION_TIME_IN_SECONDS = 20 * 60
     const val BOAT_RESERVATION_ALV_PERCENTAGE = 25.5
+
+    fun paytrailProductCode(product: BoatSpaceType): String {
+        val product =
+            when (product) {
+                BoatSpaceType.Slip, BoatSpaceType.Trailer -> "T1270"
+                BoatSpaceType.Winter -> "T1271"
+                BoatSpaceType.Storage -> "T1276"
+            }
+
+        return "329700-1230329-$product-0-0-0-0-0-0-0-0-0-100"
+    }
+
+    fun paytrailDescription(reservation: BoatSpaceReservationDetails): String {
+        val typeDescription =
+            when (reservation.type) {
+                BoatSpaceType.Slip -> "Venepaikka"
+                BoatSpaceType.Trailer -> "Traileripaikka"
+                BoatSpaceType.Winter -> "Talvipaikka"
+                BoatSpaceType.Storage -> "Säilytyspaikka"
+            }
+        return "$typeDescription ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
+    }
+
     const val PAYTRAIL_PRODUCT_CODE = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
 
     const val BEAM_MAX_WIDTH_ADJUSTMENT_CM = 40

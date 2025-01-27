@@ -23,7 +23,9 @@ function LoaderR<T extends unknown[]>({
     if (!r.isLoading && !r.isFailure) {
       return r.value
     }
+
     if (allowFailure) return null
+
     throw new Error(
       'Unexpected state: All results should be successful at this point.'
     )

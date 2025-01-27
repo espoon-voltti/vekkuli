@@ -197,6 +197,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             boatSection.noRegistrationCheckbox.check()
             boatSection.ownerRadio.click()
 
+            val trailerSection = formPage.getWinterStorageTypeSection()
+            trailerSection.trailerRegistrationNumberInput.fill("RGST1234")
             val citizenSection = formPage.getCitizenSection()
             citizenSection.emailInput.fill("test@example.com")
             assertThat(citizenSection.emailError).isHidden()
@@ -208,7 +210,6 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             userAgreementSection.agreementCheckbox.check()
 
             formPage.submitButton.click()
-
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
 

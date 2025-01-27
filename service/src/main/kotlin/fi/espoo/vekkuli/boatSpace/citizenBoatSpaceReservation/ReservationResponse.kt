@@ -7,7 +7,6 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -39,12 +38,13 @@ data class ReservationResponse(
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
-    val revisedPrice: String,
+    val revisedPrice: Int,
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
     val canRenew: Boolean,
     val canSwitch: Boolean,
+    val totalPriceInCents: Int,
 ) {
     data class Citizen(
         val id: UUID,
@@ -59,6 +59,7 @@ data class ReservationResponse(
         val municipalityCode: Int,
         val municipalityName: String,
         val birthDate: LocalDate,
+        val discountPercentage: Int,
     )
 
     data class Organization(
@@ -71,6 +72,7 @@ data class ReservationResponse(
         val address: String? = null,
         val postalCode: String? = null,
         val city: String? = null,
+        val discountPercentage: Int,
     )
 
     data class Boat(
@@ -201,6 +203,7 @@ class ReservationResponseMapper(
             creationType = reservationWithDependencies.creationType,
             canRenew = seasonalService.canRenewAReservation(reservationId).success,
             canSwitch = seasonalService.canSwitchReservation(reserverId, boatSpace.type, reservationId).success,
+            totalPriceInCents = reservationWithDependencies.priceCents
         )
     }
 
@@ -232,8 +235,9 @@ class ReservationResponseMapper(
             postalOffice = citizen.postOffice,
             city = citizen.municipalityName,
             municipalityCode = citizen.municipalityCode,
-            municipalityName = citizen.municipalityName,
-            birthDate = citizen.birthdayAsDate
+            birthDate = citizen.birthdayAsDate,
+            discountPercentage = citizen.discountPercentage,
+            municipalityName = citizen.municipalityName
         )
     }
 
@@ -264,6 +268,7 @@ class ReservationResponseMapper(
             address = organization.streetAddress,
             postalCode = organization.postalCode,
             city = organization.postOffice,
+            discountPercentage = organization.discountPercentage,
         )
     }
 
@@ -332,15 +337,17 @@ class ReservationResponseMapper(
         )
     }
 
-    // This can be a function to get the revised price of a reservation, eg. for switch or because of discounts
-    private fun getRevisedPrice(reservation: ReservationWithDependencies): String =
-        when (reservation.creationType) {
+    // This can be a function to get the revised price of a reservation. Note that it cannot be used for discount calculation
+    // because reserver can change in UI and organization might have different discount which is not know here
+    private fun getRevisedPrice(reservation: ReservationWithDependencies): Int {
+        return when (reservation.creationType) {
             CreationType.Switch -> {
-                formatInt(boatSpaceSwitchService.getRevisedPrice(reservation))
+                boatSpaceSwitchService.getRevisedPrice(reservation)
             }
 
             else -> {
-                reservation.priceInEuro
+                reservation.priceCents
             }
         }
+    }
 }

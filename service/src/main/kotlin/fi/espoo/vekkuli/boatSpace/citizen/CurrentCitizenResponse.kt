@@ -25,6 +25,7 @@ data class CurrentCitizenResponse(
         val postOfficeSv: String,
         val postalCode: String,
         val birthday: String,
+        val discountPercentage: Int,
     )
 }
 
@@ -54,6 +55,7 @@ fun CitizenWithDetails?.toCurrentCitizenResponse() =
                             postOfficeSv = postOfficeSv,
                             postalCode = postalCode,
                             birthday = birthday,
+                            discountPercentage = discountPercentage,
                         )
                 ),
             apiVersion = "1.0"

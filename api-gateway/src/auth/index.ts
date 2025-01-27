@@ -8,11 +8,17 @@ import { fromCallback } from '../utils/promise-utils.js'
 import { Sessions } from './session.js'
 
 export function requireAuthentication(
-  userType: UserType,
+  userType: UserType | UserType[],
   unauthorizedHandler: (req: Request, res: Response, next: NextFunction) => void
 ) {
+  const testableUserType = Array.isArray(userType) ? userType : [userType]
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !req.user.id || req.user.type !== userType) {
+    if (
+      !req.user ||
+      !req.user.id ||
+      req.user.type === undefined ||
+      !testableUserType.includes(req.user.type)
+    ) {
       logInfo('Could not find user', req)
       unauthorizedHandler(req, res, next)
       return

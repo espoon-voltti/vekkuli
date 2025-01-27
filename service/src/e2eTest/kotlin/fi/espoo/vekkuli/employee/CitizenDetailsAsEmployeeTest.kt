@@ -98,27 +98,26 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             val listingPage = reservationListPage()
             listingPage.boatSpace1.click()
             val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.memoNavi.click()
+            citizenDetails.memoNavi.clickAndWaitForHtmxSettle()
 
-            // Add memo, added the waitFor which seemed to fix the flakiness
-            citizenDetails.addNewMemoBtn.waitFor()
-            citizenDetails.addNewMemoBtn.click()
+            citizenDetails.addNewMemoBtn.clickAndWaitForHtmxSettle()
             val text = "This is a new memo"
             val memoId = 2
             citizenDetails.newMemoContent.fill(text)
-            citizenDetails.newMemoSaveBtn.click()
+            citizenDetails.newMemoSaveBtn.clickAndWaitForHtmxSettle()
+
             assertThat(citizenDetails.userMemo(memoId)).containsText(text)
 
             // Edit memo
             val newText = "Edited memo"
-            citizenDetails.userMemo(memoId).getByTestId("edit-memo-button").click()
+            citizenDetails.userMemo(memoId).getByTestId("edit-memo-button").clickAndWaitForHtmxSettle()
             citizenDetails.userMemo(memoId).getByTestId("edit-memo-content").fill(newText)
-            citizenDetails.userMemo(memoId).getByTestId("save-edit-button").click()
+            citizenDetails.userMemo(memoId).getByTestId("save-edit-button").clickAndWaitForHtmxSettle()
             assertThat(citizenDetails.userMemo(memoId).locator(".memo-content")).containsText(newText)
 
             // Delete memo
             page.onDialog { it.accept() }
-            citizenDetails.userMemo(memoId).getByTestId("delete-memo-button").click()
+            citizenDetails.userMemo(memoId).getByTestId("delete-memo-button").clickAndWaitForHtmxSettle()
             assertThat(citizenDetails.userMemo(memoId)).hasCount(0)
         } catch (e: AssertionError) {
             handleError(e)
@@ -413,7 +412,6 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
 
         CitizenHomePage(page).loginAsMikkoVirtanen()
-
         val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
         val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
         val paymentPage = CitizenPaymentPage(page)
@@ -425,6 +423,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             getBoatSection().nameInput.fill("The Boat")
             getBoatSection().widthInput.fill("1")
             getBoatSection().lengthInput.fill("1")
+            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
         }
         paymentPage.payReservation()
 

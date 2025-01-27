@@ -115,27 +115,25 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             val organizationDetails = OrganizationDetailsPage(page)
             organizationDetails.navigateToEspoonPursiseura()
             assertThat(organizationDetails.organizationDetailsSection).isVisible()
-            organizationDetails.memoNavi.click()
+            organizationDetails.memoNavi.clickAndWaitForHtmxSettle()
 
-            // Add memo, added the waitFor which seemed to fix the flakiness
-            organizationDetails.addNewMemoBtn.waitFor()
-            organizationDetails.addNewMemoBtn.click()
+            organizationDetails.addNewMemoBtn.clickAndWaitForHtmxSettle()
             val text = "This is a new memo"
             val memoId = 2
             organizationDetails.newMemoContent.fill(text)
-            organizationDetails.newMemoSaveBtn.click()
+            organizationDetails.newMemoSaveBtn.clickAndWaitForHtmxSettle()
             assertThat(organizationDetails.userMemo(memoId)).containsText(text)
 
             // Edit memo
             val newText = "Edited memo"
-            organizationDetails.userMemo(memoId).getByTestId("edit-memo-button").click()
+            organizationDetails.userMemo(memoId).getByTestId("edit-memo-button").clickAndWaitForHtmxSettle()
             organizationDetails.userMemo(memoId).getByTestId("edit-memo-content").fill(newText)
-            organizationDetails.userMemo(memoId).getByTestId("save-edit-button").click()
+            organizationDetails.userMemo(memoId).getByTestId("save-edit-button").clickAndWaitForHtmxSettle()
             assertThat(organizationDetails.userMemo(memoId).locator(".memo-content")).containsText(newText)
 
             // Delete memo
             page.onDialog { it.accept() }
-            organizationDetails.userMemo(memoId).getByTestId("delete-memo-button").click()
+            organizationDetails.userMemo(memoId).getByTestId("delete-memo-button").clickAndWaitForHtmxSettle()
             assertThat(organizationDetails.userMemo(memoId)).hasCount(0)
         } catch (e: AssertionError) {
             handleError(e)

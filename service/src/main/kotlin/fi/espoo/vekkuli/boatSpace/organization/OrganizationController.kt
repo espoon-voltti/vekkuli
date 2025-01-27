@@ -153,7 +153,7 @@ class OrganizationUserController(
         return organizationControllerService.buildOrganizationUpdatedPage(reserverId, boatId, input, errors)
     }
 
-    @GetMapping("/yhteiso/kayttaja/{organizationId}/muokkaa")
+    @GetMapping("/virkailija/yhteiso/kayttaja/{organizationId}/muokkaa")
     @ResponseBody
     fun editOrganizationInformation(
         @PathVariable organizationId: UUID,

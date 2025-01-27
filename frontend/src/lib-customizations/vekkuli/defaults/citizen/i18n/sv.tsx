@@ -7,7 +7,8 @@ import { Translations as ComponentTranslations } from 'lib-components/i18n'
 import {
   BoatSpaceType,
   OwnershipStatus,
-  ReservationValidity
+  ReservationValidity,
+  ReserverType
 } from 'citizen-frontend/shared/types'
 import LocalDate from 'lib-common/date/local-date'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
@@ -53,6 +54,10 @@ const sv: Translations = {
         fi: 'Suomi',
         sv: 'Svenska',
         en: 'English'
+      },
+      dimensions: {
+        widthInMeters: 'Bredd (m)',
+        lengthInMeters: 'Längd (m)'
       }
     },
     openExpandingInfo: 'Öppna detaljer',
@@ -170,6 +175,10 @@ const sv: Translations = {
       submit: {
         continueToPayment: 'Fortsätt till betalning',
         confirmReservation: 'Bekräfta bokning'
+      },
+      trailerInfo: {
+        title: 'Information om släpvagnen',
+        registrationCode: 'Registernummer'
       }
     },
     steps: {
@@ -207,6 +216,15 @@ const sv: Translations = {
               return 'Tills vidare, förnyas årligen i april'
           }
       }
+    },
+    reserverDiscountInfo: (
+      type: ReserverType,
+      reserverName: string,
+      discountPercentage: number,
+      discountedPrice: string
+    ) => {
+      const name = type === 'Organization' ? `${reserverName}` : `dig `
+      return `En rabatt på ${discountPercentage} % har definierats för ${name}. Efter rabatten förblir priset på platsen ${discountedPrice} €`
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Betald ${paymentDate.format()}` : '-'
@@ -358,6 +376,9 @@ const sv: Translations = {
         goBackToReservation: 'Gå till bokningen'
       }
     }
+  },
+  payment: {
+    title: 'Välj betalningsmetod'
   }
 }
 

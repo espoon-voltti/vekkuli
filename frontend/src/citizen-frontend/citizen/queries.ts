@@ -1,9 +1,9 @@
 import {
   citizenActiveReservations,
-  organizationActiveReservations,
-  organizationExpiredReservations,
   citizenExpiredReservations,
   citizenOrganizations,
+  organizationActiveReservations,
+  organizationExpiredReservations,
   updateCitizenInformation
 } from 'citizen-frontend/api-clients/citizen'
 import { updateCitizenTrailer } from 'citizen-frontend/api-clients/trailer'
@@ -20,7 +20,6 @@ export const queryKeys = createQueryKeys('citizen', {
   organizationExpiredReservations: () => ['organizationExpiredReservations'],
   citizenOrganizations: () => ['citizenOrganizations'],
   unfinishedReservation: () => ['unfinishedReservation'],
-  unfinishedReservationExpiration: () => ['unfinishedReservationExpiration'],
   allSearchesToFreeSpaces: () => ['searchFreeSpaces']
 })
 

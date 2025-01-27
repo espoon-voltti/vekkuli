@@ -200,6 +200,7 @@ export function deserializeJsonBoatSpaceReservationResponse(
     vatValue: json.vatValue,
     netPrice: json.netPrice,
     revisedPrice: json.revisedPrice,
+    totalPriceInCents: json.totalPriceInCents,
     boat: json.boat,
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,

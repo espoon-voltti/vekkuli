@@ -1,6 +1,6 @@
 package fi.espoo.vekkuli.views.citizen
 
-import fi.espoo.vekkuli.boatSpace.admin.DebugInfoOverlayView
+import fi.espoo.vekkuli.boatSpace.dev.DebugInfoOverlayView
 import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons

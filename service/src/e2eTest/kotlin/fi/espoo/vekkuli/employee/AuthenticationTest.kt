@@ -19,7 +19,7 @@ class AuthenticationTest : PlaywrightTest() {
     @Test
     fun `authenticated citizen should not be able to access employee tools`() {
         CitizenHomePage(page).loginAsLeoKorhonen()
-        page.navigate("$baseUrl/admin/settings")
+        page.navigate("$baseUrl/virkailija/admin/dashboard")
         assertEquals("$baseUrl/virkailija", page.url())
     }
 }

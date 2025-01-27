@@ -1,18 +1,18 @@
-package fi.espoo.vekkuli.boatSpace.admin
+package fi.espoo.vekkuli.boatSpace.dev
 
 import fi.espoo.vekkuli.utils.TimeProvider
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-@RestController
-@RequestMapping("/admin")
-class SettingsController(
+@RestController("DevDashboardController")
+@RequestMapping("/dev")
+class DashboardController(
     private val adminLayout: Layout,
     private val timeProvider: TimeProvider,
-    private val settingsView: SettingsView
+    private val settingsView: DashboardView
 ) {
-    @GetMapping("/settings")
+    @GetMapping("/dashboard")
     @ResponseBody
     fun setSystemDateView(request: HttpServletRequest) =
         ResponseEntity
