@@ -266,6 +266,16 @@ class ReservationFormService(
             reserveResult.data.endDate
         )
 
+        if (status == ReservationStatus.Confirmed) {
+            boatReservationService.updateReservationStatus(
+                reservationId,
+                status,
+                timeProvider.getCurrentDate(),
+                "",
+                PaymentType.Other
+            )
+        }
+
         sendReservationEmail(reservationId, CreationType.New)
     }
 
@@ -319,16 +329,30 @@ class ReservationFormService(
             )
         }
         val successResultData = (result as ReservationResult.Success).data
-// TODO: check discountPrice and confirm if doesn't requite payment
+        val revisedPriceWithPossibleDiscount = paymentService.calculatePriceWithDiscount(reservation)
+
+        val status =
+            if (revisedPriceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
 
         processBoatSpaceReservation(
             originalReservation.reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
-            ReservationStatus.Payment,
+            status,
             successResultData.reservationValidity,
             successResultData.startDate,
             successResultData.endDate
         )
+
+        if (status == ReservationStatus.Confirmed) {
+            boatReservationService.updateReservationStatus(
+                reservationId,
+                status,
+                timeProvider.getCurrentDate(),
+                "",
+                PaymentType.Other
+            )
+            boatReservationService.markReservationEnded(originalReservation.id)
+        }
     }
 
     @Transactional
@@ -375,7 +399,7 @@ class ReservationFormService(
                 "",
                 PaymentType.Other
             )
-            boatReservationService.markReservationEnded(reservation.originalReservationId)
+            boatReservationService.markReservationEnded(originalReservation.id)
         }
     }
 
