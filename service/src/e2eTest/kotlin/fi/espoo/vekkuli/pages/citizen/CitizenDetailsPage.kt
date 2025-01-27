@@ -70,9 +70,9 @@ class CitizenDetailsPage(
         private val root: Locator
     ) {
         private val fields = FieldLocator(root)
-        val terminateButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka").setExact(true))
-        val renewButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Maksa kausimaksu").setExact(true))
-        val switchSpace = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Vaihda paikka").setExact(true))
+        val terminateButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka"))
+        val renewButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Maksa kausimaksu"))
+        val switchSpace = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Vaihda paikka"))
 
         val locationName = fields.getField("Satama")
         val place = fields.getField("Paikka")

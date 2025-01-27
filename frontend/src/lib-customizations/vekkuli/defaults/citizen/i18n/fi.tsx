@@ -348,7 +348,8 @@ export default {
       Trailer: 'Trailerisäilytys',
       Buck: 'Pukkisäilytys',
       BuckWithTent: 'Pukkisäilytys suojateltalla'
-    }
+    },
+    reserve: 'Varaa'
   },
   citizen: {
     firstName: 'Etunimi',

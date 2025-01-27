@@ -40,6 +40,7 @@ export const ResultGroup = React.memo(function ResultGroup({
             <ResultRow
               onReserveSpace={onReserveSpace}
               space={space}
+              placeName={place.name}
               key={`result-row-${space.id}`}
             />
           ))}
