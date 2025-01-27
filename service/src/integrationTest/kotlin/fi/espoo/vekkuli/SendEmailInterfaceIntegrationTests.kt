@@ -104,7 +104,7 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
         val source = "test"
         var emails =
             templateEmailService.sendBatchEmail(
-                "reservation_organization_confirmation",
+                "reservation_created_for_organization_with_invoice",
                 null,
                 "sender@email.com",
                 listOf(recipients[0]),
@@ -116,7 +116,7 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
         assertEquals(1, emails.size, "One email to be sent")
         emails =
             templateEmailService.sendBatchEmail(
-                "reservation_organization_confirmation",
+                "reservation_created_for_organization_with_invoice",
                 null,
                 "sender@email.com",
                 recipients,

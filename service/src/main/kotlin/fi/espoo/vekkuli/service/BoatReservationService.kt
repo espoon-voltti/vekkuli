@@ -117,9 +117,6 @@ class BoatReservationService(
 
         handleReservationPaymentResult(stamp, paymentSuccess)
 
-        if (paymentSuccess) {
-            sendConfirmationEmail(reservation, payment)
-        }
         return PaymentProcessResult.Success(reservation)
     }
 

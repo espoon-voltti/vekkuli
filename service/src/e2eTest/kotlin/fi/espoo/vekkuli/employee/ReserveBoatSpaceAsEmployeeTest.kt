@@ -141,7 +141,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
@@ -225,7 +229,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             // TODO should have sent an email about winter place reservation
-            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
@@ -318,7 +326,12 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+            // TODO should have sent an email about winter place reservation
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
@@ -377,7 +390,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
@@ -473,7 +490,11 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
@@ -554,7 +575,12 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
         messageService.sendScheduledEmails()
         assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+
+        assertTrue(
+            SendEmailServiceMock.emails.get(
+                0
+            ).contains("to mikko.virtanen@noreplytest.fi with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+        )
 
         val reservationListPage = ReservationListPage(page)
         assertThat(reservationListPage.header).isVisible()
@@ -664,7 +690,9 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         messageService.sendScheduledEmails()
         // TODO should send emails to organization and all representatives
         assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+        assertTrue(
+            SendEmailServiceMock.emails.get(0).contains("foo@bar.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+        )
 
         val reservationListPage = ReservationListPage(page)
         assertThat(reservationListPage.header).isVisible()

@@ -54,7 +54,11 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
 
         messageService.sendScheduledEmails()
         assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(SendEmailServiceMock.emails.get(0).contains("subject Espoon Resurssivaraus: Venepaikan varausvahvistus"))
+        assertTrue(
+            SendEmailServiceMock.emails.get(
+                0
+            ).contains("mikko.virtanen@noreplytest.fi with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+        )
         SendEmailServiceMock.resetEmails()
 
         // Check that the citizen and boat space is visible in the reservation list
