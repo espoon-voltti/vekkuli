@@ -686,8 +686,16 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         messageService.sendScheduledEmails()
         // Email is sent to both organization representative and the reserver
         assertEquals(2, SendEmailServiceMock.emails.size)
+
         assertTrue(
-            SendEmailServiceMock.emails.get(0).contains("foo@bar.com with subject Espoon kaupungin venepaikan varaus")
+            SendEmailServiceMock.emails.any {
+                it.contains("foo@bar.com with subject Espoon kaupungin venepaikan varaus")
+            }
+        )
+        assertTrue(
+            SendEmailServiceMock.emails.any {
+                it.contains("mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
+            }
         )
     }
 

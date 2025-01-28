@@ -119,7 +119,7 @@ class BoatReservationService(
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
 
         handleReservationPaymentResult(stamp, paymentSuccess)
-        if (paymentSuccess) sendReservationEmail(reservation.id, CreationType.New)
+        if (paymentSuccess) sendReservationEmail(reservation.id)
 
         return PaymentProcessResult.Success(reservation)
     }
@@ -588,10 +588,7 @@ class BoatReservationService(
         return result
     }
 
-    fun sendReservationEmail(
-        reservationId: Int,
-        creationType: CreationType,
-    ) {
+    fun sendReservationEmail(reservationId: Int) {
         val reservation =
             getBoatSpaceReservation(reservationId)
                 ?: throw BadRequest("Reservation $reservationId not found")
@@ -636,7 +633,7 @@ class BoatReservationService(
             }
 
         val emailSettings =
-            when (creationType) {
+            when (reservation.creationType) {
                 CreationType.New -> {
                     if (isInvoiced) {
                         EmailSettings(

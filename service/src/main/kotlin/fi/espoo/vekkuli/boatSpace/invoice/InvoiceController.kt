@@ -4,7 +4,6 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
@@ -188,7 +187,7 @@ class InvoiceController(
         }
         if (!input.markAsPaid) {
             reservationService.setReservationStatusToInvoiced(reservation.id)
-            boatReservationService.sendReservationEmail(reservation.id, CreationType.New)
+            boatReservationService.sendReservationEmail(reservation.id)
         }
     }
 

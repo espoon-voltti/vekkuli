@@ -20,7 +20,6 @@ import kotlin.test.assertTrue
 import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage as ReserveBoatSpaceEmployeePage
-import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : ReserveTest() {

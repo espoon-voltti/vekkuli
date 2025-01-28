@@ -6,8 +6,15 @@ import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.service.SendEmailServiceMock
+import org.junit.jupiter.api.BeforeEach
 
 open class ReserveTest : PlaywrightTest() {
+    @BeforeEach
+    fun setUp() {
+        SendEmailServiceMock.resetEmails()
+    }
+
     protected fun setDiscountForReserver(
         page: Page,
         reserverName: String,

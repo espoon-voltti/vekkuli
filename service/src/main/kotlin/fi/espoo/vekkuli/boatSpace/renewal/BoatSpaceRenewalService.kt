@@ -152,6 +152,7 @@ class BoatSpaceRenewalService(
 
         invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
             ?: throw InternalError("Failed to send invoice")
+        boatReservationService.sendReservationEmail(renewedReservationId)
     }
 
     fun buildBoatSpaceRenewalViewParams(
