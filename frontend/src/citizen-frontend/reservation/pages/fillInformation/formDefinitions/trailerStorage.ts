@@ -10,6 +10,7 @@ export const trailerInfoForm = object({
   width: required(positiveNumber()),
   registrationNumber: required(string())
 })
+
 export type TrailerInfoForm = typeof trailerInfoForm
 
 export const trailerStorageForm = mapped(
@@ -27,6 +28,7 @@ export const trailerStorageForm = mapped(
     }
   }
 )
+
 export type TrailerStorageForm = typeof trailerStorageForm
 
 export default function initialFormState(

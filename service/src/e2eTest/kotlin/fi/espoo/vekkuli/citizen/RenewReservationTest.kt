@@ -163,6 +163,64 @@ class RenewReservationTest : ReserveTest() {
     }
 
     @Test
+    fun `should be able to renew storage reservation`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsLeoKorhonen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.trailerRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                getBoatSection().widthInput.fill("2")
+                getBoatSection().lengthInput.fill("5")
+                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            }
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+            mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservationSection = citizenDetailsPage.getFirstReservationSection()
+
+            assertThat(reservationSection.renewButton).isVisible()
+            reservationSection.renewButton.click()
+            // Make sure that citizen is redirected to unfinished reservation switch form
+            reservationPage.navigateToPage()
+
+            assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")
+
+            val userAgreementSection = form.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
+            form.submitButton.click()
+
+            val paymentPage = PaymentPage(page)
+            paymentPage.nordeaSuccessButton.click()
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+
+            // Check that the renewed reservation is visible
+            citizenDetailsPage.navigateToPage()
+            assertThat(reservationSection.renewButton).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `if reserver has a discount should get a discount when renewing reservation`() {
         val discount = 50
         val expectedPrice = "133,60"

@@ -42,7 +42,7 @@ class BoatSpaceService(
                 boatType,
                 decimalToInt(width),
                 decimalToInt(length),
-                if (boatSpaceType != BoatSpaceType.Storage) amenities else getSingleOrEmptyList(storageType),
+                amenities,
                 boatSpaceType,
                 if (boatSpaceType != BoatSpaceType.Storage) harbor?.map { s -> s.toInt() } else null
             )

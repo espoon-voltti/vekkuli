@@ -1,10 +1,18 @@
-import { BoatSpaceType, Trailer } from 'citizen-frontend/shared/types'
+import {
+  BoatSpaceAmenity,
+  BoatSpaceType,
+  Trailer
+} from 'citizen-frontend/shared/types'
 import { union, value } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import { StoredSearchState } from '../../useStoredSearchState'
 
+import initialAllYearStorageFormState, {
+  allYearStorageForm,
+  StorageAmenity
+} from './allYearStorage'
 import initialTrailerFormState, { trailerStorageForm } from './trailerStorage'
 import initialWinterStorageFormState, {
   onWinterStorageFormUpdate,
@@ -15,7 +23,7 @@ export const spaceTypeInfoUnionForm = union({
   Slip: value<null>(),
   Trailer: trailerStorageForm,
   Winter: winterStorageForm,
-  Storage: value<null>()
+  Storage: allYearStorageForm
 })
 export type SpaceTypeInfoUnionForm = typeof spaceTypeInfoUnionForm
 
@@ -23,6 +31,7 @@ export function initialSpaceTypeInfoFormState(
   i18n: Translations,
   type: BoatSpaceType,
   storedState?: StoredSearchState,
+  reservationAmenity?: BoatSpaceAmenity,
   initialTrailer?: Trailer
 ): StateOf<SpaceTypeInfoUnionForm> {
   switch (type) {
@@ -39,7 +48,15 @@ export function initialSpaceTypeInfoFormState(
         state: initialWinterStorageFormState(i18n, storedState, initialTrailer)
       }
     case 'Storage':
-      return { branch: type, state: null }
+      return {
+        branch: type,
+        state: initialAllYearStorageFormState(
+          reservationAmenity as StorageAmenity,
+          i18n,
+          storedState,
+          initialTrailer
+        )
+      }
   }
 }
 

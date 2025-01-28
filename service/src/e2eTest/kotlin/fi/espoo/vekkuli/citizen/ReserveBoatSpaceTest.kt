@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -169,6 +170,76 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
+    fun `reserving an all year storage for buck places`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsLeoKorhonen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.buckRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")
+                getWinterStorageTypeSection().buckWithTentStorageTypeRadio.click()
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys suojateltalla")
+            }
+
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `reserving an all year storage for trailer places`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsLeoKorhonen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.trailerRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
+                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            }
+
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `reserving a trailer space as a citizen`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 5, 1, 22, 22, 22))
@@ -207,54 +278,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             userAgreementSection.agreementCheckbox.check()
 
             formPage.submitButton.click()
-            val paymentPage = PaymentPage(page)
-            paymentPage.nordeaSuccessButton.click()
-
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
-
-    @Test
-    fun `reserving a storage space as a citizen`() {
-        try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 9, 1, 22, 22, 22))
-
-            CitizenHomePage(page).loginAsLeoKorhonen()
-
-            val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.navigateToPage()
-            reservationPage.startReservingStorageSpaceB007()
-
-            val formPage = BoatSpaceFormPage(page)
-            val boatSection = formPage.getBoatSection()
-            val userAgreementSection = formPage.getUserAgreementSection()
-
-            // Fill in the boat information
-            boatSection.typeSelect.selectOption("Sailboat")
-            boatSection.nameInput.fill("My Boat")
-            boatSection.lengthInput.fill("3")
-            boatSection.widthInput.fill("25")
-            boatSection.depthInput.fill("1.5")
-            boatSection.weightInput.fill("2000")
-            boatSection.otherIdentifierInput.fill("ID12345")
-            boatSection.noRegistrationCheckbox.check()
-            boatSection.ownerRadio.click()
-
-            val citizenSection = formPage.getCitizenSection()
-            citizenSection.emailInput.fill("test@example.com")
-            assertThat(citizenSection.emailError).isHidden()
-
-            citizenSection.phoneInput.fill("123456789")
-            assertThat(citizenSection.phoneError).isHidden()
-
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-
-            formPage.submitButton.click()
-
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
 

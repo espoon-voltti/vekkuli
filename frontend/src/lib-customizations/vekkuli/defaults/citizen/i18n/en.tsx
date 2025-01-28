@@ -134,10 +134,12 @@ const en: Translations = {
       missingFieldsInfoBox:
         'First provide the boat type and dimensions to see suitable spaces for your boat.',
       filters: {
+        title: 'Boat space reservation',
         boatSpaceType: 'Space type',
         harbor: 'Harbor',
         amenities: 'Amenities',
         boatType: 'Boat type',
+        storageTypeAmenities: 'Storage type',
         branchSpecific: {
           Slip: {
             width: 'Boat width (m)',
@@ -182,9 +184,22 @@ const en: Translations = {
         continueToPayment: 'Continue to payment',
         confirmReservation: 'Confirm reservation'
       },
+      storageInfo: {
+        title: 'Storage information',
+        buckWithTentInfo:
+          'Please note that the boat and the cradle, including their protective tents, must fit within the reserved space.'
+      },
       trailerInfo: {
         title: 'Trailer information',
         registrationCode: 'Registration number'
+      },
+      allYearStorage: {
+        Trailer: {
+          title: 'Trailer information'
+        },
+        Buck: {
+          title: 'Buck information'
+        }
       }
     },
     paymentPage: {

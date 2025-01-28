@@ -102,6 +102,7 @@ export function initialFormState(
       i18n,
       spaceType,
       storedState,
+      unfinishedReservation?.reservation.boatSpace.amenity,
       unfinishedReservation?.reservation.trailer
     ),
     ...initialUserAgreementFormState(i18n)
