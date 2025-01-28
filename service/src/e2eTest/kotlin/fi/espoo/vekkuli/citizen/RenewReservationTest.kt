@@ -161,16 +161,17 @@ class RenewReservationTest : ReserveTest() {
             handleError(e)
         }
     }
+
     @Test
     fun `should be able to renew storage reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
-             val citizenHomePage = CitizenHomePage(page)
+            val citizenHomePage = CitizenHomePage(page)
             citizenHomePage.loginAsLeoKorhonen()
             citizenHomePage.navigateToPage()
             citizenHomePage.languageSelector.click()
             citizenHomePage.languageSelector.getByText("Suomi").click()
-             val reservationPage = ReserveBoatSpacePage(page)
+            val reservationPage = ReserveBoatSpacePage(page)
             reservationPage.navigateToPage()
 
             val filterSection = reservationPage.getFilterSection()
@@ -192,7 +193,7 @@ class RenewReservationTest : ReserveTest() {
             PaymentPage(page).payReservation()
             assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
             mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
-             val citizenDetailsPage = CitizenDetailsPage(page)
+            val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
             val reservationSection = citizenDetailsPage.getFirstReservationSection()
 
@@ -203,14 +204,14 @@ class RenewReservationTest : ReserveTest() {
 
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")
 
-             val userAgreementSection = form.getUserAgreementSection()
+            val userAgreementSection = form.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
-             form.submitButton.click()
+            form.submitButton.click()
 
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
-              assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
 
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
@@ -233,7 +234,7 @@ class RenewReservationTest : ReserveTest() {
             citizenHomePage.navigateToPage()
             citizenHomePage.languageSelector.click()
             citizenHomePage.languageSelector.getByText("Suomi").click()
-            
+
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
             val reservationSection = citizenDetailsPage.getFirstReservationSection()
