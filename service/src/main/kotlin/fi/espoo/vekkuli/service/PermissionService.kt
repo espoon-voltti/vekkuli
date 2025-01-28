@@ -75,7 +75,9 @@ class PermissionService(
         when {
             userService.isAppUser(editorId) -> true
             editorId == trailerReserverId -> true
-            else -> false
+            else -> {
+                editorId in organizationService.getOrganizationMembers(trailerReserverId).map { it.id }
+            }
         }
 
     fun canEditTrailer(
@@ -86,6 +88,9 @@ class PermissionService(
         return when {
             userService.isAppUser(editorId) -> true
             editorId == trailer?.reserverId -> true
+            trailer != null -> {
+                editorId in organizationService.getOrganizationMembers(trailer.reserverId).map { it.id }
+            }
             else -> false
         }
     }

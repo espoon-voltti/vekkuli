@@ -20,7 +20,7 @@ export default React.memo(function Reservation({
 
   return (
     <>
-      <div className="reservation-card">
+      <div className="reservation-card" data-testid="reservation-list-card">
         <Columns isVCentered>
           <Column isNarrow>
             <h4>

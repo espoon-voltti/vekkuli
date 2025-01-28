@@ -11,10 +11,13 @@ export default React.memo(function CitizenInformation({
   organizations: Organization[]
 }) {
   return (
-    <>
+    <div data-testid="organization-list">
       <h4 className="mb-1 has-text-left">Yhteisöt</h4>
       {organizations.map((organization) => (
-        <Columns key={`organization-${organization.id}`}>
+        <Columns
+          key={`organization-${organization.id}`}
+          data-testid="organization-row"
+        >
           <Column isOneQuarter>
             <Link
               className="link"
@@ -36,6 +39,6 @@ export default React.memo(function CitizenInformation({
           </Column>
         </Columns>
       ))}
-    </>
+    </div>
   )
 })

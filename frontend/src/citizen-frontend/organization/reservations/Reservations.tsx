@@ -13,7 +13,7 @@ export default React.memo(function Reservations({
   if (!reservations.length) return null
 
   return (
-    <Container isBlock>
+    <Container isBlock data-testid="reservation-list">
       <h3>Paikkavaraukset</h3>
       <div className="reservation-list form-section">
         {reservations.map((reservation) => (
