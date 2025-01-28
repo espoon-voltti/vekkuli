@@ -16,7 +16,7 @@ export default React.memo(function TrailerSpaceType({
   const i18n = useTranslation()
   const { trailerInfo } = useFormFields(bind)
   return (
-    <FormSection data-testid="winter-storage-type">
+    <FormSection data-testid="trailer-storage-type">
       <h3 className="header">{i18n.reservation.formPage.trailerInfo.title}</h3>
       <Columns>
         <Column>

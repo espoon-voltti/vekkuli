@@ -435,7 +435,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             getBoatSection().nameInput.fill("The Boat")
             getBoatSection().widthInput.fill("1")
             getBoatSection().lengthInput.fill("1")
-            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
         }
         paymentPage.payReservation()
 
