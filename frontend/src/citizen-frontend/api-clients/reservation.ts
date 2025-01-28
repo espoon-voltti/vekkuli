@@ -74,7 +74,8 @@ export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReserv
     organizations: json.organizations,
     organizationsBoats: mapResponseToBoatsByOrganization(
       json.organizationsBoats
-    )
+    ),
+    organizationRevisedPrices: json.organizationRevisedPrices
   }
 }
 

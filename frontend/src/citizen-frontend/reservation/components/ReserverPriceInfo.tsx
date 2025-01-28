@@ -2,39 +2,40 @@ import React from 'react'
 
 import {BlueInfoCircle} from '../../../lib-icons'
 import {useTranslation} from '../../localization'
-import {formatCentsToEuros} from '../../shared/formatters'
-import {ReservationPriceInfo} from "../pages/fillInformation/helpers";
+import {parsePrice} from '../../shared/formatters'
+import {RevisedPriceForReservation} from "../RevisedPriceForReservation";
 
 export default React.memo(function ReserverPriceInfo({
-    reservationPriceInfo
+    revisedPriceForReservation
     }: {
-    reservationPriceInfo: ReservationPriceInfo
+    revisedPriceForReservation: RevisedPriceForReservation
 }) {
-    const {discountPercentage, discountedPriceInCents, priceInCents, creationType} = reservationPriceInfo
+    const {discountPercentage, revisedPriceWithDiscountInEuro, revisedPriceInEuro, creationType} = revisedPriceForReservation
     const i18n = useTranslation()
+    const numericPrice = parsePrice(revisedPriceInEuro)
 
     const getSwitchInfoText = () => {
-      if (priceInCents > 0) {
-        return i18n.reservation.paymentInfo.moreExpensive(formatCentsToEuros(priceInCents))
-      } else if (priceInCents < 0) {
+      if (numericPrice > 0) {
+        return i18n.reservation.paymentInfo.moreExpensive(revisedPriceInEuro)
+      } else if (numericPrice < 0) {
         return i18n.reservation.paymentInfo.lessExpensive
       }
       return i18n.reservation.paymentInfo.equal
     }
 
     const getDiscountText = () => {
-      const {reserverType, reserverName, discountPercentage} = reservationPriceInfo
+      const {reserverType, name, discountPercentage} = revisedPriceForReservation
       return i18n.reservation.reserverDiscountInfo(
           reserverType,
-          reserverName || '',
+          name ?? "",
           discountPercentage,
-          formatCentsToEuros(discountedPriceInCents)
+          revisedPriceWithDiscountInEuro
       )
     }
 
     const switchText = creationType === 'Switch' ? getSwitchInfoText() : null
     const discountText = discountPercentage > 0 ? getDiscountText() : null
-    const showDiscountText = discountText && (!switchText || switchText && priceInCents > 0)
+    const showDiscountText = discountText && (!switchText || switchText && numericPrice > 0)
 
     return switchText || discountText ? (
         <div
@@ -46,7 +47,7 @@ export default React.memo(function ReserverPriceInfo({
                     <BlueInfoCircle/>
                 </span>
             </div>
-            <p className="column">
+            <p data-testid="reservation-info-text" className="column">
                 {switchText && (<span>{switchText}</span>)}
                 {showDiscountText && (<span>{discountText}</span>)}
             </p>

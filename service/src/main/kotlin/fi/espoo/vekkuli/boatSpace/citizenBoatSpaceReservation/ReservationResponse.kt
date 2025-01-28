@@ -7,6 +7,8 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.discountedPriceInCents
+import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -14,12 +16,23 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
+data class RevisedPrice(
+    val reserverType: ReserverType,
+    val id: UUID?,
+    val discountPercentage: Int,
+    val name: String?,
+    val revisedPriceInCents: Int,
+    val revisedPriceInEuro: String,
+    val revisedPriceWithDiscountInEuro: String
+)
+
 data class UnfinishedReservationResponse(
     val reservation: ReservationResponse,
     val boats: List<CitizenBoatResponse>,
     val municipalities: List<MunicipalityResponse>,
     val organizations: List<CitizenOrganizationResponse>,
-    val organizationsBoats: Map<String, List<Boat>>
+    val organizationsBoats: Map<String, List<Boat>>,
+    val organizationRevisedPrices: List<RevisedPrice>
 )
 
 data class ReservationResponse(
@@ -38,13 +51,13 @@ data class ReservationResponse(
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
-    val revisedPrice: Int,
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
     val canRenew: Boolean,
     val canSwitch: Boolean,
     val totalPriceInCents: Int,
+    val revisedPrice: RevisedPrice
 ) {
     data class Citizen(
         val id: UUID,
@@ -179,7 +192,6 @@ class ReservationResponseMapper(
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservationWithDependencies)
         val trailer = getTrailer(reservationWithDependencies)
-        val revisedPrice = getRevisedPrice(reservationWithDependencies)
 
         return ReservationResponse(
             id = reservationId,
@@ -196,14 +208,14 @@ class ReservationResponseMapper(
             totalPrice = reservationWithDependencies.priceInEuro,
             vatValue = reservationWithDependencies.vatPriceInEuro,
             netPrice = reservationWithDependencies.priceWithoutVatInEuro,
-            revisedPrice = revisedPrice,
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
             paymentDate = paymentDate,
             creationType = reservationWithDependencies.creationType,
             canRenew = seasonalService.canRenewAReservation(reservationId).success,
             canSwitch = seasonalService.canSwitchReservation(reserverId, boatSpace.type, reservationId).success,
-            totalPriceInCents = reservationWithDependencies.priceCents
+            totalPriceInCents = reservationWithDependencies.priceCents,
+            revisedPrice = toRevisedPrice(reservationWithDependencies, citizen, organization)
         )
     }
 
@@ -337,10 +349,10 @@ class ReservationResponseMapper(
         )
     }
 
-    // This can be a function to get the revised price of a reservation. Note that it cannot be used for discount calculation
-    // because reserver can change in UI and organization might have different discount which is not know here
-    private fun getRevisedPrice(reservation: ReservationWithDependencies): Int {
-        return when (reservation.creationType) {
+    // This can be a function to get the revised price of a reservation. If the reservation is a switch, it is the difference
+    // between old and new space. The discounts must be counted after this info.
+    private fun getRevisedPriceInCents(reservation: ReservationWithDependencies): Int =
+        when (reservation.creationType) {
             CreationType.Switch -> {
                 boatSpaceSwitchService.getRevisedPrice(reservation)
             }
@@ -349,5 +361,61 @@ class ReservationResponseMapper(
                 reservation.priceCents
             }
         }
+
+    private fun toRevisedPrice(
+        id: UUID?,
+        revisedPriceInCents: Int,
+        discountPercentage: Int,
+        reserverType: ReserverType,
+        name: String?
+    ): RevisedPrice =
+        RevisedPrice(
+            id = id,
+            reserverType = reserverType,
+            discountPercentage = discountPercentage,
+            name = name,
+            revisedPriceInEuro = formatInt(revisedPriceInCents),
+            revisedPriceInCents = revisedPriceInCents,
+            revisedPriceWithDiscountInEuro =
+                formatInt(
+                    discountedPriceInCents(
+                        revisedPriceInCents,
+                        discountPercentage
+                    )
+                )
+        )
+
+    fun toRevisedPrice(
+        reservation: ReservationWithDependencies,
+        citizen: CitizenWithDetails?,
+        organization: Organization?
+    ): RevisedPrice {
+        val revisedPriceInCents = getRevisedPriceInCents(reservation)
+        val discountPercentage = reservation.discountPercentage
+        return toRevisedPrice(
+            reservation.reserverId,
+            revisedPriceInCents,
+            discountPercentage ?: 0,
+            reservation.reserverType ?: ReserverType.Citizen,
+            if (citizen != null) {
+                "${citizen.firstName} ${citizen.lastName}"
+            } else {
+                organization?.name
+            }
+        )
     }
+
+    fun toOrganizationRevisedPrices(
+        revisedPriceCents: Int,
+        organizations: List<Organization>
+    ): List<RevisedPrice> =
+        organizations.map {
+            toRevisedPrice(
+                it.id,
+                revisedPriceCents,
+                it.discountPercentage,
+                ReserverType.Organization,
+                it.name
+            )
+        }
 }

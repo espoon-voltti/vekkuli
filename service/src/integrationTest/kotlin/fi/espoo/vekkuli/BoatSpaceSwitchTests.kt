@@ -10,8 +10,11 @@ import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.PaymentRepository
+import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -54,6 +57,12 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     @MockBean
     lateinit var organizationService: OrganizationService
+
+    @Autowired
+    private lateinit var reserverRepository: ReserverRepository
+
+    @Autowired
+    private lateinit var paymentRepository: PaymentRepository
 
     @BeforeEach
     override fun resetDatabase() {
@@ -508,9 +517,9 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
             agreeToRules = true,
         )
 
-    private fun createExpensiveTestBoatSpace(): Int {
+    private fun createExpensiveTestBoatSpace(id: Int = 999999): Int {
         val currentlyMostExpensiveSpacePriceId = 6
-        val spaceId = 999999
+        val spaceId = id
 
         insertDevBoatSpace(
             DevBoatSpace(
@@ -528,5 +537,32 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         )
 
         return spaceId
+    }
+
+    @Test
+    fun `should set the switched reservation to confirmed state if price is zero and add a payment entry`() {
+        val originalReservation = createTestReservationForEspooCitizen()
+        val expensiveSpaceId = createExpensiveTestBoatSpace(989898)
+
+        reserverRepository.updateDiscount(citizenIdMikko, 100)
+
+        val switchReservation =
+            boatSpaceSwitchService.startReservation(
+                expensiveSpaceId,
+                originalReservation.id
+            )
+        val switchInput = createTestSwitchReservationFormFillInput()
+
+        reservationService.fillReservationInformation(switchReservation.id, switchInput.toReservationInformation())
+
+        val updatedSwitchedReservation = boatReservationService.getReservationWithDependencies(switchReservation.id)
+
+        assertNotNull(updatedSwitchedReservation, "Updated switch reservation should exist")
+
+        assertEquals(ReservationStatus.Confirmed, updatedSwitchedReservation.status, "Status should be confirmed")
+        val payment = paymentRepository.getPaymentForReservation(updatedSwitchedReservation.id)
+        Assertions.assertNotNull(payment, "Should create payment")
+        assertEquals(PaymentStatus.Success, payment!!.status)
+        assertEquals(0, payment.totalCents)
     }
 }

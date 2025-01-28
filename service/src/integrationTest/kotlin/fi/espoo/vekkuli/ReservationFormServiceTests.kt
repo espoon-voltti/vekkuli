@@ -7,7 +7,8 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.TrailerRepository
+import fi.espoo.vekkuli.repository.PaymentRepository
+import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -46,7 +47,15 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     private lateinit var reservationInput: ReservationInput
 
     @Autowired
-    private lateinit var trailerRepository: TrailerRepository
+    private lateinit var reserverRepository: ReserverRepository
+
+    @Autowired
+    private lateinit var paymentRepository: PaymentRepository
+
+    @BeforeEach
+    fun resetDiscount() {
+        reserverRepository.updateDiscount(citizenIdOlivia, 0)
+    }
 
     @BeforeEach
     override fun resetDatabase() {
@@ -254,5 +263,74 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         assertEquals(madeReservation.id, reservation!!.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Payment, reservation.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, reservation.creationType, "Status should be renewal")
+    }
+
+    @Test
+    fun `should set the new reservation to confirmed state if price is zero and add a payment entry`() {
+        val madeReservation = testUtils.createReservationInInfoState(citizenIdOlivia)
+        reserverRepository.updateDiscount(citizenIdOlivia, 100)
+
+        Mockito
+            .`when`(seasonalService.canReserveANewSpace(citizenIdOlivia, BoatSpaceType.Slip))
+            .thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        startDate = LocalDate.now(),
+                        endDate = LocalDate.now().plusDays(30),
+                        reservationValidity = ReservationValidity.FixedTerm
+                    )
+                )
+            )
+
+        reservationService.createOrUpdateReserverAndReservationForCitizen(
+            madeReservation.id,
+            citizenIdOlivia,
+            reservationInput
+        )
+        val reservation = boatReservationService.getReservationWithDependencies(madeReservation.id)
+        assertEquals(reservation?.status, ReservationStatus.Confirmed, "Status should be confirmed")
+        val payment = paymentRepository.getPaymentForReservation(madeReservation.id)
+        assertNotNull(payment, "Should create payment")
+        assertEquals(PaymentStatus.Success, payment!!.status)
+        assertEquals(0, payment.totalCents)
+    }
+
+    @Test
+    fun `should set the renewed reservation to confirmed state if price is zero and add a payment entry`() {
+        val madeReservation =
+            testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdOlivia))
+
+        Mockito
+            .`when`(seasonalService.canRenewAReservation(madeReservation.id))
+            .thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        startDate = LocalDate.now(),
+                        endDate = LocalDate.now().plusDays(30),
+                        reservationValidity = ReservationValidity.Indefinite
+                    )
+                )
+            )
+        val renewedReservation =
+            boatSpaceRenewalService.createRenewalReservation(madeReservation.id, citizenIdOlivia, UserType.CITIZEN)
+
+        assertNotNull(renewedReservation)
+        reserverRepository.updateDiscount(citizenIdOlivia, 100)
+
+        reservationService.createOrUpdateReserverAndReservationForCitizen(
+            renewedReservation!!.id,
+            citizenIdOlivia,
+            reservationInput
+        )
+
+        val reservation = boatReservationService.getReservationWithDependencies(renewedReservation.id)
+        assertEquals(reservation?.status, ReservationStatus.Confirmed, "Status should be confirmed")
+        val payment = paymentRepository.getPaymentForReservation(reservation!!.id)
+        assertNotNull(payment, "Should create payment")
+        assertEquals(PaymentStatus.Success, payment!!.status)
+        assertEquals(0, payment.totalCents)
+
+        assertEquals(madeReservation.id, renewedReservation.originalReservationId, "Original reservation ID should match")
+        assertEquals(CreationType.Renewal, renewedReservation.creationType, "Status should be renewal")
     }
 }

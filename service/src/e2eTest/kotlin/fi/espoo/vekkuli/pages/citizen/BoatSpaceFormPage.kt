@@ -86,7 +86,7 @@ open class BoatSpaceFormPage(
     class ReservedSpaceSection(
         root: Locator
     ) {
-        private val fields = FieldLocator(root)
+        val fields = FieldLocator(root)
         val storageTypeField = fields.getField("Säilytystapa")
     }
 
@@ -113,6 +113,7 @@ open class BoatSpaceFormPage(
 
     val validationWarning = page.locator(".form-validation-message").getByText("Pakollisia tietoja puuttuu")
     val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
+    val confirmButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Vahvista varaus").setExact(true))
     val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
     val header = page.getByText("Venepaikan varaus:")
 
