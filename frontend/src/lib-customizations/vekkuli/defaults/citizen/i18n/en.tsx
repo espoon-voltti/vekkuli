@@ -381,6 +381,10 @@ const en: Translations = {
       }
     }
   },
+  organization: {
+    organizationPhone: 'Organization phone number',
+    organizationEmail: 'Organization email'
+  },
   payment: {
     title: 'Choose payment method'
   }

@@ -381,6 +381,10 @@ export default {
       }
     }
   },
+  organization: {
+    organizationPhone: 'Yhteisön puhelinnumero',
+    organizationEmail: 'Yhteisön sähköposti'
+  },
   payment: {
     title: 'Valitse maksutapa'
   }
