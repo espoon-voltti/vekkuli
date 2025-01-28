@@ -382,6 +382,10 @@ const sv: Translations = {
       }
     }
   },
+  organization: {
+    organizationPhone: 'Organisationens telefonnummer',
+    organizationEmail: 'Organisationens e-post'
+  },
   payment: {
     title: 'Välj betalningsmetod'
   }

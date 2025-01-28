@@ -2,6 +2,7 @@ import { Column, Columns } from 'lib-components/dom'
 import { FormSection, SelectField, TextField } from 'lib-components/form'
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
 import { OrganizationInfoForm } from '../../formDefinitions/organization'
@@ -21,6 +22,8 @@ export const WithOrganization = React.memo(function Organization({
     streetAddress,
     municipality
   } = useFormFields(bind)
+
+  const i18n = useTranslation()
 
   return (
     <FormSection>
@@ -57,6 +60,7 @@ export const WithOrganization = React.memo(function Organization({
             label="Puhelinnumero"
             required={true}
             bind={phone}
+            ariaLabel={i18n.organization.organizationPhone}
           />
         </Column>
         <Column isOneQuarter>
@@ -65,6 +69,7 @@ export const WithOrganization = React.memo(function Organization({
             label="Sähköposti"
             required={true}
             bind={email}
+            ariaLabel={i18n.organization.organizationEmail}
           />
         </Column>
         <Column isOneQuarter>
