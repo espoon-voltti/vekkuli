@@ -186,6 +186,10 @@ export default {
         registrationCode: 'Rekisteritunnus'
       }
     },
+    paymentPage: {
+      paymentCancelled:
+        'Maksu epäonnistui, yritä uudelleen tai palaa takaisin peruuttaaksesi varauksen.'
+    },
 
     noRegistererNumber: 'Ei rekisterinumeroa',
     certify: 'Vakuutan antamani tiedot oikeiksi',
@@ -348,7 +352,8 @@ export default {
       Trailer: 'Trailerisäilytys',
       Buck: 'Pukkisäilytys',
       BuckWithTent: 'Pukkisäilytys suojateltalla'
-    }
+    },
+    reserve: 'Varaa'
   },
   citizen: {
     firstName: 'Etunimi',

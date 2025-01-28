@@ -4,7 +4,7 @@ import React from 'react'
 import { useNavigate } from 'react-router'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
+import {formatPlaceIdentifier, parsePrice} from 'citizen-frontend/shared/formatters'
 import { StorageType } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields, useFormUnion } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -29,8 +29,9 @@ import UserAgreementsSection from './sections/UserAgreements'
 import BoatSection from './sections/boat/Boat'
 import OrganizationSection from './sections/organization/Organization'
 import WinterStorageType from './sections/winterStorageType/WinterStorageType'
+import {getRevisedPriceForReservation} from "../../RevisedPriceForReservation";
+import {RevisedPrice} from "../../../api-types/reservation";
 import TrailerStorageType from './sections/trailerStorageType/TrailerStorageType'
-import { getReservationPriceInfo } from './helpers'
 
 type FormProperties = {
   reservation: Reservation
@@ -43,7 +44,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
   const [submitError, setSubmitError] = React.useState<'SERVER_ERROR' | null>(
     null
   )
-  const { boats, municipalities, organizations, organizationsBoats } =
+  const { boats, municipalities, organizations, organizationsBoats, organizationRevisedPrices } =
     reservation
 
   const { mutateAsync: submitForm } = useMutation(
@@ -113,13 +114,19 @@ export default React.memo(function Form({ reservation }: FormProperties) {
       : undefined) as StorageType | undefined
   }
 
-  const getSelectedOrganization = () =>
-    organization.isValid() ? organization.value().organization : null
+  const getSelectedOrganizationId = (
+  ) => {
+    const org = organization.isValid() && organization.value().organization
+    return (org && "id" in org) ? org?.id : null
+  }
 
-  const reservationPriceInfo = getReservationPriceInfo(
-    updatedReservation,
-    getSelectedOrganization()
-  )
+  const getRevisedPrice = (): RevisedPrice => {
+    const selectedOrganizationId = getSelectedOrganizationId()
+    const organizationRevisedPrice = organizationRevisedPrices.find((r) => r.id === selectedOrganizationId)
+    return organizationRevisedPrice ?? updatedReservation.revisedPrice
+  }
+
+  const reservationPriceInfo = getRevisedPriceForReservation(updatedReservation, getRevisedPrice())
 
   return (
     <>
@@ -154,9 +161,8 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           )}
           <FormSection>
             <ReservedSpace
-              reservation={updatedReservation}
-              reservationPriceInfo={reservationPriceInfo}
-            />
+                reservation={updatedReservation}
+                revisedPriceForReservation={reservationPriceInfo} />
           </FormSection>
           <UserAgreementsSection bind={userAgreement} />
           {showAllErrors && <ValidationWarning />}
@@ -169,7 +175,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
             {i18n.reservation.cancelReservation}
           </ReservationCancel>
           <Button type="primary" action={onSubmit}>
-            {reservationPriceInfo.discountedPriceInCents > 0
+            {parsePrice(reservationPriceInfo.revisedPriceWithDiscountInEuro) > 0
               ? i18n.reservation.formPage.submit.continueToPayment
               : i18n.reservation.formPage.submit.confirmReservation}
           </Button>

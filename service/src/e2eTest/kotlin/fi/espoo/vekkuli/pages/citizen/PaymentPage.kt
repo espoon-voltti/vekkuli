@@ -11,6 +11,7 @@ class PaymentPage(
     val nordeaSuccessButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Nordea success"))
     val nordeaFailedButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Nordea failed"))
     val paymentProviders = getByDataTestId("payment-providers")
+    val reservationFailedNotification = page.getByText("Maksu epäonnistui")
     val reservationSuccessNotification = page.getByText("Venepaikan varaus onnistui")
 
     fun payReservation() {

@@ -72,19 +72,18 @@ export default React.memo(function Reservation({
       })
   }
 
+  const formattedPlaceIdentifier = formatPlaceIdentifier(
+    boatSpace.section,
+    boatSpace.placeNumber,
+    boatSpace.locationName
+  )
+
   return (
     <>
       <div className="reservation-card" data-testid="reservation-list-card">
         <Columns isVCentered>
           <Column isNarrow>
-            <h4>
-              {i18n.boatSpace.boatSpaceType[reservation.boatSpace.type].label}:{' '}
-              {formatPlaceIdentifier(
-                boatSpace.section,
-                boatSpace.placeNumber,
-                boatSpace.locationName
-              )}
-            </h4>
+            <h4>{`${i18n.boatSpace.boatSpaceType[reservation.boatSpace.type].label}: ${formattedPlaceIdentifier}`}</h4>
           </Column>
         </Columns>
         <Columns>
@@ -189,6 +188,7 @@ export default React.memo(function Reservation({
               <Button
                 type="danger-outlined"
                 action={() => setTerminateModalVisible('visible')}
+                ariaLabel={`${i18n.citizenPage.reservation.actions.terminate} : ${formattedPlaceIdentifier}`}
               >
                 {i18n.citizenPage.reservation.actions.terminate}
               </Button>
@@ -197,6 +197,7 @@ export default React.memo(function Reservation({
               <Button
                 type="primary"
                 action={() => navigate('/kuntalainen/venepaikka')}
+                ariaLabel={`${i18n.citizenPage.reservation.actions.change} : ${formattedPlaceIdentifier}`}
               >
                 {i18n.citizenPage.reservation.actions.change}
               </Button>
@@ -207,6 +208,7 @@ export default React.memo(function Reservation({
                 type="primary"
                 action={() => onRenew()}
                 disabled={renewIsPending}
+                ariaLabel={`${i18n.citizenPage.reservation.actions.renew} : ${formattedPlaceIdentifier}`}
               >
                 {i18n.citizenPage.reservation.actions.renew}
               </Button>

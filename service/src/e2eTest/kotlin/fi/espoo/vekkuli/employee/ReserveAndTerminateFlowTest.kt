@@ -10,10 +10,13 @@ import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class ReserveAndTerminateFlowTest : PlaywrightTest() {
@@ -60,6 +63,15 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         reserveBoatSpacePage.revealB314BoatSpace()
         assertThat(reserveBoatSpacePage.reserveTableB314Row).not().isVisible()
 
+        messageService.sendScheduledEmails()
+        assertEquals(1, SendEmailServiceMock.emails.size)
+        assertTrue(
+            SendEmailServiceMock.emails.get(
+                0
+            ).contains("mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
+        )
+        SendEmailServiceMock.resetEmails()
+
         // Terminate the reservation
         listingPage.navigateTo()
         listingPage.reservationsTableB314Row.click()
@@ -85,6 +97,11 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         assertThat(
             citizenDetailsPage.terminationDateInFirstReservationListItem
         ).containsText(formatAsFullDate(expectedTerminationDate))
+
+        // Assert that termination email to citizen has been sent
+        messageService.sendScheduledEmails()
+        assertEquals(1, SendEmailServiceMock.emails.size)
+        assertTrue(SendEmailServiceMock.emails.get(0).contains("Venepaikka: Haukilahti B 314 on irtisanottu virkailijan toimesta"))
 
         // Check that the reservation is still visible in the listing page with the correct end date
         listingPage.navigateTo()

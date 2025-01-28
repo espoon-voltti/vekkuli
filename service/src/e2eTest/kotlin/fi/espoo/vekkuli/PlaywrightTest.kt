@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli
 
 import com.microsoft.playwright.*
+import fi.espoo.vekkuli.service.MessageService
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -18,6 +20,9 @@ import kotlin.io.path.Path
 abstract class PlaywrightTest {
     @Autowired
     protected lateinit var jdbi: Jdbi
+
+    @Autowired
+    lateinit var messageService: MessageService
 
     protected lateinit var playwright: Playwright
     protected lateinit var browser: Browser
@@ -54,6 +59,7 @@ abstract class PlaywrightTest {
         page = context.newPage()
         // Mock the behavior to return a specific date-time
         mockTimeProvider(timeProvider)
+        SendEmailServiceMock.resetEmails()
     }
 
     @AfterEach

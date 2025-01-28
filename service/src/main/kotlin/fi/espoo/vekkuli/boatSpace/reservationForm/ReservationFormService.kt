@@ -255,15 +255,28 @@ class ReservationFormService(
         val priceWithPossibleDiscount = discountedPriceInCents(priceCents, reserver?.discountPercentage)
 
         val status = if (priceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
+        val rbsInput = buildReserveBoatSpaceInput(reservationId, input)
 
         processBoatSpaceReservation(
             reserverId,
-            buildReserveBoatSpaceInput(reservationId, input),
+            rbsInput,
             status,
             reserveResult.data.reservationValidity,
             reserveResult.data.startDate,
             reserveResult.data.endDate
         )
+
+        if (status == ReservationStatus.Confirmed) {
+            boatReservationService.updateReservationStatus(
+                reservationId,
+                status,
+                timeProvider.getCurrentDate(),
+                "",
+                PaymentType.Other
+            )
+        }
+
+        sendReservationEmail(reservationId, CreationType.New)
     }
 
     fun validateCitizenCanRenewReservation(
@@ -316,16 +329,30 @@ class ReservationFormService(
             )
         }
         val successResultData = (result as ReservationResult.Success).data
-// TODO: check discountPrice and confirm if doesn't requite payment
+        val revisedPriceWithPossibleDiscount = paymentService.calculatePriceWithDiscount(reservation)
+
+        val status =
+            if (revisedPriceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
 
         processBoatSpaceReservation(
             originalReservation.reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
-            ReservationStatus.Payment,
+            status,
             successResultData.reservationValidity,
             successResultData.startDate,
             successResultData.endDate
         )
+
+        if (status == ReservationStatus.Confirmed) {
+            boatReservationService.updateReservationStatus(
+                reservationId,
+                status,
+                timeProvider.getCurrentDate(),
+                "",
+                PaymentType.Other
+            )
+            boatReservationService.markReservationEnded(originalReservation.id)
+        }
     }
 
     @Transactional
@@ -372,7 +399,7 @@ class ReservationFormService(
                 "",
                 PaymentType.Other
             )
-            boatReservationService.markReservationEnded(reservation.originalReservationId)
+            boatReservationService.markReservationEnded(originalReservation.id)
         }
     }
 
@@ -598,9 +625,6 @@ class ReservationFormService(
                 startDate,
                 endDate
             )
-        if (reservationStatus == ReservationStatus.Invoiced) {
-            sendReservationConfirmationEmail(input, reserverId, boatSpace, reservation)
-        }
     }
 
     private fun updateReservationWithStorageTypeRelatedInformation(
@@ -717,28 +741,84 @@ class ReservationFormService(
         )
     }
 
-    private fun sendReservationConfirmationEmail(
-        input: ReserveBoatSpaceInput,
-        reserverId: UUID,
-        boatSpace: BoatSpace,
-        reservation: BoatSpaceReservation
+    fun sendReservationEmail(
+        reservationId: Int,
+        creationType: CreationType,
     ) {
-        emailService.sendEmail(
-            "reservation_confirmation_invoice",
-            null,
-            emailEnv.senderAddress,
-            Recipient(reserverId, input.email!!),
+        val reservation =
+            boatReservationService.getBoatSpaceReservation(reservationId)
+                ?: throw BadRequest("Reservation $reservationId not found")
+        val boatSpace =
+            boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)
+                ?: throw BadRequest("Boat space ${reservation.boatSpaceId} not found")
+        val isInvoiced = reservation.status == ReservationStatus.Invoiced
+        val placeName = "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}"
+
+        val defaultParams =
             mapOf(
-                "name" to "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}",
+                "reserverName" to reservation.name,
+                "harborName" to reservation.locationName,
+                "name" to placeName,
                 "width" to intToDecimal(boatSpace.widthCm),
                 "length" to intToDecimal(boatSpace.lengthCm),
                 "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
-                "endDate" to reservation.endDate,
-                "invoiceDueDate" to
-                    formatAsFullDate(
-                        getInvoiceDueDate(timeProvider)
-                    )
+                "endDate" to reservation.endDate
             )
+
+        data class EmailSettings(
+            val template: String,
+            val recipients: List<String>,
+            val params: Map<String, Any>
+        )
+        val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
+
+        val emailSettings =
+            when (creationType) {
+                CreationType.New -> {
+                    if (isInvoiced) {
+                        EmailSettings(
+                            template = "reservation_created_by_employee",
+                            recipients = listOf(reservation.email),
+                            params =
+                                defaultParams
+                                    .plus("reservationDescription" to "${boatSpaceTypeToText(reservation.type.toString())} $placeName")
+                                    .plus("invoiceAddress" to invoiceAddress)
+                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                        )
+                    } else {
+                        EmailSettings(
+                            template = "reservation_created_by_citizen",
+                            recipients = listOf(reservation.email),
+                            params = defaultParams
+                        )
+                    }
+                }
+                CreationType.Switch -> {
+                    EmailSettings(
+                        template = "reservation_renewed_by_citizen",
+                        recipients = listOf(reservation.email),
+                        params = defaultParams
+                    )
+                }
+                CreationType.Renewal -> {
+                    EmailSettings(
+                        template = "reservation_renewed_by_employee",
+                        recipients = listOf(reservation.email),
+                        params =
+                            defaultParams
+                                .plus("reservationDescription" to "${boatSpaceTypeToText(reservation.type.toString())} $placeName")
+                                .plus("invoiceAddress" to invoiceAddress)
+                                .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                    )
+                }
+            }
+
+        emailService.sendBatchEmail(
+            emailSettings.template,
+            null,
+            emailEnv.senderAddress,
+            emailSettings.recipients.map { Recipient(reservation.reserverId, it) },
+            emailSettings.params
         )
     }
 

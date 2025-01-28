@@ -181,6 +181,10 @@ const sv: Translations = {
         registrationCode: 'Registernummer'
       }
     },
+    paymentPage: {
+      paymentCancelled:
+        'Betalningen misslyckades, försök igen eller gå tillbaka för att avbryta bokningen.'
+    },
     steps: {
       chooseBoatSpace: 'Välj plats',
       fillInformation: 'Fyll i information',
@@ -349,7 +353,8 @@ const sv: Translations = {
       Trailer: 'Trailerförvaring',
       Buck: 'Förvaring på bock',
       BuckWithTent: 'Förvaring på bock med skyddstält'
-    }
+    },
+    reserve: 'Boka'
   },
   citizen: {
     firstName: 'Förnamn',

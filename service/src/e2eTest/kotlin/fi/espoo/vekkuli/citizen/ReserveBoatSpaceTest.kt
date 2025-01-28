@@ -1,15 +1,10 @@
 package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
-import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
-import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
-import fi.espoo.vekkuli.pages.citizen.PaymentPage
+import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
-import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Disabled
@@ -18,9 +13,10 @@ import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
+import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage as ReserveBoatSpaceEmployeePage
 
 @ActiveProfiles("test")
-class ReserveBoatSpaceTest : PlaywrightTest() {
+class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `citizen can change the language`() {
         val citizenHomePage = CitizenHomePage(page)
@@ -165,7 +161,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             // Then go through the payment
             paymentPage.nordeaSuccessButton.click()
             // Now we should be on the confirmation page
-            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -213,7 +210,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
 
-            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -260,7 +258,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
 
-            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -376,7 +375,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
             // Then go through the payment
             paymentPage.nordeaSuccessButton.click()
             // Now we should be on the confirmation page
-            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
             val citizenDetailPage = CitizenDetailsPage(page)
             citizenDetailPage.navigateToPage()
@@ -508,6 +508,92 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
     }
 
     @Test
+    fun `reserving a boat space slip as a citizen with a 50 percent discount should halve the total price`() {
+        val discount = 50
+        val boatSpacePrice = "418,00"
+        val expectedPrice = "209,00"
+        try {
+            setDiscountForReserver(page, "Virtanen", discount)
+            val formPage = fillReservationInfoAndAssertCorrectDiscount(discount, expectedPrice, boatSpacePrice)
+            val submitButton = formPage.submitButton
+            submitButton.click()
+
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.getByDataTestId("payment-page")).isVisible()
+            paymentPage.nordeaSuccessButton.click()
+
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
+            val paymentReservedSpaceSection = confirmationPage.getReservedSpaceSection()
+            assertThat(
+                paymentReservedSpaceSection.fields.getField("Hinta").last()
+            ).containsText("Yhteensä: $boatSpacePrice €")
+
+            val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
+            assertThat(paymentDiscountText).containsText("$discount %")
+            assertThat(paymentDiscountText).containsText("$expectedPrice €")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `reserving a boat space slip as a citizen with a 100 percent discount should not require payment`() {
+        val discount = 100
+        val expectedPrice = "0,00"
+        val boatSpacePrice = "418,00"
+        try {
+            setDiscountForReserver(page, "Virtanen", discount)
+            val formPage = fillReservationInfoAndAssertCorrectDiscount(discount, expectedPrice, boatSpacePrice)
+            val confirmButton = formPage.confirmButton
+            confirmButton.click()
+
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.getByDataTestId("payment-page")).not().isVisible()
+
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            val paymentReservedSpaceSection = confirmationPage.getReservedSpaceSection()
+            assertThat(
+                paymentReservedSpaceSection.fields.getField("Hinta").last()
+            ).containsText("Yhteensä: $boatSpacePrice €")
+
+            val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
+            assertThat(paymentDiscountText).containsText("$discount %")
+            assertThat(paymentDiscountText).containsText("$expectedPrice €")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun discountIsAppliedFromSelectedReserver() {
+        val citizenDiscount = 50
+        val organizationDiscount = 100
+        val boatSpacePrice = "418,00"
+        val expectedPriceForCitizen = "209,00"
+        val expectedPriceForOrganization = "0,00"
+        try {
+            setDiscountForReserver(page, "Virtanen", citizenDiscount)
+            setDiscountForReserver(page, "Espoon Pursiseura", organizationDiscount, false)
+
+            val formPage =
+                fillReservationInfoAndAssertCorrectDiscount(citizenDiscount, expectedPriceForCitizen, boatSpacePrice)
+
+            val organizationSection = formPage.getOrganizationSection()
+            organizationSection.reserveForOrganization.click()
+            organizationSection.organization("Espoon Pursiseura").click()
+
+            val discountText = formPage.getByDataTestId("reservation-info-text")
+            assertThat(discountText).containsText("$organizationDiscount %")
+            assertThat(discountText).containsText("$expectedPriceForOrganization €")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun cancelReservationFromForm() {
         CitizenHomePage(page).loginAsOliviaVirtanen()
 
@@ -574,7 +660,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
+        val reservationPage = ReserveBoatSpaceEmployeePage(page, UserType.CITIZEN)
         reservationPage.navigateTo()
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
@@ -622,7 +708,8 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         val paymentPage = PaymentPage(page)
         paymentPage.nordeaSuccessButton.click()
 
-        assertThat(paymentPage.reservationSuccessNotification).isVisible()
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
     }
 
     @Test
@@ -633,7 +720,7 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         page.getByTestId("loginButton").click()
         page.getByText("Kirjaudu").click()
 
-        val reservationPage = ReserveBoatSpacePage(page, UserType.CITIZEN)
+        val reservationPage = ReserveBoatSpaceEmployeePage(page, UserType.CITIZEN)
         reservationPage.navigateTo()
         reservationPage.widthFilterInput.fill("3")
         reservationPage.lengthFilterInput.fill("6")
@@ -674,5 +761,52 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
         searchResults.firstReserveButton.click()
 
         assertThat(page.locator("body")).containsText("Varaaminen ei ole mahdollista")
+    }
+
+    private fun fillReservationInfoAndAssertCorrectDiscount(
+        discount: Int,
+        expectedPrice: String,
+        boatSpacePrice: String
+    ): BoatSpaceFormPage {
+        CitizenHomePage(page).loginAsOliviaVirtanen()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+
+        val reserveModal = reservationPage.getReserveModal()
+        assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.firstSwitchReservationButton).isVisible()
+        assertThat(reserveModal.reserveAnotherButton).isVisible()
+        reserveModal.reserveAnotherButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+
+        val boatSection = formPage.getBoatSection()
+        // Fill in the boat information
+        boatSection.typeSelect.selectOption("Sailboat")
+        boatSection.nameInput.fill("My Boat")
+        boatSection.lengthInput.fill("3")
+        boatSection.widthInput.fill("25")
+        boatSection.depthInput.fill("1.5")
+        boatSection.weightInput.fill("2000")
+        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.noRegistrationCheckbox.check()
+        boatSection.ownerRadio.click()
+
+        val citizenSection = formPage.getCitizenSection()
+        citizenSection.emailInput.fill("test@example.com")
+        citizenSection.phoneInput.fill("123456789")
+
+        val userAgreementSection = formPage.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+
+        val reservedSpaceSection = formPage.getReservedSpaceSection()
+        assertThat(reservedSpaceSection.fields.getField("Hinta").last()).containsText("Yhteensä: $boatSpacePrice €")
+        val discountText = formPage.getByDataTestId("reservation-info-text")
+        assertThat(discountText).containsText("$discount %")
+        assertThat(discountText).containsText("$expectedPrice €")
+        return formPage
     }
 }
