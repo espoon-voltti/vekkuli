@@ -93,28 +93,28 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         val filterSection = reservationPage.getFilterSection()
         filterSection.storageRadio.click()
         val storageFilterSection = filterSection.getStorageFilterSection()
-        storageFilterSection.buckRadio.click()
+        storageFilterSection.trailerRadio.click()
         storageFilterSection.widthInput.fill("1")
         storageFilterSection.lengthInput.fill("3")
         val searchResultsSection = reserveBoatSpacePage.getSearchResultsSection()
-        searchResultsSection.firstReserveButton.click()
+        searchResultsSection.b007ReserveButton.click()
 
         val form = BoatSpaceFormPage(page)
         form.fillFormAndSubmit {
             getBoatSection().widthInput.fill("2")
             getBoatSection().lengthInput.fill("5")
+            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
         }
         PaymentPage(page).payReservation()
         assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
 
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
-        val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+        val firstReservationSection = citizenDetailsPage.getReservationSection(1)
         // Opens up information from the first reservation and confirms it's the same we just reserved
         firstReservationSection.terminateButton.click()
         val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
         assertThat(terminateReservationModal.root).isVisible()
-        page.pause()
         assertThat(terminateReservationModal.placeIdentifierText).hasText(expectedTerminationLocation)
 
         // Terminate reservation and check for success message
@@ -129,7 +129,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
 
         // Check that the boat space is available for reservation again
         reserveBoatSpacePage.navigateToPage()
-        storageFilterSection.buckRadio.click()
+        storageFilterSection.trailerRadio.click()
         storageFilterSection.widthInput.fill("1")
         storageFilterSection.lengthInput.fill("3")
         assertThat(searchResultsSection.b007ReserveButton).isVisible()
