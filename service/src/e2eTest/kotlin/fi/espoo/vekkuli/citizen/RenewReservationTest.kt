@@ -176,7 +176,6 @@ class RenewReservationTest : ReserveTest() {
 
             val filterSection = reservationPage.getFilterSection()
             filterSection.storageRadio.click()
-            page.pause()
             val storageFilterSection = filterSection.getStorageFilterSection()
             storageFilterSection.trailerRadio.click()
             storageFilterSection.widthInput.fill("1")

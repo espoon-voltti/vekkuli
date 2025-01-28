@@ -1,12 +1,12 @@
+import { Column } from 'lib-components/dom'
 import { RadioField } from 'lib-components/form/RadioField'
 import React from 'react'
 
-import { BoundForm, useFormFields } from 'lib-common/form/hooks'
+import { useTranslation } from 'citizen-frontend/localization'
+import { InfoBox } from 'citizen-frontend/reservation/components/InfoBox'
+import { BoundForm } from 'lib-common/form/hooks'
 
 import { StorageTypeForm } from '../../formDefinitions/winterStorage'
-import { InfoBox } from 'citizen-frontend/reservation/components/InfoBox'
-import { useTranslation } from 'citizen-frontend/localization'
-import { Column, Columns } from 'lib-components/dom'
 
 export default React.memo(function StorageType({
   bind
@@ -26,7 +26,7 @@ export default React.memo(function StorageType({
       />
       {storageType === 'BuckWithTent' && (
         <InfoBox
-          text={i18n.reservation.formPage.storageTypeInfo.buckWithTentInfo}
+          text={i18n.reservation.formPage.storageInfo.buckWithTentInfo}
         />
       )}
     </Column>
