@@ -178,7 +178,7 @@ const sv: Translations = {
         continueToPayment: 'Fortsätt till betalning',
         confirmReservation: 'Bekräfta bokning'
       },
-      storageTypeInfo: {
+      storageInfo: {
         title: 'Information om förvaringsplatsen',
         buckWithTentInfo:
           'Observera att båten och stöttan, inklusive deras skyddstält, måste rymmas inom det reserverade utrymmet.'
@@ -186,6 +186,14 @@ const sv: Translations = {
       trailerInfo: {
         title: 'Information om släpvagnen',
         registrationCode: 'Registernummer'
+      },
+      allYearStorage: {
+        Trailer: {
+          title: 'Trailer information'
+        },
+        Buck: {
+          title: 'Bock information'
+        }
       }
     },
     paymentPage: {

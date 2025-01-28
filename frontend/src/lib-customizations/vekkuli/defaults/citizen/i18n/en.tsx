@@ -184,7 +184,7 @@ const en: Translations = {
         continueToPayment: 'Continue to payment',
         confirmReservation: 'Confirm reservation'
       },
-      storageTypeInfo: {
+      storageInfo: {
         title: 'Storage information',
         buckWithTentInfo:
           'Please note that the boat and the cradle, including their protective tents, must fit within the reserved space.'
@@ -192,6 +192,14 @@ const en: Translations = {
       trailerInfo: {
         title: 'Trailer information',
         registrationCode: 'Registration number'
+      },
+      allYearStorage: {
+        Trailer: {
+          title: 'Trailer information'
+        },
+        Buck: {
+          title: 'Buck information'
+        }
       }
     },
     paymentPage: {

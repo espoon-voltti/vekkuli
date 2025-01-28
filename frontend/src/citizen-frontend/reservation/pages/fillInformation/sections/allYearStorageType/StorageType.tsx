@@ -20,15 +20,10 @@ export default React.memo(function AllYearStorageType({
 
   return (
     <FormSection data-testid="winter-storage-type">
-      {branch === 'Trailer' ? (
-        <h3 className="header">
-          {i18n.reservation.formPage.trailerInfo.title}
-        </h3>
-      ) : (
-        <h3 className="header">
-          {i18n.reservation.formPage.storageTypeInfo.title}
-        </h3>
-      )}
+      <h3 className="header">
+        {i18n.reservation.formPage.allYearStorage[branch].title}
+      </h3>
+
       <Columns>
         {branch === 'Buck' && <StorageType bind={form} />}
         <Column>{branch === 'Trailer' && <TrailerInfo bind={form} />}</Column>
