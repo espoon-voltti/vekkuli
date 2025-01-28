@@ -675,4 +675,20 @@ class ReserveBoatSpaceTest : PlaywrightTest() {
 
         assertThat(page.locator("body")).containsText("Varaaminen ei ole mahdollista")
     }
+
+    @Test
+    fun `show error message after failed payment`() {
+        CitizenHomePage(page).loginAsMikkoVirtanen()
+
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        paymentPage.nordeaFailedButton.click()
+
+        assertThat(paymentPage.reservationFailedNotification).isVisible()
+    }
 }

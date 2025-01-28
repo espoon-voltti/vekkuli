@@ -435,6 +435,22 @@ body > .columns {
   align-items: center;
 }
 
+.message-box {
+  padding: $spacing-medium;
+  border: 1px solid $bulma-primary;
+  border-radius: 4px;
+  display: flex;
+  margin-bottom: $spacing-large;
+
+  &.is-info {
+    border-color: $bulma-primary;
+  }
+
+  &.is-error {
+    border-color: $warning;
+  }
+}
+
 .ack-info {
   padding: $spacing-medium;
   border: 1px solid $warning;

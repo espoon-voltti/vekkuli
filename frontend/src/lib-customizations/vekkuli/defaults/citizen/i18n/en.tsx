@@ -187,6 +187,10 @@ const en: Translations = {
         registrationCode: 'Registration number'
       }
     },
+    paymentPage: {
+      paymentCancelled:
+        'Payment failed, please try again or go back to cancel the reservation.'
+    },
     noRegistererNumber: 'No registration number',
     certify: 'I certify that the information I have provided is correct',
     agreeToRules:

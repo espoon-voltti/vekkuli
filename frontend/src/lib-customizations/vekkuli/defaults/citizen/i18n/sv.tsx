@@ -181,6 +181,10 @@ const sv: Translations = {
         registrationCode: 'Registernummer'
       }
     },
+    paymentPage: {
+      paymentCancelled:
+        'Betalningen misslyckades, försök igen eller gå tillbaka för att avbryta bokningen.'
+    },
     steps: {
       chooseBoatSpace: 'Välj plats',
       fillInformation: 'Fyll i information',
