@@ -24,6 +24,11 @@ class CitizenHomePage(
         loginAsCitizen(mikkoVirtanenSsn)
     }
 
+    // non-Espoo citizen
+    fun loginAsMarkoKuusinen() {
+        loginAsCitizen(markoKuusinenSsn)
+    }
+
     fun loginAsCitizen(ssn: String) {
         page.navigate(baseUrl)
         getByDataTestId("loginButton").click()
@@ -43,5 +48,6 @@ class CitizenHomePage(
         val oliviaVirtanenSsn = "031298-988S"
         val leoKorhonenSsn = "150499-911U"
         val mikkoVirtanenSsn = "010106A957V"
+        val markoKuusinenSsn = "290991-993F"
     }
 }

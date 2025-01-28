@@ -220,10 +220,6 @@ class SeasonalService(
             )
         val isEspooCitizen = reserver.isEspooCitizen()
 
-        if (!isEspooCitizen) {
-            return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
-        }
-
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverId, BoatSpaceType.Storage)
         val hasSomePlace = reservations.isNotEmpty()
 
