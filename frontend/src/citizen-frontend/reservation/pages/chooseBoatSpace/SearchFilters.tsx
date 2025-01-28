@@ -18,8 +18,14 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
   const i18n = useTranslation()
   const { boatSpaceType, boatSpaceUnionForm } = useFormFields(bind)
   const { form, branch } = useFormUnion(boatSpaceUnionForm)
-  const { boatType, width, length, amenities, harbor, storageAmenities } =
-    useFormFields(form)
+  const {
+    boatType,
+    width,
+    length,
+    amenities,
+    harbor,
+    storageAmenity: storageAmenities
+  } = useFormFields(form)
 
   return (
     <form className="block" data-testid="boat-space-filter">

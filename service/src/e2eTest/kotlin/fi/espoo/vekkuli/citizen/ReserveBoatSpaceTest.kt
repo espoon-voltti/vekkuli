@@ -206,6 +206,40 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
+    fun `reserving an all year storage for trailer places`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsLeoKorhonen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.trailerRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
+                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            }
+
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `reserving a trailer space as a citizen`() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 5, 1, 22, 22, 22))

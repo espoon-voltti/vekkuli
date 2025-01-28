@@ -31,7 +31,6 @@ class FreeSpacesController(
         @RequestParam @Min(0) width: BigDecimal?,
         @RequestParam @Min(0) length: BigDecimal?,
         @RequestParam amenities: List<BoatSpaceAmenity>?,
-        @RequestParam storageAmenity: BoatSpaceAmenity?,
         @RequestParam storageType: BoatSpaceAmenity?,
         @RequestParam harbor: List<String>?,
         request: HttpServletRequest,
@@ -48,7 +47,7 @@ class FreeSpacesController(
                 boatType,
                 width,
                 length,
-                if (storageAmenity !== null) listOf(storageAmenity) else amenities,
+                amenities,
                 storageType,
                 spaceType,
                 harbor

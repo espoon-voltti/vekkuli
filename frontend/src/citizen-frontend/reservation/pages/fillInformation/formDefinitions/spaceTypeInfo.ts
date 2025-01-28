@@ -1,7 +1,6 @@
 import {
   BoatSpaceAmenity,
   BoatSpaceType,
-  StorageType,
   Trailer
 } from 'citizen-frontend/shared/types'
 import { union, value } from 'lib-common/form/form'

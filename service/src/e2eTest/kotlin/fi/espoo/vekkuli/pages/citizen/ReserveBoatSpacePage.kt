@@ -77,6 +77,7 @@ class ReserveBoatSpacePage(
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
         val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
         val b059ReserveButton = root.locator("tr:has-text('B 059')").locator("button:has-text('Varaa')")
+        val b007ReserveButton = root.locator("tr:has-text('B 007')").locator("button:has-text('Varaa')")
     }
 
     class ReserveModal(

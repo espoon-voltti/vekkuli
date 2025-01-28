@@ -18,7 +18,7 @@ import {
   union,
   value
 } from 'lib-common/form/form'
-import { StateOf } from 'lib-common/form/types'
+import { OutputOf, StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import { StoredSearchState } from '../useStoredSearchState'
@@ -28,7 +28,7 @@ const searchSpaceParamsForm = object({
   width: required(positiveNumber()),
   length: required(positiveNumber()),
   amenities: multiSelect<BoatSpaceAmenity>(),
-  storageAmenities: oneOf<BoatSpaceAmenity>(),
+  storageAmenity: oneOf<BoatSpaceAmenity>(),
   harbor: multiSelect<Harbor>()
 })
 
@@ -41,6 +41,8 @@ const boatSpaceUnionForm = union({
   Storage: searchSpaceParamsForm
 })
 
+type BoatSpaceUnionForm = typeof boatSpaceUnionForm
+
 export type SearchFormUnion = typeof boatSpaceUnionForm
 
 const boatSpaceUnionCache = object({
@@ -52,6 +54,16 @@ const boatSpaceUnionCache = object({
 
 export type BoatSpaceUnionCache = typeof boatSpaceUnionCache
 
+function parseAmenities(
+  boatSpaceUnionForm: OutputOf<BoatSpaceUnionForm>
+): BoatSpaceAmenity[] {
+  const { amenities, storageAmenity } = boatSpaceUnionForm.value
+
+  if (storageAmenity) return [storageAmenity]
+
+  return amenities || []
+}
+
 export const searchFreeSpacesForm = mapped(
   object({
     boatSpaceType: required(oneOf<BoatSpaceType>()),
@@ -62,7 +74,7 @@ export const searchFreeSpacesForm = mapped(
     const boatTypeValue = output.boatSpaceUnionForm.value.boatType
     const result: SearchFreeSpacesParams = {
       spaceType: output.boatSpaceType,
-      amenities: output.boatSpaceUnionForm.value.amenities || [],
+      amenities: parseAmenities(output.boatSpaceUnionForm),
       harbor:
         output.boatSpaceUnionForm.value.harbor?.map((harbor) => harbor.value) ||
         [],
@@ -71,10 +83,6 @@ export const searchFreeSpacesForm = mapped(
     }
     if (boatTypeValue) {
       result.boatType = boatTypeValue
-    }
-
-    if (output.boatSpaceUnionForm.value.storageAmenities) {
-      result.storageAmenity = output.boatSpaceUnionForm.value.storageAmenities
     }
 
     return result
@@ -184,7 +192,7 @@ export const initialUnionFormState = (
       },
       width: storedSearchState?.width ?? positiveNumber.empty().value,
       length: storedSearchState?.length ?? positiveNumber.empty().value,
-      storageAmenities: {
+      storageAmenity: {
         domValue: storedSearchState?.storageAmenity || 'Trailer',
         options: storageAmenities.map((type) => ({
           domValue: type,

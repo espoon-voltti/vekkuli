@@ -19,7 +19,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
     lateinit var messageUtil: MessageUtil
 
     @Test
-    fun `citizen can reserve a boat space and terminate it to allow others to see it`() {
+    fun `citizen can reserve a slip boat space and terminate it to allow others to see it`() {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
 
         val citizenDetailsPage = CitizenDetailsPage(page)
@@ -73,5 +73,65 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         reserveBoatSpacePage.navigateToPage()
         reserveBoatSpacePage.filterForBoatSpaceB314()
         assertThat(searchResultsSection.b314ReserveButton).isVisible()
+    }
+
+    @Test
+    fun `citizen can reserve a storage boat space and terminate it to allow others to see it`() {
+        mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+        val citizenHomePage = CitizenHomePage(page)
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        val expectedHarbour = "Haukilahti"
+        val expectedReservationId = "B 007"
+        val expectedTerminationLocation = "$expectedHarbour $expectedReservationId"
+        citizenHomePage.loginAsLeoKorhonen()
+        citizenHomePage.navigateToPage()
+        citizenHomePage.languageSelector.click()
+        citizenHomePage.languageSelector.getByText("Suomi").click()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+
+        val filterSection = reservationPage.getFilterSection()
+        filterSection.storageRadio.click()
+        val storageFilterSection = filterSection.getStorageFilterSection()
+        storageFilterSection.buckRadio.click()
+        storageFilterSection.widthInput.fill("1")
+        storageFilterSection.lengthInput.fill("3")
+        val searchResultsSection = reserveBoatSpacePage.getSearchResultsSection()
+        searchResultsSection.firstReserveButton.click()
+
+        val form = BoatSpaceFormPage(page)
+        form.fillFormAndSubmit {
+            getBoatSection().widthInput.fill("2")
+            getBoatSection().lengthInput.fill("5")
+        }
+        PaymentPage(page).payReservation()
+        assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+        // Opens up information from the first reservation and confirms it's the same we just reserved
+        firstReservationSection.terminateButton.click()
+        val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()
+        assertThat(terminateReservationModal.root).isVisible()
+        page.pause()
+        assertThat(terminateReservationModal.placeIdentifierText).hasText(expectedTerminationLocation)
+
+        // Terminate reservation and check for success message
+        terminateReservationModal.confirmButton.click()
+
+        // Check that the boat space is in expired reservations
+        citizenDetailsPage.showExpiredReservationsToggle.click()
+        assertThat(citizenDetailsPage.expiredReservationList).isVisible()
+
+        val firstExpiredReservationSection = citizenDetailsPage.getFirstExpiredReservationSection()
+        assertThat(firstExpiredReservationSection.place).hasText(expectedReservationId)
+
+        // Check that the boat space is available for reservation again
+        reserveBoatSpacePage.navigateToPage()
+        storageFilterSection.buckRadio.click()
+        storageFilterSection.widthInput.fill("1")
+        storageFilterSection.lengthInput.fill("3")
+        assertThat(searchResultsSection.b007ReserveButton).isVisible()
     }
 }
