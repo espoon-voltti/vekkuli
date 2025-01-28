@@ -1,30 +1,29 @@
 import { Button, Buttons, Column, Columns } from 'lib-components/dom'
-import { NumberField } from 'lib-components/form'
+import { NumberField, TextField } from 'lib-components/form'
+import { EditLink } from 'lib-components/links'
 import React from 'react'
 
+import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Trailer } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
-import { useMutation } from 'lib-common/query'
-
-import TextField from '../../../lib-components/form/TextField'
-import { EditLink } from '../../../lib-components/links'
-import { updateTrailerInformationMutation } from '../queries'
+import { MutationDescription, useMutation } from 'lib-common/query'
 
 import { initialFormState, trailerInformationForm } from './formDefinitions'
+import { updateTrailerMutation } from './queries'
 
 export default React.memo(function TrailerInformation({
   trailer,
-  setEditIsOn
+  setEditIsOn,
+  updateMutation = updateTrailerMutation
 }: {
   trailer: Trailer
   setEditIsOn?: (value: boolean) => void
+  updateMutation: MutationDescription<UpdateTrailerRequest, void>
 }) {
   const i18n = useTranslation()
   const [editMode, setEditMode] = React.useState(false)
-  const { mutateAsync: updateTrailer, isPending } = useMutation(
-    updateTrailerInformationMutation
-  )
+  const { mutateAsync: updateTrailer, isPending } = useMutation(updateMutation)
   const form = useForm(
     trailerInformationForm,
     () => initialFormState(trailer),
@@ -40,7 +39,7 @@ export default React.memo(function TrailerInformation({
   }
   const onSubmit = async () => {
     if (form.isValid()) {
-      await updateTrailer(form.value())
+      await updateTrailer({ trailerId: trailer.id, input: form.value() })
       setEditMode(false)
     }
   }

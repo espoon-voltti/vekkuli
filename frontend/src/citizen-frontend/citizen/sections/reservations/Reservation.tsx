@@ -5,6 +5,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { updateCitizenTrailerMutation } from 'citizen-frontend/citizen/queries'
+import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 import { Result } from 'lib-common/api'
@@ -18,7 +20,6 @@ import { unfinishedReservationQuery } from '../../../reservation/queries'
 import TerminateModal from './TerminateModal'
 import TerminateModalFailure from './TerminateModalFailure'
 import TerminateModalSuccess from './TerminateModalSuccess'
-import TrailerInformation from './TrailerInformation'
 import { startRenewReservationMutation } from './queries'
 
 type TerminateModalState = 'hidden' | 'visible' | 'success' | 'failure'
@@ -180,6 +181,7 @@ export default React.memo(function Reservation({
           <TrailerInformation
             trailer={reservation.trailer}
             setEditIsOn={(mode) => setButtonsVisible(!mode)}
+            updateMutation={updateCitizenTrailerMutation}
           />
         )}
         {buttonsVisible && (

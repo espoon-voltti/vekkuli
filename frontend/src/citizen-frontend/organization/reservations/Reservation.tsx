@@ -4,10 +4,11 @@ import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 
-import TrailerInformation from './TrailerInformation'
+import { updateOrganizationTrailerMutation } from '../queries'
 
 export default React.memo(function Reservation({
   reservation
@@ -124,7 +125,10 @@ export default React.memo(function Reservation({
           </Column>
         </Columns>
         {reservation.trailer && (
-          <TrailerInformation trailer={reservation.trailer} />
+          <TrailerInformation
+            trailer={reservation.trailer}
+            updateMutation={updateOrganizationTrailerMutation}
+          />
         )}
       </div>
     </>

@@ -1,5 +1,4 @@
-export type UpdateCitizenTrailerInput = {
-  id: number
+export type UpdateTrailerInput = {
   registrationNumber: string
   length: number
   width: number
