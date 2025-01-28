@@ -254,4 +254,25 @@ class TestUtils(
 
         return invoice
     }
+
+    fun createOrganization(
+        name: String,
+        organizationService: OrganizationService,
+    ): Organization =
+        organizationService.insertOrganization(
+            businessId = "1234567890",
+            name = name,
+            phone = "",
+            email = "",
+            streetAddress = "",
+            streetAddressSv = "",
+            postalCode = "",
+            postOffice = "",
+            municipalityCode = 1,
+            billingName = "",
+            billingStreetAddress = "",
+            billingPostalCode = "",
+            billingPostOffice = "",
+            postOfficeSv = ""
+        )
 }

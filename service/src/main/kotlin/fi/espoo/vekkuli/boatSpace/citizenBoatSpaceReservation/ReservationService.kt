@@ -77,12 +77,24 @@ open class ReservationService(
         val (citizenId) = citizenAccessControl.requireCitizen()
 
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
-        val result = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+        val organizations: List<Organization> = organizationService.getCitizenOrganizations(citizenId)
+
+        val citizenResult = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+        val reservationResults =
+            organizations
+                .map {
+                    seasonalService.canReserveANewSpace(it.id, boatSpace.type)
+                }.plus(citizenResult)
+
+        val canReserve = reservationResults.any { it is ReservationResult.Success }
 
         val today = timeProvider.getCurrentDate()
 
-        if (result is ReservationResult.Failure) {
-            throw Forbidden("Citizen can not reserve slip", result.errorCode.toString())
+        if (!canReserve) {
+            throw Forbidden(
+                "Citizen and their organizations can not reserve slip",
+                ReservationResultErrorCode.NotPossible.toString()
+            )
         }
 
         if (citizenHasExistingUnfinishedReservation(citizenId)) {
@@ -95,7 +107,7 @@ open class ReservationService(
             spaceId,
             CreationType.New,
             today,
-            getEndDate(result),
+            getEndDate(citizenResult),
         )
     }
 

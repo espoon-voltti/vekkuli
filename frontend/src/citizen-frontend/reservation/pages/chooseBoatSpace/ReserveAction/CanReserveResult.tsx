@@ -36,7 +36,8 @@ export default React.memo(function CanReserveResult({
     shouldReserveDirectly,
     hasStartedReservation,
     canReserveResult.status,
-    setError
+    setError,
+    canReserveResult.switchableReservations.length
   ])
 
   return (

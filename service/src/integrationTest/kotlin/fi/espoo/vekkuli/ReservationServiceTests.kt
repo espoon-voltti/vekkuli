@@ -82,17 +82,50 @@ class ReservationServiceTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should prevent reservation when citizen does not have permission to reserve`() {
+    fun `should prevent reservation when citizen and their organizations do not have permission to reserve`() {
+        val organization = testUtils.createOrganization("Test organization", organizationService)
+        organizationService.addCitizenToOrganization(organization.id, citizenIdOlivia)
         loginAs(citizenIdOlivia)
-        disallowReservation(eq(citizenIdOlivia))
-        val boatSpaceId = insertBoatSpace()
 
+        disallowReservation(eq(citizenIdOlivia))
+        disallowReservation(eq(organizationId))
+
+        val boatSpaceId = insertBoatSpace()
         val exception =
             assertThrows<Forbidden> {
                 reservationService.startReservation(boatSpaceId)
             }
 
-        assertEquals("Citizen can not reserve slip", exception.message)
+        assertEquals("Citizen and their organizations can not reserve slip", exception.message)
+    }
+
+    @Test
+    fun `should allow reservation if the citizen does not have permission but their organization does`() {
+        val organization = testUtils.createOrganization("Test organization", organizationService)
+        organizationService.addCitizenToOrganization(organization.id, citizenIdOlivia)
+        loginAs(citizenIdOlivia)
+
+        disallowReservation(eq(citizenIdOlivia))
+        allowReservation(eq(organization.id))
+
+        val boatSpaceId = insertBoatSpace()
+
+        reservationService.startReservation(boatSpaceId)
+    }
+
+    @Test
+    fun `should allow reservation if the citizen does have permission but their organization does not`() {
+        val organization = testUtils.createOrganization("Test organization", organizationService)
+        organizationService.addCitizenToOrganization(organization.id, citizenIdOlivia)
+
+        loginAs(citizenIdOlivia)
+
+        allowReservation(eq(citizenIdOlivia))
+        disallowReservation(eq(organization.id))
+
+        val boatSpaceId = insertBoatSpace()
+
+        reservationService.startReservation(boatSpaceId)
     }
 
     @Test
@@ -487,11 +520,21 @@ class ReservationServiceTests : IntegrationTestBase() {
     private fun insertBoat(
         citizenId: UUID,
         name: String = "TestBoat"
-    ): Int {
-        return boatService.insertBoat(
-            citizenId, "registrationCode", name, 150, 150, 150, 150, BoatType.Sailboat, "", "", OwnershipStatus.Owner
-        ).id
-    }
+    ): Int =
+        boatService
+            .insertBoat(
+                citizenId,
+                "registrationCode",
+                name,
+                150,
+                150,
+                150,
+                150,
+                BoatType.Sailboat,
+                "",
+                "",
+                OwnershipStatus.Owner
+            ).id
 
     private fun insertBoatSpace(): Int {
         val boatSpaceId = 1234
@@ -513,24 +556,24 @@ class ReservationServiceTests : IntegrationTestBase() {
         return boatSpaceId
     }
 
-    private fun insertOrganization(name: String = "TestOrganization"): UUID {
-        return organizationService.insertOrganization(
-            businessId = "1234567890",
-            name = name,
-            phone = "1234567890",
-            email = "test@test.com",
-            streetAddress = "",
-            streetAddressSv = "",
-            postalCode = "",
-            postOffice = "",
-            postOfficeSv = "",
-            municipalityCode = 1,
-            billingName = "",
-            billingStreetAddress = "",
-            billingPostalCode = "",
-            billingPostOffice = ""
-        ).id
-    }
+    private fun insertOrganization(name: String = "TestOrganization"): UUID =
+        organizationService
+            .insertOrganization(
+                businessId = "1234567890",
+                name = name,
+                phone = "1234567890",
+                email = "test@test.com",
+                streetAddress = "",
+                streetAddressSv = "",
+                postalCode = "",
+                postOffice = "",
+                postOfficeSv = "",
+                municipalityCode = 1,
+                billingName = "",
+                billingStreetAddress = "",
+                billingPostalCode = "",
+                billingPostOffice = ""
+            ).id
 
     private fun loginAs(citizenId: UUID) {
         Mockito.`when`(citizenContextProvider.getCurrentCitizen()).thenReturn(
@@ -561,7 +604,8 @@ class ReservationServiceTests : IntegrationTestBase() {
         citizenMatcher: UUID = any(),
         boatSpaceTypeMatcher: BoatSpaceType = any()
     ) {
-        Mockito.`when`(seasonalService.canReserveANewSpace(citizenMatcher, boatSpaceTypeMatcher))
+        Mockito
+            .`when`(seasonalService.canReserveANewSpace(citizenMatcher, boatSpaceTypeMatcher))
             .thenReturn(ReservationResult.Failure(ReservationResultErrorCode.NotPossible))
     }
 
