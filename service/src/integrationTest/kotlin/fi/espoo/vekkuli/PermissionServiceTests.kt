@@ -36,12 +36,14 @@ class PermissionServiceTests : IntegrationTestBase() {
     fun `should prevent non owners from editing trailer`() {
         val trailerId = insertTrailer(citizenIdMikko)
         assertFalse(permissionService.canEditTrailer(citizenIdOlivia, trailerId))
+        assertFalse(permissionService.canEditTrailer(citizenIdOlivia, citizenIdMikko))
     }
 
     @Test
     fun `should allow owner to edit trailer`() {
         val trailerId = insertTrailer(citizenIdMikko)
         assertTrue(permissionService.canEditTrailer(citizenIdMikko, trailerId))
+        assertTrue(permissionService.canEditTrailer(citizenIdMikko, citizenIdMikko))
     }
 
     @Test
@@ -49,6 +51,7 @@ class PermissionServiceTests : IntegrationTestBase() {
         val orgId = insertOrganization(citizenIdMikko)
         val trailerId = insertTrailer(orgId)
         assertFalse(permissionService.canEditTrailer(citizenIdOlivia, trailerId))
+        assertFalse(permissionService.canEditTrailer(citizenIdOlivia, orgId))
     }
 
     @Test
@@ -56,6 +59,7 @@ class PermissionServiceTests : IntegrationTestBase() {
         val orgId = insertOrganization(citizenIdMikko)
         val trailerId = insertTrailer(orgId)
         assertTrue(permissionService.canEditTrailer(citizenIdMikko, trailerId))
+        assertTrue(permissionService.canEditTrailer(citizenIdMikko, orgId))
     }
 
     private fun insertTrailer(reserverId: UUID): Int =
