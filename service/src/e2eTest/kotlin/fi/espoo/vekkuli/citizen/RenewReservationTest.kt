@@ -2,9 +2,12 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class RenewReservationTest : ReserveTest() {
@@ -49,6 +52,15 @@ class RenewReservationTest : ReserveTest() {
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
             assertThat(reservationSection.renewButton).isHidden()
+            assertThat(citizenDetailsPage.reservationListCards).containsText("Laituripaikka: Haukilahti B 001")
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.any {
+                    it.contains("leo@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
+                }
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -81,6 +93,16 @@ class RenewReservationTest : ReserveTest() {
                 getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
             }
             PaymentPage(page).payReservation()
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
+            SendEmailServiceMock.resetEmails()
+
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
 
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -104,6 +126,16 @@ class RenewReservationTest : ReserveTest() {
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
             assertThat(reservationSection.renewButton).isHidden()
+
+            assertThat(citizenDetailsPage.reservationListCards).containsText("Talvipaikka: Haukilahti B 013")
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -136,6 +168,16 @@ class RenewReservationTest : ReserveTest() {
                 getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
             }
             PaymentPage(page).payReservation()
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
+            SendEmailServiceMock.resetEmails()
+
             mockTimeProvider(timeProvider, startofTrailerRenewPeriod)
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
@@ -156,7 +198,15 @@ class RenewReservationTest : ReserveTest() {
 
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
+
             assertThat(reservationSection.renewButton).isHidden()
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }

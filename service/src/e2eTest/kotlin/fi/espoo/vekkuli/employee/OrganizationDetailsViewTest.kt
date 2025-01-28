@@ -5,10 +5,13 @@ import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.OrganizationDetailsPage
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class OrganizationDetailsViewTest : PlaywrightTest() {
@@ -34,8 +37,24 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
             assertThat(organizationDetailsPage.organizationDetailsSection).isVisible()
             organizationDetailsPage.renewReservationButton(reservationId).click()
             assertThat(invoiceDetails.header).isVisible()
+
             invoiceDetails.sendButton.click()
             assertThat(organizationDetailsPage.renewReservationButton(reservationId)).isHidden()
+            assertThat(organizationDetailsPage.reservationListCards).containsText("Boat space: Haukilahti B 005")
+
+            messageService.sendScheduledEmails()
+            assertEquals(2, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.any {
+                    it.contains("olivia@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
+                }
+            )
+
+            assertTrue(
+                SendEmailServiceMock.emails.any {
+                    it.contains("eps@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
+                }
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
