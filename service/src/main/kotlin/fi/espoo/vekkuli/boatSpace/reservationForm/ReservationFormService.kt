@@ -7,8 +7,6 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
-import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
-import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.controllers.*
@@ -66,8 +64,6 @@ class ReservationFormService(
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val boatSpaceRepository: BoatSpaceRepository,
     private val reserverRepository: ReserverRepository,
-    private val emailEnv: EmailEnv,
-    private val emailService: TemplateEmailService,
     private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
     private val boatSpaceSwitchService: BoatSpaceSwitchService,
@@ -275,8 +271,6 @@ class ReservationFormService(
                 PaymentType.Other
             )
         }
-
-        sendReservationEmail(reservationId, CreationType.New)
     }
 
     fun validateCitizenCanRenewReservation(
@@ -353,8 +347,6 @@ class ReservationFormService(
             )
             boatReservationService.markReservationEnded(originalReservation.id)
         }
-
-        sendReservationEmail(reservationId, CreationType.Renewal)
     }
 
     @Transactional
@@ -741,103 +733,6 @@ class ReservationFormService(
                 phone = phone,
                 email = email
             )
-        )
-    }
-
-    fun sendReservationEmail(
-        reservationId: Int,
-        creationType: CreationType,
-    ) {
-        val reservation =
-            boatReservationService.getBoatSpaceReservation(reservationId)
-                ?: throw BadRequest("Reservation $reservationId not found")
-        val boatSpace =
-            boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)
-                ?: throw BadRequest("Boat space ${reservation.boatSpaceId} not found")
-        val isInvoiced = reservation.status == ReservationStatus.Invoiced
-        val placeName = "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}"
-
-        val placeTypeText =
-            when (reservation.type) {
-                BoatSpaceType.Winter -> "talvipaikka"
-                BoatSpaceType.Storage -> "säilytyspaikka"
-                BoatSpaceType.Slip -> "laituripaikka"
-                BoatSpaceType.Trailer -> "traileripaikka"
-            }
-
-        val defaultParams =
-            mapOf(
-                "reserverName" to reservation.name,
-                "harborName" to reservation.locationName,
-                "name" to placeName,
-                "width" to intToDecimal(boatSpace.widthCm),
-                "length" to intToDecimal(boatSpace.lengthCm),
-                "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
-                "endDate" to reservation.endDate
-            )
-
-        data class EmailSettings(
-            val template: String,
-            val recipients: List<String>,
-            val params: Map<String, Any>
-        )
-        val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
-
-        val recipients =
-            if (reservation.reserverType == ReserverType.Organization) {
-                organizationService.getOrganizationMembers(reservation.reserverId)
-                    .map { it.email } + listOf(reservation.email)
-            } else {
-                listOf(reservation.email)
-            }
-
-        val emailSettings =
-            when (creationType) {
-                CreationType.New -> {
-                    if (isInvoiced) {
-                        EmailSettings(
-                            template = "reservation_created_by_employee",
-                            recipients = recipients,
-                            params =
-                                defaultParams
-                                    .plus("reservationDescription" to "$placeTypeText $placeName")
-                                    .plus("invoiceAddress" to invoiceAddress)
-                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
-                        )
-                    } else {
-                        EmailSettings(
-                            template = "reservation_created_by_citizen",
-                            recipients = recipients,
-                            params = defaultParams
-                        )
-                    }
-                }
-                CreationType.Switch -> {
-                    EmailSettings(
-                        template = "reservation_renewed_by_citizen",
-                        recipients = recipients,
-                        params = defaultParams
-                    )
-                }
-                CreationType.Renewal -> {
-                    EmailSettings(
-                        template = "reservation_renewed_by_employee",
-                        recipients = recipients,
-                        params =
-                            defaultParams
-                                .plus("reservationDescription" to "$placeTypeText $placeName")
-                                .plus("invoiceAddress" to invoiceAddress)
-                                .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
-                    )
-                }
-            }
-
-        emailService.sendBatchEmail(
-            emailSettings.template,
-            null,
-            emailEnv.senderAddress,
-            emailSettings.recipients.map { Recipient(reservation.reserverId, it) },
-            emailSettings.params
         )
     }
 

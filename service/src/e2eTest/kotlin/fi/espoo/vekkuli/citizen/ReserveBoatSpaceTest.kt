@@ -4,6 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
@@ -162,6 +163,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
+            paymentPage.assertOnPaymentPage()
+            messageService.sendScheduledEmails()
+            assertEquals(0, SendEmailServiceMock.emails.size)
+
             // Cancel the payment at first
             paymentPage.nordeaFailedButton.click()
             // Then go through the payment
@@ -169,7 +174,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             // Now we should be on the confirmation page
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
@@ -509,6 +513,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             // assert that payment page is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentProviders).isVisible()
+            paymentPage.nordeaSuccessButton.click()
 
             messageService.sendScheduledEmails()
             assertEquals(2, SendEmailServiceMock.emails.size)
@@ -626,6 +631,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val confirmButton = formPage.confirmButton
             confirmButton.click()
 
+            messageService.sendScheduledEmails()
+            assertEquals(0, SendEmailServiceMock.emails.size)
+
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.getByDataTestId("payment-page")).not().isVisible()
 
@@ -639,6 +647,16 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
             assertThat(paymentDiscountText).containsText("$discount %")
             assertThat(paymentDiscountText).containsText("$expectedPrice €")
+
+            /* TODO should free place get an reservation confirmation? Now it is tied to successful payment
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
+             */
         } catch (e: AssertionError) {
             handleError(e)
         }
