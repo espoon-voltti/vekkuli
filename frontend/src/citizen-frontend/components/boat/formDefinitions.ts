@@ -6,7 +6,7 @@ import {
   OwnershipStatus,
   ownershipStatuses
 } from 'citizen-frontend/shared/types'
-import { number, positiveNumber, string } from 'lib-common/form/fields'
+import { positiveNumber, string } from 'lib-common/form/fields'
 import {
   mapped,
   multiSelect,
@@ -19,7 +19,6 @@ import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 export const boatForm = mapped(
   object({
-    id: number(),
     name: required(string()),
     type: required(oneOf<BoatType>()),
     width: required(positiveNumber()),
@@ -32,7 +31,6 @@ export const boatForm = mapped(
     ownership: required(oneOf<OwnershipStatus>())
   }),
   (values): UpdateBoatInput => ({
-    id: values.id,
     name: values.name,
     type: values.type,
     width: values.width,
@@ -52,7 +50,6 @@ export const transformBoatToFormBoat = (
   boat: Boat,
   i18n: Translations
 ): StateOf<BoatForm> => ({
-  id: boat.id,
   name: boat.name || '-',
   depth: boat.depth.toString(),
   length: boat.length.toString(),
