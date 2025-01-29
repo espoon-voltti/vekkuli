@@ -215,32 +215,8 @@ class RenewReservationTest : ReserveTest() {
     @Test
     fun `should be able to renew storage reservation`() {
         try {
-            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
-            val citizenHomePage = CitizenHomePage(page)
-            citizenHomePage.loginAsLeoKorhonen()
-            citizenHomePage.navigateToPage()
-            citizenHomePage.languageSelector.click()
-            citizenHomePage.languageSelector.getByText("Suomi").click()
             val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.navigateToPage()
-
-            val filterSection = reservationPage.getFilterSection()
-            filterSection.storageRadio.click()
-            val storageFilterSection = filterSection.getStorageFilterSection()
-            storageFilterSection.trailerRadio.click()
-            storageFilterSection.widthInput.fill("1")
-            storageFilterSection.lengthInput.fill("3")
-
-            reservationPage.getSearchResultsSection().firstReserveButton.click()
-
-            val form = BoatSpaceFormPage(page)
-            form.fillFormAndSubmit {
-                getBoatSection().widthInput.fill("2")
-                getBoatSection().lengthInput.fill("5")
-                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
-            }
-            PaymentPage(page).payReservation()
-            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+            reservationPage.reserveStorageWithTrailerType(timeProvider)
             mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
@@ -251,6 +227,7 @@ class RenewReservationTest : ReserveTest() {
             // Make sure that citizen is redirected to unfinished reservation switch form
             reservationPage.navigateToPage()
 
+            val form = BoatSpaceFormPage(page)
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")
 
             val userAgreementSection = form.getUserAgreementSection()
