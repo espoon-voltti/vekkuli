@@ -6,9 +6,6 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
-import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.mockTimeProvider
-import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
 
 class ReserveBoatSpacePage(
     page: Page
@@ -169,25 +166,24 @@ class ReserveBoatSpacePage(
         page.locator("tr:has-text('TRAILERI 012')").locator("button:has-text('Varaa')").click()
     }
 
-    fun reserveStorageWithTrailerType(timeProvider: TimeProvider) {
-        mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+    fun reserveStorageWithTrailerType(
+        filterSection: FilterSection,
+        storageFilterSection: StorageFilterSection
+    ) {
         val citizenHomePage = CitizenHomePage(page)
         citizenHomePage.loginAsLeoKorhonen()
         citizenHomePage.navigateToPage()
         citizenHomePage.languageSelector.click()
         citizenHomePage.languageSelector.getByText("Suomi").click()
-        val reservationPage = ReserveBoatSpacePage(page)
-        reservationPage.navigateToPage()
+        navigateToPage()
 
-        val filterSection = reservationPage.getFilterSection()
         filterSection.storageRadio.click()
 
-        val storageFilterSection = filterSection.getStorageFilterSection()
         storageFilterSection.trailerRadio.click()
         storageFilterSection.widthInput.fill("1")
         storageFilterSection.lengthInput.fill("3")
 
-        reservationPage.getSearchResultsSection().firstReserveButton.click()
+        getSearchResultsSection().firstReserveButton.click()
         val form = BoatSpaceFormPage(page)
         form.fillFormAndSubmit {
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
@@ -196,5 +192,145 @@ class ReserveBoatSpacePage(
 
         PaymentPage(page).payReservation()
         assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+    }
+
+    fun reserveTrailerBoatSpace(): BoatSpaceFormPage {
+        val filterSection = getFilterSection()
+        filterSection.trailerRadio.click()
+        val trailerFilterSection = filterSection.getTrailerFilterSection()
+        trailerFilterSection.widthInput.fill("1")
+        trailerFilterSection.lengthInput.fill("3")
+
+        getSearchResultsSection().firstReserveButton.click()
+
+        val form = BoatSpaceFormPage(page)
+        form.fillFormAndSubmit {
+            getBoatSection().widthInput.fill("2")
+            getBoatSection().lengthInput.fill("5")
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+        }
+        PaymentPage(page).payReservation()
+        return form
+    }
+
+    fun reserveWinterBoatSpace(
+        filterSection: FilterSection,
+        winterFilterSection: WinterFilterSection
+    ) {
+        navigateToPage()
+
+        filterSection.winterRadio.click()
+
+        winterFilterSection.widthInput.fill("1")
+        winterFilterSection.lengthInput.fill("3")
+
+        val searchResultsSection = getSearchResultsSection()
+        searchResultsSection.firstReserveButton.click()
+
+        // click send to trigger validation
+        val formPage = BoatSpaceFormPage(page)
+        formPage.submitButton.click()
+
+        val boatSection = formPage.getBoatSection()
+        assertThat(boatSection.widthError).isVisible()
+        assertThat(boatSection.lengthError).isVisible()
+        assertThat(boatSection.depthError).isVisible()
+        assertThat(boatSection.weightError).isVisible()
+        assertThat(boatSection.registrationNumberError).isVisible()
+
+        val userAgreementSection = formPage.getUserAgreementSection()
+        assertThat(userAgreementSection.certifyInfoError).isVisible()
+        assertThat(userAgreementSection.agreementError).isVisible()
+
+        assertThat(formPage.validationWarning).isVisible()
+
+        // Fill in the boat information
+        boatSection.typeSelect.selectOption("Sailboat")
+
+        boatSection.widthInput.clear()
+        assertThat(boatSection.widthError).isVisible()
+
+        boatSection.lengthInput.clear()
+        assertThat(boatSection.lengthError).isVisible()
+
+        boatSection.widthInput.fill("-1")
+        assertThat(boatSection.widthError).isVisible()
+        assertThat(boatSection.widthError).hasText("Anna positiivinen luku")
+
+        boatSection.nameInput.fill("My Boat")
+        assertThat(boatSection.nameError).isHidden()
+
+        boatSection.lengthInput.fill("3")
+        assertThat(boatSection.lengthError).isHidden()
+
+        boatSection.widthInput.fill("25")
+        assertThat(boatSection.widthError).isHidden()
+
+        boatSection.depthInput.fill("1.5")
+        assertThat(boatSection.depthError).isHidden()
+
+        boatSection.weightInput.fill("2000")
+        assertThat(boatSection.weightError).isHidden()
+
+        boatSection.otherIdentifierInput.fill("ID12345")
+        assertThat(boatSection.otherIdentifierError).isHidden()
+
+        boatSection.noRegistrationCheckbox.check()
+        assertThat(boatSection.registrationNumberError).isHidden()
+
+        boatSection.ownerRadio.click()
+
+        val citizenSection = formPage.getCitizenSection()
+        citizenSection.emailInput.fill("test@example.com")
+        assertThat(citizenSection.emailError).isHidden()
+
+        citizenSection.phoneInput.fill("123456789")
+        assertThat(citizenSection.phoneError).isHidden()
+
+        val winterStorageTypeSection = formPage.getWinterStorageTypeSection()
+        val reservedSpaceSection = formPage.getReservedSpaceSection()
+
+        assertThat(winterStorageTypeSection.trailerRegistrationNumberError).isVisible()
+        assertThat(reservedSpaceSection.storageTypeField).hasText("Trailerisäilytys")
+        winterStorageTypeSection.buckStorageTypeRadio.click()
+        assertThat(reservedSpaceSection.storageTypeField).hasText("Pukkisäilytys")
+        assertThat(winterStorageTypeSection.trailerRegistrationNumberInput).isHidden()
+
+        winterStorageTypeSection.trailerStorageTypeRadio.click()
+        assertThat(winterStorageTypeSection.trailerRegistrationNumberInput).isVisible()
+
+        val trailerRegistrationCode = "ID12345"
+
+        winterStorageTypeSection.trailerRegistrationNumberInput.fill(trailerRegistrationCode)
+        winterStorageTypeSection.trailerWidthInput.fill("1.5")
+        winterStorageTypeSection.trailerLengthInput.fill("2.5")
+        assertThat(reservedSpaceSection.storageTypeField).hasText("Trailerisäilytys")
+
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        formPage.submitButton.click()
+
+        // assert that payment title is shown
+        val paymentPage = PaymentPage(page)
+        // Cancel the payment at first
+        paymentPage.nordeaFailedButton.click()
+        // Then go through the payment
+        paymentPage.nordeaSuccessButton.click()
+        // Now we should be on the confirmation page
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
+        val citizenDetailPage =
+            fi.espoo.vekkuli.pages.citizen
+                .CitizenDetailsPage(page)
+        citizenDetailPage.navigateToPage()
+
+        val reservationSection = citizenDetailPage.getReservationSection("Talvipaikka: Haukilahti B 013")
+        val trailerSection = reservationSection.getTrailerSection()
+
+        page.waitForCondition { trailerSection.widthField.isVisible }
+        assertThat(trailerSection.widthField).containsText("1,50")
+        assertThat(trailerSection.lengthField).containsText("2,50")
+        assertThat(trailerSection.registrationCodeField).containsText(trailerRegistrationCode)
     }
 }

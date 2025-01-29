@@ -97,9 +97,10 @@ class RenewReservationTest : ReserveTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
             SendEmailServiceMock.resetEmails()
 
@@ -132,9 +133,10 @@ class RenewReservationTest : ReserveTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -153,28 +155,15 @@ class RenewReservationTest : ReserveTest() {
             val reservationPage = ReserveBoatSpacePage(page)
             reservationPage.navigateToPage()
 
-            val filterSection = reservationPage.getFilterSection()
-            filterSection.trailerRadio.click()
-            val trailerFilterSection = filterSection.getTrailerFilterSection()
-            trailerFilterSection.widthInput.fill("1")
-            trailerFilterSection.lengthInput.fill("3")
-
-            reservationPage.getSearchResultsSection().firstReserveButton.click()
-
-            val form = BoatSpaceFormPage(page)
-            form.fillFormAndSubmit {
-                getBoatSection().widthInput.fill("2")
-                getBoatSection().lengthInput.fill("5")
-                getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
-            }
-            PaymentPage(page).payReservation()
+            val form = reservationPage.reserveTrailerBoatSpace()
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
             SendEmailServiceMock.resetEmails()
 
@@ -203,9 +192,10 @@ class RenewReservationTest : ReserveTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -215,8 +205,13 @@ class RenewReservationTest : ReserveTest() {
     @Test
     fun `should be able to renew storage reservation`() {
         try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+
             val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.reserveStorageWithTrailerType(timeProvider)
+            val filterSection = reservationPage.getFilterSection()
+            val storageFilterSection = filterSection.getStorageFilterSection()
+
+            reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
             mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
