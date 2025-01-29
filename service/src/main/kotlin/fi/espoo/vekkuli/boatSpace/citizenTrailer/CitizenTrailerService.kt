@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class TrailerService(
+class CitizenTrailerService(
     private val citizenAccessControl: CitizenAccessControl,
     private val boatReservationService: BoatReservationService,
     private val permissionService: PermissionService

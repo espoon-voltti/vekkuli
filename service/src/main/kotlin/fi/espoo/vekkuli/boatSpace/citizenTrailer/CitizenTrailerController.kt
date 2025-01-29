@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/citizen/trailer")
-class TrailerController(
-    private val trailerService: TrailerService,
+class CitizenTrailerController(
+    private val citizenTrailerService: CitizenTrailerService,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -30,6 +30,6 @@ class TrailerController(
             )
         }
 
-        trailerService.updateTrailer(trailerId, input)
+        citizenTrailerService.updateTrailer(trailerId, input)
     }
 }
