@@ -1,9 +1,8 @@
-package fi.espoo.vekkuli.boatSpace.citizen
+package fi.espoo.vekkuli.boatSpace.citizenTrailer
 
 import java.math.BigDecimal
 
-data class UpdateTrailerInformationInput(
-    val id: Int,
+data class UpdateTrailerInput(
     val registrationNumber: String,
     val width: BigDecimal,
     val length: BigDecimal,

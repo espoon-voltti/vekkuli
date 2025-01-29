@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
+import fi.espoo.vekkuli.utils.startOfTrailerReservationPeriod
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -266,7 +267,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `reserving a trailer space as a citizen`() {
         try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 5, 1, 22, 22, 22))
+            mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
 
             CitizenHomePage(page).loginAsLeoKorhonen()
 
@@ -289,7 +290,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             boatSection.noRegistrationCheckbox.check()
             boatSection.ownerRadio.click()
 
-            val trailerSection = formPage.getWinterStorageTypeSection()
+            val trailerSection = formPage.getTrailerStorageTypeSection()
             trailerSection.trailerRegistrationNumberInput.fill("RGST1234")
             val citizenSection = formPage.getCitizenSection()
             citizenSection.emailInput.fill("test@example.com")

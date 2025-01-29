@@ -134,8 +134,10 @@ export const harbors = [
 
 export type Harbor = (typeof harbors)[number]
 
+export type TrailerId = number
+
 export type Trailer = {
-  id: number
+  id: TrailerId
   width: number
   length: number
   registrationNumber: string

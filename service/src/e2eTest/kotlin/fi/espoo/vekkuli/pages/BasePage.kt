@@ -10,7 +10,9 @@ open class BasePage(
         testId: String,
         locator: Locator? = null
     ): Locator {
-        val test = "[data-testid=\"$testId\"]"
-        return locator?.locator(test) ?: page.locator(test)
+        if (locator != null) {
+            return locator.getByDataTestId(testId)
+        }
+        return page.getByDataTestId(testId)
     }
 }

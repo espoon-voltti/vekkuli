@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.pages
 
+import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 
 fun Page.advanceJSDateTime(seconds: Int) {
@@ -25,4 +26,14 @@ fun Page.advanceJSDateTime(seconds: Int) {
         """,
         seconds
     )
+}
+
+fun Locator.getByDataTestId(testId: String): Locator {
+    val test = "[data-testid=\"$testId\"]"
+    return locator(test)
+}
+
+fun Page.getByDataTestId(testId: String): Locator {
+    val test = "[data-testid=\"$testId\"]"
+    return locator(test)
 }

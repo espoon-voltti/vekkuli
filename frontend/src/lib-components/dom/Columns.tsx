@@ -6,13 +6,15 @@ export default React.memo(function Columns({
   isMultiline = false,
   isVCentered = false,
   verticalPLarge = false,
-  is3 = false
+  is3 = false,
+  ...rest
 }: {
   children: React.ReactNode
   isMultiline?: boolean
   isVCentered?: boolean
   verticalPLarge?: boolean
   is3?: boolean
+  'data-testid'?: string
 }) {
   const classes = classNames('columns', {
     'is-multiline': isMultiline,
@@ -20,5 +22,9 @@ export default React.memo(function Columns({
     'pv-l': verticalPLarge,
     'is-3': is3
   })
-  return <div className={classes}>{children}</div>
+  return (
+    <div className={classes} {...rest}>
+      {children}
+    </div>
+  )
 })
