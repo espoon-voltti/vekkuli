@@ -23,6 +23,7 @@ open class BoatSpaceFormPage(
     ) {
         private val fields = FieldLocator(root)
         val reserveForOrganization = fields.getRadio("Varaan yhteisön puolesta")
+        val reserveForCitizen = fields.getRadio("Varaan yksityishenkilönä")
         val phoneNumberInput = fields.getInput("Puhelinnumero")
         val emailInput = fields.getInput("Sähköposti")
 

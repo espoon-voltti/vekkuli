@@ -600,6 +600,53 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
+    fun `Citizen cannot be selected if it's reservations are full`() {
+        try {
+            CitizenHomePage(page).loginAsOliviaVirtanen()
+            // Reserve a second boat space for the organization
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            reservationPage.startReservingBoatSpaceB314()
+            reservationPage.getReserveModal().reserveANewSpace.click()
+
+            val formPage = BoatSpaceFormPage(page)
+            val organizationSection = formPage.getOrganizationSection()
+
+            page.getByText("Olivian vene").click()
+
+            val citizenSection = formPage.getCitizenSection()
+            citizenSection.emailInput.fill("test@example.com")
+            citizenSection.phoneInput.fill("123456789")
+
+            val userAgreementSection = formPage.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
+
+            formPage.submitButton.click()
+
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentProviders).isVisible()
+            paymentPage.nordeaSuccessButton.click()
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+
+            // Go to the form, assert that citizen cannot be selected
+            reservationPage.navigateToPage()
+            reservationPage.filterForBoatSpaceB314()
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+            reservationPage.getReserveModal().reserveANewSpace.click()
+
+            assertThat(organizationSection.reserveForOrganization).isVisible()
+            assertThat(organizationSection.reserveForOrganization).isVisible()
+            assertThat(page.getByText("Espoon lohi")).isVisible()
+            assertThat(page.getByText("Espoon kuha")).isVisible()
+            assertThat(page.getByText("Olivian vene")).isHidden()
+            assertThat(organizationSection.reserveForCitizen).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `reserving a boat space slip as a citizen with a 50 percent discount should halve the total price`() {
         val discount = 50
         val boatSpacePrice = "418,00"

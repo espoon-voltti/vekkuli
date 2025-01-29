@@ -127,7 +127,8 @@ export type OrganizationForm = typeof organizationForm
 export default function initialFormState(
   i18n: Translations,
   municipalities: Municipality[],
-  organizations: Organization[]
+  organizations: Organization[],
+  canCitizenReserve: boolean
 ): StateOf<OrganizationForm> {
   const selectionOptions: StateOf<OrganizationSelectionForm> = {
     domValue: organizations[0]?.id || '',
@@ -138,17 +139,33 @@ export default function initialFormState(
     }))
   }
 
+  const availableRenterTypes = reserverTypes.filter(
+    (type) => type !== 'Citizen' || canCitizenReserve
+  )
+
+  const defaultChoice = availableRenterTypes[0]
+  const defaultOrganization =
+    defaultChoice === 'Citizen'
+      ? {
+          branch: 'noOrganization' as const,
+          state: null
+        }
+      : {
+          branch: 'existing' as const,
+          state: transformOrganizationToFormOrganization(
+            organizations[0],
+            municipalities
+          )
+        }
+
   return {
-    organization: {
-      branch: 'noOrganization',
-      state: null
-    },
+    organization: defaultOrganization,
     organizationSelection: selectionOptions,
     newOrganizationCache: initialInfoFormState(municipalities),
     renterType: {
       type: {
-        domValue: 'Citizen',
-        options: reserverTypes.map((type) => ({
+        domValue: defaultChoice,
+        options: availableRenterTypes.map((type) => ({
           domValue: type,
           label: i18n.boatSpace.renterType[type],
           value: type
