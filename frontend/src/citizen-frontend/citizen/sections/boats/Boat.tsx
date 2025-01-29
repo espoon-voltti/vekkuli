@@ -56,7 +56,7 @@ export default React.memo(function Boat({
   } = useFormFields(bind)
 
   return (
-    <div className="reservation-card" data-testid={`boat-${boat.id}`}>
+    <div className="reservation-card" data-testid="boat-row">
       <Columns isVCentered>
         <Column isNarrow>
           <h4>{boat.name}</h4>

@@ -4,6 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
+import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
@@ -264,18 +265,21 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         val reserveBoatSpacePage = CitizenReserveBoatSpacePage(page)
         val boatSpaceFormPage = CitizenBoatSpaceFormPage(page)
         val paymentPage = CitizenPaymentPage(page)
+        val boatName = "The Boat"
 
         // create a reservation for B 314
         reserveBoatSpacePage.navigateToPage()
         reserveBoatSpacePage.startReservingBoatSpaceB314()
-        boatSpaceFormPage.fillFormAndSubmit()
+        boatSpaceFormPage.fillFormAndSubmit {
+            val boatSection = getBoatSection()
+            boatSection.nameInput.fill(boatName)
+        }
         paymentPage.payReservation()
 
         // create warning
-        val boatId = 8
         val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
         citizenCitizenDetails.navigateToPage()
-        val boat = citizenCitizenDetails.getBoatSection(boatId)
+        val boat = citizenCitizenDetails.getBoatSection(boatName)
         boat.editButton.click()
         boat.weightInput.fill("16000")
         boat.saveButton.click()
@@ -289,6 +293,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         listingPage.boatSpace("Virtanen Mikko").click()
 
         val citizenDetails = CitizenDetailsPage(page)
+        val boatId = 8
         assertThat(citizenDetails.acknowledgeWarningButton(boatId)).isVisible()
 
         // terminate reservation
@@ -420,7 +425,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         return listingPage
     }
 
-    private fun createReservationWarningsForMikkoVirtanen(callback: (boatSection: CitizenCitizenDetailsPage.BoatSection) -> Unit): Int {
+    private fun createReservationWarningsForMikkoVirtanen(callback: (boatSection: IHaveBoatList.BoatSection) -> Unit): Int {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
 
         CitizenHomePage(page).loginAsMikkoVirtanen()
@@ -451,7 +456,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
         val boatId = 8
         val citizenCitizenDetails = CitizenCitizenDetailsPage(page)
         citizenCitizenDetails.navigateToPage()
-        val boat = citizenCitizenDetails.getBoatSection(boatId)
+        val boat = citizenCitizenDetails.getBoatSection("The Boat")
         boat.editButton.click()
         callback(boat)
         boat.saveButton.click()

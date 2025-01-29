@@ -223,7 +223,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             citizenDetails.showAllBoatsButton.click()
 
-            val boat = citizenDetails.getBoatSection(3)
+            var boat = citizenDetails.getBoatSection("Leon vene")
             boat.editButton.click()
 
             boat.nameInput.fill("New Boat Name")
@@ -239,6 +239,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             boat.saveButton.click()
 
+            boat = citizenDetails.getBoatSection("New Boat Name")
             assertThat(boat.nameField).hasText("New Boat Name")
             assertThat(boat.weightField).hasText("2000")
             assertThat(boat.typeField).hasText("Purjevene")
@@ -261,7 +262,7 @@ class CitizenDetailsTest : PlaywrightTest() {
         val citizenDetails = CitizenDetailsPage(page)
         citizenDetails.navigateToPage()
 
-        val boat = citizenDetails.getBoatSection(1)
+        val boat = citizenDetails.getBoatSection("Leon vene")
         assertThat(boat.deleteButton).not().isVisible()
     }
 
@@ -274,7 +275,7 @@ class CitizenDetailsTest : PlaywrightTest() {
 
         citizenDetails.showAllBoatsButton.click()
 
-        val boat = citizenDetails.getBoatSection(3)
+        val boat = citizenDetails.getBoatSection("Leon toinen liian iso vene")
         assertThat(boat.deleteButton).isVisible()
 
         boat.deleteButton.click()
@@ -299,7 +300,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
-            val boat = citizenDetails.getBoatSection(1)
+            val boat = citizenDetails.getBoatSection("Leon vene")
             boat.editButton.click()
             boat.weightInput.fill("16000")
             boat.saveButton.click()

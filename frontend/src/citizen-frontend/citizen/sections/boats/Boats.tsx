@@ -17,7 +17,7 @@ export default React.memo(function Reservations() {
   const boats = useQueryResult(citizenBoatsQuery())
 
   return (
-    <Container isBlock>
+    <Container isBlock data-testid="boat-list">
       <h3>Veneet</h3>
       <Loader results={[boats, activeReservations]}>
         {(loadedBoats, reservations) => (
