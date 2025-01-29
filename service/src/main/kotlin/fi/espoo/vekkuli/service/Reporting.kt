@@ -146,6 +146,7 @@ data class BoatSpaceReportRow(
     val terminationReason: String?,
     val startDate: LocalDate?,
     val endDate: LocalDate?,
+    val paid: LocalDateTime?
 )
 
 fun getFreeBoatSpaceReport(
@@ -180,7 +181,8 @@ fun getBoatSpaceReport(
                 bsr.termination_timestamp,
                 bsr.termination_reason,
                 bsr.start_date,
-                bsr.end_date
+                bsr.end_date,
+                p.paid
             FROM boat_space bs
                  LEFT JOIN location l ON l.id = bs.location_id
                  LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
@@ -221,7 +223,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "irtisanomisaika",
             "irtisanomissyy",
             "alkupvm",
-            "loppupvm"
+            "loppupvm",
+            "maksupäivä"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -246,6 +249,7 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateToText(report.endDate))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -260,7 +264,9 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "paikka",
             "paikan leveys",
             "paikan pituus",
-            "paikan varuste"
+            "varuste",
+            "maksuluokka",
+            "maksupäivä"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -274,6 +280,8 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -288,12 +296,16 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "paikka",
             "paikan leveys",
             "paikan pituus",
+            "veneen leveys",
+            "veneen pituus",
             "paikan varuste",
             "varaaja",
             "kotikunta",
             "veneen rekisterinumero",
             "hinta",
-            "maksuluokka"
+            "maksuluokka",
+            "maksupäivä",
+            "varauksen alkupäivämäärä"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -306,12 +318,16 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
