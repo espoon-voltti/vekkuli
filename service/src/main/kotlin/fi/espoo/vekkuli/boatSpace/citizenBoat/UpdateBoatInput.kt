@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.boatSpace.citizen
+package fi.espoo.vekkuli.boatSpace.citizenBoat
 
 import fi.espoo.vekkuli.domain.Boat
 import fi.espoo.vekkuli.domain.BoatType
@@ -7,8 +7,7 @@ import fi.espoo.vekkuli.utils.decimalToInt
 import java.math.BigDecimal
 import java.util.UUID
 
-data class UpdateBoatInformationInput(
-    val id: Int,
+data class UpdateBoatInput(
     val name: String,
     val type: BoatType,
     val width: BigDecimal,
@@ -21,9 +20,12 @@ data class UpdateBoatInformationInput(
     val ownership: OwnershipStatus,
 )
 
-fun UpdateBoatInformationInput.toBoatInput(reserverId: UUID): Boat {
+fun UpdateBoatInput.toBoatInput(
+    boatId: Int,
+    reserverId: UUID
+): Boat {
     return Boat(
-        id = id,
+        id = boatId,
         reserverId = reserverId,
         name = name,
         type = type,

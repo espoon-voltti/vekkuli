@@ -92,8 +92,10 @@ export type Organization = {
 
 export type NewOrganization = Omit<Organization, 'id'>
 
+export type BoatId = number
+
 export type Boat = {
-  id: number
+  id: BoatId
   name: string
   type: BoatType
   width: number

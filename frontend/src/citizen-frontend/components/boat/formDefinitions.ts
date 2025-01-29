@@ -1,4 +1,4 @@
-import { UpdateCitizenBoatInput } from 'citizen-frontend/api-types/boat'
+import { UpdateBoatInput } from 'citizen-frontend/api-types/boat'
 import {
   Boat,
   BoatType,
@@ -31,7 +31,7 @@ export const boatForm = mapped(
     extraInformation: string(),
     ownership: required(oneOf<OwnershipStatus>())
   }),
-  (values): UpdateCitizenBoatInput => ({
+  (values): UpdateBoatInput => ({
     id: values.id,
     name: values.name,
     type: values.type,

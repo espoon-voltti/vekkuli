@@ -175,18 +175,4 @@ class CitizenController(
         }
         citizenService.updateCitizen(input)
     }
-
-    @PostMapping("/current/update-boat")
-    fun postUpdateCitizenInformation(
-        @RequestBody input: UpdateBoatInformationInput,
-        request: HttpServletRequest,
-    ) {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "UPDATE_BOAT",
-            )
-        }
-        citizenService.updateBoat(input)
-    }
 }

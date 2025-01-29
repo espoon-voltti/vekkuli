@@ -1,44 +1,48 @@
-import { Loader } from 'lib-components/Loader'
 import { Container } from 'lib-components/dom'
 import React from 'react'
 
+import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
-import { citizenBoatsQuery } from 'citizen-frontend/shared/queries'
 import { Boat } from 'citizen-frontend/shared/types'
-import { useQueryResult } from 'lib-common/query'
-
-import { citizenActiveReservationsQuery } from '../../citizen/queries'
+import { MutationDescription } from 'lib-common/query'
 
 import BoatComponent from './Boat'
 import BoatsNotInReservation from './BoatsNotInReservation'
+import { updateBoatMutation } from './queries'
 
-export default React.memo(function Reservations() {
-  const activeReservations = useQueryResult(citizenActiveReservationsQuery())
-  const boats = useQueryResult(citizenBoatsQuery())
+type BoatsProps = {
+  boats: Boat[]
+  activeReservations: BoatSpaceReservation[]
+  updateMutation: MutationDescription<UpdateBoatRequest, void>
+}
 
+export default React.memo(function Boats({
+  boats,
+  activeReservations,
+  updateMutation = updateBoatMutation
+}: BoatsProps) {
   return (
     <Container isBlock data-testid="boat-list">
       <h3>Veneet</h3>
-      <Loader results={[boats, activeReservations]}>
-        {(loadedBoats, reservations) => (
-          <>
-            <div className="reservation-list form-section no-bottom-border">
-              {boatsInActiveReservationsFilter(loadedBoats, reservations).map(
-                (boat) => (
-                  <BoatComponent key={boat.id} boat={boat} />
-                )
-              )}
-            </div>
-            <BoatsNotInReservation
-              boats={boatsInActiveReservationsFilter(
-                loadedBoats,
-                reservations,
-                false
-              )}
+      <div className="reservation-list form-section no-bottom-border">
+        {boatsInActiveReservationsFilter(boats, activeReservations).map(
+          (boat) => (
+            <BoatComponent
+              key={boat.id}
+              boat={boat}
+              updateMutation={updateMutation}
             />
-          </>
+          )
         )}
-      </Loader>
+      </div>
+      <BoatsNotInReservation
+        boats={boatsInActiveReservationsFilter(
+          boats,
+          activeReservations,
+          false
+        )}
+        updateMutation={updateMutation}
+      />
     </Container>
   )
 })
