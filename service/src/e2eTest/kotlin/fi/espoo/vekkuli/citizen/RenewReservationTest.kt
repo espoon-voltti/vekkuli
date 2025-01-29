@@ -2,9 +2,12 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class RenewReservationTest : ReserveTest() {
@@ -49,6 +52,15 @@ class RenewReservationTest : ReserveTest() {
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
             assertThat(reservationSection.renewButton).isHidden()
+            assertThat(citizenDetailsPage.reservationListCards).containsText("Laituripaikka: Haukilahti B 001")
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.any {
+                    it.contains("leo@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
+                }
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -81,6 +93,16 @@ class RenewReservationTest : ReserveTest() {
                 getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
             }
             PaymentPage(page).payReservation()
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
+            SendEmailServiceMock.resetEmails()
+
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
 
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -104,6 +126,16 @@ class RenewReservationTest : ReserveTest() {
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
             assertThat(reservationSection.renewButton).isHidden()
+
+            assertThat(citizenDetailsPage.reservationListCards).containsText("Talvipaikka: Haukilahti B 013")
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -133,9 +165,19 @@ class RenewReservationTest : ReserveTest() {
             form.fillFormAndSubmit {
                 getBoatSection().widthInput.fill("2")
                 getBoatSection().lengthInput.fill("5")
-                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+                getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
             }
             PaymentPage(page).payReservation()
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
+            SendEmailServiceMock.resetEmails()
+
             mockTimeProvider(timeProvider, startofTrailerRenewPeriod)
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
@@ -150,6 +192,72 @@ class RenewReservationTest : ReserveTest() {
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
             form.submitButton.click()
+            val paymentPage = PaymentPage(page)
+            paymentPage.nordeaSuccessButton.click()
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+
+            // Check that the renewed reservation is visible
+            citizenDetailsPage.navigateToPage()
+
+            assertThat(reservationSection.renewButton).isHidden()
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Espoon kaupungin venepaikan jatkaminen")
+            )
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `should be able to renew storage reservation`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsLeoKorhonen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.trailerRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                getBoatSection().widthInput.fill("2")
+                getBoatSection().lengthInput.fill("5")
+                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            }
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+            mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservationSection = citizenDetailsPage.getFirstReservationSection()
+
+            assertThat(reservationSection.renewButton).isVisible()
+            reservationSection.renewButton.click()
+            // Make sure that citizen is redirected to unfinished reservation switch form
+            reservationPage.navigateToPage()
+
+            assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")
+
+            val userAgreementSection = form.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
+            form.submitButton.click()
+
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
             assertThat(paymentPage.reservationSuccessNotification).isVisible()

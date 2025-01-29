@@ -21,7 +21,8 @@ export default React.memo(function TextField({
   readonly,
   required,
   value,
-  showErrorsBeforeTouched
+  showErrorsBeforeTouched,
+  ariaLabel
 }: TextFieldProps) {
   const { showAllErrors } = useFormErrorContext()
   const { state, set, isValid, validationError, translateError } =
@@ -50,6 +51,7 @@ export default React.memo(function TextField({
               id={id}
               name={name}
               value={state}
+              aria-label={ariaLabel}
               aria-required={required}
               aria-invalid={showError}
               aria-describedby={errorFieldId}

@@ -133,10 +133,12 @@ export default {
       missingFieldsInfoBox:
         'Anna ensin paikan mitat niin näet veneellesi sopivat paikat.',
       filters: {
+        title: 'Venepaikan haku',
         boatSpaceType: 'Haettava paikka',
         harbor: 'Satama',
         amenities: 'Varusteet',
         boatType: 'Venetyyppi',
+        storageTypeAmenities: 'Säilytystapa',
         branchSpecific: {
           Slip: {
             width: 'Veneen leveys (m)',
@@ -181,9 +183,22 @@ export default {
         continueToPayment: 'Jatka maksamaan',
         confirmReservation: 'Vahvista varaus'
       },
+      storageInfo: {
+        title: 'Säilytyspaikan tiedot',
+        buckWithTentInfo:
+          'Huomioi, että veneen ja pukkin suojatelttoineen tulee mahtua varatun paikan sisään.'
+      },
       trailerInfo: {
         title: 'Trailerin tiedot',
         registrationCode: 'Rekisteritunnus'
+      },
+      allYearStorage: {
+        Trailer: {
+          title: 'Trailerin tiedot'
+        },
+        Buck: {
+          title: 'Pukin tiedot'
+        }
       }
     },
     paymentPage: {
@@ -380,6 +395,10 @@ export default {
         goBackToReservation: 'Siirry varaukseen'
       }
     }
+  },
+  organization: {
+    organizationPhone: 'Yhteisön puhelinnumero',
+    organizationEmail: 'Yhteisön sähköposti'
   },
   payment: {
     title: 'Valitse maksutapa'

@@ -8,12 +8,15 @@ import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage as CitizenBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage as CitizenCitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.PaymentPage as CitizenPaymentPage
@@ -336,6 +339,15 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             assertThat(invoiceDetails.header).isVisible()
             invoiceDetails.sendButton.click()
             assertThat(citizenDetails.renewReservationButton(1)).isHidden()
+            assertThat(citizenDetails.reservationListCards).containsText("Boat space: Haukilahti B 001")
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.any {
+                    it.contains("leo@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
+                }
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -423,7 +435,7 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             getBoatSection().nameInput.fill("The Boat")
             getBoatSection().widthInput.fill("1")
             getBoatSection().lengthInput.fill("1")
-            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
         }
         paymentPage.payReservation()
 

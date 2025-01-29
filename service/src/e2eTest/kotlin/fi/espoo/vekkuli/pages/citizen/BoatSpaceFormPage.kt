@@ -73,6 +73,18 @@ open class BoatSpaceFormPage(
         val trailerWidthInput = fields.getInput("Leveys")
     }
 
+    class TrailerStorageTypeSection(
+        root: Locator
+    ) {
+        private val fields = FieldLocator(root)
+        val trailerLengthError = fields.getInputError("Pituus")
+        val trailerLengthInput = fields.getInput("Pituus")
+        val trailerRegistrationNumberError = fields.getInputError("Rekisteritunnus")
+        val trailerRegistrationNumberInput = fields.getInput("Rekisteritunnus")
+        val trailerWidthError = fields.getInputError("Leveys")
+        val trailerWidthInput = fields.getInput("Leveys")
+    }
+
     class UserAgreementSection(
         root: Locator
     ) {
@@ -104,6 +116,8 @@ open class BoatSpaceFormPage(
     fun getBoatSection() = BoatSection(getByDataTestId("boat"))
 
     fun getWinterStorageTypeSection() = WinterStorageTypeSection(getByDataTestId("winter-storage-type"))
+
+    fun getTrailerStorageTypeSection() = TrailerStorageTypeSection(getByDataTestId("trailer-storage-type"))
 
     fun getUserAgreementSection() = UserAgreementSection(getByDataTestId("user-agreement"))
 

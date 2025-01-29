@@ -4,13 +4,20 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
+import fi.espoo.vekkuli.pages.employee.*
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
+import fi.espoo.vekkuli.utils.startOfTrailerReservationPeriod
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage as ReserveBoatSpaceEmployeePage
@@ -156,6 +163,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             // assert that payment title is shown
             val paymentPage = PaymentPage(page)
+            paymentPage.assertOnPaymentPage()
+            messageService.sendScheduledEmails()
+            assertEquals(0, SendEmailServiceMock.emails.size)
+
             // Cancel the payment at first
             paymentPage.nordeaFailedButton.click()
             // Then go through the payment
@@ -163,6 +174,91 @@ class ReserveBoatSpaceTest : ReserveTest() {
             // Now we should be on the confirmation page
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `reserving an all year storage for buck places`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsLeoKorhonen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.buckRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")
+                getWinterStorageTypeSection().buckWithTentStorageTypeRadio.click()
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys suojateltalla")
+            }
+
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `reserving an all year storage for trailer places`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsLeoKorhonen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.trailerRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
+                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            }
+
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -171,7 +267,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `reserving a trailer space as a citizen`() {
         try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 5, 1, 22, 22, 22))
+            mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
 
             CitizenHomePage(page).loginAsLeoKorhonen()
 
@@ -194,7 +290,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             boatSection.noRegistrationCheckbox.check()
             boatSection.ownerRadio.click()
 
-            val trailerSection = formPage.getWinterStorageTypeSection()
+            val trailerSection = formPage.getTrailerStorageTypeSection()
             trailerSection.trailerRegistrationNumberInput.fill("RGST1234")
             val citizenSection = formPage.getCitizenSection()
             citizenSection.emailInput.fill("test@example.com")
@@ -212,54 +308,14 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
 
-    @Test
-    fun `reserving a storage space as a citizen`() {
-        try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2024, 9, 1, 22, 22, 22))
-
-            CitizenHomePage(page).loginAsLeoKorhonen()
-
-            val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.navigateToPage()
-            reservationPage.startReservingStorageSpaceB007()
-
-            val formPage = BoatSpaceFormPage(page)
-            val boatSection = formPage.getBoatSection()
-            val userAgreementSection = formPage.getUserAgreementSection()
-
-            // Fill in the boat information
-            boatSection.typeSelect.selectOption("Sailboat")
-            boatSection.nameInput.fill("My Boat")
-            boatSection.lengthInput.fill("3")
-            boatSection.widthInput.fill("25")
-            boatSection.depthInput.fill("1.5")
-            boatSection.weightInput.fill("2000")
-            boatSection.otherIdentifierInput.fill("ID12345")
-            boatSection.noRegistrationCheckbox.check()
-            boatSection.ownerRadio.click()
-
-            val citizenSection = formPage.getCitizenSection()
-            citizenSection.emailInput.fill("test@example.com")
-            assertThat(citizenSection.emailError).isHidden()
-
-            citizenSection.phoneInput.fill("123456789")
-            assertThat(citizenSection.phoneError).isHidden()
-
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-
-            formPage.submitButton.click()
-
-            val paymentPage = PaymentPage(page)
-            paymentPage.nordeaSuccessButton.click()
-
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -388,6 +444,14 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertThat(trailerSection.widthField).containsText("1,50")
             assertThat(trailerSection.lengthField).containsText("2,50")
             assertThat(trailerSection.registrationCodeField).containsText(trailerRegistrationCode)
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -449,6 +513,24 @@ class ReserveBoatSpaceTest : ReserveTest() {
             // assert that payment page is shown
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentProviders).isVisible()
+            paymentPage.nordeaSuccessButton.click()
+
+            messageService.sendScheduledEmails()
+            assertEquals(2, SendEmailServiceMock.emails.size)
+
+            // Email to citizen
+            assertTrue(
+                SendEmailServiceMock.emails.any {
+                    it.toString().contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                }
+            )
+
+            // Email to organization
+            assertTrue(
+                SendEmailServiceMock.emails.any {
+                    it.toString().contains("foo@bar.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                }
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -549,6 +631,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val confirmButton = formPage.confirmButton
             confirmButton.click()
 
+            messageService.sendScheduledEmails()
+            assertEquals(0, SendEmailServiceMock.emails.size)
+
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.getByDataTestId("payment-page")).not().isVisible()
 
@@ -562,6 +647,16 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
             assertThat(paymentDiscountText).containsText("$discount %")
             assertThat(paymentDiscountText).containsText("$expectedPrice €")
+
+            /* TODO should free place get an reservation confirmation? Now it is tied to successful payment
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails.get(
+                    0
+                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+            )
+             */
         } catch (e: AssertionError) {
             handleError(e)
         }

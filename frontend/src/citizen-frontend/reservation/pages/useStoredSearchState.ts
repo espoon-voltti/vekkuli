@@ -7,6 +7,7 @@ export type StoredSearchState = {
   spaceType?: string
   boatType?: string
   harbor?: string[]
+  storageAmenity?: string
 }
 
 function useStoredSearchState(): [

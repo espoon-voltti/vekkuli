@@ -52,6 +52,9 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentRepository: PaymentRepository
 
+    @Autowired
+    lateinit var messageService: MessageService
+
     @BeforeEach
     fun resetDiscount() {
         reserverRepository.updateDiscount(citizenIdOlivia, 0)
@@ -293,6 +296,16 @@ class ReservationFormServiceTests : IntegrationTestBase() {
         assertNotNull(payment, "Should create payment")
         assertEquals(PaymentStatus.Success, payment!!.status)
         assertEquals(0, payment.totalCents)
+
+        /* TODO should 0 price reservation send confirmation? Now it is tied to payment
+        messageService.sendScheduledEmails()
+        kotlin.test.assertEquals(1, SendEmailServiceMock.emails.size)
+        assertTrue(
+            SendEmailServiceMock.emails.get(
+                0
+            ).contains("john.doe@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+        )
+         */
     }
 
     @Test

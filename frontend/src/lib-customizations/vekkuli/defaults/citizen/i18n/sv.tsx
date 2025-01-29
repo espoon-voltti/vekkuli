@@ -128,10 +128,12 @@ const sv: Translations = {
       missingFieldsInfoBox:
         'Ange först båttyp och mått för att se vilka platser som passar din båt.',
       filters: {
+        title: 'Sök båtplats',
         boatSpaceType: 'Sök plats',
         harbor: 'Hamnen',
         amenities: 'Faciliteter',
         boatType: 'Båttyp',
+        storageTypeAmenities: 'Förråd typ',
         branchSpecific: {
           Slip: {
             width: 'Båtens bredd (m)',
@@ -176,9 +178,22 @@ const sv: Translations = {
         continueToPayment: 'Fortsätt till betalning',
         confirmReservation: 'Bekräfta bokning'
       },
+      storageInfo: {
+        title: 'Information om förvaringsplatsen',
+        buckWithTentInfo:
+          'Observera att båten och stöttan, inklusive deras skyddstält, måste rymmas inom det reserverade utrymmet.'
+      },
       trailerInfo: {
         title: 'Information om släpvagnen',
         registrationCode: 'Registernummer'
+      },
+      allYearStorage: {
+        Trailer: {
+          title: 'Trailer information'
+        },
+        Buck: {
+          title: 'Bock information'
+        }
       }
     },
     paymentPage: {
@@ -381,6 +396,10 @@ const sv: Translations = {
         goBackToReservation: 'Gå till bokningen'
       }
     }
+  },
+  organization: {
+    organizationPhone: 'Organisationens telefonnummer',
+    organizationEmail: 'Organisationens e-post'
   },
   payment: {
     title: 'Välj betalningsmetod'

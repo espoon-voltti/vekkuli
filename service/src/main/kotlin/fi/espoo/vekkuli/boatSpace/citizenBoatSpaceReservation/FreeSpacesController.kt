@@ -41,6 +41,7 @@ class FreeSpacesController(
                 "GET_FREE_SPACES",
             )
         }
+
         val freeSpacesByHarbor =
             boatSpaceService.getUnreservedBoatSpaceOptions(
                 boatType,
