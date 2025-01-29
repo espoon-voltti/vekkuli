@@ -3,6 +3,7 @@ import { MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
+import Boats from 'citizen-frontend/components/boat/Boats'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
@@ -13,9 +14,11 @@ import {
 } from '../citizen/queries'
 import { organizationBoatsQuery } from '../shared/queries'
 
-import Boats from './boats/Boats'
 import OrganizationInformation from './organizationInformation/OrganizationInformation'
-import { citizenOrganizationQuery } from './queries'
+import {
+  citizenOrganizationQuery,
+  updateOrganizationBoatMutation
+} from './queries'
 import ExpiredReservations from './reservations/ExpiredReservations'
 import Reservations from './reservations/Reservations'
 
@@ -67,7 +70,11 @@ const Content = React.memo(function Content({
               <>
                 <OrganizationInformation organization={organization} />
                 <Reservations reservations={loadedActiveReservations} />
-                <Boats boats={boats} reservations={loadedActiveReservations} />
+                <Boats
+                  boats={boats}
+                  activeReservations={loadedActiveReservations}
+                  updateMutation={updateOrganizationBoatMutation}
+                />
                 <ExpiredReservations reservations={loadedExpiredReservations} />
               </>
             )
