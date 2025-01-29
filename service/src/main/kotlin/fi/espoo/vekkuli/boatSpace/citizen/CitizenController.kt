@@ -61,16 +61,6 @@ class CitizenController(
         return boats.toCitizenBoatListResponse()
     }
 
-    @DeleteMapping("/current/boats/{boatId}")
-    fun deleteBoatById(
-        @PathVariable boatId: Int,
-        request: HttpServletRequest
-    ) {
-        val citizenId = request.ensureCitizenId()
-        if (!permissionService.canDeleteBoat(citizenId, boatId)) throw Forbidden()
-        boatService.deleteBoat(boatId)
-    }
-
     @GetMapping("/current/organization-boats/{orgId}")
     fun getOrganizationBoats(
         @PathVariable orgId: UUID,

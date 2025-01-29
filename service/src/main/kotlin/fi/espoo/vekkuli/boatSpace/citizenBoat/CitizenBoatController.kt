@@ -4,11 +4,7 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/citizen/boat")
@@ -34,5 +30,20 @@ class CitizenBoatController(
         }
 
         citizenBoatService.updateBoat(boatId, input)
+    }
+
+    @DeleteMapping("/{boatId}")
+    fun deleteBoatById(
+        @PathVariable boatId: Int,
+        request: HttpServletRequest
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "DELETE_BOAT",
+            )
+        }
+
+        citizenBoatService.deleteBoat(boatId)
     }
 }

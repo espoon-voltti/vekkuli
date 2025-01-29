@@ -21,7 +21,7 @@ export async function updateBoat({
 
 export async function deleteBoat(boatId: number): Promise<void> {
   await client.request({
-    url: uri`/current/boats/${boatId}`.toString(),
+    url: uri`/boat/${boatId}`.toString(),
     method: 'DELETE'
   })
 }

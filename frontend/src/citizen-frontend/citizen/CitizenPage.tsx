@@ -12,6 +12,7 @@ import {
   citizenActiveReservationsQuery,
   citizenExpiredReservationsQuery,
   citizenOrganizationQuery,
+  deleteCitizenBoatMutation,
   updateCitizenBoatMutation
 } from './queries'
 import CitizenInformation from './sections/citizenInformation'
@@ -61,6 +62,7 @@ const Content = React.memo(function Content({
               <Boats
                 boats={loadedBoats}
                 activeReservations={loadedActiveReservations}
+                deleteMutation={deleteCitizenBoatMutation}
                 updateMutation={updateCitizenBoatMutation}
               />
               <ExpiredReservations reservations={loadedExpiredReservations} />

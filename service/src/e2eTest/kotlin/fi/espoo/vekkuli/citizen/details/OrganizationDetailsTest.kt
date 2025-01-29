@@ -87,4 +87,46 @@ class OrganizationDetailsTest : PlaywrightTest() {
         assertThat(boatSection.otherIdentifierField).hasText("ID12345")
         assertThat(boatSection.extraInformationField).hasText("Extra info")
     }
+
+    @Test
+    fun `member can not delete boat when it's in active reservation`() {
+        CitizenHomePage(page).loginAsOliviaVirtanen()
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        val boatSection = organizationDetailsPage.getBoatSection("Espoon lohi")
+
+        assertThat(boatSection.deleteButton).not().isVisible()
+    }
+
+    @Test
+    fun `member can delete boat when it's without active reservation`() {
+        CitizenHomePage(page).loginAsOliviaVirtanen()
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        organizationDetailsPage.showAllBoatsButton.click()
+
+        val boat = organizationDetailsPage.getBoatSection("Espoon kuha")
+        assertThat(boat.deleteButton).isVisible()
+
+        boat.deleteButton.click()
+        val deleteBoatModal = organizationDetailsPage.getDeleteBoatModal()
+        assertThat(deleteBoatModal.root).isVisible()
+        assertThat(deleteBoatModal.root).containsText("Espoon kuha")
+
+        deleteBoatModal.confirmButton.click()
+        assertThat(deleteBoatModal.root).not().isVisible()
+
+        val deleteBoatSuccessModal = organizationDetailsPage.getDeleteBoatSuccessModal()
+        assertThat(deleteBoatSuccessModal.root).isVisible()
+
+        assertThat(boat.root).not().isVisible()
+    }
 }

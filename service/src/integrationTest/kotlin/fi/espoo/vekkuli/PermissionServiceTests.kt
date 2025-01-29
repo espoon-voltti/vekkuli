@@ -65,6 +65,38 @@ class PermissionServiceTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should allow user to delete boat`() {
+        val boatId = insertBoat(citizenIdMikko)
+        assertTrue(permissionService.canDeleteBoat(userId, boatId))
+    }
+
+    @Test
+    fun `should prevent non owners from deleting boat`() {
+        val boatId = insertBoat(citizenIdMikko)
+        assertFalse(permissionService.canDeleteBoat(citizenIdOlivia, boatId))
+    }
+
+    @Test
+    fun `should allow owner to delete boat`() {
+        val boatId = insertBoat(citizenIdMikko)
+        assertTrue(permissionService.canDeleteBoat(citizenIdMikko, boatId))
+    }
+
+    @Test
+    fun `should prevent non organization members from deleting boat`() {
+        val orgId = insertOrganization(citizenIdMikko)
+        val boatId = insertBoat(orgId)
+        assertFalse(permissionService.canDeleteBoat(citizenIdOlivia, boatId))
+    }
+
+    @Test
+    fun `should allow organization members to delete boat`() {
+        val orgId = insertOrganization(citizenIdMikko)
+        val boatId = insertBoat(orgId)
+        assertTrue(permissionService.canDeleteBoat(citizenIdMikko, boatId))
+    }
+
+    @Test
     fun `should allow user to edit trailer`() {
         val trailerId = insertTrailer(citizenIdMikko)
         assertTrue(permissionService.canEditTrailer(userId, trailerId))

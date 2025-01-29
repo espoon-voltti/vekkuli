@@ -21,4 +21,11 @@ class CitizenBoatService(
         if (!permissionService.canEditBoat(citizenId, boatId)) throw Unauthorized()
         boatService.updateBoatAsCitizen(input.toBoatInput(boatId, citizenId))
     }
+
+    @Transactional
+    fun deleteBoat(boatId: Int) {
+        val (citizenId) = citizenAccessControl.requireCitizen()
+        if (!permissionService.canDeleteBoat(citizenId, boatId)) throw Unauthorized()
+        boatService.deleteBoat(boatId)
+    }
 }

@@ -3,22 +3,24 @@ import React from 'react'
 
 import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
-import { Boat } from 'citizen-frontend/shared/types'
+import { Boat, BoatId } from 'citizen-frontend/shared/types'
 import { MutationDescription } from 'lib-common/query'
 
 import BoatComponent from './Boat'
 import BoatsNotInReservation from './BoatsNotInReservation'
-import { updateBoatMutation } from './queries'
+import { deleteBoatMutation, updateBoatMutation } from './queries'
 
 type BoatsProps = {
   boats: Boat[]
   activeReservations: BoatSpaceReservation[]
+  deleteMutation: MutationDescription<BoatId, void>
   updateMutation: MutationDescription<UpdateBoatRequest, void>
 }
 
 export default React.memo(function Boats({
   boats,
   activeReservations,
+  deleteMutation = deleteBoatMutation,
   updateMutation = updateBoatMutation
 }: BoatsProps) {
   return (
@@ -41,6 +43,7 @@ export default React.memo(function Boats({
           activeReservations,
           false
         )}
+        deleteMutation={deleteMutation}
         updateMutation={updateMutation}
       />
     </Container>
