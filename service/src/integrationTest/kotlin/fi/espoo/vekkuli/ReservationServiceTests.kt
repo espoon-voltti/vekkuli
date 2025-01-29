@@ -86,17 +86,50 @@ class ReservationServiceTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should prevent reservation when citizen does not have permission to reserve`() {
+    fun `should prevent reservation when citizen and their organizations do not have permission to reserve`() {
+        val organization = testUtils.createOrganization("Test organization", organizationService)
+        organizationService.addCitizenToOrganization(organization.id, citizenIdOlivia)
         loginAs(citizenIdOlivia)
-        disallowReservation(eq(citizenIdOlivia))
-        val boatSpaceId = insertBoatSpace()
 
+        disallowReservation(eq(citizenIdOlivia))
+        disallowReservation(eq(organizationId))
+
+        val boatSpaceId = insertBoatSpace()
         val exception =
             assertThrows<Forbidden> {
                 reservationService.startReservation(boatSpaceId)
             }
 
-        assertEquals("Citizen can not reserve slip", exception.message)
+        assertEquals("Citizen and their organizations can not reserve slip", exception.message)
+    }
+
+    @Test
+    fun `should allow reservation if the citizen does not have permission but their organization does`() {
+        val organization = testUtils.createOrganization("Test organization", organizationService)
+        organizationService.addCitizenToOrganization(organization.id, citizenIdOlivia)
+        loginAs(citizenIdOlivia)
+
+        disallowReservation(eq(citizenIdOlivia))
+        allowReservation(eq(organization.id))
+
+        val boatSpaceId = insertBoatSpace()
+
+        reservationService.startReservation(boatSpaceId)
+    }
+
+    @Test
+    fun `should allow reservation if the citizen does have permission but their organization does not`() {
+        val organization = testUtils.createOrganization("Test organization", organizationService)
+        organizationService.addCitizenToOrganization(organization.id, citizenIdOlivia)
+
+        loginAs(citizenIdOlivia)
+
+        allowReservation(eq(citizenIdOlivia))
+        disallowReservation(eq(organization.id))
+
+        val boatSpaceId = insertBoatSpace()
+
+        reservationService.startReservation(boatSpaceId)
     }
 
     @Test

@@ -159,7 +159,7 @@ export default {
         }
       },
       modal: {
-        reserveAnotherPlace: 'Varaan toisen paikan',
+        reserveNewSpace: 'Varaa uusi paikka',
         reservingBoatSpace: 'Olet varaamassa venepaikkaa:',
         cannotReserveNewPlace:
           'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',

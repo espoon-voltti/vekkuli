@@ -90,8 +90,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val reserveModal = reservationPage.getReserveModal()
             assertThat(reserveModal.root).isVisible()
             assertThat(reserveModal.firstSwitchReservationButton).isVisible()
-            assertThat(reserveModal.reserveAnotherButton).isVisible()
-            reserveModal.reserveAnotherButton.click()
+            assertThat(reserveModal.reserveANewSpace).isVisible()
+            reserveModal.reserveANewSpace.click()
 
             // click send to trigger validation
             val formPage = BoatSpaceFormPage(page)
@@ -174,9 +174,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -261,9 +262,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -318,9 +320,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -454,9 +457,10 @@ class ReserveBoatSpaceTest : ReserveTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -475,8 +479,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val reserveModal = reservationPage.getReserveModal()
             assertThat(reserveModal.root).isVisible()
             assertThat(reserveModal.firstSwitchReservationButton).isVisible()
-            assertThat(reserveModal.reserveAnotherButton).isVisible()
-            reserveModal.reserveAnotherButton.click()
+            assertThat(reserveModal.reserveANewSpace).isVisible()
+            reserveModal.reserveANewSpace.click()
 
             val formPage = BoatSpaceFormPage(page)
             val organizationSection = formPage.getOrganizationSection()
@@ -705,8 +709,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val reserveModal = reservationPage.getReserveModal()
         assertThat(reserveModal.root).isVisible()
         assertThat(reserveModal.firstSwitchReservationButton).isVisible()
-        assertThat(reserveModal.reserveAnotherButton).isVisible()
-        reserveModal.reserveAnotherButton.click()
+        assertThat(reserveModal.reserveANewSpace).isVisible()
+        reserveModal.reserveANewSpace.click()
 
         val formPage = BoatSpaceFormPage(page)
         val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
@@ -800,8 +804,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val reserveModal = reservationPage.getReserveModal()
         assertThat(reserveModal.root).isVisible()
         assertThat(reserveModal.firstSwitchReservationButton).isVisible()
-        assertThat(reserveModal.reserveAnotherButton).isVisible()
-        reserveModal.reserveAnotherButton.click()
+        assertThat(reserveModal.reserveANewSpace).isVisible()
+        reserveModal.reserveANewSpace.click()
 
         val formPage = BoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()
@@ -878,8 +882,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val reserveModal = reservationPage.getReserveModal()
         assertThat(reserveModal.root).isVisible()
         assertThat(reserveModal.firstSwitchReservationButton).isVisible()
-        assertThat(reserveModal.reserveAnotherButton).isVisible()
-        reserveModal.reserveAnotherButton.click()
+        assertThat(reserveModal.reserveANewSpace).isVisible()
+        reserveModal.reserveANewSpace.click()
 
         val formPage = BoatSpaceFormPage(page)
 

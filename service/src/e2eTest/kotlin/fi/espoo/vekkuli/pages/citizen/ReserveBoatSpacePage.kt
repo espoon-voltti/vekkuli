@@ -93,10 +93,10 @@ class ReserveBoatSpacePage(
         val root: Locator
     ) {
         val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
-        val reserveAnotherButton =
+        val reserveANewSpace =
             root.getByRole(
                 AriaRole.BUTTON,
-                Locator.GetByRoleOptions().setName("Varaan toisen paikan").setExact(true)
+                Locator.GetByRoleOptions().setName("Varaa uusi paikka").setExact(true)
             )
         val switchReservationButtons =
             root
