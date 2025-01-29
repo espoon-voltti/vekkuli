@@ -17,7 +17,8 @@ export type QueryKeyPrefix =
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      networkMode: 'always'
+      networkMode: 'always',
+      refetchOnWindowFocus: false
     },
     mutations: {
       networkMode: 'always'
