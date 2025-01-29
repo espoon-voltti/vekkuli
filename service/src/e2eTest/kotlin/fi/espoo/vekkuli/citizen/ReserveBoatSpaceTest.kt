@@ -8,10 +8,7 @@ import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
-import fi.espoo.vekkuli.utils.mockTimeProvider
-import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
-import fi.espoo.vekkuli.utils.startOfTrailerReservationPeriod
-import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
+import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -187,9 +184,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    fun `reserving an all year storage for buck places`() {
+    fun `reserving an all year storage for buck places as Espoo citizen`() {
         try {
-            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriodForOthers)
             val citizenHomePage = CitizenHomePage(page)
             citizenHomePage.loginAsLeoKorhonen()
             citizenHomePage.navigateToPage()
@@ -208,6 +205,40 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             reservationPage.getSearchResultsSection().firstReserveButton.click()
 
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit {
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")
+                getWinterStorageTypeSection().buckWithTentStorageTypeRadio.click()
+                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys suojateltalla")
+            }
+
+            PaymentPage(page).payReservation()
+            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `reserving an all year storage for buck places as non-Espoo citizen`() {
+        try {
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsMarkoKuusinen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.storageRadio.click()
+
+            val storageFilterSection = filterSection.getStorageFilterSection()
+            storageFilterSection.buckRadio.click()
+            storageFilterSection.widthInput.fill("1")
+            storageFilterSection.lengthInput.fill("3")
+
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
             val form = BoatSpaceFormPage(page)
             form.fillFormAndSubmit {
                 assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Pukkisäilytys")

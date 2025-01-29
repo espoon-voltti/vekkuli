@@ -78,6 +78,19 @@ const devUsers: CitizenUser[] = [
     municipalityCode: 398,
     postOffice: { fi: 'Lahti', sv: 'Lahtis' },
     dataProtection: false
+  },
+  {
+    nationalId: '290991-993F',
+    firstName: 'Marko',
+    lastName: 'Kuusinen',
+    postalCode: '00270',
+    address: {
+      fi: 'Kuusitie 21',
+      sv: 'Granvägen 21'
+    },
+    municipalityCode: 91,
+    postOffice: { fi: 'Helsinki', sv: 'Helsingfors' },
+    dataProtection: false
   }
 ]
 

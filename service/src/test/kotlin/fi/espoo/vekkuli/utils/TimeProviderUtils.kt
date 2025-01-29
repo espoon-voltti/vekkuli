@@ -21,6 +21,7 @@ val startOfStorageRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 15, 12,
 val endDateWithinMonthOfSlipRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
 val endDateWithinMonthOfWinterRenewWindow: LocalDate = LocalDate.of(2025, 8, 25)
 
+// Espoo citizen
 val startOfSlipReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
 val startOfWinterReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 1, 12, 0, 0)
 val startOfStorageReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)
@@ -29,6 +30,9 @@ val startOfTrailerReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 5, 1
 val startOfSlipSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
 val startOfWinterSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 1, 12, 0, 0)
 val startOfStorageSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 1, 12, 0, 0)
+
+// Others
+val startOfStorageReservationPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)
 
 val startOfSlipSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
 val startOfWinterSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)
