@@ -152,14 +152,13 @@ export default React.memo(function Reservation({
             />
           </Column>
           <Column>
-            {boatSpace.type !== 'Winter' && (
+            {boatSpace.type === 'Slip' ? (
               <TextField
                 label="Varuste"
                 value={i18n.boatSpace.amenities[reservation.boatSpace.amenity]}
                 readonly={true}
               />
-            )}
-            {boatSpace.type === 'Winter' && (
+            ) : (
               <TextField
                 label="Säilytystapa"
                 value={

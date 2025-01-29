@@ -225,32 +225,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `reserving an all year storage for trailer places`() {
         try {
-            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
-            val citizenHomePage = CitizenHomePage(page)
-            citizenHomePage.loginAsLeoKorhonen()
-            citizenHomePage.navigateToPage()
-            citizenHomePage.languageSelector.click()
-            citizenHomePage.languageSelector.getByText("Suomi").click()
-            val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.navigateToPage()
-
-            val filterSection = reservationPage.getFilterSection()
-            filterSection.storageRadio.click()
-
-            val storageFilterSection = filterSection.getStorageFilterSection()
-            storageFilterSection.trailerRadio.click()
-            storageFilterSection.widthInput.fill("1")
-            storageFilterSection.lengthInput.fill("3")
-
-            reservationPage.getSearchResultsSection().firstReserveButton.click()
-            val form = BoatSpaceFormPage(page)
-            form.fillFormAndSubmit {
-                assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
-                getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
-            }
-
-            PaymentPage(page).payReservation()
-            assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+            ReserveBoatSpacePage(page).reserveStorageWithTrailerType(timeProvider)
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)

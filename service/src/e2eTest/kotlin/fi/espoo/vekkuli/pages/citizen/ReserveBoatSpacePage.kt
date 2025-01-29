@@ -2,9 +2,13 @@ package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
 
 class ReserveBoatSpacePage(
     page: Page
@@ -71,13 +75,18 @@ class ReserveBoatSpacePage(
     }
 
     class SearchResultsSection(
-        root: Locator
+        private val root: Locator
     ) {
         val harborHeaders = root.locator(".harbor-header")
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
         val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
         val b059ReserveButton = root.locator("tr:has-text('B 059')").locator("button:has-text('Varaa')")
         val b007ReserveButton = root.locator("tr:has-text('B 007')").locator("button:has-text('Varaa')")
+
+        internal fun reserveButtonByPlace(
+            section: String,
+            placeNumber: String,
+        ) = root.locator("tr:has-text('$section $placeNumber')").locator("button:has-text('Varaa')")
     }
 
     class ReserveModal(
@@ -145,14 +154,6 @@ class ReserveBoatSpacePage(
         slipFilterSection.lengthInput.fill("4")
     }
 
-    fun filterForStorageSpaceB007() {
-        val filterSection = getFilterSection()
-        filterSection.storageRadio.click()
-        val slipFilterSection = filterSection.getStorageFilterSection()
-        slipFilterSection.widthInput.fill("2")
-        slipFilterSection.lengthInput.fill("4")
-    }
-
     fun startReservingBoatSpaceB314() {
         filterForBoatSpaceB314()
         getSearchResultsSection().b314ReserveButton.click()
@@ -168,8 +169,32 @@ class ReserveBoatSpacePage(
         page.locator("tr:has-text('TRAILERI 012')").locator("button:has-text('Varaa')").click()
     }
 
-    fun startReservingStorageSpaceB007() {
-        filterForStorageSpaceB007()
-        page.locator("tr:has-text('B 007')").locator("button:has-text('Varaa')").click()
+    fun reserveStorageWithTrailerType(timeProvider: TimeProvider) {
+        mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+        val citizenHomePage = CitizenHomePage(page)
+        citizenHomePage.loginAsLeoKorhonen()
+        citizenHomePage.navigateToPage()
+        citizenHomePage.languageSelector.click()
+        citizenHomePage.languageSelector.getByText("Suomi").click()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+
+        val filterSection = reservationPage.getFilterSection()
+        filterSection.storageRadio.click()
+
+        val storageFilterSection = filterSection.getStorageFilterSection()
+        storageFilterSection.trailerRadio.click()
+        storageFilterSection.widthInput.fill("1")
+        storageFilterSection.lengthInput.fill("3")
+
+        reservationPage.getSearchResultsSection().firstReserveButton.click()
+        val form = BoatSpaceFormPage(page)
+        form.fillFormAndSubmit {
+            assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
+            getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+        }
+
+        PaymentPage(page).payReservation()
+        assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
     }
 }
