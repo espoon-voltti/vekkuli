@@ -36,7 +36,7 @@ export default React.memo(function ReserveModal({
     canReserveResult.status === 'CanReserveOnlyForOrganization'
   )
     modalButtons.push({
-      label: i18n.reservation.searchPage.modal.reserveAnotherPlace,
+      label: i18n.reservation.searchPage.modal.reserveNewSpace,
       type: 'primary',
       action: () => {
         return reserveSpace()

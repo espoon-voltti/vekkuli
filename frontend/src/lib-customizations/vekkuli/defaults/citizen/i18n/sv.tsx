@@ -152,7 +152,7 @@ const sv: Translations = {
         }
       },
       modal: {
-        reserveAnotherPlace: 'Boka en annan plats',
+        reserveNewSpace: 'Boka ny plats',
         reservingBoatSpace: 'Du håller på att boka en båtplats:',
         cannotReserveNewPlace:
           'Du har redan två båtplatser. Du kan inte boka en ny plats, men du kan byta din nuvarande plats.',

@@ -158,7 +158,7 @@ const en: Translations = {
         }
       },
       modal: {
-        reserveAnotherPlace: 'Reserve another place',
+        reserveNewSpace: 'Reserve a new space',
         reservingBoatSpace: 'You are reserving a boat space:',
         cannotReserveNewPlace:
           'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
