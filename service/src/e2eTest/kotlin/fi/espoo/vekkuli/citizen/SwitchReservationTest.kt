@@ -137,7 +137,7 @@ class SwitchReservationTest : ReserveTest() {
             reserveModal.cancelButton.click()
             assertThat(reserveModal.root).isHidden()
             searchResultsSection.firstReserveButton.click()
-            assertThat(reserveModal.reserveAnotherButton).isVisible()
+            assertThat(reserveModal.reserveANewSpace).isVisible()
         }
         reserveModal.firstSwitchReservationButton.click()
 

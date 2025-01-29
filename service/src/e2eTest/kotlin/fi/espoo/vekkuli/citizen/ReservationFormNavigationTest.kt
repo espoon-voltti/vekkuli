@@ -49,7 +49,7 @@ class ReservationFormNavigationTest : PlaywrightTest() {
         assertThat(reserveModal.root).isVisible()
 
         assertNoFullPageReload {
-            reserveModal.reserveAnotherButton.click()
+            reserveModal.reserveANewSpace.click()
             assertThat(BoatSpaceFormPage(page).header).isVisible()
         }
     }
