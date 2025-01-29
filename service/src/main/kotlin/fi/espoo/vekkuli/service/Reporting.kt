@@ -29,6 +29,9 @@ data class StickerReportRow(
     val ownership: String?,
     val startDate: String?,
     val endDate: String?,
+    val productCode: String?,
+    val totalCents: String?,
+    val paid: LocalDateTime?,
 )
 
 fun getStickerReport(
@@ -43,16 +46,22 @@ fun getStickerReport(
                 l.name AS harbor, CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                 bs.type AS place_type, bs.amenity, b.name AS boat_name, b.type AS boat_type,
                 bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm, b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm, b.weight_kg AS boat_weight_kg, b.registration_code, b.other_identification,
-                b.ownership, bsr.start_date, bsr.end_date
+                b.ownership, bsr.start_date, bsr.end_date,
+                price.name AS product_code,
+                p.total_cents,
+                p.paid
             FROM boat_space_reservation bsr
                 JOIN reserver r ON r.id = bsr.reserver_id
                 JOIN boat_space bs ON bs.id = bsr.boat_space_id
                 JOIN location l ON l.id = bs.location_id
+                JOIN payment p ON p.reservation_id = bsr.id
                 LEFT JOIN boat b ON b.id = bsr.boat_id
+                LEFT JOIN price ON price.id = bs.price_id
             WHERE 
                 bsr.reserver_id IS NOT NULL
                 AND :reportDate::date >= bsr.start_date 
                 AND :reportDate::date <= bsr.end_date
+                AND bsr.status = 'Confirmed'
             """.trimIndent()
         )
             .bind("reportDate", reportDate)
@@ -81,7 +90,10 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             "veneen paino",
             "veneen rekisterinumero",
             "muu tunniste",
-            "omistussuhde"
+            "omistussuhde",
+            "maksuluokka",
+            "maksupäivä",
+            "hinta"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -107,6 +119,9 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.otherIdentification)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(ownershipStatusToText(report.ownership))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -158,7 +173,7 @@ fun getBoatSpaceReport(
                 coalesce(m.name, '') AS municipality,
                 b.registration_code,
                 p.total_cents,
-                p.product_code,
+                price.name AS product_code,
                 bsr.termination_timestamp,
                 bsr.termination_reason,
                 bsr.start_date,
@@ -170,6 +185,7 @@ fun getBoatSpaceReport(
                  LEFT JOIN payment p ON p.reservation_id = bsr.id
                  LEFT JOIN boat b ON b.id = bsr.boat_id
                  LEFT JOIN municipality m ON m.code = r.municipality_code
+                 LEFT JOIN price ON price.id = bs.price_id
             WHERE
                 bsr.start_date is NULL OR
                 (:reportDate::date >= bsr.start_date

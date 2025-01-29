@@ -4,10 +4,15 @@ import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationRea
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.Payment
+import fi.espoo.vekkuli.domain.PaymentStatus
+import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.repository.JdbiPaymentRepository
 import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -30,6 +35,9 @@ import java.util.*
 )
 @ActiveProfiles("test")
 abstract class IntegrationTestBase {
+    @Autowired
+    private lateinit var jdbiPaymentRepository: JdbiPaymentRepository
+
     @Autowired
     protected lateinit var jdbi: Jdbi
 
@@ -160,11 +168,11 @@ abstract class IntegrationTestBase {
                 .createUpdate(
                     """
                     INSERT INTO boat_space_reservation (
-                        reserver_id, boat_space_id, start_date, end_date, created, updated, 
+                        id, reserver_id, boat_space_id, start_date, end_date, created, updated, 
                         status, boat_id, employee_id, acting_citizen_id, validity, original_reservation_id, 
                         termination_reason, termination_comment, termination_timestamp, trailer_id, storage_type
                     ) VALUES (
-                        :reserverId, :boatSpaceId, :startDate, :endDate, :created, :updated, 
+                        :id, :reserverId, :boatSpaceId, :startDate, :endDate, :created, :updated, 
                         :status, :boatId, :employeeId, :actingCitizenId, :validity, :originalReservationId, 
                         :terminationReason, :terminationComment, :terminationTimestamp, :trailerId, :storageType
                     )
@@ -173,4 +181,31 @@ abstract class IntegrationTestBase {
                 .execute()
         }
     }
+
+    data class DevPayment(
+        val reserverId: UUID,
+        val paymentType: PaymentType = PaymentType.OnlinePayment,
+        val status: PaymentStatus = PaymentStatus.Success,
+        val reference: String = "",
+        val totalCents: Int = 100,
+        val vatPercentage: Double = 25.5,
+        val productCode: String = "TestProduct1",
+        val reservationId: Int,
+        val paid: LocalDateTime? = LocalDateTime.now()
+    )
+
+    fun insertDevPayment(payment: DevPayment): Payment =
+        jdbiPaymentRepository.insertPayment(
+            CreatePaymentParams(
+                reserverId = payment.reserverId,
+                reference = payment.reference,
+                totalCents = payment.totalCents,
+                vatPercentage = payment.vatPercentage,
+                productCode = payment.productCode,
+                paymentType = payment.paymentType,
+                status = payment.status,
+                paid = payment.paid
+            ),
+            payment.reservationId
+        )
 }
