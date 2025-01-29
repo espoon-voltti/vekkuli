@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.citizen
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.controllers.UserType
+import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
@@ -171,6 +172,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             // Now we should be on the confirmation page
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
@@ -179,6 +181,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                         0
                     ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
+
+            assertCorrectPaymentForReserver("korhonen", PaymentStatus.Success, "Haukilahti B314", "418,00", "")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -537,7 +541,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
             // Email to citizen
             assertTrue(
                 SendEmailServiceMock.emails.any {
-                    it.toString().contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
+                    it
+                        .toString()
+                        .contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
                 }
             )
 
@@ -547,6 +553,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                     it.toString().contains("foo@bar.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
                 }
             )
+
+            assertCorrectPaymentForReserver("Espoon Pursiseura", PaymentStatus.Success, "Haukilahti B314", "418,00", "")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -643,11 +651,12 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
     @Test
     fun `reserving a boat space slip as a citizen with a 50 percent discount should halve the total price`() {
+        val reserverName = "Virtanen"
         val discount = 50
         val boatSpacePrice = "418,00"
         val expectedPrice = "209,00"
         try {
-            setDiscountForReserver(page, "Virtanen", discount)
+            setDiscountForReserver(page, reserverName, discount)
             val formPage = fillReservationInfoAndAssertCorrectDiscount(discount, expectedPrice, boatSpacePrice)
             val submitButton = formPage.submitButton
             submitButton.click()
@@ -667,6 +676,14 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
             assertThat(paymentDiscountText).containsText("$discount %")
             assertThat(paymentDiscountText).containsText("$expectedPrice €")
+
+            assertCorrectPaymentForReserver(
+                reserverName,
+                PaymentStatus.Success,
+                "Haukilahti B314",
+                expectedPrice,
+                "Hinnassa huomioitu $discount% alennus."
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -674,11 +691,12 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
     @Test
     fun `reserving a boat space slip as a citizen with a 100 percent discount should not require payment`() {
+        val reserverName = "Virtanen"
         val discount = 100
         val expectedPrice = "0,00"
         val boatSpacePrice = "418,00"
         try {
-            setDiscountForReserver(page, "Virtanen", discount)
+            setDiscountForReserver(page, reserverName, discount)
             val formPage = fillReservationInfoAndAssertCorrectDiscount(discount, expectedPrice, boatSpacePrice)
             val confirmButton = formPage.confirmButton
             confirmButton.click()
@@ -696,7 +714,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 paymentReservedSpaceSection.fields.getField("Hinta").last()
             ).containsText("Yhteensä: $boatSpacePrice €")
 
-            val paymentDiscountText = paymentPage.getByDataTestId("reservation-info-text")
+            val paymentDiscountText = confirmationPage.getByDataTestId("reservation-info-text")
             assertThat(paymentDiscountText).containsText("$discount %")
             assertThat(paymentDiscountText).containsText("$expectedPrice €")
 
@@ -709,13 +727,20 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 ).contains("test@example.com with subject Vahvistus Espoon kaupungin venepaikan varauksesta")
             )
              */
+            assertCorrectPaymentForReserver(
+                reserverName,
+                PaymentStatus.Success,
+                "Haukilahti B314",
+                expectedPrice,
+                "Hinnassa huomioitu $discount% alennus."
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    fun discountIsAppliedFromSelectedReserver() {
+    fun discountIsAppliedFromSelectedOrganization() {
         val citizenDiscount = 50
         val organizationDiscount = 100
         val boatSpacePrice = "418,00"
@@ -735,6 +760,33 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val discountText = formPage.getByDataTestId("reservation-info-text")
             assertThat(discountText).containsText("$organizationDiscount %")
             assertThat(discountText).containsText("$expectedPriceForOrganization €")
+
+            organizationSection.phoneNumberInput.fill("123456789")
+            organizationSection.emailInput.fill("foo@bar.com")
+
+            page.getByText("Espoon lohi").click()
+
+            val confirmButton = formPage.confirmButton
+            confirmButton.click()
+
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            val paymentReservedSpaceSection = confirmationPage.getReservedSpaceSection()
+            assertThat(
+                paymentReservedSpaceSection.fields.getField("Hinta").last()
+            ).containsText("Yhteensä: $boatSpacePrice €")
+
+            val paymentDiscountText = confirmationPage.getByDataTestId("reservation-info-text")
+            assertThat(paymentDiscountText).containsText("$organizationDiscount %")
+            assertThat(paymentDiscountText).containsText("$expectedPriceForOrganization €")
+
+            assertCorrectPaymentForReserver(
+                "Espoon Pursiseura",
+                PaymentStatus.Success,
+                "Haukilahti B314",
+                expectedPriceForOrganization,
+                "Hinnassa huomioitu $organizationDiscount% alennus."
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }

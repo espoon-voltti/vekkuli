@@ -266,13 +266,18 @@ class ReservationFormService(
         )
 
         if (status == ReservationStatus.Confirmed) {
+            // when reservation is confirmed i.e. free in this case, it never goes to payment. We still create a payment row. Add info why
+            // the payment has zero amount.
+            val priceInfo = paymentService.getPriceInfo(CreationType.New, priceCents, reserver?.discountPercentage ?: 0)
             boatReservationService.updateReservationStatus(
                 reservationId,
                 status,
                 timeProvider.getCurrentDate(),
                 "",
+                priceInfo,
                 PaymentType.Other
             )
+            //sendReservationEmail(reservationId, CreationType.New)
         }
     }
 
@@ -297,8 +302,8 @@ class ReservationFormService(
             )
         }
         val successResultData = (canRenewResult as ReservationResult.Success).data
-        // TODO: check discountPrice and confirm if doesn't requite payment
-        val revisedPriceWithPossibleDiscount = paymentService.calculatePriceWithDiscount(reservation)
+        val revisedPriceWithPossibleDiscount =
+            discountedPriceInCents(paymentService.calculatePrice(reservation), reservation.discountPercentage)
 
         val status =
             if (revisedPriceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
@@ -313,11 +318,16 @@ class ReservationFormService(
         )
 
         if (status == ReservationStatus.Confirmed) {
+            // when reservation is confirmed i.e. free in this case, it never goes to payment. We still create a payment row. Add info why
+            // the payment has zero amount.
+            val priceInfo = paymentService.getPriceInfo(CreationType.Renewal, reservation.priceCents, reservation.discountPercentage)
+
             boatReservationService.updateReservationStatus(
                 reservationId,
                 status,
                 timeProvider.getCurrentDate(),
                 "",
+                priceInfo,
                 PaymentType.Other
             )
             boatReservationService.markReservationEnded(originalReservation.id)
@@ -347,7 +357,9 @@ class ReservationFormService(
             throw Forbidden("Citizen can not switch reservation")
         }
 
-        val revisedPriceWithPossibleDiscount = paymentService.calculatePriceWithDiscount(reservation)
+        val revisedPrice = paymentService.calculatePrice(reservation)
+        val revisedPriceWithPossibleDiscount =
+            discountedPriceInCents(revisedPrice, reservation.discountPercentage)
 
         val status =
             if (revisedPriceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
@@ -362,11 +374,16 @@ class ReservationFormService(
         )
 
         if (status == ReservationStatus.Confirmed) {
+            // when reservation is confirmed i.e. free in this case, it never goes to payment. We still create a payment row. Add info why
+            // the payment has zero amount.
+            val priceInfo = paymentService.getPriceInfo(CreationType.Switch, revisedPrice, reservation.discountPercentage)
+
             boatReservationService.updateReservationStatus(
                 reservationId,
                 status,
                 timeProvider.getCurrentDate(),
                 "",
+                priceInfo,
                 PaymentType.Other
             )
             boatReservationService.markReservationEnded(originalReservation.id)

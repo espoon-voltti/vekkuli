@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
+import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.baseUrlWithFinnishLangParam
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.utils.*
@@ -29,6 +30,13 @@ class SwitchReservationTest : ReserveTest() {
             paymentPage.nordeaSuccessButton.click()
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            assertCorrectPaymentForReserver(
+                "korhonen",
+                PaymentStatus.Success,
+                "Haukilahti D013",
+                "150,81",
+                "Paikan vaihto. Maksettu vain erotus."
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -51,6 +59,13 @@ class SwitchReservationTest : ReserveTest() {
 
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            assertCorrectPaymentForReserver(
+                "korhonen",
+                PaymentStatus.Success,
+                "Haukilahti D001",
+                "0,00",
+                "Paikan vaihto. Ei suoritusta, paikoilla sama hinta."
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -388,6 +403,13 @@ class SwitchReservationTest : ReserveTest() {
             assertThat(paymentDiscountText).containsText("erotus $expectedDifference €")
             assertThat(paymentDiscountText).containsText("$discount %")
             assertThat(paymentDiscountText).containsText("$expectedPrice €")
+            assertCorrectPaymentForReserver(
+                "virtanen",
+                PaymentStatus.Success,
+                "Haukilahti D013",
+                expectedPrice,
+                "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus."
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }

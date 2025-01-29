@@ -40,21 +40,17 @@ class BoatSpaceSwitchService(
     fun isSwitchedReservation(reservation: BoatSpaceReservationDetails): Boolean = reservation.creationType == CreationType.Switch
 
     // Returns the total payable amount of the new reservation. Can be negative
-    fun getRevisedPrice(reservation: ReservationWithDependencies): Int {
-        if (reservation.originalReservationId == null) {
+    fun getRevisedPrice(
+        originalReservationId: Int?,
+        priceInCents: Int
+    ): Int {
+        if (originalReservationId == null) {
             throw BadRequest("Original reservation not found")
         }
-        return getRevisedPrice(reservation.priceCents, reservation.originalReservationId)
+        return countRevisedPrice(priceInCents, originalReservationId)
     }
 
-    fun getRevisedPrice(reservation: BoatSpaceReservationDetails): Int {
-        if (reservation.originalReservationId == null) {
-            throw BadRequest("Original reservation not found")
-        }
-        return getRevisedPrice(reservation.priceCents, reservation.originalReservationId)
-    }
-
-    private fun getRevisedPrice(
+    private fun countRevisedPrice(
         newReservationPriceCents: Int,
         originalReservationId: Int
     ): Int {

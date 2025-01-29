@@ -505,6 +505,7 @@ class BoatReservationService(
         reservationStatus: ReservationStatus,
         paymentDate: LocalDate,
         paymentStatusText: String,
+        priceInfo: String = "",
         paymentType: PaymentType = PaymentType.Invoice
     ) {
         val reservation =
@@ -536,7 +537,8 @@ class BoatReservationService(
                         productCode = "?",
                         status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
                         paid = paymentDate.atStartOfDay(),
-                        paymentType = paymentType
+                        paymentType = paymentType,
+                        priceInfo = priceInfo,
                     )
                 paymentService.insertPayment(paymentParams, reservationId)
             }

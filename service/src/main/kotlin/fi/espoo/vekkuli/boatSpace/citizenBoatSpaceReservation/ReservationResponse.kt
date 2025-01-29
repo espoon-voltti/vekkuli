@@ -347,7 +347,7 @@ class ReservationResponseMapper(
     private fun getRevisedPriceInCents(reservation: ReservationWithDependencies): Int =
         when (reservation.creationType) {
             CreationType.Switch -> {
-                boatSpaceSwitchService.getRevisedPrice(reservation)
+                boatSpaceSwitchService.getRevisedPrice(reservation.originalReservationId, reservation.priceCents)
             }
 
             else -> {
