@@ -1,3 +1,4 @@
+import { UpdateCitizenBoatInput } from 'citizen-frontend/api-types/boat'
 import {
   Boat,
   BoatType,
@@ -15,8 +16,6 @@ import {
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
-
-import { UpdateCitizenBoatInput } from '../../../api-types/boat'
 
 export const boatForm = mapped(
   object({

@@ -10,7 +10,7 @@ import { Boat } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
 import { useMutation } from 'lib-common/query'
 
-import { updateBoatInformationMutation } from '../../queries'
+import { updateBoatInformationMutation } from '../../citizen/queries'
 
 import { boatForm, transformBoatToFormBoat } from './formDefinitions'
 

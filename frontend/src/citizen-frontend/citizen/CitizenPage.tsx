@@ -3,6 +3,7 @@ import { MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
+import Boats from 'citizen-frontend/components/boat/Boats'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
@@ -11,7 +12,6 @@ import {
   citizenExpiredReservationsQuery,
   citizenOrganizationQuery
 } from './queries'
-import Boats from './sections/boats/Boats'
 import CitizenInformation from './sections/citizenInformation'
 import ExpiredReservations from './sections/reservations/ExpiredReservations'
 import Reservations from './sections/reservations/Reservations'

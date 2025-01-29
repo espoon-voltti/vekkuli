@@ -7,7 +7,7 @@ import { citizenBoatsQuery } from 'citizen-frontend/shared/queries'
 import { Boat } from 'citizen-frontend/shared/types'
 import { useQueryResult } from 'lib-common/query'
 
-import { citizenActiveReservationsQuery } from '../../queries'
+import { citizenActiveReservationsQuery } from '../../citizen/queries'
 
 import BoatComponent from './Boat'
 import BoatsNotInReservation from './BoatsNotInReservation'
