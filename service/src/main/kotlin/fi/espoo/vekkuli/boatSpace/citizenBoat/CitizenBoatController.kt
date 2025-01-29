@@ -7,7 +7,7 @@ import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/citizen/boat")
+@RequestMapping("/api/citizen/boats")
 class CitizenBoatController(
     private val citizenBoatService: CitizenBoatService,
 ) {
