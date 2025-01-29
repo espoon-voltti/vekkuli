@@ -20,13 +20,19 @@ export default React.memo(function StepIndicator({ step }: StepIndicatorProps) {
   const currentStepSequence = steps.indexOf(step)
   return (
     <div className="container" id="step-indicator">
-      <div className="columns is-mobile" id="step-indicator-step">
+      <div
+        className="columns is-mobile"
+        id="step-indicator-step"
+        role="list"
+        aria-label={i18n.components.stepIndicator.title}
+      >
         {steps.map((s, index) => (
           <Step
             key={s}
             step={s}
             visited={index <= currentStepSequence}
             i18n={i18n}
+            currentStep={index === currentStepSequence}
           />
         ))}
       </div>
@@ -38,14 +44,24 @@ type StepProps = {
   step: Step
   visited: boolean
   i18n: Translations
+  currentStep: boolean
 }
 
-const Step = React.memo(function Step({ step, visited, i18n }: StepProps) {
+const Step = React.memo(function Step({
+  step,
+  visited,
+  i18n,
+  currentStep
+}: StepProps) {
   return (
-    <div className="column">
+    <div
+      className="column"
+      aria-current={currentStep ? 'page' : undefined}
+      role="listitem"
+    >
       <div
-        id="chooseBoatSpace"
         className={classNames('step mb-m', { visited: visited })}
+        aria-hidden={true}
       />
       <p className="is-uppercase has-text-centered title is-7">
         {i18n.reservation.steps[step]}

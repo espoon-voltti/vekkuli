@@ -82,6 +82,9 @@ const components: Translations = {
     collapse: () => '',
     expandDropdown: ''
   },
+  stepIndicator: {
+    title: 'Bokningssteg'
+  },
   validationErrors: {
     required: 'Värde saknas',
     requiredSelection: 'Val saknas',

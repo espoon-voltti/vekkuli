@@ -85,6 +85,9 @@ const components: Translations = {
     collapse: (opt: string) => `Sulje vaihtoehdon ${opt} alaiset vaihtoehdot`,
     expandDropdown: 'Avaa'
   },
+  stepIndicator: {
+    title: 'Varauksen vaiheet'
+  },
   validationErrors: {
     required: 'Tämä kenttä on pakollinen',
     requiredSelection: 'Valinta puuttuu',

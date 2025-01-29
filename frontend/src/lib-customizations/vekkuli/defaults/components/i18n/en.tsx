@@ -82,6 +82,9 @@ const components: Translations = {
     collapse: () => '',
     expandDropdown: ''
   },
+  stepIndicator: {
+    title: 'Reservation steps'
+  },
   validationErrors: {
     required: 'Value missing',
     requiredSelection: 'Please select one of the options',
