@@ -83,6 +83,9 @@ export interface Translations {
     collapse: (opt: string) => string
     expandDropdown: string
   }
+  stepIndicator: {
+    title: string
+  }
   validationErrors: {
     required: string
     requiredSelection: string
