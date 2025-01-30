@@ -14,10 +14,7 @@ class MemoService(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    fun getMemos(
-        reserverId: UUID,
-        category: ReservationType
-    ): List<ReserverMemoWithDetails> = memoRepository.getMemos(reserverId, category)
+    fun getMemos(reserverId: UUID): List<ReserverMemoWithDetails> = memoRepository.getMemos(reserverId, ReservationType.Marine)
 
     fun getMemo(id: Int): ReserverMemoWithDetails? = memoRepository.getMemo(id)
 
@@ -33,20 +30,18 @@ class MemoService(
     fun insertMemo(
         reserverId: UUID,
         userId: UUID,
-        category: ReservationType,
         content: String
     ): ReserverMemoWithDetails? {
-        val memo = memoRepository.insertMemo(reserverId, userId, category, content)
+        val memo = memoRepository.insertMemo(reserverId, userId, content, ReservationType.Marine)
         return memoRepository.getMemo(memo.id)
     }
 
     fun insertSystemMemo(
         reserverId: UUID,
-        category: ReservationType,
         content: String
     ): ReserverMemoWithDetails? {
         try {
-            return insertMemo(reserverId, AuthenticatedUser.systemUserId, category, content)
+            return insertMemo(reserverId, AuthenticatedUser.systemUserId, content)
         } catch (e: Exception) {
             logger.error(e) { "MEMO ERROR ${e.message}" }
         }

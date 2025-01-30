@@ -86,8 +86,8 @@ class JdbiMemoRepository(
     override fun insertMemo(
         reserverId: UUID,
         userId: UUID,
-        category: ReservationType,
-        content: String
+        content: String,
+        category: ReservationType
     ): ReserverMemo =
         jdbi.withHandleUnchecked { handle ->
             val query =

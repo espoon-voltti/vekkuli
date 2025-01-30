@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli
 
-import fi.espoo.vekkuli.domain.ReservationType
 import fi.espoo.vekkuli.service.MemoService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -20,9 +19,9 @@ class MemoServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should store and load notes`() {
-        val memo = memoService.insertMemo(this.citizenIdLeo, userId, ReservationType.Marine, "Test note")
+        val memo = memoService.insertMemo(this.citizenIdLeo, userId, "Test note")
         assertNotNull(memo)
-        val memos = memoService.getMemos(this.citizenIdLeo, ReservationType.Marine)
+        val memos = memoService.getMemos(this.citizenIdLeo)
         val found = memos.find { it.id == memo.id }
         assertNotNull(found)
         assertEquals(memo, found)
@@ -30,7 +29,7 @@ class MemoServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should delete a note`() {
-        val memo = memoService.insertMemo(this.citizenIdLeo, userId, ReservationType.Marine, "Test note")
+        val memo = memoService.insertMemo(this.citizenIdLeo, userId, "Test note")
         assertNotNull(memo)
         memoService.removeMemo(memo.id)
         assertNull(memoService.getMemo(memo.id))
@@ -38,7 +37,7 @@ class MemoServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should update a note`() {
-        val memo = memoService.insertMemo(this.citizenIdLeo, userId, ReservationType.Marine, "Test note")
+        val memo = memoService.insertMemo(this.citizenIdLeo, userId, "Test note")
         assertNotNull(memo)
         memoService.updateMemo(memo.id, userId, "Updated note")
         val updated = memoService.getMemo(memo.id)

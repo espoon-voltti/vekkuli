@@ -460,7 +460,7 @@ class BoatReservationService(
         if (reservation?.reserverId == null) {
             throw IllegalArgumentException("No reservation or reservation has no reserver")
         }
-        memoService.insertMemo(reservation.reserverId, userId, ReservationType.Marine, infoText)
+        memoService.insertMemo(reservation.reserverId, userId, infoText)
     }
 
     fun acknowledgeWarningForBoat(
@@ -699,6 +699,6 @@ class BoatReservationService(
 
         val infoText = "${reserver?.firstName} ${reserver?.lastName} vaihtoi paikan. Vanha paikka: $placeName. Uusi paikka: $newPlaceName."
 
-        memoService.insertSystemMemo(userId, ReservationType.Marine, infoText)
+        memoService.insertSystemMemo(userId, infoText)
     }
 }
