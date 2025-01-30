@@ -443,9 +443,9 @@ class ReserverDetailsReservationsContainer(
                     <td ${addTestId("payment-status")}>${paymentStatusToText(p.paymentStatus.toString())}</td>
                     <td ${addTestId("place")}>${p.harborName} ${p.place}</td>
                     <td>${boatSpaceTypeToText(p.boatSpaceType.toString())}</td>
-                    <td ${addTestId("payment-reference")}>${getReference(p) ?: ""}</td>
+                    <td>${p.paymentReference}</td>
                     <td>${paymentTypeToText(p.paymentType.toString())}</td>
-                    <td class='description'>${p.invoiceReference ?: ""}</td>
+                    <td ${addTestId("payment-reference")} class='description'>${getReference(p) ?: ""}</td>
                     <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
                     <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
                     <td ${addTestId("payment-amount")}>${formatInt(p.totalCents)}</td>

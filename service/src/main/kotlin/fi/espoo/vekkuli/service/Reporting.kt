@@ -463,7 +463,7 @@ fun paymentTypeToText(paymentType: String?): String {
 
 fun getReference(p: PaymentHistory): String? =
     if (p.paymentType == PaymentType.Invoice) {
-        p.paymentReference
+        p.invoiceReference
     } else {
         p.priceInfo
     }
