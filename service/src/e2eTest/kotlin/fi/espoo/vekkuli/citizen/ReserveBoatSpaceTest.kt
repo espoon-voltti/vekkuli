@@ -610,19 +610,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
             reservationPage.getReserveModal().reserveANewSpace.click()
 
             val formPage = BoatSpaceFormPage(page)
-            val organizationSection = formPage.getOrganizationSection()
 
-            page.getByText("Olivian vene").click()
-
-            val citizenSection = formPage.getCitizenSection()
-            citizenSection.emailInput.fill("test@example.com")
-            citizenSection.phoneInput.fill("123456789")
-
-            val userAgreementSection = formPage.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-
-            formPage.submitButton.click()
+            formPage.fillFormAndSubmit()
 
             val paymentPage = PaymentPage(page)
             assertThat(paymentPage.paymentProviders).isVisible()
@@ -635,6 +624,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             reservationPage.getSearchResultsSection().firstReserveButton.click()
             reservationPage.getReserveModal().reserveANewSpace.click()
 
+            val organizationSection = formPage.getOrganizationSection()
             assertThat(organizationSection.reserveForOrganization).isVisible()
             assertThat(page.getByText("Espoon lohi")).isVisible()
             assertThat(page.getByText("Espoon kuha")).isVisible()
