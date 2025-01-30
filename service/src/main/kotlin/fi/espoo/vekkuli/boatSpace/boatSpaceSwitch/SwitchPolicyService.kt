@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceSwitch
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.config.validateReservationIsActive
-import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -117,20 +116,15 @@ class SwitchPolicyService(
 
     fun citizenCanSwitchReservation(
         originalReservationId: Int,
-        actingCitizenId: UUID,
-        spaceType: BoatSpaceType,
+        actingCitizenId: UUID
     ): ReservationResult {
         val reserver = reserverRepo.getReserverById(actingCitizenId) ?: throw BadRequest("Reserver not found")
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(originalReservationId) ?: throw BadRequest("Reservation not found")
 
-        if (reservation.type != spaceType) {
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
         // Check the period is active
-        if (seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), spaceType)) {
-            return return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        if (seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), reservation.type)) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
         // It should have the same dates as the original

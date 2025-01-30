@@ -196,8 +196,7 @@ class ReservationResponseMapper(
             if (reserverId !== null) {
                 switchPolicyService.citizenCanSwitchReservation(
                     reservationId,
-                    reserverId,
-                    boatSpace.type
+                    reserverId
                 ).success
             } else {
                 false
