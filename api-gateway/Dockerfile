@@ -1,5 +1,7 @@
 FROM node:20.11-bookworm-slim AS base
 
+ARG CACHE_BUST=2025-W05
+
 WORKDIR /app
 
 # Upgrade to the latest Yarn version
