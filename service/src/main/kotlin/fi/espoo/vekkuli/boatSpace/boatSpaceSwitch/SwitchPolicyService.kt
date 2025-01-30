@@ -18,55 +18,6 @@ class SwitchPolicyService(
     private val reserverRepo: ReserverRepository,
     private val boatSpaceRepository: BoatSpaceRepository
 ) {
-    fun employeeCanSwitchReservation(reservationId: Int): ReservationResult {
-        val reservation =
-            boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
-                ?: throw IllegalArgumentException("Reservation not found")
-
-        // Can switch only active reservations
-        if (!validateReservationIsActive(reservation, timeProvider.getCurrentDateTime())) {
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        // Employee can always renew the reservation
-        return ReservationResult.Success(
-            ReservationResultSuccess(
-                reservation.startDate,
-                reservation.endDate,
-                reservation.validity
-            )
-        )
-    }
-
-    fun employeeCanSwitchToReservation(
-        reservationId: Int,
-        targetSpaceId: Int
-    ): ReservationResult {
-        val reservation =
-            boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
-                ?: throw IllegalArgumentException("Reservation not found")
-        val boatSpace = boatSpaceRepository.getBoatSpace(targetSpaceId) ?: throw BadRequest("Boat space not found")
-
-        // Can only switch to the same type of space
-        if (reservation.type != boatSpace.type) {
-            return return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        // Can switch only active reservations
-        if (!validateReservationIsActive(reservation, timeProvider.getCurrentDateTime())) {
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        // Employee can always renew the reservation
-        return ReservationResult.Success(
-            ReservationResultSuccess(
-                reservation.startDate,
-                reservation.endDate,
-                reservation.validity
-            )
-        )
-    }
-
     fun citizenCanSwitchToReservation(
         originalReservationId: Int,
         actingCitizenId: UUID,
