@@ -66,12 +66,13 @@ export default React.memo(function Form({ reservation }: FormProperties) {
       initialFormState(
         i18n,
         boats,
+        organizationsBoats,
         reservation.reservation.citizen,
         reservation.reservation.boatSpace.type,
         municipalities,
         organizations,
-        searchState,
-        reservation
+        reservation,
+        searchState
       ),
     i18n.components.validationErrors,
     {

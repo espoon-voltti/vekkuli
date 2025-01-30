@@ -77,23 +77,28 @@ export type ReserveSpaceForm = typeof reserveSpaceForm
 export function initialFormState(
   i18n: Translations,
   boats: Boat[],
+  organizationBoats: Record<string, Boat[]>,
   reserver: Citizen | undefined,
   spaceType: BoatSpaceType,
   municipalities: Municipality[],
   organizations: Organization[],
-  storedState?: StoredSearchState,
-  unfinishedReservation?: Reservation
+  unfinishedReservation: Reservation,
+  storedState?: StoredSearchState
 ): StateOf<ReserveSpaceForm> {
+  const canCitizenReserveNew =
+    unfinishedReservation.reservation.canReserveNew ||
+    unfinishedReservation.reservation.creationType !== 'New'
   return {
     ...initialReserverFormState(reserver),
     organization: initialOrganizationFormState(
       i18n,
       municipalities,
-      organizations
+      organizations,
+      canCitizenReserveNew
     ),
     boat: initialBoatFormState(
       i18n,
-      boats,
+      canCitizenReserveNew ? boats : organizationBoats[organizations[0].id],
       spaceType,
       storedState,
       unfinishedReservation?.reservation.boat
@@ -102,8 +107,8 @@ export function initialFormState(
       i18n,
       spaceType,
       storedState,
-      unfinishedReservation?.reservation.boatSpace.amenity,
-      unfinishedReservation?.reservation.trailer
+      unfinishedReservation.reservation.boatSpace.amenity,
+      unfinishedReservation.reservation.trailer
     ),
     ...initialUserAgreementFormState(i18n)
   }

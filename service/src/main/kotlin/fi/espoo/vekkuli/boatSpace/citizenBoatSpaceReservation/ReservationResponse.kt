@@ -54,6 +54,7 @@ data class ReservationResponse(
     val storageType: StorageType?,
     val trailer: Trailer?,
     val creationType: CreationType,
+    val canReserveNew: Boolean,
     val canRenew: Boolean,
     val canSwitch: Boolean,
     val totalPriceInCents: Int,
@@ -192,6 +193,12 @@ class ReservationResponseMapper(
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservationWithDependencies)
         val trailer = getTrailer(reservationWithDependencies)
+        val canReserveNew =
+            if (citizen != null) {
+                seasonalService.canReserveANewSpace(citizen.id, boatSpace.type).success
+            } else {
+                false
+            }
 
         return ReservationResponse(
             id = reservationId,
@@ -212,6 +219,7 @@ class ReservationResponseMapper(
             trailer = formatTrailer(trailer),
             paymentDate = paymentDate,
             creationType = reservationWithDependencies.creationType,
+            canReserveNew = canReserveNew,
             canRenew = seasonalService.canRenewAReservation(reservationId).success,
             canSwitch = seasonalService.canSwitchReservation(reserverId, boatSpace.type, reservationId).success,
             totalPriceInCents = reservationWithDependencies.priceCents,

@@ -547,7 +547,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    fun `Organization cannot be selected if it's reservations are full`() {
+    fun `Organization cannot be selected on the reservation form if it's reservations are full`() {
         try {
             CitizenHomePage(page).loginAsOliviaVirtanen()
             // Olivia has already reserved 2 boat spaces, so we need to terminate a reservation
@@ -594,6 +594,42 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             assertThat(organizationSection.reserveForOrganization).isHidden()
             assertThat(page.getByText("Espoon pursiseura")).isHidden()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Citizen cannot be selected on the reservation form if it's reservations are full`() {
+        try {
+            CitizenHomePage(page).loginAsOliviaVirtanen()
+            // Reserve a second boat space for the organization
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            reservationPage.startReservingBoatSpaceB314()
+            reservationPage.getReserveModal().reserveANewSpace.click()
+
+            val formPage = BoatSpaceFormPage(page)
+
+            formPage.fillFormAndSubmit()
+
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.paymentProviders).isVisible()
+            paymentPage.nordeaSuccessButton.click()
+            assertThat(paymentPage.reservationSuccessNotification).isVisible()
+
+            // Go to the form, assert that citizen cannot be selected
+            reservationPage.navigateToPage()
+            reservationPage.filterForBoatSpaceB314()
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+            reservationPage.getReserveModal().reserveANewSpace.click()
+
+            val organizationSection = formPage.getOrganizationSection()
+            assertThat(organizationSection.reserveForOrganization).isVisible()
+            assertThat(page.getByText("Espoon lohi")).isVisible()
+            assertThat(page.getByText("Espoon kuha")).isVisible()
+            assertThat(page.getByText("Olivian vene")).isHidden()
+            assertThat(organizationSection.reserveForCitizen).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }

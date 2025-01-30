@@ -49,6 +49,7 @@ export type BoatSpaceReservation = {
   boat: Boat
   totalPriceInCents: number
   creationType: CreationType
+  canReserveNew: boolean
   allowedReservationOperations: ReservationOperation[]
   revisedPrice: RevisedPrice
 }
@@ -89,17 +90,18 @@ export type BoatSpaceReservationResponse = {
   boat: Boat
   creationType: CreationType
   totalPriceInCents: number
+  canReserveNew: boolean
   canRenew: boolean
   canSwitch: boolean
   revisedPrice: RevisedPrice
 }
 
 export type RevisedPrice = {
-  reserverType: ReserverType,
-  id?: string,
+  reserverType: ReserverType
+  id?: string
   name?: string
   discountPercentage: number
-  revisedPriceInEuro: string,
+  revisedPriceInEuro: string
   revisedPriceWithDiscountInEuro: string
 }
 
