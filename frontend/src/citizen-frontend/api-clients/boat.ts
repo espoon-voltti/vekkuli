@@ -13,7 +13,7 @@ export async function updateBoat({
   input
 }: UpdateBoatRequest): Promise<void> {
   await client.request<void>({
-    url: uri`/boat/${boatId}`.toString(),
+    url: uri`/boats/${boatId}`.toString(),
     method: 'PATCH',
     data: input
   })
@@ -21,7 +21,7 @@ export async function updateBoat({
 
 export async function deleteBoat(boatId: number): Promise<void> {
   await client.request({
-    url: uri`/current/boats/${boatId}`.toString(),
+    url: uri`/boats/${boatId}`.toString(),
     method: 'DELETE'
   })
 }

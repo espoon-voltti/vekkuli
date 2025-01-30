@@ -110,7 +110,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
 
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
-        val firstReservationSection = citizenDetailsPage.getReservationSection(1)
+        val firstReservationSection = citizenDetailsPage.getReservationSection(expectedTerminationLocation)
         // Opens up information from the first reservation and confirms it's the same we just reserved
         firstReservationSection.terminateButton.click()
         val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()

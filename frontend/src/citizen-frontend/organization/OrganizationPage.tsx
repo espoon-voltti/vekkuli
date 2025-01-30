@@ -17,6 +17,7 @@ import { organizationBoatsQuery } from '../shared/queries'
 import OrganizationInformation from './organizationInformation/OrganizationInformation'
 import {
   citizenOrganizationQuery,
+  deleteOrganizationBoatMutation,
   updateOrganizationBoatMutation
 } from './queries'
 import ExpiredReservations from './reservations/ExpiredReservations'
@@ -73,6 +74,7 @@ const Content = React.memo(function Content({
                 <Boats
                   boats={boats}
                   activeReservations={loadedActiveReservations}
+                  deleteMutation={deleteOrganizationBoatMutation}
                   updateMutation={updateOrganizationBoatMutation}
                 />
                 <ExpiredReservations reservations={loadedExpiredReservations} />

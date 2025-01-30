@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 
 import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { useTranslation } from 'citizen-frontend/localization'
-import { Boat } from 'citizen-frontend/shared/types'
+import { Boat, BoatId } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
 import { MutationDescription, useMutationResult } from 'lib-common/query'
 
@@ -12,15 +12,16 @@ import ConfirmDeleteBoatModal from './ConfirmDeleteBoatModal'
 import DeleteBoatFailedModal from './DeleteBoatFailedModal'
 import DeleteBoatSuccessModal from './DeleteBoatSuccessModal'
 import { initShowBoatsForm, showBoatsForm } from './formDefinitions'
-import { deleteBoatMutation } from './queries'
 
 type BoatsNotInreservationsProps = {
   boats: Boat[]
+  deleteMutation: MutationDescription<BoatId, void>
   updateMutation: MutationDescription<UpdateBoatRequest, void>
 }
 
 export default React.memo(function BoatsNotInreservations({
   boats,
+  deleteMutation,
   updateMutation
 }: BoatsNotInreservationsProps) {
   const i18n = useTranslation()
@@ -39,7 +40,7 @@ export default React.memo(function BoatsNotInreservations({
   const { show } = useFormFields(bind)
 
   const { mutateAsync: deleteBoat, isPending } =
-    useMutationResult(deleteBoatMutation)
+    useMutationResult(deleteMutation)
 
   return (
     <>
