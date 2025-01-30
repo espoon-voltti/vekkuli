@@ -19,7 +19,11 @@ data class AuthenticatedUser(
     val id: UUID,
     val type: String
 ) {
-    fun isSystemUser() = id == UUID.fromString("00000000-0000-0000-0000-000000000000")
+    companion object {
+        val systemUserId = UUID.fromString("00000000-0000-0000-0000-000000000000")
+    }
+
+    fun isSystemUser() = id == systemUserId // UUID.fromString("00000000-0000-0000-0000-000000000000")
 
     fun isCitizen() = type == "citizen"
 

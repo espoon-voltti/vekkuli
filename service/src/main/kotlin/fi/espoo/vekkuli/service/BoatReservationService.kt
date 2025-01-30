@@ -95,7 +95,8 @@ class BoatReservationService(
     private val trailerRepository: TrailerRepository,
     private val organizationService: OrganizationService,
     private val paymentRepository: PaymentRepository,
-    private val boatSpaceRepository: BoatSpaceRepository
+    private val boatSpaceRepository: BoatSpaceRepository,
+    private val reserverRepository: ReserverRepository
 ) {
     fun handlePaymentResult(
         params: Map<String, String>,
@@ -119,7 +120,7 @@ class BoatReservationService(
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
 
         handleReservationPaymentResult(stamp, paymentSuccess)
-        if (paymentSuccess) sendReservationEmail(reservation.id)
+        if (paymentSuccess) sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
 
         return PaymentProcessResult.Success(reservation)
     }
@@ -587,7 +588,7 @@ class BoatReservationService(
         return result
     }
 
-    fun sendReservationEmail(reservationId: Int) {
+    fun sendReservationEmailAndInsertMemoIfSwitch(reservationId: Int) {
         val reservation =
             getBoatSpaceReservation(reservationId)
                 ?: throw BadRequest("Reservation $reservationId not found")
@@ -595,7 +596,7 @@ class BoatReservationService(
             boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)
                 ?: throw BadRequest("Boat space ${reservation.boatSpaceId} not found")
         val isInvoiced = reservation.status == ReservationStatus.Invoiced
-        val placeName = "${boatSpace.locationName} ${boatSpace.section}${boatSpace.placeNumber}"
+        val placeName = "${reservation.locationName} ${reservation.place}"
 
         val placeTypeText =
             when (reservation.type) {
@@ -679,5 +680,25 @@ class BoatReservationService(
             emailSettings.recipients.map { Recipient(reservation.reserverId, it) },
             emailSettings.params
         )
+
+        if (reservation.creationType == CreationType.Switch) {
+            documentSwitchToMemo(reservation)
+        }
+    }
+
+    fun documentSwitchToMemo(reservation: BoatSpaceReservationDetails) {
+        val userId = reservation.actingCitizenId ?: reservation.reserverId
+        val reserver = reserverRepository.getCitizenById(userId)
+
+        val originalReservation =
+            getBoatSpaceReservation(reservation.originalReservationId ?: -1)
+                ?: throw BadRequest("Reservation ${reservation.originalReservationId} not found")
+
+        val placeName = "${reservation.locationName} ${reservation.place}"
+        val newPlaceName = "${originalReservation.locationName} ${originalReservation.place}"
+
+        val infoText = "${reserver?.firstName} ${reserver?.lastName} vaihtoi paikan. Vanha paikka: $placeName. Uusi paikka: $newPlaceName."
+
+        memoService.insertSystemMemo(userId, ReservationType.Marine, infoText)
     }
 }

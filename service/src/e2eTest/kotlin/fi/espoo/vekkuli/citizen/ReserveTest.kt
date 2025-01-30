@@ -50,7 +50,7 @@ open class ReserveTest : PlaywrightTest() {
         citizenDetails.paymentsNavi.click()
         assertThat(citizenDetails.paymentsTable).isVisible()
         val paymentRows = citizenDetails.paymentsTable.locator("tbody tr").all()
-        page.pause()
+
         val matchingRow =
             paymentRows.find { row ->
                 val paymentStatus = citizenDetails.getByDataTestId("payment-status", row).textContent()

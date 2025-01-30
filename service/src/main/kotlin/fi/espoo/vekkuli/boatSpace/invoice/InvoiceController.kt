@@ -194,7 +194,7 @@ class InvoiceController(
         }
         if (!input.markAsPaid) {
             reservationService.setReservationStatusToInvoiced(reservation.id)
-            boatReservationService.sendReservationEmail(reservation.id)
+            boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
         }
     }
 
