@@ -27,44 +27,6 @@ class CommonComponents(
 ) {
     fun t(key: String): String = messageUtil.getMessage(key)
 
-    fun languageSelection(): String {
-        val languageCode = localeUtil.getLocaleLanguageCode().uppercase()
-        // language=HTML
-        return (
-            """
-            <div class="dropdown is-hoverable" id="language-selection" >
-              <div class="dropdown-trigger">
-                <a class="dropdown-title" aria-haspopup="true" aria-controls="dropdown-menu">
-                    <span class="icon is-small">
-                        ${icons.globe}
-                      </span>
-                      <span class='pl-xs'>$languageCode</span>
-                    </a>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                   <a class="dropdown-item" href="?lang=fi">${
-                t(
-                    "lang.finnish"
-                )
-            }</a>
-                  <a class="dropdown-item" href="?lang=sv" >${
-                t(
-                    "lang.swedish"
-                )
-            }</a>
-                  <a class="dropdown-item" href="?lang=en">${
-                t(
-                    "lang.english"
-                )
-            }</a>
-                </div>
-              </div>
-            </div>
-            """.trimIndent()
-        )
-    }
-
     // language=HTML
     fun goBackButton(backUrl: String) =
         """

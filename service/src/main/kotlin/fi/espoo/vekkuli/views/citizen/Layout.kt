@@ -94,7 +94,6 @@ class Layout(
                         <h1>${t("home.title")}</h1>
                     </div>
                     <div class="columns">
-                            ${commonComponents.languageSelection()}
                             $menu 
                     </div>
                 </div>
