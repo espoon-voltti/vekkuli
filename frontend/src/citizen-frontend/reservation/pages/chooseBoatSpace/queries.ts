@@ -21,7 +21,8 @@ const reservationQueryKeys = createQueryKeys('free-spaces', {
 
 export const freeSpacesQuery = query({
   api: getFreeSpaces,
-  queryKey: reservationQueryKeys.searchFreeSpaces
+  queryKey: reservationQueryKeys.searchFreeSpaces,
+  options: { refetchOnWindowFocus: true }
 })
 
 export const reserveSpaceMutation = mutation({
