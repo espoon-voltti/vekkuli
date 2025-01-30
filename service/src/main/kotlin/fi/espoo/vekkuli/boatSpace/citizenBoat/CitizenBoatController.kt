@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.boatSpace.citizenTrailer
+package fi.espoo.vekkuli.boatSpace.citizenBoat
 
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
@@ -11,25 +11,28 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/citizen/trailer")
-class TrailerController(
-    private val trailerService: TrailerService,
+@RequestMapping("/api/citizen/boat")
+class CitizenBoatController(
+    private val citizenBoatService: CitizenBoatService,
 ) {
     private val logger = KotlinLogging.logger {}
 
-    @PatchMapping("/{trailerId}")
-    fun patchTrailer(
-        @PathVariable trailerId: Int,
-        @RequestBody input: UpdateTrailerInput,
+    @PatchMapping("/{boatId}")
+    fun patchBoat(
+        @PathVariable boatId: Int,
+        @RequestBody input: UpdateBoatInput,
         request: HttpServletRequest,
     ) {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
-                "UPDATE_TRAILER",
+                "UPDATE_BOAT",
+                mapOf(
+                    "targetId" to boatId.toString()
+                ),
             )
         }
 
-        trailerService.updateTrailer(trailerId, input)
+        citizenBoatService.updateBoat(boatId, input)
     }
 }

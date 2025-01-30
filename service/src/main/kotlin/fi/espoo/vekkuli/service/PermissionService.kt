@@ -103,6 +103,9 @@ class PermissionService(
         return when {
             userService.isAppUser(editorId) -> true
             editorId == boat?.reserverId -> true
+            boat != null -> {
+                editorId in organizationService.getOrganizationMembers(boat.reserverId).map { it.id }
+            }
             else -> false
         }
     }

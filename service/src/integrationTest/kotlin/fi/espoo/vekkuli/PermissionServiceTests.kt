@@ -1,6 +1,9 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.repository.TrailerRepository
+import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.PermissionService
 import org.junit.jupiter.api.Test
@@ -18,6 +21,9 @@ import kotlin.test.assertTrue
 @ActiveProfiles("test")
 class PermissionServiceTests : IntegrationTestBase() {
     @Autowired
+    private lateinit var boatService: BoatService
+
+    @Autowired
     private lateinit var organizationService: OrganizationService
 
     @Autowired
@@ -25,6 +31,38 @@ class PermissionServiceTests : IntegrationTestBase() {
 
     @Autowired
     private lateinit var trailerRepository: TrailerRepository
+
+    @Test
+    fun `should allow user to edit boat`() {
+        val boatId = insertBoat(citizenIdMikko)
+        assertTrue(permissionService.canEditBoat(userId, boatId))
+    }
+
+    @Test
+    fun `should prevent non owners from editing boat`() {
+        val boatId = insertBoat(citizenIdMikko)
+        assertFalse(permissionService.canEditBoat(citizenIdOlivia, boatId))
+    }
+
+    @Test
+    fun `should allow owner to edit boat`() {
+        val boatId = insertBoat(citizenIdMikko)
+        assertTrue(permissionService.canEditBoat(citizenIdMikko, boatId))
+    }
+
+    @Test
+    fun `should prevent non organization members from editing boat`() {
+        val orgId = insertOrganization(citizenIdMikko)
+        val boatId = insertBoat(orgId)
+        assertFalse(permissionService.canEditBoat(citizenIdOlivia, boatId))
+    }
+
+    @Test
+    fun `should allow organization members to edit boat`() {
+        val orgId = insertOrganization(citizenIdMikko)
+        val boatId = insertBoat(orgId)
+        assertTrue(permissionService.canEditBoat(citizenIdMikko, boatId))
+    }
 
     @Test
     fun `should allow user to edit trailer`() {
@@ -61,6 +99,22 @@ class PermissionServiceTests : IntegrationTestBase() {
         assertTrue(permissionService.canEditTrailer(citizenIdMikko, trailerId))
         assertTrue(permissionService.canEditTrailer(citizenIdMikko, orgId))
     }
+
+    private fun insertBoat(reserverId: UUID): Int =
+        boatService
+            .insertBoat(
+                reserverId,
+                "registrationCode",
+                "TestBoat",
+                150,
+                150,
+                150,
+                150,
+                BoatType.Sailboat,
+                "",
+                "",
+                OwnershipStatus.Owner
+            ).id
 
     private fun insertTrailer(reserverId: UUID): Int =
         trailerRepository

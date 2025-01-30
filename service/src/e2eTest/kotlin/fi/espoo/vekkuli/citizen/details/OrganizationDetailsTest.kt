@@ -48,4 +48,43 @@ class OrganizationDetailsTest : PlaywrightTest() {
         assertThat(trailerSection.widthField).containsText("6,20")
         assertThat(trailerSection.lengthField).containsText("12,11")
     }
+
+    @Test
+    fun `member can edit boat information`() {
+        CitizenHomePage(page).loginAsOliviaVirtanen()
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        var boatSection = organizationDetailsPage.getBoatSection("Espoon lohi")
+
+        boatSection.editButton.click()
+
+        boatSection.nameInput.fill("New Boat Name")
+        boatSection.weightInput.fill("2000")
+        boatSection.typeSelect.selectOption("Sailboat")
+        boatSection.depthInput.fill("1.5")
+        boatSection.widthInput.fill("3")
+        boatSection.registrationNumberInput.fill("ABC123")
+        boatSection.lengthInput.fill("6")
+        boatSection.ownershipSelect.selectOption("Owner")
+        boatSection.otherIdentifierInput.fill("ID12345")
+        boatSection.extraInformationInput.fill("Extra info")
+
+        boatSection.saveButton.click()
+
+        boatSection = organizationDetailsPage.getBoatSection("New Boat Name")
+        assertThat(boatSection.nameField).hasText("New Boat Name")
+        assertThat(boatSection.weightField).hasText("2000")
+        assertThat(boatSection.typeField).hasText("Purjevene")
+        assertThat(boatSection.depthField).hasText("1,50")
+        assertThat(boatSection.widthField).hasText("3,00")
+        assertThat(boatSection.registrationNumberField).hasText("ABC123")
+        assertThat(boatSection.lengthField).hasText("6,00")
+        assertThat(boatSection.ownershipField).hasText("Omistan veneen")
+        assertThat(boatSection.otherIdentifierField).hasText("ID12345")
+        assertThat(boatSection.extraInformationField).hasText("Extra info")
+    }
 }

@@ -1,10 +1,11 @@
 import { CheckboxField } from 'lib-components/form/CheckboxField'
 import React, { useState } from 'react'
 
+import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Boat } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
-import { useMutationResult } from 'lib-common/query'
+import { MutationDescription, useMutationResult } from 'lib-common/query'
 
 import BoatComponent from './Boat'
 import ConfirmDeleteBoatModal from './ConfirmDeleteBoatModal'
@@ -13,11 +14,15 @@ import DeleteBoatSuccessModal from './DeleteBoatSuccessModal'
 import { initShowBoatsForm, showBoatsForm } from './formDefinitions'
 import { deleteBoatMutation } from './queries'
 
-export default React.memo(function BoatsNotInreservations({
-  boats
-}: {
+type BoatsNotInreservationsProps = {
   boats: Boat[]
-}) {
+  updateMutation: MutationDescription<UpdateBoatRequest, void>
+}
+
+export default React.memo(function BoatsNotInreservations({
+  boats,
+  updateMutation
+}: BoatsNotInreservationsProps) {
   const i18n = useTranslation()
 
   const [boatPendingDeletion, setBoatPendingDeletion] = useState<Boat | null>(
@@ -50,6 +55,7 @@ export default React.memo(function BoatsNotInreservations({
                   key={boat.id}
                   boat={boat}
                   onDelete={() => setBoatPendingDeletion(boat)}
+                  updateMutation={updateMutation}
                 />
               ))}
             </div>

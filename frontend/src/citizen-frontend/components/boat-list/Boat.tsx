@@ -5,31 +5,32 @@ import TextField from 'lib-components/form/TextField'
 import { DeleteLink, EditLink } from 'lib-components/links'
 import React from 'react'
 
+import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { useTranslation } from 'citizen-frontend/localization'
 import { Boat } from 'citizen-frontend/shared/types'
 import { useForm, useFormFields } from 'lib-common/form/hooks'
-import { useMutation } from 'lib-common/query'
-
-import { updateBoatInformationMutation } from '../../queries'
+import { MutationDescription, useMutation } from 'lib-common/query'
 
 import { boatForm, transformBoatToFormBoat } from './formDefinitions'
 
-export default React.memo(function Boat({
-  boat,
-  onDelete
-}: {
+type BoatProps = {
   boat: Boat
   onDelete?: () => void
-}) {
+  updateMutation: MutationDescription<UpdateBoatRequest, void>
+}
+
+export default React.memo(function Boat({
+  boat,
+  onDelete,
+  updateMutation
+}: BoatProps) {
   const i18n = useTranslation()
   const bind = useForm(
     boatForm,
     () => transformBoatToFormBoat(boat, i18n),
     i18n.components.validationErrors
   )
-  const { mutateAsync: updateBoat, isPending } = useMutation(
-    updateBoatInformationMutation
-  )
+  const { mutateAsync: updateBoat, isPending } = useMutation(updateMutation)
   const [editMode, setEditMode] = React.useState(false)
 
   const cancel = () => {
@@ -38,7 +39,7 @@ export default React.memo(function Boat({
   }
   const onSubmit = async () => {
     if (bind.isValid()) {
-      await updateBoat(bind.value())
+      await updateBoat({ boatId: boat.id, input: bind.value() })
       setEditMode(false)
     }
   }
@@ -56,7 +57,7 @@ export default React.memo(function Boat({
   } = useFormFields(bind)
 
   return (
-    <div className="reservation-card" data-testid={`boat-${boat.id}`}>
+    <div className="reservation-card" data-testid="boat-row">
       <Columns isVCentered>
         <Column isNarrow>
           <h4>{boat.name}</h4>

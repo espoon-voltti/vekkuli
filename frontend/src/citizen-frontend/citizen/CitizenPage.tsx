@@ -3,15 +3,17 @@ import { MainSection } from 'lib-components/dom'
 import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
+import Boats from 'citizen-frontend/components/boat-list/Boats'
+import { citizenBoatsQuery } from 'citizen-frontend/shared/queries'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
 import {
   citizenActiveReservationsQuery,
   citizenExpiredReservationsQuery,
-  citizenOrganizationQuery
+  citizenOrganizationQuery,
+  updateCitizenBoatMutation
 } from './queries'
-import Boats from './sections/boats/Boats'
 import CitizenInformation from './sections/citizenInformation'
 import ExpiredReservations from './sections/reservations/ExpiredReservations'
 import Reservations from './sections/reservations/Reservations'
@@ -28,18 +30,26 @@ const Content = React.memo(function Content({
 }) {
   const organizations = useQueryResult(citizenOrganizationQuery())
   const activeReservations = useQueryResult(citizenActiveReservationsQuery())
+  const boats = useQueryResult(citizenBoatsQuery())
   const expiredReservations = useQueryResult(citizenExpiredReservationsQuery())
 
   return (
     <MainSection>
       <Loader
-        results={[user, organizations, activeReservations, expiredReservations]}
+        results={[
+          user,
+          organizations,
+          activeReservations,
+          expiredReservations,
+          boats
+        ]}
       >
         {(
           currentUser,
           loadedOrganizations,
           loadedActiveReservations,
-          loadedExpiredReservations
+          loadedExpiredReservations,
+          loadedBoats
         ) =>
           currentUser && (
             <>
@@ -48,7 +58,11 @@ const Content = React.memo(function Content({
                 organizations={loadedOrganizations}
               />
               <Reservations reservations={loadedActiveReservations} />
-              <Boats />
+              <Boats
+                boats={loadedBoats}
+                activeReservations={loadedActiveReservations}
+                updateMutation={updateCitizenBoatMutation}
+              />
               <ExpiredReservations reservations={loadedExpiredReservations} />
             </>
           )
