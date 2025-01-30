@@ -13,7 +13,6 @@ export const citizenOrganizationQuery = query({
 export const updateOrganizationBoatMutation = mutation({
   api: updateBoat,
   invalidateQueryKeys: () => [
-    queryKeys.citizenOrganizations(),
     queryKeys.organizationActiveReservations(),
     sharedQueryKeys.organizationBoats()
   ]
