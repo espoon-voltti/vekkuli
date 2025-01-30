@@ -41,6 +41,9 @@ class CitizenBoatController(
             logger.audit(
                 it,
                 "DELETE_BOAT",
+                mapOf(
+                    "targetId" to boatId.toString()
+                ),
             )
         }
 
