@@ -27,6 +27,9 @@ class CitizenBoatController(
             logger.audit(
                 it,
                 "UPDATE_BOAT",
+                mapOf(
+                    "targetId" to boatId.toString()
+                ),
             )
         }
 

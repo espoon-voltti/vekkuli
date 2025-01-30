@@ -27,6 +27,9 @@ class CitizenTrailerController(
             logger.audit(
                 it,
                 "UPDATE_TRAILER",
+                mapOf(
+                    "targetId" to trailerId.toString()
+                ),
             )
         }
 
