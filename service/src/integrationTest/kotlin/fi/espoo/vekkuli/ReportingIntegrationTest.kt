@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
@@ -159,9 +160,10 @@ class ReportingIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `boat place report (free and reserved)`() {
+    fun `boat place report (free, reserved and terminated)`() {
         val freeBoatSpaceId = 4242
         val reservedBoatSpaceId = 4243
+        val terminatedBoatSpaceId = 4244
 
         insertDevBoatSpace(
             DevBoatSpace(
@@ -190,6 +192,21 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 widthCm = 100,
                 lengthCm = 200,
                 description = "Test reserved boat space"
+            )
+        )
+
+        insertDevBoatSpace(
+            DevBoatSpace(
+                id = terminatedBoatSpaceId,
+                type = BoatSpaceType.Slip,
+                locationId = 1,
+                priceId = 1,
+                section = "A",
+                placeNumber = 3,
+                amenity = BoatSpaceAmenity.Buoy,
+                widthCm = 200,
+                lengthCm = 300,
+                description = "Test terminated boat space"
             )
         )
 
@@ -227,6 +244,22 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
+        val terminatedId = 3232
+
+        insertDevBoatSpaceReservation(
+            DevBoatSpaceReservation(
+                id = terminatedId,
+                reserverId = citizenIdLeo,
+                boatSpaceId = terminatedBoatSpaceId,
+                startDate = today,
+                endDate = today.plusMonths(12),
+                boatId = boatId,
+                status = ReservationStatus.Cancelled,
+                terminationReason = ReservationTerminationReason.RuleViolation,
+                terminationTimestamp = today.plusMonths(1).atStartOfDay()
+            )
+        )
+
         val freeRows = getFreeBoatSpaceReport(jdbi, today.atStartOfDay())
         freeRows.find { it.place == "A 001" }
         assertTrue(freeRows.none { it.place == "A 002" })
@@ -234,5 +267,11 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         val reservedRows = getReservedBoatSpaceReport(jdbi, today.atStartOfDay())
         assertTrue(reservedRows.any { it.place == "A 002" })
         assertTrue(reservedRows.none { it.place == "A 001" })
+
+        val terminatedRows = getTerminatedBoatSpaceReport(jdbi, today.atStartOfDay())
+        assertEquals(1, terminatedRows.size)
+        assertEquals("A 003", terminatedRows[0].place)
+        assertEquals("RuleViolation", terminatedRows[0].terminationReason)
+        assertEquals(today.plusMonths(1).atStartOfDay(), terminatedRows[0].terminationTimestamp)
     }
 }

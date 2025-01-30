@@ -159,6 +159,11 @@ fun getReservedBoatSpaceReport(
     reportDate: LocalDateTime
 ): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.startDate != null }
 
+fun getTerminatedBoatSpaceReport(
+    jdbi: Jdbi,
+    reportDate: LocalDateTime
+): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.terminationTimestamp != null }
+
 fun getBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
@@ -328,6 +333,42 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
+            .append(CSV_RECORD_SEPARATOR)
+    }
+
+    return csvContent.toString()
+}
+
+fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
+    val csvHeader =
+        listOf(
+            "satama",
+            "laituri",
+            "paikka",
+            "paikan leveys",
+            "paikan pituus",
+            "paikan varuste",
+            "varaaja",
+            "kotikunta",
+            "irtisanomisaika",
+            "Irtisanomisen syy"
+        ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
+
+    val csvContent = StringBuilder()
+    csvContent.append(csvHeader)
+
+    for (report in reportRows) {
+        csvContent
+            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 

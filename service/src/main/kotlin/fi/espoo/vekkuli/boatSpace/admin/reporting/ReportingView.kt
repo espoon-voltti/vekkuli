@@ -52,6 +52,16 @@ class ReportingView(
                 )
             )
 
+        val terminatedBoatSpaceReportStartDateInputField =
+            formComponents.dateInput(
+                DateInputOptions(
+                    id = "reportingDate",
+                    labelKey = "reporting.filter.reportingDate",
+                    value = timeProvider.getCurrentDate().toString(),
+                    autoWidth = true
+                )
+            )
+
         // language=HTML
         return """
             <section class="section reports-container">
@@ -156,6 +166,33 @@ class ReportingView(
                                     class="button is-primary"
                                     type="submit"
                                     data-testid="reserved-boat-space-report-button"
+                                >
+                                    ${t("reporting.submit")}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="container">
+                    <form id="form"
+                          method="get"
+                          action="/virkailija/admin/reporting/boat-space-report/terminated"
+                          class="block"
+                    >
+                        <h2>${t("reporting.terminatedBoatSpaceReport")}</h2>
+                        
+                        <p class="reports-info">${t("reporting.terminatedBoatSpaceReportInfo")}</p>
+                                                
+                        <div class='columns'>
+                            <div class='column'>
+                                $terminatedBoatSpaceReportStartDateInputField
+                            </div>
+                            <div class='column'>
+                                <button id="submit-button"
+                                    class="button is-primary"
+                                    type="submit"
+                                    data-testid="terminated-boat-space-report-button"
                                 >
                                     ${t("reporting.submit")}
                                 </button>
