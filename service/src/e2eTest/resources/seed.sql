@@ -513,10 +513,9 @@ VALUES
     (false, 'Storage', 'Change',  9, 1, 7, 31);
 
 
-INSERT INTO app_user (id, external_id, first_name, last_name, email, system_user)
+INSERT INTO app_user (id, external_id, first_name, last_name, email)
 VALUES
-    ('94833b54-132b-4ab8-b841-60df45809b3e', 'ad:001', 'Ville', 'Virkailija', 'ville@noreplytest.fi', FAlSE),
-     ('00000000-0000-0000-0000-000000000000', 'api-gw', 'api-gw', 'system-user', NULL, TRUE);
+    ('94833b54-132b-4ab8-b841-60df45809b3e', 'ad:001', 'Ville', 'Virkailija', 'ville@noreplytest.fi');
 
 INSERT INTO reserver (id, type, name, updated_at, phone, email, street_address, postal_code, municipality_code, post_office, espoo_rules_applied)
 VALUES

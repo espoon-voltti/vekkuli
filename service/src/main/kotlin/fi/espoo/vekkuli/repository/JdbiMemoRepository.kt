@@ -85,7 +85,7 @@ class JdbiMemoRepository(
 
     override fun insertMemo(
         reserverId: UUID,
-        userId: UUID,
+        userId: UUID?,
         content: String,
         category: ReservationType
     ): ReserverMemo =
