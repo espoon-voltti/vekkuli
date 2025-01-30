@@ -69,15 +69,22 @@ export type CanReserveResultStatus =
   | 'CanNotReserve'
   | 'CanReserveOnlyForOrganization'
 
+export type SwitchableOrganizationReservation = {
+  organizationName: string
+  reservations: SwitchableReservation[]
+}
+
 export type SwitchableReservation = {
   id: number
   boatSpace: BoatSpace
   totalPrice: string
   vatValue: string
 }
+
 export type CanReserveReservation = {
   status: CanReserveResultStatus
   switchableReservations: SwitchableReservation[]
+  switchableOrganizationReservations: SwitchableOrganizationReservation[]
 }
 
 export type BoatSpaceReservationResponse = {

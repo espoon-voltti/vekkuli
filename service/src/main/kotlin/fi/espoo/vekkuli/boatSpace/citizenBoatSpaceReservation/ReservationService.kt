@@ -124,13 +124,27 @@ open class ReservationService(
     ): CanReserveResult {
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val reservations = boatReservationService.getBoatSpaceReservationsForReserver(citizenId)
-
+        val organizationReservations =
+            organizationService
+                .getCitizenOrganizations(citizenId)
+                .map { Pair(it.name, boatReservationService.getBoatSpaceReservationsForReserver(it.id)) }
         val canReserveSpaceResult = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
 
         val switchableReservations =
             reservations.filter {
                 switchPolicyService.citizenCanSwitchToReservation(it.id, citizenId, spaceId) is ReservationResult.Success
             }
+
+        val switchableOrganizationReservations: List<SwitchableOrganizationReservation> =
+            organizationReservations
+                .map {
+                    SwitchableOrganizationReservation(
+                        it.first,
+                        it.second.filter { reservation ->
+                            seasonalService.canSwitchReservation(citizenId, boatSpace.type, reservation.id) is ReservationResult.Success
+                        }
+                    )
+                }.filter { it.reservations.isNotEmpty() }
 
         if (canReserveSpaceResult is ReservationResult.Failure) {
             if (organizationService.getCitizenOrganizations(citizenId).isNotEmpty() &&
@@ -139,19 +153,22 @@ open class ReservationService(
                 // Can not reserve for reserver, but can reserve for organization
                 return CanReserveResult(
                     status = CanReserveResultStatus.CanReserveOnlyForOrganization,
-                    switchableReservations = switchableReservations
+                    switchableReservations,
+                    switchableOrganizationReservations
                 )
             }
             // Can not reserve but might be able to switch
             return CanReserveResult(
                 status = CanReserveResultStatus.CanNotReserve,
-                switchableReservations = switchableReservations
+                switchableReservations,
+                switchableOrganizationReservations
             )
         }
         // Can reserve and switch if previous reservations
         return CanReserveResult(
             status = CanReserveResultStatus.CanReserve,
-            switchableReservations = switchableReservations
+            switchableReservations,
+            switchableOrganizationReservations
         )
     }
 

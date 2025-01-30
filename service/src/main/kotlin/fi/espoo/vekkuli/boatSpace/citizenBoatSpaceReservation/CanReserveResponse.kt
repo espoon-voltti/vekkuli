@@ -1,10 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.common.NotFound
-import fi.espoo.vekkuli.domain.BoatSpace
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.utils.intToDecimal
@@ -17,15 +14,27 @@ enum class CanReserveResultStatus {
     CanReserveOnlyForOrganization,
 }
 
+data class SwitchableOrganizationReservation(
+    val organizationName: String?,
+    val reservations: List<BoatSpaceReservationDetails>
+)
+
 data class CanReserveResult(
     val status: CanReserveResultStatus,
     val switchableReservations: List<BoatSpaceReservationDetails>,
+    val switchableOrganization: List<SwitchableOrganizationReservation>
 )
 
 data class CanReserveResponse(
     val status: CanReserveResultStatus,
-    val switchableReservations: List<SwitchableReservation>
+    val switchableReservations: List<SwitchableReservation>,
+    val switchableOrganizationReservations: List<SwitchableOrganizationReservation>
 ) {
+    data class SwitchableOrganizationReservation(
+        val organizationName: String?,
+        val reservations: List<SwitchableReservation>
+    )
+
     data class SwitchableReservation(
         val id: Int,
         val boatSpace: BoatSpace,
@@ -61,6 +70,22 @@ class CanReserveResponseMapper(
                         boatSpace = formatBoatSpace(boatSpace),
                         totalPrice = it.priceInEuro,
                         vatValue = it.vatPriceInEuro
+                    )
+                },
+            switchableOrganizationReservations =
+                canReserveResult.switchableOrganization.map {
+                    CanReserveResponse.SwitchableOrganizationReservation(
+                        organizationName = it.organizationName,
+                        reservations =
+                            it.reservations.map { reservation ->
+                                val boatSpace = getBoatSpace(reservation.boatSpaceId)
+                                CanReserveResponse.SwitchableReservation(
+                                    id = reservation.id,
+                                    boatSpace = formatBoatSpace(boatSpace),
+                                    totalPrice = reservation.priceInEuro,
+                                    vatValue = reservation.vatPriceInEuro
+                                )
+                            }
                     )
                 }
         )
