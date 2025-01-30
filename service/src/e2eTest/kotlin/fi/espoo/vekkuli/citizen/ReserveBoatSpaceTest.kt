@@ -547,7 +547,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    fun `Organization cannot be selected if it's reservations are full`() {
+    fun `Organization cannot be selected on the reservation form if it's reservations are full`() {
         try {
             CitizenHomePage(page).loginAsOliviaVirtanen()
             // Olivia has already reserved 2 boat spaces, so we need to terminate a reservation
@@ -600,7 +600,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    fun `Citizen cannot be selected if it's reservations are full`() {
+    fun `Citizen cannot be selected on the reservation form if it's reservations are full`() {
         try {
             CitizenHomePage(page).loginAsOliviaVirtanen()
             // Reserve a second boat space for the organization
@@ -635,7 +635,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             reservationPage.getSearchResultsSection().firstReserveButton.click()
             reservationPage.getReserveModal().reserveANewSpace.click()
 
-            assertThat(organizationSection.reserveForOrganization).isVisible()
             assertThat(organizationSection.reserveForOrganization).isVisible()
             assertThat(page.getByText("Espoon lohi")).isVisible()
             assertThat(page.getByText("Espoon kuha")).isVisible()
