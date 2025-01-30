@@ -101,7 +101,8 @@ open class ReserveTest : PlaywrightTest() {
 
     protected fun assertOnlyOneConfirmationEmailIsSent(
         emailAddress: String? = "test@example.com",
-        emailSubject: String? = "Vahvistus Espoon kaupungin venepaikan varauksesta") {
+        emailSubject: String? = "Vahvistus Espoon kaupungin venepaikan varauksesta"
+    ) {
         messageService.sendScheduledEmails()
         assertEquals(1, SendEmailServiceMock.emails.size)
         assertTrue(
