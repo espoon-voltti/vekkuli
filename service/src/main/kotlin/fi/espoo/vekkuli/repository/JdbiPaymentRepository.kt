@@ -169,7 +169,7 @@ class JdbiPaymentRepository(
                         p.paid AS paid_date, 
                         p.total_cents,
                         location.name AS harbor_name,
-                        CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place,
+                        CONCAT(bs.section ,' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                         bs.type AS boat_space_type,
                         p.reference AS paymentReference, 
                         i.reference AS invoiceReference,

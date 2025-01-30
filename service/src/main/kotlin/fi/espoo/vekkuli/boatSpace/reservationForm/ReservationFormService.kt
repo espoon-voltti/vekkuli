@@ -277,7 +277,7 @@ class ReservationFormService(
                 priceInfo,
                 PaymentType.Other
             )
-            // sendReservationEmail(reservationId, CreationType.New)
+            boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservationId)
         }
     }
 
@@ -331,6 +331,7 @@ class ReservationFormService(
                 PaymentType.Other
             )
             boatReservationService.markReservationEnded(originalReservation.id)
+            boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservationId)
         }
     }
 
@@ -387,6 +388,7 @@ class ReservationFormService(
                 PaymentType.Other
             )
             boatReservationService.markReservationEnded(originalReservation.id)
+            boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservationId)
         }
     }
 

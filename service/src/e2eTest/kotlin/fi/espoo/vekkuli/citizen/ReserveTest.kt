@@ -4,12 +4,15 @@ import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.domain.PaymentStatus
+import fi.espoo.vekkuli.employeeHomePage
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.service.paymentStatusToText
 import org.junit.jupiter.api.BeforeEach
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 open class ReserveTest : PlaywrightTest() {
     @BeforeEach
@@ -80,6 +83,7 @@ open class ReserveTest : PlaywrightTest() {
     }
 
     private fun reservationListPage(doLogin: Boolean = true): ReservationListPage {
+        page.navigate(employeeHomePage)
         val employeeHome = EmployeeHomePage(page)
         if (doLogin) {
             employeeHome.employeeLogin()
@@ -88,5 +92,23 @@ open class ReserveTest : PlaywrightTest() {
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
         return listingPage
+    }
+
+    protected fun assertZeroEmailsSent() {
+        messageService.sendScheduledEmails()
+        assertEquals(0, SendEmailServiceMock.emails.size)
+    }
+
+    protected fun assertOnlyOneConfirmationEmailIsSent(
+        emailAddress: String? = "test@example.com",
+        emailSubject: String? = "Vahvistus Espoon kaupungin venepaikan varauksesta") {
+        messageService.sendScheduledEmails()
+        assertEquals(1, SendEmailServiceMock.emails.size)
+        assertTrue(
+            SendEmailServiceMock.emails
+                .get(
+                    0
+                ).contains("$emailAddress with subject $emailSubject")
+        )
     }
 }

@@ -655,7 +655,7 @@ class BoatReservationService(
                 }
                 CreationType.Switch -> {
                     EmailSettings(
-                        template = "reservation_renewed_by_citizen",
+                        template = "reservation_switched_by_citizen",
                         recipients = recipients,
                         params = defaultParams
                     )

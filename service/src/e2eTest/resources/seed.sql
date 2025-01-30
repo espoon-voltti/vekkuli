@@ -594,7 +594,8 @@ VALUES
 
     Terveisin
     Merellinen ulkoilu
-    {{employeeEmail}}')
+    {{employeeEmail}}'),
+    ('reservation_switched_by_citizen', 'Vahvistus Espoon kaupungin venepaikan vaihdosta', E'Hyvä asiakas,\n\nOlet vaihtanut Espoon kaupungilta vuokraamaasi venepaikkaa.\n\nHuomioithan, että sinun on viipymättä poistettavana veneesi vanhalta paikalta, sillä paikka on vapautunut seuraavalle vuokrattavaksi.\n\nUusi paikka:\n\nVuokralainen:\n{{reserverName}}\n\nPaikan tiedot:\nPaikan nimi: {{name}}\nPaikan leveys {{width}}\nPaikan pituus {{length}}\nPaikan varuste/säilytystapa {{amenity}}\n\nVarauksesi on voimassa {{endDate}} asti.\n\nSaat mahdollisen uuden avainkoodin laiturin portin avaimen teettämistä varten sekä kausitarran kirjepostilla myöhemmin.\n\nHallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.\n\nVenesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.\n\nTerveisin\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi')
 ON CONFLICT (id) DO NOTHING;
 
 

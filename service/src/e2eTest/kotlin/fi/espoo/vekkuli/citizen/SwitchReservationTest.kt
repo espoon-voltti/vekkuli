@@ -27,17 +27,20 @@ class SwitchReservationTest : ReserveTest() {
             form.submitButton.click()
 
             val paymentPage = PaymentPage(page)
+            paymentPage.assertOnPaymentPage()
+            assertZeroEmailsSent()
             paymentPage.nordeaSuccessButton.click()
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
             assertCorrectPaymentForReserver(
                 "korhonen",
                 PaymentStatus.Success,
-                "Haukilahti D013",
+                "Haukilahti D 013",
                 "150,81",
                 "Paikan vaihto. Maksettu vain erotus."
             )
 
+            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
             val citizenDetails = citizenPageInEmployeeView("korhonen", false)
             citizenDetails.memoNavi.click()
             assertThat(citizenDetails.userMemo(2))
@@ -62,15 +65,21 @@ class SwitchReservationTest : ReserveTest() {
             userAgreementSection.agreementCheckbox.check()
             switchSpaceFormPage.reserveButton.click()
 
+            // asserting that email is sent when there is no payment
+            assertZeroEmailsSent()
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.getByDataTestId("payment-page")).not().isVisible()
+
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
             assertCorrectPaymentForReserver(
                 "korhonen",
                 PaymentStatus.Success,
-                "Haukilahti D001",
+                "Haukilahti D 001",
                 "0,00",
                 "Paikan vaihto. Ei suoritusta, paikoilla sama hinta."
             )
+            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -398,6 +407,7 @@ class SwitchReservationTest : ReserveTest() {
             assertThat(discountText).containsText("$discount %")
             assertThat(discountText).containsText("$expectedPrice €")
             form.submitButton.click()
+            assertZeroEmailsSent()
 
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
@@ -411,10 +421,11 @@ class SwitchReservationTest : ReserveTest() {
             assertCorrectPaymentForReserver(
                 "virtanen",
                 PaymentStatus.Success,
-                "Haukilahti D013",
+                "Haukilahti D 013",
                 expectedPrice,
                 "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus."
             )
+            assertOnlyOneConfirmationEmailIsSent("olivia@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
         } catch (e: AssertionError) {
             handleError(e)
         }
