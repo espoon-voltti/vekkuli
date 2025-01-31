@@ -170,39 +170,23 @@ export function deserializeJsonBoatSpaceReservationResponse(
   const citizen = json.citizen
     ? { ...json.citizen, birthDate: LocalDate.parseIso(json.citizen.birthDate) }
     : undefined
-  const organization = json.organization ? json.organization : undefined
-  const createAllowedOperationsList = (
-    json: BoatSpaceReservationResponse
-  ): ReservationOperation[] => {
-    const operationsList: ReservationOperation[] = []
-    if (json.canRenew) operationsList.push('Renew')
-    if (json.canSwitch) operationsList.push('Switch')
-    return operationsList
-  }
 
   return {
     id: json.id,
     citizen,
-    organization,
     status: json.status,
-    created: HelsinkiDateTime.parseIso(json.created),
     startDate: LocalDate.parseIso(json.startDate),
     endDate: LocalDate.parseIso(json.endDate),
     validity: json.validity,
     boatSpace: json.boatSpace,
-    paymentDate: json.paymentDate
-      ? LocalDate.parseIso(json.paymentDate)
-      : undefined,
     totalPrice: json.totalPrice,
     vatValue: json.vatValue,
     netPrice: json.netPrice,
     revisedPrice: json.revisedPrice,
-    totalPriceInCents: json.totalPriceInCents,
     boat: json.boat,
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,
     creationType: json.creationType,
-    allowedReservationOperations: createAllowedOperationsList(json),
     canReserveNew: json.canReserveNew
   }
 }
