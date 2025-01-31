@@ -33,25 +33,35 @@ export type ReservationOperation = 'Switch' | 'Renew' | 'Terminate'
 export type BoatSpaceReservation = {
   id: number
   citizen?: Citizen
-  organization?: Organization
   status: ReservationStatus
   boatSpace: BoatSpace
-  created: HelsinkiDateTime
   startDate: LocalDate
   endDate: LocalDate
   validity: ReservationValidity
-  paymentDate?: LocalDate
   totalPrice: string
   vatValue: string
   netPrice: string
   storageType?: StorageType
   trailer?: Trailer
   boat: Boat
-  totalPriceInCents: number
   creationType: CreationType
   canReserveNew: boolean
-  allowedReservationOperations: ReservationOperation[]
   revisedPrice: RevisedPrice
+}
+
+export type ExistingBoatSpaceReservation = {
+  id: number
+  boatSpace: BoatSpace
+  allowedReservationOperations: ReservationOperation[]
+  created: HelsinkiDateTime
+  endDate: LocalDate
+  validity: ReservationValidity
+  totalPrice: string
+  vatValue: string
+  boat: Boat
+  storageType?: StorageType
+  paymentDate?: LocalDate
+  trailer?: Trailer
 }
 
 export type CanReserveResultStatus =
@@ -74,14 +84,11 @@ export type BoatSpaceReservationResponse = {
   id: number
   reserverType: ReserverType
   citizen?: ResponseCitizen
-  organization?: Organization
   boatSpace: BoatSpace
   status: ReservationStatus
-  created: string
   startDate: string
   endDate: string
   validity: ReservationValidity
-  paymentDate: string | null
   totalPrice: string
   vatValue: string
   netPrice: string
@@ -89,11 +96,24 @@ export type BoatSpaceReservationResponse = {
   trailer: Trailer | null
   boat: Boat
   creationType: CreationType
-  totalPriceInCents: number
   canReserveNew: boolean
+  revisedPrice: RevisedPrice
+}
+
+export type ExistingBoatSpaceReservationResponse = {
+  id: number
+  boatSpace: BoatSpace
   canRenew: boolean
   canSwitch: boolean
-  revisedPrice: RevisedPrice
+  created: string
+  endDate: string
+  validity: ReservationValidity
+  totalPrice: string
+  vatValue: string
+  boat: Boat
+  storageType: StorageType | null
+  paymentDate?: string | null
+  trailer?: Trailer | null
 }
 
 export type RevisedPrice = {

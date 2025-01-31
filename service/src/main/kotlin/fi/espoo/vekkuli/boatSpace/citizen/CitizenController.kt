@@ -1,7 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.citizen
 
-import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationResponse
-import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationResponseMapper
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.config.audit
@@ -31,7 +29,7 @@ class CitizenController(
     private val citizenService: CitizenService,
     private val organizationService: OrganizationService,
     private val reservationService: ReservationService,
-    private val reservationResponseMapper: ReservationResponseMapper,
+    private val existingReservationResponseMapper: ExistingReservationResponseMapper,
     private val permissionService: PermissionService,
 ) {
     private val logger = KotlinLogging.logger {}
@@ -93,7 +91,7 @@ class CitizenController(
     }
 
     @GetMapping("/current/active-reservations")
-    fun getActiveReservations(request: HttpServletRequest): List<ReservationResponse> {
+    fun getActiveReservations(request: HttpServletRequest): List<ExistingReservationResponse> {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
@@ -101,11 +99,11 @@ class CitizenController(
             )
         }
         val reservations = reservationService.getActiveReservationsForCurrentCitizen()
-        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
     }
 
     @GetMapping("/current/expired-reservations")
-    fun getExpiredReservations(request: HttpServletRequest): List<ReservationResponse> {
+    fun getExpiredReservations(request: HttpServletRequest): List<ExistingReservationResponse> {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
@@ -113,14 +111,14 @@ class CitizenController(
             )
         }
         val reservations = reservationService.getExpiredReservationsForCurrentCitizen()
-        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
     }
 
     @GetMapping("/current/organization-active-reservations/{orgId}")
     fun getOrganizationActiveReservations(
         @PathVariable orgId: UUID,
         request: HttpServletRequest
-    ): List<ReservationResponse> {
+    ): List<ExistingReservationResponse> {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
@@ -131,14 +129,14 @@ class CitizenController(
         val userId = request.getAuthenticatedUser()?.id
         if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
         val reservations = reservationService.getActiveReservationsForOrganization(orgId)
-        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
     }
 
     @GetMapping("/current/organization-expired-reservations/{orgId}")
     fun getOrganizationExpiredReservations(
         @PathVariable orgId: UUID,
         request: HttpServletRequest
-    ): List<ReservationResponse> {
+    ): List<ExistingReservationResponse> {
         request.getAuthenticatedUser()?.let {
             logger.audit(
                 it,
@@ -149,7 +147,7 @@ class CitizenController(
         val userId = request.getAuthenticatedUser()?.id
         if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
         val reservations = reservationService.getExpiredReservationsForOrganization(orgId)
-        return reservations.map { reservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
     }
 
     @PostMapping("/current/update-information")

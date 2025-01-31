@@ -13,7 +13,6 @@ import fi.espoo.vekkuli.utils.intToDecimal
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.*
 
 data class RevisedPrice(
@@ -39,15 +38,12 @@ data class ReservationResponse(
     val id: Int,
     val reserverType: ReserverType,
     val citizen: Citizen?,
-    val organization: Organization?,
     val boatSpace: BoatSpace,
     val boat: Boat?,
     val status: ReservationStatus,
-    val created: LocalDateTime,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val validity: ReservationValidity,
-    val paymentDate: LocalDate?,
     val totalPrice: String,
     val vatValue: String,
     val netPrice: String,
@@ -55,9 +51,6 @@ data class ReservationResponse(
     val trailer: Trailer?,
     val creationType: CreationType,
     val canReserveNew: Boolean,
-    val canRenew: Boolean,
-    val canSwitch: Boolean,
-    val totalPriceInCents: Int,
     val revisedPrice: RevisedPrice
 ) {
     data class Citizen(
@@ -141,11 +134,9 @@ class ReservationResponseMapper(
             reservation.actingCitizenId,
             reservation.reserverId,
             reservation.status,
-            reservation.created,
             reservation.startDate,
             reservation.validity,
             reservation.endDate,
-            reservation.paymentDate,
         )
 
     fun toReservationResponse(reservation: ReservationWithDependencies): ReservationResponse =
@@ -154,11 +145,9 @@ class ReservationResponseMapper(
             reservation.actingCitizenId,
             reservation.reserverId,
             reservation.status,
-            reservation.created,
             reservation.startDate,
             reservation.validity,
             reservation.endDate,
-            null
         )
 
     private fun reservationResponse(
@@ -166,11 +155,9 @@ class ReservationResponseMapper(
         actingCitizenId: UUID?,
         reserverId: UUID?,
         status: ReservationStatus,
-        created: LocalDateTime,
         startDate: LocalDate,
         validity: ReservationValidity,
         endDate: LocalDate,
-        paymentDate: LocalDate?
     ): ReservationResponse {
         val reservationWithDependencies =
             spaceReservationService.getReservationWithDependencies(reservationId) ?: throw NotFound()
@@ -204,11 +191,9 @@ class ReservationResponseMapper(
             id = reservationId,
             reserverType = reservationWithDependencies.reserverType ?: ReserverType.Citizen,
             citizen = formatCitizen(citizen),
-            organization = formatOrganization(organization),
             boat = formatBoat(boat),
             boatSpace = formatBoatSpace(boatSpace),
             status = status,
-            created = created,
             startDate = startDate,
             validity = validity,
             endDate = endDate,
@@ -217,12 +202,8 @@ class ReservationResponseMapper(
             netPrice = reservationWithDependencies.priceWithoutVatInEuro,
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
-            paymentDate = paymentDate,
             creationType = reservationWithDependencies.creationType,
             canReserveNew = canReserveNew,
-            canRenew = seasonalService.canRenewAReservation(reservationId).success,
-            canSwitch = seasonalService.canSwitchReservation(reserverId, boatSpace.type, reservationId).success,
-            totalPriceInCents = reservationWithDependencies.priceCents,
             revisedPrice = toRevisedPrice(reservationWithDependencies, citizen, organization)
         )
     }
@@ -324,7 +305,7 @@ class ReservationResponseMapper(
     private fun getBoatSpace(reservation: ReservationWithDependencies): BoatSpace =
         spaceReservationService.getBoatSpaceRelatedToReservation(reservation.id) ?: throw NotFound()
 
-    private fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
+    fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
         ReservationResponse.BoatSpace(
             id = boatSpace.id,
             type = boatSpace.type,

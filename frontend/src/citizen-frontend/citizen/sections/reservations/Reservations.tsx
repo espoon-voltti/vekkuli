@@ -1,14 +1,14 @@
 import { Container } from 'lib-components/dom'
 import React from 'react'
 
-import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 
 import Reservation from './Reservation'
 
 export default React.memo(function Reservations({
   reservations
 }: {
-  reservations: BoatSpaceReservation[]
+  reservations: ExistingBoatSpaceReservation[]
 }) {
   if (!reservations.length) return null
 
@@ -19,14 +19,8 @@ export default React.memo(function Reservations({
         {reservations.map((reservation) => (
           <Reservation
             key={reservation.id}
-            reservation={reservation}
             canTerminate
-            canSwitch={reservation.allowedReservationOperations.includes(
-              'Switch'
-            )}
-            canRenew={reservation.allowedReservationOperations.includes(
-              'Renew'
-            )}
+            reservation={reservation}
           />
         ))}
       </div>

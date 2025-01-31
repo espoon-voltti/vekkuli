@@ -2,7 +2,7 @@ import { Column, Columns } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
-import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import {
   formatDimensions,
@@ -15,7 +15,7 @@ import { terminateReservationMutation } from './queries'
 
 export type TerminateModalProps = {
   close: () => void
-  reservation: BoatSpaceReservation
+  reservation: ExistingBoatSpaceReservation
   onTermination: (mutation: Promise<Result<void>>) => void
 }
 

@@ -3,7 +3,7 @@ import { NumberField } from 'lib-components/form'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
-import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
@@ -13,7 +13,7 @@ import { updateOrganizationTrailerMutation } from '../queries'
 export default React.memo(function Reservation({
   reservation
 }: {
-  reservation: BoatSpaceReservation
+  reservation: ExistingBoatSpaceReservation
 }) {
   const i18n = useTranslation()
 

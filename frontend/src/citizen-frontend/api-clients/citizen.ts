@@ -8,12 +8,13 @@ import {
 } from '../api-types/citizen'
 import {
   BoatSpaceReservation,
-  BoatSpaceReservationResponse
+  ExistingBoatSpaceReservation,
+  ExistingBoatSpaceReservationResponse
 } from '../api-types/reservation'
 import { formatCmToM } from '../shared/formatters'
 import { Boat, Organization } from '../shared/types'
 
-import { deserializeJsonBoatSpaceReservationResponse } from './reservation'
+import { deserializeJsonExistingBoatSpaceReservationResponse } from './reservation'
 
 export async function citizenBoats(): Promise<Boat[]> {
   const { data: json } = await client.request<CitizenBoatsResponse>({
@@ -63,42 +64,50 @@ export function deserializeJsonCitizenBoatsResponse(
 
 export async function organizationActiveReservations(
   orgId: string
-): Promise<BoatSpaceReservation[]> {
-  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+): Promise<ExistingBoatSpaceReservation[]> {
+  const { data: json } = await client.request<
+    ExistingBoatSpaceReservationResponse[]
+  >({
     url: uri`/current/organization-active-reservations/${orgId}`.toString(),
     method: 'GET'
   })
-  return json.map(deserializeJsonBoatSpaceReservationResponse)
+  return json.map(deserializeJsonExistingBoatSpaceReservationResponse)
 }
 
 export async function citizenActiveReservations(): Promise<
-  BoatSpaceReservation[]
+  ExistingBoatSpaceReservation[]
 > {
-  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+  const { data: json } = await client.request<
+    ExistingBoatSpaceReservationResponse[]
+  >({
     url: uri`/current/active-reservations`.toString(),
     method: 'GET'
   })
-  return json.map(deserializeJsonBoatSpaceReservationResponse)
+  return json.map(deserializeJsonExistingBoatSpaceReservationResponse)
 }
 
 export async function citizenExpiredReservations(): Promise<
-  BoatSpaceReservation[]
+  ExistingBoatSpaceReservation[]
 > {
-  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+  const { data: json } = await client.request<
+    ExistingBoatSpaceReservationResponse[]
+  >({
     url: uri`/current/expired-reservations`.toString(),
     method: 'GET'
   })
-  return json.map(deserializeJsonBoatSpaceReservationResponse)
+  return json.map(deserializeJsonExistingBoatSpaceReservationResponse)
 }
 
 export async function organizationExpiredReservations(
   orgId: string
-): Promise<BoatSpaceReservation[]> {
-  const { data: json } = await client.request<BoatSpaceReservationResponse[]>({
+): Promise<ExistingBoatSpaceReservation[]> {
+  const { data: json } = await client.request<
+    ExistingBoatSpaceReservationResponse[]
+  >({
     url: uri`/current/organization-expired-reservations/${orgId}`.toString(),
     method: 'GET'
   })
-  return json.map(deserializeJsonBoatSpaceReservationResponse)
+  return json.map(deserializeJsonExistingBoatSpaceReservationResponse)
 }
 
 export async function citizenOrganizations(): Promise<Organization[]> {

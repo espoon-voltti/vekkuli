@@ -4,7 +4,7 @@ import TextField from 'lib-components/form/TextField'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { updateCitizenTrailerMutation } from 'citizen-frontend/citizen/queries'
 import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
@@ -26,15 +26,14 @@ type TerminateModalState = 'hidden' | 'visible' | 'success' | 'failure'
 
 export default React.memo(function Reservation({
   reservation,
-  canTerminate,
-  canSwitch,
-  canRenew
+  canTerminate
 }: {
-  reservation: BoatSpaceReservation
+  reservation: ExistingBoatSpaceReservation
   canTerminate?: boolean
-  canSwitch?: boolean
-  canRenew?: boolean
 }) {
+  const canSwitch = reservation.allowedReservationOperations.includes('Switch')
+  const canRenew = reservation.allowedReservationOperations.includes('Renew')
+
   const i18n = useTranslation()
   const [terminateModalVisible, setTerminateModalVisible] =
     useState<TerminateModalState>('hidden')
