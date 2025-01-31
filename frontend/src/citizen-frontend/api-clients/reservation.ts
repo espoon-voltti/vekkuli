@@ -187,7 +187,8 @@ export function deserializeJsonBoatSpaceReservationResponse(
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,
     creationType: json.creationType,
-    canReserveNew: json.canReserveNew
+    canReserveNew: json.canReserveNew,
+    reserverType: json.reserverType
   }
 }
 
