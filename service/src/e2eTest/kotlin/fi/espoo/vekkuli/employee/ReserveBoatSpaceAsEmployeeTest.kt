@@ -14,19 +14,6 @@ import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
-    @Test
-    fun `employee can change the language`() {
-        val employeeHome = EmployeeHomePage(page)
-        employeeHome.employeeLogin("fi")
-        assertThat(page.getByText("Varaukset").first()).isVisible()
-        page.getByTestId("language-selection").click()
-        page.getByText("English").click()
-        assertThat(page.getByText("Reservations").first()).isVisible()
-        page.getByTestId("language-selection").click()
-        page.getByText("Svenska").click()
-        assertThat(page.getByText("Reservationer").first()).isVisible()
-    }
-
     private fun fillAndTestForm(formPage: BoatSpaceFormPage) {
         formPage.submitButton.click()
 

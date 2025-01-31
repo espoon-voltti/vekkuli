@@ -3,7 +3,6 @@ import fi.espoo.vekkuli.boatSpace.dev.DebugInfoOverlayView
 import fi.espoo.vekkuli.config.LocaleUtil
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.views.Icons
-import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.head
 import org.springframework.stereotype.Service
 
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service
 class EmployeeLayout(
     private val icons: Icons,
     private val messageUtil: MessageUtil,
-    private val commonComponents: CommonComponents,
     private val localeUtil: LocaleUtil,
     private val debugOver: DebugInfoOverlayView
 ) {
@@ -80,7 +78,6 @@ class EmployeeLayout(
                         </ul>
                                                    
                         <div class="login-section" >
-                            ${commonComponents.languageSelection()}
                             $authMenu
                         </div>
                     </div>
