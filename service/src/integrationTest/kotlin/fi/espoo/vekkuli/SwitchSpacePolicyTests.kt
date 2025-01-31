@@ -2,8 +2,11 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationOperation
+import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.service.ReservationResultSuccess
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -145,6 +148,120 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
             false,
             switchPolicyService.citizenCanSwitchToReservation(originalReservation.id, reserver, targetSpaceId).success,
             "Citizen can not switch reservation"
+        )
+    }
+
+    @Test
+    fun `should be able to switch slip reservation to slip space as Espoo citizen within switch time limits`() {
+        val reserverId = espooCitizenWithoutReservationsId
+        val validity = ReservationValidity.Indefinite
+        val boatSpaceType = BoatSpaceType.Slip
+        val targetSpaceId = boatSpaceIdForSlip2
+
+        // Start at the start of reservation period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
+
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    boatSpaceId = boatSpaceIdForSlip,
+                    validity = validity,
+                    endDate = endDate
+                )
+            )
+
+        // Move time before the start of the switch period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
+
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can't be switched before the start of the season"
+        )
+
+        // Move to the start of switch period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        assertEquals(
+            true,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can be switched at the start of the season"
+        )
+
+        // Move to the end of switch period
+        testUtils.moveTimeToReservationPeriodEnd(boatSpaceType, ReservationOperation.Change)
+        assertEquals(
+            true,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can be switched at the end of the season"
+        )
+
+        // Move time after the end of switch period
+        testUtils.moveTimeToReservationPeriodEnd(boatSpaceType, ReservationOperation.Change, addDays = 1)
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can't be switched after the switch period"
+        )
+    }
+
+    @Test
+    fun `should be able to switch winter reservation to winter space as Espoo citizen within switch time limits`() {
+        val reserverId = espooCitizenWithoutReservationsId
+        val validity = ReservationValidity.Indefinite
+        val boatSpaceType = BoatSpaceType.Winter
+        val originalSpaceId = boatSpaceIdForWinter
+        val targetSpaceId = boatSpaceIdForWinter2
+
+        // Start at the start of reservation period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+
+        val endDate = getWinterEndDate(timeProvider.getCurrentDate())
+
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    boatSpaceId = originalSpaceId,
+                    validity = validity,
+                    endDate = endDate
+                )
+            )
+
+        // Move time before the start of the switch period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
+
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can't be switched before the start of the season"
+        )
+
+        // Move to the start of switch period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        assertEquals(
+            true,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can be switched at the start of the season"
+        )
+
+        // Move to the end of switch period
+        testUtils.moveTimeToReservationPeriodEnd(boatSpaceType, ReservationOperation.Change)
+        assertEquals(
+            true,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can be switched at the end of the season"
+        )
+
+        // Move time after the end of switch period
+        testUtils.moveTimeToReservationPeriodEnd(boatSpaceType, ReservationOperation.Change, addDays = 1)
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
+            "Reservation can't be switched after the switch period"
         )
     }
 }
