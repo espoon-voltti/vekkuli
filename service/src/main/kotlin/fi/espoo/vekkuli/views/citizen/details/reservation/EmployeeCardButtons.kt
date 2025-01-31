@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
@@ -10,7 +11,8 @@ import java.util.*
 @Component
 class EmployeeCardButtons(
     private var modal: Modal,
-    private val commonButtons: ReservationCardButtons
+    private val commonButtons: ReservationCardButtons,
+    private val renewalPolicyService: RenewalPolicyService
 ) : BaseView() {
     fun render(
         reservation: BoatSpaceReservationDetails,
@@ -29,7 +31,7 @@ class EmployeeCardButtons(
     }
 
     fun createRenewPlaceButton(reservation: BoatSpaceReservationDetails): String {
-        if (!reservation.canRenew) {
+        if (!renewalPolicyService.employeeCanRenewReservation(reservation.id).success) {
             return ""
         }
 

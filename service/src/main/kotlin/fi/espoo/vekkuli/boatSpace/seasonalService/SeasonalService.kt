@@ -1,6 +1,5 @@
 package fi.espoo.vekkuli.boatSpace.seasonalService
 
-import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getStorageEndDate
 import fi.espoo.vekkuli.config.BoatSpaceConfig.getTrailerEndDate
@@ -12,6 +11,7 @@ import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.service.ReservationResultErrorCode
 import fi.espoo.vekkuli.service.ReservationResultSuccess
+import fi.espoo.vekkuli.utils.DateRange
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.isMonthDayWithinRange
 import org.springframework.stereotype.Service
@@ -46,53 +46,26 @@ class SeasonalService(
         }
     }
 
-    fun canRenewAReservation(originalReservationId: Int): ReservationResult {
-        val originalReservation =
-            boatSpaceReservationRepo.getBoatSpaceReservationDetails(originalReservationId)
-                ?: throw IllegalArgumentException("Reservation not found")
-        val periods = seasonalRepository.getReservationPeriods()
-        return canRenewAReservation(periods, originalReservation.validity, originalReservation.endDate, originalReservation.type)
+    fun isReservationRenewalPeriodActive(
+        isEspooCitizen: Boolean,
+        type: BoatSpaceType
+    ): Boolean {
+        return hasActiveReservationPeriod(
+            seasonalRepository.getReservationPeriods(),
+            timeProvider.getCurrentDate(),
+            isEspooCitizen,
+            type,
+            ReservationOperation.Renew
+        )
     }
 
-    private fun canRenewAReservation(
-        periods: List<ReservationPeriod>,
-        oldValidity: ReservationValidity,
-        oldEndDate: LocalDate,
-        boatSpaceType: BoatSpaceType
-    ): ReservationResult {
-        if (oldValidity == ReservationValidity.FixedTerm) {
-            // Fixed term reservations cannot be renewed
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        val now = timeProvider.getCurrentDate()
-
-        // Check if the reservation is within the renewal period and reservation is about to expire
-        if (now.isBefore(oldEndDate.minusDays(DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())) || now.isAfter(oldEndDate)) {
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        val hasActivePeriod =
-            hasActiveReservationPeriod(
-                periods,
-                now,
-                true,
-                boatSpaceType,
-                ReservationOperation.Renew
-            )
-
-        if (!hasActivePeriod) {
-            // If no period found, reservation is not possible
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        val endDate = getBoatSpaceReservationEndDateForRenew(boatSpaceType, oldValidity)
-        return ReservationResult.Success(
-            ReservationResultSuccess(
-                now,
-                endDate,
-                oldValidity
-            )
+    fun getRenewReservationStartAndEndDate(
+        boatSpaceType: BoatSpaceType,
+        validity: ReservationValidity
+    ): DateRange {
+        return DateRange(
+            startDate = timeProvider.getCurrentDate(),
+            endDate = getBoatSpaceReservationEndDateForRenew(boatSpaceType, validity)
         )
     }
 
@@ -123,14 +96,13 @@ class SeasonalService(
     }
 
     fun isReservationSwitchPeriodActive(
-        reserverID: UUID,
+        isEspooCitizen: Boolean,
         type: BoatSpaceType
     ): Boolean {
-        val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
         return hasActiveReservationPeriod(
             seasonalRepository.getReservationPeriods(),
             timeProvider.getCurrentDate(),
-            reserver.isEspooCitizen(),
+            isEspooCitizen,
             type,
             ReservationOperation.Change
         )
@@ -172,36 +144,6 @@ class SeasonalService(
     fun isBoatSpaceReserved(boatSpaceId: Int): Boolean = boatSpaceRepository.isBoatSpaceReserved(boatSpaceId)
 
     fun getReservationPeriods(): List<ReservationPeriod> = seasonalRepository.getReservationPeriods()
-
-    fun addPeriodInformationToReservation(
-        reserverID: UUID,
-        reservations: List<BoatSpaceReservationDetails>,
-    ): List<BoatSpaceReservationDetails> {
-        val reserver = reserverRepo.getReserverById(reserverID) ?: throw java.lang.IllegalArgumentException("Reserver not found")
-        val isEspooCitizen = reserver.isEspooCitizen()
-        if (!isEspooCitizen) {
-            // Only Espoo citizens can renew reservations
-            return reservations
-        }
-        val periods = getReservationPeriods()
-        return reservations.map { reservation ->
-            // @TODO: This should be moved to another place
-            val canRenewResult = canRenewAReservation(periods, reservation.validity, reservation.endDate, reservation.type)
-            // @TODO: This should be moved to another place
-            val canSwitchResult =
-                canSwitchReservationWithinPeriod(
-                    reservation.type,
-                    reservation.startDate,
-                    reservation.endDate,
-                    reservation.validity,
-                    isEspooCitizen
-                )
-            reservation.copy(
-                canRenew = canRenewResult.success,
-                canSwitch = canSwitchResult.success,
-            )
-        }
-    }
 
     fun canReserveANewSpace(
         reserverID: UUID,

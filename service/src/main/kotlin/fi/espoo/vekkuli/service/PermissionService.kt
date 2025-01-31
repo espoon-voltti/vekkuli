@@ -115,7 +115,20 @@ class PermissionService(
         boatId: Int
     ): Boolean = canEditBoat(editorId, boatId)
 
-    fun canSwitchOrRenewReservation(
+    fun canSwitchReservation(
+        reserver: ReserverWithDetails,
+        reservation: BoatSpaceReservationDetails
+    ): Boolean =
+        when {
+            userService.isAppUser(reserver.id) -> true
+            reserver.id == reservation.reserverId -> true
+            reservation.reserverType == ReserverType.Organization -> {
+                reserver.id in organizationService.getOrganizationMembers(reservation.reserverId).map { it.id }
+            }
+            else -> false
+        }
+
+    fun canRenewReservation(
         reserver: ReserverWithDetails,
         reservation: BoatSpaceReservationDetails
     ): Boolean =

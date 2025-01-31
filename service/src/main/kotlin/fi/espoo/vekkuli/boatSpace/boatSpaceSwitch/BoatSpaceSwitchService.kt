@@ -69,7 +69,7 @@ class BoatSpaceSwitchService(
         }
 
         // User has rights to switch the reservation
-        if (!permissionService.canSwitchOrRenewReservation(reserver, reservation)) {
+        if (!permissionService.canSwitchReservation(reserver, reservation)) {
             return false
         }
 
@@ -79,7 +79,7 @@ class BoatSpaceSwitchService(
         }
 
         // Make sure the switch period is active
-        return seasonalService.isReservationSwitchPeriodActive(reserver.id, boatSpace.type)
+        return seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), boatSpace.type)
     }
 
     fun isSwitchedReservation(reservation: BoatSpaceReservationDetails): Boolean = reservation.creationType == CreationType.Switch

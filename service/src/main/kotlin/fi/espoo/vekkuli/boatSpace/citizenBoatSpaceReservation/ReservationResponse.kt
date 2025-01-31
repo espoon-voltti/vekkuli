@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.citizen.CitizenBoatResponse
 import fi.espoo.vekkuli.boatSpace.citizen.CitizenOrganizationResponse
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
@@ -126,7 +127,7 @@ class ReservationResponseMapper(
     private val organizationService: OrganizationService,
     private val boatSpaceSwitchService: BoatSpaceSwitchService,
     private val seasonalService: SeasonalService,
-    private val permissionService: PermissionService
+    private val renewalPolicyService: RenewalPolicyService
 ) {
     fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse =
         reservationResponse(
@@ -186,6 +187,7 @@ class ReservationResponseMapper(
             } else {
                 false
             }
+        val canRenew = if(reserverId !== null) renewalPolicyService.citizenCanRenewReservation(reservationId, reserverId).success else false
 
         return ReservationResponse(
             id = reservationId,

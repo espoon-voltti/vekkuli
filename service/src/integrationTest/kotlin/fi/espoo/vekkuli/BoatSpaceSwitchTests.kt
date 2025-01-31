@@ -73,18 +73,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     fun mockSeasonalService() {
         // We live in the starting period of reservation switch for espoo citizen
         mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
-        // mockLoggedInUser()
 
-        // pass through the return values
-        Mockito
-            .`when`(
-                seasonalService.addPeriodInformationToReservation(
-                    any(),
-                    any(),
-                )
-            ).thenAnswer {
-                it.getArgument(1)
-            }
 
         Mockito.`when`(seasonalService.isReservationSwitchPeriodActive(any(), any())).thenReturn(true)
     }
