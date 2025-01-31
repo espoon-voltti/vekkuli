@@ -183,24 +183,6 @@ class ReservationResponseMapper(
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservationWithDependencies)
         val trailer = getTrailer(reservationWithDependencies)
-        val canRenew =
-            if (reserverId !== null) {
-                renewalPolicyService.citizenCanRenewReservation(
-                    reservationId,
-                    reserverId
-                ).success
-            } else {
-                false
-            }
-        val canSwitch =
-            if (reserverId !== null) {
-                switchPolicyService.citizenCanSwitchReservation(
-                    reservationId,
-                    reserverId
-                ).success
-            } else {
-                false
-            }
         val canReserveNew =
             if (citizen != null) {
                 seasonalService.canReserveANewSpace(citizen.id, boatSpace.type).success
