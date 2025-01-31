@@ -1,10 +1,10 @@
 import React from 'react'
 
 export default React.memo(function MainSection({
-    dataTestId,
+  dataTestId,
   children
 }: {
-  dataTestId?: String
+  dataTestId?: string
   children: React.ReactNode
 }) {
   return (
