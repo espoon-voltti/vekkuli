@@ -337,11 +337,12 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
                 ?: throw BadRequest("Original reservation not found")
 
-        if (!switchPolicyService.citizenCanSwitchToReservation(
-                originalReservation.id,
-                actingCitizenId,
-                reservation.boatSpaceId,
-            ).success
+        if (!switchPolicyService
+                .citizenCanSwitchToReservation(
+                    originalReservation.id,
+                    actingCitizenId,
+                    reservation.boatSpaceId,
+                ).success
         ) {
             throw Forbidden("Citizen can not switch reservation")
         }
@@ -804,6 +805,32 @@ class ReservationFormService(
         if (reservation.boatSpaceType == BoatSpaceType.Winter) {
             return (
                 reservationFormView.winterStorageForm(
+                    reservation,
+                    boats,
+                    citizen,
+                    organizations,
+                    input,
+                    userType,
+                    municipalities
+                )
+            )
+        }
+        if (reservation.boatSpaceType == BoatSpaceType.Trailer) {
+            return (
+                reservationFormView.trailerForm(
+                    reservation,
+                    boats,
+                    citizen,
+                    organizations,
+                    input,
+                    userType,
+                    municipalities
+                )
+            )
+        }
+        if (reservation.boatSpaceType == BoatSpaceType.Storage) {
+            return (
+                reservationFormView.storageForm(
                     reservation,
                     boats,
                     citizen,

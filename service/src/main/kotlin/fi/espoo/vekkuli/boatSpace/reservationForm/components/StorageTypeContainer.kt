@@ -12,11 +12,24 @@ import java.math.BigDecimal
 class StorageTypeContainer(
     private val formComponents: FormComponents,
 ) : BaseView() {
-    fun render(
+    fun trailerContainer(
         trailerRegistrationNumber: String?,
         trailerWidth: BigDecimal?,
         trailerLength: BigDecimal?,
-        storageType: StorageType? = StorageType.Trailer
+    ): String =
+        """ <div class='form-section mb-none'>
+                <h1 class='label'>${t("boatApplication.title.trailerType")}</h1>
+                <input type="hidden" name="storageType" value='Trailer'>
+                    ${trailerEdit(
+            trailerRegistrationNumber,
+            trailerWidth,
+            trailerLength,
+        )}"""
+
+    fun trailerEdit(
+        trailerRegistrationNumber: String?,
+        trailerWidth: BigDecimal?,
+        trailerLength: BigDecimal?,
     ): String {
         val trailerRegistrationNumberInput =
             formComponents.textInput(
@@ -40,6 +53,40 @@ class StorageTypeContainer(
                 true
             )
 
+        return (
+            """ <template x-if="storageType === '${StorageType.Trailer.name}'">
+                <div data-testid="trailer-information-inputs" class='columns'>
+                    <div class='column is-one-quarter'>
+                        $trailerRegistrationNumberInput
+                    </div>
+                     <div class='column is-one-quarter'>
+                        $trailerWidthInput
+                     </div>
+                     <div class='column is-one-quarter'>
+                        $trailerLengthInput
+                    </div>
+                </div>
+            </template>"""
+        )
+    }
+
+    fun buckStorageTypeRadioButtons(storageType: StorageType?): String {
+        val radioButtons =
+            formComponents.radioButtons(
+                "boatApplication.title.storageType",
+                "storageType",
+                storageType?.name,
+                listOf(
+                    RadioOption(StorageType.Buck.name, t("boatApplication.option.buck")),
+                    RadioOption(StorageType.BuckWithTent.name, t("boatApplication.option.buckTent"))
+                ),
+                mapOf("x-model" to "storageType"),
+                isColumnLayout = true
+            )
+        return radioButtons
+    }
+
+    fun storageTypeRadioButtons(storageType: StorageType?): String {
         val radioButtons =
             formComponents.radioButtons(
                 "boatApplication.title.storageType",
@@ -53,22 +100,21 @@ class StorageTypeContainer(
                 mapOf("x-model" to "storageType"),
                 isColumnLayout = true
             )
+        return radioButtons
+    }
+
+    fun render(
+        trailerRegistrationNumber: String?,
+        trailerWidth: BigDecimal?,
+        trailerLength: BigDecimal?,
+        storageType: StorageType? = StorageType.Trailer
+    ): String {
+        val radioButtons =
+            storageTypeRadioButtons(storageType)
 
         return """<div data-testid="storage-type-selector" >
             $radioButtons
-            <template x-if="storageType === '${StorageType.Trailer.name}'">
-                <div data-testid="trailer-information-inputs" class='columns'>
-                    <div class='column is-one-quarter'>
-                        $trailerRegistrationNumberInput
-                    </div>
-                     <div class='column is-one-quarter'>
-                        $trailerWidthInput
-                     </div>
-                     <div class='column is-one-quarter'>
-                        $trailerLengthInput
-                    </div>
-                </div>
-            </template>
+            ${trailerEdit(trailerRegistrationNumber, trailerWidth, trailerLength)}
             </div>
             """
     }

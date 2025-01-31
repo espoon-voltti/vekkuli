@@ -40,12 +40,13 @@ class BoatSpaceFormPage(
     val confirmCancelModalConfirm = page.getByTestId("confirm-cancel-modal-confirm")
     val storageTypeSelector = getByDataTestId("storage-type-selector")
     val storageTypeBuckOption = page.getByTestId("storageType-Buck")
+    val storageTypeBuckWithTentOption = page.getByTestId("storageType-BuckWithTent")
     val storageTypeTrailerOption = page.getByTestId("storageType-Trailer")
     val trailerInformationInputs = getByDataTestId("trailer-information-inputs")
     val trailerRegistrationNumberError = page.getByTestId("trailerRegistrationNumber-error")
     val trailerRegistrationNumberInput = page.getByTestId("trailerRegistrationNumber")
-    val trailerWidthInput = page.getByTestId("trailerWidth")
-    val trailerLengthInput = page.getByTestId("trailerLength")
+    val trailerWidthInput = getByDataTestId("trailerWidth")
+    val trailerLengthInput = getByDataTestId("trailerLength")
     val storageTypeTextTrailer = page.getByTestId("storage-type-text-trailer")
     val storageTypeTextBuck = page.getByTestId("storage-type-text-buck")
     val storageTypeTextBuckTent = page.getByTestId("storage-type-text-buckTent")
@@ -55,6 +56,7 @@ class BoatSpaceFormPage(
     val ssnInput = page.getByTestId("ssn")
     val addressInput = page.getByTestId("address")
     val postalCodeInput = page.getByTestId("postalCode")
+    val municipalityInput = page.getByTestId("municipalityCode")
 
     val citizenSearchContainer = page.locator("#customer-search-container")
     val citizenInformationContainer = page.locator("#reserver-details")
@@ -88,7 +90,15 @@ class BoatSpaceFormPage(
     val reservationValidityInformation = getByDataTestId("reservation-validity-information")
     val boatSpacePriceInEuro = getByDataTestId("boat-space-price-in-euro")
 
-    fun fillFormAndSubmit() {
+    fun fillFormAndSubmit(overrides: (BoatSpaceFormPage.() -> Unit)? = null) {
+        firstNameInput.fill("John")
+        lastNameInput.fill("Doe")
+        ssnInput.fill("010190-123A")
+        municipalityInput.selectOption("49")
+        phoneInput.fill("123456789")
+        emailInput.fill("test@gmail.com")
+        addressInput.fill("Test street 1")
+        postalCodeInput.fill("12345")
         boatTypeSelect.selectOption("Sailboat")
         widthInput.fill("3")
         lengthInput.fill("6")
@@ -102,6 +112,9 @@ class BoatSpaceFormPage(
         phoneInput.fill("123456789")
         certifyInfoCheckbox.check()
         agreementCheckbox.check()
+
+        overrides?.invoke(this)
+
         submitButton.click()
     }
 
