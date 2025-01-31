@@ -102,6 +102,8 @@ class ReserveBoatSpacePage(
                     Locator.GetByRoleOptions().setName("Vaihdan nykyisen paikan").setExact(true)
                 )
         val firstSwitchReservationButton = switchReservationButtons.first()
+        val secondSwitchReservationButton =
+            switchReservationButtons.nth(1)
     }
 
     class LoginModal(
@@ -183,7 +185,7 @@ class ReserveBoatSpacePage(
         storageFilterSection.widthInput.fill("1")
         storageFilterSection.lengthInput.fill("3")
 
-        getSearchResultsSection().firstReserveButton.click()
+        getSearchResultsSection().b007ReserveButton.click()
         val form = BoatSpaceFormPage(page)
         form.fillFormAndSubmit {
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")

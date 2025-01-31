@@ -2,8 +2,8 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
+import fi.espoo.vekkuli.baseUrlWithFinnishLangParam
 import fi.espoo.vekkuli.pages.citizen.*
-import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -57,15 +57,70 @@ class SwitchReservationTest : ReserveTest() {
     }
 
     @Test
+    fun `should be able to switch slip reservation for organization when the price is the same`() {
+        try {
+            mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
+            page.navigate(baseUrlWithFinnishLangParam)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsOliviaVirtanen()
+            citizenHomePage.navigateToPage()
+
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val filterSection = reservationPage.getFilterSection()
+            filterSection.slipRadio.click()
+
+            reservationPage.startReservingBoatSpaceB059()
+
+            val searchResultsSection = reservationPage.getSearchResultsSection()
+
+            searchResultsSection.firstReserveButton.click()
+            val reserveModal = reservationPage.getReserveModal()
+
+            val expectedBoatSpaceSection = "B"
+            val expectedPlaceNumber = "059"
+            assertThat(reserveModal.root).isVisible()
+            reserveModal.secondSwitchReservationButton.click()
+
+            val form = BoatSpaceFormPage(page)
+            val userAgreementSection = form.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
+            form.confirmButton.click()
+
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+            val organizationDetailsSection = OrganizationDetailsPage(page).getFirstReservationSection()
+            assertThat(organizationDetailsSection.locationName).containsText("Haukilahti")
+            assertThat(organizationDetailsSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `should be able to switch a trailer space`() {
         try {
+            mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+            page.navigate(baseUrlWithFinnishLangParam)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsOliviaVirtanen()
+
             val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
             val filterSection = reservationPage.getFilterSection()
             val trailerFilterSection = filterSection.getTrailerFilterSection()
 
             ReserveBoatSpacePage(page).reserveTrailerBoatSpace()
 
-            mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+            mockTimeProvider(timeProvider, startOfTrailerSwitchPeriodForEspooCitizen)
 
             reservationPage.navigateToPage()
 
@@ -91,15 +146,13 @@ class SwitchReservationTest : ReserveTest() {
 
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-
-            // Check that the renewed reservation is visible
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("Suomenoja")
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("Trailerisäilytys")
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText(trailerRegistrationNumber)
+            // Check that the renewed reservation is visible
+            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            assertThat(firstReservationSection.locationName).containsText("Suomenoja")
+            assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
+            assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(trailerRegistrationNumber)
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -194,11 +247,11 @@ class SwitchReservationTest : ReserveTest() {
         // Check that the renewed reservation is visible
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
-        assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
-        assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText(expectedHarbor)
-        assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-        assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("Trailerisäilytys")
-        assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText(trailerRegistrationNumber)
+
+        val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+        assertThat(firstReservationSection.locationName).containsText(expectedHarbor)
+        assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
+        assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(trailerRegistrationNumber)
     }
 
     @Test
@@ -220,9 +273,8 @@ class SwitchReservationTest : ReserveTest() {
             storageFilterSection.trailerRadio.click()
             storageFilterSection.widthInput.fill("1")
             storageFilterSection.lengthInput.fill("3")
-
             val expectedBoatSpaceSection = "B"
-            val expectedPlaceNumber = "007"
+            val expectedPlaceNumber = "009"
             selectBoatSpaceForSwitch(reservationPage, 3, expectedBoatSpaceSection, expectedPlaceNumber)
             // switch form
             val switchSpaceFormPage = SwitchSpaceFormPage(page)
@@ -244,11 +296,10 @@ class SwitchReservationTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
 
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).isVisible()
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("Haukilahti")
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText("Trailerisäilytys")
-            assertThat(citizenDetailsPage.firstBoatSpaceReservationCard).containsText(trailerRegistrationNumber)
+            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            assertThat(firstReservationSection.locationName).containsText("Haukilahti")
+            assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
+            assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(trailerRegistrationNumber)
         } catch (e: AssertionError) {
             handleError(e)
         }
