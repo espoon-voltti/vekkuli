@@ -173,7 +173,10 @@ class ExistingReservationResponseMapper(
         )
     }
 
-    private fun getCanRenew(reservation: BoatSpaceReservation, reserverId: UUID?): Boolean {
+    private fun getCanRenew(
+        reservation: BoatSpaceReservation,
+        reserverId: UUID?
+    ): Boolean {
         return if (reserverId !== null) {
             renewalPolicyService.citizenCanRenewReservation(
                 reservation.id,
@@ -184,7 +187,10 @@ class ExistingReservationResponseMapper(
         }
     }
 
-    private fun getCanSwitch(reservation: BoatSpaceReservation, reserverId: UUID?): Boolean {
+    private fun getCanSwitch(
+        reservation: BoatSpaceReservation,
+        reserverId: UUID?
+    ): Boolean {
         return if (reserverId !== null) {
             switchPolicyService.citizenCanSwitchReservation(
                 reservation.id,
