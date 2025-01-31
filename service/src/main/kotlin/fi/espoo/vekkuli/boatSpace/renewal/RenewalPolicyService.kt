@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.renewal
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
 import fi.espoo.vekkuli.config.validateReservationIsActive
+import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
@@ -49,8 +50,8 @@ class RenewalPolicyService(
 
         val reserver = reserverRepo.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
 
-        // Citizen can renew only reservations if they live in Espoo
-        if (!reserver.isEspooCitizen()) {
+        // Citizen can renew only reservations if they live in Espoo (or is a strorage)
+        if (!reserver.isEspooCitizen() && reservation.type !== BoatSpaceType.Storage) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
         }
 

@@ -509,7 +509,7 @@ VALUES
     (false, 'Trailer', 'New', 5, 1, 12, 31),
     (false, 'Trailer', 'Change',  5, 1, 12, 31),
     (false, 'Storage', 'New', 9, 15, 7, 31),
-    (false, 'Storage', 'Renew', 9, 1, 9, 15),
+    (false, 'Storage', 'Renew', 8, 15, 9, 14),
     (false, 'Storage', 'Change',  9, 1, 7, 31);
 
 
