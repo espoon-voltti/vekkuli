@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.baseUrlWithFinnishLangParam

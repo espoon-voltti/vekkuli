@@ -8,7 +8,6 @@ import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.intToDecimal
@@ -32,7 +31,6 @@ class InvoiceController(
     private val reservationService: BoatReservationService,
     private val boatReservationService: BoatReservationService,
     private val invoiceService: BoatSpaceInvoiceService,
-    private val timeProvider: TimeProvider,
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository
 ) : BaseView() {
     private val logger = KotlinLogging.logger {}
@@ -194,8 +192,8 @@ class InvoiceController(
         }
         if (!input.markAsPaid) {
             reservationService.setReservationStatusToInvoiced(reservation.id)
-            boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
         }
+        boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
     }
 
     @DeleteMapping("/virkailija/venepaikka/varaus/{reservationId}/lasku")

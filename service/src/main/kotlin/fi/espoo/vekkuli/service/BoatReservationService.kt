@@ -595,8 +595,9 @@ class BoatReservationService(
         val boatSpace =
             boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)
                 ?: throw BadRequest("Boat space ${reservation.boatSpaceId} not found")
-        val isInvoiced = reservation.status == ReservationStatus.Invoiced
+        val isInvoiced = reservation.paymentType == PaymentType.Invoice
         val placeName = "${reservation.locationName} ${reservation.place}"
+        val reservationStatus = reservation.status
 
         val placeTypeText =
             when (reservation.type) {
@@ -611,8 +612,12 @@ class BoatReservationService(
                 "reserverName" to reservation.name,
                 "harborName" to reservation.locationName,
                 "name" to placeName,
-                "width" to fi.espoo.vekkuli.utils.intToDecimal(boatSpace.widthCm),
-                "length" to fi.espoo.vekkuli.utils.intToDecimal(boatSpace.lengthCm),
+                "width" to
+                    fi.espoo.vekkuli.utils
+                        .intToDecimal(boatSpace.widthCm),
+                "length" to
+                    fi.espoo.vekkuli.utils
+                        .intToDecimal(boatSpace.lengthCm),
                 "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
                 "endDate" to reservation.endDate
             )
@@ -626,7 +631,8 @@ class BoatReservationService(
 
         val recipients =
             if (reservation.reserverType == ReserverType.Organization) {
-                organizationService.getOrganizationMembers(reservation.reserverId)
+                organizationService
+                    .getOrganizationMembers(reservation.reserverId)
                     .map { it.email } + listOf(reservation.email)
             } else {
                 listOf(reservation.email)
@@ -636,15 +642,25 @@ class BoatReservationService(
             when (reservation.creationType) {
                 CreationType.New -> {
                     if (isInvoiced) {
-                        EmailSettings(
-                            template = "reservation_created_by_employee",
-                            recipients = recipients,
-                            params =
-                                defaultParams
-                                    .plus("reservationDescription" to "$placeTypeText $placeName")
-                                    .plus("invoiceAddress" to invoiceAddress)
-                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
-                        )
+                        if (reservationStatus == ReservationStatus.Confirmed) {
+                            EmailSettings(
+                                template = "reservation_created_by_employee_confirmed",
+                                recipients = recipients,
+                                params =
+                                    defaultParams
+                                        .plus("reservationDescription" to "$placeTypeText $placeName")
+                            )
+                        } else {
+                            EmailSettings(
+                                template = "reservation_created_by_employee",
+                                recipients = recipients,
+                                params =
+                                    defaultParams
+                                        .plus("reservationDescription" to "$placeTypeText $placeName")
+                                        .plus("invoiceAddress" to invoiceAddress)
+                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                            )
+                        }
                     } else {
                         EmailSettings(
                             template = "reservation_created_by_citizen",
@@ -697,7 +713,8 @@ class BoatReservationService(
         val placeName = "${reservation.locationName} ${reservation.place}"
         val newPlaceName = "${originalReservation.locationName} ${originalReservation.place}"
 
-        val infoText = "${reserver?.firstName} ${reserver?.lastName} vaihtoi paikan. Vanha paikka: $placeName. Uusi paikka: $newPlaceName."
+        val infoText =
+            "${reserver?.firstName} ${reserver?.lastName} vaihtoi paikan. Vanha paikka: $placeName. Uusi paikka: $newPlaceName."
 
         memoService.insertSystemMemo(userId, infoText)
     }

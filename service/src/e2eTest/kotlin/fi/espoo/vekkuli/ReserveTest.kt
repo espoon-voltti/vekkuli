@@ -1,8 +1,7 @@
-package fi.espoo.vekkuli.citizen
+package fi.espoo.vekkuli
 
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
@@ -10,16 +9,10 @@ import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.service.paymentStatusToText
 import fi.espoo.vekkuli.utils.fullDateFormat
-import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 open class ReserveTest : PlaywrightTest() {
-    @BeforeEach
-    fun setUp() {
-        SendEmailServiceMock.resetEmails()
-    }
-
     protected fun setDiscountForReserver(
         page: Page,
         reserverName: String,
@@ -46,13 +39,15 @@ open class ReserveTest : PlaywrightTest() {
         placeName: String,
         amount: String,
         reference: String,
-        paidDate: String? = timeProvider.getCurrentDate().format(fullDateFormat)
+        paidDate: String? = timeProvider.getCurrentDate().format(fullDateFormat),
+        doLogin: Boolean = true
     ) {
         // verity that there's a payment row in reserver's info in employee view
         // todo: citizen and organization pages should have a common base class
-        val citizenDetails = citizenPageInEmployeeView(citizenName)
+        val citizenDetails = citizenPageInEmployeeView(citizenName, doLogin)
         citizenDetails.paymentsNavi.click()
         assertThat(citizenDetails.paymentsTable).isVisible()
+        // page.pause()
         val paymentRows = citizenDetails.paymentsTable.locator("tbody tr").all()
 
         val matchingRow =

@@ -54,6 +54,7 @@ data class BoatSpaceReservationDetailsRow(
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
     val paymentReference: String?,
+    val paymentType: PaymentType?,
     val invoiceDueDate: LocalDate?,
     val storageType: StorageType?,
     val discountPercentage: Int,
@@ -309,6 +310,7 @@ class JdbiBoatSpaceReservationRepository(
                 originalReservationId = dbResult.originalReservationId,
                 paymentDate = dbResult.paymentDate,
                 paymentId = dbResult.paymentId,
+                paymentType = dbResult.paymentType,
                 excludedBoatTypes = getExcludedBoatTypes(handle, dbResult.locationId),
                 boat = loadBoatForReserver(handle, dbResult.id, dbResult.boatId),
                 trailer = loadTrailerForReserver(handle, dbResult.id, dbResult.trailerId),
@@ -450,7 +452,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentReference = it.paymentReference,
                     invoiceDueDate = it.invoiceDueDate,
                     creationType = it.creationType,
-                    discountPercentage = it.discountPercentage
+                    discountPercentage = it.discountPercentage,
+                    paymentType = it.paymentType,
                 )
             }
         }
@@ -519,7 +522,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentReference = it.paymentReference,
                     invoiceDueDate = it.invoiceDueDate,
                     creationType = it.creationType,
-                    discountPercentage = it.discountPercentage
+                    discountPercentage = it.discountPercentage,
+                    paymentType = it.paymentType,
                 )
             }
         }
@@ -588,7 +592,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentReference = it.paymentReference,
                     invoiceDueDate = it.invoiceDueDate,
                     creationType = it.creationType,
-                    discountPercentage = it.discountPercentage
+                    discountPercentage = it.discountPercentage,
+                    paymentType = it.paymentType,
                 )
             }
         }
@@ -765,7 +770,8 @@ class JdbiBoatSpaceReservationRepository(
                     paymentReference = it.paymentReference,
                     invoiceDueDate = it.invoiceDueDate,
                     creationType = it.creationType,
-                    discountPercentage = it.discountPercentage
+                    discountPercentage = it.discountPercentage,
+                    paymentType = it.paymentType,
                 )
             }
         }
@@ -1194,6 +1200,7 @@ class JdbiBoatSpaceReservationRepository(
         bsr.creation_type,
         p.id as payment_id,
         p.paid as payment_date,
+        p.payment_type,
         r.id as reserver_id,
         r.type as reserver_type,
         r.name,

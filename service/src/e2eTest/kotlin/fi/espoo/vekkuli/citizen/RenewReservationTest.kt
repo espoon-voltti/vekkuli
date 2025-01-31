@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock

@@ -8,9 +8,11 @@ class EmployeeHomePage(
 ) {
     fun employeeLogin(langCode: String = "en") {
         page.navigate("$employeeHomePage?lang=$langCode")
+        page.waitForCondition { employeeLoginButton.isVisible }
         employeeLoginButton.click()
         page.getByText("Kirjaudu").click()
     }
 
     val employeeLoginButton = page.getByTestId("employee-login-button")
+    val languageSelector = page.locator("#language-selection")
 }
