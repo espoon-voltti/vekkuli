@@ -795,7 +795,7 @@ class ReservationFormService(
         if (formInput.isOrganization != false) {
             val organizationId = formInput.organizationId
             val organization = organizations.find { it.id == organizationId }
-            if (organization != null) {
+            if (organization != null && organization.discountPercentage > 0) {
                 return ReserverPriceInfo(
                     discountPercentage = organization.discountPercentage,
                     originalPriceInCents = reservation.priceCents,
