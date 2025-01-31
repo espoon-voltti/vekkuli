@@ -598,7 +598,6 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         // Fill in the boat information
         fillBoatAndOtherDetails(formPage)
         formPage.submitButton.click()
-
         val invoicePage = InvoicePreviewPage(page)
         assertThat(invoicePage.header).isVisible()
 
