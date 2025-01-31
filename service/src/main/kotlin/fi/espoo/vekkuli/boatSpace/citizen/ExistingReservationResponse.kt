@@ -76,7 +76,23 @@ class ExistingReservationResponseMapper(
 
         return ExistingReservationResponse(
             id = boatSpaceReservation.id,
-            boatSpace = formatBoatSpace(boatSpace),
+            boatSpace =
+                ExistingReservationResponse.BoatSpace(
+                    id = boatSpace.id,
+                    type = boatSpace.type,
+                    section = boatSpace.section,
+                    placeNumber = boatSpace.placeNumber,
+                    amenity = boatSpace.amenity,
+                    width =
+                        fi.espoo.vekkuli.utils
+                            .intToDecimal(boatSpace.widthCm),
+                    length =
+                        fi.espoo.vekkuli.utils
+                            .intToDecimal(boatSpace.lengthCm),
+                    description = boatSpace.description,
+                    excludedBoatTypes = boatSpace.excludedBoatTypes,
+                    locationName = boatSpace.locationName
+                ),
             boat = formatBoat(boat),
             created = boatSpaceReservation.created,
             endDate = boatSpaceReservation.endDate,
@@ -94,25 +110,6 @@ class ExistingReservationResponseMapper(
                     ).success,
         )
     }
-
-    // todo remove duplicated code
-    fun formatBoatSpace(boatSpace: BoatSpace): ExistingReservationResponse.BoatSpace =
-        ExistingReservationResponse.BoatSpace(
-            id = boatSpace.id,
-            type = boatSpace.type,
-            section = boatSpace.section,
-            placeNumber = boatSpace.placeNumber,
-            amenity = boatSpace.amenity,
-            width =
-                fi.espoo.vekkuli.utils
-                    .intToDecimal(boatSpace.widthCm),
-            length =
-                fi.espoo.vekkuli.utils
-                    .intToDecimal(boatSpace.lengthCm),
-            description = boatSpace.description,
-            excludedBoatTypes = boatSpace.excludedBoatTypes,
-            locationName = boatSpace.locationName
-        )
 
     private fun getBoat(reservation: ReservationWithDependencies): Boat? {
         if (reservation.boatId == null) {
