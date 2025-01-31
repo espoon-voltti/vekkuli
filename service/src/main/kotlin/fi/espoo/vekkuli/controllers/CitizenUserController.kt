@@ -908,7 +908,7 @@ class CitizenUserController(
         reservationService.updateReservationStatus(
             reservationId,
             reservationStatus,
-            paymentDate,
+            paymentDate.atStartOfDay(),
             paymentStatusText
         )
 

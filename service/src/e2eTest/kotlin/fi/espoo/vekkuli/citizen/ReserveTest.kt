@@ -4,12 +4,12 @@ import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.domain.PaymentStatus
-import fi.espoo.vekkuli.employeeHomePage
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.service.paymentStatusToText
+import fi.espoo.vekkuli.utils.fullDateFormat
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -45,7 +45,8 @@ open class ReserveTest : PlaywrightTest() {
         status: PaymentStatus,
         placeName: String,
         amount: String,
-        expectedPaymentReference: String
+        reference: String,
+        paidDate: String? = timeProvider.getCurrentDate().format(fullDateFormat)
     ) {
         // verity that there's a payment row in reserver's info in employee view
         // todo: citizen and organization pages should have a common base class
@@ -60,10 +61,12 @@ open class ReserveTest : PlaywrightTest() {
                 val place = citizenDetails.getByDataTestId("place", row).textContent()
                 val paymentAmount = citizenDetails.getByDataTestId("payment-amount", row).textContent()
                 val paymentReference = citizenDetails.getByDataTestId("payment-reference", row).textContent()
+                val paymentPaidDate = citizenDetails.getByDataTestId("payment-paid-date", row).textContent()
                 paymentStatus == paymentStatusToText(status.name) &&
                     place == placeName &&
                     paymentAmount == amount &&
-                    paymentReference == expectedPaymentReference
+                    paidDate == paymentPaidDate &&
+                    paymentReference == reference
             }
 
         assertThat(matchingRow).hasCount(1)
@@ -83,7 +86,6 @@ open class ReserveTest : PlaywrightTest() {
     }
 
     private fun reservationListPage(doLogin: Boolean = true): ReservationListPage {
-        page.navigate(employeeHomePage)
         val employeeHome = EmployeeHomePage(page)
         if (doLogin) {
             employeeHome.employeeLogin()

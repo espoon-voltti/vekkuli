@@ -447,7 +447,7 @@ class ReserverDetailsReservationsContainer(
                     <td>${paymentTypeToText(p.paymentType.toString())}</td>
                     <td ${addTestId("payment-reference")} class='description'>${getReference(p) ?: ""}</td>
                     <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
-                    <td>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
+                    <td ${addTestId("payment-paid-date")}>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
                     <td ${addTestId("payment-amount")}>${formatInt(p.totalCents)}</td>
                     <td>${p.paymentCreated.format(fullDateTimeFormat)}</td>
                     <td>${if (p.paymentStatus != PaymentStatus.Refunded) createRefundButton(p.paymentId) else ""}</td>

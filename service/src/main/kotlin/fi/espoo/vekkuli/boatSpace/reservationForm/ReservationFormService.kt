@@ -272,7 +272,7 @@ class ReservationFormService(
             boatReservationService.updateReservationStatus(
                 reservationId,
                 status,
-                timeProvider.getCurrentDate(),
+                timeProvider.getCurrentDateTime(),
                 "",
                 priceInfo,
                 PaymentType.Other
@@ -325,7 +325,7 @@ class ReservationFormService(
             boatReservationService.updateReservationStatus(
                 reservationId,
                 status,
-                timeProvider.getCurrentDate(),
+                timeProvider.getCurrentDateTime(),
                 "",
                 priceInfo,
                 PaymentType.Other
@@ -382,7 +382,7 @@ class ReservationFormService(
             boatReservationService.updateReservationStatus(
                 reservationId,
                 status,
-                timeProvider.getCurrentDate(),
+                timeProvider.getCurrentDateTime(),
                 "",
                 priceInfo,
                 PaymentType.Other

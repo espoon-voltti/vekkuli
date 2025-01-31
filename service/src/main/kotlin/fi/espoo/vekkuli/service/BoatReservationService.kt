@@ -504,7 +504,7 @@ class BoatReservationService(
     fun updateReservationStatus(
         reservationId: Int,
         reservationStatus: ReservationStatus,
-        paymentDate: LocalDate,
+        paymentDate: LocalDateTime,
         paymentStatusText: String,
         priceInfo: String = "",
         paymentType: PaymentType = PaymentType.Invoice
@@ -519,7 +519,7 @@ class BoatReservationService(
                 paymentService.updatePayment(
                     payment.copy(
                         status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
-                        paid = paymentDate.atStartOfDay(),
+                        paid = paymentDate,
                         reference = paymentStatusText
                     )
                 )
@@ -537,7 +537,7 @@ class BoatReservationService(
                         vatPercentage = 0.0,
                         productCode = "?",
                         status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
-                        paid = paymentDate.atStartOfDay(),
+                        paid = if (reservationStatus == ReservationStatus.Confirmed) paymentDate else null,
                         paymentType = paymentType,
                         priceInfo = priceInfo,
                     )
