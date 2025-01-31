@@ -8,7 +8,13 @@ export default React.memo(function MainSection({
   children: React.ReactNode
 }) {
   return (
-    <section id="main" className="section" data-testid={dataTestId}>
+    <section
+      id="main"
+      role="main"
+      tabIndex={-1}
+      className="section"
+      data-testid={dataTestId}
+    >
       {children}
     </section>
   )
