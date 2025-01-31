@@ -432,12 +432,9 @@ class BoatReservationService(
         reserverId: UUID,
         spaceType: BoatSpaceType? = null
     ): List<BoatSpaceReservationDetails> =
-        seasonalService.addPeriodInformationToReservation(
+        boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(
             reserverId,
-            boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(
-                reserverId,
-                spaceType,
-            )
+            spaceType,
         )
 
     fun getExpiredBoatSpaceReservationsForReserver(reserverId: UUID): List<BoatSpaceReservationDetails> =

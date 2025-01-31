@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
@@ -59,6 +60,9 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     fun resetDiscount() {
         reserverRepository.updateDiscount(citizenIdOlivia, 0)
     }
+
+    @MockBean
+    private lateinit var renewalPolicyService: RenewalPolicyService
 
     @BeforeEach
     override fun resetDatabase() {
@@ -244,14 +248,15 @@ class ReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should be able to update reservation when the creation type is renew`() {
         val madeReservation = testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdOlivia))
-
+        val startDate = timeProvider.getCurrentDate()
+        val endDate = timeProvider.getCurrentDate().plusDays(30)
         Mockito
-            .`when`(seasonalService.canRenewAReservation(madeReservation.id))
+            .`when`(renewalPolicyService.citizenCanRenewReservation(madeReservation.id, citizenIdOlivia))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
-                        startDate = LocalDate.now(),
-                        endDate = LocalDate.now().plusDays(30),
+                        startDate = startDate,
+                        endDate = endDate,
                         reservationValidity = ReservationValidity.Indefinite
                     )
                 )
@@ -314,7 +319,7 @@ class ReservationFormServiceTests : IntegrationTestBase() {
             testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdOlivia))
 
         Mockito
-            .`when`(seasonalService.canRenewAReservation(madeReservation.id))
+            .`when`(renewalPolicyService.citizenCanRenewReservation(madeReservation.id, citizenIdOlivia))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(

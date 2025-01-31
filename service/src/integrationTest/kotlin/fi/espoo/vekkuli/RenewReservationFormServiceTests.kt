@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.renewal.BoatSpaceRenewalService
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
@@ -31,6 +32,9 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var boatSpaceRenewalService: BoatSpaceRenewalService
+
+    @Autowired
+    lateinit var renewalPolicyService: RenewalPolicyService
 
     @Test
     fun `should create a renewal reservation for employee if not exist or fetch if already created`() {
@@ -143,35 +147,33 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring reservation`() {
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
-        val madeReservation =
+        val reserver = this.citizenIdLeo
+        val originalReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
                     timeProvider,
-                    this.citizenIdLeo,
+                    reserver,
                     1,
                     1,
                     validity = ReservationValidity.Indefinite,
                     endDate = endDateWithinMonthOfSlipRenewWindow
                 )
             )
-        var reservation =
-            reservationService
-                .getBoatSpaceReservationsForReserver(this.citizenIdLeo)
-                .firstOrNull {
-                    it.id == madeReservation.id
-                }
 
-        assertEquals(reservation?.canRenew, false, "Reservation can not be renewed")
-        assertNotNull(reservation?.endDate, "Reservation has end date")
+        assertNotNull(originalReservation, "Reservation should exist")
+        assertEquals(
+            false,
+            renewalPolicyService.citizenCanRenewReservation(originalReservation.id, reserver).success,
+            "Reservation can not be renewed"
+        )
+        assertNotNull(originalReservation.endDate, "Reservation has end date")
 
         val reservationExpiringAndSeasonOpenTime = LocalDateTime.of(2025, 1, 8, 12, 0, 0)
         mockTimeProvider(timeProvider, reservationExpiringAndSeasonOpenTime)
-        reservation =
-            reservationService
-                .getBoatSpaceReservationsForReserver(this.citizenIdLeo)
-                .firstOrNull {
-                    it.id == madeReservation.id
-                }
-        assertEquals(reservation?.canRenew, true, "Reservation can be renewed")
+        assertEquals(
+            true,
+            renewalPolicyService.citizenCanRenewReservation(originalReservation.id, reserver).success,
+            "Reservation can be renewed"
+        )
     }
 }

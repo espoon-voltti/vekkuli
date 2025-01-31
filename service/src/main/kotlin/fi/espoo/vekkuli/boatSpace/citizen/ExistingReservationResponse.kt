@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizen
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
+import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 data class ExistingReservationResponse(
     val id: Int,
@@ -63,8 +66,12 @@ class ExistingReservationResponseMapper(
     private val boatService: BoatService,
     private val spaceReservationService: BoatReservationService,
     private val seasonalService: SeasonalService,
+    private val renewalPolicyService: RenewalPolicyService,
+    private val switchPolicyService: SwitchPolicyService,
+    private val citizenAccessControl: CitizenAccessControl,
 ) {
     fun toReservationResponse(boatSpaceReservation: BoatSpaceReservation): ExistingReservationResponse {
+        val (reserverId) = citizenAccessControl.requireCitizen()
         val reservationWithDependencies =
             spaceReservationService.getReservationWithDependencies(boatSpaceReservation.id) ?: throw NotFound()
 
@@ -73,6 +80,9 @@ class ExistingReservationResponseMapper(
         val boat = getBoat(reservationWithDependencies)
 
         val trailer = getTrailer(reservationWithDependencies)
+
+        val canRenew = getCanRenew(boatSpaceReservation, reserverId)
+        val canSwitch = getCanSwitch(boatSpaceReservation, reserverId)
 
         return ExistingReservationResponse(
             id = boatSpaceReservation.id,
@@ -100,14 +110,8 @@ class ExistingReservationResponseMapper(
             vatValue = reservationWithDependencies.vatPriceInEuro,
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
-            canRenew = seasonalService.canRenewAReservation(boatSpaceReservation.id).success,
-            canSwitch =
-                seasonalService
-                    .canSwitchReservation(
-                        boatSpaceReservation.reserverId,
-                        boatSpace.type,
-                        boatSpaceReservation.id
-                    ).success,
+            canRenew = canRenew,
+            canSwitch = canSwitch
         )
     }
 
@@ -167,5 +171,33 @@ class ExistingReservationResponseMapper(
                 fi.espoo.vekkuli.utils
                     .intToDecimal(trailer.lengthCm),
         )
+    }
+
+    private fun getCanRenew(
+        reservation: BoatSpaceReservation,
+        reserverId: UUID?
+    ): Boolean {
+        return if (reserverId !== null) {
+            renewalPolicyService.citizenCanRenewReservation(
+                reservation.id,
+                reserverId
+            ).success
+        } else {
+            false
+        }
+    }
+
+    private fun getCanSwitch(
+        reservation: BoatSpaceReservation,
+        reserverId: UUID?
+    ): Boolean {
+        return if (reserverId !== null) {
+            switchPolicyService.citizenCanSwitchReservation(
+                reservation.id,
+                reserverId
+            ).success
+        } else {
+            false
+        }
     }
 }

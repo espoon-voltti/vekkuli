@@ -132,7 +132,7 @@ fun getNextDate(
     val targetDateThisYear = LocalDate.of(currentYear, targetMonth, targetDay)
 
     // Check if the target date is in the future
-    return if (currentDate.isBefore(targetDateThisYear)) {
+    return if (!currentDate.isAfter(targetDateThisYear)) {
         targetDateThisYear
     } else {
         // If the target date is in the past, calculate it for the next year
@@ -141,3 +141,5 @@ fun getNextDate(
 }
 
 data class SecondsRemaining(val value: Int)
+
+data class DateRange(val startDate: LocalDate, val endDate: LocalDate)
