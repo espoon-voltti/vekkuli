@@ -47,6 +47,7 @@ export type BoatSpaceReservation = {
   creationType: CreationType
   canReserveNew: boolean
   revisedPrice: RevisedPrice
+  reserverType: ReserverType
 }
 
 export type ExistingBoatSpaceReservation = {
@@ -62,6 +63,7 @@ export type ExistingBoatSpaceReservation = {
   storageType?: StorageType
   paymentDate?: LocalDate
   trailer?: Trailer
+  reserverType: ReserverType
 }
 
 export type CanReserveResultStatus =
@@ -121,6 +123,7 @@ export type ExistingBoatSpaceReservationResponse = {
   storageType: StorageType | null
   paymentDate?: string | null
   trailer?: Trailer | null
+  reserverType: ReserverType
 }
 
 export type RevisedPrice = {

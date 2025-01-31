@@ -68,7 +68,7 @@ export default React.memo(function ReserveModal({
             {canReserveResult.switchableOrganizationReservations.map(
               (organizationReservation) => (
                 <>
-                  <Column isFull>
+                  <Column isFull key={organizationReservation.organizationName}>
                     <h3>
                       {i18n.reservation.searchPage.modal.organizationCurrentPlaces(
                         organizationReservation.organizationName

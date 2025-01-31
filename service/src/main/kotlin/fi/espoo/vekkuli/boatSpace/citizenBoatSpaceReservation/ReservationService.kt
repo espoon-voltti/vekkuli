@@ -141,7 +141,11 @@ open class ReservationService(
                     SwitchableOrganizationReservation(
                         it.first,
                         it.second.filter { reservation ->
-                            seasonalService.canSwitchReservation(citizenId, boatSpace.type, reservation.id) is ReservationResult.Success
+                            switchPolicyService.citizenCanSwitchToReservation(
+                                reservation.id,
+                                citizenId,
+                                spaceId
+                            ) is ReservationResult.Success
                         }
                     )
                 }.filter { it.reservations.isNotEmpty() }
