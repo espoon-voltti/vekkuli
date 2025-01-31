@@ -13,7 +13,7 @@ export async function updateTrailer({
   input
 }: UpdateTrailerRequest): Promise<void> {
   await client.request<void>({
-    url: uri`/trailer/${trailerId}`.toString(),
+    url: uri`/trailers/${trailerId}`.toString(),
     method: 'PATCH',
     data: input
   })
