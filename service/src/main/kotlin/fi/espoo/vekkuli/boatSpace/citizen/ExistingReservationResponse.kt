@@ -177,7 +177,7 @@ class ExistingReservationResponseMapper(
         reservation: BoatSpaceReservation,
         reserverId: UUID?
     ): Boolean {
-        return if (reserverId !== null) {
+        return if (reserverId != null) {
             renewalPolicyService.citizenCanRenewReservation(
                 reservation.id,
                 reserverId
@@ -191,7 +191,7 @@ class ExistingReservationResponseMapper(
         reservation: BoatSpaceReservation,
         reserverId: UUID?
     ): Boolean {
-        return if (reserverId !== null) {
+        return if (reserverId != null) {
             switchPolicyService.citizenCanSwitchReservation(
                 reservation.id,
                 reserverId

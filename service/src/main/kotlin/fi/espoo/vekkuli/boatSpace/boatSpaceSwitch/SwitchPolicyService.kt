@@ -79,7 +79,7 @@ class SwitchPolicyService(
         }
 
         // Check the period is active
-        if (seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), reservation.type)) {
+        if (!seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), reservation.type)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
