@@ -73,6 +73,11 @@ class SwitchPolicyService(
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(originalReservationId) ?: throw BadRequest("Reservation not found")
 
+        // Can switch only from an active reservation
+        if (!validateReservationIsActive(reservation, timeProvider.getCurrentDateTime())) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
         // Check the period is active
         if (seasonalService.isReservationSwitchPeriodActive(reserver.isEspooCitizen(), reservation.type)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
