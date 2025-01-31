@@ -85,20 +85,21 @@ export function initialFormState(
   unfinishedReservation: Reservation,
   storedState?: StoredSearchState
 ): StateOf<ReserveSpaceForm> {
-  const canCitizenReserveNew =
-    unfinishedReservation.reservation.canReserveNew ||
-    unfinishedReservation.reservation.creationType !== 'New'
+  const canCitizenReserve =
+    (unfinishedReservation.reservation.canReserveNew ||
+      unfinishedReservation.reservation.creationType !== 'New') &&
+    unfinishedReservation.reservation.reserverType === 'Citizen'
   return {
     ...initialReserverFormState(reserver),
     organization: initialOrganizationFormState(
       i18n,
       municipalities,
       organizations,
-      canCitizenReserveNew
+      canCitizenReserve
     ),
     boat: initialBoatFormState(
       i18n,
-      canCitizenReserveNew ? boats : organizationBoats[organizations[0].id],
+      canCitizenReserve ? boats : organizationBoats[organizations[0].id],
       spaceType,
       storedState,
       unfinishedReservation?.reservation.boat

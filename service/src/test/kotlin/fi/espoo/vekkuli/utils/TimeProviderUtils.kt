@@ -30,6 +30,7 @@ val startOfTrailerReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 5, 1
 val startOfSlipSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
 val startOfWinterSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 1, 12, 0, 0)
 val startOfStorageSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 1, 12, 0, 0)
+val startOfTrailerSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
 
 // Others
 val startOfStorageReservationPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)

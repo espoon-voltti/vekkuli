@@ -166,7 +166,8 @@ class ReservationResponseMapper(
             spaceReservationService.getReservationWithDependencies(reservationId) ?: throw NotFound()
         val citizen =
             if (reservationWithDependencies.reserverType ==
-                ReserverType.Citizen
+                ReserverType.Citizen ||
+                reservationWithDependencies.creationType == CreationType.Switch
             ) {
                 getCitizen(actingCitizenId, reserverId)
             } else {
@@ -207,7 +208,7 @@ class ReservationResponseMapper(
             trailer = formatTrailer(trailer),
             creationType = reservationWithDependencies.creationType,
             canReserveNew = canReserveNew,
-            revisedPrice = toRevisedPrice(reservationWithDependencies, citizen, organization)
+            revisedPrice = toRevisedPrice(reservationWithDependencies, citizen, organization),
         )
     }
 

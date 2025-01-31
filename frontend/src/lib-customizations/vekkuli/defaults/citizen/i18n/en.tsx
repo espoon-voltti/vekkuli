@@ -165,7 +165,9 @@ const en: Translations = {
         cannotReserveNewPlace:
           'You already have two boat spaces. You cannot reserve a new space, but you can switch your current space.',
         currentPlaces: 'Your current space',
-        switchCurrentPlace: 'Switch my current space'
+        switchCurrentPlace: 'Switch my current space',
+        organizationCurrentPlaces: (organizationName: string) =>
+          `Your organization's  ${organizationName} spaces:`
       }
     },
     formPage: {

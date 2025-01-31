@@ -159,7 +159,9 @@ const sv: Translations = {
         cannotReserveNewPlace:
           'Du har redan två båtplatser. Du kan inte boka en ny plats, men du kan byta din nuvarande plats.',
         currentPlaces: 'Din nuvarande plats',
-        switchCurrentPlace: 'Byt min nuvarande plats'
+        switchCurrentPlace: 'Byt min nuvarande plats',
+        organizationCurrentPlaces: (organizationName: string) =>
+          `Din organisation ${organizationName} plats:`
       }
     },
     formPage: {

@@ -257,7 +257,13 @@ class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `reserving an all year storage for trailer places`() {
         try {
-            ReserveBoatSpacePage(page).reserveStorageWithTrailerType(timeProvider)
+            mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+
+            val reservationPage = ReserveBoatSpacePage(page)
+            val filterSection = reservationPage.getFilterSection()
+            val storageFilterSection = filterSection.getStorageFilterSection()
+
+            reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)

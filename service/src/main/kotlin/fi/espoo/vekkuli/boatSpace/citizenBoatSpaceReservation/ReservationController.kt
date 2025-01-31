@@ -36,7 +36,6 @@ class ReservationController(
             )
         }
         val citizenId = request.ensureCitizenId()
-        val boats = boatService.getBoatsForReserver(citizenId)
 
         val reservation = reservationService.getUnfinishedReservationForCurrentCitizen() ?: throw NotFound()
         val boatSpace = boatSpaceRepository.getBoatSpace(reservation.boatSpaceId) ?: throw NotFound()
@@ -47,7 +46,8 @@ class ReservationController(
                 reservation,
                 boatSpace.type
             )
-
+        val reserverId = if (reservation.reserverId !== null) reservation.reserverId else citizenId
+        val boats = boatService.getBoatsForReserver(reserverId)
         val boatsByOrganization = boatService.getBoatsForReserversOrganizations(citizenId)
         val reservationResponse = reservationResponseMapper.toReservationResponse(reservation)
         val revisedPrice = reservationResponse.revisedPrice

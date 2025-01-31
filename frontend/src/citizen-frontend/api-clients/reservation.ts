@@ -187,7 +187,8 @@ export function deserializeJsonBoatSpaceReservationResponse(
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,
     creationType: json.creationType,
-    canReserveNew: json.canReserveNew
+    canReserveNew: json.canReserveNew,
+    reserverType: json.reserverType
   }
 }
 
@@ -217,6 +218,7 @@ export function deserializeJsonExistingBoatSpaceReservationResponse(
     boat: json.boat,
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,
-    allowedReservationOperations: createAllowedOperationsList(json)
+    allowedReservationOperations: createAllowedOperationsList(json),
+    reserverType: json.reserverType
   }
 }

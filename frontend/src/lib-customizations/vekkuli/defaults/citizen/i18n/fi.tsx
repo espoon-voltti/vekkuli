@@ -164,6 +164,8 @@ export default {
         cannotReserveNewPlace:
           'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
         currentPlaces: 'Paikkasi:',
+        organizationCurrentPlaces: (organizationName: string) =>
+          `Yhteisösi ${organizationName} paikat:`,
         switchCurrentPlace: 'Vaihdan nykyisen paikan'
       }
     },

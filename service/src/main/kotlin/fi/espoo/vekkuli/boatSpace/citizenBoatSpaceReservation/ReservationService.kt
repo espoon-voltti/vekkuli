@@ -124,34 +124,61 @@ open class ReservationService(
     ): CanReserveResult {
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val reservations = boatReservationService.getBoatSpaceReservationsForReserver(citizenId)
-
+        val organizationReservations =
+            organizationService
+                .getCitizenOrganizations(citizenId)
+                .map { Pair(it.name, boatReservationService.getBoatSpaceReservationsForReserver(it.id)) }
         val canReserveSpaceResult = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+        val canReserveOrganizationSpaceResult =
+            organizationService
+                .getCitizenOrganizations(citizenId)
+                .any {
+                    seasonalService.canReserveANewSpace(it.id, boatSpace.type) is ReservationResult.Success
+                }
 
         val switchableReservations =
             reservations.filter {
                 switchPolicyService.citizenCanSwitchToReservation(it.id, citizenId, spaceId) is ReservationResult.Success
             }
 
+        val switchableOrganizationReservations: List<SwitchableOrganizationReservation> =
+            organizationReservations
+                .map {
+                    SwitchableOrganizationReservation(
+                        it.first,
+                        it.second.filter { reservation ->
+                            switchPolicyService.citizenCanSwitchToReservation(
+                                reservation.id,
+                                citizenId,
+                                spaceId
+                            ) is ReservationResult.Success
+                        }
+                    )
+                }.filter { it.reservations.isNotEmpty() }
+
         if (canReserveSpaceResult is ReservationResult.Failure) {
-            if (organizationService.getCitizenOrganizations(citizenId).isNotEmpty() &&
+            if (canReserveOrganizationSpaceResult &&
                 canReserveSpaceResult.errorCode == ReservationResultErrorCode.MaxReservations
             ) {
                 // Can not reserve for reserver, but can reserve for organization
                 return CanReserveResult(
                     status = CanReserveResultStatus.CanReserveOnlyForOrganization,
-                    switchableReservations = switchableReservations
+                    switchableReservations,
+                    switchableOrganizationReservations
                 )
             }
             // Can not reserve but might be able to switch
             return CanReserveResult(
                 status = CanReserveResultStatus.CanNotReserve,
-                switchableReservations = switchableReservations
+                switchableReservations,
+                switchableOrganizationReservations
             )
         }
         // Can reserve and switch if previous reservations
         return CanReserveResult(
             status = CanReserveResultStatus.CanReserve,
-            switchableReservations = switchableReservations
+            switchableReservations,
+            switchableOrganizationReservations
         )
     }
 

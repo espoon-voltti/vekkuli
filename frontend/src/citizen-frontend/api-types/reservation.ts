@@ -47,6 +47,7 @@ export type BoatSpaceReservation = {
   creationType: CreationType
   canReserveNew: boolean
   revisedPrice: RevisedPrice
+  reserverType: ReserverType
 }
 
 export type ExistingBoatSpaceReservation = {
@@ -62,6 +63,7 @@ export type ExistingBoatSpaceReservation = {
   storageType?: StorageType
   paymentDate?: LocalDate
   trailer?: Trailer
+  reserverType: ReserverType
 }
 
 export type CanReserveResultStatus =
@@ -69,15 +71,22 @@ export type CanReserveResultStatus =
   | 'CanNotReserve'
   | 'CanReserveOnlyForOrganization'
 
+export type SwitchableOrganizationReservation = {
+  organizationName: string
+  reservations: SwitchableReservation[]
+}
+
 export type SwitchableReservation = {
   id: number
   boatSpace: BoatSpace
   totalPrice: string
   vatValue: string
 }
+
 export type CanReserveReservation = {
   status: CanReserveResultStatus
   switchableReservations: SwitchableReservation[]
+  switchableOrganizationReservations: SwitchableOrganizationReservation[]
 }
 
 export type BoatSpaceReservationResponse = {
@@ -114,6 +123,7 @@ export type ExistingBoatSpaceReservationResponse = {
   storageType: StorageType | null
   paymentDate?: string | null
   trailer?: Trailer | null
+  reserverType: ReserverType
 }
 
 export type RevisedPrice = {

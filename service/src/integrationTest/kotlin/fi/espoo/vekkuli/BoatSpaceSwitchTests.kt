@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
+import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.CanReserveResultStatus
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.toReservationInformation
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -129,10 +131,11 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         val originalReservation = createTestReservationForEspooCitizen()
         val newBoatSpaceId = 2
         val switchedReservationId =
-            boatSpaceSwitchService.startReservation(
-                newBoatSpaceId,
-                originalReservation.id
-            ).id
+            boatSpaceSwitchService
+                .startReservation(
+                    newBoatSpaceId,
+                    originalReservation.id
+                ).id
         val switchedReservation = boatReservationService.getBoatSpaceReservation(switchedReservationId)
 
         assertNotNull(switchedReservation, "Switch reservation should exist")
@@ -312,6 +315,150 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         Assertions.assertNotNull(payment, "Should create payment")
         assertEquals(PaymentStatus.Success, payment!!.status)
         assertEquals(0, payment.totalCents)
+    }
+
+    @Test
+    fun `should return CanReserveOnlyForOrganization if reservation is not reservable but citizen can reserve for organization`() {
+        // Can not reserve a new space
+        Mockito
+            .`when`(
+                seasonalService.canReserveANewSpace(eq(citizenIdLeo), any())
+            ).thenReturn(
+                ReservationResult.Failure(
+                    errorCode = ReservationResultErrorCode.MaxReservations
+                )
+            )
+
+        val organizationId = UUID.randomUUID()
+
+        val organizationList =
+            listOf(
+                Organization(
+                    id = organizationId,
+                    businessId = "1234567-8",
+                    billingName = "Test",
+                    billingStreetAddress = "Test",
+                    billingPostalCode = "12345",
+                    billingPostOffice = "Test",
+                    name = "Test",
+                    phone = "123456",
+                    email = "test@email.com",
+                    streetAddress = "Test",
+                    streetAddressSv = "Test",
+                    postalCode = "12345",
+                    postOffice = "Test",
+                    postOfficeSv = "Test",
+                    municipalityCode = 123,
+                    discountPercentage = 0,
+                    espooRulesApplied = false,
+                    municipalityName = "Espoo"
+                )
+            )
+
+        Mockito
+            .`when`(
+                seasonalService.canReserveANewSpace(eq(organizationId), any())
+            ).thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        startOfSlipReservationPeriod.toLocalDate(),
+                        startOfSlipReservationPeriod.toLocalDate(),
+                        ReservationValidity.Indefinite
+                    )
+                )
+            )
+
+        Mockito.`when`(organizationService.getCitizenOrganizations(citizenIdLeo)).thenReturn(
+            organizationList
+        )
+
+        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip2)
+        assertEquals(CanReserveResultStatus.CanReserveOnlyForOrganization, result.status)
+    }
+
+    @Test
+    fun `should return CanNotReserve if reservation is not reservable and citizen can not reserve for their organization`() {
+        // Can not reserve a new space
+        Mockito
+            .`when`(
+                seasonalService.canReserveANewSpace(eq(citizenIdLeo), any())
+            ).thenReturn(
+                ReservationResult.Failure(
+                    errorCode = ReservationResultErrorCode.MaxReservations
+                )
+            )
+
+        val organizationId = UUID.randomUUID()
+        val secondOrganizationId = UUID.randomUUID()
+
+        val organizationList =
+            listOf(
+                Organization(
+                    id = organizationId,
+                    businessId = "1234567-8",
+                    billingName = "Test",
+                    billingStreetAddress = "Test",
+                    billingPostalCode = "12345",
+                    billingPostOffice = "Test",
+                    name = "Test",
+                    phone = "123456",
+                    email = "test@email.com",
+                    streetAddress = "Test",
+                    streetAddressSv = "Test",
+                    postalCode = "12345",
+                    postOffice = "Test",
+                    postOfficeSv = "Test",
+                    municipalityCode = 123,
+                    discountPercentage = 0,
+                    espooRulesApplied = false,
+                    municipalityName = "Espoo"
+                ),
+                Organization(
+                    id = secondOrganizationId,
+                    businessId = "1234567-8",
+                    billingName = "Test",
+                    billingStreetAddress = "Test",
+                    billingPostalCode = "12345",
+                    billingPostOffice = "Test",
+                    name = "Test",
+                    phone = "123456",
+                    email = "test@email.com",
+                    streetAddress = "Test",
+                    streetAddressSv = "Test",
+                    postalCode = "12345",
+                    postOffice = "Test",
+                    postOfficeSv = "Test",
+                    municipalityCode = 123,
+                    discountPercentage = 0,
+                    espooRulesApplied = false,
+                    municipalityName = "Espoo"
+                )
+            )
+
+        Mockito
+            .`when`(
+                seasonalService.canReserveANewSpace(eq(organizationId), any())
+            ).thenReturn(
+                ReservationResult.Failure(
+                    errorCode = ReservationResultErrorCode.MaxReservations
+                )
+            )
+
+        Mockito
+            .`when`(
+                seasonalService.canReserveANewSpace(eq(secondOrganizationId), any())
+            ).thenReturn(
+                ReservationResult.Failure(
+                    errorCode = ReservationResultErrorCode.MaxReservations
+                )
+            )
+
+        Mockito.`when`(organizationService.getCitizenOrganizations(citizenIdLeo)).thenReturn(
+            organizationList
+        )
+
+        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip2)
+        assertEquals(CanReserveResultStatus.CanNotReserve, result.status)
     }
 
     private fun createTestReservationForEspooCitizen(

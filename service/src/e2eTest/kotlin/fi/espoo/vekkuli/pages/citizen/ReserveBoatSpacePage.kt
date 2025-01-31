@@ -6,9 +6,6 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
-import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.mockTimeProvider
-import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
 
 class ReserveBoatSpacePage(
     page: Page
@@ -105,6 +102,8 @@ class ReserveBoatSpacePage(
                     Locator.GetByRoleOptions().setName("Vaihdan nykyisen paikan").setExact(true)
                 )
         val firstSwitchReservationButton = switchReservationButtons.first()
+        val secondSwitchReservationButton =
+            switchReservationButtons.nth(1)
     }
 
     class LoginModal(
@@ -146,12 +145,30 @@ class ReserveBoatSpacePage(
         slipFilterSection.lengthInput.fill("5")
     }
 
+    fun filterForSlipBoatSpace() {
+        val filterSection = getFilterSection()
+        filterSection.slipRadio.click()
+        val slipFilterSection = filterSection.getSlipFilterSection()
+        slipFilterSection.boatTypeSelect.selectOption("Sailboat")
+        slipFilterSection.widthInput.fill("1")
+        slipFilterSection.lengthInput.fill("3")
+    }
+
     fun filterForTrailerSpace012() {
         val filterSection = getFilterSection()
         filterSection.trailerRadio.click()
         val slipFilterSection = filterSection.getTrailerFilterSection()
         slipFilterSection.widthInput.fill("2")
         slipFilterSection.lengthInput.fill("4")
+    }
+
+    // Winter space
+    fun filterForWinterSpaceB013() {
+        val filterSection = getFilterSection()
+        filterSection.winterRadio.click()
+        val slipFilterSection = filterSection.getWinterFilterSection()
+        slipFilterSection.widthInput.fill("1")
+        slipFilterSection.lengthInput.fill("3")
     }
 
     fun startReservingBoatSpaceB314() {
@@ -169,25 +186,29 @@ class ReserveBoatSpacePage(
         page.locator("tr:has-text('TRAILERI 012')").locator("button:has-text('Varaa')").click()
     }
 
-    fun reserveStorageWithTrailerType(timeProvider: TimeProvider) {
-        mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
+    fun startReservingWinterBoatSpaceB013() {
+        filterForWinterSpaceB013()
+        getSearchResultsSection().firstReserveButton.click()
+    }
+
+    fun reserveStorageWithTrailerType(
+        filterSection: FilterSection,
+        storageFilterSection: StorageFilterSection
+    ) {
         val citizenHomePage = CitizenHomePage(page)
         citizenHomePage.loginAsLeoKorhonen()
         citizenHomePage.navigateToPage()
         citizenHomePage.languageSelector.click()
         citizenHomePage.languageSelector.getByText("Suomi").click()
-        val reservationPage = ReserveBoatSpacePage(page)
-        reservationPage.navigateToPage()
+        navigateToPage()
 
-        val filterSection = reservationPage.getFilterSection()
         filterSection.storageRadio.click()
 
-        val storageFilterSection = filterSection.getStorageFilterSection()
         storageFilterSection.trailerRadio.click()
         storageFilterSection.widthInput.fill("1")
         storageFilterSection.lengthInput.fill("3")
 
-        reservationPage.getSearchResultsSection().firstReserveButton.click()
+        getSearchResultsSection().b007ReserveButton.click()
         val form = BoatSpaceFormPage(page)
         form.fillFormAndSubmit {
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
@@ -196,5 +217,66 @@ class ReserveBoatSpacePage(
 
         PaymentPage(page).payReservation()
         assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
+    }
+
+    fun reserveTrailerBoatSpace(): BoatSpaceFormPage {
+        val filterSection = getFilterSection()
+        filterSection.trailerRadio.click()
+        val trailerFilterSection = filterSection.getTrailerFilterSection()
+        trailerFilterSection.widthInput.fill("1")
+        trailerFilterSection.lengthInput.fill("3")
+
+        getSearchResultsSection().firstReserveButton.click()
+
+        val form = BoatSpaceFormPage(page)
+        form.fillFormAndSubmit {
+            getBoatSection().widthInput.fill("2")
+            getBoatSection().lengthInput.fill("5")
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+        }
+        PaymentPage(page).payReservation()
+        return form
+    }
+
+    fun reserveWinterBoatSpace() {
+        navigateToPage()
+
+        startReservingWinterBoatSpaceB013()
+
+        // click send to trigger validation
+        val formPage = BoatSpaceFormPage(page)
+
+        val trailerRegistrationCode = "ID12345"
+        val trailerWidth = "1.5"
+        val trailerLength = "3.5"
+
+        formPage.fillFormAndSubmit {
+            getBoatSection().widthInput.fill("1")
+            getBoatSection().lengthInput.fill("3")
+            val winterStorageTypeSection = getWinterStorageTypeSection()
+            winterStorageTypeSection.buckStorageTypeRadio.click()
+            winterStorageTypeSection.trailerStorageTypeRadio.click()
+            winterStorageTypeSection.trailerRegistrationNumberInput.fill(trailerRegistrationCode)
+            winterStorageTypeSection.trailerWidthInput.fill(trailerWidth)
+            winterStorageTypeSection.trailerLengthInput.fill(trailerLength)
+        }
+
+        // assert that payment title is shown
+        val paymentPage = PaymentPage(page)
+        // Then go through the payment
+        paymentPage.nordeaSuccessButton.click()
+        // Now we should be on the confirmation page
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
+        val citizenDetailPage = CitizenDetailsPage(page)
+        citizenDetailPage.navigateToPage()
+
+        val reservationSection = citizenDetailPage.getReservationSection("Talvipaikka: Haukilahti B 013")
+        val trailerSection = reservationSection.getTrailerSection()
+        page.waitForCondition { trailerSection.widthField.isVisible }
+        assertThat(trailerSection.widthField).containsText(trailerWidth.replace('.', ','))
+        assertThat(trailerSection.lengthField).containsText(trailerLength.replace('.', ','))
+        assertThat(trailerSection.registrationCodeField).containsText(trailerRegistrationCode)
     }
 }
