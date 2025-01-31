@@ -324,7 +324,7 @@ class ReservationResponseMapper(
     private fun getBoatSpace(reservation: ReservationWithDependencies): BoatSpace =
         spaceReservationService.getBoatSpaceRelatedToReservation(reservation.id) ?: throw NotFound()
 
-    private fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
+    fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
         ReservationResponse.BoatSpace(
             id = boatSpace.id,
             type = boatSpace.type,

@@ -54,6 +54,21 @@ export type BoatSpaceReservation = {
   revisedPrice: RevisedPrice
 }
 
+export type ExistingBoatSpaceReservation = {
+  id: number
+  boatSpace: BoatSpace
+  allowedReservationOperations: ReservationOperation[]
+  created: HelsinkiDateTime
+  endDate: LocalDate
+  validity: ReservationValidity
+  totalPrice: string
+  vatValue: string
+  boat: Boat
+  storageType?: StorageType
+  paymentDate?: LocalDate
+  trailer?: Trailer
+}
+
 export type CanReserveResultStatus =
   | 'CanReserve'
   | 'CanNotReserve'
@@ -94,6 +109,22 @@ export type BoatSpaceReservationResponse = {
   canRenew: boolean
   canSwitch: boolean
   revisedPrice: RevisedPrice
+}
+
+export type ExistingBoatSpaceReservationResponse = {
+  id: number
+  boatSpace: BoatSpace
+  canRenew: boolean
+  canSwitch: boolean
+  created: string
+  endDate: string
+  validity: ReservationValidity
+  totalPrice: string
+  vatValue: string
+  boat: Boat
+  storageType: StorageType | null
+  paymentDate?: string | null
+  trailer?: Trailer | null
 }
 
 export type RevisedPrice = {

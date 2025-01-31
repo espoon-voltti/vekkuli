@@ -12,7 +12,9 @@ import {
   UnfinishedBoatSpaceReservation,
   UnfinishedBoatSpaceReservationResponse,
   PaymentInformationResponse,
-  ReservationOperation
+  ReservationOperation,
+  ExistingBoatSpaceReservationResponse,
+  ExistingBoatSpaceReservation
 } from '../api-types/reservation'
 
 import {
@@ -162,12 +164,6 @@ export async function paymentInformation(
   return data
 }
 
-export function deserializeJsonBoatSpaceReservationListResponse(
-  json: BoatSpaceReservationResponse[]
-): BoatSpaceReservation[] {
-  return json.map((j) => deserializeJsonBoatSpaceReservationResponse(j))
-}
-
 export function deserializeJsonBoatSpaceReservationResponse(
   json: BoatSpaceReservationResponse
 ): BoatSpaceReservation {
@@ -208,5 +204,35 @@ export function deserializeJsonBoatSpaceReservationResponse(
     creationType: json.creationType,
     allowedReservationOperations: createAllowedOperationsList(json),
     canReserveNew: json.canReserveNew
+  }
+}
+
+export function deserializeJsonExistingBoatSpaceReservationResponse(
+  json: ExistingBoatSpaceReservationResponse
+): ExistingBoatSpaceReservation {
+  const createAllowedOperationsList = (
+    json: ExistingBoatSpaceReservationResponse
+  ): ReservationOperation[] => {
+    const operationsList: ReservationOperation[] = []
+    if (json.canRenew) operationsList.push('Renew')
+    if (json.canSwitch) operationsList.push('Switch')
+    return operationsList
+  }
+
+  return {
+    id: json.id,
+    created: HelsinkiDateTime.parseIso(json.created),
+    endDate: LocalDate.parseIso(json.endDate),
+    validity: json.validity,
+    boatSpace: json.boatSpace,
+    paymentDate: json.paymentDate
+      ? LocalDate.parseIso(json.paymentDate)
+      : undefined,
+    totalPrice: json.totalPrice,
+    vatValue: json.vatValue,
+    boat: json.boat,
+    storageType: json.storageType ?? undefined,
+    trailer: json.trailer ?? undefined,
+    allowedReservationOperations: createAllowedOperationsList(json)
   }
 }

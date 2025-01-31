@@ -2,7 +2,7 @@ import { Container } from 'lib-components/dom'
 import React from 'react'
 
 import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
-import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { Boat } from 'citizen-frontend/shared/types'
 import { MutationDescription } from 'lib-common/query'
 
@@ -12,7 +12,7 @@ import { updateBoatMutation } from './queries'
 
 type BoatsProps = {
   boats: Boat[]
-  activeReservations: BoatSpaceReservation[]
+  activeReservations: ExistingBoatSpaceReservation[]
   updateMutation: MutationDescription<UpdateBoatRequest, void>
 }
 
@@ -49,7 +49,7 @@ export default React.memo(function Boats({
 
 const boatsInActiveReservationsFilter = (
   boats: Boat[],
-  activeReservations: BoatSpaceReservation[],
+  activeReservations: ExistingBoatSpaceReservation[],
   active = true
 ) => {
   const boatIds = new Set(

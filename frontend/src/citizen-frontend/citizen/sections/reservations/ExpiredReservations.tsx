@@ -2,14 +2,14 @@ import Accordion from 'lib-components/accordion/Accordion'
 import { Container } from 'lib-components/dom'
 import React from 'react'
 
-import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 
 import Reservation from './Reservation'
 
 export default React.memo(function ExpiredReservations({
   reservations
 }: {
-  reservations: BoatSpaceReservation[]
+  reservations: ExistingBoatSpaceReservation[]
 }) {
   if (!reservations.length) return null
 
