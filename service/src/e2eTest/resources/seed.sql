@@ -524,7 +524,9 @@ VALUES
     ('509edb00-5549-11ef-a1c7-776e76028a49', 'Citizen', 'Olivia Virtanen', now(), '04083677348', 'olivia@noreplytest.fi', '', '' , 49, 'Espoo', false),
     ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', 'Citizen', 'Marko Kuusinen', now(), '04583464312', 'marko@noreplytest.fi', '', '' , 91, 'Helsinki', false),
     ('82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Citizen', 'Jorma Pulkkinen', now(), '0503528873', 'jorma@noreplytest.fi', '', '' , 398, 'Lahti', true),
-    ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Organization', 'Espoon Pursiseura', now(), '0448101969', 'eps@noreplytest.fi', 'Nuottatie 19', '02230', 49, 'Espoo', false)
+    ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Organization', 'Espoon Pursiseura', now(), '0448101969', 'eps@noreplytest.fi', 'Nuottatie 19', '02230', 49, 'Espoo', false),
+    ('6a7b1b37-ace5-4992-878b-1fa0cd52e4e7', 'Citizen', 'Turvald Kieltoinen', now(), '050123123', 'turvald@kieltoinen.fi', '', '' , 49, 'Espoo', true)
+
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO citizen (id, national_id, first_name, last_name)
@@ -533,7 +535,8 @@ VALUES
   ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', '150499-911U', 'Leo', 'Korhonen'),
   ('509edb00-5549-11ef-a1c7-776e76028a49', '031298-988S', 'Olivia', 'Virtanen'),
   ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', '290991-993F', 'Marko', 'Kuusinen'),
-  ('82722a75-793a-4cbe-a3d9-a3043f2f5731', '111275-180K', 'Jorma', 'Pulkkinen')
+  ('82722a75-793a-4cbe-a3d9-a3043f2f5731', '111275-180K', 'Jorma', 'Pulkkinen'),
+  ('6a7b1b37-ace5-4992-878b-1fa0cd52e4e7', '250695-7378', 'Turvald', 'Kieltoinen')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO organization (id, business_id, billing_name, billing_street_address, billing_postal_code, billing_post_office)

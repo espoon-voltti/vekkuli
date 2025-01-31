@@ -29,6 +29,10 @@ class CitizenHomePage(
         loginAsCitizen(markoKuusinenSsn)
     }
 
+    fun loginAsTurvaldKieltoinen() {
+        loginAsCitizen(turvaldKieltoinenSsn)
+    }
+
     fun loginAsCitizen(ssn: String) {
         page.navigate(baseUrl)
         getByDataTestId("loginButton").click()
@@ -49,5 +53,6 @@ class CitizenHomePage(
         val leoKorhonenSsn = "150499-911U"
         val mikkoVirtanenSsn = "010106A957V"
         val markoKuusinenSsn = "290991-993F"
+        val turvaldKieltoinenSsn = "250695-7378"
     }
 }
