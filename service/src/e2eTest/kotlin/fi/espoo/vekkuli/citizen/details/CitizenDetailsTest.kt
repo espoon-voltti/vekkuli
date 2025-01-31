@@ -9,8 +9,10 @@ import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.PaymentPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.utils.endOfSlipSwitchPeriodForEspooCitizen
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
+import fi.espoo.vekkuli.utils.startOfSlipSwitchPeriodForEspooCitizen
 import fi.espoo.vekkuli.utils.startOfWinterSpaceRenewPeriod
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -324,6 +326,28 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             employeeCitizenDetails.memoNavi.click()
             assertThat(employeeCitizenDetails.userMemo(2)).containsText(infoText)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `citizen can see switch button on slip reservation`() {
+        try {
+            mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
+            CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
+
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToPage()
+
+            val firstReservationSection = citizenDetails.getFirstReservationSection()
+            assertThat(firstReservationSection.switchSpace).isVisible()
+
+            // move to after the switch period has ended
+            mockTimeProvider(timeProvider, endOfSlipSwitchPeriodForEspooCitizen.plusDays(1))
+            citizenDetails.navigateToPage()
+
+            assertThat(firstReservationSection.switchSpace).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
