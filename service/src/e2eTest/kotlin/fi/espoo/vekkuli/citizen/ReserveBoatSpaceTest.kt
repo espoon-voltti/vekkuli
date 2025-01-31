@@ -511,6 +511,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertThat(paymentPage.paymentProviders).isVisible()
             paymentPage.nordeaSuccessButton.click()
 
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
             messageService.sendScheduledEmails()
             assertEquals(2, SendEmailServiceMock.emails.size)
 
