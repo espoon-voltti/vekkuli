@@ -50,7 +50,7 @@ data class CreatePaymentParams(
     val paymentType: PaymentType,
     val status: PaymentStatus? = PaymentStatus.Created,
     val paid: LocalDateTime? = null,
-    val priceInfo: String? = null,
+    val priceInfo: String? = null
 )
 
 data class CreateInvoiceParams(
@@ -74,5 +74,5 @@ data class PaymentHistory(
     val paymentType: PaymentType,
     val invoiceDueDate: LocalDate?,
     val paymentCreated: LocalDateTime,
-    val priceInfo: String?,
+    val priceInfo: String?
 )

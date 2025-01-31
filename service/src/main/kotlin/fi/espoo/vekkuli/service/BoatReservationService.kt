@@ -91,7 +91,6 @@ class BoatReservationService(
     private val timeProvider: TimeProvider,
     private val memoService: MemoService,
     private val permissionService: PermissionService,
-    private val seasonalService: SeasonalService,
     private val trailerRepository: TrailerRepository,
     private val organizationService: OrganizationService,
     private val paymentRepository: PaymentRepository,
@@ -539,7 +538,7 @@ class BoatReservationService(
                         status = if (reservationStatus == ReservationStatus.Confirmed) PaymentStatus.Success else PaymentStatus.Created,
                         paid = if (reservationStatus == ReservationStatus.Confirmed) paymentDate else null,
                         paymentType = paymentType,
-                        priceInfo = priceInfo,
+                        priceInfo = priceInfo
                     )
                 paymentService.insertPayment(paymentParams, reservationId)
             }

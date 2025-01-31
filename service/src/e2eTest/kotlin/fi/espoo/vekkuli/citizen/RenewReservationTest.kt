@@ -192,6 +192,7 @@ class RenewReservationTest : ReserveTest() {
             reservationPage.navigateToPage()
 
             val form = BoatSpaceFormPage(page)
+            assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).isVisible()
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")
 
             val userAgreementSection = form.getUserAgreementSection()

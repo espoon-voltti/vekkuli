@@ -14,5 +14,4 @@ class EmployeeHomePage(
     }
 
     val employeeLoginButton = page.getByTestId("employee-login-button")
-    val languageSelector = page.locator("#language-selection")
 }

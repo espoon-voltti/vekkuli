@@ -46,7 +46,7 @@ class ReservationPaymentService(
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
                         productCode = paytrailProductCode(reservation.type),
                         paymentType = PaymentType.OnlinePayment,
-                        priceInfo = priceInfo,
+                        priceInfo = priceInfo
                     )
                 )
             }

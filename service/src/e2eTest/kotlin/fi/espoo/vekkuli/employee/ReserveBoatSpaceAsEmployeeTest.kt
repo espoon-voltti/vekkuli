@@ -214,6 +214,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             assertThat(citizenDetailsPage.invoicePaidButton).isHidden()
+
             page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Confirmed, 01.04.2024") }
             page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
 

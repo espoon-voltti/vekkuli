@@ -3,8 +3,8 @@ package fi.espoo.vekkuli.citizen
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
-import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.baseUrlWithFinnishLangParam
+import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
