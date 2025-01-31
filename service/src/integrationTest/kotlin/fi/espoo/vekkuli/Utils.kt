@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.DateRange
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.Jdbi
@@ -288,7 +289,7 @@ class TestUtils(
         addDays: Long? = null
     ) {
         // This is the configured year, because renew periods start at the next year.
-        val year = if(operation == ReservationOperation.Renew) 2025 else 2024
+        val year = if (operation == ReservationOperation.Renew) 2025 else 2024
         val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
         moveTimeToPeriod(period.startMonth, period.startDay, year, addDays)
     }
@@ -299,14 +300,19 @@ class TestUtils(
         isEspooCitizen: Boolean = true,
         addDays: Long? = null
     ) {
-        val year = if(operation == ReservationOperation.Renew) 2025 else 2024
+        val year = if (operation == ReservationOperation.Renew) 2025 else 2024
         val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
         moveTimeToPeriod(period.endMonth, period.endDay, year, addDays)
     }
 
-    private fun moveTimeToPeriod(month: Int, day: Int, year: Int, addDays: Long? = null) {
+    private fun moveTimeToPeriod(
+        month: Int,
+        day: Int,
+        year: Int,
+        addDays: Long? = null
+    ) {
         var date = LocalDateTime.of(year, month, day, 0, 0, 0)
-        if(addDays != null) {
+        if (addDays != null) {
             date = date.plusDays(addDays)
         }
         mockTimeProvider(timeProvider, date)
@@ -320,8 +326,21 @@ class TestUtils(
         val periods = seasonalService.getReservationPeriods()
         return periods.filter {
             it.boatSpaceType == boatSpaceType &&
-            it.operation == operation &&
-            it.isEspooCitizen == isEspooCitizen
+                it.operation == operation &&
+                it.isEspooCitizen == isEspooCitizen
         }
+    }
+
+    fun getReservationPeriodDateRange(
+        isEspooCitizen: Boolean,
+        boatSpaceType: BoatSpaceType,
+        operation: ReservationOperation,
+        year: Int
+    ): DateRange {
+        val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
+        return DateRange(
+            startDate = LocalDate.of(year, period.startMonth, period.startDay),
+            endDate = LocalDate.of(year, period.endMonth, period.endDay),
+        )
     }
 }

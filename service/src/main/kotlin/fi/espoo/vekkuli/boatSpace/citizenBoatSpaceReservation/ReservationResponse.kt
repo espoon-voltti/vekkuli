@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.boatSpace.citizen.CitizenBoatResponse
 import fi.espoo.vekkuli.boatSpace.citizen.CitizenOrganizationResponse
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
@@ -127,7 +128,8 @@ class ReservationResponseMapper(
     private val organizationService: OrganizationService,
     private val boatSpaceSwitchService: BoatSpaceSwitchService,
     private val seasonalService: SeasonalService,
-    private val renewalPolicyService: RenewalPolicyService
+    private val renewalPolicyService: RenewalPolicyService,
+    private val switchPolicyService: SwitchPolicyService
 ) {
     fun toReservationResponse(reservation: BoatSpaceReservation): ReservationResponse =
         reservationResponse(
@@ -181,13 +183,31 @@ class ReservationResponseMapper(
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservationWithDependencies)
         val trailer = getTrailer(reservationWithDependencies)
+        val canRenew =
+            if (reserverId !== null) {
+                renewalPolicyService.citizenCanRenewReservation(
+                    reservationId,
+                    reserverId
+                ).success
+            } else {
+                false
+            }
+        val canSwitch =
+            if (reserverId !== null) {
+                switchPolicyService.citizenCanSwitchReservation(
+                    reservationId,
+                    reserverId,
+                    boatSpace.type
+                ).success
+            } else {
+                false
+            }
         val canReserveNew =
             if (citizen != null) {
                 seasonalService.canReserveANewSpace(citizen.id, boatSpace.type).success
             } else {
                 false
             }
-        val canRenew = if(reserverId !== null) renewalPolicyService.citizenCanRenewReservation(reservationId, reserverId).success else false
 
         return ReservationResponse(
             id = reservationId,

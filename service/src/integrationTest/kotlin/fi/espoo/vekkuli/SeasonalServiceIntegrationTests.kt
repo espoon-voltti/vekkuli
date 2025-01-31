@@ -884,45 +884,4 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         val isReservedAfterReservationSecond = seasonalService.isBoatSpaceReserved(boatSpaceId)
         assertEquals(true, isReservedAfterReservationSecond, "Boat space is reserved")
     }
-
-    @Test
-    fun `should check whether boat space can be switched`() {
-        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
-        // Slip reservation
-        val madeReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    this.citizenIdLeo,
-                    1,
-                    1
-                )
-            )
-        val canSwitch = seasonalService.canSwitchReservation(citizenIdLeo, BoatSpaceType.Slip, madeReservation.id)
-        assertEquals(true, canSwitch.success, "Boat space can be switched")
-        assertEquals(
-            ReservationResult.Success(
-                ReservationResultSuccess(madeReservation.startDate, madeReservation.endDate, madeReservation.validity)
-            ),
-            canSwitch,
-            "ReservationResultSuccess is returned"
-        )
-    }
-
-    @Test
-    fun `should fail if storage type is not provided for winter space reservation`() {
-        mockTimeProvider(timeProvider, startOfWinterSwitchPeriodForEspooCitizen)
-        // create a second reservation for the same boat space
-        val madeReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    this.citizenIdLeo,
-                    2,
-                    2,
-                )
-            )
-        val canSwitch = seasonalService.canSwitchReservation(citizenIdLeo, BoatSpaceType.Winter, madeReservation.id)
-        assertEquals(false, canSwitch.success, "Boat space cannot be switched")
-    }
 }

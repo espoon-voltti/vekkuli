@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.reservationForm
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationPaymentService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
@@ -68,7 +69,8 @@ class ReservationFormService(
     private val trailerRepository: TrailerRepository,
     private val boatSpaceSwitchService: BoatSpaceSwitchService,
     private val paymentService: ReservationPaymentService,
-    private val renewalPolicyService: RenewalPolicyService
+    private val renewalPolicyService: RenewalPolicyService,
+    private val switchPolicyService: SwitchPolicyService
 ) {
     @Transactional
     fun createOrUpdateReserverAndReservationForCitizen(
@@ -335,11 +337,11 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
                 ?: throw BadRequest("Original reservation not found")
 
-        if (!boatSpaceSwitchService.validateCitizenCanSwitchReservation(
+        if (!switchPolicyService.citizenCanSwitchToReservation(
+                originalReservation.id,
                 actingCitizenId,
                 reservation.boatSpaceId,
-                originalReservation.id
-            )
+            ).success
         ) {
             throw Forbidden("Citizen can not switch reservation")
         }

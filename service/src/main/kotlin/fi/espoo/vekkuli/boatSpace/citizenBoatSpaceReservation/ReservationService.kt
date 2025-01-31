@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.common.Conflict
@@ -31,7 +32,8 @@ open class ReservationService(
     private val reservationPaymentService: ReservationPaymentService,
     private val terminateService: TerminateReservationService,
     private val organizationService: OrganizationService,
-    private val paymentService: PaymentService
+    private val paymentService: PaymentService,
+    private val switchPolicyService: SwitchPolicyService
 ) {
     fun getUnfinishedReservationForCurrentCitizen(): BoatSpaceReservation? {
         val (citizenId) = citizenAccessControl.requireCitizen()
@@ -127,7 +129,7 @@ open class ReservationService(
 
         val switchableReservations =
             reservations.filter {
-                seasonalService.canSwitchReservation(citizenId, boatSpace.type, it.id) is ReservationResult.Success
+                switchPolicyService.citizenCanSwitchToReservation(it.id, citizenId, spaceId) is ReservationResult.Success
             }
 
         if (canReserveSpaceResult is ReservationResult.Failure) {

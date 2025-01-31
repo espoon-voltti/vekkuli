@@ -69,32 +69,6 @@ class SeasonalService(
         )
     }
 
-    fun canSwitchReservation(
-        reserverID: UUID?,
-        type: BoatSpaceType,
-        reservationId: Int
-    ): ReservationResult {
-        if (reserverID == null) {
-            throw IllegalArgumentException("Reserver not found")
-        }
-        val reserver = reserverRepo.getReserverById(reserverID) ?: throw IllegalArgumentException("Reserver not found")
-        val reservation =
-            boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
-                ?: throw IllegalArgumentException("Reservation not found")
-
-        if (reservation.type != type) {
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        return canSwitchReservationWithinPeriod(
-            type,
-            reservation.startDate,
-            reservation.endDate,
-            reservation.validity,
-            reserver.isEspooCitizen()
-        )
-    }
-
     fun isReservationSwitchPeriodActive(
         isEspooCitizen: Boolean,
         type: BoatSpaceType
@@ -105,39 +79,6 @@ class SeasonalService(
             isEspooCitizen,
             type,
             ReservationOperation.Change
-        )
-    }
-
-    private fun canSwitchReservationWithinPeriod(
-        type: BoatSpaceType,
-        startDate: LocalDate,
-        endDate: LocalDate,
-        validity: ReservationValidity,
-        isEspooCitizen: Boolean
-    ): ReservationResult {
-        val periods = seasonalRepository.getReservationPeriods()
-        val now = timeProvider.getCurrentDate()
-
-        val hasActivePeriod =
-            hasActiveReservationPeriod(
-                periods,
-                now,
-                isEspooCitizen,
-                type,
-                ReservationOperation.Change
-            )
-
-        if (!hasActivePeriod) {
-            // If no period found, reservation is not possible
-            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
-        }
-
-        return ReservationResult.Success(
-            ReservationResultSuccess(
-                startDate,
-                endDate,
-                validity
-            )
         )
     }
 

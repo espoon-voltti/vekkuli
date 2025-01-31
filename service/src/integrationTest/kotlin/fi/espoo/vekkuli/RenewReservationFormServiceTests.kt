@@ -161,13 +161,19 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
             )
 
         assertNotNull(originalReservation, "Reservation should exist")
-        assertEquals(false, renewalPolicyService.citizenCanRenewReservation(originalReservation.id, reserver).success, "Reservation can not be renewed")
+        assertEquals(
+            false,
+            renewalPolicyService.citizenCanRenewReservation(originalReservation.id, reserver).success,
+            "Reservation can not be renewed"
+        )
         assertNotNull(originalReservation.endDate, "Reservation has end date")
 
         val reservationExpiringAndSeasonOpenTime = LocalDateTime.of(2025, 1, 8, 12, 0, 0)
         mockTimeProvider(timeProvider, reservationExpiringAndSeasonOpenTime)
-        assertEquals(true, renewalPolicyService.citizenCanRenewReservation(originalReservation.id, reserver).success, "Reservation can be renewed")
+        assertEquals(
+            true,
+            renewalPolicyService.citizenCanRenewReservation(originalReservation.id, reserver).success,
+            "Reservation can be renewed"
+        )
     }
-
-
 }

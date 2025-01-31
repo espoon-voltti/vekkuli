@@ -42,14 +42,15 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
 
         // Start at the start of reservation period
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                reserverId,
-                validity = ReservationValidity.Indefinite,
-                endDate = getSlipEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    validity = ReservationValidity.Indefinite,
+                    endDate = getSlipEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
+                )
             )
-        )
 
         // Move time before the start of the renewal period
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew, addDays = -1)
@@ -75,7 +76,54 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
             "Reservation can't be renewed after the renewal period"
         )
+    }
 
+    @Test
+    fun `should be able to renew expiring indefinite at the last day of the renew period`() {
+        // Start at the start of reservation period
+        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
+
+        val reserverId = espooCitizenWithoutReservationsId
+        val validity = ReservationValidity.Indefinite
+        val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
+        val startDate = timeProvider.getCurrentDate()
+
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    validity = validity,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+            )
+
+        val renewPeriod =
+            testUtils.getReservationPeriodDateRange(
+                true,
+                BoatSpaceType.Slip,
+                ReservationOperation.Renew,
+                startDate.plusYears(1).year
+            )
+
+        // Move time to the last day of the renewal period
+        mockTimeProvider(timeProvider, renewPeriod.endDate.atStartOfDay())
+
+        val expectedRenewalEndDate = getSlipEndDate(timeProvider.getCurrentDate().plusYears(1), validity)
+        val beforePeriodResult = renewalPolicyService.employeeCanRenewReservation(reservation.id)
+
+        assertEquals(
+            timeProvider.getCurrentDate(),
+            (beforePeriodResult as? ReservationResult.Success)?.data?.startDate,
+            "Renewed reservation should start from the current date"
+        )
+
+        assertEquals(
+            expectedRenewalEndDate,
+            (beforePeriodResult as? ReservationResult.Success)?.data?.endDate,
+            "Renewed reservation should end at the end of the next season"
+        )
     }
 
     @Test
@@ -84,19 +132,24 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         // Start at the start of reservation period
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New, isEspooCitizen = false)
 
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                reserverId,
-                validity = ReservationValidity.Indefinite,
-                endDate = getSlipEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    validity = ReservationValidity.Indefinite,
+                    endDate = getSlipEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite)
+                )
             )
-        )
 
         // Move to the start of renewal period (for espoo citizen)
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
 
-        assertEquals(false, renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success, "Reservation can't be renewed")
+        assertEquals(
+            false,
+            renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
+            "Reservation can't be renewed"
+        )
     }
 
     @Test
@@ -105,23 +158,28 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         // Start at the start of reservation period
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
 
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                reserverId,
-                validity = ReservationValidity.FixedTerm,
-                endDate = getSlipEndDate(timeProvider.getCurrentDate(), ReservationValidity.FixedTerm)
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    validity = ReservationValidity.FixedTerm,
+                    endDate = getSlipEndDate(timeProvider.getCurrentDate(), ReservationValidity.FixedTerm)
+                )
             )
-        )
 
         // Move to the start of renewal period
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
 
-        assertEquals(false, renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success, "Reservation can't be renewed")
+        assertEquals(
+            false,
+            renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
+            "Reservation can't be renewed"
+        )
     }
 
     @Test
-    fun `should be able to renew expiring indefinite slip reservation as Employee at any point in time`() {
+    fun `should be able to renew active indefinite slip reservation as an Employee`() {
         // Start at the start of reservation period
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
 
@@ -129,14 +187,15 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         val validity = ReservationValidity.Indefinite
         val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
 
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                reserverId,
-                validity = validity,
-                endDate = endDate
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    validity = validity,
+                    endDate = endDate
+                )
             )
-        )
 
         // Move time before the start of the renewal period
         testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew, addDays = -1)
@@ -180,6 +239,78 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should be able to renew expiring fixed term slip reservation as Employee for an active reservation`() {
+        // Start at the start of reservation period
+        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
+
+        val reserverId = espooCitizenWithoutReservationsId
+        val validity = ReservationValidity.FixedTerm
+        val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
+        val startDate = timeProvider.getCurrentDate()
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    validity = validity,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+            )
+
+        // Move time before the start of the renewal period
+        val dayWhenFixedReservationExpires = endDate.atStartOfDay()
+        mockTimeProvider(timeProvider, dayWhenFixedReservationExpires)
+        val startOfRenewPeriod =
+            testUtils.getReservationPeriodDateRange(
+                true,
+                BoatSpaceType.Slip,
+                ReservationOperation.Renew,
+                startDate.plusYears(1).year
+            )
+        val expectedRenewalEndDate = getSlipEndDate(timeProvider.getCurrentDate().plusYears(1), validity)
+        val beforePeriodResult = renewalPolicyService.employeeCanRenewReservation(reservation.id)
+
+        assertEquals(
+            true,
+            dayWhenFixedReservationExpires.isBefore(startOfRenewPeriod.startDate.atStartOfDay()),
+            "We are operating before the start of the renewal period"
+        )
+
+        assertEquals(
+            true,
+            beforePeriodResult.success,
+            "Employee can renew reservation before the start of the season"
+        )
+
+        assertEquals(
+            timeProvider.getCurrentDate(),
+            (beforePeriodResult as? ReservationResult.Success)?.data?.startDate,
+            "Renewed reservation should start from the current date"
+        )
+
+        assertEquals(
+            expectedRenewalEndDate,
+            (beforePeriodResult as? ReservationResult.Success)?.data?.endDate,
+            "Renewed reservation should end at the end of the next season"
+        )
+
+        // Move to the start of renewal period
+        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
+        assertEquals(
+            true,
+            timeProvider.getCurrentDate().isAfter(endDate),
+            "the renew period starts after the fixed term reservation expires"
+        )
+
+        assertEquals(
+            false,
+            renewalPolicyService.employeeCanRenewReservation(reservation.id).success,
+            "Employee can't renew reservation when it has expired already"
+        )
+    }
+
+    @Test
     fun `should be able to renew expiring indefinite winter reservation as Espoo citizen within renewal time limits`() {
         val reserverId = espooCitizenWithoutReservationsId
         val endDate = getWinterEndDate(timeProvider.getCurrentDate())
@@ -187,15 +318,16 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
 
         // Start at the start of reservation period
         testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                reserverId,
-                boatSpaceId = boatSpaceIdForWinter,
-                validity = ReservationValidity.Indefinite,
-                endDate = endDate
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    boatSpaceId = boatSpaceIdForWinter,
+                    validity = ReservationValidity.Indefinite,
+                    endDate = endDate
+                )
             )
-        )
 
         // Move time before the start of the renewal period
         testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
@@ -221,7 +353,6 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
             "Reservation can't be renewed after the renewal period"
         )
-
     }
 
     @Test
@@ -232,15 +363,16 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
 
         // Start at the start of reservation period
         testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                reserverId,
-                boatSpaceId = boatSpaceIdForStorage,
-                validity = ReservationValidity.Indefinite,
-                endDate = endDate
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    boatSpaceId = boatSpaceIdForStorage,
+                    validity = ReservationValidity.Indefinite,
+                    endDate = endDate
+                )
             )
-        )
 
         // Move time before the start of the renewal period
         testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
@@ -266,27 +398,27 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
             "Reservation can't be renewed after the renewal period"
         )
-
     }
 
     @Test
     fun `should be able to renew expiring indefinite trailer reservation as Espoo citizen within renewal time limits`() {
         val reserverId = espooCitizenWithoutReservationsId
         val validity = ReservationValidity.Indefinite
-        val endDate = getTrailerEndDate(timeProvider.getCurrentDate(),validity)
+        val endDate = getTrailerEndDate(timeProvider.getCurrentDate(), validity)
         val boatSpaceType = BoatSpaceType.Trailer
 
         // Start at the start of reservation period
         testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
-        val reservation = testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                reserverId,
-                boatSpaceId = boatSpaceIdForTrailer,
-                validity = validity,
-                endDate = endDate
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    boatSpaceId = boatSpaceIdForTrailer,
+                    validity = validity,
+                    endDate = endDate
+                )
             )
-        )
 
         // Move time before the start of the renewal period
         testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
@@ -312,7 +444,5 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
             "Reservation can't be renewed after the renewal period"
         )
-
     }
 }
-

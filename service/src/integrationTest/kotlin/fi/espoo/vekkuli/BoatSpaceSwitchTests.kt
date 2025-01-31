@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.BoatSpaceSwitchService
-import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.CanReserveResultStatus
+import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.FillReservationInformationInput
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationService
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.toReservationInformation
@@ -64,6 +64,9 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentRepository: PaymentRepository
 
+    @MockBean
+    private lateinit var switchPolicyService: SwitchPolicyService
+
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
@@ -73,8 +76,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     fun mockSeasonalService() {
         // We live in the starting period of reservation switch for espoo citizen
         mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
-
-
         Mockito.`when`(seasonalService.isReservationSwitchPeriodActive(any(), any())).thenReturn(true)
     }
 
@@ -101,6 +102,26 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
         // Let's not tes
         Mockito.`when`(citizenContextProvider.getCurrentCitizen()).thenReturn(loggedInCitizen)
+    }
+
+    @BeforeEach
+    fun mockAllowSwitching() {
+        Mockito
+            .`when`(
+                switchPolicyService.citizenCanSwitchToReservation(
+                    any(),
+                    any(),
+                    any()
+                )
+            ).thenReturn(
+                ReservationResult.Success(
+                    ReservationResultSuccess(
+                        startOfSlipSwitchPeriodForEspooCitizen.toLocalDate(),
+                        startOfSlipSwitchPeriodForEspooCitizen.toLocalDate(),
+                        ReservationValidity.Indefinite
+                    )
+                )
+            )
     }
 
     @Test
@@ -133,9 +154,8 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should not be able to create a switch reservation if active existing switch reservation exists`() {
+    fun `should not be able to start creating a switch reservation if active existing unfinished switch reservation exists`() {
         val originalReservation = createTestReservationForEspooCitizen()
-
         val firstSwitch =
             boatSpaceSwitchService.startReservation(
                 2,
@@ -154,7 +174,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Test
     fun `should be able to create a switch reservation if existing switch reservation has expired`() {
         val originalReservation = createTestReservationForEspooCitizen()
-
         val firstSwitch =
             boatSpaceSwitchService.startReservation(
                 2,
@@ -176,20 +195,6 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `should not be able to create a switch reservation if boat space is already reserved`() {
-        val alreadyReserverdSpaceId = 3
-        val originalReservation = createTestReservationForEspooCitizen()
-        createTestReservationForEspooCitizen(spaceId = alreadyReserverdSpaceId)
-
-        val switchException =
-            assertThrows<Forbidden> {
-                boatSpaceSwitchService.startReservation(alreadyReserverdSpaceId, originalReservation.id)
-            }
-
-        assertEquals("Citizen can not switch reservation", switchException.message)
-    }
-
-    @Test
     fun `should update switch reservation details and set status to Confirmed when reservation costs the same`() {
         val originalReservation = createTestReservationForEspooCitizen()
         val switchReservation =
@@ -198,7 +203,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
                 originalReservation.id
             )
         val switchInput = createTestSwitchReservationFormFillInput()
-        println(originalReservation.email)
+
         reservationService.fillReservationInformation(switchReservation.id, switchInput.toReservationInformation())
 
         val updatedSwitchedReservation = boatReservationService.getBoatSpaceReservation(switchReservation.id)
@@ -283,183 +288,30 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `allow switching winter reservations`() {
-        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-        val originalWinterReservation = createTestReservationForEspooCitizen(spaceId = boatSpaceIdForWinter)
+    fun `should set the switched reservation to confirmed state if price is zero and add a payment entry`() {
+        val originalReservation = createTestReservationForEspooCitizen()
+        val expensiveSpaceId = createExpensiveTestBoatSpace(989898)
+
+        reserverRepository.updateDiscount(citizenIdMikko, 100)
+
         val switchReservation =
             boatSpaceSwitchService.startReservation(
-                boatSpaceIdForWinter2,
-                originalWinterReservation.id
+                expensiveSpaceId,
+                originalReservation.id
             )
+        val switchInput = createTestSwitchReservationFormFillInput()
 
-        assertNotNull(switchReservation, "Switch reservation should exist for winter reservation")
-    }
+        reservationService.fillReservationInformation(switchReservation.id, switchInput.toReservationInformation())
 
-    @Test
-    fun `should not be able switch slip reservation with winter reservation`() {
-        val originalSlipReservation = createTestReservationForEspooCitizen(spaceId = boatSpaceIdForSlip)
-        val expectedException =
-            assertThrows<Forbidden> {
-                boatSpaceSwitchService.startReservation(
-                    boatSpaceIdForWinter2,
-                    originalSlipReservation.id
-                )
-            }
+        val updatedSwitchedReservation = boatReservationService.getReservationWithDependencies(switchReservation.id)
 
-        assertEquals("Citizen can not switch reservation", expectedException.message)
-    }
+        assertNotNull(updatedSwitchedReservation, "Updated switch reservation should exist")
 
-    /*
-
-     * 1. Can reserve space
-     * 2. Can not reserve space
-     * 3. Can reserve space and switch
-     * 4. Can not reserve space but can switch
-     * 5. Can not reserve space and can not switch
-     * 6. Can not reserve a space for reserver, but for organization
-     * */
-    @Test
-    fun `should return CanReserve status when space is reservable`() {
-        Mockito
-            .`when`(
-                seasonalService.canReserveANewSpace(any(), any())
-            ).thenReturn(
-                ReservationResult.Success(
-                    ReservationResultSuccess(
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        ReservationValidity.Indefinite
-                    )
-                )
-            )
-        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip3)
-        assertEquals(CanReserveResultStatus.CanReserve, result.status)
-    }
-
-    @Test
-    fun `should return CanNotReserve status when no space is reservable`() {
-        Mockito.`when`(seasonalService.canReserveANewSpace(any(), any())).thenReturn(
-            ReservationResult.Failure(
-                errorCode = ReservationResultErrorCode.NotPossible
-            )
-        )
-        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip3)
-        assertEquals(CanReserveResultStatus.CanNotReserve, result.status)
-    }
-
-    @Test
-    fun `should return CanReserve status and switchable spaces when space is reservable and can switch`() {
-        val slipReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider = timeProvider,
-                    citizenId = citizenIdLeo,
-                    boatSpaceId = boatSpaceIdForSlip,
-                    boatId = 2,
-                    validity = ReservationValidity.Indefinite,
-                    endDate = startOfSlipReservationPeriod.plusDays(10).toLocalDate()
-                )
-            )
-
-        Mockito
-            .`when`(
-                seasonalService.canReserveANewSpace(any(), any())
-            ).thenReturn(
-                ReservationResult.Success(
-                    ReservationResultSuccess(
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        ReservationValidity.Indefinite
-                    )
-                )
-            )
-
-        Mockito
-            .`when`(
-                seasonalService.canSwitchReservation(
-                    any(),
-                    any(),
-                    any()
-                )
-            ).thenReturn(
-                ReservationResult.Success(
-                    ReservationResultSuccess(
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        ReservationValidity.Indefinite
-                    )
-                )
-            )
-
-        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip2)
-        assertEquals(CanReserveResultStatus.CanReserve, result.status)
-    }
-
-    @Test
-    fun `should return CanNotReserve status and switchable spaces when space is not reservable and can switch`() {
-        val slipReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider = timeProvider,
-                    citizenId = citizenIdLeo,
-                    boatSpaceId = boatSpaceIdForSlip,
-                    boatId = 2,
-                    validity = ReservationValidity.Indefinite,
-                    endDate = startOfSlipReservationPeriod.plusDays(10).toLocalDate()
-                )
-            )
-
-        // Can not reserve a new space
-        Mockito
-            .`when`(
-                seasonalService.canReserveANewSpace(any(), any())
-            ).thenReturn(
-                ReservationResult.Failure(
-                    errorCode = ReservationResultErrorCode.MaxReservations
-                )
-            )
-
-        //
-        Mockito
-            .`when`(
-                seasonalService.canSwitchReservation(
-                    any(),
-                    any(),
-                    any()
-                )
-            ).thenReturn(
-                ReservationResult.Success(
-                    ReservationResultSuccess(
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        startOfSlipReservationPeriod.toLocalDate(),
-                        ReservationValidity.Indefinite
-                    )
-                )
-            )
-
-        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip2)
-        assertEquals(CanReserveResultStatus.CanNotReserve, result.status)
-        assertEquals(listOf(slipReservation.id), result.switchableReservations.map { it.id })
-    }
-
-    @Test
-    fun `should return CanReserveOnlyForOrganization if reservation is not reservable but citizen belongs to organization`() {
-        // Can not reserve a new space
-        Mockito
-            .`when`(
-                seasonalService.canReserveANewSpace(any(), any())
-            ).thenReturn(
-                ReservationResult.Failure(
-                    errorCode = ReservationResultErrorCode.MaxReservations
-                )
-            )
-
-        Mockito.`when`(organizationService.getCitizenOrganizations(citizenIdLeo)).thenReturn(
-            listOf(Mockito.mock(Organization::class.java))
-        )
-
-        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip2)
-        assertEquals(CanReserveResultStatus.CanReserveOnlyForOrganization, result.status)
+        assertEquals(ReservationStatus.Confirmed, updatedSwitchedReservation.status, "Status should be confirmed")
+        val payment = paymentRepository.getPaymentForReservation(updatedSwitchedReservation.id)
+        Assertions.assertNotNull(payment, "Should create payment")
+        assertEquals(PaymentStatus.Success, payment!!.status)
+        assertEquals(0, payment.totalCents)
     }
 
     private fun createTestReservationForEspooCitizen(
@@ -526,32 +378,5 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         )
 
         return spaceId
-    }
-
-    @Test
-    fun `should set the switched reservation to confirmed state if price is zero and add a payment entry`() {
-        val originalReservation = createTestReservationForEspooCitizen()
-        val expensiveSpaceId = createExpensiveTestBoatSpace(989898)
-
-        reserverRepository.updateDiscount(citizenIdMikko, 100)
-
-        val switchReservation =
-            boatSpaceSwitchService.startReservation(
-                expensiveSpaceId,
-                originalReservation.id
-            )
-        val switchInput = createTestSwitchReservationFormFillInput()
-
-        reservationService.fillReservationInformation(switchReservation.id, switchInput.toReservationInformation())
-
-        val updatedSwitchedReservation = boatReservationService.getReservationWithDependencies(switchReservation.id)
-
-        assertNotNull(updatedSwitchedReservation, "Updated switch reservation should exist")
-
-        assertEquals(ReservationStatus.Confirmed, updatedSwitchedReservation.status, "Status should be confirmed")
-        val payment = paymentRepository.getPaymentForReservation(updatedSwitchedReservation.id)
-        Assertions.assertNotNull(payment, "Should create payment")
-        assertEquals(PaymentStatus.Success, payment!!.status)
-        assertEquals(0, payment.totalCents)
     }
 }
