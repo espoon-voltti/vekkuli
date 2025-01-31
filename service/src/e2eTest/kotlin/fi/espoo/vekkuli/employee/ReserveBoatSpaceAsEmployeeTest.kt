@@ -570,6 +570,61 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
     }
 
     @Test
+    fun `Employee can reserve a boat space on behalf of an existing citizen with turvakielto`() {
+        val listingPage = reservationListPage()
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.widthFilterInput.fill("3")
+        reservationPage.lengthFilterInput.fill("6")
+        reservationPage.lengthFilterInput.blur()
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        val place = page.getByTestId("place").innerText()
+        formPage.existingCitizenSelector.click()
+        assertThat(formPage.citizenSearchContainer).isVisible()
+
+        formPage.submitButton.click()
+
+        assertThat(formPage.citizenIdError).isVisible()
+
+        typeText(formPage.citizenSearchInput, "kieltoinen")
+
+        formPage.citizenSearchOption1.click()
+        assertThat(page.getByTestId("firstName")).containsText("Turvald")
+        assertThat(page.getByTestId("lastName")).containsText("Kieltoinen")
+
+        // Fill in the boat information
+        fillBoatAndOtherDetails(formPage)
+        formPage.submitButton.click()
+        val invoicePage = InvoicePreviewPage(page)
+        assertThat(invoicePage.header).isVisible()
+
+        assertThat(page.getByTestId("reserverName")).containsText("Turvald Kieltoinen")
+        assertThat(page.getByTestId("reserverAddress")).hasText("Tieto puuttuu")
+        val description = page.getByTestId("description").inputValue()
+        assertContains(description, place)
+
+        invoicePage.sendButton.click()
+
+        val reservationListPage = ReservationListPage(page)
+        assertThat(reservationListPage.header).isVisible()
+
+        // Check that the reservation is visible in the list
+        assertThat(page.getByText(place)).isVisible()
+
+        messageService.sendScheduledEmails()
+        assertEquals(1, SendEmailServiceMock.emails.size)
+
+        assertTrue(
+            SendEmailServiceMock.emails.get(
+                0
+            ).contains("to turvald@kieltoinen.fi with subject Espoon kaupungin venepaikan varaus")
+        )
+    }
+
+    @Test
     fun `After reselecting "new citizen", the previously selected citizen is no longer selected`() {
         val listingPage = reservationListPage()
         listingPage.createReservation.click()

@@ -84,12 +84,19 @@ class InvoiceController(
                 "${invoiceData.firstnames} ${invoiceData.lastname}"
             }
 
+        val reserverStreetAddress =
+            if (!invoiceData.street.isEmpty() && !invoiceData.postalCode.isEmpty() && !invoiceData.post.isEmpty()) {
+                "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}"
+            } else {
+                t("infoMissing")
+            }
+
         val model =
             SendInvoiceModel(
                 reservationId = reservationId,
                 reserverName = reserverName,
                 reserverSsn = invoiceData.ssn ?: "",
-                reserverAddress = "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}",
+                reserverAddress = reserverStreetAddress,
                 product = reservation.locationName,
                 function = getDefaultFunction(reservation.type),
                 billingPeriodStart = formatAsFullDate(reservation.startDate),

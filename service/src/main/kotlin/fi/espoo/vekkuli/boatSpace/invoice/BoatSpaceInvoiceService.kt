@@ -122,12 +122,12 @@ class BoatSpaceInvoiceService(
         }
 
         val price = priceWithVatInCents ?: reservation.priceCents
-        val description =
+        val desc =
             description
                 ?: (
                     placeTypeToText(reservation.type.toString()) +
-                        " " + reservation.locationName + " " + reservation.place + " " +
-                        timeProvider.getCurrentDate().year + "-" + reservation.endDate.year
+                        " " + reservation.locationName + " " + reservation.place + " " + timeProvider.getCurrentDate().year +
+                        if (reservation.startDate.year < reservation.endDate.year) ("-" + reservation.endDate.year) else ""
                 )
 
         if (reservation.reserverType == ReserverType.Citizen) {
@@ -150,7 +150,7 @@ class BoatSpaceInvoiceService(
                 mobilePhone = citizen.phone,
                 email = citizen.email,
                 priceCents = price,
-                description = description,
+                description = desc,
                 function = function ?: "T1270",
             )
         } else {
@@ -170,7 +170,7 @@ class BoatSpaceInvoiceService(
                 mobilePhone = reserver.phone,
                 email = reserver.email,
                 priceCents = price,
-                description = description,
+                description = desc,
                 orgId = organization?.businessId,
                 function = function ?: "T1270",
                 orgName = organization?.name,
