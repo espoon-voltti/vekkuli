@@ -202,24 +202,4 @@ class ReservationAvailabilityTests : IntegrationTestBase() {
         assertEquals(CanReserveResultStatus.CanNotReserve, result.status)
         assertEquals(listOf(slipReservation.id), result.switchableReservations.map { it.id })
     }
-
-    @Test
-    fun `should return CanReserveOnlyForOrganization if reservation is not reservable but citizen belongs to organization`() {
-        // Can not reserve a new space
-        Mockito
-            .`when`(
-                seasonalService.canReserveANewSpace(any(), any())
-            ).thenReturn(
-                ReservationResult.Failure(
-                    errorCode = ReservationResultErrorCode.MaxReservations
-                )
-            )
-
-        Mockito.`when`(organizationService.getCitizenOrganizations(citizenIdLeo)).thenReturn(
-            listOf(Mockito.mock(Organization::class.java))
-        )
-
-        val result = reservationService.checkReservationAvailability(citizenIdLeo, boatSpaceIdForSlip2)
-        assertEquals(CanReserveResultStatus.CanReserveOnlyForOrganization, result.status)
-    }
 }

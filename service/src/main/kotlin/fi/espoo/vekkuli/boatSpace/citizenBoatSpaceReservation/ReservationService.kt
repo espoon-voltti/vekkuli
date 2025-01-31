@@ -129,6 +129,12 @@ open class ReservationService(
                 .getCitizenOrganizations(citizenId)
                 .map { Pair(it.name, boatReservationService.getBoatSpaceReservationsForReserver(it.id)) }
         val canReserveSpaceResult = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
+        val canReserveOrganizationSpaceResult =
+            organizationService
+                .getCitizenOrganizations(citizenId)
+                .any {
+                    seasonalService.canReserveANewSpace(it.id, boatSpace.type) is ReservationResult.Success
+                }
 
         val switchableReservations =
             reservations.filter {
@@ -151,7 +157,7 @@ open class ReservationService(
                 }.filter { it.reservations.isNotEmpty() }
 
         if (canReserveSpaceResult is ReservationResult.Failure) {
-            if (organizationService.getCitizenOrganizations(citizenId).isNotEmpty() &&
+            if (canReserveOrganizationSpaceResult &&
                 canReserveSpaceResult.errorCode == ReservationResultErrorCode.MaxReservations
             ) {
                 // Can not reserve for reserver, but can reserve for organization

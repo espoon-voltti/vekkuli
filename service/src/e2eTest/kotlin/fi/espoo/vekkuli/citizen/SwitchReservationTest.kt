@@ -81,6 +81,7 @@ class SwitchReservationTest : ReserveTest() {
             val expectedBoatSpaceSection = "B"
             val expectedPlaceNumber = "059"
             assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.secondSwitchReservationButton).isVisible()
             reserveModal.secondSwitchReservationButton.click()
 
             val form = BoatSpaceFormPage(page)
@@ -99,6 +100,53 @@ class SwitchReservationTest : ReserveTest() {
             val organizationDetailsSection = OrganizationDetailsPage(page).getFirstReservationSection()
             assertThat(organizationDetailsSection.locationName).containsText("Haukilahti")
             assertThat(organizationDetailsSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `should be able to switch slip reservation for organization`() {
+        try {
+            mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
+            page.navigate(baseUrlWithFinnishLangParam)
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsOliviaVirtanen()
+            citizenHomePage.navigateToPage()
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+            reservationPage.startReservingBoatSpaceB314()
+
+            val reserveModal = reservationPage.getReserveModal()
+            assertThat(reserveModal.reserveANewSpace).isVisible()
+            reserveModal.reserveANewSpace.click()
+
+            val form = BoatSpaceFormPage(page)
+            form.fillFormAndSubmit()
+
+            val paymentPage = PaymentPage(page)
+            paymentPage.nordeaSuccessButton.click()
+
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
+            reservationPage.navigateToPage()
+            reservationPage.startReservingBoatSpaceB059()
+
+            assertThat(reserveModal.root).isVisible()
+            assertThat(reserveModal.reserveANewSpace).isVisible()
+            assertThat(reserveModal.reserveANewSpace).isVisible()
+            reserveModal.reserveANewSpace.click()
+            form.fillFormAndSubmit()
+
+            paymentPage.nordeaSuccessButton.click()
+
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
+            reservationPage.navigateToPage()
+            reservationPage.filterForSlipBoatSpace()
+            reservationPage.getSearchResultsSection().firstReserveButton.click()
+            assertThat(reserveModal.reserveANewSpace).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -166,7 +214,7 @@ class SwitchReservationTest : ReserveTest() {
             val winterFilterSection = filterSection.getWinterFilterSection()
             CitizenHomePage(page).loginAsLeoKorhonen()
             mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-            reservationPage.reserveWinterBoatSpace(filterSection, winterFilterSection)
+            reservationPage.reserveWinterBoatSpace()
 
             val expectedBoatSpaceSection = "B"
             val expectedPlaceNumber = "017"
@@ -194,7 +242,7 @@ class SwitchReservationTest : ReserveTest() {
             val winterFilterSection = filterSection.getWinterFilterSection()
             CitizenHomePage(page).loginAsLeoKorhonen()
             mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
-            reservationPage.reserveWinterBoatSpace(filterSection, winterFilterSection)
+            reservationPage.reserveWinterBoatSpace()
             switchWinterSpace(reservationPage, filterSection, winterFilterSection, "3", "5", 1, "Suomenoja", "B", "087", paymentFlow = true)
         } catch (e: AssertionError) {
             handleError(e)
