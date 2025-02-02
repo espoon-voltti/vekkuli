@@ -264,4 +264,101 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
             "Reservation can't be switched after the switch period"
         )
     }
+
+    @Test
+    fun `should check whether slip reservation is switchable in the change period`() {
+        val reserverId = espooCitizenWithoutReservationsId
+        val validity = ReservationValidity.Indefinite
+        val boatSpaceType = BoatSpaceType.Slip
+        val originalSpaceId = boatSpaceIdForSlip
+
+        // Start at the start of reservation period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+
+        val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
+
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    boatSpaceId = originalSpaceId,
+                    validity = validity,
+                    endDate = endDate
+                )
+            )
+
+        // Move time before the start of the switch period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
+
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
+            "Reservation can't be switched before the start of the season"
+        )
+
+        // Move to the start of switch period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        assertEquals(
+            true,
+            switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
+            "Reservation can be switched at the start of the season"
+        )
+
+        // Move to the end of switch period
+        testUtils.moveTimeToReservationPeriodEnd(boatSpaceType, ReservationOperation.Change)
+        assertEquals(
+            true,
+            switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
+            "Reservation can be switched at the end of the season"
+        )
+
+        // Move time after the end of switch period
+        testUtils.moveTimeToReservationPeriodEnd(boatSpaceType, ReservationOperation.Change, addDays = 1)
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
+            "Reservation can't be switched after the switch period"
+        )
+    }
+
+    @Test
+    fun `should check whether reservation is still active when it can be changed`() {
+        val reserverId = espooCitizenWithoutReservationsId
+        val validity = ReservationValidity.Indefinite
+        val boatSpaceType = BoatSpaceType.Slip
+        val originalSpaceId = boatSpaceIdForSlip
+
+        // Start at the start of reservation period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+
+        val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
+
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    reserverId,
+                    boatSpaceId = originalSpaceId,
+                    validity = validity,
+                    endDate = endDate
+                )
+            )
+
+        // Move to the start of switch period
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        assertEquals(
+            true,
+            switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
+            "Reservation can be switched at the start of the current season"
+        )
+
+        // Move to the start of switch period of next year
+        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = 365)
+        assertEquals(
+            false,
+            switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
+            "Expired reservation can't be switched"
+        )
+    }
 }

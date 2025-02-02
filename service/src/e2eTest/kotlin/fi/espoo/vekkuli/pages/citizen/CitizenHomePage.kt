@@ -29,6 +29,10 @@ class CitizenHomePage(
         loginAsCitizen(markoKuusinenSsn)
     }
 
+    fun loginAsEspooCitizenWithActiveSlipReservation() {
+        loginAsLeoKorhonen()
+    }
+
     fun loginAsTurvaldKieltoinen() {
         loginAsCitizen(turvaldKieltoinenSsn)
     }
