@@ -25,6 +25,8 @@ class ReserveWinterSpacePage(
     val amenityBuoyCheckbox = page.getByTestId("buoy-checkbox")
     val amenityRearBuoyCheckbox = page.getByTestId("rearBuoy-checkbox")
     val amenityBeamCheckbox = page.getByTestId("beam-checkbox")
+    val amenityTrailerRadioButton = page.getByTestId("amenities-Trailer")
+    val amenityBuckRadioButton = page.getByTestId("amenities-Buck")
     val amenityWalkBeamCheckbox = page.getByTestId("walkBeam-checkbox")
     val harborCheckbox = { harbor: String -> page.getByTestId("$harbor-checkbox") }
     val harborHeaders = page.locator(".harbor-header")

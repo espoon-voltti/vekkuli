@@ -142,9 +142,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
             )
 
             citizenDetailsPage.paymentsNavi.click()
@@ -316,9 +317,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
             )
 
             updateReservationToConfirmed(citizenDetailsPage)
@@ -379,9 +381,175 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
+            )
+
+            updateReservationToConfirmed(citizenDetailsPage)
+
+            citizenDetailsPage.memoNavi.click()
+            assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a storage space with trailer amenity on behalf of a citizen`() {
+        try {
+            val listingPage = reservationListPage()
+
+            listingPage.createReservation.click()
+
+            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Storage).click()
+
+            reservationPage.amenityTrailerRadioButton.click()
+            reservationPage.widthFilterInput.fill("1.8")
+            reservationPage.lengthFilterInput.fill("5.5")
+
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+            formPage.fillFormAndSubmit {
+                assertThat(formPage.storageTypeTextTrailer).isVisible()
+                trailerWidthInput.fill("1.8")
+                trailerLengthInput.fill("5.5")
+                trailerRegistrationNumberInput.fill("ABC-123")
+            }
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.sendButton.click()
+
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("Doe John").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
+            )
+
+            updateReservationToConfirmed(citizenDetailsPage)
+
+            citizenDetailsPage.memoNavi.click()
+            assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a storage space with buck amenity space on behalf of a citizen`() {
+        try {
+            val listingPage = reservationListPage()
+
+            listingPage.createReservation.click()
+
+            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Storage).click()
+
+            reservationPage.amenityBuckRadioButton.click()
+            reservationPage.widthFilterInput.fill("1.8")
+            reservationPage.lengthFilterInput.fill("5.5")
+
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+            formPage.fillFormAndSubmit {
+                assertThat(formPage.storageTypeTextTrailer).isVisible()
+                storageTypeBuckWithTentOption.click()
+            }
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.sendButton.click()
+
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("Doe John").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
+            )
+
+            updateReservationToConfirmed(citizenDetailsPage)
+
+            citizenDetailsPage.memoNavi.click()
+            assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a trailer boat space on behalf of a citizen`() {
+        try {
+            val listingPage = reservationListPage()
+
+            listingPage.createReservation.click()
+
+            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Trailer).click()
+
+            reservationPage.widthFilterInput.fill("1.8")
+            reservationPage.lengthFilterInput.fill("5.5")
+
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+            formPage.fillFormAndSubmit {
+                assertThat(formPage.storageTypeTextTrailer).isVisible()
+                trailerWidthInput.fill("1.8")
+                trailerLengthInput.fill("5.5")
+                trailerRegistrationNumberInput.fill("ABC-123")
+            }
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.sendButton.click()
+
+            val reservationListPage = ReservationListPage(page)
+            assertThat(reservationListPage.header).isVisible()
+            page.getByText("Doe John").click()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+
+            messageService.sendScheduledEmails()
+            assertEquals(1, SendEmailServiceMock.emails.size)
+            assertTrue(
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
             )
 
             updateReservationToConfirmed(citizenDetailsPage)
@@ -479,9 +647,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             assertTrue(
-                SendEmailServiceMock.emails.get(
-                    0
-                ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
+                SendEmailServiceMock.emails
+                    .get(
+                        0
+                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -563,9 +732,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertEquals(1, SendEmailServiceMock.emails.size)
 
         assertTrue(
-            SendEmailServiceMock.emails.get(
-                0
-            ).contains("to mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
+            SendEmailServiceMock.emails
+                .get(
+                    0
+                ).contains("to mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
         )
     }
 
@@ -618,9 +788,10 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
         assertEquals(1, SendEmailServiceMock.emails.size)
 
         assertTrue(
-            SendEmailServiceMock.emails.get(
-                0
-            ).contains("to turvald@kieltoinen.fi with subject Espoon kaupungin venepaikan varaus")
+            SendEmailServiceMock.emails
+                .get(
+                    0
+                ).contains("to turvald@kieltoinen.fi with subject Espoon kaupungin venepaikan varaus")
         )
     }
 

@@ -84,10 +84,10 @@ class BoatSpaceSearch(
         val storageTypeButtons =
             formComponents.radioButtons(
                 "boatSpaces.storageTypeHeader",
-                "storageType",
-                "Slip",
+                "amenities",
+                StorageType.Trailer.name,
                 storageTypeAmenities.map { RadioOption(it.name, t("boatSpaces.amenityOption.$it")) },
-                mapOf("x-model" to "storageType"),
+                mapOf("x-model" to "amenities"),
                 isColumnLayout = true
             )
 

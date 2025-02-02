@@ -62,6 +62,180 @@ class ReservationFormView(
     private val storageTypeContainer: StorageTypeContainer,
     private val reservationValidityContainer: ReservationValidityContainer,
 ) : BaseView() {
+    fun trailerForm(
+        reservation: ReservationForApplicationForm,
+        boats: List<Boat>,
+        citizen: CitizenWithDetails?,
+        organizations: List<Organization>,
+        input: ReservationInput,
+        userType: UserType,
+        municipalities: List<Municipality>,
+        isNewCustomer: Boolean = true,
+    ): String {
+        // language=HTML
+        val storageContent =
+            """
+             <div class='form-section'>
+                ${citizenContainer.render(userType, reservation.id, input, citizen, municipalities)}  
+            </div>
+            
+             <div class='form-section'>
+                ${slipHolder.render(
+                organizations,
+                input.isOrganization ?: false,
+                input.organizationId,
+                userType,
+                reservation.id,
+                municipalities
+            )}
+            </div> 
+            
+            <div class='form-section'>
+                    ${boatForm.render(
+                BoatFormParams(
+                    userType,
+                    citizen,
+                    boats,
+                    reservation.id,
+                    BoatFormInput(
+                        id = input.boatId ?: 0,
+                        boatName = input.boatName ?: "",
+                        boatType = input.boatType ?: BoatType.OutboardMotor,
+                        width = null,
+                        length = null,
+                        depth = input.depth,
+                        weight = input.weight,
+                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                        otherIdentification = input.otherIdentification ?: "",
+                        extraInformation = input.extraInformation ?: "",
+                        ownership = input.ownership ?: OwnershipStatus.Owner,
+                        noRegistrationNumber = input.noRegistrationNumber ?: false,
+                    )
+                )
+            )}
+            </div>
+            <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}', reservationValidity: '${input.reservationValidity}' }">
+                <div class='form-section mb-none'>
+                   ${ storageTypeContainer.trailerContainer(
+                input.trailerRegistrationNumber,
+                input.trailerWidth,
+                input.trailerLength,
+            )}
+                </div>
+                
+                ${if (userType == UserType.EMPLOYEE) {
+                """<div class='form-section'>
+                  ${reservationValidityContainer.render(input.reservationValidity)}
+                 </div>"""
+            } else {
+                ""
+            }}
+            
+                 <div class='form-section'>
+                     ${reservationInformation.reservationInformationWithStorageType(reservation)}
+                </div>
+            </div>
+            """.trimIndent()
+        return boatSpaceForm.render(
+            reservation,
+            userType,
+            titleText = t("boatApplication.title.reservation.winter"),
+            formContent = storageContent,
+            reserverPriceInfo = input.reserverPriceInfo,
+        )
+    }
+
+    fun storageForm(
+        reservation: ReservationForApplicationForm,
+        boats: List<Boat>,
+        citizen: CitizenWithDetails?,
+        organizations: List<Organization>,
+        input: ReservationInput,
+        userType: UserType,
+        municipalities: List<Municipality>,
+        isNewCustomer: Boolean = true,
+    ): String {
+        // language=HTML
+        val storageTypeContainer =
+            if (reservation.amenity == BoatSpaceAmenity.Trailer) {
+                storageTypeContainer.trailerContainer(
+                    input.trailerRegistrationNumber,
+                    input.trailerWidth,
+                    input.trailerLength,
+                )
+            } else {
+                storageTypeContainer.buckStorageTypeRadioButtons(input.storageType)
+            }
+
+        // language=HTML
+        val storageContent =
+            """
+             <div class='form-section'>
+                ${citizenContainer.render(userType, reservation.id, input, citizen, municipalities)}  
+            </div>
+            
+             <div class='form-section'>
+                ${slipHolder.render(
+                organizations,
+                input.isOrganization ?: false,
+                input.organizationId,
+                userType,
+                reservation.id,
+                municipalities
+            )}
+            </div> 
+            
+            <div class='form-section'>
+                    ${boatForm.render(
+                BoatFormParams(
+                    userType,
+                    citizen,
+                    boats,
+                    reservation.id,
+                    BoatFormInput(
+                        id = input.boatId ?: 0,
+                        boatName = input.boatName ?: "",
+                        boatType = input.boatType ?: BoatType.OutboardMotor,
+                        width = null,
+                        length = null,
+                        depth = input.depth,
+                        weight = input.weight,
+                        boatRegistrationNumber = input.boatRegistrationNumber ?: "",
+                        otherIdentification = input.otherIdentification ?: "",
+                        extraInformation = input.extraInformation ?: "",
+                        ownership = input.ownership ?: OwnershipStatus.Owner,
+                        noRegistrationNumber = input.noRegistrationNumber ?: false,
+                    )
+                )
+            )}
+            </div>
+            <div class='form-section pb-none' x-data="{ storageType: '${StorageType.Trailer.name}', reservationValidity: '${input.reservationValidity}' }">
+                <div class='form-section mb-none'>
+                    $storageTypeContainer
+                </div>
+                
+                ${if (userType == UserType.EMPLOYEE) {
+                """<div class='form-section'>
+                  ${reservationValidityContainer.render(input.reservationValidity)}
+                 </div>"""
+            } else {
+                ""
+            }}
+            
+                 <div class='form-section'>
+                     ${reservationInformation.reservationInformationWithStorageType(reservation)}
+                </div>
+            </div>
+            """.trimIndent()
+        return boatSpaceForm.render(
+            reservation,
+            userType,
+            titleText = t("boatApplication.title.reservation.winter"),
+            formContent = storageContent,
+            reserverPriceInfo = input.reserverPriceInfo,
+        )
+    }
+
     fun winterStorageForm(
         reservation: ReservationForApplicationForm,
         boats: List<Boat>,
