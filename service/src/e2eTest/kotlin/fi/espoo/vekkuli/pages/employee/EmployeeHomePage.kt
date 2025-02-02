@@ -8,6 +8,7 @@ class EmployeeHomePage(
 ) {
     fun employeeLogin(langCode: String = "en") {
         page.navigate("$employeeHomePage?lang=$langCode")
+        page.waitForCondition { employeeLoginButton.isVisible }
         employeeLoginButton.click()
         page.getByText("Kirjaudu").click()
     }

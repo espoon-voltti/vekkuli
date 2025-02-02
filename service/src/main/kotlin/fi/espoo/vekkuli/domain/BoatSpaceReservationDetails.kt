@@ -50,6 +50,7 @@ data class BoatSpaceReservationDetails(
     val paymentDate: LocalDate?,
     val paymentId: UUID?,
     val paymentReference: String?,
+    val paymentType: PaymentType?,
     val invoiceDueDate: LocalDate?,
     val creationType: CreationType,
     val discountPercentage: Int,
@@ -82,5 +83,5 @@ fun BoatSpaceReservationDetails.toBoatSpaceReservation() =
         reserverId = reserverId,
         validity = validity,
         paymentDate = paymentDate,
-        creationType = creationType
+        creationType = creationType,
     )

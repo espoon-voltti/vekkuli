@@ -1,9 +1,10 @@
 package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import org.junit.jupiter.api.Test
@@ -13,7 +14,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
-class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
+class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     private fun fillAndTestForm(formPage: BoatSpaceFormPage) {
         formPage.submitButton.click()
 
@@ -139,19 +140,12 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
 
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails
-                    .get(
-                        0
-                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
-            )
+            assertOnlyOneConfirmationEmailIsSent(emailSubject = "Espoon kaupungin venepaikan varaus")
 
             citizenDetailsPage.paymentsNavi.click()
 
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Maksettu") }
-            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Haukilahti D013") }
+            page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Haukilahti D 013") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Laituri") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("100000") }
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Lasku") }
@@ -223,9 +217,17 @@ class ReserveBoatSpaceAsEmployeeTest : PlaywrightTest() {
 
             page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Confirmed, 01.04.2024") }
             page.waitForCondition { citizenDetailsPage.paymentStatus.textContent().contains("Invoice id: 100000") }
-            messageService.sendScheduledEmails()
-            // no email should be sent
-            assertEquals(0, SendEmailServiceMock.emails.size)
+
+            assertCorrectPaymentForReserver(
+                "doe",
+                PaymentStatus.Success,
+                "Haukilahti D 013",
+                "0,00",
+                "Laituri Haukilahti D 013 2024-2025",
+                doLogin = false
+            )
+
+            assertOnlyOneConfirmationEmailIsSent(emailSubject = "Vahvistus Espoon kaupungin venepaikan varauksesta")
         } catch (
             e: AssertionError
         ) {

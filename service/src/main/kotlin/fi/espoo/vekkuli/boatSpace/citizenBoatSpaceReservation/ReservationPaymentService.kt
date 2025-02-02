@@ -5,10 +5,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.BOAT_RESERVATION_ALV_PERCENTAGE
 import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailDescription
 import fi.espoo.vekkuli.config.BoatSpaceConfig.paytrailProductCode
 import fi.espoo.vekkuli.config.PaytrailEnv
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.CitizenWithDetails
-import fi.espoo.vekkuli.domain.CreatePaymentParams
-import fi.espoo.vekkuli.domain.PaymentType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.discountedPriceInCents
 import fi.espoo.vekkuli.utils.formatAsShortDate
@@ -31,7 +28,9 @@ class ReservationPaymentService(
     ): PaytrailPaymentResponse {
         // TODO use timeProvider?
         val reference = createReference("172200", paytrailEnv.merchantId, reservation.id, LocalDate.now())
-        val amount = calculatePriceWithDiscount(reservation)
+        val price = calculatePrice(reservation)
+        val amount = discountedPriceInCents(price, reservation.discountPercentage)
+        val priceInfo = getPriceInfo(reservation.creationType, price, reservation.discountPercentage)
         if (amount <= 0) {
             throw IllegalArgumentException("Payment amount must be greater than zero, reservationId: $reservation.id")
         }
@@ -46,7 +45,8 @@ class ReservationPaymentService(
                         totalCents = amount,
                         vatPercentage = BOAT_RESERVATION_ALV_PERCENTAGE,
                         productCode = paytrailProductCode(reservation.type),
-                        paymentType = PaymentType.OnlinePayment
+                        paymentType = PaymentType.OnlinePayment,
+                        priceInfo = priceInfo
                     )
                 )
             }
@@ -81,15 +81,37 @@ class ReservationPaymentService(
         )
     }
 
-    fun calculatePriceWithDiscount(reservation: BoatSpaceReservationDetails): Int {
-        val priceCents =
-            if (switchService.isSwitchedReservation(reservation)) {
-                switchService.getRevisedPrice(reservation)
-            } else {
-                reservation.priceCents
+    fun getPriceInfo(
+        reservationCreationType: CreationType,
+        revisedPrise: Int,
+        reserverDiscountPercentage: Int
+    ): String {
+        var text = ""
+        if (reservationCreationType == CreationType.Switch) {
+            text = "Paikan vaihto. "
+            when {
+                revisedPrise > 0 -> {
+                    text += "Maksettu vain erotus. "
+                    if (reserverDiscountPercentage > 0) {
+                        text += "Hinnassa huomioitu $reserverDiscountPercentage% alennus. "
+                    }
+                }
+                revisedPrise < 0 -> text += "Ei suoritusta, uusi paikka edullisempi. "
+                else -> text += "Ei suoritusta, paikoilla sama hinta. "
             }
-        return discountedPriceInCents(priceCents, reservation.discountPercentage)
+        } else if (reserverDiscountPercentage > 0) {
+            text += "Hinnassa huomioitu $reserverDiscountPercentage% alennus."
+        }
+
+        return text.trim()
     }
+
+    fun calculatePrice(reservation: BoatSpaceReservationDetails): Int =
+        if (switchService.isSwitchedReservation(reservation)) {
+            switchService.getRevisedPrice(reservation.originalReservationId, reservation.priceCents)
+        } else {
+            reservation.priceCents
+        }
 
     fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult =
         when (val result = boatReservationService.handlePaymentResult(params, true)) {

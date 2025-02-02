@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.domain.PaymentHistory
+import fi.espoo.vekkuli.domain.PaymentType
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
@@ -458,6 +460,13 @@ fun paymentTypeToText(paymentType: String?): String {
         else -> paymentType ?: ""
     }
 }
+
+fun getReference(p: PaymentHistory): String? =
+    if (p.paymentType == PaymentType.Invoice) {
+        p.invoiceReference
+    } else {
+        p.priceInfo
+    }
 
 val localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 

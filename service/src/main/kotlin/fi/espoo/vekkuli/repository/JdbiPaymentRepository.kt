@@ -25,8 +25,8 @@ class JdbiPaymentRepository(
                 handle
                     .createQuery(
                         """
-                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status, payment_type, paid)
-                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, :status, :paymentType, :paid)
+                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status, payment_type, paid, price_info)
+                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, :status, :paymentType, :paid, :priceInfo)
                         RETURNING *
                         """
                     ).bindKotlin(params)
@@ -169,13 +169,14 @@ class JdbiPaymentRepository(
                         p.paid AS paid_date, 
                         p.total_cents,
                         location.name AS harbor_name,
-                        CONCAT(bs.section, TO_CHAR(bs.place_number, 'FM000')) as place,
+                        CONCAT(bs.section ,' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                         bs.type AS boat_space_type,
                         p.reference AS paymentReference, 
                         i.reference AS invoiceReference,
                         i.due_date AS invoiceDueDate,
                         p.created AS paymentCreated,
-                        p.payment_type AS paymentType
+                        p.payment_type AS paymentType,
+                        p.price_info AS priceInfo
                     FROM boat_space_reservation bsr
                         JOIN boat_space bs ON bsr.boat_space_id = bs.id
                         JOIN location ON bs.location_id = location.id

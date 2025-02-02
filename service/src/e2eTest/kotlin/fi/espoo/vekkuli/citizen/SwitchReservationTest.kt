@@ -1,8 +1,10 @@
 package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.baseUrlWithFinnishLangParam
+import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
@@ -26,9 +28,24 @@ class SwitchReservationTest : ReserveTest() {
             form.submitButton.click()
 
             val paymentPage = PaymentPage(page)
+            paymentPage.assertOnPaymentPage()
+            assertZeroEmailsSent()
             paymentPage.nordeaSuccessButton.click()
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            assertCorrectPaymentForReserver(
+                "korhonen",
+                PaymentStatus.Success,
+                "Haukilahti D 013",
+                "150,81",
+                "Paikan vaihto. Maksettu vain erotus."
+            )
+
+            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
+            val citizenDetails = citizenPageInEmployeeView("korhonen", false)
+            citizenDetails.memoNavi.click()
+            assertThat(citizenDetails.userMemo(2))
+                .containsText("Leo Korhonen vaihtoi paikan. Vanha paikka: Haukilahti D 013. Uusi paikka: Haukilahti B 001.")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -49,8 +66,21 @@ class SwitchReservationTest : ReserveTest() {
             userAgreementSection.agreementCheckbox.check()
             switchSpaceFormPage.reserveButton.click()
 
+            // asserting that email is sent when there is no payment
+            assertZeroEmailsSent()
+            val paymentPage = PaymentPage(page)
+            assertThat(paymentPage.getByDataTestId("payment-page")).not().isVisible()
+
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            assertCorrectPaymentForReserver(
+                "korhonen",
+                PaymentStatus.Success,
+                "Haukilahti D 001",
+                "0,00",
+                "Paikan vaihto. Ei suoritusta, paikoilla sama hinta."
+            )
+            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -378,6 +408,7 @@ class SwitchReservationTest : ReserveTest() {
             assertThat(discountText).containsText("$discount %")
             assertThat(discountText).containsText("$expectedPrice €")
             form.submitButton.click()
+            assertZeroEmailsSent()
 
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
@@ -388,6 +419,14 @@ class SwitchReservationTest : ReserveTest() {
             assertThat(paymentDiscountText).containsText("erotus $expectedDifference €")
             assertThat(paymentDiscountText).containsText("$discount %")
             assertThat(paymentDiscountText).containsText("$expectedPrice €")
+            assertCorrectPaymentForReserver(
+                "virtanen",
+                PaymentStatus.Success,
+                "Haukilahti D 013",
+                expectedPrice,
+                "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus."
+            )
+            assertOnlyOneConfirmationEmailIsSent("olivia@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
         } catch (e: AssertionError) {
             handleError(e)
         }

@@ -170,7 +170,7 @@ class CitizenUserController(
         }
         val reserver =
             reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
-        val memos = memoService.getMemos(citizenId, ReservationType.Marine)
+        val memos = memoService.getMemos(citizenId)
         return reserverDetailsMemoContainer.tabContent(reserver, memos)
     }
 
@@ -225,8 +225,8 @@ class CitizenUserController(
         val userId = request.getAuthenticatedUser()?.id ?: throw IllegalArgumentException("User not found")
         val reserver =
             reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
-        memoService.insertMemo(citizenId, userId, ReservationType.Marine, content)
-        val memos = memoService.getMemos(citizenId, ReservationType.Marine)
+        memoService.insertMemo(citizenId, userId, content)
+        val memos = memoService.getMemos(citizenId)
         return reserverDetailsMemoContainer.tabContent(reserver, memos)
     }
 
@@ -243,7 +243,7 @@ class CitizenUserController(
         val reserver =
             reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         memoService.removeMemo(memoId)
-        val memos = memoService.getMemos(citizenId, ReservationType.Marine)
+        val memos = memoService.getMemos(citizenId)
         return reserverDetailsMemoContainer.tabContent(reserver, memos)
     }
 
@@ -908,7 +908,7 @@ class CitizenUserController(
         reservationService.updateReservationStatus(
             reservationId,
             reservationStatus,
-            paymentDate,
+            paymentDate.atStartOfDay(),
             paymentStatusText
         )
 
@@ -917,7 +917,7 @@ class CitizenUserController(
 
         val memoContent = "Varauksen tila: ${reservationStatusToText(reservationStatus)}  $paymentDate: $paymentStatusText"
 
-        memoService.insertMemo(reserverId, user.id, ReservationType.Marine, memoContent)
+        memoService.insertMemo(reserverId, user.id, memoContent)
 
         return ResponseEntity.ok(reserverPage(boatSpaceReservations, boats, reserverId))
     }

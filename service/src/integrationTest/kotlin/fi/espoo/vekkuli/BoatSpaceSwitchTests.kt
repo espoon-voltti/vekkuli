@@ -227,7 +227,11 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         assertEquals(switchInput.citizen.phone, updatedSwitchedReservation.phone, "User phone should be the same as input")
 
         // Should be in Confirmed state when the price is the same
-        val revisedPrice = boatSpaceSwitchService.getRevisedPrice(updatedSwitchedReservation)
+        val revisedPrice =
+            boatSpaceSwitchService.getRevisedPrice(
+                updatedSwitchedReservation.originalReservationId,
+                updatedSwitchedReservation.priceCents
+            )
         assertEquals(0, revisedPrice, "The revised price should be 0")
         assertEquals(
             originalReservation.priceCents,

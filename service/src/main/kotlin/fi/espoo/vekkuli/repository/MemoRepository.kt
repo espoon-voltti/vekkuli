@@ -17,9 +17,9 @@ interface MemoRepository {
 
     fun insertMemo(
         reserverId: UUID,
-        userId: UUID,
-        category: ReservationType,
-        content: String
+        userId: UUID?,
+        content: String,
+        category: ReservationType
     ): ReserverMemo
 
     fun updateMemo(

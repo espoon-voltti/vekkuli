@@ -10,10 +10,7 @@ import java.util.*
 class MemoService(
     private val memoRepository: MemoRepository
 ) {
-    fun getMemos(
-        reserverId: UUID,
-        category: ReservationType
-    ): List<ReserverMemoWithDetails> = memoRepository.getMemos(reserverId, category)
+    fun getMemos(reserverId: UUID): List<ReserverMemoWithDetails> = memoRepository.getMemos(reserverId, ReservationType.Marine)
 
     fun getMemo(id: Int): ReserverMemoWithDetails? = memoRepository.getMemo(id)
 
@@ -28,13 +25,17 @@ class MemoService(
 
     fun insertMemo(
         reserverId: UUID,
-        userId: UUID,
-        category: ReservationType,
+        userId: UUID?,
         content: String
     ): ReserverMemoWithDetails? {
-        val memo = memoRepository.insertMemo(reserverId, userId, category, content)
+        val memo = memoRepository.insertMemo(reserverId, userId, content, ReservationType.Marine)
         return memoRepository.getMemo(memo.id)
     }
+
+    fun insertSystemMemo(
+        reserverId: UUID,
+        content: String
+    ): ReserverMemoWithDetails? = insertMemo(reserverId, null, content)
 
     fun removeMemo(id: Int): Unit = memoRepository.removeMemo(id)
 }
