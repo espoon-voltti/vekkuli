@@ -11,7 +11,7 @@ import Menu from './Menu'
 export default React.memo(function Navigation() {
   const i18n = useTranslation()
   return (
-    <nav role="navigation" aria-label="main navigation">
+    <nav role="navigation" aria-label={i18n.header.mainNavigation}>
       <div className="nav-row">
         <div className="columns">
           <Link to="/" className="link" aria-label={i18n.header.goToHomepage}>

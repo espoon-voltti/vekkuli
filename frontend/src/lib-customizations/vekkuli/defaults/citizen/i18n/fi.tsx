@@ -119,7 +119,8 @@ export default {
     closeMenu: 'Sulje valikko',
     goToHomepage: 'Siirry etusivulle',
     goToMainContent: 'Siirry pääsisältöön',
-    selectLanguage: 'Valitse kieli'
+    selectLanguage: 'Valitse kieli',
+    mainNavigation: 'Päänavigaatio'
   },
   components: componentTranslations,
   reservation: {

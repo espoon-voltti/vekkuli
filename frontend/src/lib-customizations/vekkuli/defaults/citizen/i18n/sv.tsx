@@ -120,7 +120,8 @@ const sv: Translations = {
     closeMenu: 'Stäng menyn',
     goToHomepage: 'Gå till hemsidan',
     goToMainContent: 'Hoppa till innehållet',
-    selectLanguage: 'Välj språk'
+    selectLanguage: 'Välj språk',
+    mainNavigation: 'Huvudnavigering'
   },
   components: componentTranslations,
   reservation: {
