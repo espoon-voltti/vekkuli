@@ -7,6 +7,7 @@ import {
   organizationExpiredReservations,
   updateCitizenInformation
 } from 'citizen-frontend/api-clients/citizen'
+import { terminateReservation } from 'citizen-frontend/api-clients/reservation'
 import { updateTrailer } from 'citizen-frontend/api-clients/trailer'
 import { queryKeys as sharedQueryKeys } from 'citizen-frontend/shared/queries'
 import { mutation, query } from 'lib-common/query'
@@ -68,4 +69,12 @@ export const updateCitizenBoatMutation = mutation({
 export const deleteCitizenBoatMutation = mutation({
   api: deleteBoat,
   invalidateQueryKeys: () => [sharedQueryKeys.citizenBoats()]
+})
+
+export const terminateCitizenReservationMutation = mutation({
+  api: terminateReservation,
+  invalidateQueryKeys: () => [
+    queryKeys.citizenActiveReservations(),
+    queryKeys.citizenExpiredReservations()
+  ]
 })

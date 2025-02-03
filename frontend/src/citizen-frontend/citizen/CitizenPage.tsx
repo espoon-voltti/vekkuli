@@ -8,16 +8,17 @@ import { citizenBoatsQuery } from 'citizen-frontend/shared/queries'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
+import ExpiredReservations from '../components/reservation-list/ExpiredReservations'
+import Reservations from '../components/reservation-list/Reservations'
 import {
   citizenActiveReservationsQuery,
   citizenExpiredReservationsQuery,
   citizenOrganizationQuery,
   deleteCitizenBoatMutation,
+  terminateCitizenReservationMutation,
   updateCitizenBoatMutation
 } from './queries'
 import CitizenInformation from './sections/citizenInformation'
-import ExpiredReservations from './sections/reservations/ExpiredReservations'
-import Reservations from './sections/reservations/Reservations'
 
 export default React.memo(function CitizenPage() {
   const { user } = useContext(AuthContext)
@@ -58,7 +59,10 @@ const Content = React.memo(function Content({
                 user={currentUser}
                 organizations={loadedOrganizations}
               />
-              <Reservations reservations={loadedActiveReservations} />
+              <Reservations
+                reservations={loadedActiveReservations}
+                terminateMutation={terminateCitizenReservationMutation}
+              />
               <Boats
                 boats={loadedBoats}
                 activeReservations={loadedActiveReservations}

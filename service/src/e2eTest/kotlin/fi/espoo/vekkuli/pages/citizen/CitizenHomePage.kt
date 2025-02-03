@@ -33,6 +33,10 @@ class CitizenHomePage(
         loginAsLeoKorhonen()
     }
 
+    fun loginAsEspooCitizenWithActiveOrganizationSlipReservation() {
+        loginAsOliviaVirtanen()
+    }
+
     fun loginAsTurvaldKieltoinen() {
         loginAsCitizen(turvaldKieltoinenSsn)
     }

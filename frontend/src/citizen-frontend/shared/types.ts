@@ -11,6 +11,8 @@ export const reservationStatuses = [
   'Invoiced'
 ] as const
 
+export type ReservationId = number
+
 export type ReservationStatus = (typeof reservationStatuses)[number]
 
 export const reserverTypes = ['Citizen', 'Organization'] as const

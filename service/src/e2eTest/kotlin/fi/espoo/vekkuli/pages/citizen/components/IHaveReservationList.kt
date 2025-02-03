@@ -38,6 +38,10 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
         val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
     }
 
+    class TerminateReservationSuccessModal(
+        val root: Locator
+    )
+
     class TrailerSection(
         root: Locator
     ) {
@@ -85,5 +89,5 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
 
     fun getTerminateReservationFailureModal() = TerminateReservationFailureModal(getByDataTestId("terminate-reservation-failure-modal"))
 
-    fun getTerminateReservationSuccessModal() = getByDataTestId("terminate-reservation-success-modal")
+    fun getTerminateReservationSuccessModal() = TerminateReservationSuccessModal(getByDataTestId("terminate-reservation-success-modal"))
 }
