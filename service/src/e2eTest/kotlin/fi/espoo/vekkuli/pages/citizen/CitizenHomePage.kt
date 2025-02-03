@@ -37,6 +37,10 @@ class CitizenHomePage(
         loginAsOliviaVirtanen()
     }
 
+    fun loginAsEspooCitizenWithActiveOrganization() {
+        loginAsOliviaVirtanen()
+    }
+
     fun loginAsTurvaldKieltoinen() {
         loginAsCitizen(turvaldKieltoinenSsn)
     }

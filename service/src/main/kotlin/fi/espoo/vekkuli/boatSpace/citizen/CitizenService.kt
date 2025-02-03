@@ -22,7 +22,7 @@ open class CitizenService(
 
     fun getCitizenOrganizationContactPersons(organizationId: UUID): List<CitizenWithDetails> {
         val (citizenId) = citizenAccessControl.requireCitizen()
-        if(!permissionService.hasAccessToOrganization(citizenId, organizationId)) {
+        if (!permissionService.hasAccessToOrganization(citizenId, organizationId)) {
             throw Forbidden("No access to organization")
         }
         return organizationService.getOrganizationMembers(organizationId)

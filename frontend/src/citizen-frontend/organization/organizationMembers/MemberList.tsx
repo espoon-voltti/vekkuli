@@ -12,7 +12,7 @@ export default React.memo(function MemberList({
   const i18n = useTranslation()
 
   return (
-    <>
+    <div data-testid="organization-contact-list">
       <h3 className="header">{i18n.organization.contactDetails.title}</h3>
       <Columns hideOnMobile>
         <Column isOneQuarter>
@@ -26,12 +26,16 @@ export default React.memo(function MemberList({
         </Column>
       </Columns>
       {members.map((member, index) => (
-        <Columns key={index} bottomMarginOnMobile>
+        <Columns
+          key={index}
+          bottomMarginOnMobile
+          data-testid="organization-contact-list-item"
+        >
           <Column isOneQuarter>{member.name}</Column>
           <Column isOneQuarter>{member.phone}</Column>
           <Column isOneQuarter>{member.email}</Column>
         </Columns>
       ))}
-    </>
+    </div>
   )
 })

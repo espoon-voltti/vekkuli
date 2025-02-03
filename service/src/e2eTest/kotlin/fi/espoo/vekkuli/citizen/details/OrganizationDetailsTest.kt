@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfTrailerReservationPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
 class OrganizationDetailsTest : PlaywrightTest() {
@@ -162,5 +163,29 @@ class OrganizationDetailsTest : PlaywrightTest() {
         val expiredReservationSection = organizationDetailsPage.getExpiredReservationSection("Haukilahti B 005")
         assertThat(expiredReservationSection.locationName).containsText("Haukilahti")
         assertThat(expiredReservationSection.place).containsText("B 005")
+    }
+
+    @Test
+    fun `member can see contact details`() {
+        val expectedTitle = "Yhteyshenkilöt"
+        val expectedContactName = "Olivia Virtanen"
+        val expectedContactPhone = "04083677348"
+        val expectedContactEmail = "olivia@noreplytest.fi"
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveOrganization()
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        val contactListSection = organizationDetailsPage.getContactList()
+
+        assertThat(contactListSection.title).containsText(expectedTitle)
+        assertEquals(contactListSection.labels.count(), 3, "Expected 3 columns in contact list heading")
+
+        val firstContact = organizationDetailsPage.getContactListItems().first()
+        assertThat(firstContact.name).containsText(expectedContactName)
+        assertThat(firstContact.phone).containsText(expectedContactPhone)
+        assertThat(firstContact.email).containsText(expectedContactEmail)
     }
 }

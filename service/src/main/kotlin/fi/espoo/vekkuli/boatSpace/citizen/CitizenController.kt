@@ -126,7 +126,7 @@ class CitizenController(
             )
         }
         val citizenId = request.ensureCitizenId()
-        if (!permissionService.hasAccessToOrganization(citizenId, orgId)){
+        if (!permissionService.hasAccessToOrganization(citizenId, orgId)) {
             throw Forbidden()
         }
         val reservations = reservationService.getActiveReservationsForOrganization(orgId)
@@ -146,7 +146,7 @@ class CitizenController(
             )
         }
         val citizenId = request.ensureCitizenId()
-        if (!permissionService.hasAccessToOrganization(citizenId, orgId)){
+        if (!permissionService.hasAccessToOrganization(citizenId, orgId)) {
             throw Forbidden()
         }
         val reservations = reservationService.getExpiredReservationsForOrganization(orgId)
