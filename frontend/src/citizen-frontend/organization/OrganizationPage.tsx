@@ -4,6 +4,8 @@ import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
 import Boats from 'citizen-frontend/components/boat-list/Boats'
+import ExpiredReservations from 'citizen-frontend/components/reservation-list/ExpiredReservations'
+import Reservations from 'citizen-frontend/components/reservation-list/Reservations'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
@@ -18,10 +20,9 @@ import OrganizationInformation from './organizationInformation/OrganizationInfor
 import {
   citizenOrganizationQuery,
   deleteOrganizationBoatMutation,
+  terminateOrganizationReservationMutation,
   updateOrganizationBoatMutation
 } from './queries'
-import ExpiredReservations from './reservations/ExpiredReservations'
-import Reservations from './reservations/Reservations'
 
 export default function OrganizationPage() {
   const { user } = useContext(AuthContext)
@@ -70,7 +71,10 @@ const Content = React.memo(function Content({
             organization && (
               <>
                 <OrganizationInformation organization={organization} />
-                <Reservations reservations={loadedActiveReservations} />
+                <Reservations
+                  reservations={loadedActiveReservations}
+                  terminateMutation={terminateOrganizationReservationMutation}
+                />
                 <Boats
                   boats={boats}
                   activeReservations={loadedActiveReservations}

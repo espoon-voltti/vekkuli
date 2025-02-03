@@ -129,4 +129,38 @@ class OrganizationDetailsTest : PlaywrightTest() {
 
         assertThat(boat.root).not().isVisible()
     }
+
+    @Test
+    fun `member can terminate active reservation`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveOrganizationSlipReservation()
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+
+        // Expired list is not on the page
+        assertThat(organizationDetailsPage.expiredReservationList).hasCount(0)
+
+        val reservationSection = organizationDetailsPage.getReservationSection("Haukilahti B 005")
+        reservationSection.terminateButton.click()
+
+        val terminateReservationModal = organizationDetailsPage.getTerminateReservationModal()
+        assertThat(terminateReservationModal.root).isVisible()
+        assertThat(terminateReservationModal.placeIdentifierText).hasText("Haukilahti B 005")
+
+        terminateReservationModal.confirmButton.click()
+
+        val terminateReservationSuccessModal = organizationDetailsPage.getTerminateReservationSuccessModal()
+        assertThat(terminateReservationSuccessModal.root).isVisible()
+
+        assertThat(terminateReservationModal.root).not().isVisible()
+
+        organizationDetailsPage.showExpiredReservationsToggle.click()
+
+        val expiredReservationSection = organizationDetailsPage.getExpiredReservationSection("Haukilahti B 005")
+        assertThat(expiredReservationSection.locationName).containsText("Haukilahti")
+        assertThat(expiredReservationSection.place).containsText("B 005")
+    }
 }
