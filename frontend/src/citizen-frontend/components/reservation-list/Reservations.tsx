@@ -9,10 +9,11 @@ import Reservation from './Reservation'
 import TerminateModal from './TerminateModal'
 import TerminateModalFailure from './TerminateModalFailure'
 import TerminateModalSuccess from './TerminateModalSuccess'
+import { terminateReservationMutation } from './queries'
 
 export default React.memo(function Reservations({
   reservations,
-  terminateMutation
+  terminateMutation = terminateReservationMutation
 }: {
   reservations: ExistingBoatSpaceReservation[]
   terminateMutation: MutationDescription<ReservationId, void>
