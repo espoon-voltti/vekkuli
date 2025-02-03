@@ -8,20 +8,19 @@ import { MutationDescription } from 'lib-common/query'
 
 import BoatComponent from './Boat'
 import BoatsNotInReservation from './BoatsNotInReservation'
-import { deleteBoatMutation, updateBoatMutation } from './queries'
 
 type BoatsProps = {
   boats: Boat[]
   activeReservations: ExistingBoatSpaceReservation[]
-  deleteMutation: MutationDescription<BoatId, void>
-  updateMutation: MutationDescription<UpdateBoatRequest, void>
+  deleteMutation?: MutationDescription<BoatId, void>
+  updateMutation?: MutationDescription<UpdateBoatRequest, void>
 }
 
 export default React.memo(function Boats({
   boats,
   activeReservations,
-  deleteMutation = deleteBoatMutation,
-  updateMutation = updateBoatMutation
+  deleteMutation,
+  updateMutation
 }: BoatsProps) {
   return (
     <Container isBlock data-testid="boat-list">

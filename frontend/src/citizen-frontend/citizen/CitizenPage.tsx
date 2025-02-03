@@ -10,13 +10,15 @@ import { useQueryResult } from 'lib-common/query'
 
 import ExpiredReservations from '../components/reservation-list/ExpiredReservations'
 import Reservations from '../components/reservation-list/Reservations'
+
 import {
   citizenActiveReservationsQuery,
   citizenExpiredReservationsQuery,
   citizenOrganizationQuery,
   deleteCitizenBoatMutation,
   terminateCitizenReservationMutation,
-  updateCitizenBoatMutation
+  updateCitizenBoatMutation,
+  updateCitizenTrailerMutation
 } from './queries'
 import CitizenInformation from './sections/citizenInformation'
 
@@ -62,6 +64,7 @@ const Content = React.memo(function Content({
               <Reservations
                 reservations={loadedActiveReservations}
                 terminateMutation={terminateCitizenReservationMutation}
+                updateTrailerMutation={updateCitizenTrailerMutation}
               />
               <Boats
                 boats={loadedBoats}

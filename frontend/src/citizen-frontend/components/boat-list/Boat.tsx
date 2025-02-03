@@ -12,18 +12,20 @@ import { useForm, useFormFields } from 'lib-common/form/hooks'
 import { MutationDescription, useMutation } from 'lib-common/query'
 
 import { boatForm, transformBoatToFormBoat } from './formDefinitions'
+import { updateBoatDisabled } from './queries'
 
 type BoatProps = {
   boat: Boat
   onDelete?: () => void
-  updateMutation: MutationDescription<UpdateBoatRequest, void>
+  updateMutation?: MutationDescription<UpdateBoatRequest, void>
 }
 
 export default React.memo(function Boat({
   boat,
   onDelete,
-  updateMutation
+  updateMutation = updateBoatDisabled
 }: BoatProps) {
+  const editDisabled = updateMutation === updateBoatDisabled
   const i18n = useTranslation()
   const bind = useForm(
     boatForm,
@@ -70,9 +72,11 @@ export default React.memo(function Boat({
               </Column>
             )}
             <Column isNarrow toRight>
-              <EditLink action={() => setEditMode(true)}>
-                Muokkaa veneen tietoja
-              </EditLink>
+              {!editDisabled && (
+                <EditLink action={() => setEditMode(true)}>
+                  Muokkaa veneen tietoja
+                </EditLink>
+              )}
             </Column>
           </Columns>
         </Column>

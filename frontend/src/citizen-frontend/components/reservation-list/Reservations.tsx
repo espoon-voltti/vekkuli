@@ -1,6 +1,7 @@
 import { Container } from 'lib-components/dom'
 import React, { useState } from 'react'
 
+import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import { ReservationId } from 'citizen-frontend/shared/types'
 import { MutationDescription } from 'lib-common/query'
@@ -9,15 +10,18 @@ import Reservation from './Reservation'
 import TerminateModal from './TerminateModal'
 import TerminateModalFailure from './TerminateModalFailure'
 import TerminateModalSuccess from './TerminateModalSuccess'
-import { terminateReservationMutation } from './queries'
+import { terminateReservationDisabled } from './queries'
 
 export default React.memo(function Reservations({
   reservations,
-  terminateMutation = terminateReservationMutation
+  updateTrailerMutation,
+  terminateMutation = terminateReservationDisabled
 }: {
   reservations: ExistingBoatSpaceReservation[]
-  terminateMutation: MutationDescription<ReservationId, void>
+  terminateMutation?: MutationDescription<ReservationId, void>
+  updateTrailerMutation: MutationDescription<UpdateTrailerRequest, void>
 }) {
+  const terminationDisabled = terminateMutation === terminateReservationDisabled
   const [reservationPendingTermination, setReservationPendingTermination] =
     useState<ExistingBoatSpaceReservation | null>(null)
   const [reservationTerminateSuccess, setReservationTerminateSuccess] =
@@ -35,9 +39,12 @@ export default React.memo(function Reservations({
               <Reservation
                 key={reservation.id}
                 reservation={reservation}
-                onTerminate={() =>
-                  setReservationPendingTermination(reservation)
+                onTerminate={
+                  terminationDisabled
+                    ? undefined
+                    : () => setReservationPendingTermination(reservation)
                 }
+                updateTrailerMutation={updateTrailerMutation}
               />
             ))}
           </div>

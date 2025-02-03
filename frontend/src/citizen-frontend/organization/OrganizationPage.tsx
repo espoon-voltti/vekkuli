@@ -21,7 +21,8 @@ import {
   citizenOrganizationQuery,
   deleteOrganizationBoatMutation,
   terminateOrganizationReservationMutation,
-  updateOrganizationBoatMutation
+  updateOrganizationBoatMutation,
+  updateOrganizationTrailerMutation
 } from './queries'
 
 export default function OrganizationPage() {
@@ -74,6 +75,7 @@ const Content = React.memo(function Content({
                 <Reservations
                   reservations={loadedActiveReservations}
                   terminateMutation={terminateOrganizationReservationMutation}
+                  updateTrailerMutation={updateOrganizationTrailerMutation}
                 />
                 <Boats
                   boats={boats}
