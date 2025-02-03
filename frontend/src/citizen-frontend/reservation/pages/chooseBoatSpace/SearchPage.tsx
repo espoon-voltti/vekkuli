@@ -103,7 +103,7 @@ export default React.memo(function SearchPage() {
       {(reservation) =>
         !reservation && (
           <>
-            <MainSection>
+            <MainSection ariaLabel={i18n.reservation.steps.chooseBoatSpace}>
               <StepIndicator step="chooseBoatSpace" />
               <Container>
                 <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
