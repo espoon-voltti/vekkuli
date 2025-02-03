@@ -167,7 +167,8 @@ class ReservationResponseMapper(
         val citizen =
             if (reservationWithDependencies.reserverType ==
                 ReserverType.Citizen ||
-                reservationWithDependencies.creationType == CreationType.Switch
+                reservationWithDependencies.creationType == CreationType.Switch ||
+                reservationWithDependencies.creationType == CreationType.Renewal
             ) {
                 getCitizen(actingCitizenId, reserverId)
             } else {
