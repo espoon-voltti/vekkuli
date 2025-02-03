@@ -148,3 +148,9 @@ export type Trailer = {
 }
 
 export type NewTrailer = Omit<Trailer, 'id'>
+
+export type ContactDetails = {
+  name: string
+  phone: string
+  email: string
+}

@@ -400,7 +400,15 @@ const en: Translations = {
   },
   organization: {
     organizationPhone: 'Organization phone number',
-    organizationEmail: 'Organization email'
+    organizationEmail: 'Organization email',
+    contactDetails: {
+      title: 'Contact information',
+      fields: {
+        name: 'Name',
+        phone: 'Phone',
+        email: 'Email'
+      }
+    }
   },
   payment: {
     title: 'Choose payment method'

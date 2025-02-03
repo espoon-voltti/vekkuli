@@ -401,7 +401,15 @@ const sv: Translations = {
   },
   organization: {
     organizationPhone: 'Organisationens telefonnummer',
-    organizationEmail: 'Organisationens e-post'
+    organizationEmail: 'Organisationens e-post',
+    contactDetails: {
+      title: 'Kontaktpersoner',
+      fields: {
+        name: 'Namn',
+        phone: 'Telefonnummer',
+        email: 'E-post'
+      }
+    }
   },
   payment: {
     title: 'Välj betalningsmetod'
