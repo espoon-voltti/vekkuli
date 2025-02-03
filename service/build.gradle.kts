@@ -18,7 +18,7 @@ plugins {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.1")
-        classpath("org.flywaydb:flyway-database-postgresql:11.2.0")
+        classpath("org.flywaydb:flyway-database-postgresql:11.3.0")
     }
 }
 
@@ -80,10 +80,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.ws:spring-ws-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0")
+    implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
     implementation("org.flywaydb:flyway-core:10.20.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.2.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.3.0")
     implementation("org.postgresql:postgresql:42.7.1")
     api(platform("org.jdbi:jdbi3-bom:3.45.0"))
     implementation("org.jdbi:jdbi3-core")
