@@ -637,7 +637,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
-
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()

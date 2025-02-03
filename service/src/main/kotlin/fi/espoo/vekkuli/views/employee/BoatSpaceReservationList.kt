@@ -234,7 +234,33 @@ class BoatSpaceReservationList : BaseView() {
         val reservationRows =
             reservations.joinToString("\n") { result ->
                 val endDateFormatted = formatAsShortYearDate(result.endDate)
-                val paymentDateFormatted = formatAsShortYearDate(result.paymentDate)
+                val statusText =
+                    when (result.status) {
+                        ReservationStatus.Confirmed ->
+                            t("boatSpaceReservation.paymentOption.confirmed") +
+                                if (result.paymentDate != null) {
+                                    (
+                                        ", " + t("employee.boatSpaceReservations.paidDate") +
+                                            " " + formatAsShortYearDate(result.paymentDate)
+                                    )
+                                } else {
+                                    ""
+                                }
+
+                        ReservationStatus.Invoiced ->
+                            t("boatSpaceReservation.paymentOption.invoiced") +
+                                if (result.invoiceDueDate != null) {
+                                    (
+                                        ", " + t("employee.boatSpaceReservations.dueDate") +
+                                            " " + formatAsShortYearDate(result.invoiceDueDate)
+                                    )
+                                } else {
+                                    ""
+                                }
+
+                        else -> t("boatSpaceReservation.paymentOption.${result.status}")
+                    }
+
                 val endDateText =
                     if (result.status == ReservationStatus.Cancelled) {
                         """<span class="has-text-danger">${t("reservations.text.terminated")} $endDateFormatted</span>"""
@@ -266,7 +292,7 @@ class BoatSpaceReservationList : BaseView() {
                     <td>${result.phone}</td>
                     <td>${result.email}</td>
                     <td>${result.municipalityName}</td>
-                    <td>$paymentDateFormatted</td>
+                    <td>$statusText</td>
                     <td ${addTestId(
                     "reservation-end-date"
                 )}>$endDateText</td>
