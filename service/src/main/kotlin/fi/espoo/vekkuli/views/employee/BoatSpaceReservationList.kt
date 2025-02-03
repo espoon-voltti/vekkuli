@@ -258,7 +258,7 @@ class BoatSpaceReservationList : BaseView() {
                                     ""
                                 }
 
-                        else -> t("boatSpaceReservation.paymentOption.${result.status}")
+                        else -> t("boatSpaceReservation.paymentOption.${result.status.toString().lowercase()}")
                     }
 
                 val endDateText =
