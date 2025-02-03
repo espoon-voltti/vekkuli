@@ -3,6 +3,7 @@ import { MainSection } from 'lib-components/dom'
 import React from 'react'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 import useRouteParams from 'lib-common/useRouteParams'
@@ -14,6 +15,7 @@ import ReservedSpace from '../../components/ReservedSpace'
 import { getReservationQuery } from './queries'
 
 export default React.memo(function ConfirmationPage() {
+  const i18n = useTranslation()
   const { reservationId } = useRouteParams(['reservationId'])
 
   const reservation = useQueryResult(
@@ -21,7 +23,10 @@ export default React.memo(function ConfirmationPage() {
   )
 
   return (
-    <MainSection dataTestId="confirmation-page">
+    <MainSection
+      dataTestId="confirmation-page"
+      ariaLabel={i18n.reservation.steps.confirmation}
+    >
       <StepIndicator step="confirmation" />
       <div className="container">
         <Content reservation={reservation} />
