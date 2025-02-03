@@ -205,8 +205,8 @@ class ReserveBoatSpacePage(
         filterSection.storageRadio.click()
 
         storageFilterSection.trailerRadio.click()
-        storageFilterSection.widthInput.fill("1")
-        storageFilterSection.lengthInput.fill("3")
+        storageFilterSection.widthInput.fill("1.23")
+        storageFilterSection.lengthInput.fill("3.45")
 
         getSearchResultsSection().b007ReserveButton.click()
         val form = BoatSpaceFormPage(page)
