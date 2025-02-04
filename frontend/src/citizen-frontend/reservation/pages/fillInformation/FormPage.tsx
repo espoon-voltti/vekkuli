@@ -16,7 +16,7 @@ export default React.memo(function FormPage() {
   const { reservation } = useContext(ReservationStateContext)
   const i18n = useTranslation()
   return (
-    <MainSection>
+    <MainSection ariaLabel={i18n.reservation.steps.fillInformation}>
       <Container>
         <Loader results={[reservation]}>
           {(loadedReservation) => (

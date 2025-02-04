@@ -3,16 +3,19 @@ import { MainSection } from 'lib-components/dom'
 import React from 'react'
 
 import { BoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 import useRouteParams from 'lib-common/useRouteParams'
 
+import { getRevisedPriceForReservation } from '../../RevisedPriceForReservation'
 import StepIndicator from '../../StepIndicator'
+import ReservedSpace from '../../components/ReservedSpace'
+
 import { getReservationQuery } from './queries'
-import ReservedSpace from "../../components/ReservedSpace";
-import {getRevisedPriceForReservation} from "../../RevisedPriceForReservation";
 
 export default React.memo(function ConfirmationPage() {
+  const i18n = useTranslation()
   const { reservationId } = useRouteParams(['reservationId'])
 
   const reservation = useQueryResult(
@@ -20,7 +23,10 @@ export default React.memo(function ConfirmationPage() {
   )
 
   return (
-    <MainSection dataTestId="confirmation-page">
+    <MainSection
+      dataTestId="confirmation-page"
+      ariaLabel={i18n.reservation.steps.confirmation}
+    >
       <StepIndicator step="confirmation" />
       <div className="container">
         <Content reservation={reservation} />
@@ -37,31 +43,36 @@ const Content = React.memo(function Content({
   return (
     <Loader results={[reservation]}>
       {(loadedReservation) => {
-          const reservationPriceInfo = getRevisedPriceForReservation(loadedReservation, loadedReservation.revisedPrice)
-          return (
-        <>
-          <h2 className="h1">Venepaikan varaus onnistui</h2>
-          <div className="container">
-            <ul className="has-bullets ml-none">
-              <li>
-                Saat viestin vahvistuksesta myös ilmoittamaasi
-                sähköpostiosoitteeseen.
-              </li>
-              <li>
-                Vahvistussähköpostissa on lisätietoa varaamastasi venepaikasta
-                ja sataman käytännöistä.
-              </li>
-              <li>
-                Varauksesi on voimassa toistaiseksi ja voit jatkaa sitä
-                seuraavalle kaudelle aina tammikuussa.
-              </li>
-            </ul>
-          </div>
-          <ReservedSpace
-                reservation={loadedReservation}
-                revisedPriceForReservation={reservationPriceInfo} />
-        </>
-      )}}
+        const reservationPriceInfo = getRevisedPriceForReservation(
+          loadedReservation,
+          loadedReservation.revisedPrice
+        )
+        return (
+          <>
+            <h2 className="h1">Venepaikan varaus onnistui</h2>
+            <div className="container">
+              <ul className="has-bullets ml-none">
+                <li>
+                  Saat viestin vahvistuksesta myös ilmoittamaasi
+                  sähköpostiosoitteeseen.
+                </li>
+                <li>
+                  Vahvistussähköpostissa on lisätietoa varaamastasi venepaikasta
+                  ja sataman käytännöistä.
+                </li>
+                <li>
+                  Varauksesi on voimassa toistaiseksi ja voit jatkaa sitä
+                  seuraavalle kaudelle aina tammikuussa.
+                </li>
+              </ul>
+            </div>
+            <ReservedSpace
+              reservation={loadedReservation}
+              revisedPriceForReservation={reservationPriceInfo}
+            />
+          </>
+        )
+      }}
     </Loader>
   )
 })

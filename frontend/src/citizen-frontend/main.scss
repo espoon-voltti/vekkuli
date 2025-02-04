@@ -116,13 +116,12 @@ html, body {
   position: absolute;
   left: -9999px;
   z-index: 999;
-  opacity: 0;
-  margin-top: 12px;
-  margin-left: 12px;
 }
-.skip-to-main-content-link:focus {
-  left: auto;
-  opacity: 1;
+
+.skip-to-main-content-link:focus,
+.skip-to-main-content-link:focus-visible {
+  top: 12px;
+  left: 12px;
 }
 
 h1, h2.h1 {

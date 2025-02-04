@@ -18,7 +18,10 @@ export default React.memo(function PaymentPage() {
   const [searchParams] = useSearchParams()
 
   return (
-    <MainSection dataTestId="payment-page">
+    <MainSection
+      dataTestId="payment-page"
+      ariaLabel={i18n.reservation.steps.payment}
+    >
       <Loader results={[reservation]}>
         {(unfinishedReservation) => (
           <>

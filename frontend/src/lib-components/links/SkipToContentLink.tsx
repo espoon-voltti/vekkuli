@@ -1,4 +1,8 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
+
+const container = document.createElement('div')
+document.body.prepend(container)
 
 export default React.memo(function SkipToContentLink({
   children,
@@ -7,12 +11,14 @@ export default React.memo(function SkipToContentLink({
   children: React.ReactNode
   target: string
 }) {
-  return (
+  return ReactDOM.createPortal(
     <a
       href={`#${target}`}
       className="button is-primary skip-to-main-content-link"
+      tabIndex={0}
     >
       {children}
-    </a>
+    </a>,
+    container
   )
 })

@@ -4,6 +4,7 @@ import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
 import Boats from 'citizen-frontend/components/boat-list/Boats'
+import { useTranslation } from 'citizen-frontend/localization'
 import { citizenBoatsQuery } from 'citizen-frontend/shared/queries'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
@@ -36,9 +37,10 @@ const Content = React.memo(function Content({
   const activeReservations = useQueryResult(citizenActiveReservationsQuery())
   const boats = useQueryResult(citizenBoatsQuery())
   const expiredReservations = useQueryResult(citizenExpiredReservationsQuery())
+  const i18n = useTranslation()
 
   return (
-    <MainSection>
+    <MainSection ariaLabel={i18n.citizenPage.title}>
       <Loader
         results={[
           user,
