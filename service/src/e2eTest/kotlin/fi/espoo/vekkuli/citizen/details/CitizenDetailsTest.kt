@@ -154,7 +154,6 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun `citizen cannot renew reservation if it is not time to renew`() {
         try {
             // Set time over month before the reservation ends. Renewal should not be possible.
@@ -162,11 +161,11 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = EmployeeCitizenDetailsPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            assertThat(citizenDetails.renewReservationButton(1)).not().isVisible()
+            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+            assertThat(reservationSection.renewButton).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }
