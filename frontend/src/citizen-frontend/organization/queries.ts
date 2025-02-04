@@ -3,7 +3,6 @@ import {
   citizenOrganizationContactDetails,
   citizenOrganizations
 } from 'citizen-frontend/api-clients/citizen'
-import { citizenOrganizations } from 'citizen-frontend/api-clients/citizen'
 import { terminateReservation } from 'citizen-frontend/api-clients/reservation'
 import { updateTrailer } from 'citizen-frontend/api-clients/trailer'
 import { queryKeys } from 'citizen-frontend/citizen/queries'
