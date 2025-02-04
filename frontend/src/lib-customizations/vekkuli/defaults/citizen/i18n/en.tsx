@@ -132,6 +132,12 @@ const en: Translations = {
       confirmation: 'Confirmation'
     },
     searchPage: {
+      title: 'Espoo City boat space rental',
+      image: {
+        harbors: {
+          altText: "Espoo's marinas"
+        }
+      },
       missingFieldsInfoBox:
         'First provide the boat type and dimensions to see suitable spaces for your boat.',
       filters: {

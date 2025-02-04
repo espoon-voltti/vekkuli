@@ -126,6 +126,12 @@ const sv: Translations = {
   components: componentTranslations,
   reservation: {
     searchPage: {
+      title: 'Esbo stads båtplatsuthyrning',
+      image: {
+        harbors: {
+          altText: 'Esbos småbåtshamnar'
+        }
+      },
       missingFieldsInfoBox:
         'Ange först båttyp och mått för att se vilka platser som passar din båt.',
       filters: {

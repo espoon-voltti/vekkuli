@@ -131,6 +131,12 @@ export default {
       confirmation: 'Vahvistus'
     },
     searchPage: {
+      title: 'Espoon kaupungin venepaikkojen vuokraus',
+      image: {
+        harbors: {
+          altText: 'Espoon venesatamat'
+        }
+      },
       missingFieldsInfoBox:
         'Anna ensin paikan mitat niin näet veneellesi sopivat paikat.',
       filters: {
