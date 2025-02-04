@@ -145,6 +145,8 @@ const en: Translations = {
         boatSpaceType: 'Space type',
         harbor: 'Harbor',
         amenities: 'Amenities',
+        harborHeader: 'Harbor',
+        amenityHeader: 'Amenity',
         boatType: 'Boat type',
         storageTypeAmenities: 'Storage type',
         branchSpecific: {

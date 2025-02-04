@@ -139,6 +139,8 @@ const sv: Translations = {
         boatSpaceType: 'Sök plats',
         harbor: 'Hamnen',
         amenities: 'Faciliteter',
+        harborHeader: 'Hamnar',
+        amenityHeader: 'Förtöjningssätt',
         boatType: 'Båttyp',
         storageTypeAmenities: 'Förråd typ',
         branchSpecific: {

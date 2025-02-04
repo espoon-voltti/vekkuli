@@ -144,6 +144,8 @@ export default {
         boatSpaceType: 'Haettava paikka',
         harbor: 'Satama',
         amenities: 'Varusteet',
+        harborHeader: 'Satama',
+        amenityHeader: 'Varuste',
         boatType: 'Venetyyppi',
         storageTypeAmenities: 'Säilytystapa',
         branchSpecific: {
