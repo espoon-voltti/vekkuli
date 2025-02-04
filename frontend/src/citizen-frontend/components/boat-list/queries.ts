@@ -1,12 +1,11 @@
-import { deleteBoat, updateBoat } from 'citizen-frontend/api-clients/boat'
-import { queryKeys } from 'citizen-frontend/shared/queries'
-import { mutation } from 'lib-common/query'
+import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
+import { BoatId } from 'citizen-frontend/shared/types'
 
-export const deleteBoatMutation = mutation({
-  api: deleteBoat,
-  invalidateQueryKeys: () => [queryKeys.citizenBoats()]
-})
+import { createMutationDisabledDefault } from '../util'
 
-export const updateBoatMutation = mutation({
-  api: updateBoat
-})
+export const deleteBoatDisabled = createMutationDisabledDefault<BoatId, void>()
+
+export const updateBoatDisabled = createMutationDisabledDefault<
+  UpdateBoatRequest,
+  void
+>()

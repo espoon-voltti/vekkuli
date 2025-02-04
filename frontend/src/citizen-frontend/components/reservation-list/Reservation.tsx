@@ -4,12 +4,16 @@ import TextField from 'lib-components/form/TextField'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
-import { updateCitizenTrailerMutation } from 'citizen-frontend/citizen/queries'
 import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
-import { useMutation, useQueryResult } from 'lib-common/query'
+import {
+  MutationDescription,
+  useMutation,
+  useQueryResult
+} from 'lib-common/query'
 
 import ErrorModal, {
   ErrorCode
@@ -20,10 +24,12 @@ import { startRenewReservationMutation } from './queries'
 
 export default React.memo(function Reservation({
   reservation,
-  onTerminate
+  onTerminate,
+  updateTrailerMutation
 }: {
   reservation: ExistingBoatSpaceReservation
   onTerminate?: () => void
+  updateTrailerMutation?: MutationDescription<UpdateTrailerRequest, void>
 }) {
   const canSwitch = reservation.allowedReservationOperations.includes('Switch')
   const canRenew = reservation.allowedReservationOperations.includes('Renew')
@@ -161,7 +167,7 @@ export default React.memo(function Reservation({
           <TrailerInformation
             trailer={reservation.trailer}
             setEditIsOn={(mode) => setButtonsVisible(!mode)}
-            updateMutation={updateCitizenTrailerMutation}
+            updateMutation={updateTrailerMutation}
           />
         )}
         {buttonsVisible && (

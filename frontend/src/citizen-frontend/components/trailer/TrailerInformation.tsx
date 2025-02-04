@@ -10,17 +10,18 @@ import { useForm, useFormFields } from 'lib-common/form/hooks'
 import { MutationDescription, useMutation } from 'lib-common/query'
 
 import { initialFormState, trailerInformationForm } from './formDefinitions'
-import { updateTrailerMutation } from './queries'
+import { updateTrailerDisabled } from './queries'
 
 export default React.memo(function TrailerInformation({
   trailer,
   setEditIsOn,
-  updateMutation = updateTrailerMutation
+  updateMutation = updateTrailerDisabled
 }: {
   trailer: Trailer
   setEditIsOn?: (value: boolean) => void
-  updateMutation: MutationDescription<UpdateTrailerRequest, void>
+  updateMutation?: MutationDescription<UpdateTrailerRequest, void>
 }) {
+  const editDisabled = updateMutation === updateTrailerDisabled
   const i18n = useTranslation()
   const [editMode, setEditMode] = React.useState(false)
   const { mutateAsync: updateTrailer, isPending } = useMutation(updateMutation)
@@ -52,7 +53,7 @@ export default React.memo(function TrailerInformation({
           <h4>Trailerin tiedot</h4>
         </Column>
         <Column isNarrow toRight>
-          {editMode ? null : (
+          {editMode || editDisabled ? null : (
             <EditLink action={() => changeEditMode(true)}>
               Muokkaa trailerin tietoja
             </EditLink>
