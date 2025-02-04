@@ -4,9 +4,9 @@ ARG CACHE_BUST=2025-W05
 
 LABEL maintainer="https://github.com/espoon-voltti/vekkuli"
 
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
-ENV LANGUAGE C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ENV LANGUAGE=C.UTF-8
 RUN apt-get update \
  && apt-get -y dist-upgrade \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -34,7 +34,6 @@ RUN ./gradlew --no-daemon resolveDependencies \
 COPY . .
 
 RUN ./gradlew compileSass
-
 RUN ./gradlew bundleJs
 
 # --offline is used to be sure that all dependencies are installed in previous steps
@@ -53,7 +52,7 @@ COPY --from=builder /app/target/ .
 
 ARG build=none
 ARG commit=none
-ENV APP_BUILD "$build"
-ENV APP_COMMIT "$commit"
+ENV APP_BUILD="$build"
+ENV APP_COMMIT="$commit"
 LABEL fi.espoo.build="$build" \
       fi.espoo.commit="$commit"
