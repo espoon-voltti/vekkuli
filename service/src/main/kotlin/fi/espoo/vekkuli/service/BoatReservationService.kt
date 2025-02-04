@@ -122,7 +122,7 @@ class BoatReservationService(
 
         if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
 
-        handleReservationPaymentResult(stamp, paymentSuccess)
+        handleReservationPaymentResult(stamp, paymentSuccess) ?: return PaymentProcessResult.Failure
         if (paymentSuccess) sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
 
         return PaymentProcessResult.Success(reservation)

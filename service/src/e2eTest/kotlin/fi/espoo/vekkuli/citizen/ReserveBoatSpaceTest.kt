@@ -10,6 +10,7 @@ import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -1005,6 +1006,35 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         val reservationTimerSection = paymentPage.getReservationTimerSection()
         assertThat(reservationTimerSection.root).isVisible()
+    }
+
+    @Test
+    fun `Payment after reservation time expiry results in valid reservation if space is still available`() {
+        val currentTime = timeProvider.getCurrentDateTime()
+        val reservationTimerExpired = currentTime.plus(Duration.ofMinutes(25))
+
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.header).isVisible()
+
+        mockTimeProvider(timeProvider, reservationTimerExpired)
+
+        paymentPage.payReservation()
+        assertThat(paymentPage.reservationSuccessNotification).isVisible()
+        assertCorrectPaymentForReserver("Virtanen Mikko", PaymentStatus.Success, "Haukilahti B 314", "418,00", "")
+
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+        val citizenDetailPage = CitizenDetailsPage(page)
+        citizenDetailPage.navigateToPage()
+
+        val reservationSection = citizenDetailPage.getReservationSection("Haukilahti B 314")
+        assertThat(reservationSection.root).isVisible()
     }
 
     private fun fillReservationInfoAndAssertCorrectDiscount(
