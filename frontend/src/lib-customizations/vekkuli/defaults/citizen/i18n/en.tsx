@@ -120,7 +120,8 @@ const en: Translations = {
     closeMenu: 'Close menu',
     goToHomepage: 'Go to homepage',
     goToMainContent: 'Skip to main content',
-    selectLanguage: 'Select language'
+    selectLanguage: 'Select language',
+    mainNavigation: 'Main navigation'
   },
   components: componentTranslations,
   reservation: {

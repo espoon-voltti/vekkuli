@@ -11,10 +11,12 @@ import Menu from './Menu'
 export default React.memo(function Navigation() {
   const i18n = useTranslation()
   return (
-    <nav role="navigation" aria-label="main navigation">
+    <nav role="navigation" aria-label={i18n.header.mainNavigation}>
       <div className="nav-row">
         <div className="columns">
-          <img className="logo" src={Logo} alt="Espoo logo" />
+          <Link to="/" className="link" aria-label={i18n.header.goToHomepage}>
+            <img className="logo" src={Logo} alt="Espoo logo" />
+          </Link>
           <h1>{i18n.common.title}</h1>
         </div>
         <div className="columns">
