@@ -4,10 +4,11 @@ import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.pages.citizen.components.IHaveReservationTimer
 
 class PaymentPage(
     page: Page
-) : BasePage(page) {
+) : BasePage(page), IHaveReservationTimer<PaymentPage> {
     val header = page.getByText("Valitse maksutapa")
     val nordeaSuccessButton =
         page.getByText(

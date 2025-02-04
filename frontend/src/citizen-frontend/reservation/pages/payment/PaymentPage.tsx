@@ -7,6 +7,7 @@ import { useTranslation } from 'citizen-frontend/localization'
 import { ErrorBox } from 'citizen-frontend/reservation/components/ErrorBox'
 
 import StepIndicator from '../../StepIndicator'
+import ReservationTimer from '../../components/ReservationTimer'
 import { ReservationStateContext } from '../../state'
 
 import CancelPayment from './CancelPayment'
@@ -29,6 +30,7 @@ export default React.memo(function PaymentPage() {
               <CancelPayment reservation={unfinishedReservation.reservation} />
             </Container>
             <StepIndicator step="payment" />
+            <ReservationTimer />
             <div className="container">
               <h2>{i18n.payment.title}</h2>
               {searchParams.get('cancelled') === 'true' && (

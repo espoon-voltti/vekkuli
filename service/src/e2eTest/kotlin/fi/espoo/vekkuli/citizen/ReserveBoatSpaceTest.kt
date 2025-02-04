@@ -991,6 +991,22 @@ class ReserveBoatSpaceTest : ReserveTest() {
         assertThat(page.locator("body")).containsText("Varaaminen ei ole mahdollista")
     }
 
+    @Test
+    fun `Payment page displays remaining reservation time`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.header).isVisible()
+
+        val reservationTimerSection = paymentPage.getReservationTimerSection()
+        assertThat(reservationTimerSection.root).isVisible()
+    }
+
     private fun fillReservationInfoAndAssertCorrectDiscount(
         discount: Int,
         expectedPrice: String,
