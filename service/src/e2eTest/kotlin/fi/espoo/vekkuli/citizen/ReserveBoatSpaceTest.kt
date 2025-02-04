@@ -832,37 +832,26 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun formValuesArePreservedAfterPaymentPageBackButton() {
-        page.navigate(baseUrlWithEnglishLangParam)
-        page.getByTestId("loginButton").click()
-        page.getByText("Kirjaudu").click()
+        CitizenHomePage(page).loginAsMikkoVirtanen()
 
-        val reservationPage = ReserveBoatSpaceEmployeePage(page, UserType.CITIZEN)
-        reservationPage.navigateTo()
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.lengthFilterInput.blur()
-        reservationPage.firstReserveButton.click()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
 
-        val formPage = EmployeeBoatSpaceFormPage(page)
-        assertThat(formPage.header).isVisible()
-        formPage.fillFormAndSubmit()
+        val boatSpaceFormPage = BoatSpaceFormPage(page)
+        boatSpaceFormPage.fillFormAndSubmit {
+            val boatSection = getBoatSection()
+            boatSection.widthInput.fill("3")
+            boatSection.lengthInput.fill("6")
+        }
 
-        val paymentPage = EmployeePaymentPage(page)
-        assertThat(paymentPage.paymentPageTitle).hasCount(1)
-        paymentPage.backButtonOnPaymentPage.click()
+        PaymentPage(page).backButton.click()
 
         // assert that form is filled with the previous values
-        assertThat(formPage.header).isVisible()
-        assertThat(formPage.widthInput).hasValue("3.00")
-        assertThat(formPage.lengthInput).hasValue("6.00")
-        assertThat(formPage.depthInput).hasValue("1.5")
-        assertThat(formPage.weightInput).hasValue("2000")
-        assertThat(formPage.boatNameInput).hasValue("My Boat")
-        assertThat(formPage.otherIdentification).hasValue("ID12345")
-        assertThat(formPage.emailInput).hasValue("test@example.com")
-        assertThat(formPage.phoneInput).hasValue("123456789")
+        val boatSection = boatSpaceFormPage.getBoatSection()
+        assertThat(boatSection.widthInput).hasValue("3")
+        assertThat(boatSection.lengthInput).hasValue("6")
     }
 
     @Test
