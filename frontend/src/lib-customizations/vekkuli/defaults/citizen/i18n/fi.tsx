@@ -401,7 +401,15 @@ export default {
   },
   organization: {
     organizationPhone: 'Yhteisön puhelinnumero',
-    organizationEmail: 'Yhteisön sähköposti'
+    organizationEmail: 'Yhteisön sähköposti',
+    contactDetails: {
+      title: 'Yhteyshenkilöt',
+      fields: {
+        name: 'Nimi',
+        phone: 'Puhelinnumero',
+        email: 'Sähköposti'
+      }
+    }
   },
   payment: {
     title: 'Valitse maksutapa'

@@ -21,7 +21,8 @@ export const queryKeys = createQueryKeys('citizen', {
   organizationExpiredReservations: () => ['organizationExpiredReservations'],
   citizenOrganizations: () => ['citizenOrganizations'],
   unfinishedReservation: () => ['unfinishedReservation'],
-  allSearchesToFreeSpaces: () => ['searchFreeSpaces']
+  allSearchesToFreeSpaces: () => ['searchFreeSpaces'],
+  organizationContactDetails: () => ['organizationContactDetails']
 })
 
 export const citizenActiveReservationsQuery = query({

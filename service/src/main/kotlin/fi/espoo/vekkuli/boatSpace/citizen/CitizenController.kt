@@ -12,7 +12,6 @@ import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
-import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -126,8 +125,10 @@ class CitizenController(
                 mapOf("targetId" to orgId.toString())
             )
         }
-        val userId = request.getAuthenticatedUser()?.id
-        if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
+        val citizenId = request.ensureCitizenId()
+        if (!permissionService.hasAccessToOrganization(citizenId, orgId)) {
+            throw Forbidden()
+        }
         val reservations = reservationService.getActiveReservationsForOrganization(orgId)
         return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
     }
@@ -144,10 +145,28 @@ class CitizenController(
                 mapOf("targetId" to orgId.toString())
             )
         }
-        val userId = request.getAuthenticatedUser()?.id
-        if (userId == null || !permissionService.hasAccessToOrganization(userId, orgId)) throw Forbidden()
+        val citizenId = request.ensureCitizenId()
+        if (!permissionService.hasAccessToOrganization(citizenId, orgId)) {
+            throw Forbidden()
+        }
         val reservations = reservationService.getExpiredReservationsForOrganization(orgId)
         return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
+    }
+
+    @GetMapping("/current/organization-contact-details/{orgId}")
+    fun getOrganizationContactDetails(
+        @PathVariable orgId: UUID,
+        request: HttpServletRequest
+    ): CitizenOrganizationContactDetailsResponse {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(
+                it,
+                "GET_CURRENT_ORGANIZATION_CONTACT_DETAILS",
+                mapOf("targetId" to orgId.toString())
+            )
+        }
+
+        return citizenService.getCitizenOrganizationContactPersons(orgId).toCitizenOrganizationContactDetailsResponse()
     }
 
     @PostMapping("/current/update-information")
