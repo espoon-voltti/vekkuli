@@ -123,6 +123,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     val municipalityCode: Int,
     val municipalityName: String,
     val paymentDate: LocalDate?,
+    val invoiceDueDate: LocalDate?,
     val validity: ReservationValidity
 )
 
@@ -850,7 +851,8 @@ class JdbiBoatSpaceReservationRepository(
                         t.reserver_id AS trailer_reserver_id,
                         t.registration_code AS trailer_registration_code,
                         t.width_cm AS trailer_width_cm,
-                        t.length_cm AS trailer_length_cm
+                        t.length_cm AS trailer_length_cm,
+                        i.due_date as invoice_due_date
                     FROM boat_space_reservation bsr
                     LEFT JOIN boat b on b.id = bsr.boat_id
                     LEFT JOIN trailer t on t.id = bsr.trailer_id
@@ -860,6 +862,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     LEFT JOIN payment p ON (p.reservation_id = bsr.id AND p.status = 'Success')
+                    LEFT JOIN invoice i ON bsr.id = i.reservation_id
                     WHERE $filterQuery
                     $sortByQuery
                     """.trimIndent()
@@ -915,7 +918,8 @@ class JdbiBoatSpaceReservationRepository(
                         paymentDate = row.paymentDate,
                         storageType = row.storageType,
                         validity = row.validity,
-                        amenity = row.amenity
+                        amenity = row.amenity,
+                        invoiceDueDate = row.invoiceDueDate
                     )
                 }
         }

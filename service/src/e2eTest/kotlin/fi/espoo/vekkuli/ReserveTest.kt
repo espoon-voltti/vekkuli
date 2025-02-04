@@ -47,7 +47,6 @@ open class ReserveTest : PlaywrightTest() {
         val citizenDetails = citizenPageInEmployeeView(citizenName, doLogin)
         citizenDetails.paymentsNavi.click()
         assertThat(citizenDetails.paymentsTable).isVisible()
-        // page.pause()
         val paymentRows = citizenDetails.paymentsTable.locator("tbody tr").all()
 
         val matchingRow =

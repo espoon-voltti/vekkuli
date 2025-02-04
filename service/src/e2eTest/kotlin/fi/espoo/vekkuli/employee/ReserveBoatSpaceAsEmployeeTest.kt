@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.employee
 
+import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.controllers.UserType
@@ -129,6 +130,13 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
+
+            val reservationRow =
+                reservationListPage.reservations.filter(
+                    Locator.FilterOptions().setHasText("Doe John")
+                )
+            assertTrue(reservationRow.textContent().contains("Laskutettu, eräpäivä 22.04.24"))
+
             page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
 
@@ -637,12 +645,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
-
             val reservationListPage = ReservationListPage(page)
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
-
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Until 31.12.2024" in citizenDetailsPage.reservationValidity.first().textContent())
 
@@ -726,7 +732,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         val reservationListPage = ReservationListPage(page)
         assertThat(reservationListPage.header).isVisible()
-
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
 
