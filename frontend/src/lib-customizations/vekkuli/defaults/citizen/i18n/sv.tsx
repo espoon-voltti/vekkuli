@@ -135,6 +135,10 @@ const sv: Translations = {
       missingFieldsInfoBox:
         'Ange först båttyp och mått för att se vilka platser som passar din båt.',
       freeSpaceCount: 'Antal platser tillgängliga enligt sökkriterier',
+      size: 'Storlek',
+      amenityLabel: 'Förtöjningssätt',
+      price: 'Pris/Period',
+      place: 'Plats',
       filters: {
         title: 'Sök båtplats',
         boatSpaceType: 'Sök plats',

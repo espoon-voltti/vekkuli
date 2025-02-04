@@ -140,6 +140,10 @@ export default {
       missingFieldsInfoBox:
         'Anna ensin paikan mitat niin näet veneellesi sopivat paikat.',
       freeSpaceCount: 'Hakuehtoihin sopivat vapaat paikat',
+      size: 'Paikan koko',
+      amenityLabel: 'Varuste',
+      price: 'Hinta/Kausi',
+      place: 'Paikka',
       filters: {
         title: 'Venepaikan haku',
         boatSpaceType: 'Haettava paikka',
