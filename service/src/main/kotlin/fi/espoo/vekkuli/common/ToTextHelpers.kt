@@ -8,5 +8,5 @@ fun reservationStatusToText(reservationStatus: ReservationStatus): String =
         ReservationStatus.Payment -> "Maksettavana"
         ReservationStatus.Confirmed -> "Maksettu"
         ReservationStatus.Invoiced -> "Laskutettavana"
-        ReservationStatus.Cancelled -> "Peruttu"
+        ReservationStatus.Cancelled -> "Irtisanottu"
     }

@@ -732,7 +732,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         val reservationListPage = ReservationListPage(page)
         assertThat(reservationListPage.header).isVisible()
-
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
 

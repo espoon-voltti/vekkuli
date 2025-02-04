@@ -293,6 +293,9 @@ class BoatSpaceReservationList : BaseView() {
                     <td>${result.email}</td>
                     <td>${result.municipalityName}</td>
                     <td>$statusText</td>
+                <td ${addTestId(
+                    "reservation-start-date"
+                )}>${formatAsShortYearDate(result.startDate)}</td>
                     <td ${addTestId(
                     "reservation-end-date"
                 )}>$endDateText</td>
@@ -432,6 +435,9 @@ class BoatSpaceReservationList : BaseView() {
                                     <th><span class="reservation-table-header">
                                         ${t("boatSpaceReservation.title.paymentState")}
                                     </span></th>
+                                    <th class="nowrap">
+                                        ${sortButton("START_DATE", t("boatSpaceReservation.title.startDate"))}
+                                    </th>
                                     <th class="nowrap">
                                         ${sortButton("END_DATE", t("boatSpaceReservation.title.endDate"))}
                                     </th>
