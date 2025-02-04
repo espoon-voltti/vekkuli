@@ -64,12 +64,6 @@ class InvoicePreview(
                 "dueDate",
                 formatAsFullDate(model.dueDate)
             )
-        val invoicePeriod =
-            formComponents.field(
-                "invoice.invoicePeriod",
-                "invoicePeriod",
-                "${model.billingPeriodStart} - ${model.billingPeriodEnd}",
-            )
         val priceWithTax =
             formComponents.decimalInput(
                 "invoice.priceWithTax",
@@ -145,10 +139,6 @@ class InvoicePreview(
                         
                         <div class="column">
                             $dueDate
-                        </div>
-                        
-                        <div class="column">
-                            $invoicePeriod
                         </div>
                         
                         <div class="column">
