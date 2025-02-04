@@ -142,8 +142,8 @@ class JdbiBoatSpaceRepository(
                 AND (
                     (boat_space_reservation.created <= :currentTime) AND
                     (boat_space_reservation.status IN ('Info', 'Payment') AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
-                    (boat_space_reservation.status IN ('Confirmed', 'Invoiced') AND boat_space_reservation.end_date >= :currentTime) OR
-                    (boat_space_reservation.status = 'Cancelled' AND boat_space_reservation.end_date > :currentTime)
+                    (boat_space_reservation.status IN ('Confirmed', 'Invoiced') AND boat_space_reservation.end_date::date >= :currentTime::date) OR
+                    (boat_space_reservation.status = 'Cancelled' AND boat_space_reservation.end_date::date > :currentTime::date)
                 )
                 WHERE 
                     boat_space_reservation.id IS NULL

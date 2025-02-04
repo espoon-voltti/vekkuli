@@ -1153,7 +1153,7 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
                     WHERE bsr.status = 'Confirmed' AND validity = :validity
-                        AND end_date < :endDateCut AND end_date > :currentTime
+                        AND end_date < :endDateCut AND end_date::date > :currentTime::date
                     """.trimIndent()
                 )
             query.bind("validity", validity)

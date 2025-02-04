@@ -164,7 +164,7 @@ class JdbiBoatRepository(
                           WHERE 
                             boat_space_reservation.boat_id = boat.id
                             AND
-                            boat_space_reservation.end_date > :timestamp
+                            boat_space_reservation.end_date::date > :timestamp::date
                       );
                     """.trimIndent()
                 )
