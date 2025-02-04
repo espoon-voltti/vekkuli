@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.boatSpace.citizen
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
-import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
@@ -18,6 +17,7 @@ data class ExistingReservationResponse(
     val boat: Boat?,
     val created: LocalDateTime,
     val endDate: LocalDate,
+    val validity: ReservationValidity,
     val paymentDate: LocalDate?,
     val totalPrice: String,
     val vatValue: String,
@@ -66,7 +66,6 @@ data class ExistingReservationResponse(
 class ExistingReservationResponseMapper(
     private val boatService: BoatService,
     private val spaceReservationService: BoatReservationService,
-    private val seasonalService: SeasonalService,
     private val renewalPolicyService: RenewalPolicyService,
     private val switchPolicyService: SwitchPolicyService,
     private val citizenAccessControl: CitizenAccessControl,
@@ -107,6 +106,7 @@ class ExistingReservationResponseMapper(
             boat = formatBoat(boat),
             created = boatSpaceReservation.created,
             endDate = boatSpaceReservation.endDate,
+            validity = reservationWithDependencies.validity,
             paymentDate = boatSpaceReservation.paymentDate,
             totalPrice = reservationWithDependencies.priceInEuro,
             vatValue = reservationWithDependencies.vatPriceInEuro,
