@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.boatSpace.invoice.InvoiceController.InvoiceInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.BoatRegistrationBaseInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.ValidBoatRegistration
 import fi.espoo.vekkuli.common.Conflict
@@ -79,6 +80,7 @@ class BoatSpaceRenewController(
     @PostMapping("/virkailija/venepaikka/jatka/{originalReservationId}/lasku")
     fun sendInvoiceAndTerminateOldReservation(
         @PathVariable originalReservationId: Int,
+        @ModelAttribute("input") input: InvoiceInput,
         request: HttpServletRequest,
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
@@ -91,6 +93,7 @@ class BoatSpaceRenewController(
                 renewedReservation.id,
                 renewedReservation.reserverId,
                 renewedReservation.originalReservationId,
+                input
             )
             return redirectUrl(getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId))
         } catch (e: Exception) {

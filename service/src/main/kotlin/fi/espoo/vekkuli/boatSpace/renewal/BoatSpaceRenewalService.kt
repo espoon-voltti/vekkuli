@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
+import fi.espoo.vekkuli.boatSpace.invoice.InvoiceController.InvoiceInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Conflict
@@ -10,6 +11,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
@@ -121,14 +123,22 @@ class BoatSpaceRenewalService(
     fun activateRenewalAndSendInvoice(
         renewedReservationId: Int,
         reserverId: UUID?,
-        originalReservationId: Int?
+        originalReservationId: Int?,
+        input: InvoiceInput
     ) {
         if (reserverId == null || originalReservationId == null) {
             throw IllegalArgumentException("Reservation not found")
         }
-
+        val priceWithVatInCents = decimalToInt(input.priceWithTax)
         val invoiceData =
-            invoiceService.createInvoiceData(renewedReservationId, reserverId)
+            invoiceService.createInvoiceData(
+                renewedReservationId,
+                reserverId,
+                priceWithVatInCents,
+                input.description,
+                input.function,
+                input.contactPerson
+            )
                 ?: throw InternalError("Failed to create invoice batch")
 
         boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
