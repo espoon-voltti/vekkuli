@@ -4,6 +4,7 @@
 
 package fi.espoo.vekkuli.config
 
+import mu.KotlinLogging
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
@@ -13,9 +14,18 @@ import java.util.*
 class MessageUtil(
     private val messageSource: MessageSource
 ) {
+    private val logger = KotlinLogging.logger {}
+
     fun getMessage(
         code: String,
         args: List<Any> = emptyList(),
         locale: Locale = LocaleContextHolder.getLocale()
-    ): String = messageSource.getMessage(code, args.toTypedArray(), locale)
+    ): String {
+        try {
+            return messageSource.getMessage(code, args.toTypedArray(), locale)
+        } catch (e: Exception) {
+            logger.error("Missing message for code: $code for locale $locale")
+            return code
+        }
+    }
 }
