@@ -62,6 +62,53 @@ class RenewReservationTest : ReserveTest() {
     }
 
     @Test
+    fun `should be able to renew slip reservation for organization`() {
+        try {
+            mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+
+            val citizenHomePage = CitizenHomePage(page)
+            citizenHomePage.loginAsOliviaVirtanen()
+            citizenHomePage.navigateToPage()
+            citizenHomePage.languageSelector.click()
+            citizenHomePage.languageSelector.getByText("Suomi").click()
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            page.getByText("Espoon Pursiseura").click()
+
+            val reservationSection = citizenDetailsPage.getFirstReservationSection()
+
+            assertThat(reservationSection.renewButton).isVisible()
+            reservationSection.renewButton.click()
+            // renew form
+            val form = BoatSpaceFormPage(page)
+            assertThat(form.header).isVisible()
+            // Make sure that citizen is redirected to unfinished reservation switch form
+            val reservationPage = ReserveBoatSpacePage(page)
+            reservationPage.navigateToPage()
+
+            val userAgreementSection = form.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
+            form.submitButton.click()
+
+            assertZeroEmailsSent()
+            val paymentPage = PaymentPage(page)
+            paymentPage.nordeaSuccessButton.click()
+            val confirmationPage = ConfirmationPage(page)
+            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
+            // Check that the renewed reservation is visible
+            citizenDetailsPage.navigateToPage()
+            page.getByText("Espoon Pursiseura").click()
+            assertThat(reservationSection.renewButton).isHidden()
+            assertThat(citizenDetailsPage.reservationListCards).containsText("Laituripaikka: Haukilahti B 005")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
     fun `should be able to renew winter reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
