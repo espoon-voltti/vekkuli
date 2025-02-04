@@ -363,7 +363,8 @@ export default {
       Beam: 'Aisa',
       WalkBeam: 'Kävelyaisa',
       Trailer: 'Trailerisäilytys',
-      Buck: 'Pukkisäilytys'
+      Buck: 'Pukkisäilytys',
+      None: '-'
     },
     winterStorageType: {
       Trailer: 'Trailerisäilytys',

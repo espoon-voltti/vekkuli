@@ -352,7 +352,8 @@ const en: Translations = {
       Beam: 'Beam',
       WalkBeam: 'Walk beam',
       Trailer: 'Trailer storage',
-      Buck: 'Stand storage'
+      Buck: 'Stand storage',
+      None: '-'
     },
     ownershipStatusInfo: (type: OwnershipStatus, spaceType: BoatSpaceType) => {
       if (type === 'CoOwner') {

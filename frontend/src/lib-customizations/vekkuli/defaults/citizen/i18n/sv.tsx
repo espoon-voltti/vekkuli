@@ -364,7 +364,8 @@ const sv: Translations = {
       Beam: 'Bom',
       WalkBeam: 'Gångbom',
       Trailer: 'Trailerförvaring',
-      Buck: 'Förvaring på bock'
+      Buck: 'Förvaring på bock',
+      None: '-'
     },
     winterStorageType: {
       Trailer: 'Trailerförvaring',
