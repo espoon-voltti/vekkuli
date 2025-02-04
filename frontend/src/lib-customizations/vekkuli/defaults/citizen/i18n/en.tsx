@@ -140,6 +140,7 @@ const en: Translations = {
       },
       missingFieldsInfoBox:
         'First provide the boat type and dimensions to see suitable spaces for your boat.',
+      freeSpaceCount: 'Number of places available according to search criteria',
       filters: {
         title: 'Boat space reservation',
         boatSpaceType: 'Space type',

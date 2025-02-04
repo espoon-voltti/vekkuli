@@ -19,12 +19,9 @@ export default React.memo(function SearchResults({
   onReserveSpace: (spaceId: number) => void
 }) {
   const i18n = useTranslation()
-
   return (
     <div className="block loaded-content" data-testid="boat-space-results">
-      <h3>
-        <span>Hakuehtoihin sopivat vapaat paikat</span> <span>({count})</span>
-      </h3>
+      <h3>{`${i18n.reservation.searchPage.freeSpaceCount} (${count})`}</h3>
       {!showInfoBox ? null : (
         <InfoBox text={i18n.reservation.searchPage.missingFieldsInfoBox} />
       )}
