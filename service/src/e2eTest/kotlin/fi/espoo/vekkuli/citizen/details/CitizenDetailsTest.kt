@@ -3,11 +3,11 @@ package fi.espoo.vekkuli.citizen.details
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.citizenPageInEnglish
+import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
-import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage
+import fi.espoo.vekkuli.pages.citizen.PaymentPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
-import fi.espoo.vekkuli.pages.employee.PaymentPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.endOfSlipSwitchPeriodForEspooCitizen
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDetailsPage
+import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
+import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
@@ -73,35 +75,28 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun `citizen can renew slip reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = EmployeeCitizenDetailsPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.renewReservationButton(1).click()
+
+            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+            reservationSection.renewButton.click()
 
             val formPage = BoatSpaceFormPage(page)
-            assertThat(formPage.header).isVisible()
-            formPage.backButton.click()
-            formPage.confirmCancelModalConfirm.click()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-
-            citizenDetails.renewReservationButton(1).click()
-            formPage.certifyInfoCheckbox.check()
-            formPage.agreementCheckbox.check()
+            val userAgreementSection = formPage.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
             formPage.submitButton.click()
 
-            // assert that payment title is shown
             val paymentPage = PaymentPage(page)
-            assertThat(paymentPage.paymentPageTitle).hasCount(1)
             paymentPage.nordeaSuccessButton.click()
 
-            page.navigate(citizenPageInEnglish)
-            assertThat(citizenDetails.renewReservationButton(1)).isHidden()
+            citizenDetails.navigateToPage()
+            assertThat(reservationSection.renewButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -120,7 +115,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             citizenDetails.navigateToPage()
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(renewReservationId).click()
-            val formPage = BoatSpaceFormPage(page)
+            val formPage = EmployeeBoatSpaceFormPage(page)
 
             assertThat(formPage.header).isVisible()
             formPage.backButton.click()
@@ -142,7 +137,7 @@ class CitizenDetailsTest : PlaywrightTest() {
             formPage.agreementCheckbox.check()
             formPage.submitButton.click()
             // assert that payment title is shown
-            val paymentPage = PaymentPage(page)
+            val paymentPage = EmployeePaymentPage(page)
             assertThat(paymentPage.paymentPageTitle).hasCount(1)
             paymentPage.nordeaSuccessButton.click()
 
