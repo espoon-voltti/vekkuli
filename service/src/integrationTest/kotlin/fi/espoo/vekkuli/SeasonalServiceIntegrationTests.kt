@@ -327,6 +327,73 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
+    fun `should allow reserving 2 storage spaces`() {
+        val firstStorageReservation =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 5)
+        formReservationService.processBoatSpaceReservation(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = firstStorageReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = BigDecimal(3.5),
+                length = BigDecimal(6.5),
+                depth = BigDecimal(3.0),
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.Owner,
+                phone = "",
+                email = "",
+                storageType = StorageType.Buck
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            timeProvider.getCurrentDate().minusWeeks(1),
+            timeProvider.getCurrentDate().plusWeeks(1),
+        )
+
+        val canReserveAfterFirstReservation = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Storage)
+
+        assert(canReserveAfterFirstReservation.success)
+
+        val secondStorageReservation =
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 6)
+        formReservationService.processBoatSpaceReservation(
+            espooCitizenId,
+            ReserveBoatSpaceInput(
+                reservationId = secondStorageReservation.id,
+                boatId = null,
+                boatType = BoatType.Sailboat,
+                width = BigDecimal(3.5),
+                length = BigDecimal(6.5),
+                depth = BigDecimal(3.0),
+                weight = 180,
+                boatRegistrationNumber = "JFK293",
+                boatName = "Boat",
+                otherIdentification = "1",
+                extraInformation = "1",
+                ownerShip = OwnershipStatus.Owner,
+                phone = "",
+                email = "",
+                storageType = StorageType.Buck
+            ),
+            ReservationStatus.Confirmed,
+            ReservationValidity.Indefinite,
+            timeProvider.getCurrentDate().minusWeeks(1),
+            timeProvider.getCurrentDate().plusWeeks(1),
+        )
+        val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Storage)
+        if (result is ReservationResult.Failure) {
+            assertEquals(ReservationResultErrorCode.MaxReservations, result.errorCode)
+        } else {
+            throw AssertionError("canReserveANewStorageSpace succeeded, but it should fail")
+        }
+    }
+
+    @Test
     fun `first place should be fixed term for Helsinki citizens reserving a slip`() {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
         val result = seasonalService.canReserveANewSpace(helsinkiCitizenId, BoatSpaceType.Slip)

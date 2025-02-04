@@ -49,38 +49,35 @@ class SeasonalService(
     fun isReservationRenewalPeriodActive(
         isEspooCitizen: Boolean,
         type: BoatSpaceType
-    ): Boolean {
-        return hasActiveReservationPeriod(
+    ): Boolean =
+        hasActiveReservationPeriod(
             seasonalRepository.getReservationPeriods(),
             timeProvider.getCurrentDate(),
             isEspooCitizen,
             type,
             ReservationOperation.Renew
         )
-    }
 
     fun getRenewReservationStartAndEndDate(
         boatSpaceType: BoatSpaceType,
         validity: ReservationValidity
-    ): DateRange {
-        return DateRange(
+    ): DateRange =
+        DateRange(
             startDate = timeProvider.getCurrentDate(),
             endDate = getBoatSpaceReservationEndDateForRenew(boatSpaceType, validity)
         )
-    }
 
     fun isReservationSwitchPeriodActive(
         isEspooCitizen: Boolean,
         type: BoatSpaceType
-    ): Boolean {
-        return hasActiveReservationPeriod(
+    ): Boolean =
+        hasActiveReservationPeriod(
             seasonalRepository.getReservationPeriods(),
             timeProvider.getCurrentDate(),
             isEspooCitizen,
             type,
             ReservationOperation.Change
         )
-    }
 
     fun isBoatSpaceReserved(boatSpaceId: Int): Boolean = boatSpaceRepository.isBoatSpaceReserved(boatSpaceId)
 
@@ -106,7 +103,6 @@ class SeasonalService(
         val isEspooCitizen = reserver.isEspooCitizen()
 
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverId, BoatSpaceType.Storage)
-        val hasSomePlace = reservations.isNotEmpty()
 
         val periods = seasonalRepository.getReservationPeriods()
 
@@ -123,7 +119,7 @@ class SeasonalService(
                 now,
                 isEspooCitizen,
                 BoatSpaceType.Storage,
-                if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
+                ReservationOperation.New
             )
 
         if (!hasActivePeriod) {
