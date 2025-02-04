@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Place, Space } from 'citizen-frontend/api-types/free-spaces'
+import { useTranslation } from 'citizen-frontend/localization'
 
 import { ResultRow } from './ResultRow'
 import { ShowMore } from './ShowMore'
@@ -20,6 +21,7 @@ export const ResultGroup = React.memo(function ResultGroup({
   const minResultsCount = 5
   const [showMore, setShowMore] = React.useState(false)
   const limitedSpaces = showMore ? spaces : spaces.slice(0, minResultsCount)
+  const i18n = useTranslation()
 
   return (
     <div className="block">
@@ -29,10 +31,10 @@ export const ResultGroup = React.memo(function ResultGroup({
       <table className="table search-results-table is-striped is-hoverable is-fullwidth">
         <thead>
           <tr>
-            <th>Paikan koko</th>
-            <th>Varuste</th>
-            <th>Hinta/Kausi</th>
-            <th>Paikka</th>
+            <th>{i18n.reservation.searchPage.size}</th>
+            <th>{i18n.reservation.searchPage.amenityLabel}</th>
+            <th>{i18n.reservation.searchPage.price}</th>
+            <th>{i18n.reservation.searchPage.place}</th>
           </tr>
         </thead>
         <tbody>

@@ -126,13 +126,26 @@ const sv: Translations = {
   components: componentTranslations,
   reservation: {
     searchPage: {
+      title: 'Esbo stads båtplatsuthyrning',
+      image: {
+        harbors: {
+          altText: 'Esbos småbåtshamnar'
+        }
+      },
       missingFieldsInfoBox:
         'Ange först båttyp och mått för att se vilka platser som passar din båt.',
+      freeSpaceCount: 'Antal platser tillgängliga enligt sökkriterier',
+      size: 'Storlek',
+      amenityLabel: 'Förtöjningssätt',
+      price: 'Pris/Period',
+      place: 'Plats',
       filters: {
         title: 'Sök båtplats',
         boatSpaceType: 'Sök plats',
         harbor: 'Hamnen',
         amenities: 'Faciliteter',
+        harborHeader: 'Hamnar',
+        amenityHeader: 'Förtöjningssätt',
         boatType: 'Båttyp',
         storageTypeAmenities: 'Förråd typ',
         branchSpecific: {
@@ -152,6 +165,19 @@ const sv: Translations = {
             width: 'Förvaringsplatsens bredd (m)',
             length: 'Förvaringsplatsens längd (m)'
           }
+        }
+      },
+      infoText: {
+        title: 'Bokning av båtplatser 2025',
+        periods: {
+          newReservations:
+            'Bokning av nya båtplatser för Esbo-invånare från och med 3.3. och för andra från 1.4.–30.9.2025',
+          trailerReservations:
+            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2025',
+          winter:
+            'Bokning av nya vinterplatser för Esbo-invånare från 15.9.–31.12.2025',
+          storage:
+            'Bokning av förvaringsplatser i Ämmäsmäki för alla från 15.9.2025–31.7.2026'
         }
       },
       modal: {

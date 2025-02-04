@@ -98,7 +98,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
             id="amenities"
             name="amenities"
             bind={amenities}
-            label="Varuste"
+            label={i18n.reservation.searchPage.filters.amenityHeader}
           />
         </div>
       )}
@@ -108,7 +108,7 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
             id="harbor"
             name="harbor"
             bind={harbor}
-            label="Satama"
+            label={i18n.reservation.searchPage.filters.harborHeader}
           />
         </div>
       )}
