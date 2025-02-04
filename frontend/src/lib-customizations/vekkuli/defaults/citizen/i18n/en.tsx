@@ -179,11 +179,11 @@ const en: Translations = {
           newReservations:
             'Booking new boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025',
           trailerReservations:
-            'Booking Suomenoja trailer spaces for Espoo residents starting 1.4. and for others from 1.5.–31.12.2025',
+            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2025',
           winter:
-            'Booking new winter spaces for Espoo residents from 1.9.–31.12.2025',
+            'Booking new winter spaces for Espoo residents from 15.9.–31.12.2025',
           storage:
-            'Booking Ämmäsmäki storage spaces for everyone from 1.9.–31.7.2026'
+            'Booking Ämmäsmäki storage spaces for everyone from 15.9.2025–31.7.2026'
         }
       },
       modal: {

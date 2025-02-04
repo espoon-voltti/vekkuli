@@ -173,11 +173,11 @@ const sv: Translations = {
           newReservations:
             'Bokning av nya båtplatser för Esbo-invånare från och med 3.3. och för andra från 1.4.–30.9.2025',
           trailerReservations:
-            'Bokning av trailerplatser i Finno för Esbo-invånare från och med 1.4. och för andra från 1.5.–31.12.2025',
+            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2025',
           winter:
-            'Bokning av nya vinterplatser för Esbo-invånare från 1.9.–31.12.2025',
+            'Bokning av nya vinterplatser för Esbo-invånare från 15.9.–31.12.2025',
           storage:
-            'Bokning av förvaringsplatser i Ämmäsmäki för alla från 1.9.–31.7.2026'
+            'Bokning av förvaringsplatser i Ämmäsmäki för alla från 15.9.2025–31.7.2026'
         }
       },
       modal: {

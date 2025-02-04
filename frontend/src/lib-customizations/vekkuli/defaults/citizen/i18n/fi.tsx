@@ -178,11 +178,11 @@ export default {
           newReservations:
             'Uusien venepaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025',
           trailerReservations:
-            'Suomenojan traileripaikkojen varaaminen espoolaisille 1.4. alkaen ja muille 1.5.–31.12.2025',
+            'Suomenojan traileripaikkojen varaaminen kaikille 1.5.–31.12.2025',
           winter:
-            'Uusien talvipaikkojen varaaminen espoolaisille 1.9.–31.12.2025',
+            'Uusien talvipaikkojen varaaminen espoolaisille 15.9.–31.12.2025',
           storage:
-            'Ämmäsmäen säilytyspaikkojen varaaminen kaikille 1.9.–31.7.2026'
+            'Ämmäsmäen säilytyspaikkojen varaaminen kaikille 15.9.2025–31.7.2026'
         }
       },
       modal: {
