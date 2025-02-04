@@ -172,6 +172,19 @@ export default {
           }
         }
       },
+      infoText: {
+        title: 'Venepaikkojen varaaminen 2025',
+        periods: {
+          newReservations:
+            'Uusien venepaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025',
+          trailerReservations:
+            'Suomenojan traileripaikkojen varaaminen espoolaisille 1.4. alkaen ja muille 1.5.–31.12.2025',
+          winter:
+            'Uusien talvipaikkojen varaaminen espoolaisille 1.9.–31.12.2025',
+          storage:
+            'Ämmäsmäen säilytyspaikkojen varaaminen kaikille 1.9.–31.7.2026'
+        }
+      },
       modal: {
         reserveNewSpace: 'Varaa uusi paikka',
         reservingBoatSpace: 'Olet varaamassa venepaikkaa:',

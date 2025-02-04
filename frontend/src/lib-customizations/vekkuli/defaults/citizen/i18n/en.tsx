@@ -173,6 +173,19 @@ const en: Translations = {
           }
         }
       },
+      infoText: {
+        title: 'Booking Boat Spaces 2025',
+        periods: {
+          newReservations:
+            'Booking new boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025',
+          trailerReservations:
+            'Booking Suomenoja trailer spaces for Espoo residents starting 1.4. and for others from 1.5.–31.12.2025',
+          winter:
+            'Booking new winter spaces for Espoo residents from 1.9.–31.12.2025',
+          storage:
+            'Booking Ämmäsmäki storage spaces for everyone from 1.9.–31.7.2026'
+        }
+      },
       modal: {
         reserveNewSpace: 'Reserve a new space',
         reservingBoatSpace: 'You are reserving a boat space:',
