@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
@@ -19,8 +18,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage as EmployeeCitizenDetailsPage
-import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
-import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
 
 @ActiveProfiles("test")
 class CitizenDetailsTest : PlaywrightTest() {
@@ -103,46 +100,29 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
+    @Disabled
     fun `citizen can renew winter storage reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
-
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val renewReservationId = 6
-            val citizenDetails = EmployeeCitizenDetailsPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.renewReservationButton(renewReservationId).click()
-            val formPage = EmployeeBoatSpaceFormPage(page)
 
-            assertThat(formPage.header).isVisible()
-            formPage.backButton.click()
+            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 015")
+            reservationSection.renewButton.click()
 
-            formPage.confirmCancelModalConfirm.click()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.renewReservationButton(renewReservationId).click()
-            assertThat(formPage.storageTypeTextBuck).isHidden()
-            formPage.storageTypeBuckOption.click()
-            assertThat(formPage.storageTypeTextBuck).isVisible()
-            assertThat(formPage.trailerInformationInputs).isHidden()
-
-            formPage.storageTypeTrailerOption.click()
-            assertThat(formPage.trailerInformationInputs).isVisible()
-            assertThat(formPage.trailerWidthInput).hasValue("2.00")
-            assertThat(formPage.trailerLengthInput).hasValue("3.00")
-            assertThat(formPage.trailerRegistrationNumberInput).hasValue("ABC123")
-            formPage.certifyInfoCheckbox.check()
-            formPage.agreementCheckbox.check()
+            val formPage = BoatSpaceFormPage(page)
+            val userAgreementSection = formPage.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
             formPage.submitButton.click()
-            // assert that payment title is shown
-            val paymentPage = EmployeePaymentPage(page)
-            assertThat(paymentPage.paymentPageTitle).hasCount(1)
+
+            val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
 
-            page.navigate(citizenPageInEnglish)
-            assertThat(citizenDetails.renewReservationButton(renewReservationId)).isHidden()
+            citizenDetails.navigateToPage()
+            assertThat(reservationSection.renewButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }
