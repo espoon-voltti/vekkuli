@@ -12,4 +12,6 @@ class InvoicePreviewPage(
     val markAsPaid = page.getByTestId("mark-as-paid")
     val confirmModalSubmit = page.getByTestId("confirm-modal-submit")
     val confirmModalCancel = page.getByTestId("confirm-modal-cancel")
+    val priceWithTax = page.getByTestId("priceWithTax")
+    val description = page.getByTestId("description")
 }

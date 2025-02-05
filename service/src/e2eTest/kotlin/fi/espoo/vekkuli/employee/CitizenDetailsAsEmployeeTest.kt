@@ -342,9 +342,16 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             assertThat(citizenDetails.citizenDetailsSection).isVisible()
             citizenDetails.renewReservationButton(1).click()
             assertThat(invoiceDetails.header).isVisible()
+            invoiceDetails.priceWithTax.fill("101")
+            invoiceDetails.description.fill("Test description")
             invoiceDetails.sendButton.click()
             assertThat(citizenDetails.renewReservationButton(1)).isHidden()
             assertThat(citizenDetails.reservationListCards).containsText("Boat space: Haukilahti B 001")
+
+            citizenDetails.paymentsNavi.click()
+
+            citizenDetails.paymentsTable.textContent().contains("101,00")
+            citizenDetails.paymentsTable.textContent().contains("Test description")
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
