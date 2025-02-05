@@ -98,7 +98,7 @@ class CitizenController(
             )
         }
         val reservations = reservationService.getActiveReservationsForCurrentCitizen()
-        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toActiveReservationResponse(it) }
     }
 
     @GetMapping("/current/expired-reservations")
@@ -110,7 +110,7 @@ class CitizenController(
             )
         }
         val reservations = reservationService.getExpiredReservationsForCurrentCitizen()
-        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toExpiredReservationResponse(it) }
     }
 
     @GetMapping("/current/organization-active-reservations/{orgId}")
@@ -130,7 +130,7 @@ class CitizenController(
             throw Forbidden()
         }
         val reservations = reservationService.getActiveReservationsForOrganization(orgId)
-        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toActiveReservationResponse(it) }
     }
 
     @GetMapping("/current/organization-expired-reservations/{orgId}")
@@ -150,7 +150,7 @@ class CitizenController(
             throw Forbidden()
         }
         val reservations = reservationService.getExpiredReservationsForOrganization(orgId)
-        return reservations.map { existingReservationResponseMapper.toReservationResponse(it) }
+        return reservations.map { existingReservationResponseMapper.toExpiredReservationResponse(it) }
     }
 
     @GetMapping("/current/organization-contact-details/{orgId}")

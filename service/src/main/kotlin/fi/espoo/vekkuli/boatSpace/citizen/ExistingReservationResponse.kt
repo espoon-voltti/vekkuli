@@ -3,8 +3,10 @@ package fi.espoo.vekkuli.boatSpace.citizen
 import fi.espoo.vekkuli.boatSpace.boatSpaceSwitch.SwitchPolicyService
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.common.NotFound
+import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -18,6 +20,7 @@ data class ExistingReservationResponse(
     val created: LocalDateTime,
     val endDate: LocalDate,
     val validity: ReservationValidity,
+    val isActive: Boolean,
     val paymentDate: LocalDate?,
     val totalPrice: String,
     val vatValue: String,
@@ -69,8 +72,11 @@ class ExistingReservationResponseMapper(
     private val renewalPolicyService: RenewalPolicyService,
     private val switchPolicyService: SwitchPolicyService,
     private val citizenAccessControl: CitizenAccessControl,
+    private val timeProvider: TimeProvider
 ) {
-    fun toReservationResponse(boatSpaceReservation: BoatSpaceReservation): ExistingReservationResponse {
+    fun toActiveReservationResponse(boatSpaceReservation: BoatSpaceReservation) = toReservationResponse(boatSpaceReservation, true)
+    fun toExpiredReservationResponse(boatSpaceReservation: BoatSpaceReservation) = toReservationResponse(boatSpaceReservation, false)
+    fun toReservationResponse(boatSpaceReservation: BoatSpaceReservation, isActive: Boolean? = null): ExistingReservationResponse {
         val (reserverId) = citizenAccessControl.requireCitizen()
         val reservationWithDependencies =
             spaceReservationService.getReservationWithDependencies(boatSpaceReservation.id) ?: throw NotFound()
@@ -83,6 +89,8 @@ class ExistingReservationResponseMapper(
 
         val canRenew = getCanRenew(boatSpaceReservation, reserverId)
         val canSwitch = getCanSwitch(boatSpaceReservation, reserverId)
+
+        val isActive = if(isActive !== null) isActive else validateReservationIsActive(boatSpaceReservation, timeProvider.getCurrentDateTime())
 
         return ExistingReservationResponse(
             id = boatSpaceReservation.id,
@@ -107,6 +115,7 @@ class ExistingReservationResponseMapper(
             created = boatSpaceReservation.created,
             endDate = boatSpaceReservation.endDate,
             validity = reservationWithDependencies.validity,
+            isActive = isActive,
             paymentDate = boatSpaceReservation.paymentDate,
             totalPrice = reservationWithDependencies.priceInEuro,
             vatValue = reservationWithDependencies.vatPriceInEuro,

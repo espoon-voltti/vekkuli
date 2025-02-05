@@ -255,15 +255,14 @@ export default {
         'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
     },
     validity: (
-        endDate: LocalDate,
-        validity: ReservationValidity
+      endDate: LocalDate,
+      validity: ReservationValidity,
+      isActive: boolean
     ): string => {
-      switch (validity) {
-        case 'FixedTerm':
-          return `${endDate.format()} asti`
-        case 'Indefinite':
-          return 'Toistaiseksi, jatko vuosittain'
+      if (validity === 'FixedTerm' || !isActive) {
+        return `${endDate.format()} asti`
       }
+      return 'Toistaiseksi, jatko vuosittain'
     },
     reserverDiscountInfo: (
       type: ReserverType,
