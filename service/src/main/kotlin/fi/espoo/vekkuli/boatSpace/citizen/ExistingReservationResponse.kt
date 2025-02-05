@@ -75,8 +75,13 @@ class ExistingReservationResponseMapper(
     private val timeProvider: TimeProvider
 ) {
     fun toActiveReservationResponse(boatSpaceReservation: BoatSpaceReservation) = toReservationResponse(boatSpaceReservation, true)
+
     fun toExpiredReservationResponse(boatSpaceReservation: BoatSpaceReservation) = toReservationResponse(boatSpaceReservation, false)
-    fun toReservationResponse(boatSpaceReservation: BoatSpaceReservation, isActive: Boolean? = null): ExistingReservationResponse {
+
+    fun toReservationResponse(
+        boatSpaceReservation: BoatSpaceReservation,
+        isActive: Boolean? = null
+    ): ExistingReservationResponse {
         val (reserverId) = citizenAccessControl.requireCitizen()
         val reservationWithDependencies =
             spaceReservationService.getReservationWithDependencies(boatSpaceReservation.id) ?: throw NotFound()
@@ -90,7 +95,15 @@ class ExistingReservationResponseMapper(
         val canRenew = getCanRenew(boatSpaceReservation, reserverId)
         val canSwitch = getCanSwitch(boatSpaceReservation, reserverId)
 
-        val isActive = if(isActive !== null) isActive else validateReservationIsActive(boatSpaceReservation, timeProvider.getCurrentDateTime())
+        val isActive =
+            if (isActive !== null) {
+                isActive
+            } else {
+                validateReservationIsActive(
+                    boatSpaceReservation,
+                    timeProvider.getCurrentDateTime()
+                )
+            }
 
         return ExistingReservationResponse(
             id = boatSpaceReservation.id,

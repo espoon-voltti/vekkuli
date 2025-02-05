@@ -16,7 +16,11 @@ fun validateReservationIsActive(
     time: LocalDateTime
 ): Boolean = validateReservationIsActive(reservation.status, reservation.endDate, time.toLocalDate())
 
-fun validateReservationIsActive(status: ReservationStatus, endDate: LocalDate, now: LocalDate): Boolean {
+fun validateReservationIsActive(
+    status: ReservationStatus,
+    endDate: LocalDate,
+    now: LocalDate
+): Boolean {
     return when (status) {
         ReservationStatus.Confirmed, ReservationStatus.Invoiced -> {
             return (endDate >= now)
