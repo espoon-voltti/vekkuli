@@ -56,7 +56,7 @@ class TemplateEmailService(
             userId = userId,
             senderAddress = senderAddress,
             recipients = recipients,
-            subject = tpl.subject,
+            subject = replaceTags(tpl.subject, variables),
             body = replaceTags(tpl.body, variables),
         )
     }

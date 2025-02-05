@@ -19,4 +19,5 @@ export interface BaseFieldProps<TValue = string> {
   ariaInvalid?: boolean
   ariaDescribedBy?: string
   ariaLabel?: string
+  dataTestId?: string
 }

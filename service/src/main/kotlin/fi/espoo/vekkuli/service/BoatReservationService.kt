@@ -96,6 +96,11 @@ class BoatReservationService(
     private val boatSpaceRepository: BoatSpaceRepository,
     private val reserverRepository: ReserverRepository
 ) {
+    fun t(
+        key: String,
+        params: List<String> = emptyList()
+    ): String = messageUtil.getMessage(key, params)
+
     fun handlePaymentResult(
         params: Map<String, String>,
         paymentSuccess: Boolean
@@ -320,6 +325,7 @@ class BoatReservationService(
         creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity,
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservation(
             reserverId,
@@ -328,6 +334,7 @@ class BoatReservationService(
             creationType,
             startDate,
             endDate,
+            validity
         )
 
     fun insertBoatSpaceReservationAsEmployee(
@@ -597,13 +604,7 @@ class BoatReservationService(
         val placeName = "${reservation.locationName} ${reservation.place}"
         val reservationStatus = reservation.status
 
-        val placeTypeText =
-            when (reservation.type) {
-                BoatSpaceType.Winter -> "talvipaikka"
-                BoatSpaceType.Storage -> "säilytyspaikka"
-                BoatSpaceType.Slip -> "laituripaikka"
-                BoatSpaceType.Trailer -> "traileripaikka"
-            }
+        val placeTypeText = t("boatSpaceReservation.email.types.${reservation.type}")
 
         val defaultParams =
             mapOf(
@@ -616,8 +617,13 @@ class BoatReservationService(
                 "length" to
                     fi.espoo.vekkuli.utils
                         .intToDecimal(boatSpace.lengthCm),
-                "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
-                "endDate" to reservation.endDate
+                "amenity" to t("boatSpaces.amenityOption.${boatSpace.amenity}"),
+                "endDate" to
+                    t(
+                        "boatSpaceReservation.email.validity.${reservation.validity}",
+                        listOf(formatAsFullDate(reservation.endDate))
+                    ),
+                "placeType" to placeTypeText,
             )
 
         data class EmailSettings(
@@ -675,15 +681,37 @@ class BoatReservationService(
                     )
                 }
                 CreationType.Renewal -> {
-                    EmailSettings(
-                        template = "reservation_renewed_by_employee",
-                        recipients = recipients,
-                        params =
-                            defaultParams
-                                .plus("reservationDescription" to "$placeTypeText $placeName")
-                                .plus("invoiceAddress" to invoiceAddress)
-                                .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
-                    )
+                    if (isInvoiced) {
+                        if (reservationStatus == ReservationStatus.Confirmed) {
+                            EmailSettings(
+                                template = "reservation_renewed_by_employee_confirmed",
+                                recipients = recipients,
+                                params =
+                                    defaultParams
+                                        .plus("reservationDescription" to "$placeTypeText $placeName")
+                            )
+                        } else {
+                            EmailSettings(
+                                template = "reservation_renewed_by_employee",
+                                recipients = recipients,
+                                params =
+                                    defaultParams
+                                        .plus("reservationDescription" to "$placeTypeText $placeName")
+                                        .plus("invoiceAddress" to invoiceAddress)
+                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                            )
+                        }
+                    } else {
+                        EmailSettings(
+                            template = "reservation_renewed_by_citizen",
+                            recipients = recipients,
+                            params =
+                                defaultParams
+                                    .plus("reservationDescription" to "$placeTypeText $placeName")
+                                    .plus("invoiceAddress" to invoiceAddress)
+                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                        )
+                    }
                 }
             }
 

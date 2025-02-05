@@ -87,12 +87,9 @@ export default React.memo(function ReservedSpace({
           <div className="column is-one-quarter">
             <TextField
               label="Varaus voimassa:"
-              value={i18n.reservation.validity(
-                reservation.endDate,
-                reservation.validity,
-                boatSpace.type
-              )}
+              value={i18n.reservation.validity(reservation.endDate, reservation.validity)}
               readonly={true}
+              dataTestId="reservation-validity"
             />
           </div>
           <div className="column is-half">

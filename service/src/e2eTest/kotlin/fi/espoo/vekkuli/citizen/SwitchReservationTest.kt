@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.baseUrlWithFinnishLangParam
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -41,7 +42,7 @@ class SwitchReservationTest : ReserveTest() {
                 "Paikan vaihto. Maksettu vain erotus."
             )
 
-            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
+            assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi",)
             val citizenDetails = citizenPageInEmployeeView("korhonen", false)
             citizenDetails.memoNavi.click()
             assertThat(citizenDetails.userMemo(2))
@@ -80,7 +81,7 @@ class SwitchReservationTest : ReserveTest() {
                 "0,00",
                 "Paikan vaihto. Ei suoritusta, paikoilla sama hinta."
             )
-            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
+            assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -183,57 +184,92 @@ class SwitchReservationTest : ReserveTest() {
     }
 
     @Test
-    fun `should be able to switch a trailer space`() {
+    fun `should be able to switch an indefinite trailer space`() {
         try {
-            mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
-            page.navigate(baseUrlWithFinnishLangParam)
-            val citizenHomePage = CitizenHomePage(page)
-            citizenHomePage.loginAsOliviaVirtanen()
-
-            val reservationPage = ReserveBoatSpacePage(page)
-            reservationPage.navigateToPage()
-
-            val filterSection = reservationPage.getFilterSection()
-            val trailerFilterSection = filterSection.getTrailerFilterSection()
-
-            ReserveBoatSpacePage(page).reserveTrailerBoatSpace()
-
-            mockTimeProvider(timeProvider, startOfTrailerSwitchPeriodForEspooCitizen)
-
-            reservationPage.navigateToPage()
-
-            filterSection.trailerRadio.click()
-
-            trailerFilterSection.widthInput.fill("1")
-            trailerFilterSection.lengthInput.fill("3")
-            val expectedBoatSpaceSection = "TRAILERI"
-            val expectedPlaceNumber = "015"
-            selectBoatSpaceForSwitch(reservationPage, 1, expectedBoatSpaceSection, expectedPlaceNumber)
-            // switch form
-            val switchSpaceFormPage = SwitchSpaceFormPage(page)
-            // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
-            val trailerRegistrationNumber = "ABC-456"
-            switchSpaceFormPage.getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill(
-                trailerRegistrationNumber
-            )
-            val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
-            userAgreementSection.certifyInfoCheckbox.check()
-            userAgreementSection.agreementCheckbox.check()
-            switchSpaceFormPage.reserveButton.click()
-
-            val confirmationPage = ConfirmationPage(page)
-            assertThat(confirmationPage.reservationSuccessNotification).isVisible()
-            val citizenDetailsPage = CitizenDetailsPage(page)
-            citizenDetailsPage.navigateToPage()
-            // Check that the renewed reservation is visible
-            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
-            assertThat(firstReservationSection.locationName).containsText("Suomenoja")
-            assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-            assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(trailerRegistrationNumber)
+            verifySuccesfullTrailerSwitch(true)
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `should be able to switch a fixed term trailer space`() {
+        try {
+            verifySuccesfullTrailerSwitch(false)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun verifySuccesfullTrailerSwitch(forEspooCitizen: Boolean) {
+        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+        page.navigate(baseUrlWithFinnishLangParam)
+        val citizenHomePage = CitizenHomePage(page)
+        if (forEspooCitizen) {
+            citizenHomePage.loginAsOliviaVirtanen()
+        } else {
+            citizenHomePage.loginAsNonEspooCitizenMarko()
+        }
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+
+        val filterSection = reservationPage.getFilterSection()
+        val trailerFilterSection = filterSection.getTrailerFilterSection()
+
+        ReserveBoatSpacePage(page).reserveTrailerBoatSpace()
+        if (forEspooCitizen) {
+            assertEmailIsSentOfCitizensIndefiniteTrailerReservation()
+        } else {
+            assertEmailIsSentOfCitizensFixedTermTrailerReservation(endDate = "30.04.2025")
+        }
+        SendEmailServiceMock.resetEmails()
+
+        if (forEspooCitizen) {
+            mockTimeProvider(timeProvider, startOfTrailerSwitchPeriodForEspooCitizen)
+        } else {
+            mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+        }
+
+        reservationPage.navigateToPage()
+
+        filterSection.trailerRadio.click()
+
+        trailerFilterSection.widthInput.fill("1")
+        trailerFilterSection.lengthInput.fill("3")
+        val expectedBoatSpaceSection = "TRAILERI"
+        val expectedPlaceNumber = "015"
+        selectBoatSpaceForSwitch(reservationPage, 1, expectedBoatSpaceSection, expectedPlaceNumber)
+        // switch form
+        val switchSpaceFormPage = SwitchSpaceFormPage(page)
+        // Make sure that citizen is redirected to unfinished reservation switch form
+        reservationPage.navigateToPage()
+        val trailerRegistrationNumber = "ABC-456"
+        switchSpaceFormPage.getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill(
+            trailerRegistrationNumber
+        )
+        val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
+        userAgreementSection.certifyInfoCheckbox.check()
+        userAgreementSection.agreementCheckbox.check()
+        switchSpaceFormPage.reserveButton.click()
+
+        val confirmationPage = ConfirmationPage(page)
+        assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+
+        if (forEspooCitizen) {
+            assertEmailIsSentOfCitizensIndefiniteTrailerSwitch()
+        } else {
+            assertEmailIsSentOfCitizensFixedTermTrailerSwitch(endDate = "30.04.2025")
+        }
+        // Check that the renewed reservation is visible
+        val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+        assertThat(firstReservationSection.locationName).containsText("Suomenoja")
+        assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
+        assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
+            trailerRegistrationNumber
+        )
     }
 
     @Test
@@ -245,6 +281,8 @@ class SwitchReservationTest : ReserveTest() {
             CitizenHomePage(page).loginAsLeoKorhonen()
             mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
             reservationPage.reserveWinterBoatSpace()
+            assertEmailIsSentOfCitizensWinterSpaceReservation()
+            SendEmailServiceMock.resetEmails()
 
             val expectedBoatSpaceSection = "B"
             val expectedPlaceNumber = "017"
@@ -259,6 +297,7 @@ class SwitchReservationTest : ReserveTest() {
                 expectedBoatSpaceSection,
                 expectedPlaceNumber
             )
+            assertEmailIsSentOfCitizensWinterSpaceSwitch()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -273,7 +312,21 @@ class SwitchReservationTest : ReserveTest() {
             CitizenHomePage(page).loginAsLeoKorhonen()
             mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
             reservationPage.reserveWinterBoatSpace()
-            switchWinterSpace(reservationPage, filterSection, winterFilterSection, "3", "5", 1, "Suomenoja", "B", "087", paymentFlow = true)
+            assertEmailIsSentOfCitizensWinterSpaceReservation()
+            SendEmailServiceMock.resetEmails()
+            switchWinterSpace(
+                reservationPage,
+                filterSection,
+                winterFilterSection,
+                "3",
+                "5",
+                1,
+                "Suomenoja",
+                "B",
+                "087",
+                paymentFlow = true
+            )
+            assertEmailIsSentOfCitizensWinterSpaceSwitch()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -329,7 +382,9 @@ class SwitchReservationTest : ReserveTest() {
         val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
         assertThat(firstReservationSection.locationName).containsText(expectedHarbor)
         assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-        assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(trailerRegistrationNumber)
+        assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
+            trailerRegistrationNumber
+        )
     }
 
     @Test
@@ -341,6 +396,8 @@ class SwitchReservationTest : ReserveTest() {
             reservationPage.navigateToPage()
 
             reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
+            assertEmailIsSentOfCitizensStorageSpaceReservation()
+            SendEmailServiceMock.resetEmails()
 
             mockTimeProvider(timeProvider, startOfStorageSwitchPeriodForEspooCitizen)
 
@@ -373,18 +430,21 @@ class SwitchReservationTest : ReserveTest() {
             // Check that the renewed reservation is visible
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
+            assertEmailIsSentOfCitizensStorageSpaceSwitch()
 
             val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
             assertThat(firstReservationSection.locationName).containsText("Haukilahti")
             assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
-            assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(trailerRegistrationNumber)
+            assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
+                trailerRegistrationNumber
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    fun `reservers discount is applied to the switch payment difference when new place is more expensive`() {
+    fun `reservers discount is applied to the slip switch payment difference when new place is more expensive`() {
         val discount = 50
         val expectedDifference = "150,81"
         val expectedPrice = "75,41"
@@ -426,7 +486,8 @@ class SwitchReservationTest : ReserveTest() {
                 expectedPrice,
                 "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus."
             )
-            assertOnlyOneConfirmationEmailIsSent("olivia@noreplytest.fi", "Vahvistus Espoon kaupungin venepaikan vaihdosta")
+            // switched place was fixed term so the new place should be as well
+            assertEmailIsSentOfCitizensFixedTermSlipSwitch("olivia@noreplytest.fi")
         } catch (e: AssertionError) {
             handleError(e)
         }

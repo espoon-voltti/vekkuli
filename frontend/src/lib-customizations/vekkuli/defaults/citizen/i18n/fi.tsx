@@ -255,23 +255,14 @@ export default {
         'Paikka maksaa saman verran kuin aikaisempi. Sinun ei tarvitse maksaa hintaa uudestaan.'
     },
     validity: (
-      endDate: LocalDate,
-      validity: ReservationValidity,
-      boatSpaceType: BoatSpaceType
+        endDate: LocalDate,
+        validity: ReservationValidity
     ): string => {
       switch (validity) {
         case 'FixedTerm':
           return `${endDate.format()} asti`
         case 'Indefinite':
-          switch (boatSpaceType) {
-            case 'Slip':
-              return 'Toistaiseksi, jatko vuosittain tammikuussa'
-            case 'Winter':
-            case 'Storage':
-              return 'Toistaiseksi, jatko vuosittain elokuussa'
-            case 'Trailer':
-              return 'Toistaiseksi, jatko vuosittain huhtikuussa'
-          }
+          return 'Toistaiseksi, jatko vuosittain'
       }
     },
     reserverDiscountInfo: (

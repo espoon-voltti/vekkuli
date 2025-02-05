@@ -120,6 +120,12 @@ class ReservationFormService(
                 existingReservation.id
             } else {
                 val today = timeProvider.getCurrentDate()
+                val validity =
+                    if (result is ReservationResult.Success) {
+                        result.data.reservationValidity
+                    } else {
+                        ReservationValidity.FixedTerm
+                    }
                 boatReservationService
                     .insertBoatSpaceReservation(
                         citizenId,
@@ -128,6 +134,7 @@ class ReservationFormService(
                         CreationType.New,
                         today,
                         getEndDate(result),
+                        validity
                     ).id
             }
         )

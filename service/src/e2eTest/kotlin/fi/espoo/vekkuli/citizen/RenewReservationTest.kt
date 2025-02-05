@@ -55,7 +55,7 @@ class RenewReservationTest : ReserveTest() {
             assertThat(reservationSection.renewButton).isHidden()
             assertThat(citizenDetailsPage.reservationListCards).containsText("Laituripaikka: Haukilahti B 001")
 
-            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Espoon kaupungin venepaikan jatkaminen")
+            assertEmailIsSentOfCitizensSlipRenewal("leo@noreplytest.fi")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -136,7 +136,7 @@ class RenewReservationTest : ReserveTest() {
             }
             PaymentPage(page).payReservation()
 
-            assertOnlyOneConfirmationEmailIsSent("test@example.com")
+            assertEmailIsSentOfCitizensWinterSpaceReservation()
             SendEmailServiceMock.resetEmails()
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
 
@@ -164,7 +164,7 @@ class RenewReservationTest : ReserveTest() {
 
             assertThat(citizenDetailsPage.reservationListCards).containsText("Talvipaikka: Haukilahti B 013")
 
-            assertOnlyOneConfirmationEmailIsSent("test@example.com", "Espoon kaupungin venepaikan jatkaminen")
+            assertEmailIsSentOfCitizensWinterSpaceRenewal()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -184,7 +184,7 @@ class RenewReservationTest : ReserveTest() {
 
             val form = reservationPage.reserveTrailerBoatSpace()
 
-            assertOnlyOneConfirmationEmailIsSent("test@example.com")
+            assertEmailIsSentOfCitizensIndefiniteTrailerReservation()
             SendEmailServiceMock.resetEmails()
 
             mockTimeProvider(timeProvider, startofTrailerRenewPeriod)
@@ -208,8 +208,7 @@ class RenewReservationTest : ReserveTest() {
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
 
-            assertThat(reservationSection.renewButton).isHidden()
-            assertOnlyOneConfirmationEmailIsSent("test@example.com", "Espoon kaupungin venepaikan jatkaminen")
+            assertEmailIsSentOfCitizensTrailerRenewal()
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -226,7 +225,7 @@ class RenewReservationTest : ReserveTest() {
 
             reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
 
-            assertOnlyOneConfirmationEmailIsSent("test@example.com")
+            assertEmailIsSentOfCitizensStorageSpaceReservation()
             SendEmailServiceMock.resetEmails()
             mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -239,6 +238,8 @@ class RenewReservationTest : ReserveTest() {
             reservationPage.navigateToPage()
 
             val form = BoatSpaceFormPage(page)
+            Thread.sleep(5)
+            assertThat(form.getWinterStorageTypeSection().trailerLengthInput).isVisible()
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).isVisible()
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")
 
@@ -250,7 +251,7 @@ class RenewReservationTest : ReserveTest() {
             val paymentPage = PaymentPage(page)
             paymentPage.nordeaSuccessButton.click()
             assertThat(paymentPage.reservationSuccessNotification).isVisible()
-            assertOnlyOneConfirmationEmailIsSent("test@example.com", "Espoon kaupungin venepaikan jatkaminen")
+            assertEmailIsSentOfCitizensStorageSpaceRenewal()
 
             // Check that the renewed reservation is visible
             citizenDetailsPage.navigateToPage()
@@ -323,7 +324,7 @@ class RenewReservationTest : ReserveTest() {
                 "Hinnassa huomioitu $discount% alennus."
             )
 
-            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Espoon kaupungin venepaikan jatkaminen")
+            assertEmailIsSentOfCitizensSlipRenewal("leo@noreplytest.fi")
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -377,7 +378,7 @@ class RenewReservationTest : ReserveTest() {
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
 
-            assertOnlyOneConfirmationEmailIsSent("leo@noreplytest.fi", "Espoon kaupungin venepaikan jatkaminen")
+            assertEmailIsSentOfCitizensSlipRenewal("leo@noreplytest.fi")
 
             val paymentDiscountText = confirmationPage.getByDataTestId("reservation-info-text")
             assertThat(paymentDiscountText).containsText("$discount %")

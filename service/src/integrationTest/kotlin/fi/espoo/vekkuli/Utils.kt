@@ -99,6 +99,7 @@ class TestUtils(
                 CreationType.New,
                 startDate = params.startDate,
                 endDate = params.endDate,
+                validity = ReservationValidity.FixedTerm,
             )
         madeReservation =
             reservationService.updateBoatInBoatSpaceReservation(
@@ -195,6 +196,7 @@ class TestUtils(
                 creationType,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate().plusDays(365),
+                validity = ReservationValidity.FixedTerm,
             )
         return reservationService.updateBoatInBoatSpaceReservation(
             madeReservation.id,
@@ -220,6 +222,7 @@ class TestUtils(
                 creationType,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate().plusDays(365),
+                validity = ReservationValidity.FixedTerm,
             )
         return madeReservation
     }
