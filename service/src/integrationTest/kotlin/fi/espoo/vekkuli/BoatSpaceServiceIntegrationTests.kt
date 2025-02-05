@@ -4,7 +4,9 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.service.BoatSpaceService
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -15,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
+import java.time.LocalDateTime
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,6 +28,42 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     lateinit var boatSpaceService: BoatSpaceService
 
     @Test
+    fun `should not return a reserved boat space if reservation ends today`() {
+        mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
+
+        val boatSpaces =
+            boatSpaceService.getUnreservedBoatSpaceOptions(
+                width = BigDecimal(3.5),
+                length = BigDecimal(5.0),
+                boatSpaceType = BoatSpaceType.Slip
+            ).first.map { it.boatSpaces }.flatten()
+
+        assertTrue(boatSpaces.any { it.id == 83 }, "Boat space 83 is available")
+
+        // Now reserve
+        val reserver = this.citizenIdLeo
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                reserver,
+                83,
+                1,
+                validity = ReservationValidity.Indefinite,
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate()
+            )
+        )
+        val boatSpacesAfterReservation =
+            boatSpaceService.getUnreservedBoatSpaceOptions(
+                width = BigDecimal(3.5),
+                length = BigDecimal(5.0),
+                boatSpaceType = BoatSpaceType.Slip
+            ).first.map { it.boatSpaces }.flatten()
+
+        assertTrue(boatSpacesAfterReservation.none { it.id == 83 }, "Boat space 83 is not available")
+    }
+
+    @Test
     fun `should fetch boat spaces if there are no filters`() {
         val boatSpaces =
             boatSpaceService.getUnreservedBoatSpaceOptions()
@@ -33,6 +72,8 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should fetch filtered boat spaces`() {
+        mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
+
         val filteredBoatWidth = 350
         val filteredBoatLength = 500
         val boatSpaces =
