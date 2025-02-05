@@ -2,7 +2,6 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.EmailSendingTest
-import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
@@ -14,28 +13,24 @@ import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
 class ReserveAndTerminateFlowTest : EmailSendingTest() {
-    @Autowired
-    lateinit var messageUtil: MessageUtil
-
     final val expectedHarbour = "Haukilahti"
     final val expectedReservationId = "B 314"
     val expectedTerminationLocation = "$expectedHarbour $expectedReservationId"
 
     @Suppress("ktlint:standard:max-line-length")
     @Test
-    fun `citizen can reserve a slip boat space and terminate it to allow others to see it, termination email is sent to citizen nd employee`() {
+    fun `citizen can reserve a slip boat space and terminate it to allow others to see it, termination email is sent to citizen and employee`() {
         val reserverName = "Virtanen Mikko"
         val terminatorName = "Mikko Virtanen"
         reserveAndTerminateBoatSpace(false)
 
         // validate that termination email is sent to both the citizen and to employee
-        assertTerminationEmailIsSentToCitizenAndEmployee(expectedTerminationLocation, terminatorName, reserverName)
+        assertTerminationEmailIsSentToCitizenAndEmployee("Laituripaikka",expectedTerminationLocation, terminatorName, reserverName)
     }
 
     @Test
@@ -47,7 +42,7 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
         reserveAndTerminateBoatSpace(true)
 
         // validate that termination email is sent to both the citizen and to employee
-        assertTerminationEmailIsSentToCitizenAndEmployee(expectedTerminationLocation, terminatorName, reserverName)
+        assertTerminationEmailIsSentToCitizenAndEmployee("Laituripaikka", expectedTerminationLocation, terminatorName, reserverName)
     }
 
     private fun addMemberToOrganization() {

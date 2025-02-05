@@ -31,11 +31,11 @@ WHERE id = 'reservation_switched_by_citizen';
 
 UPDATE email_template SET id='reservation_termination_by_citizen',
                           subject='Vahvistus Espoon kaupungin venepaikan irtisanomisesta',
-                          body=E'Hei!,\n\nPaikka {{reservationDescription}} on irtisanottu.\n\nIrtisanoaja: {{terminatorName}}\n\nPaikan vuokraaja: {{reserverName}}\n\nPaikan tulee olla tyhjä ja siivottu seuraavaa vuokralaista varten.\n\nJos irtisanoit laituri- tai traileripaikan, tulee se tyhjentää välittömästi.\nTalvi- ja Ämmäsmäen säilytyspaikan voit pitää vielä kuluvan kauden loppuun asti.\n\nJos irtisanoit Ämmäsmäen säilytyspaikan:\nÄmmäsmäen kulkulätkä tulee palauttaa Suomenojan satamaan (Hylkeenpyytäjäntie 9).\n\nMikäli et ole irtisanonut paikkaasi, ota yhteyttä sähköpostilla venepaikat@espoo.fi\n\nTerveisin,\n\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi'
+                          body=E'Hei!,\n\{{placeType}} {{reservationDescription}} on irtisanottu.\n\nIrtisanoaja: {{terminatorName}}\n\nPaikan vuokraaja: {{reserverName}}\n\nPaikan tulee olla tyhjä ja siivottu seuraavaa vuokralaista varten.\n\nJos irtisanoit laituri- tai traileripaikan, tulee se tyhjentää välittömästi.\nTalvi- ja Ämmäsmäen säilytyspaikan voit pitää vielä kuluvan kauden loppuun asti.\n\nJos irtisanoit Ämmäsmäen säilytyspaikan:\nÄmmäsmäen kulkulätkä tulee palauttaa Suomenojan satamaan (Hylkeenpyytäjäntie 9).\n\nMikäli et ole irtisanonut paikkaasi, ota yhteyttä sähköpostilla venepaikat@espoo.fi\n\nTerveisin,\n\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi'
 WHERE id='reservation_termination_notice_no_refund';
 
 
 UPDATE email_template SET id='reservation_termination_by_citizen_to_employee',
-                          subject='Paikka {{reservationDescription}} irtisanottu, asiakas: {{reserverName}}',
-                          body=E'Hei!,\n\nPaikka {{reservationDescription}} on irtisanottu {{time}}\n\nPaikan vuokraaja: {{reserverName}}\nSähköposti:{{reserverEmail}}\n\nIrtisanoaja:\nNimi: {{terminatorName}}\nSähköposti: {{terminatorEmail}}\nPuhelinnumero:{{terminatorPhone}}'
+                          subject='{{placeType}} {{reservationDescription}} irtisanottu, asiakas: {{reserverName}}',
+                          body=E'Hei!,\n\{{placeType}} {{reservationDescription}} on irtisanottu {{time}}\n\nPaikan vuokraaja: {{reserverName}}\nSähköposti:{{reserverEmail}}\n\nIrtisanoaja:\nNimi: {{terminatorName}}\nSähköposti: {{terminatorEmail}}\nPuhelinnumero:{{terminatorPhone}}'
                           WHERE id='marine_reservation_termination_employee_notice'

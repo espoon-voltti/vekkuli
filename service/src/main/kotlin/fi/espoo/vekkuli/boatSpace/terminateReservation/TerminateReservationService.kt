@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.terminateReservation
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -24,7 +25,13 @@ class TerminateReservationService(
     private val terminateReservationRepository: TerminateReservationRepository,
     private val messageService: MessageService,
     private val organizationService: OrganizationService,
+    private val messageUtil: MessageUtil
 ) {
+    fun t(
+        key: String,
+        params: List<String> = emptyList()
+    ): String = messageUtil.getMessage(key, params)
+
     @Transactional
     fun terminateBoatSpaceReservationAsOwner(
         reservationId: Int,
@@ -129,6 +136,10 @@ class TerminateReservationService(
         }
 
         val reservationDescription = "${reservationWithDetails.locationName} ${reservationWithDetails.place}"
+        val placeType =
+            t("boatSpaceReservation.email.types.${reservationWithDetails.type}")
+                .replaceFirstChar { it.uppercaseChar() }
+
         emailService
             .sendBatchEmail(
                 "reservation_termination_by_citizen",
@@ -136,6 +147,7 @@ class TerminateReservationService(
                 emailEnv.senderAddress,
                 contactDetails,
                 mapOf(
+                    "placeType" to placeType,
                     "reservationDescription" to reservationDescription,
                     "reserverName" to reservationWithDetails.name,
                     "terminatorName" to (terminator?.fullName ?: "")
@@ -151,6 +163,9 @@ class TerminateReservationService(
         val recipient = Recipient(null, emailEnv.employeeAddress)
         val contactDetails = listOf(recipient)
         val reservationDescription = "${reservationWithDetails.locationName} ${reservationWithDetails.place}"
+        val placeType =
+            t("boatSpaceReservation.email.types.${reservationWithDetails.type}")
+                .replaceFirstChar { it.uppercaseChar() }
 
         emailService
             .sendBatchEmail(
@@ -159,6 +174,7 @@ class TerminateReservationService(
                 emailEnv.senderAddress,
                 contactDetails,
                 mapOf(
+                    "placeType" to placeType,
                     "reservationDescription" to reservationDescription,
                     "reserverName" to reservationWithDetails.name,
                     "reserverEmail" to reservationWithDetails.email,

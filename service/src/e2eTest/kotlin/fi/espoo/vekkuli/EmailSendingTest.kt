@@ -493,6 +493,7 @@ open class EmailSendingTest : PlaywrightTest() {
     }
 
     fun assertTerminationEmailIsSentToCitizenAndEmployee(
+        placeType: String,
         terminatedSpace: String,
         terminator: String,
         reserverName: String,
@@ -516,18 +517,18 @@ open class EmailSendingTest : PlaywrightTest() {
             val emailToCitizen = sortedEmails[i]
             assertTrue(
                 emailToCitizen.contains("$recipientAddress with subject $citizenEmailSubject") &&
-                    emailToCitizen.contains("Paikka $terminatedSpace on irtisanottu.") &&
+                    emailToCitizen.contains("$placeType $terminatedSpace on irtisanottu.") &&
                     emailToCitizen.contains("Irtisanoaja: $terminator") &&
                     emailToCitizen.contains("Paikan vuokraaja: $reserverName")
             )
         }
 
         val emailToEmployee = sortedEmails.last()
-        val employeeEmailSubject = "Paikka $terminatedSpace irtisanottu, asiakas: $reserverName"
+        val employeeEmailSubject = "$placeType $terminatedSpace irtisanottu, asiakas: $reserverName"
 
         assertTrue(
             emailToEmployee.contains("venepaikat@espoo.fi with subject $employeeEmailSubject") &&
-                emailToEmployee.contains("Paikka $terminatedSpace on irtisanottu") &&
+                emailToEmployee.contains("$placeType $terminatedSpace on irtisanottu") &&
                 emailToEmployee.contains("Paikan vuokraaja: $reserverName") &&
                 emailToEmployee.contains("Irtisanoaja:\nNimi: $terminator")
         )
