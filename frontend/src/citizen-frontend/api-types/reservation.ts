@@ -58,6 +58,7 @@ export type ExistingBoatSpaceReservation = {
   created: HelsinkiDateTime
   endDate: LocalDate
   validity: ReservationValidity
+  active: boolean
   totalPrice: string
   vatValue: string
   boat: Boat
@@ -118,6 +119,7 @@ export type ExistingBoatSpaceReservationResponse = {
   created: string
   endDate: string
   validity: ReservationValidity
+  isActive: boolean
   totalPrice: string
   vatValue: string
   boat: Boat
