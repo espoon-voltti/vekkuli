@@ -1,30 +1,25 @@
 package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
-import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
-import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
-import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage as CitizenBoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage as CitizenCitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.PaymentPage as CitizenPaymentPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage as CitizenReserveBoatSpacePage
 
 @ActiveProfiles("test")
-class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
+class CitizenDetailsAsEmployeeTest : ReserveTest() {
     @Test
     fun listingReservations() {
         try {
@@ -320,46 +315,6 @@ class CitizenDetailsAsEmployeeTest : PlaywrightTest() {
             page.getByTestId("delete-boat-3").click()
             page.getByTestId("delete-modal-confirm-3").click()
             assertThat(page.getByTestId("boat-3")).isHidden()
-        } catch (e: AssertionError) {
-            handleError(e)
-        }
-    }
-
-    @Test
-    fun `employee can renew a boat space reservation`() {
-        try {
-            mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
-            val listingPage = reservationListPage()
-
-            listingPage.boatSpace1.click()
-            val citizenDetails = CitizenDetailsPage(page)
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-
-            citizenDetails.renewReservationButton(1).click()
-            val invoiceDetails = InvoicePreviewPage(page)
-            assertThat(invoiceDetails.header).isVisible()
-            invoiceDetails.cancelButton.click()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.renewReservationButton(1).click()
-            assertThat(invoiceDetails.header).isVisible()
-            invoiceDetails.priceWithTax.fill("101")
-            invoiceDetails.description.fill("Test description")
-            invoiceDetails.sendButton.click()
-            assertThat(citizenDetails.renewReservationButton(1)).isHidden()
-            assertThat(citizenDetails.reservationListCards).containsText("Boat space: Haukilahti B 001")
-
-            citizenDetails.paymentsNavi.click()
-
-            citizenDetails.paymentsTable.textContent().contains("101,00")
-            citizenDetails.paymentsTable.textContent().contains("Test description")
-
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails.any {
-                    it.contains("leo@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
-                }
-            )
         } catch (e: AssertionError) {
             handleError(e)
         }

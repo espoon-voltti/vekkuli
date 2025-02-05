@@ -104,6 +104,13 @@ open class ReservationService(
             throw Forbidden("Citizen can not have multiple reservations open")
         }
 
+        val validity =
+            if (citizenResult is ReservationResult.Success) {
+                citizenResult.data.reservationValidity
+            } else {
+                ReservationValidity.FixedTerm
+            }
+
         return boatReservationService.insertBoatSpaceReservation(
             citizenId,
             citizenId,
@@ -111,6 +118,7 @@ open class ReservationService(
             CreationType.New,
             today,
             getEndDate(citizenResult),
+            validity
         )
     }
 

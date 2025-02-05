@@ -255,23 +255,14 @@ const en: Translations = {
         'The place costs the same as your previous one. You do not need to pay again.'
     },
     validity: (
-      endDate: LocalDate,
-      validity: ReservationValidity,
-      boatSpaceType: BoatSpaceType
+        endDate: LocalDate,
+        validity: ReservationValidity
     ) => {
       switch (validity) {
         case 'FixedTerm':
           return `until ${endDate.format()}`
         case 'Indefinite':
-          switch (boatSpaceType) {
-            case 'Slip':
-              return 'For now, resume annually in January'
-            case 'Winter':
-            case 'Storage':
-              return 'For now, resume annually in August'
-            case 'Trailer':
-              return 'For now, resume annually in April'
-          }
+          return 'For now, resume annually'
       }
     },
     reserverDiscountInfo: (

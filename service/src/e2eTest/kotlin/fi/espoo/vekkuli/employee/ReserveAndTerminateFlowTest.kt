@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
-class ReserveAndTerminateFlowTest : PlaywrightTest() {
+class ReserveAndTerminateFlowTest : ReserveTest() {
     @Autowired
     lateinit var messageUtil: MessageUtil
 
@@ -63,13 +63,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         reserveBoatSpacePage.revealB314BoatSpace()
         assertThat(reserveBoatSpacePage.reserveTableB314Row).not().isVisible()
 
-        messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(
-            SendEmailServiceMock.emails.get(
-                0
-            ).contains("mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
-        )
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi")
         SendEmailServiceMock.resetEmails()
 
         // Terminate the reservation

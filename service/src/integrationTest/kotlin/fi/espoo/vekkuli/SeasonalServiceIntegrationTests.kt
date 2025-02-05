@@ -462,6 +462,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
+                validity = ReservationValidity.Indefinite,
             )
 
         val result = reservationService.getReservationWithReserver(madeReservation.id)
@@ -480,6 +481,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
+                validity = ReservationValidity.FixedTerm,
             )
         val boatId = 1
         val updatedReservation =
@@ -496,6 +498,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
         assertEquals(madeReservation.reserverId, updatedReservation.reserverId, "citizen is the same")
         assertEquals(boatId, reservation?.boatId, "boat is updated")
+        assertEquals(reservation?.validity, updatedReservation.validity, "validity is updated")
     }
 
     @Test
@@ -509,6 +512,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
+                validity = ReservationValidity.FixedTerm,
             )
         val reservation = reservationService.getUnfinishedReservationForCitizen(this.citizenIdLeo)
         assertEquals(madeReservation.id, reservation?.id, "reservation is the same")
@@ -842,6 +846,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 CreationType.New,
                 startDate = timeProvider.getCurrentDate(),
                 endDate = timeProvider.getCurrentDate(),
+                validity = ReservationValidity.FixedTerm,
             )
         val boatSpace = reservationService.getBoatSpaceRelatedToReservation(newReservation.id)
         assertEquals(boatSpaceId, boatSpace?.id, "Correct boat space is fetched")

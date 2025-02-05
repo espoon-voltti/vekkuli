@@ -246,23 +246,14 @@ const sv: Translations = {
     totalPrice: (totalPrice: string, vatValue: string) =>
       `${totalPrice} € (inkl. moms ${vatValue} €)`,
     validity: (
-      endDate: LocalDate,
-      validity: ReservationValidity,
-      boatSpaceType: BoatSpaceType
+        endDate: LocalDate,
+        validity: ReservationValidity
     ) => {
       switch (validity) {
         case 'FixedTerm':
           return `Till ${endDate.format()}`
         case 'Indefinite':
-          switch (boatSpaceType) {
-            case 'Slip':
-              return 'Tills vidare, förnyas årligen i januari'
-            case 'Winter':
-            case 'Storage':
-              return 'Tills vidare, förnyas årligen i augusti'
-            case 'Trailer':
-              return 'Tills vidare, förnyas årligen i april'
-          }
+          return 'Tills vidare, förnyas årligen'
       }
     },
     reserverDiscountInfo: (

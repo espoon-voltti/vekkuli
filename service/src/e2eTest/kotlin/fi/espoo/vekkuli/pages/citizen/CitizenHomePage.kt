@@ -25,7 +25,7 @@ class CitizenHomePage(
     }
 
     // non-Espoo citizen
-    fun loginAsMarkoKuusinen() {
+    fun loginAsNonEspooCitizenMarko() {
         loginAsCitizen(markoKuusinenSsn)
     }
 
