@@ -2,24 +2,17 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
-import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
-import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage
-import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage as EmployeeBoatSpaceFormPage
-import fi.espoo.vekkuli.pages.employee.PaymentPage as EmployeePaymentPage
-import fi.espoo.vekkuli.pages.employee.ReserveBoatSpacePage as ReserveBoatSpaceEmployeePage
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : ReserveTest() {
@@ -832,37 +825,26 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun formValuesArePreservedAfterPaymentPageBackButton() {
-        page.navigate(baseUrlWithEnglishLangParam)
-        page.getByTestId("loginButton").click()
-        page.getByText("Kirjaudu").click()
+        CitizenHomePage(page).loginAsMikkoVirtanen()
 
-        val reservationPage = ReserveBoatSpaceEmployeePage(page, UserType.CITIZEN)
-        reservationPage.navigateTo()
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.lengthFilterInput.blur()
-        reservationPage.firstReserveButton.click()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
 
-        val formPage = EmployeeBoatSpaceFormPage(page)
-        assertThat(formPage.header).isVisible()
-        formPage.fillFormAndSubmit()
+        val boatSpaceFormPage = BoatSpaceFormPage(page)
+        boatSpaceFormPage.fillFormAndSubmit {
+            val boatSection = getBoatSection()
+            boatSection.widthInput.fill("3")
+            boatSection.lengthInput.fill("6")
+        }
 
-        val paymentPage = EmployeePaymentPage(page)
-        assertThat(paymentPage.paymentPageTitle).hasCount(1)
-        paymentPage.backButtonOnPaymentPage.click()
+        PaymentPage(page).backButton.click()
 
         // assert that form is filled with the previous values
-        assertThat(formPage.header).isVisible()
-        assertThat(formPage.widthInput).hasValue("3.00")
-        assertThat(formPage.lengthInput).hasValue("6.00")
-        assertThat(formPage.depthInput).hasValue("1.5")
-        assertThat(formPage.weightInput).hasValue("2000")
-        assertThat(formPage.boatNameInput).hasValue("My Boat")
-        assertThat(formPage.otherIdentification).hasValue("ID12345")
-        assertThat(formPage.emailInput).hasValue("test@example.com")
-        assertThat(formPage.phoneInput).hasValue("123456789")
+        val boatSection = boatSpaceFormPage.getBoatSection()
+        assertThat(boatSection.widthInput).hasValue("3")
+        assertThat(boatSection.lengthInput).hasValue("6")
     }
 
     @Test
@@ -891,30 +873,34 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun paymentFailed() {
         // login and pick first free space
-        page.navigate(baseUrlWithEnglishLangParam)
-        page.getByTestId("loginButton").click()
-        page.getByText("Kirjaudu").click()
+        CitizenHomePage(page).loginAsOliviaVirtanen()
 
-        val reservationPage = ReserveBoatSpaceEmployeePage(page, UserType.CITIZEN)
-        reservationPage.navigateTo()
-        reservationPage.widthFilterInput.fill("3")
-        reservationPage.lengthFilterInput.fill("6")
-        reservationPage.lengthFilterInput.blur()
-        reservationPage.firstReserveButton.click()
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
 
-        val formPage = EmployeeBoatSpaceFormPage(page)
+        val reserveModal = reservationPage.getReserveModal()
+        assertThat(reserveModal.root).isVisible()
+        assertThat(reserveModal.firstSwitchReservationButton).isVisible()
+        assertThat(reserveModal.reserveANewSpace).isVisible()
+        reserveModal.reserveANewSpace.click()
+
+        val formPage = BoatSpaceFormPage(page)
         formPage.fillFormAndSubmit()
 
-        val paymentPage = EmployeePaymentPage(page)
-        assertThat(paymentPage.paymentPageTitle).isVisible()
+        val paymentPage = PaymentPage(page)
         paymentPage.nordeaFailedButton.click()
-        assertThat(paymentPage.paymentErrorMessage).isVisible()
-        paymentPage.paymentErrorLink.click()
-        assertThat(formPage.confirmCancelModal).isVisible()
-        formPage.confirmCancelModalConfirm.click()
+        assertThat(paymentPage.reservationFailedNotification).isVisible()
+
+        paymentPage.backButton.click()
+        formPage.cancelButton.click()
+
+        val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+        assertThat(confirmCancelReservationModal.root).isVisible()
+        confirmCancelReservationModal.confirmButton.click()
+
         assertThat(reservationPage.header).isVisible()
     }
 

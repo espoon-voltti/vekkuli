@@ -132,13 +132,26 @@ const en: Translations = {
       confirmation: 'Confirmation'
     },
     searchPage: {
+      title: 'Espoo City boat space rental',
+      image: {
+        harbors: {
+          altText: "Espoo's marinas"
+        }
+      },
       missingFieldsInfoBox:
         'First provide the boat type and dimensions to see suitable spaces for your boat.',
+      freeSpaceCount: 'Number of places available according to search criteria',
+      size: 'Size',
+      amenityLabel: 'Amenity',
+      price: 'Price/Season',
+      place: 'Place',
       filters: {
         title: 'Boat space reservation',
         boatSpaceType: 'Space type',
         harbor: 'Harbor',
         amenities: 'Amenities',
+        harborHeader: 'Harbor',
+        amenityHeader: 'Amenity',
         boatType: 'Boat type',
         storageTypeAmenities: 'Storage type',
         branchSpecific: {
@@ -158,6 +171,19 @@ const en: Translations = {
             width: 'Storage space width (m)',
             length: 'Storage space length (m)'
           }
+        }
+      },
+      infoText: {
+        title: 'Booking Boat Spaces 2025',
+        periods: {
+          newReservations:
+            'Booking new boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025',
+          trailerReservations:
+            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2025',
+          winter:
+            'Booking new winter spaces for Espoo residents from 15.9.–31.12.2025',
+          storage:
+            'Booking Ämmäsmäki storage spaces for everyone from 15.9.2025–31.7.2026'
         }
       },
       modal: {

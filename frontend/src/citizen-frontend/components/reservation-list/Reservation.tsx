@@ -47,8 +47,7 @@ export default React.memo(function Reservation({
 
   const onRenew = () => {
     renewReservation(reservation.id)
-      .then((response) => {
-        console.info('switch place response', response)
+      .then(() => {
         return navigate('/kuntalainen/venepaikka/jatka')
       })
       .catch((error) => {

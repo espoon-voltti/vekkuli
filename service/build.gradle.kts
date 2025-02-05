@@ -11,6 +11,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.0.20"
+    id("org.owasp.dependencycheck") version "12.0.1"
 
     idea
 }
@@ -216,6 +217,18 @@ tasks {
             showStandardStreams = true
             events("passed", "skipped", "failed")
         }
+    }
+
+    dependencyCheck {
+        failBuildOnCVSS = 0.0f
+        analyzers.apply {
+            assemblyEnabled = false
+            nodeAuditEnabled = false
+            nodeEnabled = false
+            nuspecEnabled = false
+        }
+        nvd.apply { apiKey = System.getenv("NVD_API_KEY") }
+        suppressionFile = "$projectDir/owasp-suppressions.xml"
     }
 }
 

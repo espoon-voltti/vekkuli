@@ -2,12 +2,11 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.citizenPageInEnglish
+import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
-import fi.espoo.vekkuli.pages.employee.BoatSpaceFormPage
+import fi.espoo.vekkuli.pages.citizen.PaymentPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
-import fi.espoo.vekkuli.pages.employee.PaymentPage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.endOfSlipSwitchPeriodForEspooCitizen
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -73,88 +72,63 @@ class CitizenDetailsTest : PlaywrightTest() {
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun `citizen can renew slip reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = EmployeeCitizenDetailsPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.renewReservationButton(1).click()
+
+            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+            reservationSection.renewButton.click()
 
             val formPage = BoatSpaceFormPage(page)
-            assertThat(formPage.header).isVisible()
-            formPage.backButton.click()
-            formPage.confirmCancelModalConfirm.click()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-
-            citizenDetails.renewReservationButton(1).click()
-            formPage.certifyInfoCheckbox.check()
-            formPage.agreementCheckbox.check()
+            val userAgreementSection = formPage.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
             formPage.submitButton.click()
 
-            // assert that payment title is shown
             val paymentPage = PaymentPage(page)
-            assertThat(paymentPage.paymentPageTitle).hasCount(1)
             paymentPage.nordeaSuccessButton.click()
 
-            page.navigate(citizenPageInEnglish)
-            assertThat(citizenDetails.renewReservationButton(1)).isHidden()
+            citizenDetails.navigateToPage()
+            assertThat(reservationSection.renewButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    @Disabled("Feature is not working")
+    @Disabled
     fun `citizen can renew winter storage reservation`() {
         try {
             mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
-
             CitizenHomePage(page).loginAsOliviaVirtanen()
 
-            val renewReservationId = 6
-            val citizenDetails = EmployeeCitizenDetailsPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.renewReservationButton(renewReservationId).click()
+
+            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 015")
+            reservationSection.renewButton.click()
+
             val formPage = BoatSpaceFormPage(page)
-
-            assertThat(formPage.header).isVisible()
-            formPage.backButton.click()
-
-            formPage.confirmCancelModalConfirm.click()
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            citizenDetails.renewReservationButton(renewReservationId).click()
-            assertThat(formPage.storageTypeTextBuck).isHidden()
-            formPage.storageTypeBuckOption.click()
-            assertThat(formPage.storageTypeTextBuck).isVisible()
-            assertThat(formPage.trailerInformationInputs).isHidden()
-
-            formPage.storageTypeTrailerOption.click()
-            assertThat(formPage.trailerInformationInputs).isVisible()
-            assertThat(formPage.trailerWidthInput).hasValue("2.00")
-            assertThat(formPage.trailerLengthInput).hasValue("3.00")
-            assertThat(formPage.trailerRegistrationNumberInput).hasValue("ABC123")
-            formPage.certifyInfoCheckbox.check()
-            formPage.agreementCheckbox.check()
+            val userAgreementSection = formPage.getUserAgreementSection()
+            userAgreementSection.certifyInfoCheckbox.check()
+            userAgreementSection.agreementCheckbox.check()
             formPage.submitButton.click()
-            // assert that payment title is shown
+
             val paymentPage = PaymentPage(page)
-            assertThat(paymentPage.paymentPageTitle).hasCount(1)
             paymentPage.nordeaSuccessButton.click()
 
-            page.navigate(citizenPageInEnglish)
-            assertThat(citizenDetails.renewReservationButton(renewReservationId)).isHidden()
+            citizenDetails.navigateToPage()
+            assertThat(reservationSection.renewButton).isHidden()
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun `citizen cannot renew reservation if it is not time to renew`() {
         try {
             // Set time over month before the reservation ends. Renewal should not be possible.
@@ -162,11 +136,11 @@ class CitizenDetailsTest : PlaywrightTest() {
 
             CitizenHomePage(page).loginAsLeoKorhonen()
 
-            val citizenDetails = EmployeeCitizenDetailsPage(page)
+            val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.navigateToPage()
 
-            assertThat(citizenDetails.citizenDetailsSection).isVisible()
-            assertThat(citizenDetails.renewReservationButton(1)).not().isVisible()
+            val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+            assertThat(reservationSection.renewButton).not().isVisible()
         } catch (e: AssertionError) {
             handleError(e)
         }

@@ -131,13 +131,26 @@ export default {
       confirmation: 'Vahvistus'
     },
     searchPage: {
+      title: 'Espoon kaupungin venepaikkojen vuokraus',
+      image: {
+        harbors: {
+          altText: 'Espoon venesatamat'
+        }
+      },
       missingFieldsInfoBox:
         'Anna ensin paikan mitat niin näet veneellesi sopivat paikat.',
+      freeSpaceCount: 'Hakuehtoihin sopivat vapaat paikat',
+      size: 'Paikan koko',
+      amenityLabel: 'Varuste',
+      price: 'Hinta/Kausi',
+      place: 'Paikka',
       filters: {
         title: 'Venepaikan haku',
         boatSpaceType: 'Haettava paikka',
         harbor: 'Satama',
         amenities: 'Varusteet',
+        harborHeader: 'Satama',
+        amenityHeader: 'Varuste',
         boatType: 'Venetyyppi',
         storageTypeAmenities: 'Säilytystapa',
         branchSpecific: {
@@ -157,6 +170,19 @@ export default {
             width: 'Säilytyspaikan leveys (m)',
             length: 'Säilytyspaikan pituus (m)'
           }
+        }
+      },
+      infoText: {
+        title: 'Venepaikkojen varaaminen 2025',
+        periods: {
+          newReservations:
+            'Uusien venepaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025',
+          trailerReservations:
+            'Suomenojan traileripaikkojen varaaminen kaikille 1.5.–31.12.2025',
+          winter:
+            'Uusien talvipaikkojen varaaminen espoolaisille 15.9.–31.12.2025',
+          storage:
+            'Ämmäsmäen säilytyspaikkojen varaaminen kaikille 15.9.2025–31.7.2026'
         }
       },
       modal: {
