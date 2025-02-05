@@ -22,7 +22,8 @@ export default React.memo(function TextField({
   required,
   value,
   showErrorsBeforeTouched,
-  ariaLabel
+  ariaLabel,
+  dataTestId
 }: TextFieldProps) {
   const { showAllErrors } = useFormErrorContext()
   const { state, set, isValid, validationError, translateError } =
@@ -42,7 +43,7 @@ export default React.memo(function TextField({
           {required && ' *'}
         </label>
         {readonly ? (
-          <ReadOnly value={readOnlyValue} />
+          <ReadOnly dataTestId={dataTestId} value={readOnlyValue} />
         ) : (
           <>
             <input
