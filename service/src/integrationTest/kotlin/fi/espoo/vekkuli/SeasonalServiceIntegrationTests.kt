@@ -24,6 +24,7 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.collections.listOf
 import kotlin.test.assertContains
+import kotlin.test.assertTrue
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -117,8 +118,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Slip)
         if (result is ReservationResult.Success) {
@@ -164,8 +165,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
@@ -210,11 +211,11 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val madeReservation2 =
-            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 1)
+            testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 2)
         formReservationService.processBoatSpaceReservation(
             reserverId,
             ReserveBoatSpaceInput(
@@ -235,8 +236,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Slip)
         if (result is ReservationResult.Failure) {
@@ -281,8 +282,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val madeReservation2 =
             testUtils.createReservationInPaymentState(timeProvider, reservationService, reserverId, 8)
@@ -307,8 +308,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Failure) {
@@ -353,8 +354,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
 
         val canReserveAfterFirstReservation = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Storage)
@@ -384,8 +385,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.Indefinite,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val result = seasonalService.canReserveANewSpace(espooCitizenId, BoatSpaceType.Storage)
         if (result is ReservationResult.Failure) {
@@ -442,8 +443,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.FixedTerm,
-            timeProvider.getCurrentDate().minusWeeks(1),
-            timeProvider.getCurrentDate().plusWeeks(1),
+            timeProvider.getCurrentDateTime().minusWeeks(1),
+            timeProvider.getCurrentDateTime().plusWeeks(1),
         )
         val result = seasonalService.canReserveANewSpace(helsinkiCitizenId, BoatSpaceType.Slip)
         if (result is ReservationResult.Failure) {
@@ -487,14 +488,14 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             )
         val boatId = 1
         val updatedReservation =
-            reservationService.updateBoatInBoatSpaceReservation(
+            reservationRepo.updateBoatInBoatSpaceReservation(
                 madeReservation.id,
                 boatId,
                 this.citizenIdLeo,
                 ReservationStatus.Payment,
                 ReservationValidity.Indefinite,
-                timeProvider.getCurrentDate(),
-                timeProvider.getCurrentDate(),
+                timeProvider.getCurrentDateTime(),
+                timeProvider.getCurrentDateTime(),
             )
         val reservation = reservationService.getReservationWithReserver(madeReservation.id)
         assertEquals(madeReservation.id, updatedReservation.id, "reservation is the same")
@@ -551,8 +552,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.FixedTerm,
-            timeProvider.getCurrentDate(),
-            timeProvider.getCurrentDate()
+            timeProvider.getCurrentDateTime(),
+            timeProvider.getCurrentDateTime()
         )
         val reservation =
             reservationService
@@ -675,7 +676,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             )
         )
         testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdMikko, 3, 2))
-        testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdOlivia, 3, 2))
+        testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdOlivia, 4, 2))
 
         // Create a reservation for Olivia Virtanen in payment state
         testUtils.createReservationInPaymentState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
@@ -745,8 +746,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.FixedTerm,
-            timeProvider.getCurrentDate(),
-            timeProvider.getCurrentDate()
+            timeProvider.getCurrentDateTime(),
+            timeProvider.getCurrentDateTime()
         )
 
         val reservationsWithWarnings =
@@ -880,7 +881,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         val noExpiredReservations = reservationService.getExpiredBoatSpaceReservationsForReserver(this.citizenIdLeo)
         assertEquals(0, noExpiredReservations.size)
 
-        reservationService.markReservationEnded(reservationExpired.id)
+        reservationService.markReservationEnded(reservationExpired.id, timeProvider.getCurrentDateTime())
         terminateReservationService.terminateBoatSpaceReservationAsOwner(
             reservationTerminated.id,
             this.citizenIdLeo
@@ -894,11 +895,11 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             "Reservation is still in Confirmed state"
         )
         assertEquals(
-            timeProvider.getCurrentDate().minusDays(1),
+            timeProvider.getCurrentDate(),
             expiredReservations
                 .find {
                     it.id == reservationExpired.id
-                }?.endDate,
+                }?.endDate?.toLocalDate(),
             "End date is set to yesterday"
         )
 
@@ -915,7 +916,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             expiredReservations
                 .find {
                     it.id == reservationTerminated.id
-                }?.endDate,
+                }?.endDate?.toLocalDate(),
             "End date is set to now"
         )
     }
@@ -947,14 +948,21 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(true, isReservedAfterReservation, "Boat space is reserved")
 
         // create a second reservation for the same boat space
-        testUtils.createReservationInConfirmedState(
-            CreateReservationParams(
-                timeProvider,
-                this.citizenIdLeo,
-                boatSpaceId,
-                2,
+        var throws = false
+        try {
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    boatSpaceId,
+                    2,
+                )
             )
-        )
+        } catch (e: Exception) {
+            throws = true
+        }
+        assertTrue(throws)
+
         val isReservedAfterReservationSecond = seasonalService.isBoatSpaceReserved(boatSpaceId)
         assertEquals(true, isReservedAfterReservationSecond, "Boat space is reserved")
     }

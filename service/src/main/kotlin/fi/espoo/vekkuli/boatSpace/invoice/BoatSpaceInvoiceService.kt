@@ -138,8 +138,8 @@ class BoatSpaceInvoiceService(
             return InvoiceData(
                 type = reservation.type,
                 dueDate = getInvoiceDueDate(timeProvider),
-                startDate = reservation.startDate,
-                endDate = reservation.endDate,
+                startDate = reservation.startDate.toLocalDate(),
+                endDate = reservation.endDate.toLocalDate(),
                 ssn = citizen.nationalId,
                 lastname = citizen.lastName,
                 firstnames = citizen.firstName,
@@ -158,8 +158,8 @@ class BoatSpaceInvoiceService(
             return InvoiceData(
                 type = reservation.type,
                 dueDate = getInvoiceDueDate(timeProvider),
-                startDate = reservation.startDate,
-                endDate = reservation.endDate,
+                startDate = reservation.startDate.toLocalDate(),
+                endDate = reservation.endDate.toLocalDate(),
                 // Organization name
                 lastname = reserver.name,
                 firstnames = null,

@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.atEndOfDay
 import fi.espoo.vekkuli.utils.fullDateTimeFormat
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -35,10 +36,11 @@ class TerminateReservationService(
         if (!permissionService.canTerminateBoatSpaceReservation(terminatorId, reservationId)) {
             throw Unauthorized()
         }
+
         val reservation =
             terminateReservationRepository.terminateBoatSpaceReservation(
                 reservationId,
-                timeProvider.getCurrentDate(),
+                timeProvider.getCurrentDateTime(),
                 ReservationTerminationReason.UserRequest,
                 null
             )
@@ -65,10 +67,18 @@ class TerminateReservationService(
         if (!permissionService.canTerminateBoatSpaceReservationForOtherUser(terminatorId, reservationId)) {
             throw Unauthorized()
         }
+        // If termination date is in the future, use end of that day, else use current time
+        val endDateWithCalculatedTime =
+            if (endDate == timeProvider.getCurrentDate()) {
+                timeProvider.getCurrentDateTime()
+            } else {
+                endDate.atEndOfDay()
+            }
+
         val reservation =
             terminateReservationRepository.terminateBoatSpaceReservation(
                 reservationId,
-                endDate,
+                endDateWithCalculatedTime,
                 terminationReason,
                 comment
             )

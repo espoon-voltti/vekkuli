@@ -582,7 +582,7 @@ class ReservationServiceTests : IntegrationTestBase() {
             val information = createReservationInformation()
             val (reservationId) = reservationService.startReservation(boatSpaceId)
             reservationService.fillReservationInformation(reservationId, information)
-            boatReservationService.markReservationEnded(reservationId)
+            boatReservationService.markReservationEnded(reservationId, LocalDate.now().plusDays(30).atStartOfDay())
             verify(messageService, times(1)).getAndInsertUnsentEmails(
                 eq(ReservationType.Marine),
                 eq(reservationId),

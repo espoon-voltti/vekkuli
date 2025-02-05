@@ -28,8 +28,8 @@ data class BoatSpaceReservationDetailsRow(
     val boatSpaceId: Int,
     val boatSpaceLengthCm: Int,
     val boatSpaceWidthCm: Int,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+    val startDate: LocalDateTime,
+    val endDate: LocalDateTime,
     val status: ReservationStatus,
     val terminationReason: ReservationTerminationReason?,
     val terminationComment: String?,
@@ -360,6 +360,37 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("updatedTime", timeProvider.getCurrentDateTime())
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.mapTo<Int>().findOne().orElse(null)
+        }
+
+    override fun isReservationConfirmable(reservationId: Int): Boolean =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    SELECT 1
+                    FROM boat_space_reservation bsr
+                    WHERE bsr.id = :reservationId
+                        AND bsr.status = 'Payment' 
+                        AND (
+                            (bsr.created > :currentTime - make_interval(secs => :paymentTimeout))
+                            OR
+                            NOT EXISTS (
+                                SELECT 1
+                                FROM boat_space_reservation bsr_other
+                                WHERE
+                                    bsr_other.id != bsr.id
+                                    AND
+                                    bsr_other.boat_space_id = bsr.boat_space_id
+                                    AND
+                                    bsr_other.created > bsr.created
+                            )
+                        )
+                    """.trimIndent()
+                )
+            query.bind("reservationId", reservationId)
+            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<Int>().list().size == 1
         }
 
     override fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies? =
@@ -730,7 +761,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE r.id = :reserverId AND 
                       ${if (spaceType != null) "bs.type = :spaceType AND" else ""}
                         (
-                            ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut) OR
+                            ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date > :endDateCut) OR
                              (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut) 
                         )
                     """.trimIndent()
@@ -738,11 +769,13 @@ class JdbiBoatSpaceReservationRepository(
             if (spaceType != null) {
                 query.bind("spaceType", spaceType)
             }
+            val now = timeProvider.getCurrentDateTime()
             query.bind("reserverId", reserverId)
-            query.bind("endDateCut", timeProvider.getCurrentDate())
+            query.bind("endDateCut", now)
 
             // read warnings that are associated with the reservation
             val reservations = query.mapTo<BoatSpaceReservationDetailsRow>().list()
+
             reservations.map {
                 BoatSpaceReservationDetails(
                     id = it.id,
@@ -1002,8 +1035,8 @@ class JdbiBoatSpaceReservationRepository(
         reserverId: UUID,
         reservationStatus: ReservationStatus,
         validity: ReservationValidity,
-        startDate: LocalDate,
-        endDate: LocalDate,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
@@ -1134,13 +1167,13 @@ class JdbiBoatSpaceReservationRepository(
                         OR 
                         (
                             (bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND
-                            bsr.end_date < :endDateCut
+                            bsr.end_date <= :endDateCut
                          )
                      )
                     """.trimIndent()
                 )
             query.bind("reserverId", reserverId)
-            query.bind("endDateCut", timeProvider.getCurrentDate())
+            query.bind("endDateCut", timeProvider.getCurrentDateTime())
 
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
@@ -1206,7 +1239,10 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
-    override fun setReservationAsExpired(reservationId: Int): Unit =
+    override fun setReservationAsExpired(
+        reservationId: Int,
+        endDate: LocalDateTime
+    ): Unit =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(
@@ -1216,7 +1252,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE id = :id
                     """.trimIndent()
                 ).bind("id", reservationId)
-                .bind("endDate", timeProvider.getCurrentDate().minusDays(1))
+                .bind("endDate", endDate)
                 .bind("updatedTime", timeProvider.getCurrentDateTime())
                 .execute()
         }

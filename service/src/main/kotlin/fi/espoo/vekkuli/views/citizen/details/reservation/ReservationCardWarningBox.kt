@@ -21,7 +21,7 @@ class ReservationCardWarningBox(
             return ""
         }
         return warningBox.render(
-            t("reservationWarning.$userType.renewInfo", listOf(formatAsFullDate(reservation.endDate)))
+            t("reservationWarning.$userType.renewInfo", listOf(formatAsFullDate(reservation.endDate.toLocalDate())))
         )
     }
 }

@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -315,16 +316,29 @@ class ReservationFormServiceTests : IntegrationTestBase() {
 
     @Test
     fun `should set the renewed reservation to confirmed state if price is zero and add a payment entry`() {
+        val startDate = timeProvider.getCurrentDate()
+        val endDate = timeProvider.getCurrentDate().plusDays(364)
+
         val madeReservation =
-            testUtils.createReservationInConfirmedState(CreateReservationParams(timeProvider, citizenIdOlivia))
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider = timeProvider,
+                    citizenId = citizenIdOlivia,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+            )
+
+        mockTimeProvider(timeProvider, endDate.atStartOfDay())
+        val currentDate = timeProvider.getCurrentDate()
 
         Mockito
             .`when`(renewalPolicyService.citizenCanRenewReservation(madeReservation.id, citizenIdOlivia))
             .thenReturn(
                 ReservationResult.Success(
                     ReservationResultSuccess(
-                        startDate = LocalDate.now(),
-                        endDate = LocalDate.now().plusDays(30),
+                        startDate = currentDate,
+                        endDate = currentDate.plusDays(365),
                         reservationValidity = ReservationValidity.Indefinite
                     )
                 )

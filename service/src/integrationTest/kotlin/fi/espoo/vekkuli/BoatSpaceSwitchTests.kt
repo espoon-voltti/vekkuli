@@ -269,6 +269,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     @Test
     fun `should set old reservation as expired after switch reservation is directly confirmed`() {
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
         val originalReservation = createTestReservationForEspooCitizen()
         val switchReservation =
             boatSpaceSwitchService.startReservation(
@@ -285,12 +286,13 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         assertNotNull(updatedOriginalReservation)
         assertNotNull(updatedSwitchedReservation)
 
+        val now = timeProvider.getCurrentDateTime()
         assertTrue(
-            validateReservationIsActive(updatedSwitchedReservation, timeProvider.getCurrentDateTime()),
+            validateReservationIsActive(updatedSwitchedReservation, now),
             "Switch reservation should be active"
         )
         assertTrue(
-            !validateReservationIsActive(updatedOriginalReservation, timeProvider.getCurrentDateTime()),
+            !validateReservationIsActive(updatedOriginalReservation, now),
             "Original reservation should not be active"
         )
     }

@@ -206,8 +206,8 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
                 citizenDetailsPage.terminationCommentInFirstReservationListItem
             ).containsText(terminationComment)
 
-            // Wait for the reservation to expire
-            mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusWeeks(weeksAddedToEndTime))
+            // Wait for the reservation to expire at the end of day of the termination date
+            mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusWeeks(weeksAddedToEndTime).plusDays(1))
             page.reload()
 
             assertThat(

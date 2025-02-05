@@ -102,7 +102,7 @@ class ReservationCardInformation : BaseView() {
                      </div>
                      <div class="field">
                          <label class="label">${t("boatSpaceReservation.title.reservationDate")}</label>
-                         <p>${formatAsFullDate(reservation.startDate)}</p>
+                         <p>${formatAsFullDate(reservation.startDate.toLocalDate())}</p>
                      </div>
                  </div>
                  <div class="column">
@@ -161,7 +161,7 @@ class ReservationCardInformation : BaseView() {
             var reservationValidityText =
                 t(
                     "boatSpaceReservation.validity.${reservation.validity}",
-                    listOf(formatAsFullDate(reservation.endDate))
+                    listOf(formatAsFullDate(reservation.endDate.toLocalDate()))
                 )
 
             // For indefinite reservations, show also the end date for employees
@@ -170,7 +170,7 @@ class ReservationCardInformation : BaseView() {
                     " (${
                         t(
                             "boatSpaceReservation.validity.${ReservationValidity.FixedTerm}",
-                            listOf(formatAsFullDate(reservation.endDate))
+                            listOf(formatAsFullDate(reservation.endDate.toLocalDate()))
                         )
                     })"
             }
@@ -180,7 +180,7 @@ class ReservationCardInformation : BaseView() {
 
     private fun renderWithTerminatedDate(reservation: BoatSpaceReservationDetails): String =
         """
-        ${formatAsFullDate(reservation.endDate)}
+        ${formatAsFullDate(reservation.endDate.toLocalDate())}
         </br>
         <span ${addTestId("reservation-list-card-terminated-date")}>
         ${t("boatSpaceReservation.terminated")} ${formatAsFullDate(reservation.terminationTimestamp?.toLocalDate())}

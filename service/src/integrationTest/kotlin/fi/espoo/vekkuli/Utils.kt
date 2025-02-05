@@ -7,9 +7,11 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.getInvoiceDueDate
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.Invoice
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.DateRange
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.atEndOfDay
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
@@ -81,11 +83,12 @@ data class CreateReservationParams(
     val reserverId: UUID = citizenId,
     val status: ReservationStatus = ReservationStatus.Payment,
     val startDate: LocalDate = timeProvider.getCurrentDate(),
-    val endDate: LocalDate = timeProvider.getCurrentDate().plusDays(365),
+    val endDate: LocalDate = timeProvider.getCurrentDate().plusDays(364),
 )
 
 @Service
 class TestUtils(
+    private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val reservationService: BoatReservationService,
     private val timeProvider: TimeProvider,
     private var seasonalService: SeasonalService
@@ -102,14 +105,14 @@ class TestUtils(
                 validity = ReservationValidity.FixedTerm,
             )
         madeReservation =
-            reservationService.updateBoatInBoatSpaceReservation(
+            boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
                 madeReservation.id,
                 params.boatId,
                 params.reserverId,
                 params.status,
                 params.validity,
-                startDate = params.startDate,
-                endDate = params.endDate,
+                startDate = params.startDate.atStartOfDay(),
+                endDate = params.endDate.atEndOfDay(),
             )
         val payment =
             reservationService.addPaymentToReservation(
@@ -198,14 +201,14 @@ class TestUtils(
                 endDate = timeProvider.getCurrentDate().plusDays(365),
                 validity = ReservationValidity.FixedTerm,
             )
-        return reservationService.updateBoatInBoatSpaceReservation(
+        return boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
             madeReservation.id,
             boatId,
             reserverId,
             state,
             ReservationValidity.FixedTerm,
-            startDate = timeProvider.getCurrentDate(),
-            endDate = timeProvider.getCurrentDate().plusDays(365)
+            startDate = timeProvider.getCurrentDate().atStartOfDay(),
+            endDate = timeProvider.getCurrentDate().atEndOfDay().plusDays(365)
         )
     }
 

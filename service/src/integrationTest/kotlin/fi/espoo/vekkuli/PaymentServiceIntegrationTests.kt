@@ -121,7 +121,8 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
                 timeProvider,
                 reservationService,
                 invoiceService,
-                this.citizenIdLeo
+                this.citizenIdLeo,
+                5
             )
         reservationService.markInvoicePaid(madeReservation.id, timeProvider.getCurrentDateTime())
 

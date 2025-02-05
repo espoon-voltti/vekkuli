@@ -114,7 +114,7 @@ class ReserveAndTerminateFlowTest : ReserveTest() {
         assertThat(reserveBoatSpacePage.reserveTableB314Row).not().isVisible()
 
         // Go forward in time to the end date of the reservation
-        mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusWeeks(weeksAddedToEndTime))
+        mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusWeeks(weeksAddedToEndTime).plusDays(1))
 
         // The reservation should not be visible anymore
         listingPage.navigateTo()

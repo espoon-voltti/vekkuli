@@ -13,6 +13,7 @@ import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.domain.StorageType
+import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.repository.JdbiPaymentRepository
 import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.service.SendEmailServiceMock
@@ -38,6 +39,9 @@ import java.util.*
 abstract class IntegrationTestBase {
     @Autowired
     private lateinit var jdbiPaymentRepository: JdbiPaymentRepository
+
+    @Autowired
+    protected lateinit var reservationRepo: BoatSpaceReservationRepository
 
     @Autowired
     protected lateinit var jdbi: Jdbi

@@ -96,7 +96,6 @@ class ExistingReservationResponseMapper(
 
         val canRenew = getCanRenew(boatSpaceReservation.id, reserverId)
         val canSwitch = getCanSwitch(boatSpaceReservation.id, reserverId)
-
         val isActive =
             if (isActive !== null) {
                 isActive
@@ -128,7 +127,7 @@ class ExistingReservationResponseMapper(
                 ),
             boat = formatBoat(boat),
             created = boatSpaceReservation.created,
-            endDate = boatSpaceReservation.endDate,
+            endDate = boatSpaceReservation.endDate.toLocalDate(),
             validity = reservationWithDependencies.validity,
             isActive = isActive,
             paymentDate = boatSpaceReservation.paymentDate,

@@ -11,7 +11,6 @@ import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.service.ReservationResultErrorCode
 import fi.espoo.vekkuli.service.ReservationResultSuccess
-import fi.espoo.vekkuli.utils.DateRange
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.isMonthDayWithinRange
 import org.springframework.stereotype.Service
@@ -56,15 +55,6 @@ class SeasonalService(
             isEspooCitizen,
             type,
             ReservationOperation.Renew
-        )
-
-    fun getRenewReservationStartAndEndDate(
-        boatSpaceType: BoatSpaceType,
-        validity: ReservationValidity
-    ): DateRange =
-        DateRange(
-            startDate = timeProvider.getCurrentDate(),
-            endDate = getBoatSpaceReservationEndDateForRenew(boatSpaceType, validity)
         )
 
     fun isReservationSwitchPeriodActive(

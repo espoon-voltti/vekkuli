@@ -138,6 +138,7 @@ class ReservationController(
             )
         }
         val information = input.toReservationInformation()
+
         return reservationResponseMapper.toReservationResponse(
             reservationService.fillReservationInformation(reservationId, information)
         )

@@ -143,3 +143,6 @@ fun getNextDate(
 data class SecondsRemaining(val value: Int)
 
 data class DateRange(val startDate: LocalDate, val endDate: LocalDate)
+
+// LocalTime.MAX does not work
+fun LocalDate.atEndOfDay(): LocalDateTime = this.atTime(23, 59, 59)

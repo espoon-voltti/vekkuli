@@ -37,7 +37,7 @@ class ReservationConfirmation(
         val validityText =
             t(
                 "boatSpaceReservation.validity.${reservation.validity}",
-                listOf(formatAsFullDate(reservation.endDate))
+                listOf(formatAsFullDate(reservation.endDate.toLocalDate()))
             )
 
         val amenity =

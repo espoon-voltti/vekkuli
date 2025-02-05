@@ -52,7 +52,11 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         assertEquals(true, canSwitch.success, "Boat space can be switched")
         assertEquals(
             ReservationResult.Success(
-                ReservationResultSuccess(originalReservation.startDate, originalReservation.endDate, originalReservation.validity)
+                ReservationResultSuccess(
+                    originalReservation.startDate.toLocalDate(),
+                    originalReservation.endDate.toLocalDate(),
+                    originalReservation.validity
+                )
             ),
             canSwitch,
             "ReservationResultSuccess is returned"

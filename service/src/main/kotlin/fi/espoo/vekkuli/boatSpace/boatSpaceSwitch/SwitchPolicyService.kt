@@ -58,8 +58,8 @@ class SwitchPolicyService(
         // It should have the same dates as the original
         return ReservationResult.Success(
             ReservationResultSuccess(
-                reservation.startDate,
-                reservation.endDate,
+                reservation.startDate.toLocalDate(),
+                reservation.endDate.toLocalDate(),
                 reservation.validity
             )
         )
@@ -86,8 +86,8 @@ class SwitchPolicyService(
         // It should have the same dates as the original
         return ReservationResult.Success(
             ReservationResultSuccess(
-                reservation.startDate,
-                reservation.endDate,
+                reservation.startDate.toLocalDate(),
+                reservation.endDate.toLocalDate(),
                 reservation.validity
             )
         )

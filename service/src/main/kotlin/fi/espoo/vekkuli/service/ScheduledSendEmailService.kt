@@ -43,7 +43,7 @@ class ScheduledSendEmailService(
                 EmailType.Renew,
                 mapOf(
                     "name" to "${reservation.locationName} ${reservation.place}",
-                    "endDate" to formatAsFullDate(reservation.endDate),
+                    "endDate" to formatAsFullDate(reservation.endDate.toLocalDate()),
                     "reserverName" to reservation.name,
                     "width" to
                         fi.espoo.vekkuli.utils
@@ -78,7 +78,7 @@ class ScheduledSendEmailService(
                 EmailType.Expiry,
                 mapOf(
                     "name" to "${reservation.locationName} ${reservation.place}",
-                    "endDate" to formatAsFullDate(reservation.endDate),
+                    "endDate" to formatAsFullDate(reservation.endDate.toLocalDate()),
                     "reserverName" to reservation.name,
                 ) +
                     messageUtil.getLocalizedMap("placeType", "boatSpaceReservation.email.types.${reservation.type}")
@@ -118,7 +118,7 @@ class ScheduledSendEmailService(
                 EmailType.ExpiredReservation,
                 mapOf(
                     "name" to placeName,
-                    "endDate" to formatAsFullDate(reservation.endDate),
+                    "endDate" to formatAsFullDate(reservation.endDate.toLocalDate()),
                     "reserverName" to reserverName,
                 ) +
                     messageUtil.getLocalizedMap("placeType", "boatSpaceReservation.email.types.${reservation.type}")
@@ -134,7 +134,7 @@ class ScheduledSendEmailService(
                     contactDetails,
                     mapOf(
                         "name" to placeName,
-                        "endDate" to formatAsFullDate(reservation.endDate),
+                        "endDate" to formatAsFullDate(reservation.endDate.toLocalDate()),
                         "reserverName" to reserverName,
                         "reserverEmail" to reservation.email
                     )

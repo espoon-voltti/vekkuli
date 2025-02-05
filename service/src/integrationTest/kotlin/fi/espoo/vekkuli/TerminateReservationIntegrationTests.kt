@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.SentMessageRepository
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.atEndOfDay
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -90,8 +91,8 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
             ),
             ReservationStatus.Confirmed,
             ReservationValidity.FixedTerm,
-            newReservation.startDate,
-            newReservation.endDate
+            newReservation.startDate.atStartOfDay(),
+            newReservation.endDate.atEndOfDay()
         )
 
         val originalReservation = reservationService.getBoatSpaceReservation(newReservation.id)
@@ -99,9 +100,9 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         val terminatedReservation = reservationService.getBoatSpaceReservation(newReservation.id)
 
         assertEquals(ReservationStatus.Confirmed, originalReservation?.status, "Reservation starts as Confirmed")
-        assertEquals(endDate, originalReservation?.endDate, "Reservation endDate is $endDate")
+        assertEquals(endDate, originalReservation?.endDate?.toLocalDate(), "Reservation endDate is $endDate")
         assertEquals(ReservationStatus.Cancelled, terminatedReservation?.status, "Reservation is marked as Cancelled")
-        assertEquals(timeProvider.getCurrentDate(), terminatedReservation?.endDate, "End date is set to now")
+        assertEquals(timeProvider.getCurrentDate(), terminatedReservation?.endDate?.toLocalDate(), "End date is set to now")
     }
 
     @Test
@@ -187,7 +188,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
                     1
                 )
             )
-        val leoEndDate = timeProvider.getCurrentDate().minusDays(1)
+        val leoEndDate = timeProvider.getCurrentDate()
         val leoTerminationReason = ReservationTerminationReason.PaymentViolation
         val reservationOfLeo =
             testUtils.createReservationInConfirmedState(
@@ -235,7 +236,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         assertEquals(null, originalOliviaReservation?.terminationComment, "Olivia termination comment starts as null")
 
         assertEquals(ReservationStatus.Cancelled, terminatedOliviaReservation?.status, "Olivia reservation was terminated")
-        assertEquals(oliviaEndDate, terminatedOliviaReservation?.endDate, "Olivia end date is set to the given date")
+        assertEquals(oliviaEndDate, terminatedOliviaReservation?.endDate?.toLocalDate(), "Olivia end date is set to the given date")
         assertEquals(oliviaTerminationReason, terminatedOliviaReservation?.terminationReason, "Olivia termination reason is set")
         assertEquals(oliviaTerminationComment, terminatedOliviaReservation?.terminationComment, "Olivia termination comment is set")
 
@@ -253,7 +254,7 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
         assertEquals(null, originalLeoReservation?.terminationComment, "Leo termination comment starts as null")
 
         assertEquals(ReservationStatus.Cancelled, terminatedLeoReservation?.status, "Leo reservation was terminated")
-        assertEquals(leoEndDate, terminatedLeoReservation?.endDate, "Leo end date is set to the given date")
+        assertEquals(leoEndDate, terminatedLeoReservation?.endDate?.toLocalDate(), "Leo end date is set to the given date")
         assertEquals(leoTerminationReason, terminatedLeoReservation?.terminationReason, "Leo termination reason is set")
         assertEquals(null, terminatedLeoReservation?.terminationComment, "Leo termination comment is null as it was not set")
     }

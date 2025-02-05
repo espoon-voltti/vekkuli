@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
 import fi.espoo.vekkuli.utils.SqlExpr
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 data class UpdateReservationParams(
@@ -22,6 +23,8 @@ interface BoatSpaceReservationRepository {
     fun getBoatSpaceReservationWithPaymentId(id: UUID): BoatSpaceReservationDetails?
 
     fun updateBoatSpaceReservationOnPaymentSuccess(paymentId: UUID): Int?
+
+    fun isReservationConfirmable(reservationId: Int): Boolean
 
     fun getUnfinishedReservationForCitizen(id: UUID): ReservationWithDependencies?
 
@@ -77,8 +80,8 @@ interface BoatSpaceReservationRepository {
         reserverId: UUID,
         reservationStatus: ReservationStatus,
         validity: ReservationValidity,
-        startDate: LocalDate,
-        endDate: LocalDate,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
     ): BoatSpaceReservation
 
     fun updateTrailerInBoatSpaceReservation(
@@ -99,9 +102,12 @@ interface BoatSpaceReservationRepository {
 
     fun getExpiringBoatSpaceReservations(validity: ReservationValidity): List<BoatSpaceReservationDetails>
 
-    fun getExpiredBoatSpaceReservations(): List<BoatSpaceReservationDetails>
+    fun setReservationAsExpired(
+        reservationId: Int,
+        endDate: LocalDateTime
+    )
 
-    fun setReservationAsExpired(reservationId: Int)
+    fun getExpiredBoatSpaceReservations(): List<BoatSpaceReservationDetails>
 
     fun getHarbors(): List<Location>
 

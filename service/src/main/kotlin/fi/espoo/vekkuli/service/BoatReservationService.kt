@@ -125,6 +125,7 @@ class BoatReservationService(
         return handlePaymentResult(paymentId, isPaid)
     }
 
+    @Transactional
     fun handlePaymentResult(
         paymentId: UUID,
         isPaid: Boolean
@@ -147,22 +148,20 @@ class BoatReservationService(
             return PaymentProcessResult.Cancelled(reservation)
         }
 
-        val boatSpaceWasAvailable =
+        if (boatSpaceReservationRepo.isReservationConfirmable(reservation.id)) {
+            if (reservation.originalReservationId != null) {
+                markReservationEnded(reservation.originalReservationId, timeProvider.getCurrentDateTime())
+            }
+            // And only then move the new reservation to confirmed
             boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
                 payment.id
-            ) != null
+            )
 
-        if (!boatSpaceWasAvailable) {
+            sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
+            return PaymentProcessResult.Paid(reservation)
+        } else {
             return PaymentProcessResult.Failure(PaymentProcessErrorCode.BoatSpaceNotAvailable, isPaid, reservation)
         }
-
-        if (reservation.originalReservationId != null) {
-            markReservationEnded(reservation.originalReservationId)
-        }
-
-        sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
-
-        return PaymentProcessResult.Paid(reservation)
     }
 
     @Transactional
@@ -308,25 +307,6 @@ class BoatReservationService(
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace? =
         boatSpaceReservationRepo.getBoatSpaceRelatedToReservation(reservationId)
-
-    fun updateBoatInBoatSpaceReservation(
-        reservationId: Int,
-        boatId: Int,
-        reserverId: UUID,
-        reservationStatus: ReservationStatus,
-        validity: ReservationValidity,
-        startDate: LocalDate,
-        endDate: LocalDate,
-    ): BoatSpaceReservation =
-        boatSpaceReservationRepo.updateBoatInBoatSpaceReservation(
-            reservationId,
-            boatId,
-            reserverId,
-            reservationStatus,
-            validity,
-            startDate,
-            endDate
-        )
 
     fun setReservationStatusToInvoiced(reservationId: Int): BoatSpaceReservation =
         boatSpaceReservationRepo.setReservationStatusToInvoiced(reservationId)
@@ -583,8 +563,11 @@ class BoatReservationService(
         return recipient
     }
 
-    fun markReservationEnded(reservationId: Int) {
-        boatSpaceReservationRepo.setReservationAsExpired(reservationId)
+    fun markReservationEnded(
+        reservationId: Int,
+        endDate: LocalDateTime
+    ) {
+        boatSpaceReservationRepo.setReservationAsExpired(reservationId, endDate)
         preventSendingAReservationExpirationEmail(reservationId)
     }
 
@@ -676,7 +659,7 @@ class BoatReservationService(
                 messageUtil.getLocalizedMap(
                     "endDate",
                     "boatSpaceReservation.email.validity.${reservation.validity}",
-                    listOf(formatAsFullDate(reservation.endDate))
+                    listOf(formatAsFullDate(reservation.endDate.toLocalDate()))
                 ) +
                 getCitizenReserverForOrganizationLocalization(
                     organizationReservation,

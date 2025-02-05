@@ -169,6 +169,7 @@ class RenewReservationTest : ReserveTest() {
             val reservationSection = citizenDetailsPage.getFirstReservationSection()
 
             assertThat(reservationSection.renewButton).isVisible()
+
             reservationSection.renewButton.click()
             // Make sure that citizen is redirected to unfinished reservation switch form
             reservationPage.navigateToPage()
@@ -256,12 +257,14 @@ class RenewReservationTest : ReserveTest() {
             val reservationSection = citizenDetailsPage.getFirstReservationSection()
 
             assertThat(reservationSection.renewButton).isVisible()
+
             reservationSection.renewButton.click()
             // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
+            // reservationPage.navigateToPage()
 
             val form = BoatSpaceFormPage(page)
             Thread.sleep(5)
+
             assertThat(form.getWinterStorageTypeSection().trailerLengthInput).isVisible()
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).isVisible()
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")

@@ -29,13 +29,13 @@ class RenewalPolicyService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val contractPeriod = seasonalService.getRenewReservationStartAndEndDate(reservation.type, reservation.validity)
-
         return ReservationResult.Success(
-            ReservationResultSuccess(
-                contractPeriod.startDate,
-                contractPeriod.endDate,
-                reservation.validity
+            return ReservationResult.Success(
+                ReservationResultSuccess(
+                    timeProvider.getCurrentDate(),
+                    seasonalService.getBoatSpaceReservationEndDateForRenew(reservation.type, reservation.validity),
+                    reservation.validity
+                )
             )
         )
     }
@@ -71,7 +71,10 @@ class RenewalPolicyService(
         }
 
         val currentDate = timeProvider.getCurrentDate()
-        val originalReservationRenewGracePeriod = reservation.endDate.minusDays(DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())
+        val originalReservationRenewGracePeriod =
+            reservation.endDate.toLocalDate().minusDays(
+                DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong()
+            )
         // Check if the reservation is within the renewal period and reservation is about to expire
         if (currentDate.isBefore(originalReservationRenewGracePeriod)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
@@ -82,12 +85,10 @@ class RenewalPolicyService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val contractPeriod = seasonalService.getRenewReservationStartAndEndDate(reservation.type, reservation.validity)
-
         return ReservationResult.Success(
             ReservationResultSuccess(
-                contractPeriod.startDate,
-                contractPeriod.endDate,
+                timeProvider.getCurrentDate(),
+                seasonalService.getBoatSpaceReservationEndDateForRenew(reservation.type, reservation.validity),
                 reservation.validity
             )
         )

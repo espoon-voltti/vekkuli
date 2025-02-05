@@ -226,7 +226,7 @@ class SwitchReservationTest : ReserveTest() {
         SendEmailServiceMock.resetEmails()
 
         if (forEspooCitizen) {
-            mockTimeProvider(timeProvider, startOfTrailerSwitchPeriodForEspooCitizen)
+            mockTimeProvider(timeProvider, startOfTrailerSwitchPeriodForEspooCitizen.plusYears(1))
         } else {
             mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
         }
@@ -251,9 +251,11 @@ class SwitchReservationTest : ReserveTest() {
         val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
         userAgreementSection.certifyInfoCheckbox.check()
         userAgreementSection.agreementCheckbox.check()
+
         switchSpaceFormPage.reserveButton.click()
 
         val confirmationPage = ConfirmationPage(page)
+
         assertThat(confirmationPage.reservationSuccessNotification).isVisible()
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
@@ -344,7 +346,7 @@ class SwitchReservationTest : ReserveTest() {
         expectedPlaceNumber: String? = null,
         paymentFlow: Boolean = false
     ) {
-        mockTimeProvider(timeProvider, startOfWinterSwitchPeriodForEspooCitizen)
+        mockTimeProvider(timeProvider, startOfWinterSwitchPeriodForEspooCitizen.plusYears(1))
 
         reservationPage.navigateToPage()
 

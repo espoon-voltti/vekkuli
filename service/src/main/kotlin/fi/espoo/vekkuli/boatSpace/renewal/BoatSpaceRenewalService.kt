@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
@@ -30,7 +31,8 @@ class BoatSpaceRenewalService(
     private val boatSpaceReservationRepo: BoatSpaceReservationRepository,
     private val trailerRepo: TrailerRepository,
     private val renewalPolicy: RenewalPolicyService,
-    private val citizenAccessControl: ContextCitizenAccessControl
+    private val citizenAccessControl: ContextCitizenAccessControl,
+    private val timeProvider: TimeProvider
 ) {
     @Transactional
     fun startReservation(reservationId: Int): ReservationWithDependencies {
@@ -143,7 +145,7 @@ class BoatSpaceRenewalService(
 
         boatReservationService.setReservationStatusToInvoiced(renewedReservationId)
 
-        boatReservationService.markReservationEnded(originalReservationId)
+        boatReservationService.markReservationEnded(originalReservationId, timeProvider.getCurrentDateTime())
 
         invoiceService.createAndSendInvoice(invoiceData, reserverId, renewedReservationId)
             ?: throw InternalError("Failed to send invoice")

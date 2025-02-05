@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Month
 import java.util.*
 
@@ -217,23 +218,16 @@ class ReservationFormService(
             throw BadRequest("Reservation not found")
         }
 
-        val data =
-            ReservationResultSuccess(
-                timeProvider.getCurrentDate(),
-                seasonalService.getBoatSpaceReservationEndDateForNew(
-                    reservation.boatSpaceType,
-                    input.reservationValidity
-                ),
-                input.reservationValidity
-            )
-
         processBoatSpaceReservation(
             reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
             ReservationStatus.Payment,
-            data.reservationValidity,
-            data.startDate,
-            data.endDate
+            input.reservationValidity,
+            timeProvider.getCurrentDateTime(),
+            seasonalService.getBoatSpaceReservationEndDateForNew(
+                reservation.boatSpaceType,
+                input.reservationValidity
+            ).atEndOfDay()
         )
     }
 
@@ -268,8 +262,12 @@ class ReservationFormService(
             rbsInput,
             status,
             reserveResult.data.reservationValidity,
-            reserveResult.data.startDate,
-            reserveResult.data.endDate
+            if (reserveResult.data.startDate == timeProvider.getCurrentDate()) {
+                timeProvider.getCurrentDateTime()
+            } else {
+                reserveResult.data.startDate.atStartOfDay()
+            },
+            reserveResult.data.endDate.atEndOfDay()
         )
 
         if (status == ReservationStatus.Confirmed) {
@@ -315,13 +313,17 @@ class ReservationFormService(
         val status =
             if (revisedPriceWithPossibleDiscount > 0) ReservationStatus.Payment else ReservationStatus.Confirmed
 
+        if (status == ReservationStatus.Confirmed) {
+            boatReservationService.markReservationEnded(originalReservation.id, timeProvider.getCurrentDateTime())
+        }
+
         processBoatSpaceReservation(
             originalReservation.reserverId,
             buildReserveBoatSpaceInput(reservationId, input),
             status,
             successResultData.reservationValidity,
-            successResultData.startDate,
-            successResultData.endDate
+            timeProvider.getCurrentDateTime(),
+            successResultData.endDate.atEndOfDay()
         )
 
         if (status == ReservationStatus.Confirmed) {
@@ -337,7 +339,7 @@ class ReservationFormService(
                 priceInfo,
                 PaymentType.Other
             )
-            boatReservationService.markReservationEnded(originalReservation.id)
+
             boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservationId)
         }
     }
@@ -394,7 +396,8 @@ class ReservationFormService(
                 priceInfo,
                 PaymentType.Other
             )
-            boatReservationService.markReservationEnded(originalReservation.id)
+
+            boatReservationService.markReservationEnded(originalReservation.id, timeProvider.getCurrentDateTime())
             boatReservationService.sendReservationEmailAndInsertMemoIfSwitch(reservationId)
         }
     }
@@ -596,8 +599,8 @@ class ReservationFormService(
         input: ReserveBoatSpaceInput,
         reservationStatus: ReservationStatus,
         reservationValidity: ReservationValidity,
-        startDate: LocalDate,
-        endDate: LocalDate,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
     ) {
         val boatSpace =
             boatReservationService.getBoatSpaceRelatedToReservation(input.reservationId)
