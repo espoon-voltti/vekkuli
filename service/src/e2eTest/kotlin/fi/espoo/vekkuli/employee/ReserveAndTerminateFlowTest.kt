@@ -51,8 +51,9 @@ class ReserveAndTerminateFlowTest : ReserveTest() {
 
         // Creates a reservation for a citizen, invoices it and returns to the listing page
         reserveBoatSpacePage.reserveB314BoatSpaceToASailboatAsEmployee(expectedReserverSearch)
-
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
         // Check that the citizen and boat space is visible in the reservation list
+        listingPage.navigateTo()
         assertThat(listingPage.reservationsTableB314Row).isVisible()
 
         // Go to the citizen details page

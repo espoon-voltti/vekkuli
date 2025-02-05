@@ -130,7 +130,11 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+
             val reservationListPage = ReservationListPage(page)
+            reservationListPage.navigateTo()
             assertThat(reservationListPage.header).isVisible()
 
             val reservationRow =
@@ -140,7 +144,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertTrue(reservationRow.textContent().contains("Laskutettu, eräpäivä 22.04.24"))
 
             page.getByText("Doe John").click()
-            val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
@@ -217,10 +220,13 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
 
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+
             val reservationListPage = ReservationListPage(page)
+            reservationListPage.navigateTo()
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()
-            val citizenDetailsPage = CitizenDetailsPage(page)
 
             assertThat(citizenDetailsPage.invoicePaidButton).isHidden()
 
@@ -392,9 +398,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
         }
-        val reservationListPage = ReservationListPage(page)
-        assertThat(reservationListPage.header).isVisible()
-        page.getByText("Doe John").click()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
     }
 
     @Test
@@ -428,10 +433,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
 
@@ -474,10 +477,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
 
@@ -596,9 +597,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoicePreviewPage.confirmModalSubmit.click()
         }
 
-        val reservationListPage = ReservationListPage(page)
-        assertThat(reservationListPage.header).isVisible()
-        page.getByText("Doe John").click()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
     }
 
     private fun fillWinterBoatSpaceForm(formPage: BoatSpaceFormPage) {
@@ -675,10 +675,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val invoicePreviewPage = InvoicePreviewPage(page)
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
+
             val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Until 31.12.2024" in citizenDetailsPage.reservationValidity.first().textContent())
 
@@ -715,8 +714,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoicePreviewPage.confirmModalSubmit.click()
 
             // we need to give some time for test to be able to evaluate the email sending
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
             assertEmailIsSentOfEmployeesFixedTermSlipReservationWithoutPayment()
         } catch (e: AssertionError) {
             handleError(e)
@@ -729,8 +728,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             reserveStoragePlace(true, false)
 
             // we need to give some time for test to be able to evaluate the email sending
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
             assertEmailIsSentOfEmployeesFixedTermStorageReservationWithoutPayment(endDate = "14.09.2024")
         } catch (e: AssertionError) {
             handleError(e)
@@ -743,8 +742,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             reserveStoragePlace(true, true)
 
             // we need to give some time for test to be able to evaluate the email sending
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
             assertEmailIsSentOfEmployeesFixedTermStorageReservationWithInvoice(endDate = "14.09.2024")
         } catch (e: AssertionError) {
             handleError(e)
@@ -757,8 +756,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             reserveStoragePlace(false, false)
 
             // we need to give some time for test to be able to evaluate the email sending
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
             assertEmailIsSentOfEmployeesIndefiniteStorageSpaceReservationWithoutPayment()
         } catch (e: AssertionError) {
             handleError(e)
@@ -867,8 +866,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertContains(description, place)
 
         invoicePage.sendButton.click()
-
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
         val reservationListPage = ReservationListPage(page)
+        reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
@@ -918,9 +919,11 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         invoicePage.sendButton.click()
 
-        val reservationListPage = ReservationListPage(page)
-        assertThat(reservationListPage.header).isVisible()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
+        val reservationListPage = ReservationListPage(page)
+        reservationListPage.navigateTo()
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
 
@@ -1025,7 +1028,11 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(invoicePreviewPage.header).isVisible()
         invoicePreviewPage.sendButton.click()
 
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+
         val reservationListPage = ReservationListPage(page)
+        reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
 
         messageService.sendScheduledEmails()
