@@ -1167,6 +1167,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(citizenDetails.citizenDetailsSection).isVisible()
         citizenDetails.renewReservationButton(1).click()
         assertThat(invoiceDetails.header).isVisible()
+        invoiceDetails.priceWithTax.fill("101")
+        invoiceDetails.description.fill("Test description")
 
         if (sendInvoice) {
             invoiceDetails.sendButton.click()
@@ -1176,6 +1178,11 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         }
         assertThat(citizenDetails.renewReservationButton(1)).isHidden()
         assertThat(citizenDetails.reservationListCards).containsText("Boat space: Haukilahti B 001")
+
+        citizenDetails.paymentsNavi.click()
+
+        citizenDetails.paymentsTable.textContent().contains("101,00")
+        citizenDetails.paymentsTable.textContent().contains("Test description")
     }
 
     private fun fillBoatAndOtherDetails(formPage: BoatSpaceFormPage) {
