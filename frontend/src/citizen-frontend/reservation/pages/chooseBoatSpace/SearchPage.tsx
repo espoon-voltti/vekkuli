@@ -1,6 +1,6 @@
 import { Loader } from 'lib-components/Loader'
 import { Column, Columns, Container, MainSection } from 'lib-components/dom'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
@@ -20,6 +20,7 @@ import SearchFilters from './SearchFilters'
 import SearchResult from './SearchResults'
 import {
   initialFormState,
+  onLanguageChange,
   SearchFormBranches,
   searchFreeSpacesForm
 } from './formDefinitions'
@@ -64,6 +65,11 @@ export default React.memo(function SearchPage() {
       }
     }
   )
+
+  useEffect(() => {
+    onLanguageChange(bind, i18n)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n])
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false)
 

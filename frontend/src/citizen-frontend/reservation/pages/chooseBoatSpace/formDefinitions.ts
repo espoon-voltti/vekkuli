@@ -18,6 +18,7 @@ import {
   union,
   value
 } from 'lib-common/form/form'
+import { BoundForm } from 'lib-common/form/hooks'
 import { OutputOf, StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
@@ -113,6 +114,100 @@ export function initialFormState(
     ),
     boatSpaceUnionCache: initialUnionCacheFormState(i18n, storedSearchState)
   }
+}
+
+function mapOptionsWithTranslatedLabels<T extends { value: string }>(
+  options: T[],
+  translationPath: Record<string, string>
+): T[] {
+  return options.map((option) => ({
+    ...option,
+    label: translationPath[option.value]
+  }))
+}
+
+/**
+ * Form component (RadioField, SelectField, CheckBoxField) option labels
+ * get entered into the form as translated strings.
+ * When the language changes, the strings do not get updated automatically.
+ * This applies also to the union cache that is utilized when switching between
+ * form branches.
+ */
+export function onLanguageChange(
+  bind: BoundForm<SearchForm>,
+  i18n: Translations
+) {
+  bind.update((prev) => ({
+    ...prev,
+    boatSpaceType: {
+      ...prev.boatSpaceType,
+      options: prev.boatSpaceType.options.map((option) => {
+        return {
+          ...option,
+          label: i18n.boatSpace.boatSpaceType[option.value].label,
+          info: i18n.boatSpace.boatSpaceType[option.value].info
+        }
+      })
+    },
+    boatSpaceUnionForm: {
+      ...prev.boatSpaceUnionForm,
+      state: {
+        ...prev.boatSpaceUnionForm.state,
+        amenities: {
+          ...prev.boatSpaceUnionForm.state.amenities,
+          options: mapOptionsWithTranslatedLabels(
+            prev.boatSpaceUnionForm.state.amenities.options,
+            i18n.boatSpace.amenities
+          )
+        },
+        boatType: {
+          ...prev.boatSpaceUnionForm.state.boatType,
+          options: mapOptionsWithTranslatedLabels(
+            prev.boatSpaceUnionForm.state.boatType.options,
+            i18n.boatSpace.boatType
+          )
+        },
+        storageAmenity: {
+          ...prev.boatSpaceUnionForm.state.storageAmenity,
+          options: mapOptionsWithTranslatedLabels(
+            prev.boatSpaceUnionForm.state.storageAmenity.options,
+            i18n.boatSpace.amenities
+          )
+        }
+      }
+    },
+    // Slip and Storage are currently the only form branches that have translated labels
+    boatSpaceUnionCache: {
+      ...prev.boatSpaceUnionCache,
+      Slip: {
+        ...prev.boatSpaceUnionCache.Slip,
+        amenities: {
+          ...prev.boatSpaceUnionCache.Slip.amenities,
+          options: mapOptionsWithTranslatedLabels(
+            prev.boatSpaceUnionCache.Slip.amenities.options,
+            i18n.boatSpace.amenities
+          )
+        },
+        boatType: {
+          ...prev.boatSpaceUnionCache.Slip.boatType,
+          options: mapOptionsWithTranslatedLabels(
+            prev.boatSpaceUnionCache.Slip.boatType.options,
+            i18n.boatSpace.boatType
+          )
+        }
+      },
+      Storage: {
+        ...prev.boatSpaceUnionCache.Storage,
+        storageAmenity: {
+          ...prev.boatSpaceUnionCache.Storage.storageAmenity,
+          options: mapOptionsWithTranslatedLabels(
+            prev.boatSpaceUnionCache.Storage.storageAmenity.options,
+            i18n.boatSpace.amenities
+          )
+        }
+      }
+    }
+  }))
 }
 
 export type SearchFormBranches = BoatSpaceType
