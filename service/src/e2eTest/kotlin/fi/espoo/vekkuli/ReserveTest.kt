@@ -6,13 +6,10 @@ import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
-import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.service.paymentStatusToText
 import fi.espoo.vekkuli.utils.fullDateFormat
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-open class ReserveTest : PlaywrightTest() {
+class ReserveTest : EmailSendingTest() {
     protected fun setDiscountForReserver(
         page: Page,
         reserverName: String,
@@ -88,24 +85,5 @@ open class ReserveTest : PlaywrightTest() {
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
         return listingPage
-    }
-
-    protected fun assertZeroEmailsSent() {
-        messageService.sendScheduledEmails()
-        assertEquals(0, SendEmailServiceMock.emails.size)
-    }
-
-    protected fun assertOnlyOneConfirmationEmailIsSent(
-        emailAddress: String? = "test@example.com",
-        emailSubject: String? = "Vahvistus Espoon kaupungin venepaikan varauksesta"
-    ) {
-        messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(
-            SendEmailServiceMock.emails
-                .get(
-                    0
-                ).contains("$emailAddress with subject $emailSubject")
-        )
     }
 }

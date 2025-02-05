@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.OrganizationDetailsPage
@@ -11,12 +11,11 @@ import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
-class OrganizationDetailsViewTest : PlaywrightTest() {
+class OrganizationDetailsViewTest : ReserveTest() {
     @Test
-    fun `employee can renew slip reservation`() {
+    fun `employee can renew slip reservation for organization`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
 
@@ -44,17 +43,8 @@ class OrganizationDetailsViewTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(2, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails.any {
-                    it.contains("olivia@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
-                }
-            )
-
-            assertTrue(
-                SendEmailServiceMock.emails.any {
-                    it.contains("eps@noreplytest.fi with subject Espoon kaupungin venepaikan jatkaminen")
-                }
-            )
+            assertEmailIsSentOfEmployeeSlipRenewalWithInvoice("olivia@noreplytest.fi", false)
+            assertEmailIsSentOfEmployeeSlipRenewalWithInvoice("eps@noreplytest.fi", false)
         } catch (e: AssertionError) {
             handleError(e)
         }
