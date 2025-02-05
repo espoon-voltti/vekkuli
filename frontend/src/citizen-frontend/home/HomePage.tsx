@@ -131,21 +131,36 @@ const getKeyText = (key: string) => {
 
 const periods: PeriodProps[] = [
   {
-    title: 'Venepaikkojen varaaminen 2026',
-    season: 'Veneilykausi 10.6.–14.9.2026',
+    title: 'Venepaikkojen varaaminen 2025',
+    season: 'Veneilykausi 10.6.–14.9.2025',
     periods: [
-      '7.1.–31.1.2026 vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa venepaikansa vuokrausta',
-      '1.3.–30.9.2026 espoolaiset* voivat varata venepaikkoja',
-      '1.4.–30.9.2026 kaikki voivat varata venepaikkoja'
+      '3.3.–31.3.2025 vain espoolaiset* voivat varata venepaikkoja',
+      '1.4.–30.9.2025 kaikki voivat varata venepaikkoja'
     ]
   },
   {
-    title: 'Suomenojan traileripaikkojen varaaminen 2026',
+    title: 'Suomenojan traileripaikkojen varaaminen 2025',
     season:
-      'Vuokrakausi 1.5.2026–30.4.2027. Vene trailerilla, vesillelasku luiskalta.',
+      'Vuokrakausi 1.5.2025–30.4.2026. Vene trailerilla, vesillelasku luiskalta.',
     periods: [
-      '1.4.–30.4.2026 vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikan vuokrausta',
-      '1.5.–31.12.2026 kaikki voivat varata traileripaikkoja'
+      '1.4.–30.4.2025 vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikan vuokrausta',
+      '1.5.–31.12.2025 kaikki voivat varata traileripaikkoja'
+    ]
+  },
+  {
+    title: 'Talvipaikkojen varaaminen 2025',
+    season: 'Talvisäilytyskausi 15.9.–10.6.2026 ',
+    periods: [
+      '15.8.–14.9.2025 vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa talvipaikan vuokrausta',
+      '15.9.–31.12.2025 vain espoolaiset* voivat varata talvipaikkoja'
+    ]
+  },
+  {
+    title: 'Ämmäsmäen säilytyspaikan varaaminen 2025',
+    season: 'Säilytyskausi 15.9.2025–14.9.2026',
+    periods: [
+      '15.8.–14.9.2025 säilytyspaikan vuokraajat voivat jatkaa säilytyspaikkan vuokrausta',
+      '15.9.2025–31.7.2026 kaikki voivat varata säilytyspaikkoja'
     ]
   }
 ]
