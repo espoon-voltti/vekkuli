@@ -30,7 +30,7 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
         reserveAndTerminateBoatSpace(false)
 
         // validate that termination email is sent to both the citizen and to employee
-        assertTerminationEmailIsSentToCitizenAndEmployee("Laituripaikka",expectedTerminationLocation, terminatorName, reserverName)
+        assertTerminationEmailIsSentToCitizenAndEmployee("Laituripaikka", expectedTerminationLocation, terminatorName, reserverName)
     }
 
     @Test
