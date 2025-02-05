@@ -128,13 +128,13 @@ class SeasonalService(
         }
 
         val endDate = getStorageEndDate(now)
-        val validity = if (!isEspooCitizen || reservations.isNotEmpty()) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
 
+        // Storage place reservations are always indefinite
         return ReservationResult.Success(
             ReservationResultSuccess(
                 now,
                 endDate,
-                validity
+                ReservationValidity.Indefinite
             )
         )
     }

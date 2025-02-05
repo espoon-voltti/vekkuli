@@ -931,13 +931,14 @@ class JdbiBoatSpaceReservationRepository(
         creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type)
-                    VALUES (:reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType)
+                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type, validity)
+                    VALUES (:reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType, :validity)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -948,6 +949,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("endDate", endDate)
             query.bind("currentDate", timeProvider.getCurrentDateTime())
             query.bind("creationType", creationType)
+            query.bind("validity", validity)
             query.mapTo<BoatSpaceReservation>().one()
         }
 
