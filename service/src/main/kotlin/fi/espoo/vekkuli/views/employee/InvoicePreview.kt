@@ -120,6 +120,7 @@ class InvoicePreview(
                     <form
                         hx-post="$submitUrl"
                         hx-target="body"
+                        hx-push-url="true"
                     >
                     ${invoiceLine(t("invoice.label.booker"), model.reserverName,"reserverName")}
                     ${if (!isOrganization) invoiceLine(t("invoice.label.bookerSsn"), model.reserverSsn,"reserverSsn") else ""}
