@@ -246,15 +246,14 @@ const sv: Translations = {
     totalPrice: (totalPrice: string, vatValue: string) =>
       `${totalPrice} € (inkl. moms ${vatValue} €)`,
     validity: (
-        endDate: LocalDate,
-        validity: ReservationValidity
+      endDate: LocalDate,
+      validity: ReservationValidity,
+      isActive: boolean
     ) => {
-      switch (validity) {
-        case 'FixedTerm':
-          return `Till ${endDate.format()}`
-        case 'Indefinite':
-          return 'Tills vidare, förnyas årligen'
+      if (validity === 'Indefinite' && isActive) {
+        return 'Tills vidare, förnyas årligen'
       }
+      return `Till ${endDate.format()}`
     },
     reserverDiscountInfo: (
       type: ReserverType,

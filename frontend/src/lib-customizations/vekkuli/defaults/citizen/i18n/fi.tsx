@@ -259,10 +259,10 @@ export default {
       validity: ReservationValidity,
       isActive: boolean
     ): string => {
-      if (validity === 'FixedTerm' || !isActive) {
-        return `${endDate.format()} asti`
+      if (validity === 'Indefinite' && isActive) {
+        return 'Toistaiseksi, jatko vuosittain'
       }
-      return 'Toistaiseksi, jatko vuosittain'
+      return `${endDate.format()} asti`
     },
     reserverDiscountInfo: (
       type: ReserverType,
