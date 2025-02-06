@@ -136,6 +136,7 @@ export type RevisedPrice = {
   discountPercentage: number
   revisedPriceInEuro: string
   revisedPriceWithDiscountInEuro: string
+  validity: ReservationValidity
 }
 
 export type UnfinishedBoatSpaceReservationResponse = {

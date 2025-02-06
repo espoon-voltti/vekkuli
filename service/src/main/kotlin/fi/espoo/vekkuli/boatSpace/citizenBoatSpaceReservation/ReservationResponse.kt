@@ -24,7 +24,8 @@ data class RevisedPrice(
     val name: String?,
     val revisedPriceInCents: Int,
     val revisedPriceInEuro: String,
-    val revisedPriceWithDiscountInEuro: String
+    val revisedPriceWithDiscountInEuro: String,
+    val validity: ReservationValidity
 )
 
 data class UnfinishedReservationResponse(
@@ -361,13 +362,15 @@ class ReservationResponseMapper(
         revisedPriceInCents: Int,
         discountPercentage: Int,
         reserverType: ReserverType,
-        name: String?
+        name: String?,
+        validity: ReservationValidity
     ): RevisedPrice =
         RevisedPrice(
             id = id,
             reserverType = reserverType,
             discountPercentage = discountPercentage,
             name = name,
+            validity = validity,
             revisedPriceInEuro = formatInt(revisedPriceInCents),
             revisedPriceInCents = revisedPriceInCents,
             revisedPriceWithDiscountInEuro =
@@ -395,21 +398,31 @@ class ReservationResponseMapper(
                 "${citizen.firstName} ${citizen.lastName}"
             } else {
                 organization?.name
-            }
+            },
+            reservation.validity
         )
     }
 
     fun toOrganizationRevisedPrices(
         revisedPriceCents: Int,
-        organizations: List<Organization>
+        organizations: List<Organization>,
+        boatSpaceType: BoatSpaceType
     ): List<RevisedPrice> =
         organizations.map {
+            val result = seasonalService.canReserveANewSpace(it.id, boatSpaceType)
+            val validity =
+                if (result is ReservationResult.Success) {
+                    result.data.reservationValidity
+                } else {
+                    ReservationValidity.FixedTerm
+                }
             toRevisedPrice(
                 it.id,
                 revisedPriceCents,
                 it.discountPercentage,
                 ReserverType.Organization,
-                it.name
+                it.name,
+                validity
             )
         }
 }

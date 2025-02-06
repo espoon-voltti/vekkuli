@@ -568,8 +568,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
 
-            // TODO: test that if organization already has one place, the validity should be fixed, this should fail
-            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("31.01.2025 asti")
 
             formPage.submitButton.click()
             assertZeroEmailsSent()
