@@ -328,7 +328,14 @@ const en: Translations = {
       'An error occurred while deleting the boat. Please contact customer support.',
     deleteSuccess: 'The boat has been deleted',
     confirmDelete: (boatName: string) =>
-      `You are about to delete the information for the boat ${boatName}`
+      `You are about to delete the information for the boat ${boatName}`,
+    editBoatDetails: 'Edit Boat Details',
+    boatName: 'Boat name',
+    boatDepthInMeters: 'Draft (m)',
+    boatWeightInKg: 'Weight (kg)',
+    registrationNumber: 'Registration Number',
+    otherIdentifier: 'Other Identifier',
+    additionalInfo: 'Additional Information'
   },
   boatSpace: {
     renterType: {

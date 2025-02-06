@@ -4,6 +4,7 @@ import { SelectField } from 'lib-components/form/SelectField'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
 import { BoatInfoForm } from '../../formDefinitions/boat'
@@ -13,6 +14,7 @@ export default React.memo(function Boat({
 }: {
   bind: BoundForm<BoatInfoForm>
 }) {
+  const i18n = useTranslation()
   const {
     name,
     type,
@@ -34,7 +36,7 @@ export default React.memo(function Boat({
         <div className="column is-one-quarter">
           <TextField
             id="boatName"
-            label="Veneen nimi"
+            label={i18n.boat.boatName}
             bind={name}
             required={true}
           />
@@ -43,7 +45,7 @@ export default React.memo(function Boat({
           <SelectField
             id="boat-type"
             name="boatType"
-            label="Venetyyppi"
+            label={i18n.reservation.searchPage.filters.boatType}
             required={true}
             bind={type}
           />
@@ -51,7 +53,7 @@ export default React.memo(function Boat({
         <div className="column is-one-quarter">
           <NumberField
             id="boat-width"
-            label="Leveys (m)"
+            label={i18n.common.unit.dimensions.widthInMeters}
             bind={width}
             name="width"
             step={0.01}
@@ -64,7 +66,7 @@ export default React.memo(function Boat({
         <div className="column is-one-quarter">
           <NumberField
             id="boat-height"
-            label="Pituus (m)"
+            label={i18n.common.unit.dimensions.lengthInMeters}
             bind={length}
             name="length"
             step={0.01}
@@ -79,7 +81,7 @@ export default React.memo(function Boat({
         <div className="column is-one-quarter">
           <NumberField
             id="boat-depth"
-            label="Syväys (m)"
+            label={i18n.boat.boatDepthInMeters}
             bind={depth}
             name="depth"
             step={0.01}
@@ -92,7 +94,7 @@ export default React.memo(function Boat({
         <div className="column is-one-quarter">
           <NumberField
             id="boat-weight"
-            label="Paino (kg)"
+            label={i18n.boat.boatWeightInKg}
             bind={weight}
             name="weight"
             step={0.01}
@@ -105,7 +107,7 @@ export default React.memo(function Boat({
           <div className="column is-one-quarter">
             <TextField
               id="register-number"
-              label="Rekisteritunnus"
+              label={i18n.boat.registrationNumber}
               bind={registrationNumberValue}
               required={true}
             />
@@ -124,7 +126,7 @@ export default React.memo(function Boat({
         <div className="column is-one-quarter">
           <TextField
             id="other-identifier"
-            label="Muu tunniste"
+            label={i18n.boat.otherIdentifier}
             bind={otherIdentification}
             required={true}
           />
@@ -132,7 +134,7 @@ export default React.memo(function Boat({
         <div className="column is-one-quarter">
           <TextField
             id="additional-info"
-            label="Lisätiedot"
+            label={i18n.boat.additionalInfo}
             bind={extraInformation}
           />
         </div>

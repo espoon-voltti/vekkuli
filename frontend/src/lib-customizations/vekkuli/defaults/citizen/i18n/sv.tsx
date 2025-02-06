@@ -324,7 +324,14 @@ const sv: Translations = {
       'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
     deleteSuccess: 'Båten har tagits bort',
     confirmDelete: (boatName: string) =>
-      `Du håller på att ta bort informationen för båten ${boatName}`
+      `Du håller på att ta bort informationen för båten ${boatName}`,
+    editBoatDetails: 'Redigera båtdetaljer',
+    boatName: 'Båtnamn',
+    boatDepthInMeters: 'Djupgående (m)',
+    boatWeightInKg: 'Vikt (kg)',
+    registrationNumber: 'Registreringsnummer',
+    otherIdentifier: 'Annan identifierare',
+    additionalInfo: 'Ytterligare information'
   },
   boatSpace: {
     boatSpaceType: {

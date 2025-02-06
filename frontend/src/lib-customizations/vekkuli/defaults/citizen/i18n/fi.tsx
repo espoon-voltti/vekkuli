@@ -324,7 +324,14 @@ export default {
       'Veneen poistamisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
     deleteSuccess: 'Vene on poistettu',
     confirmDelete: (boatName: string) =>
-      `Olet poistamassa veneen ${boatName} tietoja`
+      `Olet poistamassa veneen ${boatName} tietoja`,
+    editBoatDetails: 'Muokkaa veneen tietoja',
+    boatName: 'Veneen nimi',
+    boatDepthInMeters: 'Syväys (m)',
+    boatWeightInKg: 'Paino (kg)',
+    registrationNumber: 'Rekisteritunnus',
+    otherIdentifier: 'Muu tunniste',
+    additionalInfo: 'Lisätiedot'
   },
   boatSpace: {
     renterType: {
