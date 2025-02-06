@@ -48,7 +48,6 @@ class FreeSpacesController(
                 width,
                 length,
                 amenities,
-                storageType,
                 spaceType,
                 harbor
             )
