@@ -223,7 +223,9 @@ const sv: Translations = {
         Buck: {
           title: 'Bock information'
         }
-      }
+      },
+      reserver: 'Bokare',
+      tenant: 'Hyresgäst'
     },
     paymentPage: {
       paymentCancelled:
@@ -401,7 +403,9 @@ const sv: Translations = {
     nationalId: 'Personnummer',
     postalCode: 'Postnummer',
     postOffice: 'Postort',
-    municipality: 'Kommun'
+    municipality: 'Kommun',
+    birthday: 'Födelsedatum',
+    streetAddress: 'Adress'
   },
   citizenPage: {
     title: 'Mina uppgifter',

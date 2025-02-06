@@ -230,7 +230,9 @@ const en: Translations = {
         Buck: {
           title: 'Buck information'
         }
-      }
+      },
+      reserver: 'Reserver',
+      tenant: 'Renter'
     },
     paymentPage: {
       paymentCancelled:
@@ -400,7 +402,9 @@ const en: Translations = {
     nationalId: 'National ID',
     postalCode: 'Postal Code',
     postOffice: 'Post Office',
-    municipality: 'Municipality'
+    municipality: 'Municipality',
+    birthday: 'Birthday',
+    streetAddress: 'Address'
   },
   citizenPage: {
     title: 'My Information',

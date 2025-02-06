@@ -229,7 +229,9 @@ export default {
         Buck: {
           title: 'Pukin tiedot'
         }
-      }
+      },
+      reserver: 'Varaaja',
+      tenant: 'Vuokralainen'
     },
     paymentPage: {
       paymentCancelled:
@@ -400,7 +402,9 @@ export default {
     nationalId: 'Henkilötunnus',
     postalCode: 'Postinumero',
     postOffice: 'Postitoimipaikka',
-    municipality: 'Kotikunta'
+    municipality: 'Kotikunta',
+    birthday: 'Syntymäaika',
+    streetAddress: 'Katuosoite'
   },
   citizenPage: {
     title: 'Omat tiedot',
