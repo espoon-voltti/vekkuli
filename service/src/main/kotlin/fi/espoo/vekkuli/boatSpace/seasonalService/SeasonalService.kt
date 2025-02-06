@@ -285,7 +285,8 @@ class SeasonalService(
             hasActiveReservationPeriod(
                 periods,
                 now,
-                true, // always Espoo citizen
+                // always Espoo citizen
+                true,
                 BoatSpaceType.Winter,
                 if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
             )

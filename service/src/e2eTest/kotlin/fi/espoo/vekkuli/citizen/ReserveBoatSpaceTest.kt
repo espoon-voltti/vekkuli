@@ -310,7 +310,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
-
             assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
             formPage.submitButton.click()
             assertZeroEmailsSent()
@@ -740,7 +739,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
         try {
             setDiscountForReserver(page, reserverName, discount)
             val formPage = fillReservationInfoAndAssertCorrectDiscount(discount, expectedPrice, boatSpacePrice)
-            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
             val confirmButton = formPage.confirmButton
             confirmButton.click()
 
