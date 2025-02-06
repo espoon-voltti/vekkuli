@@ -129,7 +129,8 @@ const en: Translations = {
       chooseBoatSpace: 'Select a space',
       fillInformation: 'Fill in information',
       payment: 'Make payment',
-      confirmation: 'Confirmation'
+      confirmation: 'Confirmation',
+      error: 'Error'
     },
     searchPage: {
       title: 'Espoo City boat space rental',

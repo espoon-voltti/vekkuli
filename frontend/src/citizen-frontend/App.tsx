@@ -15,6 +15,7 @@ import { queryClient, QueryClientProvider } from './query'
 import ReservationStateRedirect from './reservation/ReservationStateRedirect'
 import SearchPage from './reservation/pages/chooseBoatSpace/SearchPage'
 import ConfirmationPage from './reservation/pages/confirmation/ConfirmationPage'
+import ReservationErrorPage from './reservation/pages/error/ErrorPage'
 import FormPage from './reservation/pages/fillInformation/FormPage'
 import PaymentPage from './reservation/pages/payment/PaymentPage'
 import { ReservationStateContextProvider } from './reservation/state'
@@ -133,11 +134,11 @@ export const appRouter = createBrowserRouter([
         )
       },
       {
-        path: 'kuntalainen/venepaikka/varausvirhe/:reservationId/:errorType',
+        path: 'kuntalainen/venepaikka/varausvirhe/:reservationId/:error',
         element: (
           <RequireAuth>
             <ScrollToTop>
-              <div>Venepaikan varaus epäonnistui</div>
+              <ReservationErrorPage />
             </ScrollToTop>
           </RequireAuth>
         )

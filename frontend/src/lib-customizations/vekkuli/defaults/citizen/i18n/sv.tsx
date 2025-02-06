@@ -233,7 +233,8 @@ const sv: Translations = {
       chooseBoatSpace: 'Välj plats',
       fillInformation: 'Fyll i information',
       payment: 'Betalning',
-      confirmation: 'Bekräftelse'
+      confirmation: 'Bekräftelse',
+      error: 'Fel'
     },
     noRegistererNumber: 'Inget registreringsnummer',
     certify: 'Jag intygar att de uppgifter jag har lämnat är korrekta.',

@@ -181,3 +181,9 @@ export type Municipality = {
   code: number
   name: string
 }
+
+export type ReservationError =
+  | 'BoatSpaceNotAvailable'
+  | 'InvalidSignature'
+  | 'PaymentNotFound'
+  | 'ReservationNotFound'
