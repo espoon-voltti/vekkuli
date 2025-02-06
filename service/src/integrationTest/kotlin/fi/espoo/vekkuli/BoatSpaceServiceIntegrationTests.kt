@@ -82,7 +82,6 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 BigDecimal(filteredBoatWidth / 100.0),
                 BigDecimal(filteredBoatLength / 100.0),
                 listOf(BoatSpaceAmenity.Beam),
-                null,
                 BoatSpaceType.Slip
             )
         assertEquals(7, boatSpaces.second, "Correct number of boat spaces are fetched")
@@ -114,7 +113,6 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 null,
                 null,
                 listOf(BoatSpaceAmenity.Beam),
-                null,
                 BoatSpaceType.Slip
             )
         assertEquals(boatSpaces.second, 0, "No boat spaces are fetched")
