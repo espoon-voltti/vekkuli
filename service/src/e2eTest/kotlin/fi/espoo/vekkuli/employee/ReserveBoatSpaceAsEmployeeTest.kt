@@ -334,9 +334,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 31.08.2024")
+            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 14.09.2024")
 
-            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithInvoice(endDate = "31.08.2024")
+            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithInvoice(endDate = "14.09.2024")
             updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
@@ -353,9 +353,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 31.08.2024")
+            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 14.09.2024")
 
-            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithoutPayment(endDate = "31.08.2024")
+            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithoutPayment(endDate = "14.09.2024")
         } catch (e: AssertionError) {
             handleError(e)
         }
