@@ -37,11 +37,12 @@ class ReserveTest : EmailSendingTest() {
         amount: String,
         reference: String,
         paidDate: String? = timeProvider.getCurrentDate().format(fullDateFormat),
-        doLogin: Boolean = true
+        doLogin: Boolean = true,
+        filterReservations: (ReservationListPage.() -> Unit)? = null
     ) {
         // verity that there's a payment row in reserver's info in employee view
         // todo: citizen and organization pages should have a common base class
-        val citizenDetails = citizenPageInEmployeeView(citizenName, doLogin)
+        val citizenDetails = citizenPageInEmployeeView(citizenName, doLogin, filterReservations)
         citizenDetails.paymentsNavi.click()
         assertThat(citizenDetails.paymentsTable).isVisible()
         val paymentRows = citizenDetails.paymentsTable.locator("tbody tr").all()
@@ -65,9 +66,11 @@ class ReserveTest : EmailSendingTest() {
 
     protected fun citizenPageInEmployeeView(
         reserverName: String,
-        doLogin: Boolean = true
+        doLogin: Boolean = true,
+        filter: (ReservationListPage.() -> Unit)? = null
     ): CitizenDetailsPage {
         val listingPage = reservationListPage(doLogin)
+        filter?.invoke(listingPage)
         listingPage
             .getByDataTestId("reserver-name")
             .getByText(reserverName)

@@ -19,7 +19,8 @@ class PaymentPage(
             "Nordea failed"
         )
     val paymentProviders = getByDataTestId("payment-providers")
-    val reservationFailedNotification = page.getByText("Maksu epäonnistui")
+    val paymentFailedNotification = page.getByText("Maksu epäonnistui")
+    val reservationFailedNotification = page.getByText("Venepaikan varaus epäonnistui")
     val reservationSuccessNotification = page.getByText("Venepaikan varaus onnistui")
     val backButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 

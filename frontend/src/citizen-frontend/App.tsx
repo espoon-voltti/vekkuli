@@ -133,6 +133,16 @@ export const appRouter = createBrowserRouter([
         )
       },
       {
+        path: 'kuntalainen/venepaikka/varausvirhe/:reservationId/:errorType',
+        element: (
+          <RequireAuth>
+            <ScrollToTop>
+              <div>Venepaikan varaus epäonnistui</div>
+            </ScrollToTop>
+          </RequireAuth>
+        )
+      },
+      {
         path: 'kuntalainen/omat-tiedot',
         element: (
           <RequireAuth>
