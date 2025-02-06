@@ -1039,4 +1039,20 @@ class ReserveBoatSpaceTest : ReserveTest() {
         assertThat(discountText).containsText("$expectedPrice €")
         return formPage
     }
+
+    @Test
+    fun `Search values are not carried over to the form for winter reservations`() {
+        CitizenHomePage(page).loginAsOliviaVirtanen()
+
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingWinterBoatSpaceB013()
+        reservationPage.getReserveModal().reserveANewSpace.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        val winterStorageType = formPage.getWinterStorageTypeSection()
+        assertThat(winterStorageType.trailerLengthInput).hasValue("")
+        assertThat(winterStorageType.trailerWidthInput).hasValue("")
+    }
 }
