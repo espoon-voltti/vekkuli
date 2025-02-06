@@ -14,7 +14,7 @@ fun mockTimeProvider(
 }
 
 val startOfSlipRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 0)
-val startOfWinterSpaceRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 1, 12, 0, 0)
+val startOfWinterSpaceRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 15, 12, 0, 0)
 val startofTrailerRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 4, 1, 12, 0, 0)
 val startOfStorageRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 15, 12, 0, 0)
 
@@ -23,14 +23,14 @@ val endDateWithinMonthOfWinterRenewWindow: LocalDate = LocalDate.of(2025, 8, 25)
 
 // Espoo citizen
 val startOfSlipReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
-val startOfWinterReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 1, 12, 0, 0)
+val startOfWinterReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)
 val startOfStorageReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)
 val startOfTrailerReservationPeriod: LocalDateTime = LocalDateTime.of(2024, 5, 1, 12, 0, 0)
 
 val startOfSlipSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
 val endOfSlipSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 9, 30, 12, 0, 0)
-val startOfWinterSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 1, 12, 0, 0)
-val startOfStorageSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 1, 12, 0, 0)
+val startOfWinterSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 15, 12, 0, 0)
+val startOfStorageSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 8, 15, 12, 0, 0)
 val startOfTrailerSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
 
 // Others
