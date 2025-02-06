@@ -503,13 +503,12 @@ open class EmailSendingTest : PlaywrightTest() {
         val expectedNroOfEmails = recipientAddresses.size + 1
         assertEquals(expectedNroOfEmails, SendEmailServiceMock.emails.size)
 
-        val sortedEmails =
-            SendEmailServiceMock.emails.sortedBy { email ->
-                when {
-                    email.contains("to venepaikat@espoo.fi") -> 1
-                    else -> 0
-                }
-            }
+        val sortedEmails = SendEmailServiceMock.emails.sortedWith(
+            compareBy(
+                { email -> if (email.contains("to venepaikat@espoo.fi")) 1 else 0 }, // Ensure employee email last
+                { email -> recipientAddresses.indexOfFirst { email.contains(it) } } // Sort others to match the passed list
+            )
+        )
 
         val citizenEmailSubject = "Vahvistus Espoon kaupungin venepaikan irtisanomisesta"
 
