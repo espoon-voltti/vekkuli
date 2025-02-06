@@ -1,6 +1,8 @@
 package fi.espoo.vekkuli.utils
 
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import org.mockito.Mockito
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -38,3 +40,7 @@ val startOfStorageReservationPeriodForOthers: LocalDateTime = LocalDateTime.of(2
 
 val startOfSlipSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 1, 7, 12, 0, 0)
 val startOfWinterSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2024, 9, 15, 12, 0, 0)
+
+val sessionDuration = Duration.ofSeconds(BoatSpaceConfig.SESSION_TIME_IN_SECONDS.toLong())
+val moreThanSessionDuration = sessionDuration.plusSeconds(5L)
+val lessThanSessionDuration = sessionDuration.minusSeconds(5L)

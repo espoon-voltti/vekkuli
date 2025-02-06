@@ -10,7 +10,6 @@ import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
-import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -1011,7 +1010,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `Payment after reservation time expiry results in valid reservation if space is still available`() {
         val currentTime = timeProvider.getCurrentDateTime()
-        val reservationTimerExpired = currentTime.plus(Duration.ofMinutes(25))
+        val reservationTimerExpired = currentTime.plus(moreThanSessionDuration)
 
         CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
 

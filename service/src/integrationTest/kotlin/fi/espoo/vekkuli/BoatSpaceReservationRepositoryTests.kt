@@ -4,7 +4,9 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.PaytrailMock
+import fi.espoo.vekkuli.utils.lessThanSessionDuration
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.moreThanSessionDuration
 import fi.espoo.vekkuli.utils.startOfSlipReservationPeriod
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.time.Duration
 import java.util.UUID
 import kotlin.test.assertEquals
 
@@ -68,7 +69,7 @@ class BoatSpaceReservationRepositoryTests : IntegrationTestBase() {
                 )
             )
 
-        val beforeReservationTimerExpires = currentTime.plus(Duration.ofMinutes(15))
+        val beforeReservationTimerExpires = currentTime.plus(lessThanSessionDuration)
         mockTimeProvider(timeProvider, beforeReservationTimerExpires)
 
         val updateResult = boatSpaceReservationRepository.updateBoatSpaceReservationOnPaymentSuccess(payment.id)
@@ -109,7 +110,7 @@ class BoatSpaceReservationRepositoryTests : IntegrationTestBase() {
                 )
             )
 
-        val reservationTimerExpired = currentTime.plus(Duration.ofMinutes(25))
+        val reservationTimerExpired = currentTime.plus(moreThanSessionDuration)
         mockTimeProvider(timeProvider, reservationTimerExpired)
 
         val updateResult = boatSpaceReservationRepository.updateBoatSpaceReservationOnPaymentSuccess(payment.id)
@@ -164,7 +165,7 @@ class BoatSpaceReservationRepositoryTests : IntegrationTestBase() {
                 )
             )
 
-        val reservationTimerExpired = currentTime.plus(Duration.ofMinutes(25))
+        val reservationTimerExpired = currentTime.plus(moreThanSessionDuration)
         mockTimeProvider(timeProvider, reservationTimerExpired)
 
         val updateResult = boatSpaceReservationRepository.updateBoatSpaceReservationOnPaymentSuccess(payment.id)
