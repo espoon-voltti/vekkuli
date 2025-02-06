@@ -233,7 +233,16 @@ const en: Translations = {
       },
       reserver: 'Reserver',
       tenant: 'Renter',
-      boatInformation: 'Boat information'
+      boatInformation: 'Boat information',
+      boatSpaceInformation: 'Boat space to be reserved',
+      harbor: 'Harbor',
+      place: 'Place',
+      boatSpaceType: 'Boat space type',
+      boatSpaceDimensions: 'Boat space dimensions',
+      boatSpaceAmenity: 'Amenity',
+      reservationValidity: 'Reservation Validity:',
+      price: 'Price',
+      storageType: 'Storage method'
     },
     paymentPage: {
       paymentCancelled:

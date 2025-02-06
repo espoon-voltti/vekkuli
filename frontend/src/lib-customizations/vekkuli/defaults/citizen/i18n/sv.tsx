@@ -226,7 +226,16 @@ const sv: Translations = {
       },
       reserver: 'Bokare',
       tenant: 'Hyresgäst',
-      boatInformation: 'Båtinformation'
+      boatInformation: 'Båtinformation',
+      boatSpaceInformation: 'Båtplats att reservera',
+      harbor: 'Hamn',
+      place: 'Plats',
+      boatSpaceType: 'Båtplatstyp',
+      boatSpaceDimensions: 'Båtplatsens dimensioner',
+      boatSpaceAmenity: 'Förtöjningssätt',
+      reservationValidity: 'Reservationens giltighet:',
+      price: 'Pris',
+      storageType: 'Förvaringstyp'
     },
     paymentPage: {
       paymentCancelled:

@@ -29,18 +29,20 @@ export default React.memo(function ReservedSpace({
   return (
     <>
       <div className="form-section" data-testid="reserved-space">
-        <h3 className="header">Varattava paikka</h3>
+        <h3 className="header">
+          {i18n.reservation.formPage.boatSpaceInformation}
+        </h3>
         <div className="columns">
           <div className="column is-one-quarter">
             <TextField
-              label="Satama"
+              label={i18n.reservation.formPage.harbor}
               value={boatSpace.locationName ?? '-'}
               readonly={true}
             />
           </div>
           <div className="column is-one-quarter">
             <TextField
-              label="Paikka"
+              label={i18n.reservation.formPage.place}
               value={formatPlaceIdentifier(
                 boatSpace.section,
                 boatSpace.placeNumber
@@ -50,14 +52,14 @@ export default React.memo(function ReservedSpace({
           </div>
           <div className="column is-one-quarter">
             <TextField
-              label="Venepaikkatyyppi"
+              label={i18n.reservation.formPage.boatSpaceType}
               value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
               readonly={true}
             />
           </div>
           <div className="column is-one-quarter">
             <TextField
-              label="Paikan koko"
+              label={i18n.reservation.formPage.boatSpaceDimensions}
               value={formatDimensions(boatSpace)}
               readonly={true}
             />
@@ -67,14 +69,14 @@ export default React.memo(function ReservedSpace({
           <div className="column is-one-quarter">
             {!hasStorageType && (
               <TextField
-                label="Varuste"
+                label={i18n.reservation.formPage.boatSpaceAmenity}
                 value={i18n.boatSpace.amenities[boatSpace.amenity]}
                 readonly={true}
               />
             )}
             {hasStorageType && (
               <TextField
-                label="Säilytystapa"
+                label={i18n.reservation.formPage.storageType}
                 value={
                   reservation.storageType
                     ? i18n.boatSpace.winterStorageType[reservation.storageType]
@@ -86,7 +88,7 @@ export default React.memo(function ReservedSpace({
           </div>
           <div className="column is-one-quarter">
             <TextField
-              label="Varaus voimassa:"
+              label={i18n.reservation.formPage.reservationValidity}
               value={i18n.reservation.validity(
                 reservation.endDate,
                 reservation.validity,
@@ -98,7 +100,7 @@ export default React.memo(function ReservedSpace({
           </div>
           <div className="column is-half">
             <TextField
-              label="Hinta"
+              label={i18n.reservation.formPage.price}
               value={[
                 i18n.reservation.prices.netPrice(netPrice),
                 i18n.reservation.prices.vatValue(vatValue),

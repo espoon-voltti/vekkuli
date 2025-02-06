@@ -232,7 +232,16 @@ export default {
       },
       reserver: 'Varaaja',
       tenant: 'Vuokralainen',
-      boatInformation: 'Veneen tiedot'
+      boatInformation: 'Veneen tiedot',
+      boatSpaceInformation: 'Varattava paikka',
+      harbor: 'Satama',
+      place: 'Paikka',
+      boatSpaceType: 'Venepaikkatyyppi',
+      boatSpaceDimensions: 'Paikan koko',
+      boatSpaceAmenity: 'Varuste',
+      reservationValidity: 'Varaus voimassa:',
+      price: 'Hinta',
+      storageType: 'Säilytystapa'
     },
     paymentPage: {
       paymentCancelled:
