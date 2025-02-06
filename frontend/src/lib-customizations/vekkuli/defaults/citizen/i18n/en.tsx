@@ -232,7 +232,8 @@ const en: Translations = {
         }
       },
       reserver: 'Reserver',
-      tenant: 'Renter'
+      tenant: 'Renter',
+      boatInformation: 'Boat information'
     },
     paymentPage: {
       paymentCancelled:

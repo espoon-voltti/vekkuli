@@ -225,7 +225,8 @@ const sv: Translations = {
         }
       },
       reserver: 'Bokare',
-      tenant: 'Hyresgäst'
+      tenant: 'Hyresgäst',
+      boatInformation: 'Båtinformation'
     },
     paymentPage: {
       paymentCancelled:

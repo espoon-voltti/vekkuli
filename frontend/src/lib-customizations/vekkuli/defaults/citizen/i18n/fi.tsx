@@ -231,7 +231,8 @@ export default {
         }
       },
       reserver: 'Varaaja',
-      tenant: 'Vuokralainen'
+      tenant: 'Vuokralainen',
+      boatInformation: 'Veneen tiedot'
     },
     paymentPage: {
       paymentCancelled:
