@@ -102,8 +102,8 @@ function initialTrailerInfoState(
     branch: 'Trailer',
     state: {
       registrationNumber: initialTrailer?.registrationNumber ?? '',
-      width: initialTrailer?.registrationNumber ?? positiveNumber.empty().value,
-      length: initialTrailer?.registrationNumber ?? positiveNumber.empty().value
+      width: initialTrailer?.width.toString() ?? positiveNumber.empty().value,
+      length: initialTrailer?.length.toString() ?? positiveNumber.empty().value
     }
   }
 }

@@ -48,11 +48,11 @@ function initialTrailerInfoState(
     registrationNumber: initialTrailer?.registrationNumber ?? '',
     width:
       storedState?.width ??
-      initialTrailer?.registrationNumber ??
+      initialTrailer?.width.toString() ??
       positiveNumber.empty().value,
     length:
       storedState?.length ??
-      initialTrailer?.registrationNumber ??
+      initialTrailer?.length.toString() ??
       positiveNumber.empty().value
   }
 }
