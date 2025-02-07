@@ -21,8 +21,15 @@ interface SendEmailInterface {
 @Service
 @Profile("test")
 class SendEmailServiceMock : SendEmailInterface {
+    data class SentEmail(
+        val senderAddress: String,
+        val recipientAddress: String,
+        val subject: String,
+        val body: String
+    )
+
     companion object {
-        val emails = mutableListOf<String>()
+        val emails = mutableListOf<SentEmail>()
 
         fun resetEmails() {
             emails.clear()
@@ -37,7 +44,7 @@ class SendEmailServiceMock : SendEmailInterface {
     ): String? {
         val email = "Email from $senderAddress to $emailAddress with subject $subject and content $body"
         println(email)
-        emails.add(email)
+        emails.add(SentEmail(senderAddress ?: "", emailAddress, subject, body))
         return email
     }
 }

@@ -109,13 +109,9 @@ class BoatReservationService(
     private val organizationService: OrganizationService,
     private val paymentRepository: PaymentRepository,
     private val boatSpaceRepository: BoatSpaceRepository,
-    private val reserverRepository: ReserverRepository
+    private val reserverRepository: ReserverRepository,
+    private val reserverService: ReserverService,
 ) {
-    fun t(
-        key: String,
-        params: List<String> = emptyList()
-    ): String = messageUtil.getMessage(key, params)
-
     fun handlePaytrailPaymentResult(
         params: Map<String, String>,
         isPaid: Boolean
@@ -628,8 +624,7 @@ class BoatReservationService(
         val isInvoiced = reservation.paymentType == PaymentType.Invoice
         val placeName = "${reservation.locationName} ${reservation.place}"
         val reservationStatus = reservation.status
-
-        val placeTypeText = t("boatSpaceReservation.email.types.${reservation.type}")
+        val organizationReservation = reservation.reserverType == ReserverType.Organization
 
         val defaultParams =
             mapOf(
@@ -641,15 +636,21 @@ class BoatReservationService(
                         .intToDecimal(boatSpace.widthCm),
                 "length" to
                     fi.espoo.vekkuli.utils
-                        .intToDecimal(boatSpace.lengthCm),
-                "amenity" to t("boatSpaces.amenityOption.${boatSpace.amenity}"),
-                "endDate" to
-                    t(
-                        "boatSpaceReservation.email.validity.${reservation.validity}",
-                        listOf(formatAsFullDate(reservation.endDate))
-                    ),
-                "placeType" to placeTypeText,
-            )
+                        .intToDecimal(boatSpace.lengthCm)
+            ) +
+                messageUtil.getLocalizedMap(
+                    "placeType",
+                    "boatSpaceReservation.email.types.${reservation.type}"
+                ) +
+                messageUtil.getLocalizedMap(
+                    "amenity",
+                    "boatSpaces.amenityOption.${boatSpace.amenity}"
+                ) +
+                messageUtil.getLocalizedMap(
+                    "endDate",
+                    "boatSpaceReservation.email.validity.${reservation.validity}",
+                    listOf(formatAsFullDate(reservation.endDate))
+                ) + getCitizenReserverForOrganization(organizationReservation, reservation)
 
         data class EmailSettings(
             val template: String,
@@ -659,7 +660,7 @@ class BoatReservationService(
         val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
 
         val recipients =
-            if (reservation.reserverType == ReserverType.Organization) {
+            if (organizationReservation) {
                 organizationService
                     .getOrganizationMembers(reservation.reserverId)
                     .map { it.email } + listOf(reservation.email)
@@ -675,9 +676,7 @@ class BoatReservationService(
                             EmailSettings(
                                 template = "reservation_created_by_employee_confirmed",
                                 recipients = recipients,
-                                params =
-                                    defaultParams
-                                        .plus("reservationDescription" to "$placeTypeText $placeName")
+                                params = defaultParams
                             )
                         } else {
                             EmailSettings(
@@ -685,7 +684,6 @@ class BoatReservationService(
                                 recipients = recipients,
                                 params =
                                     defaultParams
-                                        .plus("reservationDescription" to "$placeTypeText $placeName")
                                         .plus("invoiceAddress" to invoiceAddress)
                                         .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
                             )
@@ -711,9 +709,7 @@ class BoatReservationService(
                             EmailSettings(
                                 template = "reservation_renewed_by_employee_confirmed",
                                 recipients = recipients,
-                                params =
-                                    defaultParams
-                                        .plus("reservationDescription" to "$placeTypeText $placeName")
+                                params = defaultParams
                             )
                         } else {
                             EmailSettings(
@@ -721,7 +717,6 @@ class BoatReservationService(
                                 recipients = recipients,
                                 params =
                                     defaultParams
-                                        .plus("reservationDescription" to "$placeTypeText $placeName")
                                         .plus("invoiceAddress" to invoiceAddress)
                                         .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
                             )
@@ -732,7 +727,6 @@ class BoatReservationService(
                             recipients = recipients,
                             params =
                                 defaultParams
-                                    .plus("reservationDescription" to "$placeTypeText $placeName")
                                     .plus("invoiceAddress" to invoiceAddress)
                                     .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
                         )
@@ -750,6 +744,30 @@ class BoatReservationService(
 
         if (reservation.creationType == CreationType.Switch) {
             documentSwitchToMemo(reservation)
+        }
+    }
+
+    private fun getCitizenReserverForOrganization(
+        organizationReservation: Boolean,
+        reservation: BoatSpaceReservationDetails
+    ): Map<String, String> {
+        val key = "citizenReserver"
+        val actingCitizen =
+            if (organizationReservation && reservation.actingCitizenId != null) {
+                reserverService.getCitizen(reservation.actingCitizenId)?.fullName
+            } else {
+                null
+            }
+        return if (actingCitizen != null) {
+            messageUtil.getLocalizedMap(
+                key,
+                "boatSpaceReservation.email.reserver",
+                listOf(actingCitizen)
+            )
+        } else {
+            messageUtil.locales.associate { locale ->
+                "$key${locale.language.replaceFirstChar { it.uppercaseChar() }}" to ""
+            }
         }
     }
 
