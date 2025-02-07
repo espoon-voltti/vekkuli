@@ -116,7 +116,7 @@ class TestUtils(
                 madeReservation.id,
                 CreatePaymentParams(params.citizenId, "1", 1, 24.0, "1", PaymentType.OnlinePayment)
             )
-        reservationService.handleReservationPaymentResult(payment.id, true)
+        reservationService.handlePaymentResult(payment.id, true)
         return reservationService.getBoatSpaceReservation(madeReservation.id) ?: throw IllegalStateException("Reservation not found")
     }
 

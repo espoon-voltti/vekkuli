@@ -956,7 +956,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         val paymentPage = PaymentPage(page)
         paymentPage.nordeaFailedButton.click()
-        assertThat(paymentPage.reservationFailedNotification).isVisible()
+        assertThat(paymentPage.paymentFailedNotification).isVisible()
 
         paymentPage.backButton.click()
         formPage.cancelButton.click()
@@ -989,6 +989,100 @@ class ReserveBoatSpaceTest : ReserveTest() {
         searchResults.firstReserveButton.click()
 
         assertThat(page.locator("body")).containsText("Varaaminen ei ole mahdollista")
+    }
+
+    @Test
+    fun `Payment page displays remaining reservation time`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.header).isVisible()
+
+        val reservationTimerSection = paymentPage.getReservationTimerSection()
+        assertThat(reservationTimerSection.root).isVisible()
+    }
+
+    @Test
+    fun `Payment after reservation time expiry results in valid reservation if space is still available`() {
+        val currentTime = timeProvider.getCurrentDateTime()
+        val reservationTimerExpired = currentTime.plus(moreThanSessionDuration)
+
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+
+        val paymentPage = PaymentPage(page)
+        assertThat(paymentPage.header).isVisible()
+
+        mockTimeProvider(timeProvider, reservationTimerExpired)
+
+        paymentPage.payReservation()
+        assertThat(paymentPage.reservationSuccessNotification).isVisible()
+        assertCorrectPaymentForReserver("Virtanen Mikko", PaymentStatus.Success, "Haukilahti B 314", "418,00", "")
+
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+        val citizenDetailPage = CitizenDetailsPage(page)
+        citizenDetailPage.navigateToPage()
+
+        val reservationSection = citizenDetailPage.getReservationSection("Haukilahti B 314")
+        assertThat(reservationSection.root).isVisible()
+    }
+
+    @Test
+    fun `Payment after reservation time expiry fails if space is not available`() {
+        val currentTime = timeProvider.getCurrentDateTime()
+        val reservationTimerExpired = currentTime.plus(moreThanSessionDuration)
+
+        val mikkoPage = page
+
+        // start reservation as Mikko
+        CitizenHomePage(mikkoPage).loginAsMikkoVirtanen()
+
+        val mikkoReservationPage = ReserveBoatSpacePage(mikkoPage)
+        mikkoReservationPage.navigateToPage()
+        mikkoReservationPage.startReservingBoatSpaceB314()
+        BoatSpaceFormPage(mikkoPage).fillFormAndSubmit()
+
+        val mikkoPaymentPage = PaymentPage(mikkoPage)
+        assertThat(mikkoPaymentPage.header).isVisible()
+
+        mockTimeProvider(timeProvider, reservationTimerExpired)
+
+        // start reservation as Olivia
+        browser.newContext().use { oliviaContext ->
+            val oliviaPage = oliviaContext.newPage()
+            CitizenHomePage(oliviaPage).loginAsOliviaVirtanen()
+
+            val oliviaReservationPage = ReserveBoatSpacePage(oliviaPage)
+            oliviaReservationPage.navigateToPage()
+            oliviaReservationPage.startReservingBoatSpaceB314()
+
+            val oliviaReserveModal = oliviaReservationPage.getReserveModal()
+            oliviaReserveModal.reserveANewSpace.click()
+            assertThat(BoatSpaceFormPage(oliviaPage).header).isVisible()
+        }
+
+        // pay reservation as mikko
+        mikkoPaymentPage.payReservation()
+        assertThat(mikkoPaymentPage.reservationFailedNotification).isVisible()
+        assertCorrectPaymentForReserver("Virtanen Mikko", PaymentStatus.Success, "Haukilahti B 314", "418,00", "", filterReservations = {
+            reservationStateFilter("PAYMENT").click()
+        })
+
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+        val citizenDetailPage = CitizenDetailsPage(page)
+        citizenDetailPage.navigateToPage()
+
+        val reservationSection = citizenDetailPage.getReservationSection("Haukilahti B 314")
+        assertThat(reservationSection.root).not().isVisible()
     }
 
     private fun fillReservationInfoAndAssertCorrectDiscount(

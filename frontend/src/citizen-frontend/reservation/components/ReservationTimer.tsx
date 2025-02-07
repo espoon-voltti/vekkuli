@@ -66,7 +66,12 @@ const TimeRemaining = React.memo(function TimeRemaining({
   const remainingSeconds: number = remainingTime % 60
 
   return (
-    <div role="timer" id="timer" className="timer has-text-centered p-3">
+    <div
+      role="timer"
+      id="timer"
+      className="timer has-text-centered p-3"
+      data-testid="reservation-timer"
+    >
       Sinulla on
       <span className="has-text-weight-bold">
         {' '}

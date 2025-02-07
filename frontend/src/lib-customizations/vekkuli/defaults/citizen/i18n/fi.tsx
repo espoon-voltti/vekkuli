@@ -128,7 +128,8 @@ export default {
       chooseBoatSpace: 'Paikan valinta',
       fillInformation: 'Tietojen täyttäminen',
       payment: 'Maksaminen',
-      confirmation: 'Vahvistus'
+      confirmation: 'Vahvistus',
+      error: 'Virhe'
     },
     searchPage: {
       title: 'Espoon kaupungin venepaikkojen vuokraus',

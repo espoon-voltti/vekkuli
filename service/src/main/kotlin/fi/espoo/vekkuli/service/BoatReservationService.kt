@@ -35,6 +35,13 @@ data class ReservationResultSuccess(
     val reservationValidity: ReservationValidity
 )
 
+enum class PaymentProcessErrorCode {
+    BoatSpaceNotAvailable,
+    InvalidSignature,
+    PaymentNotFound,
+    ReservationNotFound,
+}
+
 sealed class ReservationResult(
     val success: Boolean
 ) {
@@ -48,11 +55,19 @@ sealed class ReservationResult(
 }
 
 sealed class PaymentProcessResult {
-    data class Success(
+    data class Paid(
         val reservation: BoatSpaceReservationDetails
     ) : PaymentProcessResult()
 
-    object Failure : PaymentProcessResult()
+    data class Cancelled(
+        val reservation: BoatSpaceReservationDetails
+    ) : PaymentProcessResult()
+
+    data class Failure(
+        val errorCode: PaymentProcessErrorCode,
+        val isPaid: Boolean,
+        val reservation: BoatSpaceReservationDetails? = null
+    ) : PaymentProcessResult()
 
     data class HandledAlready(
         val reservation: BoatSpaceReservationDetails
@@ -101,46 +116,56 @@ class BoatReservationService(
         params: List<String> = emptyList()
     ): String = messageUtil.getMessage(key, params)
 
-    fun handlePaymentResult(
+    fun handlePaytrailPaymentResult(
         params: Map<String, String>,
-        paymentSuccess: Boolean
+        isPaid: Boolean
     ): PaymentProcessResult {
         if (!paytrail.checkSignature(params)) {
-            return PaymentProcessResult.Failure
+            return PaymentProcessResult.Failure(PaymentProcessErrorCode.InvalidSignature, isPaid)
         }
-        val stamp = UUID.fromString(params.get("checkout-stamp"))
 
-        val payment = paymentService.getPayment(stamp)
-        if (payment == null) return PaymentProcessResult.Failure
+        val paymentId = UUID.fromString(params.get("checkout-stamp"))
+        return handlePaymentResult(paymentId, isPaid)
+    }
 
-        val reservation = boatSpaceReservationRepo.getBoatSpaceReservationWithPaymentId(stamp)
-        if (reservation == null) return PaymentProcessResult.Failure
+    fun handlePaymentResult(
+        paymentId: UUID,
+        isPaid: Boolean
+    ): PaymentProcessResult {
+        val payment =
+            paymentService.getPayment(paymentId)
+                ?: return PaymentProcessResult.Failure(PaymentProcessErrorCode.PaymentNotFound, isPaid)
+
+        val reservation =
+            boatSpaceReservationRepo.getBoatSpaceReservationWithPaymentId(paymentId)
+                ?: return PaymentProcessResult.Failure(PaymentProcessErrorCode.ReservationNotFound, isPaid)
+
+        if (payment.status != PaymentStatus.Created) {
+            return PaymentProcessResult.HandledAlready(reservation)
+        }
+
+        paymentService.updatePayment(payment.id, isPaid, if (isPaid) timeProvider.getCurrentDateTime() else null)
+
+        if (!isPaid) {
+            return PaymentProcessResult.Cancelled(reservation)
+        }
+
+        val boatSpaceWasAvailable =
+            boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
+                payment.id
+            ) != null
+
+        if (!boatSpaceWasAvailable) {
+            return PaymentProcessResult.Failure(PaymentProcessErrorCode.BoatSpaceNotAvailable, isPaid, reservation)
+        }
 
         if (reservation.originalReservationId != null) {
             markReservationEnded(reservation.originalReservationId)
         }
 
-        if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
+        sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
 
-        handleReservationPaymentResult(stamp, paymentSuccess)
-        if (paymentSuccess) sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
-
-        return PaymentProcessResult.Success(reservation)
-    }
-
-    fun handleReservationPaymentResult(
-        paymentId: UUID,
-        success: Boolean
-    ): Int? {
-        paymentService.updatePayment(paymentId, success, if (success) timeProvider.getCurrentDateTime() else null)
-        if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(paymentId)
-
-        val reservationId =
-            boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
-                paymentId
-            )
-
-        return reservationId
+        return PaymentProcessResult.Paid(reservation)
     }
 
     @Transactional
