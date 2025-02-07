@@ -15,7 +15,7 @@ import { useMutation } from 'lib-common/query'
 import { WarningExclamation } from 'lib-icons'
 
 import { ReservationInfo } from '../../../api-types/reservation'
-import { getRevisedPriceForReservation } from '../../RevisedPriceForReservation'
+import { getReservationInfoForReservation } from '../../ReservationInfoForReservation'
 import { InfoBox } from '../../components/InfoBox'
 import ReservationCancel from '../../components/ReservationCancel'
 import ReservedSpace from '../../components/ReservedSpace'
@@ -141,7 +141,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
     return organizationRevisedPrice ?? updatedReservation.reservationInfo
   }
 
-  const reservationPriceInfo = getRevisedPriceForReservation(
+  const reservationInfoForReservation = getReservationInfoForReservation(
     updatedReservation,
     getRevisedPrice()
   )
@@ -182,7 +182,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           <FormSection>
             <ReservedSpace
               reservation={updatedReservation}
-              revisedPriceForReservation={reservationPriceInfo}
+              reservationInfoForReservation={reservationInfoForReservation}
             />
           </FormSection>
           <UserAgreementsSection bind={userAgreement} />
@@ -196,7 +196,9 @@ export default React.memo(function Form({ reservation }: FormProperties) {
             {i18n.reservation.cancelReservation}
           </ReservationCancel>
           <Button type="primary" action={onSubmit}>
-            {parsePrice(reservationPriceInfo.revisedPriceWithDiscountInEuro) > 0
+            {parsePrice(
+              reservationInfoForReservation.revisedPriceWithDiscountInEuro
+            ) > 0
               ? i18n.reservation.formPage.submit.continueToPayment
               : i18n.reservation.formPage.submit.confirmReservation}
           </Button>

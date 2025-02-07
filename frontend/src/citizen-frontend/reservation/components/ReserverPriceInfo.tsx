@@ -3,19 +3,19 @@ import React from 'react'
 import { BlueInfoCircle } from '../../../lib-icons'
 import { useTranslation } from '../../localization'
 import { parsePrice } from '../../shared/formatters'
-import { RevisedPriceForReservation } from '../RevisedPriceForReservation'
+import { ReservationInfoForReservation } from '../ReservationInfoForReservation'
 
 export default React.memo(function ReserverPriceInfo({
-  revisedPriceForReservation
+  reservationInfoForReservation
 }: {
-  revisedPriceForReservation: RevisedPriceForReservation
+  reservationInfoForReservation: ReservationInfoForReservation
 }) {
   const {
     discountPercentage,
     revisedPriceWithDiscountInEuro,
     revisedPriceInEuro,
     creationType
-  } = revisedPriceForReservation
+  } = reservationInfoForReservation
   const i18n = useTranslation()
   const numericPrice = parsePrice(revisedPriceInEuro)
 
@@ -30,7 +30,7 @@ export default React.memo(function ReserverPriceInfo({
 
   const getDiscountText = () => {
     const { reserverType, name, discountPercentage } =
-      revisedPriceForReservation
+      reservationInfoForReservation
     return i18n.reservation.reserverDiscountInfo(
       reserverType,
       name ?? '',
