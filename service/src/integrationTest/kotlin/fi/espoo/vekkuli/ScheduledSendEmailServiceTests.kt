@@ -3,7 +3,6 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
-import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,12 +33,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     @BeforeEach
     override fun resetDatabase() {
         deleteAllEmails(jdbi)
-        jdbi.withHandleUnchecked { handle ->
-            // seed insert some reservations which mess the tests
-            handle.execute("DELETE FROM payment")
-            handle.execute("DELETE FROM boat_space_reservation")
-        }
-
+        deleteAllReservations(jdbi)
         SendEmailServiceMock.resetEmails()
     }
 
@@ -114,6 +108,10 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
             timeProvider,
             endOfYear.minusDays(20).atStartOfDay()
         )
+
+        // First send the reservation confirmation emails
+        messageService.sendScheduledEmails()
+        SendEmailServiceMock.resetEmails()
 
         functionToTest()
         messageService.sendScheduledEmails()

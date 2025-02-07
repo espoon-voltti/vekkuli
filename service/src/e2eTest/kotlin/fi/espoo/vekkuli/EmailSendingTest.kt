@@ -37,7 +37,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin laituripaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin laituripaikka",
+        "Sinulle on varattu Espoon kaupungin laituripaikka",
         sendAndAssertSendCount
     )
 
@@ -60,7 +60,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin laituripaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin laituripaikka",
+        "Sinulle on varattu Espoon kaupungin laituripaikka",
         endDate,
         sendAndAssertSendCount
     )
@@ -103,7 +103,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin säilytyspaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin säilytyspaikka",
+        "Sinulle on varattu Espoon kaupungin säilytyspaikka",
         sendAndAssertSendCount
     )
 
@@ -126,7 +126,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin säilytyspaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin säilytyspaikka",
+        "Sinulle on varattu Espoon kaupungin säilytyspaikka",
         endDate,
         sendAndAssertSendCount
     )
@@ -157,7 +157,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin traileripaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin traileripaikka",
+        "Sinulle on varattu Espoon kaupungin traileripaikka",
         sendAndAssertSendCount
     )
 
@@ -180,7 +180,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin traileripaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin traileripaikka",
+        "Sinulle on varattu Espoon kaupungin traileripaikka",
         endDate,
         sendAndAssertSendCount
     )
@@ -223,7 +223,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin talvipaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin talvipaikka",
+        "Sinulle on varattu Espoon kaupungin talvipaikka",
         sendAndAssertSendCount
     )
 
@@ -246,7 +246,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Vahvistus Espoon kaupungin talvipaikkavarauksesta",
-        "Sinulle on varattu espoon kaupungin talvipaikka",
+        "Sinulle on varattu Espoon kaupungin talvipaikka",
         endDate,
         sendAndAssertSendCount
     )
@@ -466,8 +466,8 @@ open class EmailSendingTest : PlaywrightTest() {
 
     private fun assertOnlyOneConfirmationEmailIsSent(
         emailAddress: String? = null,
-        emailSubject: String = "foo",
-        validity: String = "foo",
+        emailSubject: String,
+        validity: String,
         contentSnippet: String,
         sendAndAssertSendCount: Boolean? = null,
     ) {
