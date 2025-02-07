@@ -255,15 +255,14 @@ const en: Translations = {
         'The place costs the same as your previous one. You do not need to pay again.'
     },
     validity: (
-        endDate: LocalDate,
-        validity: ReservationValidity
+      endDate: LocalDate,
+      validity: ReservationValidity,
+      isActive: boolean
     ) => {
-      switch (validity) {
-        case 'FixedTerm':
-          return `until ${endDate.format()}`
-        case 'Indefinite':
-          return 'For now, resume annually'
+      if (validity === 'Indefinite' && isActive) {
+        return 'For now, resume annually'
       }
+      return `until ${endDate.format()}`
     },
     reserverDiscountInfo: (
       type: ReserverType,

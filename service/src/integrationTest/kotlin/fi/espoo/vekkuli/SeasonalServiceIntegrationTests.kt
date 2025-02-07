@@ -5,6 +5,8 @@ import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReserveBoatSpaceInput
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getSlipEndDate
+import fi.espoo.vekkuli.config.BoatSpaceConfig.getWinterEndDate
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
@@ -53,7 +55,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Slip)
         if (result is ReservationResult.Success) {
-            assertEquals(LocalDate.of(2025, 1, 31), result.data.endDate)
+            assertEquals(getSlipEndDate(timeProvider.getCurrentDate(), ReservationValidity.Indefinite), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
         } else {
             throw AssertionError("canReserveANewSlip failed")
@@ -74,7 +76,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
-            assertEquals(LocalDate.of(2025, 8, 31), result.data.endDate)
+            assertEquals(getWinterEndDate(timeProvider.getCurrentDate()), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
         } else {
             throw AssertionError("canReserveANewWinterSpace failed")
@@ -167,7 +169,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         )
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Winter)
         if (result is ReservationResult.Success) {
-            assertEquals(LocalDate.of(2025, 8, 31), result.data.endDate)
+            assertEquals(getWinterEndDate(timeProvider.getCurrentDate()), result.data.endDate)
             assertEquals(ReservationValidity.Indefinite, result.data.reservationValidity)
         } else {
             throw AssertionError("canReserveANewWinterSpace failed")

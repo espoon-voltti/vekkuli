@@ -17,6 +17,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
 
         val locationName = fields.getField("Satama")
         val place = fields.getField("Paikka")
+        val validity = fields.getField("Varaus voimassa")
 
         fun getTrailerSection() = TrailerSection(root.getByDataTestId("trailer-information"))
     }

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.util.*
 
 @Controller
 class InvoiceController(
@@ -155,9 +156,19 @@ class InvoiceController(
 
         return ResponseEntity
             .status(HttpStatus.FOUND)
-            .header("Location", "/virkailija/venepaikat/varaukset")
+            .header("Location", getBackUrl(reservation.reserverType, reservation.reserverId))
             .body("")
     }
+
+    fun getBackUrl(
+        reserverType: ReserverType?,
+        reserverId: UUID?
+    ): String =
+        if (reserverType == ReserverType.Citizen) {
+            "/virkailija/kayttaja/$reserverId"
+        } else {
+            "/virkailija/yhteiso/$reserverId"
+        }
 
     private fun handleInvoiceSending(
         reservation: ReservationWithDependencies,

@@ -487,30 +487,31 @@ DELETE FROM reservation_period;
 INSERT INTO reservation_period(is_espoo_citizen, boat_space_type, operation, start_month, start_day, end_month, end_day)
 VALUES
     -- For Espoo citizens
-    (true, 'Slip', 'New', 3, 1, 9, 30),
-    (true, 'Slip', 'SecondNew', 4, 1, 9, 30),
     (true, 'Slip', 'Renew', 1, 7, 1, 31),
-    (true, 'Slip', 'Change', 1, 7, 1, 31),
-    (true, 'Slip', 'Change', 3, 1, 9, 30),
-    (true, 'Trailer', 'New', 5, 1, 12, 31),
+    (true, 'Slip', 'Change', 1, 7, 9, 30),
+    (true, 'Slip', 'New', 3, 3, 9, 30),
+    (true, 'Slip', 'SecondNew', 4, 1, 9, 30),
     (true, 'Trailer', 'Renew', 4, 1, 4, 30),
+    (true, 'Trailer', 'New', 5, 1, 12, 31),
     (true, 'Trailer', 'Change',  4, 1, 12, 31),
-    (true, 'Winter', 'New', 9, 1, 12, 31),
-    (true, 'Winter', 'Renew',  8, 1, 8, 31),
-    (true, 'Winter', 'Change',  8, 1, 12, 31),
-    (true, 'Winter', 'SecondNew',  9, 1, 12, 31),
-    (true, 'Storage', 'New', 9, 15, 7, 31),
+    (true, 'Winter', 'Renew',  8, 15, 9, 14),
+    (true, 'Winter', 'Change',  8, 15, 12, 31),
+    (true, 'Winter', 'New', 9, 15, 12, 31),
+    (true, 'Winter', 'SecondNew', 9, 15, 12, 31),
     (true, 'Storage', 'Renew',  8, 15, 9, 14),
-    (true, 'Storage', 'Change',  8, 1, 7, 31),
+    (true, 'Storage', 'Change',  8, 15, 8, 14),
+    (true, 'Storage', 'New', 9, 15, 9, 14),
+    (true, 'Storage', 'SecondNew', 9, 15, 9, 14),
 
     -- For non-Espoo citizens
     (false, 'Slip', 'New', 4, 1, 9, 30),
     (false, 'Slip', 'Change', 4, 1, 9, 30),
     (false, 'Trailer', 'New', 5, 1, 12, 31),
     (false, 'Trailer', 'Change',  5, 1, 12, 31),
-    (false, 'Storage', 'New', 9, 15, 7, 31),
-    (false, 'Storage', 'Renew', 8, 15, 9, 14),
-    (false, 'Storage', 'Change',  9, 1, 7, 31);
+    (false, 'Storage', 'Renew',  8, 15, 9, 14),
+    (false, 'Storage', 'Change',  8, 15, 8, 14),
+    (false, 'Storage', 'New', 9, 15, 9, 14),
+    (false, 'Storage', 'SecondNew', 9, 15, 9, 14);
 
 
 INSERT INTO app_user (id, external_id, first_name, last_name, email)
@@ -599,7 +600,7 @@ VALUES
     ('D1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon poistettu vene', 120, 400, 20, 180, 'OutboardMotor', 'Delmo 600', '', 'Owner', '2024-04-01T00:00:00'),
     ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon lohi', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
     ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon kuha', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
-    (null, '82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Ruutuässä', 200, 300, 120, 3000, 'Sailboat', 'Swan 45', '', 'Owner', null);
+    ('W9876', '82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Ruutuässä', 200, 300, 120, 3000, 'Sailboat', 'Swan 45', '', 'Owner', null);
 
 
 INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) VALUES

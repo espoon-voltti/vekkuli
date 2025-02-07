@@ -7,14 +7,14 @@ import {
   BoatSpaceReservation,
   BoatSpaceReservationResponse,
   CanReserveReservation,
+  ExistingBoatSpaceReservation,
+  ExistingBoatSpaceReservationResponse,
   FillBoatSpaceReservationInput,
   Municipality,
-  UnfinishedBoatSpaceReservation,
-  UnfinishedBoatSpaceReservationResponse,
   PaymentInformationResponse,
   ReservationOperation,
-  ExistingBoatSpaceReservationResponse,
-  ExistingBoatSpaceReservation
+  UnfinishedBoatSpaceReservation,
+  UnfinishedBoatSpaceReservationResponse
 } from '../api-types/reservation'
 
 import {
@@ -209,6 +209,7 @@ export function deserializeJsonExistingBoatSpaceReservationResponse(
     created: HelsinkiDateTime.parseIso(json.created),
     endDate: LocalDate.parseIso(json.endDate),
     validity: json.validity,
+    active: json.isActive,
     boatSpace: json.boatSpace,
     paymentDate: json.paymentDate
       ? LocalDate.parseIso(json.paymentDate)

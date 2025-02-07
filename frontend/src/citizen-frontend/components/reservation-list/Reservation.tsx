@@ -109,7 +109,11 @@ export default React.memo(function Reservation({
             />
             <TextField
               label="Varaus voimassa"
-              value={i18n.reservation.validity(reservation.endDate, reservation.validity)}
+              value={i18n.reservation.validity(
+                reservation.endDate,
+                reservation.validity,
+                reservation.active
+              )}
               readonly={true}
             />
           </Column>
