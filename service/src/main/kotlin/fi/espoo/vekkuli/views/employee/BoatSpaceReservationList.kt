@@ -87,7 +87,9 @@ class BoatSpaceReservationList : BaseView() {
         val paymentFilters =
             paymentOptions.joinToString("\n") { paymentOption ->
                 """
-                <label class="filter-button">
+                <label class="filter-button" ${addTestId(
+                    "filter-reservation-state-$paymentOption"
+                )}>
                     <input type="checkbox" name="payment" value="$paymentOption" class="is-hidden" ${if (params.hasPayment(paymentOption)) {
                     "checked"
                 } else {

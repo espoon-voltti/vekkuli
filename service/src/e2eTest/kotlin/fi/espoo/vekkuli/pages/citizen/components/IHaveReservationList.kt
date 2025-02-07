@@ -8,7 +8,7 @@ import fi.espoo.vekkuli.pages.getByDataTestId
 
 interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHaveReservationList<T> {
     class ReservationSection(
-        private val root: Locator
+        val root: Locator
     ) {
         private val fields = FieldLocator(root)
         val terminateButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka"))
@@ -44,7 +44,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
     )
 
     class TrailerSection(
-        root: Locator
+        val root: Locator
     ) {
         private val fields = FieldLocator(root)
         val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))

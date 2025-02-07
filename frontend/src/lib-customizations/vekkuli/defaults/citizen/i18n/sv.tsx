@@ -223,7 +223,19 @@ const sv: Translations = {
         Buck: {
           title: 'Bock information'
         }
-      }
+      },
+      reserver: 'Bokare',
+      tenant: 'Hyresgäst',
+      boatInformation: 'Båtinformation',
+      boatSpaceInformation: 'Båtplats att reservera',
+      harbor: 'Hamn',
+      place: 'Plats',
+      boatSpaceType: 'Båtplatstyp',
+      boatSpaceDimensions: 'Båtplatsens dimensioner',
+      boatSpaceAmenity: 'Förtöjningssätt',
+      reservationValidity: 'Reservationens giltighet:',
+      price: 'Pris',
+      storageType: 'Förvaringstyp'
     },
     paymentPage: {
       paymentCancelled:
@@ -233,7 +245,8 @@ const sv: Translations = {
       chooseBoatSpace: 'Välj plats',
       fillInformation: 'Fyll i information',
       payment: 'Betalning',
-      confirmation: 'Bekräftelse'
+      confirmation: 'Bekräftelse',
+      error: 'Fel'
     },
     noRegistererNumber: 'Inget registreringsnummer',
     certify: 'Jag intygar att de uppgifter jag har lämnat är korrekta.',
@@ -320,7 +333,14 @@ const sv: Translations = {
       'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
     deleteSuccess: 'Båten har tagits bort',
     confirmDelete: (boatName: string) =>
-      `Du håller på att ta bort informationen för båten ${boatName}`
+      `Du håller på att ta bort informationen för båten ${boatName}`,
+    editBoatDetails: 'Redigera båtdetaljer',
+    boatName: 'Båtnamn',
+    boatDepthInMeters: 'Djupgående (m)',
+    boatWeightInKg: 'Vikt (kg)',
+    registrationNumber: 'Registreringsnummer',
+    otherIdentifier: 'Annan identifierare',
+    additionalInfo: 'Ytterligare information'
   },
   boatSpace: {
     boatSpaceType: {
@@ -400,7 +420,9 @@ const sv: Translations = {
     nationalId: 'Personnummer',
     postalCode: 'Postnummer',
     postOffice: 'Postort',
-    municipality: 'Kommun'
+    municipality: 'Kommun',
+    birthday: 'Födelsedatum',
+    streetAddress: 'Adress'
   },
   citizenPage: {
     title: 'Mina uppgifter',

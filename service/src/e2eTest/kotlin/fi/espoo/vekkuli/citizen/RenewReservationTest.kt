@@ -133,6 +133,8 @@ class RenewReservationTest : ReserveTest() {
                 getBoatSection().widthInput.fill("2")
                 getBoatSection().lengthInput.fill("5")
                 getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+                getWinterStorageTypeSection().trailerLengthInput.fill("3")
+                getWinterStorageTypeSection().trailerWidthInput.fill("1")
             }
             PaymentPage(page).payReservation()
 
@@ -150,8 +152,10 @@ class RenewReservationTest : ReserveTest() {
             reservationPage.navigateToPage()
 
             val userAgreementSection = form.getUserAgreementSection()
+            page.pause()
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
+            page.pause()
             form.submitButton.click()
 
             val paymentPage = PaymentPage(page)
@@ -196,6 +200,7 @@ class RenewReservationTest : ReserveTest() {
             reservationSection.renewButton.click()
             // Make sure that citizen is redirected to unfinished reservation switch form
             reservationPage.navigateToPage()
+            page.pause()
 
             val userAgreementSection = form.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()

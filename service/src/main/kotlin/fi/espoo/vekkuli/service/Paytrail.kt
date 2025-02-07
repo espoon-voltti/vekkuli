@@ -2,8 +2,6 @@ package fi.espoo.vekkuli.service
 
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.PaytrailEnv
-import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.controllers.Utils.Companion.isStagingOrProduction
 import fi.espoo.vekkuli.utils.TimeProvider
 import io.ktor.client.call.*
 import kotlinx.coroutines.runBlocking
@@ -52,8 +50,8 @@ data class PaytrailPaymentParams(
     val language: String,
     val items: List<PaytrailPurchaseItem>? = null,
     val customer: PaytrailCustomer,
-    val redirectUrls: PaytrailCallbackUrl? = null,
-    val callbackUrls: PaytrailCallbackUrl? = null,
+    val redirectUrls: PaytrailCallbackUrl,
+    val callbackUrls: PaytrailCallbackUrl?,
 )
 
 @Serializable
@@ -98,22 +96,6 @@ data class PaytrailPaymentResponse(
 
 const val BASE_URL = "https://services.paytrail.com"
 
-val redirectUrls =
-    PaytrailCallbackUrl(
-        getServiceUrl("/kuntalainen/maksut/onnistunut"),
-        getServiceUrl("/kuntalainen/maksut/peruuntunut")
-    )
-
-val callbackUrls: PaytrailCallbackUrl? =
-    if (isStagingOrProduction()) {
-        PaytrailCallbackUrl(
-            getServiceUrl("/ext/payments/paytrail/success"),
-            getServiceUrl("/ext/payments/paytrail/cancel")
-        )
-    } else {
-        null
-    }
-
 const val CURRENCY = "EUR"
 
 // HASH_ALGORITHM_NAME and HASH_ALGORITHM must be changed together
@@ -148,7 +130,7 @@ class PaytrailMock : PaytrailInterface {
                     PaytrailProvider(
                         name = "Nordea success",
                         methodIsPost = false,
-                        url = params.redirectUrls?.success ?: "/kuntalainen/maksut/onnistunut",
+                        url = params.redirectUrls.success,
                         icon = "https://www.nordea.fi/icon.png",
                         svg = "https://www.nordea.fi/icon.svg",
                         id = "nordea-success",
@@ -161,7 +143,7 @@ class PaytrailMock : PaytrailInterface {
                     PaytrailProvider(
                         name = "Nordea failed",
                         methodIsPost = false,
-                        url = params.redirectUrls?.cancel ?: "/kuntalainen/maksut/peruuntunut",
+                        url = params.redirectUrls.cancel,
                         icon = "https://www.nordea.fi/icon.png",
                         svg = "https://www.nordea.fi/icon.svg",
                         id = "nordea-fail",
@@ -204,8 +186,8 @@ class Paytrail(
                 currency = CURRENCY,
                 language = params.language,
                 customer = params.customer,
-                redirectUrls = params.redirectUrls ?: redirectUrls,
-                callbackUrls = params.callbackUrls ?: callbackUrls,
+                redirectUrls = params.redirectUrls,
+                callbackUrls = params.callbackUrls,
                 callbackDelay = 1,
                 items = params.items,
             )

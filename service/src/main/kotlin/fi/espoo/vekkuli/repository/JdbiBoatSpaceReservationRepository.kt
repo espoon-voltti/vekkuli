@@ -337,7 +337,20 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE p.id = :paymentId
                         AND bsr.id = p.reservation_id
                         AND bsr.status = 'Payment' 
-                        AND bsr.created > :currentTime - make_interval(secs => :paymentTimeout)
+                        AND (
+                            (bsr.created > :currentTime - make_interval(secs => :paymentTimeout))
+                            OR
+                            NOT EXISTS (
+                                SELECT 1
+                                FROM boat_space_reservation bsr_other
+                                WHERE
+                                    bsr_other.id != bsr.id
+                                    AND
+                                    bsr_other.boat_space_id = bsr.boat_space_id
+                                    AND
+                                    bsr_other.created > bsr.created
+                            )
+                        )
                     RETURNING bsr.id
                     """.trimIndent()
                 )

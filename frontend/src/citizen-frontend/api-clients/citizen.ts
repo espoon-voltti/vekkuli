@@ -58,9 +58,9 @@ export function deserializeJsonCitizenBoatsResponse(
     length: formatCmToM(boat.lengthCm),
     depth: formatCmToM(boat.depthCm),
     weight: boat.weightKg,
-    hasNoRegistrationNumber: boat.registrationCode.length === 0,
+    hasNoRegistrationNumber: boat.registrationCode?.length === 0,
     ownership: boat.ownership,
-    registrationNumber: boat.registrationCode,
+    registrationNumber: boat.registrationCode || '',
     otherIdentification: boat.otherIdentification,
     extraInformation: boat.extraInformation
   }))

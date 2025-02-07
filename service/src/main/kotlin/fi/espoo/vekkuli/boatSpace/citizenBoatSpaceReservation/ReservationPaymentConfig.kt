@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
 import fi.espoo.vekkuli.controllers.Utils
+import fi.espoo.vekkuli.service.PaymentProcessErrorCode
 import fi.espoo.vekkuli.service.PaytrailCallbackUrl
 import java.net.URI
 
@@ -16,6 +17,13 @@ object ReservationPaymentConfig {
 
     fun cancelledFrontendUrl(): URI {
         return URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/maksa?cancelled=true"))
+    }
+
+    fun errorFrontendUrl(
+        reservationId: Int,
+        errorType: PaymentProcessErrorCode
+    ): URI {
+        return URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/varausvirhe/$reservationId/$errorType"))
     }
 
     fun redirectUrls() =
