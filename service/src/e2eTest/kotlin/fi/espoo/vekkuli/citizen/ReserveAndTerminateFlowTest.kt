@@ -11,13 +11,13 @@ import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.OrganizationDetailsPage
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
 class ReserveAndTerminateFlowTest : EmailSendingTest() {
+    final val terminatorName = "Mikko Virtanen"
     final val expectedHarbour = "Haukilahti"
     final val expectedReservationId = "B 314"
     val expectedTerminationLocation = "$expectedHarbour $expectedReservationId"
@@ -26,26 +26,36 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
     @Test
     fun `citizen can reserve a slip boat space and terminate it to allow others to see it, termination email is sent to citizen and employee`() {
         val reserverName = "Virtanen Mikko"
-        val terminatorName = "Mikko Virtanen"
-        reserveAndTerminateBoatSpace(false)
+        val recipientsAddresses = listOf("test@example.com")
+        reserveAndTerminateBoatSpace(recipientsAddresses, false)
 
         // validate that termination email is sent to both the citizen and to employee
-        assertTerminationEmailIsSentToCitizenAndEmployee("Laituripaikka", expectedTerminationLocation, terminatorName, reserverName)
+        assertTerminationEmailIsSentToCitizenAndEmployee(
+            "laituripaikka",
+            expectedTerminationLocation,
+            terminatorName,
+            reserverName
+        )
     }
 
     @Test
-    @Disabled("Organization is missing terminate button in profile page")
     fun `terminating organization reservation sends email to all organization members and to employee`() {
-        val reserverName = "Virtanen Olivia"
-        val terminatorName = "Olivia Virtanen"
-        addMemberToOrganization()
-        reserveAndTerminateBoatSpace(true)
+        val reserverName = "Espoon Pursiseura"
+        val recipientsAddresses = listOf("olivia@noreplytest.fi", "test@example.com", "eps@noreplytest.fi")
+        addMikkoVirtanenToOrganization()
+        reserveAndTerminateBoatSpace(recipientsAddresses, true)
 
-        // validate that termination email is sent to both the citizen and to employee
-        assertTerminationEmailIsSentToCitizenAndEmployee("Laituripaikka", expectedTerminationLocation, terminatorName, reserverName)
+        // validate that termination email is sent to organization, all its members and to employee
+        assertTerminationEmailIsSentToCitizenAndEmployee(
+            "laituripaikka",
+            expectedTerminationLocation,
+            terminatorName,
+            reserverName,
+            recipientsAddresses
+        )
     }
 
-    private fun addMemberToOrganization() {
+    private fun addMikkoVirtanenToOrganization() {
         EmployeeHomePage(page).employeeLogin()
         val organizationDetails = OrganizationDetailsPage(page)
         organizationDetails.navigateToEspoonPursiseura()
@@ -67,7 +77,10 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
         assertThat(organizationDetails.organizationMemberTableBody).containsText("Mikko Virtanen")
     }
 
-    private fun reserveAndTerminateBoatSpace(forOrganization: Boolean) {
+    private fun reserveAndTerminateBoatSpace(
+        recipientAddresses: List<String>,
+        forOrganization: Boolean
+    ) {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
 
         val citizenDetailsPage = CitizenDetailsPage(page)
@@ -89,16 +102,24 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
         PaymentPage(page).payReservation()
 
         citizenDetailsPage.navigateToPage()
+
+        messageService.sendScheduledEmails()
+        assertEquals(recipientAddresses.size, SendEmailServiceMock.emails.size)
+
         if (forOrganization) {
-            messageService.sendScheduledEmails()
-            assertEquals(3, SendEmailServiceMock.emails.size)
-            // email to organization
-            assertEmailIsSentOfCitizensFixedTermSlipReservation("eps@noreplytest.fi", sendAndAssertSendCount = false)
-            // emails to organization members
-            assertEmailIsSentOfCitizensFixedTermSlipReservation("olivia@noreplytest.fi", sendAndAssertSendCount = false)
-            assertEmailIsSentOfCitizensFixedTermSlipReservation(sendAndAssertSendCount = false)
+            recipientAddresses.forEach { address ->
+                assertEmailIsSentOfCitizensFixedTermSlipReservation(
+                    address,
+                    sendAndAssertSendCount = false
+                )
+            }
         } else {
-            assertEmailIsSentOfCitizensIndefiniteSlipReservation()
+            recipientAddresses.forEach { address ->
+                assertEmailIsSentOfCitizensIndefiniteSlipReservation(
+                    address,
+                    sendAndAssertSendCount = false
+                )
+            }
         }
         SendEmailServiceMock.resetEmails()
 

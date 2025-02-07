@@ -16,6 +16,11 @@ class MessageUtil(
 ) {
     private val logger = KotlinLogging.logger {}
 
+    final val localeFI = Locale("fi", "FI")
+    final val localeSV = Locale("sv", "FI")
+    final val localeEN = Locale.ENGLISH
+    final val locales = listOf(localeFI, localeSV, localeEN)
+
     fun getMessage(
         code: String,
         args: List<Any> = emptyList(),
@@ -28,4 +33,14 @@ class MessageUtil(
             return code
         }
     }
+
+    fun getLocalizedMap(
+        key: String,
+        code: String,
+        args: List<Any> = emptyList()
+    ): Map<String, String> =
+        locales.associate { locale ->
+            "$key${locale.language.replaceFirstChar { it.uppercaseChar() }}" to
+                getMessage(code, args, locale)
+        }
 }

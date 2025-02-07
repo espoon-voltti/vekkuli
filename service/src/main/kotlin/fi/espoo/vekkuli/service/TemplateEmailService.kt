@@ -77,14 +77,14 @@ class TemplateEmailService(
             return emptyList()
         }
         // Get emails that have not been sent
-        var emails =
+        val emails =
             messageService
                 .getAndInsertUnsentEmails(reservationType, reservationId, messageType, recipients.map { it.email })
         return messageService.sendEmails(
             userId = userId,
             senderAddress = senderAddress,
             recipients = recipients.filter { emails.contains(it.email) },
-            subject = tpl.subject,
+            subject = replaceTags(tpl.subject, variables),
             body = replaceTags(tpl.body, variables),
         )
     }
