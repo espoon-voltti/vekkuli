@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -82,7 +84,6 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 BigDecimal(filteredBoatWidth / 100.0),
                 BigDecimal(filteredBoatLength / 100.0),
                 listOf(BoatSpaceAmenity.Beam),
-                null,
                 BoatSpaceType.Slip
             )
         assertEquals(7, boatSpaces.second, "Correct number of boat spaces are fetched")
@@ -114,9 +115,59 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 null,
                 null,
                 listOf(BoatSpaceAmenity.Beam),
-                null,
                 BoatSpaceType.Slip
             )
         assertEquals(boatSpaces.second, 0, "No boat spaces are fetched")
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "Slip, Beam, 10, 10, 0",
+        "Slip, Beam, 3, 5, 30",
+        "Trailer, None, 10, 10, 0",
+        "Trailer, None, 1, 3, 28",
+        "Trailer, Trailer, 1, 1, 0",
+        "Trailer, Buck, 1, 1, 0",
+        "Winter, None, 10, 10, 0",
+        "Winter, None, 2.75, 5.5, 25",
+        "Winter, None, 2.5, 4.5, 28",
+        "Winter, Trailer, 1, 1, 0",
+        "Winter, Buck, 1, 1, 0",
+        "Storage, Buck, 10, 10, 0",
+        "Storage, Buck, 1, 1, 11",
+        "Storage, Trailer, 10, 10, 0",
+        "Storage, Trailer, 1, 1, 10",
+        "Storage, None, 1, 1, 0",
+    )
+    fun `should fetch spaces boat spaces with expected filters`(
+        spaceType: BoatSpaceType,
+        amenity: BoatSpaceAmenity,
+        width: BigDecimal,
+        length: BigDecimal,
+        expectedResults: Int
+    ) {
+        val expectedResultBoatSpaces =
+            boatSpaceService.getUnreservedBoatSpaceOptions(
+                BoatType.OutboardMotor,
+                width,
+                length,
+                listOf(amenity),
+                spaceType
+            )
+
+        assertEquals(
+            expectedResults,
+            expectedResultBoatSpaces.second,
+            "Correct number of boat spaces are fetched for: $spaceType: $amenity with filters ${width}x$length"
+        )
+
+        assertTrue(
+            expectedResultBoatSpaces.first.all {
+                it.boatSpaces.all { bs ->
+                    bs.amenity == amenity
+                }
+            },
+            "Only boat spaces with correct amenity are fetched"
+        )
     }
 }
