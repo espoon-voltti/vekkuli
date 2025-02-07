@@ -477,16 +477,17 @@ open class EmailSendingTest : PlaywrightTest() {
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
             val email = SendEmailServiceMock.emails[0]
-            assertTrue(email.contains("$recipientAddress with subject $emailSubject"))
-            assertTrue(email.contains(validity))
-            assertTrue(email.contains(contentSnippet))
+            assertEquals(email.recipientAddress, recipientAddress)
+            assertEquals(email.subject, emailSubject)
+            assertTrue(email.body.contains(validity))
+            assertTrue(email.body.contains(contentSnippet))
         } else {
             assertTrue(
-                SendEmailServiceMock.emails.any {
-                    val email = it.toString()
-                    email.contains("$recipientAddress with subject $emailSubject") &&
-                        email.contains(validity) &&
-                        email.contains(contentSnippet)
+                SendEmailServiceMock.emails.any { email ->
+                    email.recipientAddress == recipientAddress &&
+                        email.subject == emailSubject &&
+                        email.body.contains(validity) &&
+                        email.body.contains(contentSnippet)
                 }
             )
         }
@@ -503,33 +504,36 @@ open class EmailSendingTest : PlaywrightTest() {
         val expectedNroOfEmails = recipientAddresses.size + 1
         assertEquals(expectedNroOfEmails, SendEmailServiceMock.emails.size)
 
-        val sortedEmails = SendEmailServiceMock.emails.sortedWith(
-            compareBy(
-                { email -> if (email.contains("to venepaikat@espoo.fi")) 1 else 0 }, // Ensure employee email last
-                { email -> recipientAddresses.indexOfFirst { email.contains(it) } } // Sort others to match the passed list
+        val sortedEmails =
+            SendEmailServiceMock.emails.sortedWith(
+                compareBy(
+                    { email -> if (email.recipientAddress == "venepaikat@espoo.fi") 1 else 0 },
+                    { email -> recipientAddresses.indexOfFirst { email.recipientAddress == it } }
+                )
             )
-        )
 
         val citizenEmailSubject = "Vahvistus Espoon kaupungin venepaikan irtisanomisesta"
 
         recipientAddresses.forEachIndexed { i, recipientAddress ->
             val emailToCitizen = sortedEmails[i]
             assertTrue(
-                emailToCitizen.contains("$recipientAddress with subject $citizenEmailSubject") &&
-                    emailToCitizen.contains("$placeType $terminatedSpace on irtisanottu.") &&
-                    emailToCitizen.contains("Irtisanoaja: $terminator") &&
-                    emailToCitizen.contains("Paikan vuokraaja: $reserverName")
+                emailToCitizen.recipientAddress == recipientAddress &&
+                    emailToCitizen.subject == citizenEmailSubject &&
+                    emailToCitizen.body.contains("$placeType $terminatedSpace on irtisanottu.") &&
+                    emailToCitizen.body.contains("Irtisanoaja: $terminator") &&
+                    emailToCitizen.body.contains("Paikan vuokraaja: $reserverName")
             )
         }
 
         val emailToEmployee = sortedEmails.last()
-        val employeeEmailSubject = "$placeType $terminatedSpace irtisanottu, asiakas: $reserverName"
+        val employeeEmailSubject = "Espoon kaupungin $placeType $terminatedSpace irtisanottu, asiakas: $reserverName"
 
         assertTrue(
-            emailToEmployee.contains("venepaikat@espoo.fi with subject $employeeEmailSubject") &&
-                emailToEmployee.contains("$placeType $terminatedSpace on irtisanottu") &&
-                emailToEmployee.contains("Paikan vuokraaja: $reserverName") &&
-                emailToEmployee.contains("Irtisanoaja:\nNimi: $terminator")
+            emailToEmployee.recipientAddress == "venepaikat@espoo.fi" &&
+                emailToEmployee.subject == employeeEmailSubject &&
+                emailToEmployee.body.contains("$placeType $terminatedSpace on irtisanottu") &&
+                emailToEmployee.body.contains("Paikan vuokraaja: $reserverName") &&
+                emailToEmployee.body.contains("Irtisanoaja:\nNimi: $terminator")
         )
     }
 }

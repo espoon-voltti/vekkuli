@@ -95,8 +95,14 @@ class ReserveAndTerminateFlowTest : ReserveTest() {
 
         // Assert that termination email to citizen has been sent
         messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(SendEmailServiceMock.emails.get(0).contains("Venepaikka: Haukilahti B 314 on irtisanottu virkailijan toimesta"))
+        val sentEmails = SendEmailServiceMock.emails
+        assertEquals(1, sentEmails.size)
+        assertTrue(
+            sentEmails
+                .get(0)
+                .body
+                .contains("Venepaikka: Haukilahti B 314 on irtisanottu virkailijan toimesta")
+        )
 
         // Check that the reservation is still visible in the listing page with the correct end date
         listingPage.navigateTo()

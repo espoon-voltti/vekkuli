@@ -144,7 +144,9 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(SendEmailServiceMock.emails.get(0).contains("Venepaikka: Haukilahti B 001 on irtisanottu virkailijan toimesta"))
+            assertTrue(
+                SendEmailServiceMock.emails.get(0).body.contains("Venepaikka: Haukilahti B 001 on irtisanottu virkailijan toimesta")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }

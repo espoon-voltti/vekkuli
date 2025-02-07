@@ -27,11 +27,6 @@ class TerminateReservationService(
     private val organizationService: OrganizationService,
     private val messageUtil: MessageUtil
 ) {
-    fun t(
-        key: String,
-        params: List<String> = emptyList()
-    ): String = messageUtil.getMessage(key, params)
-
     @Transactional
     fun terminateBoatSpaceReservationAsOwner(
         reservationId: Int,
@@ -136,9 +131,6 @@ class TerminateReservationService(
         }
 
         val reservationDescription = "${reservationWithDetails.locationName} ${reservationWithDetails.place}"
-        val placeType =
-            t("boatSpaceReservation.email.types.${reservationWithDetails.type}")
-                .replaceFirstChar { it.uppercaseChar() }
 
         emailService
             .sendBatchEmail(
@@ -147,11 +139,14 @@ class TerminateReservationService(
                 emailEnv.senderAddress,
                 contactDetails,
                 mapOf(
-                    "placeType" to placeType,
-                    "reservationDescription" to reservationDescription,
+                    "name" to reservationDescription,
                     "reserverName" to reservationWithDetails.name,
                     "terminatorName" to (terminator?.fullName ?: "")
-                )
+                ) +
+                    messageUtil.getLocalizedMap(
+                        "placeType",
+                        "boatSpaceReservation.email.types.${reservationWithDetails.type}"
+                    )
             )
     }
 
@@ -163,9 +158,6 @@ class TerminateReservationService(
         val recipient = Recipient(null, emailEnv.employeeAddress)
         val contactDetails = listOf(recipient)
         val reservationDescription = "${reservationWithDetails.locationName} ${reservationWithDetails.place}"
-        val placeType =
-            t("boatSpaceReservation.email.types.${reservationWithDetails.type}")
-                .replaceFirstChar { it.uppercaseChar() }
 
         emailService
             .sendBatchEmail(
@@ -174,8 +166,7 @@ class TerminateReservationService(
                 emailEnv.senderAddress,
                 contactDetails,
                 mapOf(
-                    "placeType" to placeType,
-                    "reservationDescription" to reservationDescription,
+                    "name" to reservationDescription,
                     "reserverName" to reservationWithDetails.name,
                     "reserverEmail" to reservationWithDetails.email,
                     "terminatorName" to terminator.fullName,
@@ -185,7 +176,11 @@ class TerminateReservationService(
                         timeProvider.getCurrentDateTime().format(
                             fullDateTimeFormat
                         ),
-                )
+                ) +
+                    messageUtil.getLocalizedMap(
+                        "placeType",
+                        "boatSpaceReservation.email.types.${reservationWithDetails.type}"
+                    )
             )
     }
 
