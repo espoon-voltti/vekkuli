@@ -17,7 +17,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
 
-data class RevisedPrice(
+data class ReservationInfo(
     val reserverType: ReserverType,
     val id: UUID?,
     val discountPercentage: Int,
@@ -34,7 +34,7 @@ data class UnfinishedReservationResponse(
     val municipalities: List<MunicipalityResponse>,
     val organizations: List<CitizenOrganizationResponse>,
     val organizationsBoats: Map<String, List<Boat>>,
-    val organizationRevisedPrices: List<RevisedPrice>
+    val organizationReservationInfos: List<ReservationInfo>
 )
 
 data class ReservationResponse(
@@ -54,7 +54,7 @@ data class ReservationResponse(
     val trailer: Trailer?,
     val creationType: CreationType,
     val canReserveNew: Boolean,
-    val revisedPrice: RevisedPrice
+    val reservationInfo: ReservationInfo
 ) {
     data class Citizen(
         val id: UUID,
@@ -210,7 +210,7 @@ class ReservationResponseMapper(
             trailer = formatTrailer(trailer),
             creationType = reservationWithDependencies.creationType,
             canReserveNew = canReserveNew,
-            revisedPrice = toRevisedPrice(reservationWithDependencies, citizen, organization),
+            reservationInfo = toReservationInfo(reservationWithDependencies, citizen, organization),
         )
     }
 
@@ -357,15 +357,15 @@ class ReservationResponseMapper(
             }
         }
 
-    private fun toRevisedPrice(
+    private fun toReservationInfo(
         id: UUID?,
         revisedPriceInCents: Int,
         discountPercentage: Int,
         reserverType: ReserverType,
         name: String?,
         validity: ReservationValidity
-    ): RevisedPrice =
-        RevisedPrice(
+    ): ReservationInfo =
+        ReservationInfo(
             id = id,
             reserverType = reserverType,
             discountPercentage = discountPercentage,
@@ -382,14 +382,14 @@ class ReservationResponseMapper(
                 )
         )
 
-    fun toRevisedPrice(
+    fun toReservationInfo(
         reservation: ReservationWithDependencies,
         citizen: CitizenWithDetails?,
         organization: Organization?
-    ): RevisedPrice {
+    ): ReservationInfo {
         val revisedPriceInCents = getRevisedPriceInCents(reservation)
         val discountPercentage = reservation.discountPercentage
-        return toRevisedPrice(
+        return toReservationInfo(
             reservation.reserverId,
             revisedPriceInCents,
             discountPercentage ?: 0,
@@ -403,11 +403,11 @@ class ReservationResponseMapper(
         )
     }
 
-    fun toOrganizationRevisedPrices(
+    fun toOrganizationReservationInfos(
         revisedPriceCents: Int,
         organizations: List<Organization>,
         boatSpaceType: BoatSpaceType
-    ): List<RevisedPrice> =
+    ): List<ReservationInfo> =
         organizations.map {
             val result = seasonalService.canReserveANewSpace(it.id, boatSpaceType)
             val validity =
@@ -416,7 +416,7 @@ class ReservationResponseMapper(
                 } else {
                     ReservationValidity.FixedTerm
                 }
-            toRevisedPrice(
+            toReservationInfo(
                 it.id,
                 revisedPriceCents,
                 it.discountPercentage,

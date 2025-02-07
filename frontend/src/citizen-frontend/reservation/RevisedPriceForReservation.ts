@@ -1,16 +1,16 @@
-import { BoatSpaceReservation, RevisedPrice } from '../api-types/reservation'
+import { BoatSpaceReservation, ReservationInfo } from '../api-types/reservation'
 import { CreationType } from '../shared/types'
 
-export type RevisedPriceForReservation = Omit<RevisedPrice, 'id'> & {
+export type RevisedPriceForReservation = Omit<ReservationInfo, 'id'> & {
   creationType: CreationType
 }
 
 export const getRevisedPriceForReservation = (
   reservation: BoatSpaceReservation,
-  revisedPrice: RevisedPrice
+  reservationInfo: ReservationInfo
 ): RevisedPriceForReservation => {
   return {
-    ...revisedPrice,
+    ...reservationInfo,
     creationType: reservation.creationType
   }
 }

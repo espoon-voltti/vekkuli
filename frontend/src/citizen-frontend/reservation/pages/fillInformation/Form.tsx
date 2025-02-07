@@ -14,7 +14,7 @@ import { useFormErrorContext } from 'lib-common/form/state'
 import { useMutation } from 'lib-common/query'
 import { WarningExclamation } from 'lib-icons'
 
-import { RevisedPrice } from '../../../api-types/reservation'
+import { ReservationInfo } from '../../../api-types/reservation'
 import { getRevisedPriceForReservation } from '../../RevisedPriceForReservation'
 import { InfoBox } from '../../components/InfoBox'
 import ReservationCancel from '../../components/ReservationCancel'
@@ -53,7 +53,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
     municipalities,
     organizations,
     organizationsBoats,
-    organizationRevisedPrices
+    organizationReservationInfos
   } = reservation
 
   const { mutateAsync: submitForm } = useMutation(
@@ -133,12 +133,12 @@ export default React.memo(function Form({ reservation }: FormProperties) {
     return org && 'id' in org ? org?.id : null
   }
 
-  const getRevisedPrice = (): RevisedPrice => {
+  const getRevisedPrice = (): ReservationInfo => {
     const selectedOrganizationId = getSelectedOrganizationId()
-    const organizationRevisedPrice = organizationRevisedPrices.find(
+    const organizationRevisedPrice = organizationReservationInfos.find(
       (r) => r.id === selectedOrganizationId
     )
-    return organizationRevisedPrice ?? updatedReservation.revisedPrice
+    return organizationRevisedPrice ?? updatedReservation.reservationInfo
   }
 
   const reservationPriceInfo = getRevisedPriceForReservation(

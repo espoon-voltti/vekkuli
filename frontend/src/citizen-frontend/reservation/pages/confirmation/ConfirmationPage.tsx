@@ -45,7 +45,7 @@ const Content = React.memo(function Content({
       {(loadedReservation) => {
         const reservationPriceInfo = getRevisedPriceForReservation(
           loadedReservation,
-          loadedReservation.revisedPrice
+          loadedReservation.reservationInfo
         )
         return (
           <>

@@ -77,7 +77,7 @@ export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReserv
     organizationsBoats: mapResponseToBoatsByOrganization(
       json.organizationsBoats
     ),
-    organizationRevisedPrices: json.organizationRevisedPrices
+    organizationReservationInfos: json.organizationReservationInfos
   }
 }
 
@@ -182,7 +182,7 @@ export function deserializeJsonBoatSpaceReservationResponse(
     totalPrice: json.totalPrice,
     vatValue: json.vatValue,
     netPrice: json.netPrice,
-    revisedPrice: json.revisedPrice,
+    reservationInfo: json.reservationInfo,
     boat: json.boat,
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,
