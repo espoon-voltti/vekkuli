@@ -229,7 +229,19 @@ export default {
         Buck: {
           title: 'Pukin tiedot'
         }
-      }
+      },
+      reserver: 'Varaaja',
+      tenant: 'Vuokralainen',
+      boatInformation: 'Veneen tiedot',
+      boatSpaceInformation: 'Varattava paikka',
+      harbor: 'Satama',
+      place: 'Paikka',
+      boatSpaceType: 'Venepaikkatyyppi',
+      boatSpaceDimensions: 'Paikan koko',
+      boatSpaceAmenity: 'Varuste',
+      reservationValidity: 'Varaus voimassa:',
+      price: 'Hinta',
+      storageType: 'Säilytystapa'
     },
     paymentPage: {
       paymentCancelled:
@@ -321,7 +333,14 @@ export default {
       'Veneen poistamisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
     deleteSuccess: 'Vene on poistettu',
     confirmDelete: (boatName: string) =>
-      `Olet poistamassa veneen ${boatName} tietoja`
+      `Olet poistamassa veneen ${boatName} tietoja`,
+    editBoatDetails: 'Muokkaa veneen tietoja',
+    boatName: 'Veneen nimi',
+    boatDepthInMeters: 'Syväys (m)',
+    boatWeightInKg: 'Paino (kg)',
+    registrationNumber: 'Rekisteritunnus',
+    otherIdentifier: 'Muu tunniste',
+    additionalInfo: 'Lisätiedot'
   },
   boatSpace: {
     renterType: {
@@ -400,7 +419,9 @@ export default {
     nationalId: 'Henkilötunnus',
     postalCode: 'Postinumero',
     postOffice: 'Postitoimipaikka',
-    municipality: 'Kotikunta'
+    municipality: 'Kotikunta',
+    birthday: 'Syntymäaika',
+    streetAddress: 'Katuosoite'
   },
   citizenPage: {
     title: 'Omat tiedot',

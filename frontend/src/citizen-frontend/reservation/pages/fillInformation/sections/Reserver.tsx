@@ -2,6 +2,7 @@ import DateField from 'lib-components/form/DateField'
 import TextField from 'lib-components/form/TextField'
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { Citizen } from 'citizen-frontend/shared/types'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
@@ -15,17 +16,18 @@ export default React.memo(function Reserver({
   bind: BoundForm<ReserverForm>
 }) {
   const { email, phone } = useFormFields(bind)
+  const i18n = useTranslation()
 
   if (!reserver) return null
 
   return (
     <div className="form-section" data-testid="citizen">
-      <h3 className="header">Varaaja</h3>
+      <h3 className="header">{i18n.reservation.formPage.reserver}</h3>
       <div className="columns">
         <div className="column is-one-quarter">
           <TextField
             id="firstName"
-            label="Etunimi"
+            label={i18n.citizen.firstName}
             value={reserver.firstName}
             readonly={true}
           />
@@ -33,7 +35,7 @@ export default React.memo(function Reserver({
         <div className="column is-one-quarter">
           <TextField
             id="lastName"
-            label="Sukunimi"
+            label={i18n.citizen.lastName}
             value={reserver.lastName}
             readonly={true}
           />
@@ -41,7 +43,7 @@ export default React.memo(function Reserver({
         <div className="column is-one-quarter">
           <DateField
             id="dateOfBirth"
-            label="Syntymäaika"
+            label={i18n.citizen.birthday}
             value={reserver.birthDate}
             readonly={true}
           />
@@ -49,7 +51,7 @@ export default React.memo(function Reserver({
         <div className="column is-one-quarter">
           <TextField
             id="municipality"
-            label="Kotikunta"
+            label={i18n.citizen.municipality}
             value={reserver.municipalityName}
             readonly={true}
           />
@@ -57,15 +59,25 @@ export default React.memo(function Reserver({
       </div>
       <div className="columns">
         <div className="column is-one-quarter">
-          <TextField id="email" label="Sähköposti" bind={email} required />
+          <TextField
+            id="email"
+            label={i18n.citizen.email}
+            bind={email}
+            required
+          />
         </div>
         <div className="column is-one-quarter">
-          <TextField id="phone" label="Puhelinnumero" bind={phone} required />
+          <TextField
+            id="phone"
+            label={i18n.citizen.phoneNumber}
+            bind={phone}
+            required
+          />
         </div>
         <div className="column is-half">
           <TextField
             id="address"
-            label="Katuosoite"
+            label={i18n.citizen.streetAddress}
             value={`${reserver.address}, ${reserver.postalCode}, ${reserver.city}`}
             readonly={true}
           />
