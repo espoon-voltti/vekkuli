@@ -152,10 +152,8 @@ class RenewReservationTest : ReserveTest() {
             reservationPage.navigateToPage()
 
             val userAgreementSection = form.getUserAgreementSection()
-            page.pause()
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
-            page.pause()
             form.submitButton.click()
 
             val paymentPage = PaymentPage(page)
@@ -200,7 +198,6 @@ class RenewReservationTest : ReserveTest() {
             reservationSection.renewButton.click()
             // Make sure that citizen is redirected to unfinished reservation switch form
             reservationPage.navigateToPage()
-            page.pause()
 
             val userAgreementSection = form.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()
