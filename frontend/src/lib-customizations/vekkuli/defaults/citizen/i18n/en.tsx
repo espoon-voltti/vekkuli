@@ -424,7 +424,7 @@ const en: Translations = {
     streetAddress: 'Address'
   },
   citizenPage: {
-    title: 'My Information',
+    title: 'My information',
     reservation: {
       title: 'Reservations',
       noReservations: 'No Reservations',
@@ -439,8 +439,11 @@ const en: Translations = {
     }
   },
   organization: {
-    organizationPhone: 'Organization phone number',
-    organizationEmail: 'Organization email',
+    information: {
+      title: 'Organization information',
+      phone: 'Organization phone number',
+      email: 'Organization email'
+    },
     contactDetails: {
       title: 'Contact information',
       fields: {
