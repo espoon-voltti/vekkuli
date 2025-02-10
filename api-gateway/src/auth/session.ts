@@ -7,12 +7,22 @@ import {
 } from 'date-fns'
 import express from 'express'
 import session from 'express-session'
-import { LogoutToken, toMiddleware } from '../utils/express.js'
-import { fromCallback } from '../utils/promise-utils.js'
 import { RedisClient } from '../clients/redis-client.js'
 import { SessionConfig } from '../config.js'
+import { LogoutToken, toMiddleware } from '../utils/express.js'
+import { fromCallback } from '../utils/promise-utils.js'
+import { UserType } from './index.js'
 
-const cookieName = 'vekkuli.session'
+type SessionType = UserType
+
+function cookiePrefix(sessionType: SessionType) {
+  switch (sessionType) {
+    case 'citizen':
+      return 'vekkuli.citizen'
+    case 'user':
+      return 'vekkuli.employee'
+  }
+}
 
 function sessionKey(id: string) {
   return `sess:${id}`
@@ -20,6 +30,10 @@ function sessionKey(id: string) {
 
 function logoutKey(token: LogoutToken['value']) {
   return `slo:${token}`
+}
+
+export function sessionCookie(sessionType: SessionType) {
+  return `${cookiePrefix(sessionType)}.session`
 }
 
 export interface Sessions {
@@ -37,9 +51,12 @@ export interface Sessions {
 }
 
 export function sessionSupport(
+  sessionType: SessionType,
   redisClient: RedisClient,
   config: SessionConfig
 ): Sessions {
+  const cookieName = sessionCookie(sessionType)
+
   // Base session support middleware from express-session
   const baseMiddleware = session({
     cookie: {

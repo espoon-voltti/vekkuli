@@ -15,12 +15,12 @@ export function createCitizenRouter(
 ): Router {
   const router = Router()
 
-  const sessions = sessionSupport(redisClient, config.session)
+  const sessions = sessionSupport('citizen', redisClient, config.citizenSession)
   const proxy = createProxy(serviceUrl)
 
   router.use(sessions.middleware)
   router.use(passport.session())
-  router.use(cookieParser(config.session.cookieSecret))
+  router.use(cookieParser(config.citizenSession.cookieSecret))
 
   router.use(cacheControl(() => 'forbid-cache'))
 
