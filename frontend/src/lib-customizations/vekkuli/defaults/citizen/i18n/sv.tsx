@@ -436,7 +436,8 @@ const sv: Translations = {
       },
       modal: {
         goBackToReservation: 'Gå till bokningen'
-      }
+      },
+      showAllBoats: 'Visa även båtar som inte är kopplade till en reservation'
     }
   },
   organization: {

@@ -13,7 +13,7 @@ export const userAgreementForm = object({
 })
 export type UserAgreementForm = typeof userAgreementForm
 
-export default function initialFormState(i18n: Translations) {
+export default function initialFormState() {
   return {
     userAgreement: {
       certified: {
@@ -21,7 +21,7 @@ export default function initialFormState(i18n: Translations) {
         options: [
           {
             domValue: 'certify',
-            label: i18n.reservation.certify,
+            label: (i18n: Translations) => i18n.reservation.certify,
             value: true
           }
         ]
@@ -31,7 +31,7 @@ export default function initialFormState(i18n: Translations) {
         options: [
           {
             domValue: 'agreeToRules',
-            label: i18n.reservation.agreeToRules,
+            label: (i18n: Translations) => i18n.reservation.agreeToRules,
             value: true
           }
         ]

@@ -92,7 +92,6 @@ export function initialFormState(
   return {
     ...initialReserverFormState(reserver),
     organization: initialOrganizationFormState(
-      i18n,
       municipalities,
       organizations,
       canCitizenReserve
@@ -111,7 +110,7 @@ export function initialFormState(
       unfinishedReservation.reservation.boatSpace.amenity,
       unfinishedReservation.reservation.trailer
     ),
-    ...initialUserAgreementFormState(i18n)
+    ...initialUserAgreementFormState()
   }
 }
 
