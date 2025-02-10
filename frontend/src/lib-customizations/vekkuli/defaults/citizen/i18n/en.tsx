@@ -457,6 +457,9 @@ const en: Translations = {
       phone: 'Organization phone number',
       email: 'Organization email'
     },
+    title: 'Organizations',
+    name: 'Name',
+    organizationId: 'Business ID',
     contactDetails: {
       title: 'Contact information',
       fields: {

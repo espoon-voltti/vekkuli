@@ -459,6 +459,9 @@ export default {
       phone: 'Yhteisön puhelinnumero',
       email: 'Yhteisön sähköposti'
     },
+    title: 'Yhteisöt',
+    name: 'Nimi',
+    organizationId: 'Y-tunnus',
     contactDetails: {
       title: 'Yhteyshenkilöt',
       fields: {

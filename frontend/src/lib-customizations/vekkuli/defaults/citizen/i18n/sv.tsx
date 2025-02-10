@@ -459,6 +459,9 @@ const sv: Translations = {
       phone: 'Organisationens telefonnummer',
       email: 'Organisationens e-post'
     },
+    title: 'Organisationer',
+    name: 'Namn',
+    organizationId: 'Organisationsnummer',
     contactDetails: {
       title: 'Kontaktpersoner',
       fields: {
