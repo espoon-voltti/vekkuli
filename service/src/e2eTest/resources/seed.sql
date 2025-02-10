@@ -477,8 +477,9 @@ VALUES (1, 'Haukilahti', 'Satamatie 1, Espoo'),
        (6, 'Suomenoja', 'Suomenojantie 15, Espoo'),
        (7, 'Svinö', 'Svinöntie 8, Espoo');
 
+DELETE FROM harbor_restriction;
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (1, 'JetSki');
-INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sailboat');
+INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
