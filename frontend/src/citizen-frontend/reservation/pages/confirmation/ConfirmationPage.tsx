@@ -62,7 +62,7 @@ const Content = React.memo(function Content({
                 </li>
                 <li>
                   Varauksesi on voimassa toistaiseksi ja voit jatkaa sitä
-                  seuraavalle kaudelle aina tammikuussa.
+                  seuraavalle kaudelle vuosittain jatkokauden aikana.
                 </li>
               </ul>
             </div>
