@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
+import { Translations } from 'citizen-frontend/localization'
+
 import { required as requiredValidator } from './form-validation'
 import { memoizeLast } from './memoize'
 import {
@@ -275,10 +277,14 @@ export function required<Output, Error extends string, State, Shape>(
   )
 }
 
+export type LabelInfoField =
+  | string
+  | ((i18n: Translations) => string | undefined)
+  | undefined
 export interface OneOfOption<Output> {
   domValue: string
-  label: string
-  info?: string | undefined
+  label: string | ((i18n: Translations) => string)
+  info?: LabelInfoField
   dataQa?: string | undefined
   value: Output
 }

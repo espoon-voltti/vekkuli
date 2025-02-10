@@ -29,14 +29,14 @@ export default React.memo(function Boat({
   const i18n = useTranslation()
   const bind = useForm(
     boatForm,
-    () => transformBoatToFormBoat(boat, i18n),
+    () => transformBoatToFormBoat(boat),
     i18n.components.validationErrors
   )
   const { mutateAsync: updateBoat, isPending } = useMutation(updateMutation)
   const [editMode, setEditMode] = React.useState(false)
 
   const cancel = () => {
-    bind.set(transformBoatToFormBoat(boat, i18n))
+    bind.set(transformBoatToFormBoat(boat))
     setEditMode(false)
   }
   const onSubmit = async () => {

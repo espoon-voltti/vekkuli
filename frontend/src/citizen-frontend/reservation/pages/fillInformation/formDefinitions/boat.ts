@@ -75,11 +75,7 @@ export default function initialFormState(
       selectedBoat
     ),
     boatSelection: initialBoatSelectionState(boats, selectedBoat),
-    ownership: initialOwnershipState(
-      i18n,
-      boatSpaceType,
-      selectedBoat?.ownership
-    ),
+    ownership: initialOwnershipState(boatSpaceType, selectedBoat?.ownership),
     newBoatCache: initialBoatInfoFormState(
       i18n,
       boatSpaceType,
@@ -109,7 +105,7 @@ function initialBoatInfoFormState(
       domValue: storedSearchState?.boatType ?? 'OutboardMotor',
       options: boatTypes.map((type) => ({
         domValue: type,
-        label: i18n.boatSpace.boatType[type],
+        label: (i18n: Translations) => i18n.boatSpace.boatType[type],
         value: type
       }))
     },
@@ -124,7 +120,7 @@ function initialBoatInfoFormState(
         options: [
           {
             domValue: '',
-            label: i18n.reservation.noRegistererNumber,
+            label: (i18n: Translations) => i18n.reservation.noRegistererNumber,
             value: true
           }
         ]
@@ -136,15 +132,15 @@ function initialBoatInfoFormState(
 }
 
 const initialOwnershipState = (
-  i18n: Translations,
   boatSpaceType: BoatSpaceType,
   initialValue?: OwnershipStatus
 ) => ({
   domValue: initialValue || 'Owner',
   options: ownershipStatuses.map((type) => ({
     domValue: type,
-    label: i18n.boatSpace.ownershipStatus[type],
-    info: i18n.boatSpace.ownershipStatusInfo(type, boatSpaceType),
+    label: (i18n: Translations) => i18n.boatSpace.ownershipStatus[type],
+    info: (i18n: Translations) =>
+      i18n.boatSpace.ownershipStatusInfo(type, boatSpaceType),
     value: type
   }))
 })

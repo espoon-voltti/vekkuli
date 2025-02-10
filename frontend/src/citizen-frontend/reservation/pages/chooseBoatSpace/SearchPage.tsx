@@ -41,7 +41,7 @@ export default React.memo(function SearchPage() {
 
   const bind = useForm(
     searchFreeSpacesForm,
-    () => initialFormState(i18n, searchState),
+    () => initialFormState(searchState),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => {

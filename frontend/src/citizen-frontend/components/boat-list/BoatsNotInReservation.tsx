@@ -36,7 +36,7 @@ export default React.memo(function BoatsNotInreservations({
 
   const bind = useForm(
     showBoatsForm,
-    () => initShowBoatsForm(i18n),
+    () => initShowBoatsForm(),
     i18n.components.validationErrors
   )
   const { show } = useFormFields(bind)

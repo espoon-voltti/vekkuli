@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { OneOfState } from 'lib-common/form/form'
 import { BoundFormState } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -7,7 +8,7 @@ import { useFormErrorContext } from 'lib-common/form/state'
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
-import { bindOrPlaceholders } from './utils'
+import { bindOrPlaceholders, getI18nLabel } from './utils'
 
 interface SelectFieldProps<T> extends Omit<BaseFieldProps, 'onChange'> {
   isFullWidth?: boolean
@@ -25,6 +26,7 @@ function SelectField_<T>({
   value,
   showErrorsBeforeTouched
 }: SelectFieldProps<T>) {
+  const i18n = useTranslation()
   const { state, update, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
@@ -43,7 +45,7 @@ function SelectField_<T>({
           {required && ' *'}
         </label>
         {readonly ? (
-          <ReadOnly value={readOnlyValue} />
+          <ReadOnly value={getI18nLabel(readOnlyValue, i18n)} />
         ) : (
           <>
             <div className={`select${isFullWidth ? ' is-fullwidth' : ''}`}>
@@ -61,7 +63,7 @@ function SelectField_<T>({
               >
                 {state?.options.map((opt) => (
                   <option key={opt.domValue} value={opt.domValue}>
-                    {opt.label}
+                    {getI18nLabel(opt.label, i18n)}
                   </option>
                 ))}
               </select>
