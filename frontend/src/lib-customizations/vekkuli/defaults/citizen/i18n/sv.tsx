@@ -250,7 +250,8 @@ const sv: Translations = {
     },
     noRegistererNumber: 'Inget registreringsnummer',
     certify: 'Jag intygar att de uppgifter jag har lämnat är korrekta.',
-    agreeToRules: '',
+    agreeToRules:
+      'Jag har läst och godkänner att följa hamnreglerna. Bokningen ersätter hyresavtalet som nämns i hamnreglerna.',
     prices: {
       totalPrice: (amount: string) => `Totalt: ${amount} €`,
       vatValue: (amount: string) => `Moms: ${amount} €`,
