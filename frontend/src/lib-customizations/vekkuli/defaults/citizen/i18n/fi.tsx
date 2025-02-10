@@ -402,7 +402,7 @@ export default {
       return undefined
     },
     amenities: {
-      Buoy: 'Poiju',
+      Buoy: 'Poiju merellä',
       RearBuoy: 'Peräpoiju',
       Beam: 'Aisa',
       WalkBeam: 'Kävelyaisa',
