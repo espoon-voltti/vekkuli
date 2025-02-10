@@ -49,7 +49,7 @@ const Content = React.memo(function Content({
         )
         return (
           <>
-            <h2 className="h1">Venepaikan varaus onnistui</h2>
+            <h2 className="h1">Paikan varaus onnistui</h2>
             <div className="container">
               <ul className="has-bullets ml-none">
                 <li>
