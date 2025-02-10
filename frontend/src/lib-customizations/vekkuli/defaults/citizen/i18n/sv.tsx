@@ -432,7 +432,8 @@ const sv: Translations = {
     postOffice: 'Postort',
     municipality: 'Kommun',
     birthday: 'Födelsedatum',
-    streetAddress: 'Adress'
+    streetAddress: 'Adress',
+    homeAddress: 'Hemadress'
   },
   citizenPage: {
     title: 'Mina uppgifter',

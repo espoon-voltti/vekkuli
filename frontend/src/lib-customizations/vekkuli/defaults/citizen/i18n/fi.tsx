@@ -432,7 +432,8 @@ export default {
     postOffice: 'Postitoimipaikka',
     municipality: 'Kotikunta',
     birthday: 'Syntymäaika',
-    streetAddress: 'Katuosoite'
+    streetAddress: 'Katuosoite',
+    homeAddress: 'Kotiosoite'
   },
   citizenPage: {
     title: 'Omat tiedot',

@@ -430,7 +430,8 @@ const en: Translations = {
     postOffice: 'Post Office',
     municipality: 'Municipality',
     birthday: 'Birthday',
-    streetAddress: 'Address'
+    streetAddress: 'Address',
+    homeAddress: 'Home Address'
   },
   citizenPage: {
     title: 'My information',
