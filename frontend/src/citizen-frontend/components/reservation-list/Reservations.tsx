@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 
 import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
 import { ReservationId } from 'citizen-frontend/shared/types'
 import { MutationDescription } from 'lib-common/query'
 
@@ -21,6 +22,7 @@ export default React.memo(function Reservations({
   terminateMutation?: MutationDescription<ReservationId, void>
   updateTrailerMutation: MutationDescription<UpdateTrailerRequest, void>
 }) {
+  const i18n = useTranslation()
   const terminationDisabled = terminateMutation === terminateReservationDisabled
   const [reservationPendingTermination, setReservationPendingTermination] =
     useState<ExistingBoatSpaceReservation | null>(null)
@@ -33,7 +35,7 @@ export default React.memo(function Reservations({
     <>
       {reservations && reservations.length > 0 && (
         <Container isBlock data-testid="reservation-list">
-          <h3>Paikkavaraukset</h3>
+          <h3>{i18n.citizenPage.placeReservations}</h3>
           <div className="reservation-list form-section">
             {reservations.map((reservation) => (
               <Reservation

@@ -451,7 +451,10 @@ export default {
       showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
       renewNotification: (date: LocalDate) =>
         `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`
-    }
+    },
+    placeReservations: 'Paikkavaraukset',
+    expired: 'Päättyneet',
+    expiredReservations: 'Päättyneet varaukset'
   },
   organization: {
     information: {

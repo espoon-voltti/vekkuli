@@ -451,7 +451,10 @@ const sv: Translations = {
       showAllBoats: 'Visa även båtar som inte är kopplade till en reservation',
       renewNotification: (date: LocalDate) =>
         `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()} eller byt till en ny plats.`
-    }
+    },
+    placeReservations: 'Platsreservationer',
+    expired: 'Avslutade',
+    expiredReservations: 'Avslutade bokningar'
   },
   organization: {
     information: {
