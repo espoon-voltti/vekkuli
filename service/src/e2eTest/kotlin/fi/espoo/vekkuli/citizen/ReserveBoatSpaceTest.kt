@@ -723,7 +723,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 314",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -766,7 +767,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 314",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -821,7 +823,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 314",
                 expectedPriceForOrganization,
-                "Hinnassa huomioitu $organizationDiscount% alennus."
+                "Hinnassa huomioitu $organizationDiscount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -1028,7 +1031,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
         assertThat(paymentPage.reservationSuccessNotification).isVisible()
         assertCorrectPaymentForReserver("Virtanen Mikko", PaymentStatus.Success, "Haukilahti B 314", "418,00", "")
 
-        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
         val citizenDetailPage = CitizenDetailsPage(page)
         citizenDetailPage.navigateToPage()
 
@@ -1077,7 +1079,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
             reservationStateFilter("PAYMENT").click()
         })
 
-        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
         val citizenDetailPage = CitizenDetailsPage(page)
         citizenDetailPage.navigateToPage()
 

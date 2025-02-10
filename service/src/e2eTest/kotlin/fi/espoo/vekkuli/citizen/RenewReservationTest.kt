@@ -344,7 +344,8 @@ class RenewReservationTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 001",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
 
             assertEmailIsSentOfCitizensSlipRenewal("leo@noreplytest.fi")
@@ -416,7 +417,8 @@ class RenewReservationTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 001",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)
