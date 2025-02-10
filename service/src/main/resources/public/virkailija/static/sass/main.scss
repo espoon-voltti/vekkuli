@@ -674,6 +674,10 @@ tr.table-borderless th {
   bottom: 0;
 }
 
+.reservation-card:not(:first-child) {
+  padding-top: $spacing-large;
+}
+
 .container-tabs {
   @extend .container;
   background-color: transparent;
