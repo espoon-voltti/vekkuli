@@ -47,7 +47,7 @@ export default React.memo(function TrailerInformation({
 
   const { registrationNumber, length, width } = useFormFields(form)
   return (
-    <div data-testid="trailer-information">
+    <div className="trailer-information" data-testid="trailer-information">
       <Columns isVCentered>
         <Column isNarrow>
           <h4>Trailerin tiedot</h4>
