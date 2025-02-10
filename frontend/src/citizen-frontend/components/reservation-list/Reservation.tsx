@@ -77,25 +77,25 @@ export default React.memo(function Reservation({
         <Columns>
           <Column>
             <TextField
-              label="Satama"
+              label={i18n.citizenPage.reservation.harbor}
               value={boatSpace.locationName || undefined}
               readonly={true}
             />
             <NumberField
-              label="Leveys (m)"
+              label={i18n.common.unit.dimensions.widthInMeters}
               value={boatSpace.width}
               readonly={true}
               precision={2}
             />
             <TextField
-              label="Varaus tehty"
+              label={i18n.citizenPage.reservation.reservationDate}
               value={reservation.created.format()}
               readonly={true}
             />
           </Column>
           <Column>
             <TextField
-              label="Paikka"
+              label={i18n.citizenPage.reservation.place}
               value={formatPlaceIdentifier(
                 reservation.boatSpace.section,
                 reservation.boatSpace.placeNumber
@@ -103,13 +103,13 @@ export default React.memo(function Reservation({
               readonly={true}
             />
             <NumberField
-              label="Pituus (m)"
+              label={i18n.common.unit.dimensions.lengthInMeters}
               value={boatSpace.length}
               readonly={true}
               precision={2}
             />
             <TextField
-              label="Varaus voimassa"
+              label={i18n.citizenPage.reservation.reservationValidity}
               value={i18n.reservation.validity(
                 reservation.endDate,
                 reservation.validity,
@@ -120,12 +120,12 @@ export default React.memo(function Reservation({
           </Column>
           <Column>
             <TextField
-              label="Paikan tyyppi"
+              label={i18n.citizenPage.reservation.placeType}
               value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
               readonly={true}
             />
             <TextField
-              label="Hinta"
+              label={i18n.citizenPage.reservation.price}
               value={i18n.reservation.totalPrice(
                 reservation.totalPrice,
                 reservation.vatValue
@@ -133,7 +133,7 @@ export default React.memo(function Reservation({
               readonly={true}
             />
             <TextField
-              label="Paikalla oleva vene"
+              label={i18n.citizenPage.reservation.boatPresent}
               value={reservation.boat.name}
               readonly={true}
             />
@@ -141,13 +141,13 @@ export default React.memo(function Reservation({
           <Column>
             {boatSpace.type === 'Slip' ? (
               <TextField
-                label="Varuste"
+                label={i18n.citizenPage.reservation.equipment}
                 value={i18n.boatSpace.amenities[reservation.boatSpace.amenity]}
                 readonly={true}
               />
             ) : (
               <TextField
-                label="Säilytystapa"
+                label={i18n.citizenPage.reservation.storageType}
                 value={
                   reservation.storageType
                     ? i18n.boatSpace.winterStorageType[reservation.storageType]
@@ -157,7 +157,7 @@ export default React.memo(function Reservation({
               />
             )}
             <TextField
-              label="Maksun tila"
+              label={i18n.citizenPage.reservation.paymentStatus}
               value={i18n.reservation.paymentState(reservation.paymentDate)}
               readonly={true}
             />

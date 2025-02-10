@@ -450,7 +450,17 @@ export default {
       },
       showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
       renewNotification: (date: LocalDate) =>
-        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`
+        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`,
+      harbor: 'Satama',
+      reservationDate: 'Varaus tehty',
+      place: 'Paikka',
+      reservationValidity: 'Varaus voimassa',
+      placeType: 'Paikan tyyppi',
+      price: 'Hinta',
+      boatPresent: 'Paikalla oleva vene',
+      equipment: 'Varuste',
+      paymentStatus: 'Maksun tila',
+      storageType: 'Säilytystapa'
     },
     placeReservations: 'Paikkavaraukset',
     expired: 'Päättyneet',

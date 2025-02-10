@@ -448,7 +448,17 @@ const en: Translations = {
       },
       showAllBoats: 'Also show boats that are not linked to a reservation',
       renewNotification: (date: LocalDate) =>
-        `The contract period is ending. Secure the same spot for next season by paying the season fee by ${date.format()}, or switch to a new spot.`
+        `The contract period is ending. Secure the same spot for next season by paying the season fee by ${date.format()}, or switch to a new spot.`,
+      harbor: 'Harbor',
+      reservationDate: 'Reservation Made',
+      place: 'Place',
+      reservationValidity: 'Reservation validity',
+      placeType: 'Type of Place',
+      price: 'Price',
+      boatPresent: 'Boat Present',
+      equipment: 'Equipment',
+      paymentStatus: 'Payment status',
+      storageType: 'Storage type'
     },
     placeReservations: 'Place reservations',
     expired: 'Expired',
