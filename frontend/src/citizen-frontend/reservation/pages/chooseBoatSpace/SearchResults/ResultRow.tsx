@@ -22,7 +22,7 @@ export const ResultRow = React.memo(function ResultRow({
       <td>
         <SpaceSize size={space.size} />
       </td>
-      <td>{space.amenity}</td>
+      <td>{i18n.boatSpace.amenities[space.amenity]} </td>
       <td>
         <PriceFormat price={space.price} />
       </td>

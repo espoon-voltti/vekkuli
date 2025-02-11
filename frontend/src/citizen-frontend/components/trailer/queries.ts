@@ -1,6 +1,8 @@
-import { updateTrailer } from 'citizen-frontend/api-clients/trailer'
-import { mutation } from 'lib-common/query'
+import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 
-export const updateTrailerMutation = mutation({
-  api: updateTrailer
-})
+import { createMutationDisabledDefault } from '../util'
+
+export const updateTrailerDisabled = createMutationDisabledDefault<
+  UpdateTrailerRequest,
+  void
+>()

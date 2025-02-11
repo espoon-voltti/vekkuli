@@ -12,18 +12,20 @@ import ConfirmDeleteBoatModal from './ConfirmDeleteBoatModal'
 import DeleteBoatFailedModal from './DeleteBoatFailedModal'
 import DeleteBoatSuccessModal from './DeleteBoatSuccessModal'
 import { initShowBoatsForm, showBoatsForm } from './formDefinitions'
+import { deleteBoatDisabled } from './queries'
 
 type BoatsNotInreservationsProps = {
   boats: Boat[]
-  deleteMutation: MutationDescription<BoatId, void>
-  updateMutation: MutationDescription<UpdateBoatRequest, void>
+  deleteMutation?: MutationDescription<BoatId, void>
+  updateMutation?: MutationDescription<UpdateBoatRequest, void>
 }
 
 export default React.memo(function BoatsNotInreservations({
   boats,
-  deleteMutation,
-  updateMutation
+  updateMutation,
+  deleteMutation = deleteBoatDisabled
 }: BoatsNotInreservationsProps) {
+  const deleteDisabled = deleteMutation === deleteBoatDisabled
   const i18n = useTranslation()
 
   const [boatPendingDeletion, setBoatPendingDeletion] = useState<Boat | null>(
@@ -34,7 +36,7 @@ export default React.memo(function BoatsNotInreservations({
 
   const bind = useForm(
     showBoatsForm,
-    () => initShowBoatsForm(i18n),
+    () => initShowBoatsForm(),
     i18n.components.validationErrors
   )
   const { show } = useFormFields(bind)
@@ -55,7 +57,11 @@ export default React.memo(function BoatsNotInreservations({
                 <BoatComponent
                   key={boat.id}
                   boat={boat}
-                  onDelete={() => setBoatPendingDeletion(boat)}
+                  onDelete={
+                    deleteDisabled
+                      ? undefined
+                      : () => setBoatPendingDeletion(boat)
+                  }
                   updateMutation={updateMutation}
                 />
               ))}

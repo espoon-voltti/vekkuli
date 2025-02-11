@@ -42,7 +42,10 @@ class BoatSpaceSizeLimitsTest {
         "Buoy, 200, 300, 0, 2147483647, 0, 2147483647",
         "RearBuoy, 200, 600, 250, 2147483647, 900, 2147483647",
         "Beam, 200, 200, 240, 2147483647, 70, 2147483647",
-        "WalkBeam, 200, 300, 275, 300, 170, 450"
+        "WalkBeam, 200, 300, 275, 300, 170, 450",
+        "None, 200, 300, 200, 2147483647, 300, 2147483647",
+        "Trailer, 200, 300, 200, 2147483647, 300, 2147483647",
+        "Buck, 200, 300, 200, 2147483647, 300, 2147483647"
     )
     fun `given boat size, should get limits for boat space size`(
         amenity: BoatSpaceAmenity,

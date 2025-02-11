@@ -6,13 +6,10 @@ import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
-import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.service.paymentStatusToText
 import fi.espoo.vekkuli.utils.fullDateFormat
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-open class ReserveTest : PlaywrightTest() {
+class ReserveTest : EmailSendingTest() {
     protected fun setDiscountForReserver(
         page: Page,
         reserverName: String,
@@ -40,14 +37,14 @@ open class ReserveTest : PlaywrightTest() {
         amount: String,
         reference: String,
         paidDate: String? = timeProvider.getCurrentDate().format(fullDateFormat),
-        doLogin: Boolean = true
+        doLogin: Boolean = true,
+        filterReservations: (ReservationListPage.() -> Unit)? = null
     ) {
         // verity that there's a payment row in reserver's info in employee view
         // todo: citizen and organization pages should have a common base class
-        val citizenDetails = citizenPageInEmployeeView(citizenName, doLogin)
+        val citizenDetails = citizenPageInEmployeeView(citizenName, doLogin, filterReservations)
         citizenDetails.paymentsNavi.click()
         assertThat(citizenDetails.paymentsTable).isVisible()
-        // page.pause()
         val paymentRows = citizenDetails.paymentsTable.locator("tbody tr").all()
 
         val matchingRow =
@@ -69,9 +66,11 @@ open class ReserveTest : PlaywrightTest() {
 
     protected fun citizenPageInEmployeeView(
         reserverName: String,
-        doLogin: Boolean = true
+        doLogin: Boolean = true,
+        filter: (ReservationListPage.() -> Unit)? = null
     ): CitizenDetailsPage {
         val listingPage = reservationListPage(doLogin)
+        filter?.invoke(listingPage)
         listingPage
             .getByDataTestId("reserver-name")
             .getByText(reserverName)
@@ -89,24 +88,5 @@ open class ReserveTest : PlaywrightTest() {
         val listingPage = ReservationListPage(page)
         listingPage.navigateTo()
         return listingPage
-    }
-
-    protected fun assertZeroEmailsSent() {
-        messageService.sendScheduledEmails()
-        assertEquals(0, SendEmailServiceMock.emails.size)
-    }
-
-    protected fun assertOnlyOneConfirmationEmailIsSent(
-        emailAddress: String? = "test@example.com",
-        emailSubject: String? = "Vahvistus Espoon kaupungin venepaikan varauksesta"
-    ) {
-        messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(
-            SendEmailServiceMock.emails
-                .get(
-                    0
-                ).contains("$emailAddress with subject $emailSubject")
-        )
     }
 }

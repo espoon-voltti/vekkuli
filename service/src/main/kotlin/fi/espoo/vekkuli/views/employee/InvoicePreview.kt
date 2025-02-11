@@ -64,12 +64,6 @@ class InvoicePreview(
                 "dueDate",
                 formatAsFullDate(model.dueDate)
             )
-        val invoicePeriod =
-            formComponents.field(
-                "invoice.invoicePeriod",
-                "invoicePeriod",
-                "${model.billingPeriodStart} - ${model.billingPeriodEnd}",
-            )
         val priceWithTax =
             formComponents.decimalInput(
                 "invoice.priceWithTax",
@@ -126,6 +120,8 @@ class InvoicePreview(
                     <form
                         hx-post="$submitUrl"
                         hx-target="body"
+                        hx-push-url="true"
+                        id="form"
                     >
                     ${invoiceLine(t("invoice.label.booker"), model.reserverName,"reserverName")}
                     ${if (!isOrganization) invoiceLine(t("invoice.label.bookerSsn"), model.reserverSsn,"reserverSsn") else ""}
@@ -145,10 +141,6 @@ class InvoicePreview(
                         
                         <div class="column">
                             $dueDate
-                        </div>
-                        
-                        <div class="column">
-                            $invoicePeriod
                         </div>
                         
                         <div class="column">
@@ -184,7 +176,7 @@ class InvoicePreview(
                                 x-on:click="confirmModalOpen = true">
                                 ${t("invoice.button.reserveWithoutInvoice")}
                             </button>
-                            <button id="submit"
+                            <button id="submit-button"
                                 class="button is-primary" type='submit'>
                                 ${t("invoice.button.sendInvoice")}
                             </button>
@@ -193,6 +185,9 @@ class InvoicePreview(
                     </div> 
                     ${markAsPaidConfirmModal.render()}
                     </form>
+                    <script>
+                        validation.init({forms: ['form']})
+                    </script>
                 </div>
             </section>
             """.trimIndent()

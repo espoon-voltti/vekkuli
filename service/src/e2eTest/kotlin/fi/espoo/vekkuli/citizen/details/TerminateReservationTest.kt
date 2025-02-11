@@ -70,7 +70,9 @@ class TerminateReservationTest : PlaywrightTest() {
             assertThat(terminateReservationModal.placeIdentifierText).hasText("Haukilahti B 001")
 
             terminateReservationModal.confirmButton.click()
-            // TODO assertThat(citizenDetailsPage.terminateReservationSuccessModal).isVisible()
+
+            val terminateReservationSuccessModal = citizenDetailsPage.getTerminateReservationSuccessModal()
+            assertThat(terminateReservationSuccessModal.root).isVisible()
 
             assertThat(terminateReservationModal.root).not().isVisible()
 

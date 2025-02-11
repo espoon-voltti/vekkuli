@@ -1,4 +1,4 @@
-import RedisStore from 'connect-redis'
+import { RedisStore } from 'connect-redis'
 import {
   addMinutes,
   differenceInMinutes,

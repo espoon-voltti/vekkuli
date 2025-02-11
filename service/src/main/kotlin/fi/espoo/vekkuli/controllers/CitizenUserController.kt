@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.boatSpace.organization.OrganizationDetailsView
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.common.Unauthorized
+import fi.espoo.vekkuli.common.reservationStatusToText
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
@@ -873,15 +874,6 @@ class CitizenUserController(
             postOfficeSv = input.city
         )
     )!!
-
-    fun reservationStatusToText(reservationStatus: ReservationStatus): String =
-        when (reservationStatus) {
-            ReservationStatus.Info -> "Info"
-            ReservationStatus.Payment -> "Maksettavana"
-            ReservationStatus.Confirmed -> "Maksettu"
-            ReservationStatus.Invoiced -> "Laskutettavana"
-            ReservationStatus.Cancelled -> "Peruttu"
-        }
 
     @PostMapping("/virkailija/venepaikat/varaukset/status")
     fun updateReservationStatus(

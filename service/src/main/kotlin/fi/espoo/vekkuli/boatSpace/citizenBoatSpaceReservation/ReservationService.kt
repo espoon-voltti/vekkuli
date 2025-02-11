@@ -33,6 +33,7 @@ open class ReservationService(
     private val terminateService: TerminateReservationService,
     private val organizationService: OrganizationService,
     private val paymentService: PaymentService,
+    private val permissionService: PermissionService,
     private val switchPolicyService: SwitchPolicyService
 ) {
     fun getUnfinishedReservationForCurrentCitizen(): BoatSpaceReservation? {
@@ -73,7 +74,7 @@ open class ReservationService(
             it.toBoatSpaceReservation()
         }
 
-    fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservation(reservationId).toBoatSpaceReservation()
+    fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservationAsCurrentCitizen(reservationId).toBoatSpaceReservation()
 
     fun startReservation(spaceId: Int): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()
@@ -103,6 +104,13 @@ open class ReservationService(
             throw Forbidden("Citizen can not have multiple reservations open")
         }
 
+        val validity =
+            if (citizenResult is ReservationResult.Success) {
+                citizenResult.data.reservationValidity
+            } else {
+                ReservationValidity.FixedTerm
+            }
+
         return boatReservationService.insertBoatSpaceReservation(
             citizenId,
             citizenId,
@@ -110,6 +118,7 @@ open class ReservationService(
             CreationType.New,
             today,
             getEndDate(citizenResult),
+            validity
         )
     }
 
@@ -188,7 +197,7 @@ open class ReservationService(
         information: ReservationInformation
     ): BoatSpaceReservation {
         val (citizenId) = citizenAccessControl.requireCitizen()
-        val reservation = accessReservation(reservationId)
+        val reservation = accessReservationAsCurrentCitizen(reservationId)
 
         if (reservation.status != ReservationStatus.Info) {
             throw Conflict("Reservation is already filled")
@@ -207,7 +216,7 @@ open class ReservationService(
     @Transactional
     open suspend fun getPaymentInformation(reservationId: Int): PaytrailPaymentResponse {
         val citizen = citizenAccessControl.requireCitizen()
-        val reservation = accessReservation(reservationId)
+        val reservation = accessReservationAsCurrentCitizen(reservationId)
 
         if (reservation.status != ReservationStatus.Payment) {
             throw Conflict("Reservation is not filled")
@@ -220,13 +229,14 @@ open class ReservationService(
     open fun terminateReservation(reservationId: Int) {
         val (citizenId) = citizenAccessControl.requireCitizen()
         validateCurrentCitizenAccessToReservation(reservationId)
+        if (!permissionService.canTerminateBoatSpaceReservation(citizenId, reservationId)) throw Unauthorized()
         return terminateService.terminateBoatSpaceReservationAsOwner(reservationId, citizenId)
     }
 
     @Transactional
     open fun cancelUnfinishedReservationPaymentState(reservationId: Int): BoatSpaceReservation {
         citizenAccessControl.requireCitizen()
-        val reservation = accessReservation(reservationId)
+        val reservation = accessReservationAsCurrentCitizen(reservationId)
         if (reservation.status != ReservationStatus.Payment) {
             throw Conflict("Reservation is not in payment state")
         }
@@ -240,7 +250,7 @@ open class ReservationService(
         reservationId: Int,
         boatType: BoatType
     ): Boolean {
-        val reservation = accessReservation(reservationId)
+        val reservation = accessReservationAsCurrentCitizen(reservationId)
         return reservation.excludedBoatTypes?.contains(boatType) != true
     }
 
@@ -249,7 +259,7 @@ open class ReservationService(
         width: Int,
         length: Int
     ): Boolean {
-        val reservation = accessReservation(reservationId)
+        val reservation = accessReservationAsCurrentCitizen(reservationId)
         val boatDimensions = Dimensions(width, length)
         val spaceDimensions = Dimensions(reservation.boatSpaceWidthCm, reservation.boatSpaceLengthCm)
         return doesBoatFit(spaceDimensions, reservation.amenity, boatDimensions)
@@ -288,13 +298,13 @@ open class ReservationService(
     private fun citizenHasAccessToReservation(
         citizenId: UUID,
         reservation: BoatSpaceReservationDetails
-    ): Boolean = reservation.reserverId == citizenId || reservation.actingCitizenId == citizenId
+    ): Boolean = permissionService.hasAccessToReservation(citizenId, reservation.id)
 
     private fun validateCurrentCitizenAccessToReservation(reservationId: Int) {
-        accessReservation(reservationId)
+        accessReservationAsCurrentCitizen(reservationId)
     }
 
-    private fun accessReservation(reservationId: Int): BoatSpaceReservationDetails {
+    private fun accessReservationAsCurrentCitizen(reservationId: Int): BoatSpaceReservationDetails {
         val result = boatReservationService.getBoatSpaceReservation(reservationId) ?: throw NotFound()
         validateCurrentCitizenAccessToReservation(result)
         return result

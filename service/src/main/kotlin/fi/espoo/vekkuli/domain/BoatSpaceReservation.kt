@@ -119,6 +119,7 @@ data class BoatSpaceReservationItem(
     val municipalityCode: Int,
     val municipalityName: String,
     val paymentDate: LocalDate?,
+    val invoiceDueDate: LocalDate?,
     val warnings: Set<String> = emptySet(),
     val validity: ReservationValidity?,
     val amenity: BoatSpaceAmenity?

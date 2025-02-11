@@ -60,6 +60,7 @@ interface BoatSpaceReservationRepository {
         creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity,
     ): BoatSpaceReservation
 
     fun insertBoatSpaceReservationAsEmployee(

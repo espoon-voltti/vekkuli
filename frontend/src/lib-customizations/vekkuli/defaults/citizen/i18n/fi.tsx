@@ -119,7 +119,8 @@ export default {
     closeMenu: 'Sulje valikko',
     goToHomepage: 'Siirry etusivulle',
     goToMainContent: 'Siirry pääsisältöön',
-    selectLanguage: 'Valitse kieli'
+    selectLanguage: 'Valitse kieli',
+    mainNavigation: 'Päänavigaatio'
   },
   components: componentTranslations,
   reservation: {
@@ -127,16 +128,30 @@ export default {
       chooseBoatSpace: 'Paikan valinta',
       fillInformation: 'Tietojen täyttäminen',
       payment: 'Maksaminen',
-      confirmation: 'Vahvistus'
+      confirmation: 'Vahvistus',
+      error: 'Virhe'
     },
     searchPage: {
+      title: 'Espoon kaupungin venepaikkojen vuokraus',
+      image: {
+        harbors: {
+          altText: 'Espoon venesatamat'
+        }
+      },
       missingFieldsInfoBox:
         'Anna ensin paikan mitat niin näet veneellesi sopivat paikat.',
+      freeSpaceCount: 'Hakuehtoihin sopivat vapaat paikat',
+      size: 'Paikan koko',
+      amenityLabel: 'Varuste',
+      price: 'Hinta/Kausi',
+      place: 'Paikka',
       filters: {
         title: 'Venepaikan haku',
         boatSpaceType: 'Haettava paikka',
         harbor: 'Satama',
         amenities: 'Varusteet',
+        harborHeader: 'Satama',
+        amenityHeader: 'Varuste',
         boatType: 'Venetyyppi',
         storageTypeAmenities: 'Säilytystapa',
         branchSpecific: {
@@ -156,6 +171,19 @@ export default {
             width: 'Säilytyspaikan leveys (m)',
             length: 'Säilytyspaikan pituus (m)'
           }
+        }
+      },
+      infoText: {
+        title: 'Venepaikkojen varaaminen 2025',
+        periods: {
+          newReservations:
+            'Uusien venepaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025',
+          trailerReservations:
+            'Suomenojan traileripaikkojen varaaminen kaikille 1.5.–31.12.2025',
+          winter:
+            'Uusien talvipaikkojen varaaminen espoolaisille 15.9.–31.12.2025',
+          storage:
+            'Ämmäsmäen säilytyspaikkojen varaaminen kaikille 15.9.2025–31.7.2026'
         }
       },
       modal: {
@@ -201,7 +229,19 @@ export default {
         Buck: {
           title: 'Pukin tiedot'
         }
-      }
+      },
+      reserver: 'Varaaja',
+      tenant: 'Vuokralainen',
+      boatInformation: 'Veneen tiedot',
+      boatSpaceInformation: 'Varattava paikka',
+      harbor: 'Satama',
+      place: 'Paikka',
+      boatSpaceType: 'Venepaikkatyyppi',
+      boatSpaceDimensions: 'Paikan koko',
+      boatSpaceAmenity: 'Varuste',
+      reservationValidity: 'Varaus voimassa:',
+      price: 'Hinta',
+      storageType: 'Säilytystapa'
     },
     paymentPage: {
       paymentCancelled:
@@ -230,22 +270,12 @@ export default {
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
-      boatSpaceType: BoatSpaceType
+      isActive: boolean
     ): string => {
-      switch (validity) {
-        case 'FixedTerm':
-          return `${endDate.format()} asti`
-        case 'Indefinite':
-          switch (boatSpaceType) {
-            case 'Slip':
-              return 'Toistaiseksi, jatko vuosittain tammikuussa'
-            case 'Winter':
-            case 'Storage':
-              return 'Toistaiseksi, jatko vuosittain elokuussa'
-            case 'Trailer':
-              return 'Toistaiseksi, jatko vuosittain huhtikuussa'
-          }
+      if (validity === 'Indefinite' && isActive) {
+        return 'Toistaiseksi, jatko vuosittain'
       }
+      return `${endDate.format()} asti`
     },
     reserverDiscountInfo: (
       type: ReserverType,
@@ -303,7 +333,14 @@ export default {
       'Veneen poistamisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
     deleteSuccess: 'Vene on poistettu',
     confirmDelete: (boatName: string) =>
-      `Olet poistamassa veneen ${boatName} tietoja`
+      `Olet poistamassa veneen ${boatName} tietoja`,
+    editBoatDetails: 'Muokkaa veneen tietoja',
+    boatName: 'Veneen nimi',
+    boatDepthInMeters: 'Syväys (m)',
+    boatWeightInKg: 'Paino (kg)',
+    registrationNumber: 'Rekisteritunnus',
+    otherIdentifier: 'Muu tunniste',
+    additionalInfo: 'Lisätiedot'
   },
   boatSpace: {
     renterType: {
@@ -363,7 +400,8 @@ export default {
       Beam: 'Aisa',
       WalkBeam: 'Kävelyaisa',
       Trailer: 'Trailerisäilytys',
-      Buck: 'Pukkisäilytys'
+      Buck: 'Pukkisäilytys',
+      None: '-'
     },
     winterStorageType: {
       Trailer: 'Trailerisäilytys',
@@ -381,7 +419,9 @@ export default {
     nationalId: 'Henkilötunnus',
     postalCode: 'Postinumero',
     postOffice: 'Postitoimipaikka',
-    municipality: 'Kotikunta'
+    municipality: 'Kotikunta',
+    birthday: 'Syntymäaika',
+    streetAddress: 'Katuosoite'
   },
   citizenPage: {
     title: 'Omat tiedot',
@@ -395,12 +435,21 @@ export default {
       },
       modal: {
         goBackToReservation: 'Siirry varaukseen'
-      }
+      },
+      showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin'
     }
   },
   organization: {
     organizationPhone: 'Yhteisön puhelinnumero',
-    organizationEmail: 'Yhteisön sähköposti'
+    organizationEmail: 'Yhteisön sähköposti',
+    contactDetails: {
+      title: 'Yhteyshenkilöt',
+      fields: {
+        name: 'Nimi',
+        phone: 'Puhelinnumero',
+        email: 'Sähköposti'
+      }
+    }
   },
   payment: {
     title: 'Valitse maksutapa'

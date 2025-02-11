@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.boatSpace.terminateReservation
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.EmailEnv
+import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -22,7 +23,9 @@ class TerminateReservationService(
     private val permissionService: PermissionService,
     private val reserverService: ReserverService,
     private val terminateReservationRepository: TerminateReservationRepository,
-    private val messageService: MessageService
+    private val messageService: MessageService,
+    private val organizationService: OrganizationService,
+    private val messageUtil: MessageUtil
 ) {
     @Transactional
     fun terminateBoatSpaceReservationAsOwner(
@@ -83,69 +86,101 @@ class TerminateReservationService(
         reservation: BoatSpaceReservation,
         terminatorId: UUID,
     ) {
-        val citizen = reserverService.getCitizen(terminatorId)
-        sendTerminationNoticeForReserverAndTerminator(reservation, citizen)
-        if (citizen != null) {
-            sendTerminationNoticeToEmployees(reservation, citizen)
+        val terminator = reserverService.getCitizen(terminatorId)
+        sendTerminationNoticeForReserverAndTerminator(reservation, terminator)
+        if (terminator != null) { // when would the terminator be null??
+            sendTerminationNoticeToEmployees(reservation, terminator)
         }
     }
 
     private fun sendTerminationNoticeForReserverAndTerminator(
         reservation: BoatSpaceReservation,
-        citizen: CitizenWithDetails?
+        terminator: CitizenWithDetails?
     ) {
-        val reservationWithDetails = reservationService.getBoatSpaceReservation(reservation.id) ?: return
+        val reservationWithDetails =
+            reservationService.getBoatSpaceReservation(reservation.id)
+                ?: throw BadRequest("Reservation ${reservation.id} not found")
         val reserverContact = reservationService.getEmailRecipientForReservation(reservation.id)
         val contactDetails = mutableListOf<Recipient>()
 
+        // person who originally reserved the space
         if (reserverContact != null) {
             contactDetails.add(reserverContact)
         }
 
-        if (citizen != null && reserverContact?.id != citizen.id) {
-            contactDetails.add(Recipient(citizen.id, citizen.email))
+        // if person terminating the reservation is different from original reserver, add he/she
+        if (terminator != null && reserverContact?.id != terminator.id) {
+            contactDetails.add(Recipient(terminator.id, terminator.email))
         }
+
+        val orgRecipients =
+            if (reservationWithDetails.reserverType == ReserverType.Organization) {
+                organizationService
+                    .getOrganizationMembers(reservationWithDetails.reserverId)
+                    .filter { it.id != terminator?.id && it.id != reserverContact?.id }
+                    .map { Recipient(it.id, it.email) }
+            } else {
+                emptyList()
+            }
+
+        // add possible organization members
+        contactDetails.addAll(orgRecipients)
 
         if (contactDetails.isEmpty()) {
             throw BadRequest("No contact details found for reservation")
         }
 
+        val reservationDescription = "${reservationWithDetails.locationName} ${reservationWithDetails.place}"
+
         emailService
             .sendBatchEmail(
-                "reservation_termination_notice_no_refund",
+                "reservation_termination_by_citizen",
                 null,
                 emailEnv.senderAddress,
                 contactDetails,
                 mapOf(
-                    "location" to reservationWithDetails.locationName,
-                    "place" to reservationWithDetails.place
-                )
+                    "name" to reservationDescription,
+                    "reserverName" to reservationWithDetails.name,
+                    "terminatorName" to (terminator?.fullName ?: "")
+                ) +
+                    messageUtil.getLocalizedMap(
+                        "placeType",
+                        "boatSpaceReservation.email.types.${reservationWithDetails.type}"
+                    )
             )
     }
 
     private fun sendTerminationNoticeToEmployees(
         reservation: BoatSpaceReservation,
-        citizen: CitizenWithDetails
+        terminator: CitizenWithDetails
     ) {
         val reservationWithDetails = reservationService.getBoatSpaceReservation(reservation.id) ?: return
         val recipient = Recipient(null, emailEnv.employeeAddress)
         val contactDetails = listOf(recipient)
+        val reservationDescription = "${reservationWithDetails.locationName} ${reservationWithDetails.place}"
 
         emailService
             .sendBatchEmail(
-                "marine_reservation_termination_employee_notice",
+                "reservation_termination_by_citizen_to_employee",
                 null,
                 emailEnv.senderAddress,
                 contactDetails,
                 mapOf(
-                    "terminator" to citizen.fullName,
+                    "name" to reservationDescription,
+                    "reserverName" to reservationWithDetails.name,
+                    "reserverEmail" to reservationWithDetails.email,
+                    "terminatorName" to terminator.fullName,
+                    "terminatorEmail" to terminator.email,
+                    "terminatorPhone" to terminator.phone,
                     "time" to
                         timeProvider.getCurrentDateTime().format(
                             fullDateTimeFormat
                         ),
-                    "location" to reservationWithDetails.locationName,
-                    "place" to reservationWithDetails.place
-                )
+                ) +
+                    messageUtil.getLocalizedMap(
+                        "placeType",
+                        "boatSpaceReservation.email.types.${reservationWithDetails.type}"
+                    )
             )
     }
 

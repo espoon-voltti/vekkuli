@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
-import fi.espoo.vekkuli.PlaywrightTest
+import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.controllers.UserType
@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
-class ReserveAndTerminateFlowTest : PlaywrightTest() {
+class ReserveAndTerminateFlowTest : ReserveTest() {
     @Autowired
     lateinit var messageUtil: MessageUtil
 
@@ -51,8 +51,9 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
 
         // Creates a reservation for a citizen, invoices it and returns to the listing page
         reserveBoatSpacePage.reserveB314BoatSpaceToASailboatAsEmployee(expectedReserverSearch)
-
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
         // Check that the citizen and boat space is visible in the reservation list
+        listingPage.navigateTo()
         assertThat(listingPage.reservationsTableB314Row).isVisible()
 
         // Go to the citizen details page
@@ -63,13 +64,7 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
         reserveBoatSpacePage.revealB314BoatSpace()
         assertThat(reserveBoatSpacePage.reserveTableB314Row).not().isVisible()
 
-        messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(
-            SendEmailServiceMock.emails.get(
-                0
-            ).contains("mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
-        )
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi")
         SendEmailServiceMock.resetEmails()
 
         // Terminate the reservation
@@ -100,8 +95,14 @@ class ReserveAndTerminateFlowTest : PlaywrightTest() {
 
         // Assert that termination email to citizen has been sent
         messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-        assertTrue(SendEmailServiceMock.emails.get(0).contains("Venepaikka: Haukilahti B 314 on irtisanottu virkailijan toimesta"))
+        val sentEmails = SendEmailServiceMock.emails
+        assertEquals(1, sentEmails.size)
+        assertTrue(
+            sentEmails
+                .get(0)
+                .body
+                .contains("Venepaikka: Haukilahti B 314 on irtisanottu virkailijan toimesta")
+        )
 
         // Check that the reservation is still visible in the listing page with the correct end date
         listingPage.navigateTo()

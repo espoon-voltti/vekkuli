@@ -25,12 +25,24 @@ class CitizenHomePage(
     }
 
     // non-Espoo citizen
-    fun loginAsMarkoKuusinen() {
+    fun loginAsNonEspooCitizenMarko() {
         loginAsCitizen(markoKuusinenSsn)
+    }
+
+    fun loginAsEspooCitizenWithoutReservations() {
+        loginAsMikkoVirtanen()
     }
 
     fun loginAsEspooCitizenWithActiveSlipReservation() {
         loginAsLeoKorhonen()
+    }
+
+    fun loginAsEspooCitizenWithActiveOrganizationSlipReservation() {
+        loginAsOliviaVirtanen()
+    }
+
+    fun loginAsEspooCitizenWithActiveOrganization() {
+        loginAsOliviaVirtanen()
     }
 
     fun loginAsTurvaldKieltoinen() {

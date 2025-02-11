@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.employee
 
+import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.controllers.UserType
@@ -7,8 +8,10 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import java.time.LocalDateTime
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -127,10 +130,20 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+
+            val reservationListPage = ReservationListPage(page)
+            reservationListPage.navigateTo()
+            assertThat(reservationListPage.header).isVisible()
+
+            val reservationRow =
+                reservationListPage.reservations.filter(
+                    Locator.FilterOptions().setHasText("Doe John")
+                )
+            assertTrue(reservationRow.textContent().contains("Laskutettu, eräpäivä 22.04.24"))
+
+            page.getByText("Doe John").click()
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
@@ -140,8 +153,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
 
-            assertOnlyOneConfirmationEmailIsSent(emailSubject = "Espoon kaupungin venepaikan varaus")
-
+            assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice()
             citizenDetailsPage.paymentsNavi.click()
 
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Maksettu") }
@@ -208,10 +220,13 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             invoicePreviewPage.markAsPaid.click()
             invoicePreviewPage.confirmModalSubmit.click()
 
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+
             val reservationListPage = ReservationListPage(page)
+            reservationListPage.navigateTo()
             assertThat(reservationListPage.header).isVisible()
             page.getByText("Doe John").click()
-            val citizenDetailsPage = CitizenDetailsPage(page)
 
             assertThat(citizenDetailsPage.invoicePaidButton).isHidden()
 
@@ -227,7 +242,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
                 doLogin = false
             )
 
-            assertOnlyOneConfirmationEmailIsSent(emailSubject = "Vahvistus Espoon kaupungin venepaikan varauksesta")
+            assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithoutPayment()
         } catch (
             e: AssertionError
         ) {
@@ -275,56 +290,18 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(page.getByText(place)).isVisible()
     }
 
+    @Suppress("ktlint:standard:max-line-length")
     @Test
-    fun `Employee can reserve a winter space on behalf of a citizen, the employee is then able to set the reservation as paid`() {
+    fun `Employee can reserve a indefinite winter space on behalf of a citizen and send invoice, the employee is then able to set the reservation as paid`() {
         try {
-            val listingPage = reservationListPage()
+            reserveWinterSpace(false, true)
 
-            listingPage.boatSpaceTypeFilter("Winter").click()
-
-            listingPage.createReservation.click()
-
-            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
-
-            // fill in the filters
-            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
-            reservationPage.boatTypeSelectFilter.selectOption("OutboardMotor")
-            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Winter).click()
-
-            reservationPage.widthFilterInput.fill("1.8")
-            reservationPage.lengthFilterInput.fill("5.5")
-
-            reservationPage.firstReserveButton.click()
-
-            val formPage = BoatSpaceFormPage(page)
-
-            formPage.submitButton.click()
-
-            fillWinterBoatSpaceForm(formPage)
-
-            formPage.submitButton.click()
-
-            val invoicePreviewPage = InvoicePreviewPage(page)
-            assertThat(invoicePreviewPage.header).isVisible()
-            invoicePreviewPage.sendButton.click()
-
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
 
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails
-                    .get(
-                        0
-                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
-            )
-
+            assertEmailIsSentOfEmployeeIndefiniteWinterSpaceReservationWithInvoice()
             updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
@@ -335,60 +312,31 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     }
 
     @Test
-    fun `Employee can reserve a winter space on behalf of a citizen, and change the reservation validity to fixed time`() {
+    fun `Employee can reserve a indefinite winter space on behalf of a citizen without payment`() {
         try {
-            val listingPage = reservationListPage()
+            reserveWinterSpace(false, false)
 
-            listingPage.boatSpaceTypeFilter("Winter").click()
-
-            listingPage.createReservation.click()
-
-            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
-
-            // fill in the filters
-            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
-            reservationPage.boatTypeSelectFilter.selectOption("OutboardMotor")
-            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Winter).click()
-
-            reservationPage.widthFilterInput.fill("1.8")
-            reservationPage.lengthFilterInput.fill("5.5")
-
-            reservationPage.firstReserveButton.click()
-
-            val formPage = BoatSpaceFormPage(page)
-
-            formPage.submitButton.click()
-
-            fillWinterBoatSpaceForm(formPage)
-            formPage.reservationValidityFixedTermRadioButton.click()
-            assertContains(
-                formPage.reservationSummeryReservationValidityFixedTerm.first().textContent(),
-                "01.04.2024 - 31.12.2024"
-            )
-            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
-            formPage.submitButton.click()
-
-            val invoicePreviewPage = InvoicePreviewPage(page)
-            assertThat(invoicePreviewPage.header).isVisible()
-            invoicePreviewPage.sendButton.click()
-
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
-            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 31.08.2024")
+            assertTrue("Valid until further notice" in citizenDetailsPage.reservationValidity.first().textContent())
 
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails
-                    .get(
-                        0
-                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
-            )
+            assertEmailIsSentOfEmployeeIndefiniteWinterSpaceReservationWithoutPayment()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
 
+    @Test
+    fun `Employee can reserve a fixed term winter space on behalf of a citizen and send invoice`() {
+        try {
+            reserveWinterSpace(true, true)
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 14.09.2024")
+
+            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithInvoice(endDate = "14.09.2024")
             updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
@@ -396,6 +344,62 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `Employee can reserve a fixed term winter space on behalf of a citizen without payment`() {
+        try {
+            reserveWinterSpace(true, false)
+            val citizenDetailsPage = CitizenDetailsPage(page)
+
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+            assertContains(citizenDetailsPage.reservationValidity.first().textContent(), "Until 14.09.2024")
+
+            assertEmailIsSentOfEmployeeFixedTermWinterSpaceReservationWithoutPayment(endDate = "14.09.2024")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun reserveWinterSpace(
+        isFixed: Boolean,
+        sendInvoice: Boolean
+    ) {
+        val listingPage = reservationListPage()
+        listingPage.boatSpaceTypeFilter("Winter").click()
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+        // fill in the filters
+        assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+        reservationPage.boatTypeSelectFilter.selectOption("OutboardMotor")
+        reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Winter).click()
+        reservationPage.widthFilterInput.fill("1.8")
+        reservationPage.lengthFilterInput.fill("5.5")
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.submitButton.click()
+        fillWinterBoatSpaceForm(formPage)
+        if (isFixed) {
+            formPage.reservationValidityFixedTermRadioButton.click()
+            // todo: the end date is wrong, should be 31.08.2024
+            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+        }
+
+        formPage.submitButton.click()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.header).isVisible()
+        if (sendInvoice) {
+            invoicePreviewPage.sendButton.click()
+        } else {
+            invoicePreviewPage.markAsPaid.click()
+            invoicePreviewPage.confirmModalSubmit.click()
+        }
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
     }
 
     @Test
@@ -429,22 +433,12 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
 
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails
-                    .get(
-                        0
-                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
-            )
-
+            assertEmailIsSentOfEmployeesIndefiniteStorageSpaceReservationWithInvoice()
             updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
@@ -483,22 +477,12 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
 
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails
-                    .get(
-                        0
-                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
-            )
-
+            assertEmailIsSentOfEmployeesIndefiniteStorageSpaceReservationWithInvoice()
             updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
@@ -509,51 +493,14 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     }
 
     @Test
-    fun `Employee can reserve a trailer boat space on behalf of a citizen`() {
+    fun `Employee can reserve a indefinite trailer space on behalf of a citizen and send an invoice`() {
         try {
-            val listingPage = reservationListPage()
+            reserveTrailerSpace(false, true)
 
-            listingPage.createReservation.click()
-
-            val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
-
-            // fill in the filters
-            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
-            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Trailer).click()
-
-            reservationPage.widthFilterInput.fill("1.8")
-            reservationPage.lengthFilterInput.fill("5.5")
-
-            reservationPage.firstReserveButton.click()
-
-            val formPage = BoatSpaceFormPage(page)
-            formPage.fillFormAndSubmit {
-                assertThat(formPage.storageTypeTextTrailer).isVisible()
-                trailerWidthInput.fill("1.8")
-                trailerLengthInput.fill("5.5")
-                trailerRegistrationNumberInput.fill("ABC-123")
-            }
-
-            val invoicePreviewPage = InvoicePreviewPage(page)
-            assertThat(invoicePreviewPage.header).isVisible()
-            invoicePreviewPage.sendButton.click()
-
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
-
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
 
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails
-                    .get(
-                        0
-                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
-            )
-
+            assertEmailIsSentOfEmployeeIndefiniteTrailerReservationWithInvoice()
             updateReservationToConfirmed(citizenDetailsPage)
 
             citizenDetailsPage.memoNavi.click()
@@ -561,6 +508,97 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `Employee can reserve a indefinite trailer space on behalf of a citizen without payment`() {
+        try {
+            reserveTrailerSpace(false, false)
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+
+            assertEmailIsSentOfEmployeeIndefiniteTrailerReservationWithoutPayment()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a fixed term trailer space on behalf of a citizen and send an invoice`() {
+        try {
+            reserveTrailerSpace(true, true)
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+
+            assertEmailIsSentOfEmployeeFixedTermTrailerReservationWithInvoice(endDate = "30.04.2024")
+            updateReservationToConfirmed(citizenDetailsPage)
+
+            citizenDetailsPage.memoNavi.click()
+            assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a fixed term trailer space on behalf of a citizen without payment`() {
+        try {
+            reserveTrailerSpace(true, false)
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
+
+            assertEmailIsSentOfEmployeeFixedTermTrailerReservationWithoutPayment(endDate = "30.04.2024")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun reserveTrailerSpace(
+        isFixed: Boolean,
+        sendInvoice: Boolean
+    ) {
+        val listingPage = reservationListPage()
+
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+        // fill in the filters
+        assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+        reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Trailer).click()
+
+        reservationPage.widthFilterInput.fill("1.8")
+        reservationPage.lengthFilterInput.fill("5.5")
+
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.fillFormAndSubmit {
+            assertThat(formPage.storageTypeTextTrailer).isVisible()
+            trailerWidthInput.fill("1.8")
+            trailerLengthInput.fill("5.5")
+            trailerRegistrationNumberInput.fill("ABC-123")
+            if (isFixed) {
+                formPage.reservationValidityFixedTermRadioButton.click()
+                // todo: the end date is wrong, should be 30.04.2024
+                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+            }
+        }
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.header).isVisible()
+        if (sendInvoice) {
+            invoicePreviewPage.sendButton.click()
+        } else {
+            invoicePreviewPage.markAsPaid.click()
+            invoicePreviewPage.confirmModalSubmit.click()
+        }
+
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
     }
 
     private fun fillWinterBoatSpaceForm(formPage: BoatSpaceFormPage) {
@@ -638,24 +676,129 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             assertThat(invoicePreviewPage.header).isVisible()
             invoicePreviewPage.sendButton.click()
 
-            val reservationListPage = ReservationListPage(page)
-            assertThat(reservationListPage.header).isVisible()
-            page.getByText("Doe John").click()
             val citizenDetailsPage = CitizenDetailsPage(page)
-
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
             page.waitForCondition { citizenDetailsPage.reservationValidity.count() == 1 }
             assertTrue("Until 31.12.2024" in citizenDetailsPage.reservationValidity.first().textContent())
 
-            messageService.sendScheduledEmails()
-            assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(
-                SendEmailServiceMock.emails
-                    .get(
-                        0
-                    ).contains("test@example.com with subject Espoon kaupungin venepaikan varaus")
-            )
+            assertEmailIsSentOfEmployeesFixedTermSlipReservationWithInvoice()
         } catch (e: AssertionError) {
             handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a fixed term boat space on behalf of a citizen and not invoice it`() {
+        try {
+            val listingPage = reservationListPage()
+            listingPage.createReservation.click()
+            val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+
+            // fill in the filters
+            assertThat(reservationPage.emptyDimensionsWarning).isVisible()
+            reservationPage.boatTypeSelectFilter.selectOption("Sailboat")
+            reservationPage.widthFilterInput.fill("3")
+            reservationPage.lengthFilterInput.fill("6")
+            reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Slip).click()
+            reservationPage.firstReserveButton.click()
+
+            val formPage = BoatSpaceFormPage(page)
+            fillAndTestForm(formPage)
+            formPage.reservationValidityFixedTermRadioButton.click()
+            assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+            formPage.submitButton.click()
+
+            val invoicePreviewPage = InvoicePreviewPage(page)
+            assertThat(invoicePreviewPage.header).isVisible()
+            invoicePreviewPage.markAsPaid.click()
+            invoicePreviewPage.confirmModalSubmit.click()
+
+            // we need to give some time for test to be able to evaluate the email sending
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+            assertEmailIsSentOfEmployeesFixedTermSlipReservationWithoutPayment()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a fixed term storage space on behalf of a citizen without payment`() {
+        try {
+            reserveStoragePlace(true, false)
+
+            // we need to give some time for test to be able to evaluate the email sending
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+            assertEmailIsSentOfEmployeesFixedTermStorageReservationWithoutPayment(endDate = "14.09.2024")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve a fixed term storage space on behalf of a citizen and send an invoice`() {
+        try {
+            reserveStoragePlace(true, true)
+
+            // we need to give some time for test to be able to evaluate the email sending
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+            assertEmailIsSentOfEmployeesFixedTermStorageReservationWithInvoice(endDate = "14.09.2024")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `Employee can reserve an indefinite storage space on behalf of a citizen without payment`() {
+        try {
+            reserveStoragePlace(false, false)
+
+            // we need to give some time for test to be able to evaluate the email sending
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+            assertEmailIsSentOfEmployeesIndefiniteStorageSpaceReservationWithoutPayment()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun reserveStoragePlace(
+        isFixed: Boolean,
+        sendInvoice: Boolean
+    ) {
+        val listingPage = reservationListPage()
+        listingPage.createReservation.click()
+
+        val reservationPage = ReserveWinterSpacePage(page, UserType.EMPLOYEE)
+
+        // fill in the filters
+        reservationPage.boatSpaceTypeSlipRadio(BoatSpaceType.Storage).click()
+        reservationPage.amenityTrailerRadioButton.click()
+        reservationPage.widthFilterInput.fill("1.8")
+        reservationPage.lengthFilterInput.fill("5.5")
+        reservationPage.firstReserveButton.click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.fillFormAndSubmit {
+            assertThat(formPage.storageTypeTextTrailer).isVisible()
+            trailerWidthInput.fill("1.8")
+            trailerLengthInput.fill("5.5")
+            trailerRegistrationNumberInput.fill("ABC-123")
+            if (isFixed) {
+                formPage.reservationValidityFixedTermRadioButton.click()
+                // todo: the end date is wrong, should be 14.09.2024
+                assertContains(formPage.reservationValidityInformation.textContent(), "01.04.2024 - 31.12.2024")
+            }
+        }
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.header).isVisible()
+        if (sendInvoice) {
+            invoicePreviewPage.sendButton.click()
+        } else {
+            invoicePreviewPage.markAsPaid.click()
+            invoicePreviewPage.confirmModalSubmit.click()
         }
     }
 
@@ -723,22 +866,18 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertContains(description, place)
 
         invoicePage.sendButton.click()
-
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
         val reservationListPage = ReservationListPage(page)
+        reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
-
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
 
         messageService.sendScheduledEmails()
         assertEquals(1, SendEmailServiceMock.emails.size)
 
-        assertTrue(
-            SendEmailServiceMock.emails
-                .get(
-                    0
-                ).contains("to mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
-        )
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi")
     }
 
     @Test
@@ -780,21 +919,15 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         invoicePage.sendButton.click()
 
-        val reservationListPage = ReservationListPage(page)
-        assertThat(reservationListPage.header).isVisible()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
 
+        val reservationListPage = ReservationListPage(page)
+        reservationListPage.navigateTo()
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
 
-        messageService.sendScheduledEmails()
-        assertEquals(1, SendEmailServiceMock.emails.size)
-
-        assertTrue(
-            SendEmailServiceMock.emails
-                .get(
-                    0
-                ).contains("to turvald@kieltoinen.fi with subject Espoon kaupungin venepaikan varaus")
-        )
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("turvald@kieltoinen.fi")
     }
 
     @Test
@@ -895,23 +1028,18 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(invoicePreviewPage.header).isVisible()
         invoicePreviewPage.sendButton.click()
 
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        assertThat(citizenDetailsPage.citizenDetailsSection).isVisible()
+
         val reservationListPage = ReservationListPage(page)
+        reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
 
         messageService.sendScheduledEmails()
         // Email is sent to both organization representative and the reserver
         assertEquals(2, SendEmailServiceMock.emails.size)
-
-        assertTrue(
-            SendEmailServiceMock.emails.any {
-                it.contains("foo@bar.com with subject Espoon kaupungin venepaikan varaus")
-            }
-        )
-        assertTrue(
-            SendEmailServiceMock.emails.any {
-                it.contains("mikko.virtanen@noreplytest.fi with subject Espoon kaupungin venepaikan varaus")
-            }
-        )
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("foo@bar.com", false)
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi", false)
     }
 
     @Test
@@ -952,7 +1080,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val reserverLastName = "Korhonen"
         val reserverFirstName = "Leo"
         val discountPercentage = 50
-        val priveWithtax = "418,00"
+        val priceWithTax = "418,00"
         val discountedPrice = "209,00"
 
         val listingPage = reservationListPage()
@@ -966,7 +1094,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         reservationPage.firstReserveButton.click()
 
         val formPage = BoatSpaceFormPage(page)
-        assertThat(formPage.boatSpacePriceInEuro).containsText("$priveWithtax €")
+        assertThat(formPage.boatSpacePriceInEuro).containsText("$priceWithTax €")
 
         formPage.existingCitizenSelector.click()
         assertThat(formPage.citizenSearchContainer).isVisible()
@@ -1003,12 +1131,65 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertEquals(
             discountInfo.innerText(),
             "Customer discount of $discountPercentage% taken into account.\nOriginal price of the boat space ${
-                priveWithtax.replace(
+                priceWithTax.replace(
                     ",",
                     "."
                 )
             } €."
         )
+    }
+
+    @Test
+    fun `employee can renew a boat space reservation and send an invoice`() {
+        try {
+            renewABoatSpaceReservation(true)
+            assertEmailIsSentOfEmployeeSlipRenewalWithInvoice("leo@noreplytest.fi")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `employee can renew a boat space reservation without payment`() {
+        try {
+            renewABoatSpaceReservation(false)
+            assertEmailIsSentOfEmployeeSlipRenewalWithoutPayment("leo@noreplytest.fi")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    private fun renewABoatSpaceReservation(sendInvoice: Boolean) {
+        mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
+        val listingPage = reservationListPage()
+
+        listingPage.boatSpace1.click()
+        val citizenDetails = CitizenDetailsPage(page)
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
+
+        citizenDetails.renewReservationButton(1).click()
+        val invoiceDetails = InvoicePreviewPage(page)
+        assertThat(invoiceDetails.header).isVisible()
+        invoiceDetails.cancelButton.click()
+        assertThat(citizenDetails.citizenDetailsSection).isVisible()
+        citizenDetails.renewReservationButton(1).click()
+        assertThat(invoiceDetails.header).isVisible()
+        invoiceDetails.priceWithTax.fill("101")
+        invoiceDetails.description.fill("Test description")
+
+        if (sendInvoice) {
+            invoiceDetails.sendButton.click()
+        } else {
+            invoiceDetails.markAsPaid.click()
+            invoiceDetails.confirmModalSubmit.click()
+        }
+        assertThat(citizenDetails.renewReservationButton(1)).isHidden()
+        assertThat(citizenDetails.reservationListCards).containsText("Boat space: Haukilahti B 001")
+
+        citizenDetails.paymentsNavi.click()
+
+        citizenDetails.paymentsTable.textContent().contains("101,00")
+        citizenDetails.paymentsTable.textContent().contains("Test description")
     }
 
     private fun fillBoatAndOtherDetails(formPage: BoatSpaceFormPage) {

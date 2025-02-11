@@ -19,7 +19,7 @@ export interface Space {
   size: Size
   price: number
   id: number
-  amenity: string
+  amenity: BoatSpaceAmenity
   identifier: string
 }
 

@@ -8,36 +8,46 @@ import {
   formatDimensions,
   formatPlaceIdentifier
 } from 'citizen-frontend/shared/formatters'
-import { Result } from 'lib-common/api'
-import { useMutationResult } from 'lib-common/query'
-
-import { terminateReservationMutation } from './queries'
+import { ReservationId } from 'citizen-frontend/shared/types'
+import { MutationDescription, useMutationResult } from 'lib-common/query'
 
 export type TerminateModalProps = {
-  close: () => void
+  onCancel: () => void
+  onFailure: () => void
+  onSuccess: () => void
   reservation: ExistingBoatSpaceReservation
-  onTermination: (mutation: Promise<Result<void>>) => void
+  terminateMutation: MutationDescription<ReservationId, void>
 }
 
 export default React.memo(function TerminateModal({
-  close,
   reservation,
-  onTermination
+  onCancel,
+  onFailure,
+  onSuccess,
+  terminateMutation
 }: TerminateModalProps) {
   const i18n = useTranslation()
-  const { mutateAsync: terminateReservation, isPending } = useMutationResult(
-    terminateReservationMutation
-  )
+  const { mutateAsync: terminateReservation, isPending } =
+    useMutationResult(terminateMutation)
   const buttons = [
     {
-      label: 'Peruuta'
+      label: 'Peruuta',
+      action: onCancel
     },
     {
       label: 'Irtisano venepaikka',
       type: 'danger' as const,
       loading: isPending,
       action: () => {
-        return onTermination(terminateReservation(reservation.id))
+        terminateReservation(reservation.id)
+          .then((result) => {
+            if (result.isSuccess) {
+              onSuccess()
+            } else if (result.isFailure) {
+              onFailure()
+            }
+          })
+          .catch(onFailure)
       }
     }
   ]

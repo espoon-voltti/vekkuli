@@ -114,40 +114,32 @@ class ReservationPaymentService(
         }
 
     fun handlePaymentSuccess(params: Map<String, String>): PaymentHandleResult =
-        when (val result = boatReservationService.handlePaymentResult(params, true)) {
-            is PaymentProcessResult.Success ->
+        createPaymentHandleResult(boatReservationService.handlePaytrailPaymentResult(params, true))
+
+    fun handlePaymentCancel(params: Map<String, String>): PaymentHandleResult =
+        createPaymentHandleResult(boatReservationService.handlePaytrailPaymentResult(params, false))
+
+    private fun createPaymentHandleResult(result: PaymentProcessResult): PaymentHandleResult =
+        when (result) {
+            is PaymentProcessResult.Paid ->
                 PaymentHandleResult(
                     processResult = result,
                     redirectUrl = ReservationPaymentConfig.confirmedFrontendUrl(result.reservation.id)
                 )
-
+            is PaymentProcessResult.Cancelled ->
+                PaymentHandleResult(
+                    processResult = result,
+                    redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
+                )
             is PaymentProcessResult.Failure ->
                 PaymentHandleResult(
                     processResult = result,
-                    redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
+                    redirectUrl =
+                        when {
+                            result.reservation != null -> ReservationPaymentConfig.errorFrontendUrl(result.reservation.id, result.errorCode)
+                            else -> ReservationPaymentConfig.cancelledFrontendUrl()
+                        }
                 )
-
-            is PaymentProcessResult.HandledAlready ->
-                PaymentHandleResult(
-                    processResult = result,
-                    redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
-                )
-        }
-
-    fun handlePaymentCancel(params: Map<String, String>): PaymentHandleResult =
-        when (val result = boatReservationService.handlePaymentResult(params, false)) {
-            is PaymentProcessResult.Success ->
-                PaymentHandleResult(
-                    processResult = result,
-                    redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
-                )
-
-            is PaymentProcessResult.Failure ->
-                PaymentHandleResult(
-                    processResult = result,
-                    redirectUrl = ReservationPaymentConfig.cancelledFrontendUrl()
-                )
-
             is PaymentProcessResult.HandledAlready ->
                 PaymentHandleResult(
                     processResult = result,

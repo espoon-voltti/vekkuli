@@ -487,30 +487,31 @@ DELETE FROM reservation_period;
 INSERT INTO reservation_period(is_espoo_citizen, boat_space_type, operation, start_month, start_day, end_month, end_day)
 VALUES
     -- For Espoo citizens
-    (true, 'Slip', 'New', 3, 1, 9, 30),
-    (true, 'Slip', 'SecondNew', 4, 1, 9, 30),
     (true, 'Slip', 'Renew', 1, 7, 1, 31),
-    (true, 'Slip', 'Change', 1, 7, 1, 31),
-    (true, 'Slip', 'Change', 3, 1, 9, 30),
-    (true, 'Trailer', 'New', 5, 1, 12, 31),
+    (true, 'Slip', 'Change', 1, 7, 9, 30),
+    (true, 'Slip', 'New', 3, 3, 9, 30),
+    (true, 'Slip', 'SecondNew', 4, 1, 9, 30),
     (true, 'Trailer', 'Renew', 4, 1, 4, 30),
+    (true, 'Trailer', 'New', 5, 1, 12, 31),
     (true, 'Trailer', 'Change',  4, 1, 12, 31),
-    (true, 'Winter', 'New', 9, 1, 12, 31),
-    (true, 'Winter', 'Renew',  8, 1, 8, 31),
-    (true, 'Winter', 'Change',  8, 1, 12, 31),
-    (true, 'Winter', 'SecondNew',  9, 1, 12, 31),
-    (true, 'Storage', 'New', 9, 15, 7, 31),
+    (true, 'Winter', 'Renew',  8, 15, 9, 14),
+    (true, 'Winter', 'Change',  8, 15, 12, 31),
+    (true, 'Winter', 'New', 9, 15, 12, 31),
+    (true, 'Winter', 'SecondNew', 9, 15, 12, 31),
     (true, 'Storage', 'Renew',  8, 15, 9, 14),
-    (true, 'Storage', 'Change',  8, 1, 7, 31),
+    (true, 'Storage', 'Change',  8, 15, 8, 14),
+    (true, 'Storage', 'New', 9, 15, 9, 14),
+    (true, 'Storage', 'SecondNew', 9, 15, 9, 14),
 
     -- For non-Espoo citizens
     (false, 'Slip', 'New', 4, 1, 9, 30),
     (false, 'Slip', 'Change', 4, 1, 9, 30),
     (false, 'Trailer', 'New', 5, 1, 12, 31),
     (false, 'Trailer', 'Change',  5, 1, 12, 31),
-    (false, 'Storage', 'New', 9, 15, 7, 31),
-    (false, 'Storage', 'Renew', 8, 15, 9, 14),
-    (false, 'Storage', 'Change',  9, 1, 7, 31);
+    (false, 'Storage', 'Renew',  8, 15, 9, 14),
+    (false, 'Storage', 'Change',  8, 15, 8, 14),
+    (false, 'Storage', 'New', 9, 15, 9, 14),
+    (false, 'Storage', 'SecondNew', 9, 15, 9, 14);
 
 
 INSERT INTO app_user (id, external_id, first_name, last_name, email)
@@ -527,6 +528,863 @@ VALUES
     ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Organization', 'Espoon Pursiseura', now(), '0448101969', 'eps@noreplytest.fi', 'Nuottatie 19', '02230', 49, 'Espoo', false),
     ('6a7b1b37-ace5-4992-878b-1fa0cd52e4e7', 'Citizen', 'Turvald Kieltoinen', now(), '050123123', 'turvald@kieltoinen.fi', '', '' , 49, 'Espoo', true)
 
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO email_template (id, subject, body)
+VALUES
+    ('reservation_created_by_citizen', 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksesta', E'Hyvä asiakas,
+
+Veneelle varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu.{{citizenReserverFi}}
+
+Vuokralainen:
+{{reserverName}}
+
+Paikan tiedot:
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Varauksesi on voimassa {{endDateFi}}.
+
+Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
+
+Jos varasit säilytyspaikan Ämmäsmäeltä:
+Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 050 3209 681 arkisin kello 9-13. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
+
+Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Den plats du har bokat för din båt, {{placeTypeSv}}, är betald och bokningen har bekräftats.{{citizenReserverSv}}
+
+Hyresgäst:
+{{reserverName}}
+
+Platsinformation:
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Din bokning är giltig till {{endDateSv}}.
+
+Om du har bokat en bryggplats får du senare en säsongsetikett och en hamnkarta per post, där du hittar en nyckelkod för att skapa en nyckel till bryggporten (det finns ingen port vid Otsolahti F-bryggan). Säsongsetiketten måste fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller stöttan.
+
+Om du har bokat en förvaringsplats i Ämmäsmäki:
+Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 3209 681 vardagar mellan 9-13. Tillträdesbrickan hämtas från Finno hamn (Hylkeenpyytäjäntie 9) genom att visa kvittot.
+
+Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+The {{placeTypeEn}} you reserved for your boat has been paid, and the reservation is confirmed.{{citizenReserverEn}}
+
+Tenant:
+{{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Your reservation is valid until {{endDateEn}}.
+
+If you reserved a dock space, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage space, on the protective tent, trailer, or stand.
+
+If you reserved a storage space in Ämmäsmäki:
+The pickup of the access badge must be arranged in advance by calling 050 3209 681 on weekdays between 9-13. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
+
+Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_created_by_employee', 'Espoon kaupungin {{placeTypeFi}}varaus', E'Hyvä asiakas,
+
+Sinulle on varattu Espoon kaupungin {{placeTypeFi}} {{name}}.
+
+Sinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi. Maksun saavuttua tilillemme lähetämme sähköpostilla lisätietoa laiturin portin avaimesta sekä kausitarran postitse.
+
+Vuokralainen:
+{{reserverName}}
+
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Varauksesi on voimassa {{endDateFi}}.
+
+Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
+
+Jos varasit säilytyspaikan Ämmäsmäeltä:
+Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 050 3209 681 arkisin kello 9-13. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
+
+Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Du har reserverat en {{placeTypeSv}} {{name}} från Esbo stad.
+
+En faktura har skickats till adressen {{invoiceAddress}}. För att bekräfta bokningen, betala platsen innan förfallodatumet. Om betalningen uteblir annulleras bokningen och platsen blir tillgänglig för andra. När betalningen har mottagits på vårt konto skickar vi ytterligare information om bryggportens nyckel via e-post samt säsongsetiketten per post.
+
+Hyresgäst:
+{{reserverName}}
+
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Bokningen gäller till {{endDateSv}}.
+
+Om du har bokat en bryggplats får du senare en säsongsetikett och en hamnkarta per post, där du hittar en nyckelkod för att skapa en nyckel till bryggporten (det finns ingen port vid Otsolahti F-bryggan). Säsongsetiketten måste fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller stöttan.
+
+Om du har bokat en förvaringsplats i Ämmäsmäki:
+Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 3209 681 vardagar mellan 9-13. Tillträdesbrickan hämtas från Finno hamn (Hylkeenpyytäjäntie 9) genom att visa kvittot.
+
+Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+You have reserved a {{placeTypeEn}} {{name}} from the City of Espoo.
+
+An invoice has been sent to {{invoiceAddress}}. To confirm your booking, please pay for the spot before the due date. If unpaid, the booking will be canceled and made available for others. Once payment is received, we will send additional information about the dock gate key via email and the season sticker by mail.
+
+Tenant:
+{{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Your reservation is valid until {{endDateEn}}.
+
+If you reserved a dock space, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage space, on the protective tent, trailer, or stand.
+
+If you reserved a storage space in Ämmäsmäki:
+The pickup of the access badge must be arranged in advance by calling 050 3209 681 on weekdays between 9-13. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
+
+Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_created_by_employee_confirmed', 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksesta', E'Hyvä asiakas,
+
+Sinulle on varattu Espoon kaupungin {{placeTypeFi}} {{name}}. Lähetämme sähköpostilla lisätietoa laiturin portin avaimesta sekä kausitarran postitse.
+
+Vuokralainen:
+{{reserverName}}
+
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Varauksesi on voimassa {{endDateFi}}.
+
+Jos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.
+
+Jos varasit säilytyspaikan Ämmäsmäeltä:
+Ämmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 050 3209 681 arkisin kello 9-13. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.
+
+Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Du har reserverat en {{placeTypeSv}} {{name}} från Esbo stad. Vi skickar ytterligare information om bryggportens nyckel via e-post samt säsongsetiketten per post.
+
+Hyresgäst:
+{{reserverName}}
+
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Din bokning är giltig till {{endDateSv}}.
+
+Om du har bokat en bryggplats får du senare en säsongsetikett och en hamnkarta per post, där du hittar en nyckelkod för att skapa en nyckel till bryggporten (det finns ingen port vid Otsolahti F-bryggan). Säsongsetiketten måste fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller stöttan.
+
+Om du har bokat en förvaringsplats i Ämmäsmäki:
+Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 3209 681 vardagar mellan 9-13. Tillträdesbrickan hämtas från Finno hamn (Hylkeenpyytäjäntie 9) genom att visa kvittot.
+
+Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+You have reserved a {{placeTypeEn}} {{name}} from the City of Espoo. We will send additional information about the dock gate key via email and the season sticker by mail.
+
+Tenant:
+{{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Your reservation is valid until {{endDateEn}}.
+
+If you reserved a dock space, you will receive a season sticker and a harbor map by mail later, containing the key code needed for making a key for the dock gate (Otsolahti F-dock has no gate). The season sticker must be placed visibly on the boat, or if you reserved a winter or storage space, on the protective tent, trailer, or stand.
+
+If you reserved a storage space in Ämmäsmäki:
+The pickup of the access badge must be arranged in advance by calling 050 3209 681 on weekdays between 9-13. The badge is picked up from the Suomenoja harbor (Hylkeenpyytäjäntie 9) by showing the payment receipt.
+
+Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_renewed_by_citizen', 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen', E'Hyvä asiakas,
+
+Veneelle varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu uudelle kaudelle.{{citizenReserverFi}}
+
+Lähetämme uuden kausitarran postitse.
+
+Vuokralainen:
+{{reserverName}}
+
+Paikan tiedot:
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Varauksesi on voimassa {{endDateFi}}.
+
+Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Din bokning av {{placeTypeSv}} har betalats och bekräftats för en ny säsong.{{citizenReserverSv}}
+
+Vi skickar säsongsetiketten per post.
+
+Hyresgäst:
+{{reserverName}}
+
+Platsinformation:
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Din bokning är giltig till {{endDateSv}}.
+
+Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+The {{placeTypeEn}} you reserved for your boat has been paid and the reservation is confirmed for the new season.{{citizenReserverEn}}
+
+We will send the new season sticker by mail.
+
+Tenant:
+{{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Your reservation is valid until {{endDateEn}}.
+
+Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_renewed_by_employee', 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen', E'Hyvä asiakas,
+
+Varaamasi Espoon kaupungin {{placeTypeFi}} on jatkettu uudelle kaudelle.
+
+Sinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi.
+
+Vuokralainen:
+{{reserverName}}
+
+Paikan tiedot:
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Varauksesi on voimassa {{endDateFi}}.
+
+Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Din bokning av {{placeTypeSv}} har förlängts för en ny säsong.
+
+En faktura har skickats till adressen {{invoiceAddress}}. För att bekräfta bokningen, vänligen betala platsen innan förfallodatumet. En obetald plats sägs upp och blir tillgänglig för andra.
+
+Hyresgäst:
+{{reserverName}}
+
+Platsinformation:
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Din bokning är giltig till {{endDateSv}}.
+
+Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+Your reservation for {{placeTypeEn}} has been extended for a new season.
+
+An invoice has been sent to {{invoiceAddress}}. To confirm your reservation, please pay for the spot before the due date. An unpaid spot will be canceled and made available for others.
+
+Tenant:
+{{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Your reservation is valid until {{endDateEn}}.
+
+Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_renewed_by_employee_confirmed', 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen', E'Hyvä asiakas,
+
+Varaamasi Espoon kaupungin {{placeTypeFi}} on jatkettu uudelle kaudelle.
+
+Lähetämme uuden kausitarran postitse.
+
+Vuokralainen:
+{{reserverName}}
+
+Paikan tiedot:
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Varauksesi on voimassa {{endDateFi}}.
+
+Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Din bokning av {{placeTypeSv}} har förlängts för en ny säsong.
+
+Vi skickar en ny säsongsetikett per post.
+
+Hyresgäst:
+{{reserverName}}
+
+Platsinformation:
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Din bokning är giltig till {{endDateSv}}.
+
+Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+Your reservation for {{placeTypeEn}} has been extended for a new season.
+
+We will send a new season sticker by mail.
+
+Tenant:
+{{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Your reservation is valid until {{endDateEn}}.
+
+Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_switched_by_citizen', 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksen vaihdosta', E'Hyvä asiakas,
+
+Olet vaihtanut Espoon kaupungilta vuokraamaasi {{placeTypeFi}}a.
+
+HUOM! Vanha paikka päättyy heti vaihdon yhteydessä ja vene tulee siirtää pois vanhalta paikalta, sillä vanha paikkasi on vapautunut seuraavalle vuokrattavaksi. Venepaikkasi vuokrakausi säilyy ennallaan.
+
+Jos vaihdoit laituripaikkaa:
+Jotta saat uuden kausitarran ja avainkoodin uutta paikkaasi varten, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.{{citizenReserverFi}}
+
+Uusi paikka:
+
+Vuokralainen:
+{{reserverName}}
+
+Paikan tiedot:
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Varauksesi on voimassa {{endDateFi}}.
+
+Hallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Du har bytt din hyrda {{placeTypeSv}} i Esbo stad.
+
+OBS! Din tidigare plats avslutas omedelbart vid bytet, och båten måste flyttas bort eftersom platsen är tillgänglig för en ny hyresgäst. Hyresperioden för din båtplats förblir oförändrad.
+
+Om du bytte bryggplats:
+För att få en ny säsongsetikett och nyckelkod till din nya plats, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon 09 81658984 må och ons kl. 12.30-15 och tors kl. 9-11.{{citizenReserverSv}}
+
+Ny plats:
+
+Hyresgäst:
+{{reserverName}}
+
+Platsinformation:
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Din bokning är giltig till {{endDateSv}}.
+
+Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+You have changed your rented {{placeTypeEn}} in the City of Espoo.
+
+NOTICE! Your previous spot ends immediately upon the switch, and the boat must be moved from the old location as it is now available for a new tenant. Your rental period remains unchanged.
+
+If you switched dock space:
+To receive a new season sticker and key code for your new spot, please contact us via email at venepaikat@espoo.fi or by phone at 09 81658984 on Mon and Wed 12:30-15 and Thu 9-11.{{citizenReserverEn}}
+
+New location:
+
+Tenant:
+{{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Your reservation is valid until {{endDateEn}}.
+
+Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_termination_by_citizen', 'Vahvistus Espoon kaupungin venepaikan irtisanomisesta', E'Hei!,
+
+Espoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu.
+
+Irtisanoaja: {{terminatorName}}
+
+Paikan vuokraaja: {{reserverName}}
+
+Paikan tulee olla tyhjä ja siivottu seuraavaa vuokralaista varten.
+
+Jos irtisanoit laituri- tai traileripaikan, tulee se tyhjentää välittömästi.
+Talvi- ja Ämmäsmäen säilytyspaikan voit pitää vielä kuluvan kauden loppuun asti.
+
+Jos irtisanoit Ämmäsmäen säilytyspaikan:
+Ämmäsmäen kulkulätkä tulee palauttaa Suomenojan satamaan (Hylkeenpyytäjäntie 9).
+
+Mikäli et ole irtisanonut paikkaasi, ota yhteyttä sähköpostilla venepaikat@espoo.fi
+
+Terveisin,
+
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej!,
+
+{{placeTypeSv}} {{name}} i Esbo stad har sagts upp.
+
+Uppsägare: {{terminatorName}}
+
+Hyresgäst: {{reserverName}}
+
+Platsen måste vara tom och städad för nästa hyresgäst.
+
+Om du har sagt upp en brygg- eller trailerplats måste den tömmas omedelbart.
+Vinter- och Ämmäsmäki-förvaringsplatsen kan användas till slutet av innevarande säsong.
+
+Om du har sagt upp en förvaringsplats i Ämmäsmäki:
+Tillträdesbrickan måste returneras till Finno hamn (Hylkeenpyytäjäntie 9).
+
+Om du inte har sagt upp din plats, vänligen kontakta oss via e-post på venepaikat@espoo.fi
+
+Vänliga hälsningar,
+
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Hello!,
+
+The {{placeTypeEn}} {{name}} in the City of Espoo has been terminated.
+
+Terminator: {{terminatorName}}
+
+Tenant: {{reserverName}}
+
+The space must be empty and cleaned for the next tenant.
+
+If you have terminated a dock or trailer spot, it must be cleared immediately.
+Winter and Ämmäsmäki storage spaces can be used until the end of the current season.
+
+If you have terminated a storage space in Ämmäsmäki:
+The access badge must be returned to the Finno harbor (Hylkeenpyytäjäntie 9).
+
+If you have not terminated your place, please contact us via email at venepaikat@espoo.fi
+
+Best regards,
+
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+('reservation_termination_by_citizen_to_employee', 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}', E'Hei!,\n\nEspoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu {{time}}\n\nPaikan vuokraaja: {{reserverName}}\nSähköposti:{{reserverEmail}}\n\nIrtisanoaja:\nNimi: {{terminatorName}}\nSähköposti: {{terminatorEmail}}\nPuhelinnumero:{{terminatorPhone}}'),
+
+('fixed_term_reservation_expiring', 'Espoon kaupungin {{placeTypeFi}}varauksesi on päättymässä', E'Hyvä asiakas,
+
+Espoon kaupungin {{placeTypeFi}} {{name}} varausaika on päättymässä {{endDate}}.
+
+Paikan vuokraaja: {{reserverName}}
+
+Vuokrasopimuksen päätyttyä on paikan oltava tyhjennetty ja siivottu.
+
+Ämmäsmäen säilytyspaikan varauksen päätyttyä kulkulätkä tulee palauttaa Suomenojan satamaan (Hylkeenpyytäjäntie 9).
+
+Voit tarkistaa paikkojen varausajat ja tehdä uuden varauksen osoitteessa https://varaukset.espoo.fi.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Hyresperioden för {{placeTypeSv}} {{name}} i Esbo stad närmar sig sitt slut {{endDate}}.
+
+Hyresgäst: {{reserverName}}
+
+När hyresperioden är slut måste platsen vara tömd och städad.
+
+Om du har hyrt en förvaringsplats i Ämmäsmäki måste tillträdesbrickan returneras till Finno hamn (Hylkeenpyytäjäntie 9).
+
+Du kan kontrollera bokningsperioder och göra en ny bokning på https://varaukset.espoo.fi.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+Your reservation for {{placeTypeEn}} {{name}} in the City of Espoo is coming to an end on {{endDate}}.
+
+Tenant: {{reserverName}}
+
+Once the rental period ends, the space must be emptied and cleaned.
+
+If you rented a storage space in Ämmäsmäki, the access badge must be returned to the Finno harbor (Hylkeenpyytäjäntie 9).
+
+You can check reservation periods and make a new reservation at https://varaukset.espoo.fi.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+    ('boat_reservation_renew_reminder', 'Varmista Espoon kaupungin {{placeTypeFi}}si jatko ensi kaudelle nyt', E'Hyvä asiakas,
+
+On aika jatkaa {{placeTypeFi}}si varausta ensi kaudelle.
+
+Varmistat paikkasi varauksen maksamalla kausimaksun.
+Teet sen helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Löydät kausimaksupainikkeen omista tiedoista paikkavarauksen kohdalta. Maksamiseen tarvitset verkkopankkitunnukset.
+
+Jos kausimaksua ei ole maksettu {{endDate}} mennessä, paikka irtisanoutuu ja vapautuu.
+
+Määräajat paikan jatkamiselle:
+Laituripaikka: 7.–31.1.
+Traileripaikka: 1.–30.4.
+Talvipaikka: 15.8.–14.9.
+Säilytyspaikka Ämmäsmäellä: 15.8.–14.9.
+
+Jatkettava paikka:
+
+Paikan vuokraaja: {{reserverName}}
+
+Paikan tiedot:
+Paikan nimi: {{name}}
+Paikan leveys: {{width}}
+Paikan pituus: {{length}}
+Paikan varuste/säilytystapa: {{amenityFi}}
+
+Huomioi, mikäli kotikuntasi ei enää ole Espoo, et välttämättä ole oikeutettu jatkamaan paikkaasi.
+
+Jos kausimaksun maksaminen ei onnistu, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984. Puhelinajat löytyvät verkkosivuiltamme.
+
+Voit myös halutessasi vaihtaa nykyisen paikkasi toiseen paikkaan omilla profiilisivuillasi. Paikan vaihto vahvistuu maksamalla uuden paikan kausimaksun.
+
+Venesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Det är dags att förnya din bokning för {{placeTypeSv}} inför nästa säsong.
+
+Säkra din plats genom att betala säsongsavgiften.
+Du gör det enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot. Du hittar säsongsbetalningsknappen under din bokning. För betalning krävs bankkoder.
+
+Om säsongsavgiften inte har betalats senast {{endDate}}, sägs platsen upp och blir tillgänglig för andra.
+
+Tidsfrister för förnyelse av plats:
+Bryggplats: 7.–31.1.
+Trailerplats: 1.–30.4.
+Vinterplats: 15.8.–14.9.
+Förvaringsplats i Ämmäsmäki: 15.8.–14.9.
+
+Plats att förnya:
+
+Hyresgäst: {{reserverName}}
+
+Platsinformation:
+Platsens namn: {{name}}
+Platsens bredd: {{width}}
+Platsens längd: {{length}}
+Platsens utrustning/förvaringssätt: {{amenitySv}}
+
+Observera att om din hemkommun inte längre är Esbo kan du eventuellt inte förnya din plats.
+
+Om säsongsavgiften inte kan betalas, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon 09 81658984. Telefontider finns på vår webbplats.
+
+Du kan också byta din nuvarande plats till en annan via din profilsida. Bytet bekräftas genom att betala säsongsavgiften för den nya platsen.
+
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+It is time to renew your reservation for {{placeTypeEn}} for the next season.
+
+Secure your spot by paying the seasonal fee.
+You can do this easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot. You will find the seasonal payment button under your reservation details. Online banking credentials are required for payment.
+
+If the seasonal fee is not paid by {{endDate}}, your spot will be canceled and made available for others.
+
+Deadlines for renewing a spot:
+Dock space: 7.–31.1.
+Trailer space: 1.–30.4.
+Winter storage: 15.8.–14.9.
+Storage space in Ämmäsmäki: 15.8.–14.9.
+
+Spot to be renewed:
+
+Tenant: {{reserverName}}
+
+Location details:
+Name: {{name}}
+Width: {{width}}
+Length: {{length}}
+Amenities/storage type: {{amenityEn}}
+
+Please note that if your home municipality is no longer Espoo, you may not be eligible to renew your spot.
+
+If you are unable to make the payment, please contact us via email at venepaikat@espoo.fi or by phone at 09 81658984. Phone hours can be found on our website.
+
+You may also choose to switch your current spot to another through your profile page. The switch is confirmed by paying the seasonal fee for the new spot.
+
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+
+    ('marine_employee_reservation_termination_custom_message', 'Ilmoitus sopimuksen irtisanomisesta', e'Hyvä asiakas,
+
+    Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
+
+    Irtisanominen astuu voimaan *xx.xx.xxxx*.
+    Irtisanomisen syy: *xxxxxx*
+
+    Pyydämme teitä ystävällisesti siirtämään veneenne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
+
+    Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
+
+    Terveisin
+    Merellinen ulkoilu
+    {{employeeEmail}}')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO citizen (id, national_id, first_name, last_name)
@@ -557,6 +1415,7 @@ VALUES
     ('1000', '2024-09-01 13:01:20', '2024-09-01 13:01:21', 'Email', 'Sent', '94833b54-132b-4ab8-b841-60df45809b3e', 'ville@noreplytest.fi', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'leo@gmail.com', 'Käyttöveden katko', 'Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.'),
     ('1000', '2024-09-01 13:01:20', '2024-09-01 13:01:21', 'Email', 'Sent', '94833b54-132b-4ab8-b841-60df45809b3e', 'ville@noreplytest.fi', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'eps@noreplytest.fi', 'Käyttöveden katko', 'Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.');
 
+
 INSERT INTO boat (registration_code, reserver_id, name, width_cm, length_cm, depth_cm, weight_kg, type, other_identification, extra_information, ownership, deleted_at)
 VALUES
     ('A1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon vene', 120, 400, 20, 180, 'OutboardMotor', 'Terhi 400', '', 'Owner', null),
@@ -565,39 +1424,7 @@ VALUES
     ('D1234', 'f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 'Leon poistettu vene', 120, 400, 20, 180, 'OutboardMotor', 'Delmo 600', '', 'Owner', '2024-04-01T00:00:00'),
     ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon lohi', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
     ('W9876', '8b220a43-86a0-4054-96f6-d29a5aba17e7', 'Espoon kuha', 120, 400, 20, 180, 'OutboardMotor', 'Buster mini', '', 'Owner', null),
-    (null, '82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Ruutuässä', 200, 300, 120, 3000, 'Sailboat', 'Swan 45', '', 'Owner', null);
-
-
-INSERT INTO email_template (id, subject, body)
-VALUES
-    ('reservation_created_by_citizen', 'Vahvistus Espoon kaupungin venepaikan varauksesta', E'Hyvä asiakas,\n\nVeneelle varaamasi paikka on maksettu ja varaus on vahvistettu.\n\nVuokralainen:\n{{reserverName}}\n\nPaikan tiedot:\nPaikan nimi: {{name}}\nPaikan leveys {{width}}\nPaikan pituus {{length}}\nPaikan varuste/säilytystapa {{amenity}}\n\nVarauksesi on voimassa {{endDate}} asti.\n\nJos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.\n\nJos varasit säilytyspaikan Ämmäsmäeltä:\nÄmmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 050 3209 681 arkisin kello 9-13. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.\n\nHallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.\n\nVenesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.\n\nTerveisin\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi'),
-    ('reservation_created_by_employee', 'Espoon kaupungin venepaikan varaus', E'Hyvä asiakas,\n\nSinulle on varattu espoon kaupungin {{reservationDescription}}.\n\nSinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi. Maksun saavuttua tilillemme lähetämme sähköpostilla lisätietoa laiturin portin avaimesta sekä kausitarran postitse. Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen, tai jos varasit talvi- tai säilytyspaikan, esim. suojatelttaan, traileriin tai pukkiin.\n\nVuokralainen:\n{{reserverName}}\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}} asti.\n\nJos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.\n\nJos varasit säilytyspaikan Ämmäsmäeltä:\nÄmmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 050 3209 681 arkisin kello 9-13. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.\n\nHallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.\n\nVenesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.\n\nTerveisin\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi'),
-    ('reservation_created_by_employee_confirmed', 'Vahvistus Espoon kaupungin venepaikan varauksesta', E'Hyvä asiakas,\n\nSinulle on varattu espoon kaupungin paikka {{reservationDescription}}. Lähetämme sähköpostilla lisätietoa laiturin portin avaimesta sekä kausitarran postitse. Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen, tai jos varasit talvi- tai säilytyspaikan, esim. suojatelttaan, traileriin tai pukkiin.\n\nVuokralainen:\n{{reserverName}}\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}} asti.\n\nJos varasit laituripaikan, saat myöhemmin postissa kausitarran ja satamakartan, jossa avainkoodi laiturin portin avaimen teettämistä varten (Otsolahden F-laiturille ei ole porttia). Kausitarra tulee kiinnittää näkyvälle paikalle veneeseen tai jos varasit talvi- tai säilytyspaikan, suojatelttaan, traileriin tai pukkiin.\n\nJos varasit säilytyspaikan Ämmäsmäeltä:\nÄmmäsmäen kulkulätkän noudosta tulee sopia ennakkoon soittamalla numeroon 050 3209 681 arkisin kello 9-13. Kulkulätkä noudetaan Suomenojan satamasta (Hylkeenpyytäjäntie 9) maksukuittia näyttämällä.\n\nHallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.\n\nVenesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.\n\nTerveisin\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi'),
-
-    ('reservation_renewed_by_citizen', 'Espoon kaupungin venepaikan jatkaminen', E'Hyvä asiakas,\n\nVeneelle varaamasi paikka on maksettu ja varaus on vahvistettu uudelle kaudelle.\n\nVuokralainen:\n{{reserverName}}\n\nPaikan tiedot:\nPaikan nimi: {{name}}\nPaikan leveys {{width}}\nPaikan pituus {{length}}\nPaikan varuste/säilytystapa {{amenity}}\n\nLähetämme kausitarran postitse.\n\nVarauksesi on voimassa {{endDate}} asti.\n\nHallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.\n\nVenesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.\n\nTerveisin\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi'),
-    ('reservation_renewed_by_employee', 'Espoon kaupungin venepaikan jatkaminen', E'Hyvä asiakas,\n\nVaraamasi Espoon kaupungin venepaikka on jatkettu uudelle kaudelle.\n\nSinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi.\n\nVuokralainen: {{reserverName}}\n\nVenepaikan nimi {{name}}\nVenepaikan leveys {{width}}\nVenepaikan pituus {{length}}\nVenepaikan varustus {{amenity}}\nVarauksen voimassaolo päättyy {{endDate}}\n\nHallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.\n\nVenesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.\n\nTerveisin\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi'),
-
-    ('reservation_termination_notice_no_refund', 'Venepaikkasi on irtisanottu', E'Hei!,\n\nOlet sanonut irti venepaikkasi {{location}} {{place}}. Sinun on viipymättä poistettava veneesi paikalta.\n\nIrtisanotusta paikasta ei makseta hyvitystä.\n\nYstävällisin terveisin,\n\nMerellinen ulkoilu\nvenepaikat@espoo.fi\n\nTämä on automaattinen viesti, älä vastaa tähän viestiin.'),
-    ('reservation_termination_notice_to_employee', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.'),
-    ('boat_reservation_expiry_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nSinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}'),
-    ('boat_reservation_renew_reminder', 'Espoon Resurssivaraus: Venepaikkasi varausaika on päättymässä', E'Hyvä asiakas,\n\nVenepaikkasi {{name}} varausaika on päättymässä.\n\nVoit uusia venepaikkasi uusimalla sen omilta sivuiltasi.\n\nJos et uusi venepaikkaasi, sinun on poistettava veneesi venepaikalta viimeistään {{endDate}}.\n\nTerveisin\nMerellinen ulkoilu\n{{sender}}'),
-    ('marine_reservation_termination_employee_notice', 'Venepaikka on irtisanottu', E'Hei!,\n\n{{terminator}} on irtisanonut {{time}} venepaikan {{location}} {{place}}.'),
-    ('marine_employee_reservation_termination_custom_message', 'Ilmoitus sopimuksen irtisanomisesta', e'Hyvä asiakas,
-
-    Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
-
-    Irtisanominen astuu voimaan *xx.xx.xxxx*.
-    Irtisanomisen syy: *xxxxxx*
-
-    Pyydämme teitä ystävällisesti siirtämään veneenne pois nykyiseltä paikaltaan *xx.xx.xxxx* mennessä.
-
-    Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}} tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.
-
-    Terveisin
-    Merellinen ulkoilu
-    {{employeeEmail}}'),
-    ('reservation_switched_by_citizen', 'Vahvistus Espoon kaupungin venepaikan vaihdosta', E'Hyvä asiakas,\n\nOlet vaihtanut Espoon kaupungilta vuokraamaasi venepaikkaa.\n\nHuomioithan, että sinun on viipymättä poistettavana veneesi vanhalta paikalta, sillä paikka on vapautunut seuraavalle vuokrattavaksi.\n\nUusi paikka:\n\nVuokralainen:\n{{reserverName}}\n\nPaikan tiedot:\nPaikan nimi: {{name}}\nPaikan leveys {{width}}\nPaikan pituus {{length}}\nPaikan varuste/säilytystapa {{amenity}}\n\nVarauksesi on voimassa {{endDate}} asti.\n\nSaat mahdollisen uuden avainkoodin laiturin portin avaimen teettämistä varten sekä kausitarran kirjepostilla myöhemmin.\n\nHallinnoi varauksiasi, veneitäsi ja omia tietojasi helposti osoitteessa https://varaukset.espoo.fi/kuntalainen/omat-tiedot.\n\nVenesatamia koskevat sopimusehdot ja säännöt sekä muuta infoa löydät osoitteesta https://www.espoo.fi/fi/liikunta-ja-luonto/veneily.\n\nTerveisin\nMerelliset ulkoilupalvelut\nvenepaikat@espoo.fi')
-ON CONFLICT (id) DO NOTHING;
+    ('W9876', '82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Ruutuässä', 200, 300, 120, 3000, 'Sailboat', 'Swan 45', '', 'Owner', null);
 
 
 INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description) VALUES

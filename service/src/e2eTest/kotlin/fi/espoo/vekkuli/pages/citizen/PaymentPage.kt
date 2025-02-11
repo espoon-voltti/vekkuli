@@ -2,11 +2,13 @@ package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
+import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.pages.citizen.components.IHaveReservationTimer
 
 class PaymentPage(
     page: Page
-) : BasePage(page) {
+) : BasePage(page), IHaveReservationTimer<PaymentPage> {
     val header = page.getByText("Valitse maksutapa")
     val nordeaSuccessButton =
         page.getByText(
@@ -17,8 +19,10 @@ class PaymentPage(
             "Nordea failed"
         )
     val paymentProviders = getByDataTestId("payment-providers")
-    val reservationFailedNotification = page.getByText("Maksu epäonnistui")
+    val paymentFailedNotification = page.getByText("Maksu epäonnistui")
+    val reservationFailedNotification = page.getByText("Venepaikan varaus epäonnistui")
     val reservationSuccessNotification = page.getByText("Venepaikan varaus onnistui")
+    val backButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 
     fun assertOnPaymentPage() {
         assertThat(getByDataTestId("payment-page")).isVisible()

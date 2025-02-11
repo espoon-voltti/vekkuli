@@ -10,6 +10,7 @@ import {
   NewOrganization,
   NewTrailer,
   Organization,
+  ReservationId,
   ReservationStatus,
   ReservationValidity,
   ReserverType,
@@ -31,7 +32,7 @@ export type UnfinishedBoatSpaceReservation = {
 export type ReservationOperation = 'Switch' | 'Renew' | 'Terminate'
 
 export type BoatSpaceReservation = {
-  id: number
+  id: ReservationId
   citizen?: Citizen
   status: ReservationStatus
   boatSpace: BoatSpace
@@ -51,12 +52,13 @@ export type BoatSpaceReservation = {
 }
 
 export type ExistingBoatSpaceReservation = {
-  id: number
+  id: ReservationId
   boatSpace: BoatSpace
   allowedReservationOperations: ReservationOperation[]
   created: HelsinkiDateTime
   endDate: LocalDate
   validity: ReservationValidity
+  active: boolean
   totalPrice: string
   vatValue: string
   boat: Boat
@@ -77,7 +79,7 @@ export type SwitchableOrganizationReservation = {
 }
 
 export type SwitchableReservation = {
-  id: number
+  id: ReservationId
   boatSpace: BoatSpace
   totalPrice: string
   vatValue: string
@@ -90,7 +92,7 @@ export type CanReserveReservation = {
 }
 
 export type BoatSpaceReservationResponse = {
-  id: number
+  id: ReservationId
   reserverType: ReserverType
   citizen?: ResponseCitizen
   boatSpace: BoatSpace
@@ -110,13 +112,14 @@ export type BoatSpaceReservationResponse = {
 }
 
 export type ExistingBoatSpaceReservationResponse = {
-  id: number
+  id: ReservationId
   boatSpace: BoatSpace
   canRenew: boolean
   canSwitch: boolean
   created: string
   endDate: string
   validity: ReservationValidity
+  isActive: boolean
   totalPrice: string
   vatValue: string
   boat: Boat
@@ -178,3 +181,9 @@ export type Municipality = {
   code: number
   name: string
 }
+
+export type ReservationError =
+  | 'BoatSpaceNotAvailable'
+  | 'InvalidSignature'
+  | 'PaymentNotFound'
+  | 'ReservationNotFound'

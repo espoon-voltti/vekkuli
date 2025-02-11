@@ -8,7 +8,7 @@ import fi.espoo.vekkuli.pages.getByDataTestId
 
 interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHaveReservationList<T> {
     class ReservationSection(
-        private val root: Locator
+        val root: Locator
     ) {
         private val fields = FieldLocator(root)
         val terminateButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Irtisano paikka"))
@@ -17,6 +17,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
 
         val locationName = fields.getField("Satama")
         val place = fields.getField("Paikka")
+        val validity = fields.getField("Varaus voimassa")
 
         fun getTrailerSection() = TrailerSection(root.getByDataTestId("trailer-information"))
     }
@@ -38,8 +39,12 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
         val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
     }
 
+    class TerminateReservationSuccessModal(
+        val root: Locator
+    )
+
     class TrailerSection(
-        root: Locator
+        val root: Locator
     ) {
         private val fields = FieldLocator(root)
         val editButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Muokkaa trailerin tietoja").setExact(true))
@@ -85,5 +90,5 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
 
     fun getTerminateReservationFailureModal() = TerminateReservationFailureModal(getByDataTestId("terminate-reservation-failure-modal"))
 
-    fun getTerminateReservationSuccessModal() = getByDataTestId("terminate-reservation-success-modal")
+    fun getTerminateReservationSuccessModal() = TerminateReservationSuccessModal(getByDataTestId("terminate-reservation-success-modal"))
 }

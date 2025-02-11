@@ -11,6 +11,8 @@ export const reservationStatuses = [
   'Invoiced'
 ] as const
 
+export type ReservationId = number
+
 export type ReservationStatus = (typeof reservationStatuses)[number]
 
 export const reserverTypes = ['Citizen', 'Organization'] as const
@@ -146,3 +148,9 @@ export type Trailer = {
 }
 
 export type NewTrailer = Omit<Trailer, 'id'>
+
+export type ContactDetails = {
+  name: string
+  phone: string
+  email: string
+}

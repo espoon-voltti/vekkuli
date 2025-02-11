@@ -120,18 +120,32 @@ const sv: Translations = {
     closeMenu: 'Stäng menyn',
     goToHomepage: 'Gå till hemsidan',
     goToMainContent: 'Hoppa till innehållet',
-    selectLanguage: 'Välj språk'
+    selectLanguage: 'Välj språk',
+    mainNavigation: 'Huvudnavigering'
   },
   components: componentTranslations,
   reservation: {
     searchPage: {
+      title: 'Esbo stads båtplatsuthyrning',
+      image: {
+        harbors: {
+          altText: 'Esbos småbåtshamnar'
+        }
+      },
       missingFieldsInfoBox:
         'Ange först båttyp och mått för att se vilka platser som passar din båt.',
+      freeSpaceCount: 'Antal platser tillgängliga enligt sökkriterier',
+      size: 'Storlek',
+      amenityLabel: 'Förtöjningssätt',
+      price: 'Pris/Period',
+      place: 'Plats',
       filters: {
         title: 'Sök båtplats',
         boatSpaceType: 'Sök plats',
         harbor: 'Hamnen',
         amenities: 'Faciliteter',
+        harborHeader: 'Hamnar',
+        amenityHeader: 'Förtöjningssätt',
         boatType: 'Båttyp',
         storageTypeAmenities: 'Förråd typ',
         branchSpecific: {
@@ -151,6 +165,19 @@ const sv: Translations = {
             width: 'Förvaringsplatsens bredd (m)',
             length: 'Förvaringsplatsens längd (m)'
           }
+        }
+      },
+      infoText: {
+        title: 'Bokning av båtplatser 2025',
+        periods: {
+          newReservations:
+            'Bokning av nya båtplatser för Esbo-invånare från och med 3.3. och för andra från 1.4.–30.9.2025',
+          trailerReservations:
+            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2025',
+          winter:
+            'Bokning av nya vinterplatser för Esbo-invånare från 15.9.–31.12.2025',
+          storage:
+            'Bokning av förvaringsplatser i Ämmäsmäki för alla från 15.9.2025–31.7.2026'
         }
       },
       modal: {
@@ -196,7 +223,19 @@ const sv: Translations = {
         Buck: {
           title: 'Bock information'
         }
-      }
+      },
+      reserver: 'Bokare',
+      tenant: 'Hyresgäst',
+      boatInformation: 'Båtinformation',
+      boatSpaceInformation: 'Båtplats att reservera',
+      harbor: 'Hamn',
+      place: 'Plats',
+      boatSpaceType: 'Båtplatstyp',
+      boatSpaceDimensions: 'Båtplatsens dimensioner',
+      boatSpaceAmenity: 'Förtöjningssätt',
+      reservationValidity: 'Reservationens giltighet:',
+      price: 'Pris',
+      storageType: 'Förvaringstyp'
     },
     paymentPage: {
       paymentCancelled:
@@ -206,11 +245,13 @@ const sv: Translations = {
       chooseBoatSpace: 'Välj plats',
       fillInformation: 'Fyll i information',
       payment: 'Betalning',
-      confirmation: 'Bekräftelse'
+      confirmation: 'Bekräftelse',
+      error: 'Fel'
     },
     noRegistererNumber: 'Inget registreringsnummer',
     certify: 'Jag intygar att de uppgifter jag har lämnat är korrekta.',
-    agreeToRules: '',
+    agreeToRules:
+      'Jag har läst och godkänner att följa hamnreglerna. Bokningen ersätter hyresavtalet som nämns i hamnreglerna.',
     prices: {
       totalPrice: (amount: string) => `Totalt: ${amount} €`,
       vatValue: (amount: string) => `Moms: ${amount} €`,
@@ -221,22 +262,12 @@ const sv: Translations = {
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
-      boatSpaceType: BoatSpaceType
+      isActive: boolean
     ) => {
-      switch (validity) {
-        case 'FixedTerm':
-          return `Till ${endDate.format()}`
-        case 'Indefinite':
-          switch (boatSpaceType) {
-            case 'Slip':
-              return 'Tills vidare, förnyas årligen i januari'
-            case 'Winter':
-            case 'Storage':
-              return 'Tills vidare, förnyas årligen i augusti'
-            case 'Trailer':
-              return 'Tills vidare, förnyas årligen i april'
-          }
+      if (validity === 'Indefinite' && isActive) {
+        return 'Tills vidare, förnyas årligen'
       }
+      return `Till ${endDate.format()}`
     },
     reserverDiscountInfo: (
       type: ReserverType,
@@ -303,7 +334,14 @@ const sv: Translations = {
       'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
     deleteSuccess: 'Båten har tagits bort',
     confirmDelete: (boatName: string) =>
-      `Du håller på att ta bort informationen för båten ${boatName}`
+      `Du håller på att ta bort informationen för båten ${boatName}`,
+    editBoatDetails: 'Redigera båtdetaljer',
+    boatName: 'Båtnamn',
+    boatDepthInMeters: 'Djupgående (m)',
+    boatWeightInKg: 'Vikt (kg)',
+    registrationNumber: 'Registreringsnummer',
+    otherIdentifier: 'Annan identifierare',
+    additionalInfo: 'Ytterligare information'
   },
   boatSpace: {
     boatSpaceType: {
@@ -364,7 +402,8 @@ const sv: Translations = {
       Beam: 'Bom',
       WalkBeam: 'Gångbom',
       Trailer: 'Trailerförvaring',
-      Buck: 'Förvaring på bock'
+      Buck: 'Förvaring på bock',
+      None: '-'
     },
     winterStorageType: {
       Trailer: 'Trailerförvaring',
@@ -382,7 +421,9 @@ const sv: Translations = {
     nationalId: 'Personnummer',
     postalCode: 'Postnummer',
     postOffice: 'Postort',
-    municipality: 'Kommun'
+    municipality: 'Kommun',
+    birthday: 'Födelsedatum',
+    streetAddress: 'Adress'
   },
   citizenPage: {
     title: 'Mina uppgifter',
@@ -396,12 +437,21 @@ const sv: Translations = {
       },
       modal: {
         goBackToReservation: 'Gå till bokningen'
-      }
+      },
+      showAllBoats: 'Visa även båtar som inte är kopplade till en reservation'
     }
   },
   organization: {
     organizationPhone: 'Organisationens telefonnummer',
-    organizationEmail: 'Organisationens e-post'
+    organizationEmail: 'Organisationens e-post',
+    contactDetails: {
+      title: 'Kontaktpersoner',
+      fields: {
+        name: 'Namn',
+        phone: 'Telefonnummer',
+        email: 'E-post'
+      }
+    }
   },
   payment: {
     title: 'Välj betalningsmetod'

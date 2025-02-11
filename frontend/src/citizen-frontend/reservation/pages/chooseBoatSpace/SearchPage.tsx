@@ -41,7 +41,7 @@ export default React.memo(function SearchPage() {
 
   const bind = useForm(
     searchFreeSpacesForm,
-    () => initialFormState(i18n, searchState),
+    () => initialFormState(searchState),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => {
@@ -103,16 +103,19 @@ export default React.memo(function SearchPage() {
       {(reservation) =>
         !reservation && (
           <>
-            <MainSection>
+            <MainSection ariaLabel={i18n.reservation.steps.chooseBoatSpace}>
               <StepIndicator step="chooseBoatSpace" />
               <Container>
-                <h2>Espoon kaupungin venepaikkojen vuokraus</h2>
+                <h2>{i18n.reservation.searchPage.title}</h2>
                 <ReservationSeasons />
                 <Columns>
                   <Column isTwoFifths>
                     <SearchFilters bind={bind} />
                     <div className="mt-xl">
-                      <img src={MapImage} alt="Espoon venesatamat" />
+                      <img
+                        src={MapImage}
+                        alt={i18n.reservation.searchPage.image.harbors.altText}
+                      />
                     </div>
                   </Column>
                   <Column>

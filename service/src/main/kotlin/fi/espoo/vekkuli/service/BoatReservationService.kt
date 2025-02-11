@@ -35,6 +35,13 @@ data class ReservationResultSuccess(
     val reservationValidity: ReservationValidity
 )
 
+enum class PaymentProcessErrorCode {
+    BoatSpaceNotAvailable,
+    InvalidSignature,
+    PaymentNotFound,
+    ReservationNotFound,
+}
+
 sealed class ReservationResult(
     val success: Boolean
 ) {
@@ -48,11 +55,19 @@ sealed class ReservationResult(
 }
 
 sealed class PaymentProcessResult {
-    data class Success(
+    data class Paid(
         val reservation: BoatSpaceReservationDetails
     ) : PaymentProcessResult()
 
-    object Failure : PaymentProcessResult()
+    data class Cancelled(
+        val reservation: BoatSpaceReservationDetails
+    ) : PaymentProcessResult()
+
+    data class Failure(
+        val errorCode: PaymentProcessErrorCode,
+        val isPaid: Boolean,
+        val reservation: BoatSpaceReservationDetails? = null
+    ) : PaymentProcessResult()
 
     data class HandledAlready(
         val reservation: BoatSpaceReservationDetails
@@ -94,48 +109,59 @@ class BoatReservationService(
     private val organizationService: OrganizationService,
     private val paymentRepository: PaymentRepository,
     private val boatSpaceRepository: BoatSpaceRepository,
-    private val reserverRepository: ReserverRepository
+    private val reserverRepository: ReserverRepository,
+    private val reserverService: ReserverService,
 ) {
-    fun handlePaymentResult(
+    fun handlePaytrailPaymentResult(
         params: Map<String, String>,
-        paymentSuccess: Boolean
+        isPaid: Boolean
     ): PaymentProcessResult {
         if (!paytrail.checkSignature(params)) {
-            return PaymentProcessResult.Failure
+            return PaymentProcessResult.Failure(PaymentProcessErrorCode.InvalidSignature, isPaid)
         }
-        val stamp = UUID.fromString(params.get("checkout-stamp"))
 
-        val payment = paymentService.getPayment(stamp)
-        if (payment == null) return PaymentProcessResult.Failure
+        val paymentId = UUID.fromString(params.get("checkout-stamp"))
+        return handlePaymentResult(paymentId, isPaid)
+    }
 
-        val reservation = boatSpaceReservationRepo.getBoatSpaceReservationWithPaymentId(stamp)
-        if (reservation == null) return PaymentProcessResult.Failure
+    fun handlePaymentResult(
+        paymentId: UUID,
+        isPaid: Boolean
+    ): PaymentProcessResult {
+        val payment =
+            paymentService.getPayment(paymentId)
+                ?: return PaymentProcessResult.Failure(PaymentProcessErrorCode.PaymentNotFound, isPaid)
+
+        val reservation =
+            boatSpaceReservationRepo.getBoatSpaceReservationWithPaymentId(paymentId)
+                ?: return PaymentProcessResult.Failure(PaymentProcessErrorCode.ReservationNotFound, isPaid)
+
+        if (payment.status != PaymentStatus.Created) {
+            return PaymentProcessResult.HandledAlready(reservation)
+        }
+
+        paymentService.updatePayment(payment.id, isPaid, if (isPaid) timeProvider.getCurrentDateTime() else null)
+
+        if (!isPaid) {
+            return PaymentProcessResult.Cancelled(reservation)
+        }
+
+        val boatSpaceWasAvailable =
+            boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
+                payment.id
+            ) != null
+
+        if (!boatSpaceWasAvailable) {
+            return PaymentProcessResult.Failure(PaymentProcessErrorCode.BoatSpaceNotAvailable, isPaid, reservation)
+        }
 
         if (reservation.originalReservationId != null) {
             markReservationEnded(reservation.originalReservationId)
         }
 
-        if (payment.status != PaymentStatus.Created) return PaymentProcessResult.HandledAlready(reservation)
+        sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
 
-        handleReservationPaymentResult(stamp, paymentSuccess)
-        if (paymentSuccess) sendReservationEmailAndInsertMemoIfSwitch(reservation.id)
-
-        return PaymentProcessResult.Success(reservation)
-    }
-
-    fun handleReservationPaymentResult(
-        paymentId: UUID,
-        success: Boolean
-    ): Int? {
-        paymentService.updatePayment(paymentId, success, if (success) timeProvider.getCurrentDateTime() else null)
-        if (!success) return boatSpaceReservationRepo.getBoatSpaceReservationIdForPayment(paymentId)
-
-        val reservationId =
-            boatSpaceReservationRepo.updateBoatSpaceReservationOnPaymentSuccess(
-                paymentId
-            )
-
-        return reservationId
+        return PaymentProcessResult.Paid(reservation)
     }
 
     @Transactional
@@ -320,6 +346,7 @@ class BoatReservationService(
         creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity,
     ): BoatSpaceReservation =
         boatSpaceReservationRepo.insertBoatSpaceReservation(
             reserverId,
@@ -328,6 +355,7 @@ class BoatReservationService(
             creationType,
             startDate,
             endDate,
+            validity
         )
 
     fun insertBoatSpaceReservationAsEmployee(
@@ -596,14 +624,7 @@ class BoatReservationService(
         val isInvoiced = reservation.paymentType == PaymentType.Invoice
         val placeName = "${reservation.locationName} ${reservation.place}"
         val reservationStatus = reservation.status
-
-        val placeTypeText =
-            when (reservation.type) {
-                BoatSpaceType.Winter -> "talvipaikka"
-                BoatSpaceType.Storage -> "säilytyspaikka"
-                BoatSpaceType.Slip -> "laituripaikka"
-                BoatSpaceType.Trailer -> "traileripaikka"
-            }
+        val organizationReservation = reservation.reserverType == ReserverType.Organization
 
         val defaultParams =
             mapOf(
@@ -615,10 +636,21 @@ class BoatReservationService(
                         .intToDecimal(boatSpace.widthCm),
                 "length" to
                     fi.espoo.vekkuli.utils
-                        .intToDecimal(boatSpace.lengthCm),
-                "amenity" to messageUtil.getMessage("boatSpaces.amenityOption.${boatSpace.amenity}"),
-                "endDate" to reservation.endDate
-            )
+                        .intToDecimal(boatSpace.lengthCm)
+            ) +
+                messageUtil.getLocalizedMap(
+                    "placeType",
+                    "boatSpaceReservation.email.types.${reservation.type}"
+                ) +
+                messageUtil.getLocalizedMap(
+                    "amenity",
+                    "boatSpaces.amenityOption.${boatSpace.amenity}"
+                ) +
+                messageUtil.getLocalizedMap(
+                    "endDate",
+                    "boatSpaceReservation.email.validity.${reservation.validity}",
+                    listOf(formatAsFullDate(reservation.endDate))
+                ) + getCitizenReserverForOrganization(organizationReservation, reservation)
 
         data class EmailSettings(
             val template: String,
@@ -628,7 +660,7 @@ class BoatReservationService(
         val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
 
         val recipients =
-            if (reservation.reserverType == ReserverType.Organization) {
+            if (organizationReservation) {
                 organizationService
                     .getOrganizationMembers(reservation.reserverId)
                     .map { it.email } + listOf(reservation.email)
@@ -644,9 +676,7 @@ class BoatReservationService(
                             EmailSettings(
                                 template = "reservation_created_by_employee_confirmed",
                                 recipients = recipients,
-                                params =
-                                    defaultParams
-                                        .plus("reservationDescription" to "$placeTypeText $placeName")
+                                params = defaultParams
                             )
                         } else {
                             EmailSettings(
@@ -654,7 +684,6 @@ class BoatReservationService(
                                 recipients = recipients,
                                 params =
                                     defaultParams
-                                        .plus("reservationDescription" to "$placeTypeText $placeName")
                                         .plus("invoiceAddress" to invoiceAddress)
                                         .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
                             )
@@ -675,15 +704,33 @@ class BoatReservationService(
                     )
                 }
                 CreationType.Renewal -> {
-                    EmailSettings(
-                        template = "reservation_renewed_by_employee",
-                        recipients = recipients,
-                        params =
-                            defaultParams
-                                .plus("reservationDescription" to "$placeTypeText $placeName")
-                                .plus("invoiceAddress" to invoiceAddress)
-                                .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
-                    )
+                    if (isInvoiced) {
+                        if (reservationStatus == ReservationStatus.Confirmed) {
+                            EmailSettings(
+                                template = "reservation_renewed_by_employee_confirmed",
+                                recipients = recipients,
+                                params = defaultParams
+                            )
+                        } else {
+                            EmailSettings(
+                                template = "reservation_renewed_by_employee",
+                                recipients = recipients,
+                                params =
+                                    defaultParams
+                                        .plus("invoiceAddress" to invoiceAddress)
+                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                            )
+                        }
+                    } else {
+                        EmailSettings(
+                            template = "reservation_renewed_by_citizen",
+                            recipients = recipients,
+                            params =
+                                defaultParams
+                                    .plus("invoiceAddress" to invoiceAddress)
+                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                        )
+                    }
                 }
             }
 
@@ -697,6 +744,30 @@ class BoatReservationService(
 
         if (reservation.creationType == CreationType.Switch) {
             documentSwitchToMemo(reservation)
+        }
+    }
+
+    private fun getCitizenReserverForOrganization(
+        organizationReservation: Boolean,
+        reservation: BoatSpaceReservationDetails
+    ): Map<String, String> {
+        val key = "citizenReserver"
+        val actingCitizen =
+            if (organizationReservation && reservation.actingCitizenId != null) {
+                reserverService.getCitizen(reservation.actingCitizenId)?.fullName
+            } else {
+                null
+            }
+        return if (actingCitizen != null) {
+            messageUtil.getLocalizedMap(
+                key,
+                "boatSpaceReservation.email.reserver",
+                listOf(actingCitizen)
+            )
+        } else {
+            messageUtil.locales.associate { locale ->
+                "$key${locale.language.replaceFirstChar { it.uppercaseChar() }}" to ""
+            }
         }
     }
 

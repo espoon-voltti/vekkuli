@@ -2,11 +2,10 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import defaultsUntyped from 'lib-customizations/espoo/citizen'
-
 import mergeWith from 'lodash/mergeWith'
 
 import { JsonOf } from 'lib-common/json'
+import defaultsUntyped from 'lib-customizations/espoo/citizen'
 
 import { mergeCustomizer } from './common'
 import en from './defaults/citizen/i18n/en'

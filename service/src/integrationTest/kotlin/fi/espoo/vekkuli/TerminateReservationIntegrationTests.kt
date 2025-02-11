@@ -66,7 +66,8 @@ class TerminateReservationIntegrationTests : IntegrationTestBase() {
                 boatSpaceId,
                 CreationType.New,
                 startDate = timeProvider.getCurrentDate().minusWeeks(2),
-                endDate = endDate
+                endDate = endDate,
+                validity = ReservationValidity.FixedTerm
             )
 
         formReservationService.processBoatSpaceReservation(

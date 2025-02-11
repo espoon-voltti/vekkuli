@@ -106,6 +106,8 @@ object BoatSpaceConfig {
                 )
 
             BoatSpaceAmenity.None -> Pair(boatWidth, Int.MAX_VALUE)
+            BoatSpaceAmenity.Trailer -> Pair(boatWidth, Int.MAX_VALUE)
+            BoatSpaceAmenity.Buck -> Pair(boatWidth, Int.MAX_VALUE)
             else -> Pair(0, Int.MAX_VALUE)
         }
     }
@@ -152,6 +154,8 @@ object BoatSpaceConfig {
                 )
 
             BoatSpaceAmenity.None -> Pair(boatLength, Int.MAX_VALUE)
+            BoatSpaceAmenity.Trailer -> Pair(boatLength, Int.MAX_VALUE)
+            BoatSpaceAmenity.Buck -> Pair(boatLength, Int.MAX_VALUE)
             else -> Pair(0, Int.MAX_VALUE)
         }
     }
@@ -199,7 +203,7 @@ object BoatSpaceConfig {
         ReservationValidity.Indefinite -> getNextDate(currentDate, 1, 31)
     }
 
-    fun getWinterEndDate(now: LocalDate) = getNextDate(now, 8, 31)
+    fun getWinterEndDate(now: LocalDate) = getNextDate(now, 9, 14)
 
     fun getStorageEndDate(now: LocalDate) = getNextDate(now, 9, 14)
 

@@ -11,6 +11,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.0.20"
+    id("org.owasp.dependencycheck") version "12.0.1"
 
     idea
 }
@@ -18,7 +19,7 @@ plugins {
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.1")
-        classpath("org.flywaydb:flyway-database-postgresql:11.2.0")
+        classpath("org.flywaydb:flyway-database-postgresql:11.3.0")
     }
 }
 
@@ -80,10 +81,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.ws:spring-ws-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0")
+    implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
     implementation("org.flywaydb:flyway-core:10.20.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.2.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.3.0")
     implementation("org.postgresql:postgresql:42.7.1")
     api(platform("org.jdbi:jdbi3-bom:3.45.0"))
     implementation("org.jdbi:jdbi3-core")
@@ -117,7 +118,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("software.amazon.awssdk:ses:2.30.8")
-    implementation("software.amazon.awssdk:core:2.28.26")
+    implementation("software.amazon.awssdk:core:2.30.16")
     implementation("software.amazon.awssdk:regions:2.20.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.24.0")
@@ -216,6 +217,18 @@ tasks {
             showStandardStreams = true
             events("passed", "skipped", "failed")
         }
+    }
+
+    dependencyCheck {
+        failBuildOnCVSS = 0.0f
+        analyzers.apply {
+            assemblyEnabled = false
+            nodeAuditEnabled = false
+            nodeEnabled = false
+            nuspecEnabled = false
+        }
+        nvd.apply { apiKey = System.getenv("NVD_API_KEY") }
+        suppressionFile = "$projectDir/owasp-suppressions.xml"
     }
 }
 

@@ -123,6 +123,7 @@ data class BoatSpaceReservationItemWithWarningRow(
     val municipalityCode: Int,
     val municipalityName: String,
     val paymentDate: LocalDate?,
+    val invoiceDueDate: LocalDate?,
     val validity: ReservationValidity
 )
 
@@ -336,7 +337,20 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE p.id = :paymentId
                         AND bsr.id = p.reservation_id
                         AND bsr.status = 'Payment' 
-                        AND bsr.created > :currentTime - make_interval(secs => :paymentTimeout)
+                        AND (
+                            (bsr.created > :currentTime - make_interval(secs => :paymentTimeout))
+                            OR
+                            NOT EXISTS (
+                                SELECT 1
+                                FROM boat_space_reservation bsr_other
+                                WHERE
+                                    bsr_other.id != bsr.id
+                                    AND
+                                    bsr_other.boat_space_id = bsr.boat_space_id
+                                    AND
+                                    bsr_other.created > bsr.created
+                            )
+                        )
                     RETURNING bsr.id
                     """.trimIndent()
                 )
@@ -850,7 +864,8 @@ class JdbiBoatSpaceReservationRepository(
                         t.reserver_id AS trailer_reserver_id,
                         t.registration_code AS trailer_registration_code,
                         t.width_cm AS trailer_width_cm,
-                        t.length_cm AS trailer_length_cm
+                        t.length_cm AS trailer_length_cm,
+                        i.due_date as invoice_due_date
                     FROM boat_space_reservation bsr
                     LEFT JOIN boat b on b.id = bsr.boat_id
                     LEFT JOIN trailer t on t.id = bsr.trailer_id
@@ -860,6 +875,7 @@ class JdbiBoatSpaceReservationRepository(
                     JOIN municipality m ON r.municipality_code = m.code
                     LEFT JOIN reservation_warning rw ON rw.reservation_id = bsr.id
                     LEFT JOIN payment p ON (p.reservation_id = bsr.id AND p.status = 'Success')
+                    LEFT JOIN invoice i ON bsr.id = i.reservation_id
                     WHERE $filterQuery
                     $sortByQuery
                     """.trimIndent()
@@ -915,7 +931,8 @@ class JdbiBoatSpaceReservationRepository(
                         paymentDate = row.paymentDate,
                         storageType = row.storageType,
                         validity = row.validity,
-                        amenity = row.amenity
+                        amenity = row.amenity,
+                        invoiceDueDate = row.invoiceDueDate
                     )
                 }
         }
@@ -927,13 +944,14 @@ class JdbiBoatSpaceReservationRepository(
         creationType: CreationType,
         startDate: LocalDate,
         endDate: LocalDate,
+        validity: ReservationValidity
     ): BoatSpaceReservation =
         jdbi.withHandleUnchecked { handle ->
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type)
-                    VALUES (:reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType)
+                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type, validity)
+                    VALUES (:reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType, :validity)
                     RETURNING *
                     """.trimIndent()
                 )
@@ -944,6 +962,7 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("endDate", endDate)
             query.bind("currentDate", timeProvider.getCurrentDateTime())
             query.bind("creationType", creationType)
+            query.bind("validity", validity)
             query.mapTo<BoatSpaceReservation>().one()
         }
 
@@ -1149,7 +1168,7 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}
                     WHERE bsr.status = 'Confirmed' AND validity = :validity
-                        AND end_date < :endDateCut AND end_date > :currentTime
+                        AND end_date < :endDateCut AND end_date::date > :currentTime::date
                     """.trimIndent()
                 )
             query.bind("validity", validity)

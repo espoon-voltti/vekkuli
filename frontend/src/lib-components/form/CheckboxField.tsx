@@ -1,6 +1,7 @@
 import { Column } from 'lib-components/dom'
 import React, { useState } from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { MultiSelectState } from 'lib-common/form/form'
 import { BoundFormState } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -8,7 +9,7 @@ import { useFormErrorContext } from 'lib-common/form/state'
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
-import { bindOrPlaceholders } from './utils'
+import { bindOrPlaceholders, getI18nLabel } from './utils'
 
 interface CheckboxFieldProps<T> extends Omit<BaseFieldProps, 'onChange'> {
   bind?: BoundFormState<MultiSelectState<T>>
@@ -25,6 +26,7 @@ function CheckboxFieldR<T>({
   readOnly,
   showErrorsBeforeTouched
 }: CheckboxFieldProps<T>) {
+  const i18n = useTranslation()
   const { state, update, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
@@ -68,7 +70,7 @@ function CheckboxFieldR<T>({
                 name={name}
                 selected={state.domValues.includes(option.domValue)}
                 value={option.domValue}
-                label={option.label}
+                label={getI18nLabel(option.label, i18n)}
                 isFullWidth={isFullWidth}
                 ariaInvalid={showError}
               />

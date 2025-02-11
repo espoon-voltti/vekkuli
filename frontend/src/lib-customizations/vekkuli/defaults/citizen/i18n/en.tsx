@@ -120,7 +120,8 @@ const en: Translations = {
     closeMenu: 'Close menu',
     goToHomepage: 'Go to homepage',
     goToMainContent: 'Skip to main content',
-    selectLanguage: 'Select language'
+    selectLanguage: 'Select language',
+    mainNavigation: 'Main navigation'
   },
   components: componentTranslations,
   reservation: {
@@ -128,16 +129,30 @@ const en: Translations = {
       chooseBoatSpace: 'Select a space',
       fillInformation: 'Fill in information',
       payment: 'Make payment',
-      confirmation: 'Confirmation'
+      confirmation: 'Confirmation',
+      error: 'Error'
     },
     searchPage: {
+      title: 'Espoo City boat space rental',
+      image: {
+        harbors: {
+          altText: "Espoo's marinas"
+        }
+      },
       missingFieldsInfoBox:
         'First provide the boat type and dimensions to see suitable spaces for your boat.',
+      freeSpaceCount: 'Number of places available according to search criteria',
+      size: 'Size',
+      amenityLabel: 'Amenity',
+      price: 'Price/Season',
+      place: 'Place',
       filters: {
         title: 'Boat space reservation',
         boatSpaceType: 'Space type',
         harbor: 'Harbor',
         amenities: 'Amenities',
+        harborHeader: 'Harbor',
+        amenityHeader: 'Amenity',
         boatType: 'Boat type',
         storageTypeAmenities: 'Storage type',
         branchSpecific: {
@@ -157,6 +172,19 @@ const en: Translations = {
             width: 'Storage space width (m)',
             length: 'Storage space length (m)'
           }
+        }
+      },
+      infoText: {
+        title: 'Booking Boat Spaces 2025',
+        periods: {
+          newReservations:
+            'Booking new boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025',
+          trailerReservations:
+            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2025',
+          winter:
+            'Booking new winter spaces for Espoo residents from 15.9.–31.12.2025',
+          storage:
+            'Booking Ämmäsmäki storage spaces for everyone from 15.9.2025–31.7.2026'
         }
       },
       modal: {
@@ -202,7 +230,19 @@ const en: Translations = {
         Buck: {
           title: 'Buck information'
         }
-      }
+      },
+      reserver: 'Reserver',
+      tenant: 'Renter',
+      boatInformation: 'Boat information',
+      boatSpaceInformation: 'Boat space to be reserved',
+      harbor: 'Harbor',
+      place: 'Place',
+      boatSpaceType: 'Boat space type',
+      boatSpaceDimensions: 'Boat space dimensions',
+      boatSpaceAmenity: 'Amenity',
+      reservationValidity: 'Reservation Validity:',
+      price: 'Price',
+      storageType: 'Storage method'
     },
     paymentPage: {
       paymentCancelled:
@@ -230,22 +270,12 @@ const en: Translations = {
     validity: (
       endDate: LocalDate,
       validity: ReservationValidity,
-      boatSpaceType: BoatSpaceType
+      isActive: boolean
     ) => {
-      switch (validity) {
-        case 'FixedTerm':
-          return `until ${endDate.format()}`
-        case 'Indefinite':
-          switch (boatSpaceType) {
-            case 'Slip':
-              return 'For now, resume annually in January'
-            case 'Winter':
-            case 'Storage':
-              return 'For now, resume annually in August'
-            case 'Trailer':
-              return 'For now, resume annually in April'
-          }
+      if (validity === 'Indefinite' && isActive) {
+        return 'For now, resume annually'
       }
+      return `until ${endDate.format()}`
     },
     reserverDiscountInfo: (
       type: ReserverType,
@@ -307,7 +337,14 @@ const en: Translations = {
       'An error occurred while deleting the boat. Please contact customer support.',
     deleteSuccess: 'The boat has been deleted',
     confirmDelete: (boatName: string) =>
-      `You are about to delete the information for the boat ${boatName}`
+      `You are about to delete the information for the boat ${boatName}`,
+    editBoatDetails: 'Edit Boat Details',
+    boatName: 'Boat name',
+    boatDepthInMeters: 'Draft (m)',
+    boatWeightInKg: 'Weight (kg)',
+    registrationNumber: 'Registration Number',
+    otherIdentifier: 'Other Identifier',
+    additionalInfo: 'Additional Information'
   },
   boatSpace: {
     renterType: {
@@ -352,7 +389,8 @@ const en: Translations = {
       Beam: 'Beam',
       WalkBeam: 'Walk beam',
       Trailer: 'Trailer storage',
-      Buck: 'Stand storage'
+      Buck: 'Stand storage',
+      None: '-'
     },
     ownershipStatusInfo: (type: OwnershipStatus, spaceType: BoatSpaceType) => {
       if (type === 'CoOwner') {
@@ -381,7 +419,9 @@ const en: Translations = {
     nationalId: 'National ID',
     postalCode: 'Postal Code',
     postOffice: 'Post Office',
-    municipality: 'Municipality'
+    municipality: 'Municipality',
+    birthday: 'Birthday',
+    streetAddress: 'Address'
   },
   citizenPage: {
     title: 'My Information',
@@ -395,12 +435,21 @@ const en: Translations = {
       },
       modal: {
         goBackToReservation: 'Go to the reservation'
-      }
+      },
+      showAllBoats: 'Also show boats that are not linked to a reservation'
     }
   },
   organization: {
     organizationPhone: 'Organization phone number',
-    organizationEmail: 'Organization email'
+    organizationEmail: 'Organization email',
+    contactDetails: {
+      title: 'Contact information',
+      fields: {
+        name: 'Name',
+        phone: 'Phone',
+        email: 'Email'
+      }
+    }
   },
   payment: {
     title: 'Choose payment method'

@@ -24,6 +24,22 @@ class PermissionService(
             else -> userId in organizationService.getOrganizationMembers(orgId).map { it.id }
         }
 
+    fun hasAccessToReservation(
+        reserverId: UUID,
+        reservationId: Int
+    ): Boolean {
+        val reservation = boatSpaceReservationRepo.getReservationWithDependencies(reservationId)
+        return when {
+            userService.isAppUser(reserverId) -> true
+            reservation?.reserverId == null -> false
+            reservation.reserverId == reserverId -> true
+            reservation.reserverType == ReserverType.Organization -> {
+                reserverId in organizationService.getOrganizationMembers(reservation.reserverId).map { it.id }
+            }
+            else -> false
+        }
+    }
+
     fun canTerminateBoatSpaceReservation(
         terminatorId: UUID,
         reservationId: Int

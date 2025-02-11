@@ -49,38 +49,35 @@ class SeasonalService(
     fun isReservationRenewalPeriodActive(
         isEspooCitizen: Boolean,
         type: BoatSpaceType
-    ): Boolean {
-        return hasActiveReservationPeriod(
+    ): Boolean =
+        hasActiveReservationPeriod(
             seasonalRepository.getReservationPeriods(),
             timeProvider.getCurrentDate(),
             isEspooCitizen,
             type,
             ReservationOperation.Renew
         )
-    }
 
     fun getRenewReservationStartAndEndDate(
         boatSpaceType: BoatSpaceType,
         validity: ReservationValidity
-    ): DateRange {
-        return DateRange(
+    ): DateRange =
+        DateRange(
             startDate = timeProvider.getCurrentDate(),
             endDate = getBoatSpaceReservationEndDateForRenew(boatSpaceType, validity)
         )
-    }
 
     fun isReservationSwitchPeriodActive(
         isEspooCitizen: Boolean,
         type: BoatSpaceType
-    ): Boolean {
-        return hasActiveReservationPeriod(
+    ): Boolean =
+        hasActiveReservationPeriod(
             seasonalRepository.getReservationPeriods(),
             timeProvider.getCurrentDate(),
             isEspooCitizen,
             type,
             ReservationOperation.Change
         )
-    }
 
     fun isBoatSpaceReserved(boatSpaceId: Int): Boolean = boatSpaceRepository.isBoatSpaceReserved(boatSpaceId)
 
@@ -107,7 +104,6 @@ class SeasonalService(
 
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverId, BoatSpaceType.Storage)
         val hasSomePlace = reservations.isNotEmpty()
-
         val periods = seasonalRepository.getReservationPeriods()
 
         if (reservations.size >= 2) {
@@ -117,13 +113,14 @@ class SeasonalService(
 
         val now = timeProvider.getCurrentDate()
 
+        val reservationOperation = if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
         val hasActivePeriod =
             hasActiveReservationPeriod(
                 periods,
                 now,
                 isEspooCitizen,
                 BoatSpaceType.Storage,
-                if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
+                reservationOperation
             )
 
         if (!hasActivePeriod) {
@@ -132,13 +129,13 @@ class SeasonalService(
         }
 
         val endDate = getStorageEndDate(now)
-        val validity = if (!isEspooCitizen || reservations.isNotEmpty()) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
 
+        // Storage place reservations are always indefinite
         return ReservationResult.Success(
             ReservationResultSuccess(
                 now,
                 endDate,
-                validity
+                ReservationValidity.Indefinite
             )
         )
     }
@@ -149,20 +146,13 @@ class SeasonalService(
                 ReservationResultErrorCode.NoReserver
             )
         val reservations = boatSpaceReservationRepo.getBoatSpaceReservationsForReserver(reserverId, BoatSpaceType.Trailer)
-        val hasSomePlace = reservations.isNotEmpty()
-        val hasIndefinitePlace = reservations.any { it.validity == ReservationValidity.Indefinite }
         val isEspooCitizen = reserver.isEspooCitizen()
 
-        if (hasSomePlace && !isEspooCitizen) {
-            // Non-Espoo citizens can only have one reservation
+        if (reservations.isNotEmpty()) {
+            // Only one reservation allowed
             return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
         }
         val periods = seasonalRepository.getReservationPeriods()
-
-        if (reservations.size >= 2) {
-            // Only two reservations are allowed
-            return ReservationResult.Failure(ReservationResultErrorCode.MaxReservations)
-        }
 
         val now = timeProvider.getCurrentDate()
 
@@ -172,7 +162,7 @@ class SeasonalService(
                 now,
                 isEspooCitizen,
                 BoatSpaceType.Trailer,
-                if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
+                ReservationOperation.New
             )
 
         if (!hasActivePeriod) {
@@ -180,7 +170,7 @@ class SeasonalService(
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 
-        val validity = if (!isEspooCitizen || hasIndefinitePlace) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
+        val validity = if (!isEspooCitizen) ReservationValidity.FixedTerm else ReservationValidity.Indefinite
         val endDate = getTrailerEndDate(now, validity)
 
         return ReservationResult.Success(
@@ -295,7 +285,8 @@ class SeasonalService(
             hasActiveReservationPeriod(
                 periods,
                 now,
-                isEspooCitizen,
+                // always Espoo citizen
+                true,
                 BoatSpaceType.Winter,
                 if (hasSomePlace) ReservationOperation.SecondNew else ReservationOperation.New
             )

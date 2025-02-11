@@ -125,7 +125,6 @@ export const organizationForm = mapped(
 export type OrganizationForm = typeof organizationForm
 
 export default function initialFormState(
-  i18n: Translations,
   municipalities: Municipality[],
   organizations: Organization[],
   canCitizenReserve: boolean
@@ -167,7 +166,7 @@ export default function initialFormState(
         domValue: defaultChoice,
         options: availableRenterTypes.map((type) => ({
           domValue: type,
-          label: i18n.boatSpace.renterType[type],
+          label: (i18n: Translations) => i18n.boatSpace.renterType[type],
           value: type
         }))
       }

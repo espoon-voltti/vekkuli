@@ -1,10 +1,11 @@
 import { Column, Columns, Container } from 'lib-components/dom'
 import { FormSection } from 'lib-components/form'
 import TextField from 'lib-components/form/TextField'
-
 import React from 'react'
 
 import { Organization } from 'citizen-frontend/shared/types'
+
+import { MemberListLoader } from '../organizationMembers'
 
 export default React.memo(function OrganizationInformation({
   organization
@@ -81,6 +82,7 @@ export default React.memo(function OrganizationInformation({
           </Column>
         </Columns>
       </FormSection>
+      <MemberListLoader orgId={organization.id} />
     </Container>
   )
 })

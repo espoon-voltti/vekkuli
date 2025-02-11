@@ -4,39 +4,37 @@ import TextField from 'lib-components/form/TextField'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
-import { updateCitizenTrailerMutation } from 'citizen-frontend/citizen/queries'
 import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
-import { Result } from 'lib-common/api'
-import { useMutation, useQueryResult } from 'lib-common/query'
+import {
+  MutationDescription,
+  useMutation,
+  useQueryResult
+} from 'lib-common/query'
 
 import ErrorModal, {
   ErrorCode
-} from '../../../reservation/pages/fillInformation/ErrorModal'
-import { unfinishedReservationQuery } from '../../../reservation/queries'
+} from '../../reservation/pages/fillInformation/ErrorModal'
+import { unfinishedReservationQuery } from '../../reservation/queries'
 
-import TerminateModal from './TerminateModal'
-import TerminateModalFailure from './TerminateModalFailure'
-import TerminateModalSuccess from './TerminateModalSuccess'
 import { startRenewReservationMutation } from './queries'
-
-type TerminateModalState = 'hidden' | 'visible' | 'success' | 'failure'
 
 export default React.memo(function Reservation({
   reservation,
-  canTerminate
+  onTerminate,
+  updateTrailerMutation
 }: {
   reservation: ExistingBoatSpaceReservation
-  canTerminate?: boolean
+  onTerminate?: () => void
+  updateTrailerMutation?: MutationDescription<UpdateTrailerRequest, void>
 }) {
   const canSwitch = reservation.allowedReservationOperations.includes('Switch')
   const canRenew = reservation.allowedReservationOperations.includes('Renew')
 
   const i18n = useTranslation()
-  const [terminateModalVisible, setTerminateModalVisible] =
-    useState<TerminateModalState>('hidden')
   const [buttonsVisible, setButtonsVisible] = useState(true)
   const { boatSpace } = reservation
   const navigate = useNavigate()
@@ -44,23 +42,12 @@ export default React.memo(function Reservation({
   const reservationStatus = useQueryResult(
     unfinishedReservationQuery()
   ).getOrElse(false)
-  const onTermination = (mutation: Promise<Result<void>>) => {
-    mutation
-      .then((result) => {
-        if (result.isSuccess) setTerminateModalVisible('success')
-        else setTerminateModalVisible('failure')
-      })
-      .catch(() => {
-        setTerminateModalVisible('failure')
-      })
-  }
   const { mutateAsync: renewReservation, isPending: renewIsPending } =
     useMutation(startRenewReservationMutation)
 
   const onRenew = () => {
     renewReservation(reservation.id)
-      .then((response) => {
-        console.info('switch place response', response)
+      .then(() => {
         return navigate('/kuntalainen/venepaikka/jatka')
       })
       .catch((error) => {
@@ -125,7 +112,7 @@ export default React.memo(function Reservation({
               value={i18n.reservation.validity(
                 reservation.endDate,
                 reservation.validity,
-                boatSpace.type
+                reservation.active
               )}
               readonly={true}
             />
@@ -179,15 +166,15 @@ export default React.memo(function Reservation({
           <TrailerInformation
             trailer={reservation.trailer}
             setEditIsOn={(mode) => setButtonsVisible(!mode)}
-            updateMutation={updateCitizenTrailerMutation}
+            updateMutation={updateTrailerMutation}
           />
         )}
         {buttonsVisible && (
           <Buttons>
-            {canTerminate && (
+            {onTerminate && (
               <Button
                 type="danger-outlined"
-                action={() => setTerminateModalVisible('visible')}
+                action={onTerminate}
                 ariaLabel={`${i18n.citizenPage.reservation.actions.terminate} : ${formattedPlaceIdentifier}`}
               >
                 {i18n.citizenPage.reservation.actions.terminate}
@@ -216,23 +203,6 @@ export default React.memo(function Reservation({
           </Buttons>
         )}
       </div>
-      {terminateModalVisible === 'visible' && (
-        <TerminateModal
-          close={() => setTerminateModalVisible('hidden')}
-          reservation={reservation}
-          onTermination={onTermination}
-        />
-      )}
-      {terminateModalVisible === 'success' && (
-        <TerminateModalSuccess
-          close={() => setTerminateModalVisible('hidden')}
-        />
-      )}
-      {terminateModalVisible === 'failure' && (
-        <TerminateModalFailure
-          close={() => setTerminateModalVisible('hidden')}
-        />
-      )}
       {!!error && (
         <ErrorModal error={error} close={() => setError(undefined)} />
       )}

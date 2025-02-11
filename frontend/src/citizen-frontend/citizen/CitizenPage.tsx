@@ -4,20 +4,24 @@ import React, { useContext } from 'react'
 
 import { AuthContext, User } from 'citizen-frontend/auth/state'
 import Boats from 'citizen-frontend/components/boat-list/Boats'
+import { useTranslation } from 'citizen-frontend/localization'
 import { citizenBoatsQuery } from 'citizen-frontend/shared/queries'
 import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
+
+import ExpiredReservations from '../components/reservation-list/ExpiredReservations'
+import Reservations from '../components/reservation-list/Reservations'
 
 import {
   citizenActiveReservationsQuery,
   citizenExpiredReservationsQuery,
   citizenOrganizationQuery,
   deleteCitizenBoatMutation,
-  updateCitizenBoatMutation
+  terminateCitizenReservationMutation,
+  updateCitizenBoatMutation,
+  updateCitizenTrailerMutation
 } from './queries'
 import CitizenInformation from './sections/citizenInformation'
-import ExpiredReservations from './sections/reservations/ExpiredReservations'
-import Reservations from './sections/reservations/Reservations'
 
 export default React.memo(function CitizenPage() {
   const { user } = useContext(AuthContext)
@@ -33,9 +37,10 @@ const Content = React.memo(function Content({
   const activeReservations = useQueryResult(citizenActiveReservationsQuery())
   const boats = useQueryResult(citizenBoatsQuery())
   const expiredReservations = useQueryResult(citizenExpiredReservationsQuery())
+  const i18n = useTranslation()
 
   return (
-    <MainSection>
+    <MainSection ariaLabel={i18n.citizenPage.title}>
       <Loader
         results={[
           user,
@@ -58,7 +63,11 @@ const Content = React.memo(function Content({
                 user={currentUser}
                 organizations={loadedOrganizations}
               />
-              <Reservations reservations={loadedActiveReservations} />
+              <Reservations
+                reservations={loadedActiveReservations}
+                terminateMutation={terminateCitizenReservationMutation}
+                updateTrailerMutation={updateCitizenTrailerMutation}
+              />
               <Boats
                 boats={loadedBoats}
                 activeReservations={loadedActiveReservations}

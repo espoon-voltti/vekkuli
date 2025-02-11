@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React, { useState } from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { OneOfState } from 'lib-common/form/form'
 import { BoundFormState } from 'lib-common/form/hooks'
 import { useFormErrorContext } from 'lib-common/form/state'
@@ -8,7 +9,7 @@ import { useFormErrorContext } from 'lib-common/form/state'
 import { BaseFieldProps } from './BaseField'
 import FieldErrorContainer from './FieldErrorContainer'
 import ReadOnly from './ReadOnly'
-import { bindOrPlaceholders } from './utils'
+import { bindOrPlaceholders, getI18nLabel } from './utils'
 
 export interface RadioOption {
   value: string
@@ -34,6 +35,7 @@ function RadioField_<T>({
   noErrorContainer,
   horizontal
 }: RadioFieldProps<T>) {
+  const i18n = useTranslation()
   const { state, update, isValid, validationError, translateError } =
     bindOrPlaceholders(bind)
   const [touched, setTouched] = useState(false)
@@ -58,9 +60,9 @@ function RadioField_<T>({
               name={name}
               value={option.domValue}
               onBlur={() => setTouched(true)}
-              label={option.label}
+              label={getI18nLabel(option.label, i18n)}
               selected={option.domValue === state?.domValue}
-              info={option.info}
+              info={getI18nLabel(option.info, i18n)}
               horizontal={horizontal}
             />
           ))}

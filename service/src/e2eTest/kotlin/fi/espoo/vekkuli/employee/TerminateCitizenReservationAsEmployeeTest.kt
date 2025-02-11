@@ -4,7 +4,6 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
-import fi.espoo.vekkuli.citizenPageInEnglish
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
@@ -17,12 +16,12 @@ import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatAsTestDate
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage as CitizenCitizenDetailsPage
 
 @ActiveProfiles("test")
 class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
@@ -145,14 +144,15 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
             messageService.sendScheduledEmails()
             assertEquals(1, SendEmailServiceMock.emails.size)
-            assertTrue(SendEmailServiceMock.emails.get(0).contains("Venepaikka: Haukilahti B 001 on irtisanottu virkailijan toimesta"))
+            assertTrue(
+                SendEmailServiceMock.emails.get(0).body.contains("Venepaikka: Haukilahti B 001 on irtisanottu virkailijan toimesta")
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
     }
 
     @Test
-    @Disabled("Feature is not working")
     fun `Employee can terminate reservation to end in the future`() {
         try {
             val listingPage = ReservationListPage(page)
@@ -208,17 +208,7 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
 
             // Wait for the reservation to expire
             mockTimeProvider(timeProvider, timeProvider.getCurrentDateTime().plusWeeks(weeksAddedToEndTime))
-            listingPage.navigateTo()
-            assertThat(listingPage.boatSpace1).not().isVisible()
-
-            CitizenHomePage(page).loginAsLeoKorhonen()
-            page.navigate(citizenPageInEnglish)
-
-            assertThat(citizenDetailsPage.expiredReservationList).hasCount(1)
-            citizenDetailsPage.getByDataTestId("accordion-title", citizenDetailsPage.expiredReservationListAccordion).click()
-            assertThat(citizenDetailsPage.expiredReservationList).isVisible()
-            assertThat(citizenDetailsPage.locationNameInFirstExpiredReservationListItem).hasText("Haukilahti")
-            assertThat(citizenDetailsPage.placeInFirstExpiredReservationListItem).hasText("B 001")
+            page.reload()
 
             assertThat(
                 citizenDetailsPage.terminationReasonInFirstExpiredReservationListItem
@@ -231,6 +221,20 @@ class TerminateCitizenReservationAsEmployeeTest : PlaywrightTest() {
             assertThat(
                 citizenDetailsPage.terminationDateInFirstExpiredReservationListItem
             ).containsText(formatAsFullDate(expectedTerminationDate))
+
+            listingPage.navigateTo()
+            assertThat(listingPage.boatSpace1).not().isVisible()
+
+            CitizenHomePage(page).loginAsLeoKorhonen()
+            val citizenCitizenDetailsPage = CitizenCitizenDetailsPage(page)
+            citizenCitizenDetailsPage.navigateToPage()
+
+            citizenCitizenDetailsPage.showExpiredReservationsToggle.click()
+            assertThat(citizenCitizenDetailsPage.expiredReservationList).hasCount(1)
+
+            val expiredReservationSection = citizenCitizenDetailsPage.getExpiredReservationSection("Haukilahti B 001")
+            assertThat(expiredReservationSection.locationName).hasText("Haukilahti")
+            assertThat(expiredReservationSection.place).hasText("B 001")
         } catch (e: AssertionError) {
             handleError(e)
         }

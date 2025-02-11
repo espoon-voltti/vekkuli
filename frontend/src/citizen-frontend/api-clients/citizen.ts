@@ -1,18 +1,22 @@
-import { uri } from 'lib-common/uri'
-
-import { client } from '../api-client'
+import { client } from 'citizen-frontend/api-client'
 import {
   CitizenBoatsResponse,
   CitizenOrganizationResponse,
+  OrganizationContactDetailsResponse,
   UpdateCitizenInformationInput
-} from '../api-types/citizen'
+} from 'citizen-frontend/api-types/citizen'
 import {
   BoatSpaceReservation,
   ExistingBoatSpaceReservation,
   ExistingBoatSpaceReservationResponse
-} from '../api-types/reservation'
-import { formatCmToM } from '../shared/formatters'
-import { Boat, Organization } from '../shared/types'
+} from 'citizen-frontend/api-types/reservation'
+import { formatCmToM } from 'citizen-frontend/shared/formatters'
+import {
+  Boat,
+  ContactDetails,
+  Organization
+} from 'citizen-frontend/shared/types'
+import { uri } from 'lib-common/uri'
 
 import { deserializeJsonExistingBoatSpaceReservationResponse } from './reservation'
 
@@ -54,9 +58,9 @@ export function deserializeJsonCitizenBoatsResponse(
     length: formatCmToM(boat.lengthCm),
     depth: formatCmToM(boat.depthCm),
     weight: boat.weightKg,
-    hasNoRegistrationNumber: boat.registrationCode.length === 0,
+    hasNoRegistrationNumber: boat.registrationCode?.length === 0,
     ownership: boat.ownership,
-    registrationNumber: boat.registrationCode,
+    registrationNumber: boat.registrationCode || '',
     otherIdentification: boat.otherIdentification,
     extraInformation: boat.extraInformation
   }))
@@ -126,4 +130,15 @@ export async function updateCitizenInformation(
     method: 'POST',
     data: input
   })
+}
+
+export async function citizenOrganizationContactDetails(
+  orgId: string
+): Promise<ContactDetails[]> {
+  const { data: json } =
+    await client.request<OrganizationContactDetailsResponse>({
+      url: uri`/current/organization-contact-details/${orgId}`.toString(),
+      method: 'GET'
+    })
+  return json
 }
