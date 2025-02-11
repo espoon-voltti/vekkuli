@@ -6,7 +6,7 @@ export interface BaseFieldProps<TValue = string> {
   label?: string
   readOnly?: boolean
   required?: boolean
-  infoKey?: string
+  infoText?: string
   value?: TValue
   onChange?: (value: TValue) => void
   onChangeTarget?: (target: EventTarget & HTMLInputElement) => void

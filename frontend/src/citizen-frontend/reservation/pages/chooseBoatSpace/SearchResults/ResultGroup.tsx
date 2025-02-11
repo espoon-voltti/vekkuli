@@ -27,6 +27,7 @@ export const ResultGroup = React.memo(function ResultGroup({
     <div className="block">
       <div className="mb-m">
         <h3 className="subtitle harbor-header mb-s">{place.name}</h3>
+        <div className="block mb-s">{place.address}</div>
       </div>
       <table className="table search-results-table is-striped is-hoverable is-fullwidth">
         <thead>

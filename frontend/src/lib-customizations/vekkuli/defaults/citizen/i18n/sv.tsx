@@ -151,21 +151,26 @@ const sv: Translations = {
         branchSpecific: {
           Slip: {
             width: 'Båtens bredd (m)',
-            length: 'Båtens längd (m)'
+            length: 'Båtens längd (m)',
+            harborInfo: 'Du kan endast reservera en trailerplats från Finno.'
           },
           Trailer: {
             width: 'Släpvagnens bredd (m)',
-            length: 'Släpvagnens längd (m)'
+            length: 'Släpvagnens längd (m)',
+            harborInfo: 'Du kan endast reservera en trailerplats från Finno.'
           },
           Winter: {
             width: 'Förvaringsplatsens bredd (m)',
-            length: 'Förvaringsplatsens längd (m)'
+            length: 'Förvaringsplatsens längd (m)',
+            harborInfo: 'Välj en vinterplats i din båthamn eller i Finno.'
           },
           Storage: {
             width: 'Förvaringsplatsens bredd (m)',
-            length: 'Förvaringsplatsens längd (m)'
+            length: 'Förvaringsplatsens längd (m)',
+            harborInfo: 'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
           }
-        }
+        },
+        storageInfo: 'All utrustning som behövs för båtens förvaring måste rymmas helt inom den reserverade platsen. Observera också att båtar placerade på onödigt stora platser kan flyttas till mindre platser.'
       },
       switchInfoText:
         'Du håller på att byta båtplats. Platsen kan endast bytas till en plats av samma typ.',

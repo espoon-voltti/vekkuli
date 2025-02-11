@@ -145,7 +145,6 @@ export const initialUnionFormState = (
       branchHarbors = harbors.map((h) => h)
       break
     case 'Trailer':
-      branchHarbors = harbors.map((h) => h)
       break
     case 'Winter':
       branchHarbors = harbors.filter((h) =>

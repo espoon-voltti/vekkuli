@@ -158,21 +158,26 @@ const en: Translations = {
         branchSpecific: {
           Slip: {
             width: 'Boat width (m)',
-            length: 'Boat length (m)'
+            length: 'Boat length (m)',
+            harborInfo: ''
           },
           Trailer: {
             width: 'Trailer width (m)',
-            length: 'Trailer length (m)'
+            length: 'Trailer length (m)',
+            harborInfo: 'You can only reserve a trailer spot from Suomenoja.'
           },
           Winter: {
             width: 'Storage space width (m)',
-            length: 'Storage space length (m)'
+            length: 'Storage space length (m)',
+            harborInfo: 'Select a winter storage space from your boat harbor or from Suomenoja.'
           },
           Storage: {
             width: 'Storage space width (m)',
-            length: 'Storage space length (m)'
+            length: 'Storage space length (m)',
+            harborInfo: 'You can only reserve year-round storage from the Ämmäsmäki storage area.'
           }
-        }
+        },
+        storageInfo: 'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats placed in unnecessarily large spaces may be moved to smaller spaces.'
       },
       switchInfoText:
         'You are changing your boat spot. The spot can only be changed to another spot of the same type.',

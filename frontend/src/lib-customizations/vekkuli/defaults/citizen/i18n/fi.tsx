@@ -157,21 +157,26 @@ export default {
         branchSpecific: {
           Slip: {
             width: 'Veneen leveys (m)',
-            length: 'Veneen pituus (m)'
+            length: 'Veneen pituus (m)',
+            harborInfo: ''
           },
           Trailer: {
             width: 'Trailerin leveys (m)',
-            length: 'Trailerin pituus (m)'
+            length: 'Trailerin pituus (m)',
+            harborInfo: 'Traileripaikan voit varata ainoastaan Suomenojalta.'
           },
           Winter: {
             width: 'Säilytyspaikan leveys (m)',
-            length: 'Säilytyspaikan pituus (m)'
+            length: 'Säilytyspaikan pituus (m)',
+            harborInfo: 'Valitse talvipaikka venepaikkasi satamasta tai Suomenojalta.'
           },
           Storage: {
             width: 'Säilytyspaikan leveys (m)',
-            length: 'Säilytyspaikan pituus (m)'
+            length: 'Säilytyspaikan pituus (m)',
+            harborInfo: 'Ympärivuotisen säilytyksen voit varata ainoastaan Ämmäsmäen säilytysalueelta.'
           }
-        }
+        },
+        storageInfo: 'Veneen säilytykseen tarvittavan kaluston on mahduttava kokonaan varattavan paikan sisäpuolelle. Huomioi myös, että tarpeettoman suurille paikoille sijoitetut veneet voidaan siirtää pienemmille paikoille.'
       },
       switchInfoText:
         'Olet vaihtamassa venepaikkaa. Paikan voi vaihtaa ainoastaan saman paikkatyypin paikkoihin. ',

@@ -24,7 +24,8 @@ function CheckboxFieldR<T>({
   bind,
   isFullWidth,
   readOnly,
-  showErrorsBeforeTouched
+  showErrorsBeforeTouched,
+  infoText
 }: CheckboxFieldProps<T>) {
   const i18n = useTranslation()
   const { state, update, isValid, validationError, translateError } =
@@ -56,6 +57,11 @@ function CheckboxFieldR<T>({
         <label className="label" htmlFor={id}>
           {label}
         </label>
+      )}
+      {!infoText ? null : (
+          <div className="block mb-m">
+            <p className="body">{infoText}</p>
+          </div>
       )}
       <div className="field columns is-multiline is-mobile">
         {readOnly ? (

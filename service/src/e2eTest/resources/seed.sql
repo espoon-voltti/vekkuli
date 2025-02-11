@@ -467,15 +467,16 @@ VALUES ('ML1', 17823, 4545, 22367),
 
 
 
--- Populate the location table with 7 different locations with made-up Finnish addresses
+-- Populate the location table with 8 different locations
 INSERT INTO location (id, name, address)
-VALUES (1, 'Haukilahti', 'Satamatie 1, Espoo'),
-       (2, 'Kivenlahti', 'Kivenlahdentie 10, Espoo'),
-       (3, 'Laajalahti', 'Laajalahdentie 5, Espoo'),
-       (4, 'Otsolahti', 'Otsolahdentie 7, Espoo'),
-       (5, 'Soukka', 'Soukantie 3, Espoo'),
-       (6, 'Suomenoja', 'Suomenojantie 15, Espoo'),
-       (7, 'Svinö', 'Svinöntie 8, Espoo');
+VALUES (1, 'Haukilahti', 'Mellstenintie 6, 02170 Espoo'),
+       (2, 'Kivenlahti', 'Marinsatamantie 5, 02320 Espoo'),
+       (3, 'Laajalahti', 'Ruukinrannantie 29, 02600 Espoo'),
+       (4, 'Otsolahti', 'Sateenkaari 9, 02100 Espoo'),
+       (5, 'Soukka', 'Soukanlahdentie 15, 02360 Espoo'),
+       (6, 'Suomenoja', 'Hylkeenpyytäjäntie 9, 02270 Espoo'),
+       (7, 'Svinö', 'Skatantie 36, 02380 Espoo'),
+       (8, 'Ämmäsmäki', 'Ämmäsmäentie 4, 02820 Espoo');
 
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (1, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sailboat');
@@ -540,6 +541,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -570,6 +572,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -584,7 +587,7 @@ Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 320
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -600,6 +603,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -614,7 +618,7 @@ The pickup of the access badge must be arranged in advance by calling 050 3209 6
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -629,6 +633,8 @@ Sinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi vara
 Vuokralainen:
 {{reserverName}}
 
+Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -660,6 +666,8 @@ En faktura har skickats till adressen {{invoiceAddress}}. För att bekräfta bok
 Hyresgäst:
 {{reserverName}}
 
+Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -674,7 +682,7 @@ Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 320
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -692,6 +700,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -706,7 +715,7 @@ The pickup of the access badge must be arranged in advance by calling 050 3209 6
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -719,6 +728,8 @@ Sinulle on varattu Espoon kaupungin {{placeTypeFi}} {{name}}. Lähetämme sähk�
 Vuokralainen:
 {{reserverName}}
 
+Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -748,6 +759,8 @@ Du har reserverat en {{placeTypeSv}} {{name}} från Esbo stad. Vi skickar ytterl
 Hyresgäst:
 {{reserverName}}
 
+Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -762,7 +775,7 @@ Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 320
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -778,6 +791,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -792,7 +806,7 @@ The pickup of the access badge must be arranged in advance by calling 050 3209 6
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -808,6 +822,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -835,6 +850,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -844,7 +860,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -862,6 +878,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -871,7 +888,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -887,6 +904,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -914,6 +932,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -923,7 +942,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -941,6 +960,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -950,7 +970,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -966,6 +986,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -993,6 +1014,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -1002,7 +1024,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -1020,6 +1042,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -1029,7 +1052,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -1050,6 +1073,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -1082,6 +1106,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -1091,7 +1116,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -1114,6 +1139,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -1123,7 +1149,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -1133,7 +1159,7 @@ venepaikat@espoo.fi'),
 
 Espoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu.
 
-Irtisanoaja: {{terminatorName}}
+Irtisanoja: {{terminatorName}}
 
 Paikan vuokraaja: {{reserverName}}
 
@@ -1202,7 +1228,7 @@ Best regards,
 Maritime Outdoor Services
 venepaikat@espoo.fi'),
 
-('reservation_termination_by_citizen_to_employee', 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}', E'Hei!,\n\nEspoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu {{time}}\n\nPaikan vuokraaja: {{reserverName}}\nSähköposti:{{reserverEmail}}\n\nIrtisanoaja:\nNimi: {{terminatorName}}\nSähköposti: {{terminatorEmail}}\nPuhelinnumero:{{terminatorPhone}}'),
+('reservation_termination_by_citizen_to_employee', 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}', E'Hei!,\n\nEspoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu {{time}}\n\nPaikan vuokraaja: {{reserverName}}\nSähköposti: {{reserverEmail}}\n\nIrtisanoja:\nNimi: {{terminatorName}}\nSähköposti: {{terminatorEmail}}\nPuhelinnumero: {{terminatorPhone}}'),
 
 ('fixed_term_reservation_expiring', 'Espoon kaupungin {{placeTypeFi}}varauksesi on päättymässä', E'Hyvä asiakas,
 
@@ -1276,6 +1302,7 @@ Jatkettava paikka:
 Paikan vuokraaja: {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -1315,6 +1342,7 @@ Plats att förnya:
 Hyresgäst: {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -1326,7 +1354,7 @@ Om säsongsavgiften inte kan betalas, kontakta oss via e-post på venepaikat@esp
 
 Du kan också byta din nuvarande plats till en annan via din profilsida. Bytet bekräftas genom att betala säsongsavgiften för den nya platsen.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -1354,6 +1382,7 @@ Spot to be renewed:
 Tenant: {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -1365,7 +1394,7 @@ If you are unable to make the payment, please contact us via email at venepaikat
 
 You may also choose to switch your current spot to another through your profile page. The switch is confirmed by paying the seasonal fee for the new spot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
