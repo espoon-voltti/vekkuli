@@ -120,7 +120,7 @@ class ReserveBoatSpacePage(
     }
 
     val header = page.getByText("Espoon kaupungin venepaikkojen vuokraus")
-    val switchInfoBox = page.getByText("Olet vaihtamassa venepaikkaa")
+    val switchInfoBox = page.getByText("Olet vaihtamassa paikkaa")
     val switchGoBackButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 
     fun navigateToPage() {
