@@ -54,7 +54,7 @@ Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 320
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -85,7 +85,7 @@ The pickup of the access badge must be arranged in advance by calling 050 3209 6
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -151,7 +151,7 @@ Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 320
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -184,7 +184,7 @@ The pickup of the access badge must be arranged in advance by calling 050 3209 6
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -246,7 +246,7 @@ Uthämtning av tillträdesbrickan ska avtalas i förväg genom att ringa 050 320
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -277,7 +277,7 @@ The pickup of the access badge must be arranged in advance by calling 050 3209 6
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -333,7 +333,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -361,7 +361,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -417,7 +417,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -445,7 +445,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -501,7 +501,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -529,7 +529,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -595,7 +595,7 @@ Din bokning är giltig till {{endDateSv}}.
 
 Hantera dina bokningar, båtar och personuppgifter enkelt på https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -628,7 +628,7 @@ Your reservation is valid until {{endDateEn}}.
 
 Manage your reservations, boats, and personal details easily at https://varaukset.espoo.fi/kuntalainen/omat-tiedot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
@@ -842,7 +842,7 @@ Om säsongsavgiften inte kan betalas, kontakta oss via e-post på venepaikat@esp
 
 Du kan också byta din nuvarande plats till en annan via din profilsida. Bytet bekräftas genom att betala säsongsavgiften för den nya platsen.
 
-Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/fritid-och-natur/batliv.
+Regler och villkor för båthamnar samt annan information hittar du på https://www.espoo.fi/sv/idrott-motion-och-natur/batliv.
 
 Vänliga hälsningar
 Havsnära friluftstjänster
@@ -882,7 +882,7 @@ If you are unable to make the payment, please contact us via email at venepaikat
 
 You may also choose to switch your current spot to another through your profile page. The switch is confirmed by paying the seasonal fee for the new spot.
 
-Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/recreation-and-nature/boating.
+Terms and conditions for boat harbors and additional information can be found at https://www.espoo.fi/en/sports-and-nature/boating.
 
 Best regards
 Maritime Outdoor Services
