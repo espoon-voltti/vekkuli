@@ -9,7 +9,9 @@ VALUES (1, 'Haukilahti', 'Mellstenintie 6, 02170 Espoo'),
        (6, 'Suomenoja', 'Hylkeenpyytäjäntie 9, 02270 Espoo'),
        (7, 'Svinö', 'Skatantie 36, 02380 Espoo'),
        (8, 'Ämmäsmäki', 'Ämmäsmäentie 4, 02820 Espoo')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+    name = EXCLUDED.name,
+    address = EXCLUDED.address;
 
 DELETE FROM harbor_restriction;
 
