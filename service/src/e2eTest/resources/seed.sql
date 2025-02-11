@@ -540,6 +540,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -570,6 +571,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -600,6 +602,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -629,6 +632,8 @@ Sinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi vara
 Vuokralainen:
 {{reserverName}}
 
+Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -660,6 +665,8 @@ En faktura har skickats till adressen {{invoiceAddress}}. För att bekräfta bok
 Hyresgäst:
 {{reserverName}}
 
+Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -692,6 +699,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -719,6 +727,8 @@ Sinulle on varattu Espoon kaupungin {{placeTypeFi}} {{name}}. Lähetämme sähk�
 Vuokralainen:
 {{reserverName}}
 
+Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -748,6 +758,8 @@ Du har reserverat en {{placeTypeSv}} {{name}} från Esbo stad. Vi skickar ytterl
 Hyresgäst:
 {{reserverName}}
 
+Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -778,6 +790,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -808,6 +821,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -835,6 +849,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -862,6 +877,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -887,6 +903,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -914,6 +931,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -941,6 +959,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -966,6 +985,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -993,6 +1013,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -1020,6 +1041,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -1050,6 +1072,7 @@ Vuokralainen:
 {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -1082,6 +1105,7 @@ Hyresgäst:
 {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -1114,6 +1138,7 @@ Tenant:
 {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}
@@ -1133,7 +1158,7 @@ venepaikat@espoo.fi'),
 
 Espoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu.
 
-Irtisanoaja: {{terminatorName}}
+Irtisanoja: {{terminatorName}}
 
 Paikan vuokraaja: {{reserverName}}
 
@@ -1202,7 +1227,7 @@ Best regards,
 Maritime Outdoor Services
 venepaikat@espoo.fi'),
 
-('reservation_termination_by_citizen_to_employee', 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}', E'Hei!,\n\nEspoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu {{time}}\n\nPaikan vuokraaja: {{reserverName}}\nSähköposti:{{reserverEmail}}\n\nIrtisanoaja:\nNimi: {{terminatorName}}\nSähköposti: {{terminatorEmail}}\nPuhelinnumero:{{terminatorPhone}}'),
+('reservation_termination_by_citizen_to_employee', 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}', E'Hei!,\n\nEspoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu {{time}}\n\nPaikan vuokraaja: {{reserverName}}\nSähköposti: {{reserverEmail}}\n\nIrtisanoja:\nNimi: {{terminatorName}}\nSähköposti: {{terminatorEmail}}\nPuhelinnumero: {{terminatorPhone}}'),
 
 ('fixed_term_reservation_expiring', 'Espoon kaupungin {{placeTypeFi}}varauksesi on päättymässä', E'Hyvä asiakas,
 
@@ -1276,6 +1301,7 @@ Jatkettava paikka:
 Paikan vuokraaja: {{reserverName}}
 
 Paikan tiedot:
+{{harborAddressFi}}
 Paikan nimi: {{name}}
 Paikan leveys: {{width}}
 Paikan pituus: {{length}}
@@ -1315,6 +1341,7 @@ Plats att förnya:
 Hyresgäst: {{reserverName}}
 
 Platsinformation:
+{{harborAddressSv}}
 Platsens namn: {{name}}
 Platsens bredd: {{width}}
 Platsens längd: {{length}}
@@ -1354,6 +1381,7 @@ Spot to be renewed:
 Tenant: {{reserverName}}
 
 Location details:
+{{harborAddressEn}}
 Name: {{name}}
 Width: {{width}}
 Length: {{length}}

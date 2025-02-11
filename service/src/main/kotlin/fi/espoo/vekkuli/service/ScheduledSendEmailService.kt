@@ -3,10 +3,7 @@ package fi.espoo.vekkuli.service
 import fi.espoo.vekkuli.common.BadRequest
 import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
-import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
-import fi.espoo.vekkuli.domain.Recipient
-import fi.espoo.vekkuli.domain.ReservationType
-import fi.espoo.vekkuli.domain.ReserverType
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -50,7 +47,11 @@ class ScheduledSendEmailService(
                             .intToDecimal(boatSpace.lengthCm),
                 ) +
                     messageUtil.getLocalizedMap("amenity", "boatSpaces.amenityOption.${boatSpace.amenity}") +
-                    messageUtil.getLocalizedMap("placeType", "boatSpaceReservation.email.types.${reservation.type}")
+                    messageUtil.getLocalizedMap(
+                        "placeType",
+                        "boatSpaceReservation.email.types.${reservation.type}"
+                    ) +
+                    getHarborAddressLocalization(reservation, boatSpace.locationAddress ?: "")
             )
         }
     }
@@ -77,6 +78,20 @@ class ScheduledSendEmailService(
                     messageUtil.getLocalizedMap("placeType", "boatSpaceReservation.email.types.${reservation.type}")
             )
         }
+    }
+
+    private fun getHarborAddressLocalization(
+        reservation: BoatSpaceReservationDetails,
+        locationAddress: String
+    ): Map<String, String> {
+        val code =
+            if (reservation.type == BoatSpaceType.Storage) {
+                "boatSpaceReservation.email.storagePlaceAddress"
+            } else {
+                "boatSpaceReservation.email.harborAddress"
+            }
+
+        return messageUtil.getLocalizedMap("harborAddress", code, listOf(locationAddress))
     }
 
     private fun getRecipients(reservation: BoatSpaceReservationDetails) =
