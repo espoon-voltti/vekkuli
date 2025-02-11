@@ -207,6 +207,7 @@ class BoatSpaceForm(
                                 class="button is-primary"
                                 type="button"
                                 hx-delete="${urls.deleteUrl}"
+                                hx-params="none"
                                 hx-on-htmx-after-request="${if (userType == UserType.CITIZEN) "window.location = '${urls.urlToReturnTo}';" else "history.back()"}">
                                 ${t("confirm")}
                             </button>

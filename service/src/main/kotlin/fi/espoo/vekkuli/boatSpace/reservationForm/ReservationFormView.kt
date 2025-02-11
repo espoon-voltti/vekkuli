@@ -139,7 +139,7 @@ class ReservationFormView(
         return boatSpaceForm.render(
             reservation,
             userType,
-            titleText = t("boatApplication.title.reservation.winter"),
+            titleText = t("boatApplication.title.reservation.trailer"),
             formContent = storageContent,
             reserverPriceInfo = input.reserverPriceInfo,
         )
@@ -230,7 +230,7 @@ class ReservationFormView(
         return boatSpaceForm.render(
             reservation,
             userType,
-            titleText = t("boatApplication.title.reservation.winter"),
+            titleText = t("boatApplication.title.reservation.storage"),
             formContent = storageContent,
             reserverPriceInfo = input.reserverPriceInfo,
         )
