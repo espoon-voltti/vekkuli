@@ -23,5 +23,6 @@ VALUES
     (4, 'JetSki'),
     (5, 'JetSki'),
     (7, 'JetSki'),
+    (8, 'JetSki'),
     (4, 'Sailboat'),
     (7, 'Sailboat');
