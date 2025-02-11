@@ -5,6 +5,7 @@ import React from 'react'
 
 import { Organization } from 'citizen-frontend/shared/types'
 
+import { useTranslation } from '../../localization'
 import { MemberListLoader } from '../organizationMembers'
 
 export default React.memo(function OrganizationInformation({
@@ -12,12 +13,13 @@ export default React.memo(function OrganizationInformation({
 }: {
   organization: Organization
 }) {
+  const i18n = useTranslation()
   return (
     <Container isBlock>
       <FormSection>
         <Columns>
           <Column>
-            <h3 className="header">Omat tiedot</h3>
+            <h3 className="header">{i18n.organization.information.title}</h3>
           </Column>
         </Columns>
         <Columns>

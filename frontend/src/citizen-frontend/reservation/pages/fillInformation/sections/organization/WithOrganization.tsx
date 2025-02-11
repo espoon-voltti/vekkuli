@@ -60,7 +60,7 @@ export const WithOrganization = React.memo(function Organization({
             label="Puhelinnumero"
             required={true}
             bind={phone}
-            ariaLabel={i18n.organization.organizationPhone}
+            ariaLabel={i18n.organization.information.phone}
           />
         </Column>
         <Column isOneQuarter>
@@ -69,7 +69,7 @@ export const WithOrganization = React.memo(function Organization({
             label="Sähköposti"
             required={true}
             bind={email}
-            ariaLabel={i18n.organization.organizationEmail}
+            ariaLabel={i18n.organization.information.email}
           />
         </Column>
         <Column isOneQuarter>

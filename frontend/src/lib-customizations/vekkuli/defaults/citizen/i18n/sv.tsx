@@ -442,8 +442,11 @@ const sv: Translations = {
     }
   },
   organization: {
-    organizationPhone: 'Organisationens telefonnummer',
-    organizationEmail: 'Organisationens e-post',
+    information: {
+      title: 'Organisationens information',
+      phone: 'Organisationens telefonnummer',
+      email: 'Organisationens e-post'
+    },
     contactDetails: {
       title: 'Kontaktpersoner',
       fields: {

@@ -440,8 +440,11 @@ export default {
     }
   },
   organization: {
-    organizationPhone: 'Yhteisön puhelinnumero',
-    organizationEmail: 'Yhteisön sähköposti',
+    information: {
+      title: 'Yhteisön tiedot',
+      phone: 'Yhteisön puhelinnumero',
+      email: 'Yhteisön sähköposti'
+    },
     contactDetails: {
       title: 'Yhteyshenkilöt',
       fields: {

@@ -1,4 +1,5 @@
 import com.github.gradle.node.npm.task.NpxTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
@@ -6,7 +7,7 @@ plugins {
     id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "2.0.20"
-    kotlin("plugin.spring") version "1.9.20"
+    kotlin("plugin.spring") version "1.9.25"
     id("org.flywaydb.flyway") version "11.3.1"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
@@ -79,7 +80,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.ws:spring-ws-security")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
@@ -124,12 +124,13 @@ dependencies {
     implementation("org.commonmark:commonmark:0.24.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
+    implementation("commons-codec:commons-codec:1.18.0")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "17"
+tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
