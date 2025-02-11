@@ -120,7 +120,7 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
               <Container>
                 <h2>{i18n.reservation.searchPage.title}</h2>
                 <ReservationSeasons />
-                {!!switchInfo && (
+                {switchInfo && (
                   <InfoBox
                     text={i18n.reservation.formPage.info.switch}
                     fullWidth

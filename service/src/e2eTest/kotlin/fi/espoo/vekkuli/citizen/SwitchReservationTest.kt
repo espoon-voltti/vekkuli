@@ -526,7 +526,7 @@ class SwitchReservationTest : ReserveTest() {
     }
 
     @Test
-    fun `a back button in switching a reservation should lead to `() {
+    fun `back button in space search page when switching should lead back to citizen details page`() {
         mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
         CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
 
