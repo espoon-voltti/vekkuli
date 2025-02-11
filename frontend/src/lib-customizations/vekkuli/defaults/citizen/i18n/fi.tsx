@@ -436,7 +436,9 @@ export default {
       modal: {
         goBackToReservation: 'Siirry varaukseen'
       },
-      showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin'
+      showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
+      renewNotification: (date: LocalDate) =>
+        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`
     }
   },
   organization: {
