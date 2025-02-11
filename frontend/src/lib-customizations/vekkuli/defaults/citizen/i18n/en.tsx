@@ -174,6 +174,8 @@ const en: Translations = {
           }
         }
       },
+      switchInfoText:
+        'You are changing your boat spot. The spot can only be changed to another spot of the same type.',
       infoText: {
         title: 'Booking Boat Spaces 2025',
         periods: {

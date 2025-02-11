@@ -14,12 +14,13 @@ export default React.memo(function CanReserveResult({
   canReserveResult,
   reserveSpace
 }: CanReserveResultProps) {
-  const { setError } = useReserveActionContext()
+  const { setError, switchInfo } = useReserveActionContext()
   const hasStartedReservation = useRef(false)
   const shouldReserveDirectly =
-    (canReserveResult.status === 'CanReserve' ||
+    switchInfo?.id ||
+    ((canReserveResult.status === 'CanReserve' ||
       canReserveResult.status === 'CanReserveOnlyForOrganization') &&
-    !canReserveResult.switchableReservations.length
+      !canReserveResult.switchableReservations.length)
   useEffect(() => {
     if (shouldReserveDirectly && !hasStartedReservation.current) {
       hasStartedReservation.current = true

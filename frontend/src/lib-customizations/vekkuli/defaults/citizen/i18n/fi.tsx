@@ -173,6 +173,8 @@ export default {
           }
         }
       },
+      switchInfoText:
+        'Olet vaihtamassa venepaikkaa. Paikan voi vaihtaa ainoastaan saman paikkatyypin paikkoihin. ',
       infoText: {
         title: 'Venepaikkojen varaaminen 2025',
         periods: {

@@ -167,6 +167,8 @@ const sv: Translations = {
           }
         }
       },
+      switchInfoText:
+        'Du håller på att byta båtplats. Platsen kan endast bytas till en plats av samma typ.',
       infoText: {
         title: 'Bokning av båtplatser 2025',
         periods: {

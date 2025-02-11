@@ -8,7 +8,9 @@ import { useForm } from 'lib-common/form/hooks'
 import { useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
+import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
 import StepIndicator from '../../StepIndicator'
+import { InfoBox } from '../../components/InfoBox'
 import { ReservationStateContext } from '../../state'
 import useStoredSearchState from '../useStoredSearchState'
 
@@ -25,7 +27,11 @@ import {
 } from './formDefinitions'
 import { freeSpacesQuery } from './queries'
 
-export default React.memo(function SearchPage() {
+type SearchPageProps = {
+  switchInfo?: SwitchReservationInformation | undefined
+}
+
+export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
   const i18n = useTranslation()
 
   const { isLoggedIn } = useContext(AuthContext)
@@ -41,7 +47,7 @@ export default React.memo(function SearchPage() {
 
   const bind = useForm(
     searchFreeSpacesForm,
-    () => initialFormState(searchState),
+    () => initialFormState(searchState, switchInfo),
     i18n.components.validationErrors,
     {
       onUpdate: (prev, next) => {
@@ -108,6 +114,12 @@ export default React.memo(function SearchPage() {
               <Container>
                 <h2>{i18n.reservation.searchPage.title}</h2>
                 <ReservationSeasons />
+                {!!switchInfo && (
+                  <InfoBox
+                    text={i18n.reservation.formPage.info.switch}
+                    fullWidth
+                  />
+                )}
                 <Columns>
                   <Column isTwoFifths>
                     <SearchFilters bind={bind} />
@@ -137,6 +149,7 @@ export default React.memo(function SearchPage() {
             {selectedBoatSpace !== undefined && (
               <ReserveActionProvider
                 spaceId={selectedBoatSpace}
+                switchInfo={switchInfo}
                 onClose={() => setSelectedBoatSpace(undefined)}
               >
                 <ReserveAction />
