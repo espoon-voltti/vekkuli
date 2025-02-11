@@ -475,6 +475,8 @@ export default {
     title: 'Yhteisöt',
     name: 'Nimi',
     organizationId: 'Y-tunnus',
+    municipality: 'Kotikunta',
+    physicalAddress: 'Käyntiosoite',
     contactDetails: {
       title: 'Yhteyshenkilöt',
       fields: {

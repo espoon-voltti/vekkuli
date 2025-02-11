@@ -475,6 +475,8 @@ const sv: Translations = {
     title: 'Organisationer',
     name: 'Namn',
     organizationId: 'Organisationsnummer',
+    municipality: 'Hemkommun',
+    physicalAddress: 'Besökadress',
     contactDetails: {
       title: 'Kontaktpersoner',
       fields: {

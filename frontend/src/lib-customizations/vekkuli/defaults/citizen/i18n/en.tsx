@@ -473,6 +473,8 @@ const en: Translations = {
     title: 'Organizations',
     name: 'Name',
     organizationId: 'Business ID',
+    municipality: 'Municipality',
+    physicalAddress: 'Physical address',
     contactDetails: {
       title: 'Contact information',
       fields: {
