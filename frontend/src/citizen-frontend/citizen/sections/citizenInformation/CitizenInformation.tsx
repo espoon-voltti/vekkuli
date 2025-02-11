@@ -45,12 +45,13 @@ export default React.memo(function CitizenInformation({
   }
 
   const { phone, email } = useFormFields(form)
+
   return (
     <Container isBlock data-testid="citizen-information">
       <FormSection>
         <Columns>
           <Column>
-            <h3 className="header">Omat tiedot</h3>
+            <h3 className="header">{i18n.citizenPage.title}</h3>
           </Column>
           <Column isNarrow toRight>
             {editMode ? null : (
