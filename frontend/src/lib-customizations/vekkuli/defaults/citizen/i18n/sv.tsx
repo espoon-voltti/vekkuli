@@ -169,7 +169,8 @@ const sv: Translations = {
             length: 'Förvaringsplatsens längd (m)',
             harborInfo: 'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
           }
-        }
+        },
+        storageInfo: 'All utrustning som behövs för båtens förvaring måste rymmas helt inom den reserverade platsen. Observera också att båtar placerade på onödigt stora platser kan flyttas till mindre platser.'
       },
       infoText: {
         title: 'Bokning av båtplatser 2025',

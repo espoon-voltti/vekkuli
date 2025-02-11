@@ -176,7 +176,8 @@ const en: Translations = {
             length: 'Storage space length (m)',
             harborInfo: 'You can only reserve year-round storage from the Ämmäsmäki storage area.'
           }
-        }
+        },
+        storageInfo: 'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats placed in unnecessarily large spaces may be moved to smaller spaces.'
       },
       infoText: {
         title: 'Booking Boat Spaces 2025',

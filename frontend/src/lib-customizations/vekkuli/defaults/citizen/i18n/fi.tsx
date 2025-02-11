@@ -175,7 +175,8 @@ export default {
             length: 'Säilytyspaikan pituus (m)',
             harborInfo: 'Ympärivuotisen säilytyksen voit varata ainoastaan Ämmäsmäen säilytysalueelta.'
           }
-        }
+        },
+        storageInfo: 'Veneen säilytykseen tarvittavan kaluston on mahduttava kokonaan varattavan paikan sisäpuolelle. Huomioi myös, että tarpeettoman suurille paikoille sijoitetut veneet voidaan siirtää pienemmille paikoille.'
       },
       infoText: {
         title: 'Venepaikkojen varaaminen 2025',
