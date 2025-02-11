@@ -26,7 +26,7 @@ export type UnfinishedBoatSpaceReservation = {
   municipalities: Municipality[]
   organizations: Organization[]
   organizationsBoats: Record<string, Boat[]>
-  organizationRevisedPrices: RevisedPrice[]
+  organizationReservationInfos: ReservationInfo[]
 }
 
 export type ReservationOperation = 'Switch' | 'Renew' | 'Terminate'
@@ -47,7 +47,7 @@ export type BoatSpaceReservation = {
   boat: Boat
   creationType: CreationType
   canReserveNew: boolean
-  revisedPrice: RevisedPrice
+  reservationInfo: ReservationInfo
   reserverType: ReserverType
 }
 
@@ -108,7 +108,7 @@ export type BoatSpaceReservationResponse = {
   boat: Boat
   creationType: CreationType
   canReserveNew: boolean
-  revisedPrice: RevisedPrice
+  reservationInfo: ReservationInfoResponse
 }
 
 export type ExistingBoatSpaceReservationResponse = {
@@ -129,13 +129,26 @@ export type ExistingBoatSpaceReservationResponse = {
   reserverType: ReserverType
 }
 
-export type RevisedPrice = {
+export type ReservationInfo = {
   reserverType: ReserverType
   id?: string
   name?: string
   discountPercentage: number
   revisedPriceInEuro: string
   revisedPriceWithDiscountInEuro: string
+  validity: ReservationValidity
+  endDate: LocalDate
+}
+
+export type ReservationInfoResponse = {
+  reserverType: ReserverType
+  id?: string
+  name?: string
+  discountPercentage: number
+  revisedPriceInEuro: string
+  revisedPriceWithDiscountInEuro: string
+  validity: ReservationValidity
+  endDate: string
 }
 
 export type UnfinishedBoatSpaceReservationResponse = {
@@ -144,7 +157,7 @@ export type UnfinishedBoatSpaceReservationResponse = {
   municipalities: Municipality[]
   organizations: Organization[]
   organizationsBoats: Record<string, CitizenBoatsResponse>
-  organizationRevisedPrices: RevisedPrice[]
+  organizationReservationInfos: ReservationInfoResponse[]
 }
 
 type ResponseCitizen = Omit<Citizen, 'birthDate'> & { birthDate: string }

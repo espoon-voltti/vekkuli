@@ -8,7 +8,7 @@ import { Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 import useRouteParams from 'lib-common/useRouteParams'
 
-import { getRevisedPriceForReservation } from '../../RevisedPriceForReservation'
+import { getReservationInfoForReservation } from '../../ReservationInfoForReservation'
 import StepIndicator from '../../StepIndicator'
 import ReservedSpace from '../../components/ReservedSpace'
 
@@ -43,9 +43,9 @@ const Content = React.memo(function Content({
   return (
     <Loader results={[reservation]}>
       {(loadedReservation) => {
-        const reservationPriceInfo = getRevisedPriceForReservation(
+        const reservationPriceInfo = getReservationInfoForReservation(
           loadedReservation,
-          loadedReservation.revisedPrice
+          loadedReservation.reservationInfo
         )
         return (
           <>
@@ -68,7 +68,7 @@ const Content = React.memo(function Content({
             </div>
             <ReservedSpace
               reservation={loadedReservation}
-              revisedPriceForReservation={reservationPriceInfo}
+              reservationInfoForReservation={reservationPriceInfo}
             />
           </>
         )

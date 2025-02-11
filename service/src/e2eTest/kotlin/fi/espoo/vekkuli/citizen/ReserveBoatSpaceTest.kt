@@ -567,8 +567,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
 
-            // TODO: test that if organization already has one place, the validity should be fixed, this should fail
-            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("Toistaiseksi, jatko vuosittain")
+            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("31.12.2024 asti")
 
             formPage.submitButton.click()
             assertZeroEmailsSent()
@@ -580,6 +579,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("31.12.2024 asti")
             messageService.sendScheduledEmails()
             assertEquals(2, SendEmailServiceMock.emails.size)
 
