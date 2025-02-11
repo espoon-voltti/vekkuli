@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
-    id("org.springframework.boot") version "3.2.0"
+    id("org.springframework.boot") version "3.4.1"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.spring") version "1.9.25"
@@ -98,7 +98,11 @@ dependencies {
     implementation("com.auth0:java-jwt:4.5.0")
 
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("ch.qos.logback:logback-access")
+    api("ch.qos.logback.access:logback-access-tomcat:2.0.5")
+
+    // These constraints are needed for CVE fixes
+    api("ch.qos.logback:logback-classic:1.5.15")
+    api("ch.qos.logback:logback-core:1.5.15")
     api("io.github.oshai:kotlin-logging-jvm:7.0.3")
 
     testImplementation(kotlin("test"))
@@ -117,9 +121,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
-    implementation("software.amazon.awssdk:ses:2.30.8")
+    implementation("software.amazon.awssdk:ses:2.30.16")
     implementation("software.amazon.awssdk:core:2.30.16")
-    implementation("software.amazon.awssdk:regions:2.20.0")
+    implementation("software.amazon.awssdk:regions:2.30.16")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.24.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
