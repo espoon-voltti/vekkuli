@@ -31,6 +31,7 @@ const sv: Translations = {
     print: 'Skriva ut',
     ok: 'Ok',
     save: 'Spara',
+    saveChanges: 'Spara ändringar',
     discard: 'Spar inte',
     saveConfirmation: 'Vill du spara ändringar?',
     saveSuccess: 'Sparat',
@@ -347,12 +348,9 @@ const sv: Translations = {
     registrationNumber: 'Registreringsnummer',
     otherIdentifier: 'Märke och modell/annan identifierare',
     additionalInfo: 'Ytterligare information',
-    widthInMeters: 'Bredd (m)',
-    lengthInMeters: 'Längd (m)',
+    title: 'Båtar',
     boatType: 'Båttyp',
-    ownershipStatus: 'Ägandestatus',
-    save: 'Spara',
-    cancel: 'Spara inte'
+    ownership: 'Ägande'
   },
   boatSpace: {
     boatSpaceType: {

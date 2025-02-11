@@ -129,7 +129,7 @@ export default React.memo(function Boat({
         </Column>
         <Column>
           <NumberField
-            label={i18n.boat.widthInMeters}
+            label={i18n.common.unit.dimensions.widthInMeters}
             name="width"
             bind={width}
             required={editMode}
@@ -145,7 +145,7 @@ export default React.memo(function Boat({
         </Column>
         <Column>
           <NumberField
-            label={i18n.boat.lengthInMeters}
+            label={i18n.common.unit.dimensions.lengthInMeters}
             name="length"
             bind={length}
             required={editMode}
@@ -153,7 +153,7 @@ export default React.memo(function Boat({
             precision={2}
           />
           <SelectField
-            label={i18n.boat.ownershipStatus}
+            label={i18n.boat.ownership}
             name="ownershipStatus"
             bind={ownership}
             required={editMode}
@@ -164,10 +164,10 @@ export default React.memo(function Boat({
       {editMode && (
         <Buttons>
           <Button action={cancel} loading={isPending}>
-            {i18n.boat.cancel}
+            {i18n.common.cancel}
           </Button>
           <Button action={onSubmit} type="primary" loading={isPending}>
-            {i18n.boat.save}
+            {i18n.common.saveChanges}
           </Button>
         </Buttons>
       )}

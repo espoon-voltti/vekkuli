@@ -31,6 +31,7 @@ const en: Translations = {
     print: 'Print',
     ok: 'Ok',
     save: 'Save',
+    saveChanges: 'Save changes',
     discard: 'Discard',
     saveConfirmation: 'Do you want to save changes?',
     saveSuccess: 'Saved',
@@ -350,12 +351,9 @@ const en: Translations = {
     registrationNumber: 'Registration Number',
     otherIdentifier: 'Brand and model/Other identifier',
     additionalInfo: 'Additional Information',
-    widthInMeters: 'Width (m)',
-    lengthInMeters: 'length (m)',
-    boatType: 'Boat type',
-    ownershipStatus: 'Ownership',
-    save: 'Save changes',
-    cancel: 'Cancel'
+    title: 'Boats',
+    boatType: 'Boat Type',
+    ownership: 'Ownership'
   },
   boatSpace: {
     renterType: {

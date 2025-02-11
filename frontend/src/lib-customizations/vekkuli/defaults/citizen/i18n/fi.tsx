@@ -30,6 +30,7 @@ export default {
     print: 'Tulosta',
     ok: 'Ok',
     save: 'Tallenna',
+    saveChanges: 'Tallenna muutokset',
     discard: 'Älä tallenna',
     saveConfirmation: 'Haluatko tallentaa muutokset?',
     saveSuccess: 'Tallennettu',
@@ -345,15 +346,12 @@ export default {
     boatName: 'Veneen nimi',
     boatDepthInMeters: 'Syväys (m)',
     boatWeightInKg: 'Paino (kg)',
-    widthInMeters: 'Leveys (m)',
-    lengthInMeters: 'Pituus (m)',
     registrationNumber: 'Rekisteritunnus',
     otherIdentifier: 'Merkki ja malli/muu tunniste',
     additionalInfo: 'Lisätiedot',
+    title: 'Veneet',
     boatType: 'Veneen tyyppi',
-    ownershipStatus: 'Omistussuhde',
-    save: 'Tallenna muutokset',
-    cancel: 'Peruuta'
+    ownership: 'Omistussuhde'
   },
   boatSpace: {
     renterType: {
