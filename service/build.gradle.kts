@@ -79,7 +79,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.ws:spring-ws-security")
+    implementation("org.springframework.ws:spring-ws-security") {
+        exclude("org.opensaml")
+    }
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
