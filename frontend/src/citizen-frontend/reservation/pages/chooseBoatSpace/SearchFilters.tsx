@@ -102,16 +102,17 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
           />
         </div>
       )}
-      {harbor.state.options.length === 0 ? null : (
+
         <div className="block">
           <CheckboxField
             id="harbor"
             name="harbor"
             bind={harbor}
             label={i18n.reservation.searchPage.filters.harborHeader}
+            infoText={i18n.reservation.searchPage.filters.branchSpecific[branch].harborInfo}
           />
         </div>
-      )}
+
     </form>
   )
 })
