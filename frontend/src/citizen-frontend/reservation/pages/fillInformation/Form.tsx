@@ -68,7 +68,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
         boats,
         organizationsBoats,
         reservation.reservation.citizen,
-        reservation.reservation.boatSpace.type,
+        reservation.reservation.boatSpace,
         municipalities,
         organizations,
         reservation,
@@ -84,7 +84,8 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           boats,
           organizationsBoats,
           municipalities,
-          organizations
+          organizations,
+          reservation.reservation.boatSpace.excludedBoatTypes || []
         )
     }
   )

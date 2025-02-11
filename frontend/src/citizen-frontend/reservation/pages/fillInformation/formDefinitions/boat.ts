@@ -64,6 +64,7 @@ export default function initialFormState(
   i18n: Translations,
   boats: Boat[],
   boatSpaceType: BoatSpaceType,
+  excludedBoatTypes?: BoatType[],
   storedSearchState?: StoredSearchState,
   selectedBoat?: Boat
 ): StateOf<BoatForm> {
@@ -71,6 +72,7 @@ export default function initialFormState(
     boatInfo: initialBoatInfoFormState(
       i18n,
       boatSpaceType,
+      excludedBoatTypes,
       storedSearchState,
       selectedBoat
     ),
@@ -83,6 +85,7 @@ export default function initialFormState(
     newBoatCache: initialBoatInfoFormState(
       i18n,
       boatSpaceType,
+      excludedBoatTypes,
       storedSearchState
     )
   }
@@ -91,10 +94,12 @@ export default function initialFormState(
 function initialBoatInfoFormState(
   i18n: Translations,
   boatSpaceType: BoatSpaceType,
+  excludedBoatTypes?: BoatType[],
   storedSearchState?: StoredSearchState,
   defaultBoat?: Boat
 ) {
-  if (defaultBoat) return transformBoatToFormBoat(defaultBoat, i18n)
+  if (defaultBoat)
+    return transformBoatToFormBoat(defaultBoat, i18n, excludedBoatTypes)
   let width = positiveNumber.empty().value
   let length = positiveNumber.empty().value
   if (boatSpaceType !== 'Winter') {
@@ -102,12 +107,14 @@ function initialBoatInfoFormState(
     length = storedSearchState?.length ?? positiveNumber.empty().value
   }
 
+  const acceptedBoatTypes = getAcceptedBoatTypes(excludedBoatTypes)
+
   return {
     id: 0,
     name: '',
     type: {
       domValue: storedSearchState?.boatType ?? 'OutboardMotor',
-      options: boatTypes.map((type) => ({
+      options: acceptedBoatTypes.map((type) => ({
         domValue: type,
         label: i18n.boatSpace.boatType[type],
         value: type
@@ -172,7 +179,8 @@ const initialBoatSelectionState = (
 
 const transformBoatToFormBoat = (
   boat: Boat,
-  i18n: Translations
+  i18n: Translations,
+  excludedBoatTypes?: BoatType[]
 ): StateOf<BoatInfoForm> => ({
   id: boat.id,
   name: boat.name,
@@ -182,7 +190,7 @@ const transformBoatToFormBoat = (
   width: boat.width.toString(),
   type: {
     domValue: boat.type,
-    options: boatTypes.map((type) => ({
+    options: getAcceptedBoatTypes(excludedBoatTypes).map((type) => ({
       domValue: type,
       label: i18n.boatSpace.boatType[type],
       value: type
@@ -211,13 +219,21 @@ type BoatFormUpdateProps = {
   next: StateOf<BoatForm>
   boats: Boat[]
   i18n: Translations
+  excludedBoatTypes?: BoatType[]
+}
+
+function getAcceptedBoatTypes(excludedBoatTypes?: BoatType[]) {
+  return boatTypes.filter(
+    (type) => !excludedBoatTypes || !excludedBoatTypes.includes(type)
+  )
 }
 
 export function onBoatFormUpdate({
   prev,
   next,
   boats,
-  i18n
+  i18n,
+  excludedBoatTypes
 }: BoatFormUpdateProps): StateOf<BoatForm> {
   const prevBoatId = prev.boatSelection.domValue
   const nextBoatId = next.boatSelection.domValue
@@ -238,7 +254,11 @@ export function onBoatFormUpdate({
     if (selectedBoat) {
       return {
         ...next,
-        boatInfo: transformBoatToFormBoat(selectedBoat, i18n),
+        boatInfo: transformBoatToFormBoat(
+          selectedBoat,
+          i18n,
+          excludedBoatTypes
+        ),
         newBoatCache: cache,
         boatSelection: initialBoatSelectionState(boats, selectedBoat)
       }
