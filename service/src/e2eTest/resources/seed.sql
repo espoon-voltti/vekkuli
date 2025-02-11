@@ -467,15 +467,16 @@ VALUES ('ML1', 17823, 4545, 22367),
 
 
 
--- Populate the location table with 7 different locations with made-up Finnish addresses
+-- Populate the location table with 8 different locations
 INSERT INTO location (id, name, address)
-VALUES (1, 'Haukilahti', 'Satamatie 1, Espoo'),
-       (2, 'Kivenlahti', 'Kivenlahdentie 10, Espoo'),
-       (3, 'Laajalahti', 'Laajalahdentie 5, Espoo'),
-       (4, 'Otsolahti', 'Otsolahdentie 7, Espoo'),
-       (5, 'Soukka', 'Soukantie 3, Espoo'),
-       (6, 'Suomenoja', 'Suomenojantie 15, Espoo'),
-       (7, 'Svinö', 'Svinöntie 8, Espoo');
+VALUES (1, 'Haukilahti', 'Mellstenintie 6, 02170 Espoo'),
+       (2, 'Kivenlahti', 'Marinsatamantie 5, 02320 Espoo'),
+       (3, 'Laajalahti', 'Ruukinrannantie 29, 02600 Espoo'),
+       (4, 'Otsolahti', 'Sateenkaari 9, 02100 Espoo'),
+       (5, 'Soukka', 'Soukanlahdentie 15, 02360 Espoo'),
+       (6, 'Suomenoja', 'Hylkeenpyytäjäntie 9, 02270 Espoo'),
+       (7, 'Svinö', 'Skatantie 36, 02380 Espoo'),
+       (8, 'Ämmäsmäki', 'Ämmäsmäentie 4, 02820 Espoo');
 
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (1, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sailboat');
