@@ -49,6 +49,7 @@ class CitizenDetailsPage(
 
     val organizationList = getByDataTestId("organization-list")
     val organizationListRows = getByDataTestId("organization-row", organizationList)
+    val header = page.getByRole(AriaRole.HEADING, Page.GetByRoleOptions().setName("Omat tiedot").setExact(true))
 
     fun getOrganizationsSection(text: String) = OrganizationSection(organizationListRows.filter(Locator.FilterOptions().setHasText(text)))
 

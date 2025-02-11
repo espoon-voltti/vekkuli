@@ -131,6 +131,7 @@ open class BoatSpaceFormPage(
     val confirmButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Vahvista varaus").setExact(true))
     val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
     val header = page.getByText("Venepaikan varaus:")
+    val switchInfoBox = page.getByText("Olet vaihtamassa venepaikkaa")
 
     fun fillFormAndSubmit(overrides: (BoatSpaceFormPage.() -> Unit)? = null) {
         val citizenSection = getCitizenSection()

@@ -493,6 +493,63 @@ class SwitchReservationTest : ReserveTest() {
         }
     }
 
+    @Test
+    fun `going to boat space search page from citizen profile switch button limits available space choices`() {
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+        reservationSection.switchSpace.click()
+
+        val searchSpacesPage = ReserveBoatSpacePage(page)
+        assertThat(searchSpacesPage.header).isVisible()
+        assertThat(searchSpacesPage.switchInfoBox).isVisible()
+
+        val filterSection = searchSpacesPage.getFilterSection()
+        assertThat(filterSection.slipRadio).not().isDisabled()
+        assertThat(filterSection.trailerRadio).isDisabled()
+        assertThat(filterSection.winterRadio).isDisabled()
+        assertThat(filterSection.storageRadio).isDisabled()
+
+        // start reserving
+        searchSpacesPage.startReservingBoatSpaceB314()
+
+        // we should be directly at the form page
+        val formPage = BoatSpaceFormPage(page)
+        assertThat(formPage.header).isVisible()
+
+        // switch info box should be visible, making it clear that we are switching
+        assertThat(formPage.switchInfoBox).isVisible()
+    }
+
+    @Test
+    fun `a back button in switching a reservation should lead to `() {
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
+
+        val citizenDetails = CitizenDetailsPage(page)
+        citizenDetails.navigateToPage()
+
+        val reservationSection = citizenDetails.getReservationSection("Haukilahti B 001")
+        reservationSection.switchSpace.click()
+
+        val searchSpacesPage = ReserveBoatSpacePage(page)
+        assertThat(searchSpacesPage.header).isVisible()
+        assertThat(searchSpacesPage.switchInfoBox).isVisible()
+
+        searchSpacesPage.switchGoBackButton.click()
+        assertThat(citizenDetails.header).isVisible()
+
+        // Back button isn't visible when directly going to the page
+        searchSpacesPage.navigateToPage()
+        assertThat(searchSpacesPage.header).isVisible()
+        assertThat(searchSpacesPage.switchInfoBox).not().isVisible()
+        assertThat(searchSpacesPage.switchGoBackButton).not().isVisible()
+    }
+
     private fun switchSlipBoatSpace(
         citizenSsn: String,
         width: String,

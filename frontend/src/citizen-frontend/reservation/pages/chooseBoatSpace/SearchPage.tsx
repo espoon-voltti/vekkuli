@@ -1,14 +1,15 @@
 import { Loader } from 'lib-components/Loader'
 import { Column, Columns, Container, MainSection } from 'lib-components/dom'
+import { GoBackLink } from 'lib-components/links'
 import React, { useContext, useState } from 'react'
 
+import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
 import { useForm } from 'lib-common/form/hooks'
 import { useQueryResult } from 'lib-common/query'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
-import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
 import StepIndicator from '../../StepIndicator'
 import { InfoBox } from '../../components/InfoBox'
 import { ReservationStateContext } from '../../state'
@@ -110,6 +111,11 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
         !reservation && (
           <>
             <MainSection ariaLabel={i18n.reservation.steps.chooseBoatSpace}>
+              {switchInfo && (
+                <Container>
+                  <GoBackLink>{i18n.reservation.goBack}</GoBackLink>
+                </Container>
+              )}
               <StepIndicator step="chooseBoatSpace" />
               <Container>
                 <h2>{i18n.reservation.searchPage.title}</h2>
