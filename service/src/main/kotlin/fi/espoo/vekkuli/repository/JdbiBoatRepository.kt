@@ -57,7 +57,9 @@ class JdbiBoatRepository(
                 b.reserver_id IN (
                     SELECT organization_id 
                     FROM reserver_organizations
-                );
+                )
+                AND
+                deleted_at IS NULL;
         """
             handle
                 .createQuery(query)

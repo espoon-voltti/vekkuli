@@ -104,6 +104,12 @@ class ReserveBoatSpacePage(
         val firstSwitchReservationButton = switchReservationButtons.first()
         val secondSwitchReservationButton =
             switchReservationButtons.nth(1)
+
+        fun getSwitchReservationButton(place: String) =
+            root.getByText(place).locator("..").locator("..").locator("..").getByRole(
+                AriaRole.BUTTON,
+                Locator.GetByRoleOptions().setName("Vaihdan nykyisen paikan").setExact(true)
+            )
     }
 
     class LoginModal(

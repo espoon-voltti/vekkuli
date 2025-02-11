@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatService
+import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -26,6 +27,9 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         deleteAllReservations(jdbi)
         deleteAllBoats(jdbi)
     }
+
+    @Autowired
+    private lateinit var organizationService: OrganizationService
 
     @Autowired
     lateinit var boatService: BoatService
@@ -128,5 +132,60 @@ class BoatServiceIntegrationTests : IntegrationTestBase() {
         boatService.deleteBoat(deleteBoat.id)
         boatService.getBoatsForReserver(this.citizenIdLeo)
         assertEquals(2, boatService.getBoatsForReserver(this.citizenIdLeo).size, "Correct number of boats are fetched")
+    }
+
+    @Test
+    fun `should get active boats for organizations`() {
+        val orgId = insertOrganization(citizenIdMikko)
+        val boatToBeDeleted = insertBoat(orgId)
+        insertBoat(orgId)
+        insertBoat(orgId)
+
+        boatService.deleteBoat(boatToBeDeleted)
+
+        val boats = boatService.getBoatsForReserversOrganizations(citizenIdMikko)
+        assertEquals(1, boats.size, "Correct number of organizations are fetched")
+        assertEquals(2, boats[orgId.toString()]?.size, "Correct number of boats are fetched")
+    }
+
+    private fun insertBoat(reserverId: UUID): Int =
+        boatService
+            .insertBoat(
+                reserverId,
+                "registrationCode",
+                "TestBoat",
+                150,
+                150,
+                150,
+                150,
+                BoatType.Sailboat,
+                "",
+                "",
+                OwnershipStatus.Owner
+            ).id
+
+    private fun insertOrganization(memberCitizenId: UUID): UUID {
+        val result =
+            organizationService
+                .insertOrganization(
+                    businessId = "1234567890",
+                    name = "TestOrganization",
+                    phone = "1234567890",
+                    email = "test@test.com",
+                    streetAddress = "",
+                    streetAddressSv = "",
+                    postalCode = "",
+                    postOffice = "",
+                    postOfficeSv = "",
+                    municipalityCode = 1,
+                    billingName = "",
+                    billingStreetAddress = "",
+                    billingPostalCode = "",
+                    billingPostOffice = ""
+                ).id
+
+        organizationService.addCitizenToOrganization(result, memberCitizenId)
+
+        return result
     }
 }
