@@ -337,18 +337,22 @@ const sv: Translations = {
   },
   boat: {
     delete: 'Ta bort båt',
-    deleteFailed:
-      'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
+    deleteFailed: 'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
     deleteSuccess: 'Båten har tagits bort',
-    confirmDelete: (boatName: string) =>
-      `Du håller på att ta bort informationen för båten ${boatName}`,
+    confirmDelete: (boatName: string) => `Du håller på att ta bort informationen för båten ${boatName}`,
     editBoatDetails: 'Redigera båtdetaljer',
     boatName: 'Båtnamn',
     boatDepthInMeters: 'Djupgående (m)',
     boatWeightInKg: 'Vikt (kg)',
     registrationNumber: 'Registreringsnummer',
-    otherIdentifier: 'Annan identifierare',
-    additionalInfo: 'Ytterligare information'
+    otherIdentifier: 'Märke och modell/annan identifierare',
+    additionalInfo: 'Ytterligare information',
+    widthInMeters: 'Bredd (m)',
+    lengthInMeters: 'Längd (m)',
+    boatType: 'Båttyp',
+    ownershipStatus: 'Ägandestatus',
+    save: 'Spara',
+    cancel: 'Spara inte'
   },
   boatSpace: {
     boatSpaceType: {

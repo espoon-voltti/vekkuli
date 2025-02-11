@@ -68,13 +68,13 @@ export default React.memo(function Boat({
           <Columns>
             {onDelete && (
               <Column isNarrow>
-                <DeleteLink action={onDelete}>Poista vene</DeleteLink>
+                <DeleteLink action={onDelete}>{i18n.boat.delete}</DeleteLink>
               </Column>
             )}
             <Column isNarrow toRight>
               {!editDisabled && (
                 <EditLink action={() => setEditMode(true)}>
-                  Muokkaa veneen tietoja
+                  {i18n.boat.editBoatDetails}
                 </EditLink>
               )}
             </Column>
@@ -84,21 +84,21 @@ export default React.memo(function Boat({
       <Columns>
         <Column>
           <TextField
-            label="Veneen nimi"
+            label={i18n.boat.boatName}
             name="name"
             bind={name}
             required={editMode}
             readonly={!editMode}
           />
           <NumberField
-            label="Paino (kg)"
+            label={i18n.boat.boatWeightInKg}
             name="weight"
             bind={weight}
             required={editMode}
             readonly={!editMode}
           />
           <TextField
-            label="Muu tunniste"
+            label={i18n.boat.otherIdentifier}
             name="otherIdentification"
             bind={otherIdentification}
             required={editMode}
@@ -107,13 +107,13 @@ export default React.memo(function Boat({
         </Column>
         <Column>
           <SelectField
-            label="Veneen tyyppi"
+            label={i18n.boat.boatType}
             bind={type}
             readonly={!editMode}
             required={editMode}
           />
           <NumberField
-            label="Syväys (m)"
+            label={i18n.boat.boatDepthInMeters}
             name="depth"
             bind={depth}
             required={editMode}
@@ -121,7 +121,7 @@ export default React.memo(function Boat({
             precision={2}
           />
           <TextField
-            label="Lisätiedot"
+            label={i18n.boat.additionalInfo}
             name="extraInformation"
             bind={extraInformation}
             readonly={!editMode}
@@ -129,7 +129,7 @@ export default React.memo(function Boat({
         </Column>
         <Column>
           <NumberField
-            label="Leveys (m)"
+            label={i18n.boat.widthInMeters}
             name="width"
             bind={width}
             required={editMode}
@@ -137,7 +137,7 @@ export default React.memo(function Boat({
             precision={2}
           />
           <TextField
-            label="Rekisteritunnus"
+            label={i18n.boat.registrationNumber}
             name="registrationNumber"
             bind={registrationNumber}
             readonly={!editMode}
@@ -145,7 +145,7 @@ export default React.memo(function Boat({
         </Column>
         <Column>
           <NumberField
-            label="Pituus (m)"
+            label={i18n.boat.lengthInMeters}
             name="length"
             bind={length}
             required={editMode}
@@ -153,7 +153,7 @@ export default React.memo(function Boat({
             precision={2}
           />
           <SelectField
-            label="Omistussuhde"
+            label={i18n.boat.ownershipStatus}
             name="ownershipStatus"
             bind={ownership}
             required={editMode}
@@ -164,10 +164,10 @@ export default React.memo(function Boat({
       {editMode && (
         <Buttons>
           <Button action={cancel} loading={isPending}>
-            Peruuta
+            {i18n.boat.cancel}
           </Button>
           <Button action={onSubmit} type="primary" loading={isPending}>
-            Tallenna muutokset
+            {i18n.boat.save}
           </Button>
         </Buttons>
       )}

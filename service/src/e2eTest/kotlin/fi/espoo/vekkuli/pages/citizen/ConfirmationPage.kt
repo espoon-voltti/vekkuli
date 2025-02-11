@@ -7,7 +7,7 @@ import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage.ReservedSpaceSection
 class ConfirmationPage(
     page: Page
 ) : BasePage(page) {
-    val reservationSuccessNotification = page.getByText("Venepaikan varaus onnistui")
+    val reservationSuccessNotification = page.getByText("Paikan varaus onnistui")
 
     fun getReservedSpaceSection() = ReservedSpaceSection(getByDataTestId("reserved-space"))
 }

@@ -345,9 +345,15 @@ export default {
     boatName: 'Veneen nimi',
     boatDepthInMeters: 'Syväys (m)',
     boatWeightInKg: 'Paino (kg)',
+    widthInMeters: 'Leveys (m)',
+    lengthInMeters: 'Pituus (m)',
     registrationNumber: 'Rekisteritunnus',
-    otherIdentifier: 'Muu tunniste',
-    additionalInfo: 'Lisätiedot'
+    otherIdentifier: 'Merkki ja malli/muu tunniste',
+    additionalInfo: 'Lisätiedot',
+    boatType: 'Veneen tyyppi',
+    ownershipStatus: 'Omistussuhde',
+    save: 'Tallenna muutokset',
+    cancel: 'Peruuta'
   },
   boatSpace: {
     renterType: {

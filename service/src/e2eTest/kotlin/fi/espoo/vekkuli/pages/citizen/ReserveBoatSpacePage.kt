@@ -37,7 +37,7 @@ class ReserveBoatSpacePage(
         val boatTypeSelect = fields.getSelect("Venetyyppi")
         val widthInput = fields.getInput("Veneen leveys")
         val lengthInput = fields.getInput("Veneen pituus")
-        val amenityBuoyCheckbox = fields.getCheckbox("Poiju", true)
+        val amenityBuoyCheckbox = fields.getCheckbox("Poiju merellä", true)
         val amenityRearBuoyCheckbox = fields.getCheckbox("Peräpoiju")
         val amenityBeamCheckbox = fields.getCheckbox("Aisa", true)
         val amenityWalkBeamCheckbox = fields.getCheckbox("Kävelyaisa")
