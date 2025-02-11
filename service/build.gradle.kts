@@ -80,9 +80,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.ws:spring-ws-security") {
-        exclude("org.opensaml")
-    }
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
@@ -127,6 +124,7 @@ dependencies {
     implementation("org.commonmark:commonmark:0.24.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
+    implementation("commons-codec:commons-codec:1.18.0")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
