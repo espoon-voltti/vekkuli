@@ -7,7 +7,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.spring") version "1.9.20"
-    id("org.flywaydb.flyway") version "10.20.0"
+    id("org.flywaydb.flyway") version "11.3.1"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.0.20"
@@ -95,7 +95,7 @@ dependencies {
     api(platform("com.fasterxml.jackson:jackson-bom:2.18.0"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    implementation("com.auth0:java-jwt:4.4.0")
+    implementation("com.auth0:java-jwt:4.5.0")
 
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("ch.qos.logback:logback-access")
@@ -118,7 +118,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("software.amazon.awssdk:ses:2.30.8")
-    implementation("software.amazon.awssdk:core:2.28.26")
+    implementation("software.amazon.awssdk:core:2.30.16")
     implementation("software.amazon.awssdk:regions:2.20.0")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.24.0")

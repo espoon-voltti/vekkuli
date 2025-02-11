@@ -46,10 +46,7 @@ export const boatForm = mapped(
 )
 export type BoatForm = typeof boatForm
 
-export const transformBoatToFormBoat = (
-  boat: Boat,
-  i18n: Translations
-): StateOf<BoatForm> => ({
+export const transformBoatToFormBoat = (boat: Boat): StateOf<BoatForm> => ({
   name: boat.name || '-',
   depth: boat.depth.toString(),
   length: boat.length.toString(),
@@ -59,7 +56,7 @@ export const transformBoatToFormBoat = (
     domValue: boat.type,
     options: boatTypes.map((type) => ({
       domValue: type,
-      label: i18n.boatSpace.boatType[type],
+      label: (i18n: Translations) => i18n.boatSpace.boatType[type],
       value: type
     }))
   },
@@ -70,7 +67,7 @@ export const transformBoatToFormBoat = (
     domValue: boat.ownership,
     options: ownershipStatuses.map((type) => ({
       domValue: type,
-      label: i18n.boatSpace.ownershipStatus[type],
+      label: (i18n: Translations) => i18n.boatSpace.ownershipStatus[type],
       value: type
     }))
   }
@@ -80,15 +77,14 @@ export const showBoatsForm = object({
   show: multiSelect<boolean>()
 })
 
-export const initShowBoatsForm = (
-  i18n: Translations
-): StateOf<typeof showBoatsForm> => ({
+export const initShowBoatsForm = (): StateOf<typeof showBoatsForm> => ({
   show: {
     domValues: [],
     options: [
       {
         domValue: 'show',
-        label: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
+        label: (i18n: Translations) =>
+          i18n.citizenPage.reservation.showAllBoats,
         value: true
       }
     ]

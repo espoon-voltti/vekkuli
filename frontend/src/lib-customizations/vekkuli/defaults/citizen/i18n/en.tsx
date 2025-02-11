@@ -435,7 +435,8 @@ const en: Translations = {
       },
       modal: {
         goBackToReservation: 'Go to the reservation'
-      }
+      },
+      showAllBoats: 'Also show boats that are not linked to a reservation'
     }
   },
   organization: {

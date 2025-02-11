@@ -33,7 +33,6 @@ class BoatSpaceService(
         width: BigDecimal? = null,
         length: BigDecimal? = null,
         amenities: List<BoatSpaceAmenity>? = null,
-        storageType: BoatSpaceAmenity? = null,
         boatSpaceType: BoatSpaceType? = null,
         harbor: List<String>? = null,
     ): Pair<List<Harbor>, Int> {

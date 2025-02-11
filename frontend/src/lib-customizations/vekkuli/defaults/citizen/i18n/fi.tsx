@@ -435,7 +435,8 @@ export default {
       },
       modal: {
         goBackToReservation: 'Siirry varaukseen'
-      }
+      },
+      showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin'
     }
   },
   organization: {

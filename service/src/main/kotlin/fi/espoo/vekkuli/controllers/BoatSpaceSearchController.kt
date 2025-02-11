@@ -158,7 +158,6 @@ class BoatSpaceSearchController {
                 width,
                 length,
                 amenities,
-                storageType,
                 boatSpaceType,
                 harbor,
             )
