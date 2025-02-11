@@ -8,6 +8,7 @@ import { UpdateTrailerRequest } from 'citizen-frontend/api-clients/trailer'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
 import TrailerInformation from 'citizen-frontend/components/trailer/TrailerInformation'
 import { useTranslation } from 'citizen-frontend/localization'
+import { ErrorBox } from 'citizen-frontend/reservation/components/ErrorBox'
 import { formatPlaceIdentifier } from 'citizen-frontend/shared/formatters'
 import {
   MutationDescription,
@@ -167,6 +168,13 @@ export default React.memo(function Reservation({
             trailer={reservation.trailer}
             setEditIsOn={(mode) => setButtonsVisible(!mode)}
             updateMutation={updateTrailerMutation}
+          />
+        )}
+        {buttonsVisible && canRenew && (
+          <ErrorBox
+            text={i18n.citizenPage.reservation.renewNotification(
+              reservation.endDate
+            )}
           />
         )}
         {buttonsVisible && (

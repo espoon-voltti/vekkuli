@@ -436,7 +436,9 @@ const en: Translations = {
       modal: {
         goBackToReservation: 'Go to the reservation'
       },
-      showAllBoats: 'Also show boats that are not linked to a reservation'
+      showAllBoats: 'Also show boats that are not linked to a reservation',
+      renewNotification: (date: LocalDate) =>
+        `The contract period is ending. Secure the same spot for next season by paying the season fee by ${date.format()}, or switch to a new spot.`
     }
   },
   organization: {
