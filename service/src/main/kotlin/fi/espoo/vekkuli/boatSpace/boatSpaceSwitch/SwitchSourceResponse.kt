@@ -16,9 +16,7 @@ data class SwitchSourceResponse(
 class SwitchSourceResponseAssembler(
     private val spaceReservationService: BoatReservationService,
 ) {
-    fun toSwitchSourceResponse(reservation: BoatSpaceReservation): SwitchSourceResponse = assembleSwitchResponse(reservation)
-
-    private fun assembleSwitchResponse(reservation: BoatSpaceReservation,): SwitchSourceResponse {
+    fun toSwitchSourceResponse(reservation: BoatSpaceReservation): SwitchSourceResponse {
         val boatSpace = getBoatSpace(reservation.id)
 
         return SwitchSourceResponse(
