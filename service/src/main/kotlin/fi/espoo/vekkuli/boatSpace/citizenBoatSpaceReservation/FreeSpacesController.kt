@@ -55,15 +55,16 @@ class FreeSpacesController(
             FreeSpacesResponse(
                 count = freeSpacesByHarbor.second,
                 placesWithFreeSpaces =
-                    freeSpacesByHarbor.first.map { harbor ->
+                    freeSpacesByHarbor.first.map { h ->
                         PlacesWithFreeSpaces(
                             place =
                                 Place(
-                                    id = harbor.location.id,
-                                    name = harbor.location.name
+                                    id = h.location.id,
+                                    name = h.location.name,
+                                    address = h.location.address,
                                 ),
                             spaces =
-                                harbor.boatSpaces.map { space ->
+                                h.boatSpaces.map { space ->
                                     FreeSpace(
                                         id = space.id,
                                         size =
