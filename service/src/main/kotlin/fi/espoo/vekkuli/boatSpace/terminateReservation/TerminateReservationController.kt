@@ -6,8 +6,8 @@ import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.utils.TimeProvider
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*

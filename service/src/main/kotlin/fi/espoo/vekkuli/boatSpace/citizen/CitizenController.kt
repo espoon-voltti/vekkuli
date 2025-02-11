@@ -10,8 +10,8 @@ import fi.espoo.vekkuli.service.BoatService
 import fi.espoo.vekkuli.service.OrganizationService
 import fi.espoo.vekkuli.service.PermissionService
 import fi.espoo.vekkuli.service.ReserverService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping

@@ -21,9 +21,9 @@ import fi.espoo.vekkuli.service.ReserverService
 import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.EditBoat
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import mu.KotlinLogging
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*

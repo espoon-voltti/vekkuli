@@ -15,8 +15,8 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
 import fi.espoo.vekkuli.views.employee.SendInvoiceModel
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller

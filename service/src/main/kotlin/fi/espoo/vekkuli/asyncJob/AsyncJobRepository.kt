@@ -5,7 +5,7 @@
 package fi.espoo.vekkuli.asyncJob
 
 import fi.espoo.vekkuli.utils.TimeProvider
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked

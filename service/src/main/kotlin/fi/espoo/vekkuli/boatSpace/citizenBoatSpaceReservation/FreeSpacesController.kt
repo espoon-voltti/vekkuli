@@ -6,9 +6,9 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.BoatSpaceService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.Min
-import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 

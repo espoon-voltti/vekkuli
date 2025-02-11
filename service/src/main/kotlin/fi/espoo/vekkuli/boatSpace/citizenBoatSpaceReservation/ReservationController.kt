@@ -9,8 +9,8 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 

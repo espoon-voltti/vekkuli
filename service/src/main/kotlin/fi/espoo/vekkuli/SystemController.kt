@@ -10,7 +10,7 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.domain.CitizenAdUser
 import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.service.ReserverService
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.web.bind.annotation.GetMapping

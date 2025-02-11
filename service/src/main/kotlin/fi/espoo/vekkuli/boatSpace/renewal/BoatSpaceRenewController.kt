@@ -15,10 +15,10 @@ import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.*
 import jakarta.validation.constraints.*
-import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*

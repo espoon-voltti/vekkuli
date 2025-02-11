@@ -4,8 +4,8 @@
 
 package fi.espoo.vekkuli.asyncJob
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.Counter
-import mu.KotlinLogging
 import java.lang.reflect.UndeclaredThrowableException
 import java.time.Duration
 import java.util.concurrent.FutureTask

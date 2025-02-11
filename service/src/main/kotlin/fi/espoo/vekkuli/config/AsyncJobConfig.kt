@@ -5,7 +5,7 @@
 package fi.espoo.vekkuli.config
 
 import fi.espoo.vekkuli.asyncJob.*
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Bean

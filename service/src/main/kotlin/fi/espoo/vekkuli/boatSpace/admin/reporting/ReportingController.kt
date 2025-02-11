@@ -15,8 +15,8 @@ import fi.espoo.vekkuli.service.stickerReportToCsv
 import fi.espoo.vekkuli.service.terminatedBoatSpaceReportToCsv
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
