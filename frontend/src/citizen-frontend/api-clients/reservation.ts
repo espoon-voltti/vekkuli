@@ -14,7 +14,9 @@ import {
   PaymentInformationResponse,
   ReservationInfo,
   ReservationInfoResponse,
+  ReservationBeingSwitchedResponse,
   ReservationOperation,
+  SwitchReservationInformation,
   UnfinishedBoatSpaceReservation,
   UnfinishedBoatSpaceReservationResponse
 } from '../api-types/reservation'
@@ -51,17 +53,6 @@ export async function startToSwitchBoatSpace(input: {
   await client.request<void>({
     url: uri`/reservation/${input.reservationId}/switch/${input.spaceId}`.toString(),
     method: 'POST'
-  })
-}
-
-export async function switchBoatSpace(
-  reservationId: number,
-  input: FillBoatSpaceReservationInput
-): Promise<void> {
-  await client.request<void>({
-    url: uri`/reservation/${reservationId}/switch`.toString(),
-    method: 'POST',
-    data: input
   })
 }
 
@@ -116,6 +107,18 @@ export async function getReservation(
     method: 'GET'
   })
   return deserializeJsonBoatSpaceReservationResponse(json)
+}
+
+export async function getReservationBeingSwitched(
+  reservationId: number
+): Promise<SwitchReservationInformation> {
+  const { data: json } = await client.request<ReservationBeingSwitchedResponse>(
+    {
+      url: uri`/reservation/${reservationId}/switch-source`.toString(),
+      method: 'GET'
+    }
+  )
+  return json
 }
 
 export async function municipalities(): Promise<Municipality[]> {

@@ -4,6 +4,7 @@ import HelsinkiDateTime from '../../lib-common/date/helsinki-date-time'
 import {
   Boat,
   BoatSpace,
+  BoatSpaceType,
   Citizen,
   CreationType,
   NewBoat,
@@ -110,6 +111,13 @@ export type BoatSpaceReservationResponse = {
   canReserveNew: boolean
   reservationInfo: ReservationInfoResponse
 }
+
+export type ReservationBeingSwitchedResponse = {
+  id: ReservationId
+  spaceType: BoatSpaceType
+}
+
+export type SwitchReservationInformation = ReservationBeingSwitchedResponse
 
 export type ExistingBoatSpaceReservationResponse = {
   id: ReservationId

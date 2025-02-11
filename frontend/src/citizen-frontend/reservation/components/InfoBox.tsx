@@ -1,13 +1,23 @@
+import classNames from 'classnames'
 import React from 'react'
 
 import { BlueInfoCircle } from 'lib-icons'
 
-export const InfoBox = React.memo(function InfoBox({ text }: { text: string }) {
+type InfoBoxProps = {
+  text: string
+  fullWidth?: boolean
+}
+
+export const InfoBox = React.memo(function InfoBox({
+  text,
+  fullWidth
+}: InfoBoxProps) {
+  const classes = classNames('message-box is-info column', {
+    'is-four-fifths': !fullWidth
+  })
+
   return (
-    <div
-      id="empty-dimensions-warning"
-      className="message-box is-info column is-four-fifths"
-    >
+    <div className={classes}>
       <div className="column is-narrow">
         <span className="icon">
           <BlueInfoCircle />

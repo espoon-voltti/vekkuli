@@ -114,6 +114,8 @@ class ReserveBoatSpacePage(
     }
 
     val header = page.getByText("Espoon kaupungin venepaikkojen vuokraus")
+    val switchInfoBox = page.getByText("Olet vaihtamassa venepaikkaa")
+    val switchGoBackButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 
     fun navigateToPage() {
         page.navigate("$baseUrl/kuntalainen/venepaikka")

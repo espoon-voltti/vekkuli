@@ -191,7 +191,9 @@ export default React.memo(function Reservation({
             {canSwitch && (
               <Button
                 type="primary"
-                action={() => navigate('/kuntalainen/venepaikka')}
+                action={() =>
+                  navigate(`/kuntalainen/venepaikka/vaihda/${reservation.id}`)
+                }
                 ariaLabel={`${i18n.citizenPage.reservation.actions.change} : ${formattedPlaceIdentifier}`}
               >
                 {i18n.citizenPage.reservation.actions.change}
