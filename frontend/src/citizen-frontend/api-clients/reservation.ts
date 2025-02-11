@@ -12,6 +12,8 @@ import {
   FillBoatSpaceReservationInput,
   Municipality,
   PaymentInformationResponse,
+  ReservationInfo,
+  ReservationInfoResponse,
   ReservationOperation,
   UnfinishedBoatSpaceReservation,
   UnfinishedBoatSpaceReservationResponse
@@ -77,7 +79,24 @@ export async function unfinishedReservation(): Promise<UnfinishedBoatSpaceReserv
     organizationsBoats: mapResponseToBoatsByOrganization(
       json.organizationsBoats
     ),
-    organizationReservationInfos: json.organizationReservationInfos
+    organizationReservationInfos: json.organizationReservationInfos.map(
+      deserializeReservationInfo
+    )
+  }
+}
+
+function deserializeReservationInfo(
+  info: ReservationInfoResponse
+): ReservationInfo {
+  return {
+    reserverType: info.reserverType,
+    id: info.id,
+    name: info.name,
+    discountPercentage: info.discountPercentage,
+    revisedPriceInEuro: info.revisedPriceInEuro,
+    revisedPriceWithDiscountInEuro: info.revisedPriceWithDiscountInEuro,
+    validity: info.validity,
+    endDate: LocalDate.parseIso(info.endDate)
   }
 }
 
@@ -182,7 +201,7 @@ export function deserializeJsonBoatSpaceReservationResponse(
     totalPrice: json.totalPrice,
     vatValue: json.vatValue,
     netPrice: json.netPrice,
-    reservationInfo: json.reservationInfo,
+    reservationInfo: deserializeReservationInfo(json.reservationInfo),
     boat: json.boat,
     storageType: json.storageType ?? undefined,
     trailer: json.trailer ?? undefined,

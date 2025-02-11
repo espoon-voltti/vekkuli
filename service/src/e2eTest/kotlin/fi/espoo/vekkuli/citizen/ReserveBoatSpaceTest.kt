@@ -567,7 +567,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
 
-            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("31.01.2025 asti")
+            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("31.12.2024 asti")
 
             formPage.submitButton.click()
             assertZeroEmailsSent()
@@ -579,6 +579,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+            assertThat(formPage.getByDataTestId("reservation-validity")).hasText("31.12.2024 asti")
             messageService.sendScheduledEmails()
             assertEquals(2, SendEmailServiceMock.emails.size)
 

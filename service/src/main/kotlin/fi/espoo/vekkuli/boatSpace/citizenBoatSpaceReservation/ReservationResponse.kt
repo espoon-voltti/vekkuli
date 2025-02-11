@@ -25,7 +25,8 @@ data class ReservationInfo(
     val revisedPriceInCents: Int,
     val revisedPriceInEuro: String,
     val revisedPriceWithDiscountInEuro: String,
-    val validity: ReservationValidity
+    val validity: ReservationValidity,
+    val endDate: LocalDate,
 )
 
 data class UnfinishedReservationResponse(
@@ -363,7 +364,8 @@ class ReservationResponseMapper(
         discountPercentage: Int,
         reserverType: ReserverType,
         name: String?,
-        validity: ReservationValidity
+        validity: ReservationValidity,
+        endDate: LocalDate
     ): ReservationInfo =
         ReservationInfo(
             id = id,
@@ -379,7 +381,8 @@ class ReservationResponseMapper(
                         revisedPriceInCents,
                         discountPercentage
                     )
-                )
+                ),
+            endDate = endDate
         )
 
     fun toReservationInfo(
@@ -399,30 +402,34 @@ class ReservationResponseMapper(
             } else {
                 organization?.name
             },
-            reservation.validity
+            reservation.validity,
+            endDate = reservation.endDate
         )
     }
 
     fun toOrganizationReservationInfos(
         revisedPriceCents: Int,
         organizations: List<Organization>,
-        boatSpaceType: BoatSpaceType
+        boatSpaceType: BoatSpaceType,
+        reservation: BoatSpaceReservation
     ): List<ReservationInfo> =
         organizations.map {
             val result = seasonalService.canReserveANewSpace(it.id, boatSpaceType)
-            val validity =
-                if (result is ReservationResult.Success) {
-                    result.data.reservationValidity
-                } else {
-                    ReservationValidity.FixedTerm
-                }
+            var validity = reservation.validity
+            var endDate = reservation.endDate
+            if (result is ReservationResult.Success) {
+                validity = result.data.reservationValidity
+                endDate = result.data.endDate
+            }
+
             toReservationInfo(
                 it.id,
                 revisedPriceCents,
                 it.discountPercentage,
                 ReserverType.Organization,
                 it.name,
-                validity
+                validity,
+                endDate
             )
         }
 }

@@ -57,7 +57,12 @@ class ReservationController(
             reserverService.getMunicipalities().toMunicipalityListResponse(),
             organizations.toCitizenOrganizationListResponse(),
             boatsByOrganization,
-            reservationResponseMapper.toOrganizationReservationInfos(revisedPrice.revisedPriceInCents, organizations, boatSpace.type),
+            reservationResponseMapper.toOrganizationReservationInfos(
+                revisedPrice.revisedPriceInCents,
+                organizations,
+                boatSpace.type,
+                reservation
+            ),
         )
     }
 

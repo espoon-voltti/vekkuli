@@ -90,7 +90,7 @@ export default React.memo(function ReservedSpace({
             <TextField
               label={i18n.reservation.formPage.reservationValidity}
               value={i18n.reservation.validity(
-                reservation.endDate,
+                reservationInfoForReservation.endDate,
                 reservationInfoForReservation.validity,
                 true
               )}
