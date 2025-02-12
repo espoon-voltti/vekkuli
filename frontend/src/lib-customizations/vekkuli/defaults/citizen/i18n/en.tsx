@@ -170,15 +170,18 @@ const en: Translations = {
           Winter: {
             width: 'Storage space width (m)',
             length: 'Storage space length (m)',
-            harborInfo: 'Select a winter storage space from your boat harbor or from Suomenoja.'
+            harborInfo:
+              'Select a winter storage space from your boat harbor or from Suomenoja.'
           },
           Storage: {
             width: 'Storage space width (m)',
             length: 'Storage space length (m)',
-            harborInfo: 'You can only reserve year-round storage from the Ämmäsmäki storage area.'
+            harborInfo:
+              'You can only reserve year-round storage from the Ämmäsmäki storage area.'
           }
         },
-        storageInfo: 'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats placed in unnecessarily large spaces may be moved to smaller spaces.'
+        storageInfo:
+          'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats placed in unnecessarily large spaces may be moved to smaller spaces.'
       },
       switchInfoText:
         'You are changing your boat spot. The spot can only be changed to another spot of the same type.',
@@ -341,9 +344,11 @@ const en: Translations = {
   },
   boat: {
     delete: 'Delete boat',
-    deleteFailed: 'An error occurred while deleting the boat. Please contact customer support.',
+    deleteFailed:
+      'An error occurred while deleting the boat. Please contact customer support.',
     deleteSuccess: 'The boat has been deleted',
-    confirmDelete: (boatName: string) => `You are about to delete the information for the boat ${boatName}`,
+    confirmDelete: (boatName: string) =>
+      `You are about to delete the information for the boat ${boatName}`,
     editBoatDetails: 'Edit Boat Details',
     boatName: 'Boat name',
     boatDepthInMeters: 'Draft (m)',

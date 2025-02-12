@@ -169,15 +169,18 @@ export default {
           Winter: {
             width: 'Säilytyspaikan leveys (m)',
             length: 'Säilytyspaikan pituus (m)',
-            harborInfo: 'Valitse talvipaikka venepaikkasi satamasta tai Suomenojalta.'
+            harborInfo:
+              'Valitse talvipaikka venepaikkasi satamasta tai Suomenojalta.'
           },
           Storage: {
             width: 'Säilytyspaikan leveys (m)',
             length: 'Säilytyspaikan pituus (m)',
-            harborInfo: 'Ympärivuotisen säilytyksen voit varata ainoastaan Ämmäsmäen säilytysalueelta.'
+            harborInfo:
+              'Ympärivuotisen säilytyksen voit varata ainoastaan Ämmäsmäen säilytysalueelta.'
           }
         },
-        storageInfo: 'Veneen säilytykseen tarvittavan kaluston on mahduttava kokonaan varattavan paikan sisäpuolelle. Huomioi myös, että tarpeettoman suurille paikoille sijoitetut veneet voidaan siirtää pienemmille paikoille.'
+        storageInfo:
+          'Veneen säilytykseen tarvittavan kaluston on mahduttava kokonaan varattavan paikan sisäpuolelle. Huomioi myös, että tarpeettoman suurille paikoille sijoitetut veneet voidaan siirtää pienemmille paikoille.'
       },
       switchInfoText:
         'Olet vaihtamassa venepaikkaa. Paikan voi vaihtaa ainoastaan saman paikkatyypin paikkoihin. ',

@@ -168,10 +168,12 @@ const sv: Translations = {
           Storage: {
             width: 'Förvaringsplatsens bredd (m)',
             length: 'Förvaringsplatsens längd (m)',
-            harborInfo: 'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
+            harborInfo:
+              'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
           }
         },
-        storageInfo: 'All utrustning som behövs för båtens förvaring måste rymmas helt inom den reserverade platsen. Observera också att båtar placerade på onödigt stora platser kan flyttas till mindre platser.'
+        storageInfo:
+          'All utrustning som behövs för båtens förvaring måste rymmas helt inom den reserverade platsen. Observera också att båtar placerade på onödigt stora platser kan flyttas till mindre platser.'
       },
       switchInfoText:
         'Du håller på att byta båtplats. Platsen kan endast bytas till en plats av samma typ.',
@@ -338,9 +340,11 @@ const sv: Translations = {
   },
   boat: {
     delete: 'Ta bort båt',
-    deleteFailed: 'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
+    deleteFailed:
+      'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
     deleteSuccess: 'Båten har tagits bort',
-    confirmDelete: (boatName: string) => `Du håller på att ta bort informationen för båten ${boatName}`,
+    confirmDelete: (boatName: string) =>
+      `Du håller på att ta bort informationen för båten ${boatName}`,
     editBoatDetails: 'Redigera båtdetaljer',
     boatName: 'Båtnamn',
     boatDepthInMeters: 'Djupgående (m)',
