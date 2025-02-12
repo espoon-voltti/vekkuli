@@ -20,6 +20,8 @@ interface BoatSpaceRepository {
     fun getBoatSpace(boatSpace: Int): BoatSpace?
 
     fun isBoatSpaceReserved(boatSpace: Int): Boolean
+
+    fun getBoatSpaces(): List<BoatSpace>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -28,6 +30,8 @@ fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item)
 class BoatSpaceService(
     private val boatSpaceRepo: BoatSpaceRepository
 ) {
+    fun getBoatSpaces() = boatSpaceRepo.getBoatSpaces()
+
     fun getUnreservedBoatSpaceOptions(
         boatType: BoatType? = null,
         width: BigDecimal? = null,
