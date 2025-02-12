@@ -148,7 +148,8 @@ data class BoatSpaceReportRow(
     val terminationReason: String?,
     val startDate: LocalDate?,
     val endDate: LocalDate?,
-    val paid: LocalDateTime?
+    val paid: LocalDateTime?,
+    val creationType: String?
 )
 
 fun getFreeBoatSpaceReport(
@@ -189,7 +190,8 @@ fun getBoatSpaceReport(
                 bsr.termination_reason,
                 bsr.start_date,
                 bsr.end_date,
-                p.paid
+                p.paid,
+                bsr.creation_type
             FROM boat_space bs
                  LEFT JOIN location l ON l.id = bs.location_id
                  LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
@@ -227,6 +229,7 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "veneen rekisterinumero",
             "hinta",
             "maksuluokka",
+            "tyyppi",
             "irtisanomisaika",
             "irtisanomissyy",
             "alkupvm",
@@ -252,6 +255,7 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
@@ -312,7 +316,8 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "hinta",
             "maksuluokka",
             "maksupäivä",
-            "varauksen alkupäivämäärä"
+            "varauksen alkupäivämäärä",
+            "tyyppi"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -335,6 +340,7 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType))).append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -458,6 +464,15 @@ fun paymentTypeToText(paymentType: String?): String {
         "Invoice" -> "Lasku"
         "Other" -> "Muu"
         else -> paymentType ?: ""
+    }
+}
+
+fun reservationCreationTypeToText(creationType: String?): String {
+    return when (creationType) {
+        "New" -> "Uusi"
+        "Renewal" -> "Jatko"
+        "Switch" -> "Vaihto"
+        else -> ""
     }
 }
 

@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationRea
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.service.*
@@ -99,7 +100,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         val stickerReportRows = getStickerReport(jdbi, today.atStartOfDay())
         assertEquals(true, stickerReportRows.size > 0)
         assertEquals(today.atStartOfDay(), stickerReportRows[0].paid)
-        val row = stickerReportRows.find { it.place == "A 001" }
+        val row = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 001" }
         assertEquals("Testi Venho", row?.boatName)
     }
 
@@ -152,13 +153,15 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 startDate = today,
                 endDate = today.plusMonths(12),
                 boatId = boatId,
+                creationType = CreationType.Renewal
             )
         )
 
         val reportRows = getBoatSpaceReport(jdbi, today.atStartOfDay())
         assertEquals(true, reportRows.size > 0)
-        val row = reportRows.find { it.place == "A 001" }
+        val row = reportRows.find { (it.harbor == "Haukilahti" && it.place == "A 001") }
         assertEquals("Korhonen Leo", row?.name)
+        assertEquals("Renewal", row?.creationType)
     }
 
     @Test

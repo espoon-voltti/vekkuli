@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.domain.CreatePaymentParams
+import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.domain.PaymentStatus
@@ -166,7 +167,8 @@ abstract class IntegrationTestBase {
         val terminationComment: String? = null,
         val terminationTimestamp: LocalDateTime? = null,
         val trailerId: Int? = null,
-        val storageType: StorageType = StorageType.None
+        val storageType: StorageType = StorageType.None,
+        val creationType: CreationType? = CreationType.New
     )
 
     fun insertDevBoatSpaceReservation(reservation: DevBoatSpaceReservation) {
@@ -177,11 +179,11 @@ abstract class IntegrationTestBase {
                     INSERT INTO boat_space_reservation (
                         id, reserver_id, boat_space_id, start_date, end_date, created, updated, 
                         status, boat_id, employee_id, acting_citizen_id, validity, original_reservation_id, 
-                        termination_reason, termination_comment, termination_timestamp, trailer_id, storage_type
+                        termination_reason, termination_comment, termination_timestamp, trailer_id, storage_type, creation_type
                     ) VALUES (
                         :id, :reserverId, :boatSpaceId, :startDate, :endDate, :created, :updated, 
                         :status, :boatId, :employeeId, :actingCitizenId, :validity, :originalReservationId, 
-                        :terminationReason, :terminationComment, :terminationTimestamp, :trailerId, :storageType
+                        :terminationReason, :terminationComment, :terminationTimestamp, :trailerId, :storageType, :creationType
                     )
                     """.trimIndent()
                 ).bindKotlin(reservation)
