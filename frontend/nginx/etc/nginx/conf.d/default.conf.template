@@ -162,13 +162,35 @@ server {
   add_header Report-To '{"group","csp-endpoint","max_age":31536000,"endpoints":[{"url":"$httpScheme://$host/api/csp"}]}';
 
   <% if ENV.key?("HTTP_SCHEME") && ENV["HTTP_SCHEME"] == "http" %>
-  set $contentSecurityPolicyBase "block-all-mixed-content; default-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://o318158.ingest.sentry.io; object-src 'none'; report-uri /api/csp; report-to csp-endpoint";
+  set $contentSecurityPolicyBase "
+    block-all-mixed-content;
+    default-src 'self';
+    font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com;
+    img-src 'self';
+    connect-src 'self' https://o318158.ingest.sentry.io;
+    object-src 'none';
+    frame-ancestors 'none';
+    form-action 'self';
+    report-uri /api/csp; report-to csp-endpoint
+  ";
   <% else %>
-  set $contentSecurityPolicyBase "block-all-mixed-content; upgrade-insecure-requests; default-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://o318158.ingest.sentry.io; object-src 'none'; report-uri /api/csp; report-to csp-endpoint";
+  set $contentSecurityPolicyBase "
+    block-all-mixed-content;
+    upgrade-insecure-requests;
+    default-src 'self';
+    font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com;
+    img-src 'self';
+    connect-src 'self' https://o318158.ingest.sentry.io;
+    object-src 'none';
+    frame-ancestors 'none';
+    form-action 'self';
+    report-uri /api/csp; report-to csp-endpoint
+  ";
   <% end %>
 
-  # disabled due to HTMX using eval
-  # add_header Content-Security-Policy "${contentSecurityPolicyBase}; frame-ancestors 'none'; form-action 'self';";
+  add_header Content-Security-Policy "${contentSecurityPolicyBase}; script-src 'self';";
 
   # Tracing
   # Return the request ID to the client to make tracing of test requests very easy
@@ -196,6 +218,7 @@ server {
   }
 
   location ~ ^/(dev|api|auth|boat-space|ext|reservation|validate|info|venepaikka|virkailija|yhteiso) {
+    add_header Content-Security-Policy "${contentSecurityPolicyBase}; script-src 'self' 'unsafe-inline' 'unsafe-eval';";
     include     proxy_params;
     proxy_pass  $apiGatewayURL;
   }
