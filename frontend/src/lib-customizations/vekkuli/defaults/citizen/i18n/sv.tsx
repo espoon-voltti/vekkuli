@@ -125,6 +125,65 @@ const sv: Translations = {
     mainNavigation: 'Huvudnavigering'
   },
   components: componentTranslations,
+  citizenFrontPage: {
+    title: 'Båtplatser',
+    info: {
+      locations:
+        'Lediga båtplatser finns i följande hamnar: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja och Svinö. Vinterförvaringsplatser finns i Laajalahti, Otsolahti och Suomenoja samt året-runt-förvaringsplatser i Ämmäsmäki.',
+      authenticationRequired:
+        'För att boka en plats krävs stark autentisering, och båtplatsen betalas vid bokningstillfället.',
+      boatRequired:
+        'Endast ägaren eller innehavaren av en båt kan boka båt-, vinter- eller förvaringsplatser. Se till att uppgifterna är korrekta i Traficoms båtregister.',
+      contactInfo:
+        'Om du inte kan autentisera dig elektroniskt, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 mån och ons kl. 12:30-15:00 och tors kl. 9:00-11:00. Ha följande information redo för bokningen: bokarens personnummer, namn, adress och e-postadress; båtens bredd, längd och vikt; samt båtens namn eller annan identifierare.',
+      readMore:
+        'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring här.'
+    },
+    periods: {
+      Slip: {
+        title: 'Boka båtplatser',
+        season: (season: string) => `Båtsäsong ${season}`,
+        periods: [
+          (period: string) => `${period} Esbo-bor* kan boka båtplatser`,
+          (period: string) => `${period} alla kan boka båtplatser`
+        ]
+      },
+      Trailer: {
+        title: 'Boka trailerplatser vid Suomenoja',
+        season: (season: string) =>
+          `Hyressäsong ${season} Båt på trailer, sjösättning från ramp.`,
+        periods: [
+          (period: string) =>
+            `${period} endast Esbo-bor* med ett nuvarande hyresavtal för trailerplats kan förnya sin hyra`,
+          (period: string) => `${period} alla kan boka trailerplatser`
+        ]
+      },
+      Winter: {
+        title: 'Boka vinterförvaringsplatser',
+        season: (season: string) => `Vinterförvaringssäsong ${season}`,
+        periods: [
+          (period: string) =>
+            `${period} endast Esbo-bor* med ett nuvarande hyresavtal för vinterplats kan förnya sin hyra`,
+          (period: string) =>
+            `${period} endast Esbo-bor* kan boka vinterförvaringsplatser`
+        ]
+      },
+      Storage: {
+        title: 'Boka förvaringsplatser i Ämmässuo',
+        season: (season: string) => `Förvaringssäsong ${season}`,
+        periods: [
+          (period: string) =>
+            `${period} nuvarande hyrestagare kan förnya sin förvaringsplats`,
+          (period: string) => `${period} alla kan boka förvaringsplatser`
+        ]
+      },
+      footNote:
+        '*Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbo-bo. I detta fall måste en Esbo-bo göra bokningen.'
+    },
+    button: {
+      browseBoatSpaces: 'Bläddra bland båtplatser'
+    }
+  },
   reservation: {
     searchPage: {
       title: 'Esbo stads båtplatsuthyrning',

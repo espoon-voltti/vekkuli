@@ -125,6 +125,65 @@ const en: Translations = {
     mainNavigation: 'Main navigation'
   },
   components: componentTranslations,
+  citizenFrontPage: {
+    title: 'Boat spaces',
+    info: {
+      locations:
+        'Available berth places can be found at the following marinas: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja, and Svinö. Winter storage places are available at Laajalahti, Otsolahti, and Suomenoja, as well as year-round storage places at Ämmäsmäki.',
+      authenticationRequired:
+        'Reserving a place requires strong authentication, and the berth is paid for at the time of reservation.',
+      boatRequired:
+        'Only the owner or holder of a boat can reserve berth, winter, or storage places. Ensure that the information is correct in Traficom’s boat register.',
+      contactInfo:
+        'If you are unable to authenticate electronically, contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mon and Wed from 12:30-15:00 and Thu from 9:00-11:00. Please have the following information ready for the reservation: the reservist’s personal ID, names, address, and email address; the boat’s width, length, and weight; and the boat’s name or other identifier.',
+      readMore:
+        'You can find more information about marinas, berth fees, and boat storage here.'
+    },
+    periods: {
+      Slip: {
+        title: 'Booking berths',
+        season: (season: string) => `Boating season ${season}`,
+        periods: [
+          (period: string) => `${period} Espoo residents* can book berths`,
+          (period: string) => `${period} everyone can book berths`
+        ]
+      },
+      Trailer: {
+        title: 'Booking trailer parking spots at Suomenoja',
+        season: (season: string) =>
+          `Rental season ${season} Boat on a trailer, launch from the ramp.`,
+        periods: [
+          (period: string) =>
+            `${period} only Espoo residents* with a current rental agreement for a trailer spot can renew their rental`,
+          (period: string) => `${period} everyone can book trailer spots`
+        ]
+      },
+      Winter: {
+        title: 'Booking winter storage spots',
+        season: (season: string) => `Winter storage season ${season}`,
+        periods: [
+          (period: string) =>
+            `${period} only Espoo residents* with a current rental agreement for a winter storage spot can renew their rental`,
+          (period: string) =>
+            `${period} only Espoo residents* can book winter storage spots`
+        ]
+      },
+      Storage: {
+        title: 'Booking storage spots at Ämmässuo',
+        season: (season: string) => `Storage season ${season}`,
+        periods: [
+          (period: string) =>
+            `${period} current renters can renew their storage spot rental`,
+          (period: string) => `${period} everyone can book storage spots`
+        ]
+      },
+      footNote:
+        '*If a boat is co-owned and over 50% of the owners reside in Espoo, you can book berths, winter, or storage spots as an Espoo resident. In this case, an Espoo resident must make the reservation.'
+    },
+    button: {
+      browseBoatSpaces: 'Browse boat spaces'
+    }
+  },
   reservation: {
     steps: {
       chooseBoatSpace: 'Select a space',

@@ -124,6 +124,66 @@ export default {
     mainNavigation: 'Päänavigaatio'
   },
   components: componentTranslations,
+  citizenFrontPage: {
+    title: 'Venepaikat',
+    info: {
+      locations:
+        'Varattavia laituripaikkoja löytyy seuraavista satamista: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja ja Svinö. Talvipaikkoja on varattavissa Laajalahdessa, Otsolahdessa ja Suomenojalla sekä ympärivuotisia säilytyspaikkoja Ämmäsmäellä.',
+      authenticationRequired:
+        'Paikan varaaminen vaatii vahvan tunnistautumisen ja venepaikka maksetaan varaamisen yhteydessä.',
+      boatRequired:
+        'Vain veneen omistaja tai haltija voi varata vene-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.',
+      contactInfo:
+        'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11. Kerääthän valmiiksi varausta varten seuraavat tiedot: varaajan henkilötunnus, nimet, osoite ja sähköpostiosoite, veneen leveys, pituus ja paino, veneen nimi tai muu tunniste.',
+      readMore:
+        'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät täältä.'
+    },
+    periods: {
+      Slip: {
+        title: 'Venepaikkojen varaaminen',
+        season: (season: string) => `Veneilykausi ${season}`,
+        periods: [
+          (period: string) =>
+            `${period} espoolaiset* voivat varata venepaikkoja`,
+          (period: string) => `${period} kaikki voivat varata venepaikkoja`
+        ]
+      },
+      Trailer: {
+        title: 'Suomenojan traileripaikkojen varaaminen',
+        season: (season: string) =>
+          `Vuokrakausi ${season} Vene trailerilla, vesillelasku luiskalta.`,
+        periods: [
+          (period: string) =>
+            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikan vuokrausta`,
+          (period: string) => `${period} kaikki voivat varata traileripaikkoja`
+        ]
+      },
+      Winter: {
+        title: 'Talvipaikkojen varaaminen',
+        season: (season: string) => `Talvisäilytyskausi ${season}`,
+        periods: [
+          (period: string) =>
+            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa talvipaikan vuokrausta`,
+          (period: string) =>
+            `${period} vain espoolaiset* voivat varata talvipaikkoja`
+        ]
+      },
+      Storage: {
+        title: 'Ämmäsmäen säilytyspaikan varaaminen',
+        season: (season: string) => `Säilytyskausi ${season}`,
+        periods: [
+          (period: string) =>
+            `${period} säilytyspaikan vuokraajat voivat jatkaa säilytyspaikan vuokrausta`,
+          (period: string) => `${period} kaikki voivat varata säilytyspaikkoja`
+        ]
+      },
+      footNote:
+        '*Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata vene-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.'
+    },
+    button: {
+      browseBoatSpaces: 'Selaile vapaita venepaikkoja'
+    }
+  },
   reservation: {
     steps: {
       chooseBoatSpace: 'Paikan valinta',

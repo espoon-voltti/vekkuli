@@ -2,6 +2,8 @@ import { MainSection } from 'lib-components/dom'
 import React from 'react'
 import { Link } from 'react-router'
 
+import { useTranslation } from 'citizen-frontend/localization'
+import { BoatSpaceType } from 'citizen-frontend/shared/types'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 import {
   Authorisation,
@@ -12,31 +14,32 @@ import {
 } from 'lib-icons'
 
 export default React.memo(function HomePage() {
+  const i18n = useTranslation()
   return (
     <MainSection>
       <div className="container">
-        <h2>Venepaikat</h2>
+        <h2>{i18n.citizenFrontPage.title}</h2>
         <div className="columns">
           <div className="column is-three-fifths">
             <InfoColumn
               icon={MapMarker}
-              textKey="citizenFrontPage.info.locations"
+              text={i18n.citizenFrontPage.info.locations}
             />
             <InfoColumn
               icon={Authorisation}
-              textKey="citizenFrontPage.info.authenticationRequired"
+              text={i18n.citizenFrontPage.info.authenticationRequired}
             />
             <InfoColumn
               icon={Boat}
-              textKey="citizenFrontPage.info.boatRequired"
+              text={i18n.citizenFrontPage.info.boatRequired}
             />
             <InfoColumn
               icon={ContactSupport}
-              textKey="citizenFrontPage.info.contactInfo"
+              text={i18n.citizenFrontPage.info.contactInfo}
             />
             <InfoColumn
               icon={InfoCircle}
-              textKey="citizenFrontPage.info.readMore"
+              text={i18n.citizenFrontPage.info.readMore}
             />
           </div>
           <div className="column is-align-content-center">
@@ -45,20 +48,16 @@ export default React.memo(function HomePage() {
         </div>
         <div className="block">
           <Link className="button is-primary" to="/kuntalainen/venepaikka">
-            Selaile vapaita venepaikkoja
+            {i18n.citizenFrontPage.button.browseBoatSpaces}
           </Link>
         </div>
       </div>
       <div className="container">
         <div className="container is-highlight">
-          {periods.map((period, index) => (
+          {boatSpaceSeasons.map((period, index) => (
             <Period key={`period-${index}`} {...period} />
           ))}
-          <p>
-            *Jos vene on yhteisomistuksessa ja yli 50% veneen omistajista asuu
-            Espoossa, voitte varata vene-, talvi- tai säilytyspaikan
-            espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.
-          </p>
+          <p>{i18n.citizenFrontPage.periods.footNote}</p>
         </div>
       </div>
     </MainSection>
@@ -67,12 +66,12 @@ export default React.memo(function HomePage() {
 
 interface InfoColumnProps {
   icon: () => React.JSX.Element
-  textKey: string
+  text: string
 }
 
 const InfoColumn = React.memo(function InfoColumn({
   icon,
-  textKey
+  text
 }: InfoColumnProps) {
   return (
     <div className="columns">
@@ -80,31 +79,32 @@ const InfoColumn = React.memo(function InfoColumn({
         <span className="icon is-medium">{icon()}</span>
       </div>
       <div className="column">
-        <p>{getKeyText(textKey)}</p>
+        <p>{text}</p>
       </div>
     </div>
   )
 })
 
-interface PeriodProps {
-  title: string
-  season: string
-  periods: string[]
-}
-
 const Period = React.memo(function Period({
-  title,
+  boatSpaceType,
   season,
   periods
-}: PeriodProps) {
+}: BoatSpaceSeason) {
+  const i18n = useTranslation()
   return (
     <>
-      <h2 className="has-text-weight-semibold">{title}</h2>
-      <h3 className="label">{season}</h3>
+      <h2 className="has-text-weight-semibold">
+        {i18n.citizenFrontPage.periods[boatSpaceType].title}
+      </h2>
+      <h3 className="label">
+        {i18n.citizenFrontPage.periods[boatSpaceType].season(season)}
+      </h3>
       <div className="mb-m">
         {periods.map((period, index) => (
           <p className="block" key={`period-${index}`}>
-            {period}
+            {i18n.citizenFrontPage.periods[boatSpaceType].periods[index](
+              period
+            )}
           </p>
         ))}
       </div>
@@ -112,55 +112,30 @@ const Period = React.memo(function Period({
   )
 })
 
-const getKeyText = (key: string) => {
-  switch (key) {
-    case 'citizenFrontPage.info.locations':
-      return 'Varattavia laituripaikkoja löytyy seuraavista satamista: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja ja Svinö. Talvipaikkoja on varattavissa Laajalahdessa, Otsolahdessa ja Suomenojalla sekä ympärivuotisia säilytyspaikkoja Ämmäsmäellä.'
-    case 'citizenFrontPage.info.authenticationRequired':
-      return 'Paikan varaaminen vaatii vahvan tunnistautumisen ja venepaikka maksetaan varaamisen yhteydessä.'
-    case 'citizenFrontPage.info.boatRequired':
-      return 'Vain veneen omistaja tai haltija voi varata vene-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.'
-    case 'citizenFrontPage.info.contactInfo':
-      return 'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11. Kerääthän valmiiksi varausta varten seuraavat tiedot: varaajan henkilötunnus, nimet, osoite ja sähköpostiosoite, veneen leveys, pituus ja paino, veneen nimi tai muu tunniste.'
-    case 'citizenFrontPage.info.readMore':
-      return 'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät täältä.'
-    default:
-      return ''
-  }
+interface BoatSpaceSeason {
+  boatSpaceType: BoatSpaceType
+  season: string
+  periods: string[] // period items map into translations in i18n files
 }
-
-const periods: PeriodProps[] = [
+const boatSpaceSeasons: BoatSpaceSeason[] = [
   {
-    title: 'Venepaikkojen varaaminen 2025',
-    season: 'Veneilykausi 10.6.–14.9.2025',
-    periods: [
-      '3.3.–31.3.2025 vain espoolaiset* voivat varata venepaikkoja',
-      '1.4.–30.9.2025 kaikki voivat varata venepaikkoja'
-    ]
+    boatSpaceType: 'Slip',
+    season: '10.6.–14.9.',
+    periods: ['3.3.–31.3.', '1.4.–30.9.']
   },
   {
-    title: 'Suomenojan traileripaikkojen varaaminen 2025',
-    season:
-      'Vuokrakausi 1.5.2025–30.4.2026. Vene trailerilla, vesillelasku luiskalta.',
-    periods: [
-      '1.4.–30.4.2025 vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikan vuokrausta',
-      '1.5.–31.12.2025 kaikki voivat varata traileripaikkoja'
-    ]
+    boatSpaceType: 'Trailer',
+    season: '1.5.–30.4.',
+    periods: ['1.4.–30.4.', '1.5.–31.12.']
   },
   {
-    title: 'Talvipaikkojen varaaminen 2025',
-    season: 'Talvisäilytyskausi 15.9.–10.6.2026 ',
-    periods: [
-      '15.8.–14.9.2025 vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa talvipaikan vuokrausta',
-      '15.9.–31.12.2025 vain espoolaiset* voivat varata talvipaikkoja'
-    ]
+    boatSpaceType: 'Winter',
+    season: '15.9.–10.6.',
+    periods: ['15.8.–14.9.', '15.9.–31.12.']
   },
   {
-    title: 'Ämmäsmäen säilytyspaikan varaaminen 2025',
-    season: 'Säilytyskausi 15.9.2025–14.9.2026',
-    periods: [
-      '15.8.–14.9.2025 säilytyspaikan vuokraajat voivat jatkaa säilytyspaikkan vuokrausta',
-      '15.9.2025–31.7.2026 kaikki voivat varata säilytyspaikkoja'
-    ]
+    boatSpaceType: 'Storage',
+    season: '15.9.–14.9.',
+    periods: ['15.8.–14.9.', '15.9.–31.7.']
   }
 ]
