@@ -341,7 +341,10 @@ const sv: Translations = {
     boatWeightInKg: 'Vikt (kg)',
     registrationNumber: 'Registreringsnummer',
     otherIdentifier: 'Annan identifierare',
-    additionalInfo: 'Ytterligare information'
+    additionalInfo: 'Ytterligare information',
+    boatSizeWarning: 'Båten passar inte på den valda båtplatsen.',
+    boatSizeWarningExplanation:
+      'Båtplatser har säkerhetsutrymmen för att förhindra skador på båtar och bryggor. En båt placerad på en plats som är för trång kan flyttas av kommunen, och ägaren av båtplatsen ansvarar för kostnaderna.'
   },
   boatSpace: {
     boatSpaceType: {

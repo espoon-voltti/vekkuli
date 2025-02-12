@@ -7,12 +7,16 @@ import React from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
+import { ChevronLeft } from '../../../../../../lib-icons'
+import { BoatSpace } from '../../../../../shared/types'
 import { BoatInfoForm } from '../../formDefinitions/boat'
 
 export default React.memo(function Boat({
-  bind
+  bind,
+  boatSpace
 }: {
   bind: BoundForm<BoatInfoForm>
+  boatSpace: BoatSpace
 }) {
   const i18n = useTranslation()
   const {
@@ -29,6 +33,29 @@ export default React.memo(function Boat({
 
   const { noRegisterNumber, number: registrationNumberValue } =
     useFormFields(registrationNumber)
+
+  const getValueOrNull = (a: typeof length) => {
+    try {
+      return a.value()
+    } catch {
+      return null
+    }
+  }
+
+  const w = getValueOrNull(width)
+  const l = getValueOrNull(length)
+  const minLength = boatSpace.minLength
+  const maxLength = boatSpace.maxLength
+  const minWidth = boatSpace.minWidth
+  const maxWidth = boatSpace.maxWidth
+
+  const showSizeWarning =
+    (l !== null &&
+      ((minLength !== null && l * 100 < minLength) ||
+        (maxLength !== null && l * 100 > maxLength))) ||
+    (w !== null &&
+      ((minWidth !== null && w * 100 < minWidth) ||
+        (maxWidth !== null && w * 100 > maxWidth)))
 
   return (
     <>
@@ -77,6 +104,7 @@ export default React.memo(function Boat({
           />
         </div>
       </div>
+      {showSizeWarning && <BoatSizeWarning />}
       <div className="columns is-vcentered">
         <div className="column is-one-quarter">
           <NumberField
@@ -142,3 +170,25 @@ export default React.memo(function Boat({
     </>
   )
 })
+
+const BoatSizeWarning = () => {
+  const i18n = useTranslation()
+  return (
+    <div className="columns is-vcentered">
+      <div className="warning" id="boatSize-warning">
+        <p className="block">{i18n.boat.boatSizeWarning}</p>
+        <p className="block">{i18n.boat.boatSizeWarningExplanation}</p>
+        <button
+          className="icon-text"
+          type="button"
+          id="size-warning-back-button"
+        >
+          <span className="icon">
+            <ChevronLeft />
+          </span>
+          <span>{i18n.reservation.goBack}</span>
+        </button>
+      </div>
+    </div>
+  )
+}

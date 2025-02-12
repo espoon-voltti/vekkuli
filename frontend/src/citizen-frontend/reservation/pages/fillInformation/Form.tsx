@@ -169,7 +169,10 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           {organizations.length > 0 && (
             <OrganizationSection bind={organization} />
           )}
-          <BoatSection bind={boat} />
+          <BoatSection
+            bind={boat}
+            boatSpace={reservation.reservation.boatSpace}
+          />
           {branch === 'Winter' && (
             <WinterStorageType bind={spaceTypeInfoForm} />
           )}

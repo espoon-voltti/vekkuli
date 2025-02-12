@@ -340,7 +340,10 @@ export default {
     boatWeightInKg: 'Paino (kg)',
     registrationNumber: 'Rekisteritunnus',
     otherIdentifier: 'Muu tunniste',
-    additionalInfo: 'Lisätiedot'
+    additionalInfo: 'Lisätiedot',
+    boatSizeWarning: 'Veneen koko ei ole sopiva valitulle venepaikalle.',
+    boatSizeWarningExplanation:
+      'Venepaikoilla on turvavälit veneiden ja laiturien vaurioiden estämiseksi. Liian ahtaaseen tai tarpeettoman suureen paikkaan laitettu vene voidaan siirtää kaupungin toimesta, ja venepaikan haltija vastaa kustannuksista.'
   },
   boatSpace: {
     renterType: {
