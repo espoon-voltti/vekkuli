@@ -378,6 +378,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test
+      - integration-test
+      - owasp
       - e2e-test
       - dockerize
     strategy:
