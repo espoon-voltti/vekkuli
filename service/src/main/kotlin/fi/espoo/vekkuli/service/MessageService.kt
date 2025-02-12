@@ -22,7 +22,7 @@ interface MessageServiceInterface {
     fun getAndInsertUnsentEmails(
         reservationType: ReservationType,
         reservationId: Int,
-        source: String,
+        emailType: EmailType,
         recipientEmails: List<String>
     ): List<String>
 }
@@ -52,9 +52,9 @@ class MessageService(
     override fun getAndInsertUnsentEmails(
         reservationType: ReservationType,
         reservationId: Int,
-        source: String,
+        emailType: EmailType,
         recipientEmails: List<String>
-    ): List<String> = messageRepository.getAndInsertUnsentEmails(reservationType, reservationId, source, recipientEmails)
+    ): List<String> = messageRepository.getAndInsertUnsentEmails(reservationType, reservationId, emailType, recipientEmails)
 
     @Scheduled(fixedRate = 60000)
     fun sendScheduledEmails() {

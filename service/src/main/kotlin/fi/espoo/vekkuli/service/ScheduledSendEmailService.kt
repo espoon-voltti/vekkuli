@@ -8,6 +8,12 @@ import fi.espoo.vekkuli.utils.formatAsFullDate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
+enum class EmailType {
+    ExpiredReservation,
+    Expiry,
+    Renew
+}
+
 @Service
 class ScheduledSendEmailService(
     private val templateEmailService: TemplateEmailService,
@@ -34,7 +40,7 @@ class ScheduledSendEmailService(
                 recipients,
                 ReservationType.Marine,
                 reservation.id,
-                "renew",
+                EmailType.Renew,
                 mapOf(
                     "name" to "${reservation.locationName} ${reservation.place}",
                     "endDate" to formatAsFullDate(reservation.endDate),
@@ -69,7 +75,7 @@ class ScheduledSendEmailService(
                 recipients,
                 ReservationType.Marine,
                 reservation.id,
-                "expiry",
+                EmailType.Expiry,
                 mapOf(
                     "name" to "${reservation.locationName} ${reservation.place}",
                     "endDate" to formatAsFullDate(reservation.endDate),

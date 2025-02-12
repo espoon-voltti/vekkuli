@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.DomainConstants
 import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReservationType
+import fi.espoo.vekkuli.service.EmailType
 import java.util.*
 
 interface SentMessageRepository {
@@ -27,7 +28,7 @@ interface SentMessageRepository {
     fun getAndInsertUnsentEmails(
         reservationType: ReservationType,
         reservationId: Int,
-        source: String,
+        emailType: EmailType,
         recipientEmails: List<String>
     ): List<String>
 }
