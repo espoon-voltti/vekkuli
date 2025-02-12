@@ -288,7 +288,7 @@ WHERE id = :jobId
 
             val runBefore = now - Duration.ofDays(180)
             val oldCount = removeUncompletedJobs(runBefore = runBefore)
-            logger.info("Removed $oldCount async jobs originally planned to be run before $runBefore")
+            logger.info { "Removed $oldCount async jobs originally planned to be run before $runBefore" }
         }
     }
 }
