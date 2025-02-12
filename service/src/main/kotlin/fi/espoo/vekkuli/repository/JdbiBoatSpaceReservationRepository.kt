@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationRea
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
+import fi.espoo.vekkuli.service.EmailType
 import fi.espoo.vekkuli.utils.SqlExpr
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Handle
@@ -1180,6 +1181,28 @@ class JdbiBoatSpaceReservationRepository(
                 timeProvider.getCurrentDate().plusDays(BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())
             )
             query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.mapTo<BoatSpaceReservationDetails>().list()
+        }
+
+    override fun getExpiredBoatSpaceReservations(): List<BoatSpaceReservationDetails> =
+        jdbi.withHandleUnchecked { handle ->
+            val query =
+                handle.createQuery(
+                    """
+                    ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}                    
+                    WHERE bsr.status = 'Confirmed'
+                       AND end_date::date < :currentTime::date
+                    AND NOT EXISTS (
+                        SELECT 1 
+                        FROM processed_message pm
+                        WHERE pm.reservation_id = bsr.id
+                        AND pm.message_type = :messageType
+                    )    
+                    """.trimIndent()
+                )
+
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.bind("messageType", EmailType.ExpiredReservation)
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 

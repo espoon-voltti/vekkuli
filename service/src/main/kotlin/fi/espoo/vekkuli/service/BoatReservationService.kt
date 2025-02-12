@@ -474,6 +474,8 @@ class BoatReservationService(
     fun getExpiringFixedTermBoatSpaceReservations(): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getExpiringBoatSpaceReservations(ReservationValidity.FixedTerm)
 
+    fun getExpiredBoatSpaceReservations(): List<BoatSpaceReservationDetails> = boatSpaceReservationRepo.getExpiredBoatSpaceReservations()
+
     fun acknowledgeWarnings(
         reservationId: Int,
         userId: UUID,

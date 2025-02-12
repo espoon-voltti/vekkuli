@@ -100,6 +100,49 @@ class ScheduledSendEmailService(
         return messageUtil.getLocalizedMap("harborAddress", code, listOf(locationAddress))
     }
 
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    fun sendReservationExpiredEmails() {
+        val expiringFixedTermReservations = reservationService.getExpiredBoatSpaceReservations()
+        expiringFixedTermReservations.forEach { reservation ->
+            val recipients = getRecipients(reservation)
+            val sender = emailEnv.senderAddress
+            val placeName = "${reservation.locationName} ${reservation.place}"
+            val reserverName = reservation.name
+            templateEmailService.sendBatchEmail(
+                "expired_reservation",
+                null,
+                sender,
+                recipients,
+                ReservationType.Marine,
+                reservation.id,
+                EmailType.ExpiredReservation,
+                mapOf(
+                    "name" to placeName,
+                    "endDate" to formatAsFullDate(reservation.endDate),
+                    "reserverName" to reserverName,
+                ) +
+                    messageUtil.getLocalizedMap("placeType", "boatSpaceReservation.email.types.${reservation.type}")
+            )
+
+            if (reservation.type == BoatSpaceType.Storage) {
+                val recipient = Recipient(null, emailEnv.employeeAddress)
+                val contactDetails = listOf(recipient)
+                templateEmailService.sendBatchEmail(
+                    "storage_place_expired_to_employee",
+                    null,
+                    sender,
+                    contactDetails,
+                    mapOf(
+                        "name" to placeName,
+                        "endDate" to formatAsFullDate(reservation.endDate),
+                        "reserverName" to reserverName,
+                        "reserverEmail" to reservation.email
+                    )
+                )
+            }
+        }
+    }
+
     private fun getRecipients(reservation: BoatSpaceReservationDetails) =
         if (reservation.reserverType == ReserverType.Organization) {
             organizationService

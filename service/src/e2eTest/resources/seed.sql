@@ -1414,7 +1414,54 @@ venepaikat@espoo.fi'),
 
     Terveisin
     Merellinen ulkoilu
-    {{employeeEmail}}')
+    {{employeeEmail}}'),
+    ('expired_reservation', 'Espoon kaupungin venepaikan vuokrasopimus on päättynyt', E'Hyvä asiakas,
+
+Espoon kaupungin {{placeTypeFi}} {{name}} vuokrasopimus on päättynyt.
+
+Paikan vuokraaja: {{reserverName}}
+
+Vuokrasopimuksen päätyttyä on paikan oltava tyhjennetty ja siivottu.
+
+Voit tarkistaa paikkojen varausajat ja tehdä uuden varauksen osoitteessa https://varaukset.espoo.fi.
+
+Terveisin
+Merelliset ulkoilupalvelut
+venepaikat@espoo.fi
+
+**************************************************
+
+Hej kund,
+
+Hyresavtalet för {{placeTypeSv}} {{name}} har upphört.
+
+Hyresgäst: {{reserverName}}
+
+När hyresperioden är slut måste platsen vara tömd och städad.
+
+Du kan kontrollera bokningsperioder och göra en ny bokning på https://varaukset.espoo.fi.
+
+Vänliga hälsningar
+Havsnära friluftstjänster
+venepaikat@espoo.fi
+
+**************************************************
+
+Dear customer,
+
+The rental agreement for the {{placeTypeEn}} {{name}} has ended.
+
+Tenant: {{reserverName}}
+
+Once the rental period ends, the space must be emptied and cleaned.
+
+You can check reservation periods and make a new reservation at https://varaukset.espoo.fi.
+
+Best regards
+Maritime Outdoor Services
+venepaikat@espoo.fi'),
+('storage_place_expired_to_employee', 'Säilytyspaikan {{name}} vuokrasopimus on päättynyt, asiakas: {{reserverName}}', E'Säilytyspaikan {{name}} vuokrasopimus on päättynyt {{endDate}}, asiakas ei ole maksanut kausimaksua uudelle kaudelle eräpäivään mennessä.\n\nAsiakas:\n{{reserverName}}
+\nSähköposti: {{reserverEmail}}')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO citizen (id, national_id, first_name, last_name)
@@ -1803,7 +1850,7 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
     ('343', 'Slip', '2', '2', 'C', '27', 'Beam', '275', '600', 'none'),
     ('344', 'Slip', '2', '2', 'C', '28', 'Beam', '275', '600', 'none'),
     ('345', 'Slip', '2', '2', 'C', '29', 'Beam', '275', '600', 'none'),
-    ('346', 'Storage', '2', '2', 'C', '30', 'Trailer', '275', '600', 'none'),
+    ('346', 'Storage', '8', '2', 'C', '30', 'Trailer', '275', '600', 'none'),
     ('347', 'Storage', '2', '2', 'C', '31', 'Trailer', '275', '600', 'none'),
     ('348', 'Storage', '2', '2', 'C', '32', 'Buck', '275', '600', 'none'),
     ('349', 'Storage', '2', '2', 'C', '33', 'Buck', '275', '600', 'none'),
