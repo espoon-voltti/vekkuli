@@ -20,8 +20,8 @@ class PaymentPage(
         )
     val paymentProviders = getByDataTestId("payment-providers")
     val paymentFailedNotification = page.getByText("Maksu epäonnistui")
-    val reservationFailedNotification = page.getByText("Venepaikan varaus epäonnistui")
-    val reservationSuccessNotification = page.getByText("Venepaikan varaus onnistui")
+    val reservationFailedNotification = page.getByText("Paikan varaus epäonnistui")
+    val reservationSuccessNotification = page.getByText("Paikan varaus onnistui")
     val backButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 
     fun assertOnPaymentPage() {

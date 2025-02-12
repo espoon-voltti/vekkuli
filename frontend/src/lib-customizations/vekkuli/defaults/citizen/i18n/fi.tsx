@@ -30,6 +30,7 @@ export default {
     print: 'Tulosta',
     ok: 'Ok',
     save: 'Tallenna',
+    saveChanges: 'Tallenna muutokset',
     discard: 'Älä tallenna',
     saveConfirmation: 'Haluatko tallentaa muutokset?',
     saveSuccess: 'Tallennettu',
@@ -195,9 +196,9 @@ export default {
       },
       modal: {
         reserveNewSpace: 'Varaa uusi paikka',
-        reservingBoatSpace: 'Olet varaamassa venepaikkaa:',
+        reservingBoatSpace: 'Olet varaamassa paikkaa:',
         cannotReserveNewPlace:
-          'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
+          'Sinulla on jo kaksi paikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
         currentPlaces: 'Paikkasi:',
         organizationCurrentPlaces: (organizationName: string) =>
           `Yhteisösi ${organizationName} paikat:`,
@@ -214,7 +215,7 @@ export default {
       },
       info: {
         switch:
-          'Olet vaihtamassa venepaikkaa. Venepaikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
+          'Olet vaihtamassa paikkaa. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
       },
       submit: {
         continueToPayment: 'Jatka maksamaan',
@@ -346,8 +347,11 @@ export default {
     boatDepthInMeters: 'Syväys (m)',
     boatWeightInKg: 'Paino (kg)',
     registrationNumber: 'Rekisteritunnus',
-    otherIdentifier: 'Muu tunniste',
-    additionalInfo: 'Lisätiedot'
+    otherIdentifier: 'Merkki ja malli/muu tunniste',
+    additionalInfo: 'Lisätiedot',
+    title: 'Veneet',
+    boatType: 'Veneen tyyppi',
+    ownership: 'Omistussuhde'
   },
   boatSpace: {
     renterType: {
@@ -402,7 +406,7 @@ export default {
       return undefined
     },
     amenities: {
-      Buoy: 'Poiju',
+      Buoy: 'Poiju merellä',
       RearBuoy: 'Peräpoiju',
       Beam: 'Aisa',
       WalkBeam: 'Kävelyaisa',

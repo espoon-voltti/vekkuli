@@ -47,21 +47,27 @@ class ReservationCardInformation : BaseView() {
                 ReservationStatus.Confirmed ->
                     """
                     <div class="payment-status">
-                        <span>${t(
-                        "citizenDetails.reservationStatus.Confirmed"
-                    )}, ${reservation.paymentDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
+                        <span>${
+                        t(
+                            "citizenDetails.reservationStatus.Confirmed"
+                        )
+                    }, ${reservation.paymentDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
                         <span>${t("citizenDetails.reservationStatus.infoText")}: ${reservation.paymentReference}</span>
                     </div>    
                     """.trimIndent()
+
                 ReservationStatus.Invoiced ->
                     """
                     <div class="payment-status">
-                        <span>${t(
-                        "citizenDetails.reservationStatus.InvoicedStatusText"
-                    )}: ${reservation.invoiceDueDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
+                        <span>${
+                        t(
+                            "citizenDetails.reservationStatus.InvoicedStatusText"
+                        )
+                    }: ${reservation.invoiceDueDate?.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) ?: ""}</span>
                         <span>${t("citizenDetails.reservationStatus.infoText")}: ${reservation.paymentReference}</span>
                     </div>    
                     """.trimIndent()
+
                 ReservationStatus.Payment, ReservationStatus.Info -> t("citizenDetails.reservationStatus.NotPaid")
                 ReservationStatus.Cancelled -> t("citizenDetails.reservationStatus.Cancelled")
             }
@@ -143,22 +149,33 @@ class ReservationCardInformation : BaseView() {
                  </div>
                  
              </div>
-            ${reservation.trailer?.let { trailerCard.render(it, userType, reserverId)} ?: ""}
+            ${reservation.trailer?.let { trailerCard.render(it, userType, reserverId) } ?: ""}
 
             """.trimIndent()
     }
 
     private fun renderReservationValidity(reservation: BoatSpaceReservationDetails): String {
-        val reservationValidityText =
-            if (reservation.terminationTimestamp != null) {
-                renderWithTerminatedDate(reservation)
-            } else {
+        if (reservation.terminationTimestamp != null) {
+            return renderWithTerminatedDate(reservation)
+        } else {
+            var reservationValidityText =
                 t(
                     "boatSpaceReservation.validity.${reservation.validity}",
                     listOf(formatAsFullDate(reservation.endDate))
                 )
+
+            // For indefinite reservations, show also the end date for employees
+            if (reservation.validity == ReservationValidity.Indefinite) {
+                reservationValidityText +=
+                    " (${
+                        t(
+                            "boatSpaceReservation.validity.${ReservationValidity.FixedTerm}",
+                            listOf(formatAsFullDate(reservation.endDate))
+                        )
+                    })"
             }
-        return reservationValidityText
+            return reservationValidityText
+        }
     }
 
     private fun renderWithTerminatedDate(reservation: BoatSpaceReservationDetails): String =

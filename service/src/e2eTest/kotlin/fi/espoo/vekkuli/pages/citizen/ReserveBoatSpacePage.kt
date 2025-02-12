@@ -37,7 +37,7 @@ class ReserveBoatSpacePage(
         val boatTypeSelect = fields.getSelect("Venetyyppi")
         val widthInput = fields.getInput("Veneen leveys")
         val lengthInput = fields.getInput("Veneen pituus")
-        val amenityBuoyCheckbox = fields.getCheckbox("Poiju", true)
+        val amenityBuoyCheckbox = fields.getCheckbox("Poiju merellä", true)
         val amenityRearBuoyCheckbox = fields.getCheckbox("Peräpoiju")
         val amenityBeamCheckbox = fields.getCheckbox("Aisa", true)
         val amenityWalkBeamCheckbox = fields.getCheckbox("Kävelyaisa")
@@ -120,7 +120,7 @@ class ReserveBoatSpacePage(
     }
 
     val header = page.getByText("Espoon kaupungin venepaikkojen vuokraus")
-    val switchInfoBox = page.getByText("Olet vaihtamassa venepaikkaa")
+    val switchInfoBox = page.getByText("Olet vaihtamassa paikkaa")
     val switchGoBackButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 
     fun navigateToPage() {

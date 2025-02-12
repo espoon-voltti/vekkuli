@@ -246,7 +246,6 @@ class RenewReservationTest : ReserveTest() {
             val reservationPage = ReserveBoatSpacePage(page)
             val filterSection = reservationPage.getFilterSection()
             val storageFilterSection = filterSection.getStorageFilterSection()
-
             reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
 
             assertEmailIsSentOfCitizensStorageSpaceReservation()

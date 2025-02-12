@@ -25,7 +25,7 @@ export default React.memo(function ErrorPage() {
       ariaLabel={i18n.reservation.steps.error}
     >
       <div className="container">
-        <h2 className="h1">Venepaikan varaus epäonnistui</h2>
+        <h2 className="h1">Paikan varaus epäonnistui</h2>
         <div className="container">
           <ErrorMessage error={error} />
         </div>
