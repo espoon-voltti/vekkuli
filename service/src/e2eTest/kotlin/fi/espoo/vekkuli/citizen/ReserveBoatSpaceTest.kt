@@ -1156,6 +1156,45 @@ class ReserveBoatSpaceTest : ReserveTest() {
         assertThat(boatSection.existingBoat("Espoon kuha")).not().isVisible()
     }
 
+    @Test
+    fun `Citizen with trailer space should be allowed to reserve trailer space for organization`() {
+        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveOrganization()
+
+        // reserve for citizen
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpace012()
+        BoatSpaceFormPage(page).fillFormAndSubmit {
+            getOrganizationSection().reserveForCitizen.click()
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-111")
+        }
+        PaymentPage(page).payReservation()
+
+        // reserve for organization
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.getSearchResultsSection().reserveButtonByPlace("TRAILERI", "013").click()
+        reserveBoatSpacePage.getReserveModal().reserveANewSpace.click()
+
+        BoatSpaceFormPage(page).fillFormAndSubmit {
+            getOrganizationSection().reserveForOrganization.click()
+            getOrganizationSection().organization("Espoon pursiseura").click()
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-222")
+        }
+        PaymentPage(page).payReservation()
+
+        // check citizen has reservation
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        assertThat(citizenDetailsPage.getReservationSection("TRAILERI 012").root).isVisible()
+
+        // check organization has reservation
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        assertThat(organizationDetailsPage.getReservationSection("TRAILERI 013").root).isVisible()
+    }
+
     private fun fillReservationInfoAndAssertCorrectDiscount(
         discount: Int,
         expectedPrice: String,

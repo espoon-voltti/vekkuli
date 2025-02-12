@@ -76,9 +76,9 @@ class ReserveBoatSpacePage(
     ) {
         val harborHeaders = root.locator(".harbor-header")
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
-        val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
-        val b059ReserveButton = root.locator("tr:has-text('B 059')").locator("button:has-text('Varaa')")
-        val b007ReserveButton = root.locator("tr:has-text('B 007')").locator("button:has-text('Varaa')")
+        val b314ReserveButton = reserveButtonByPlace("B", "314")
+        val b059ReserveButton = reserveButtonByPlace("B", "059")
+        val b007ReserveButton = reserveButtonByPlace("B", "007")
 
         internal fun reserveButtonByPlace(
             section: String,
