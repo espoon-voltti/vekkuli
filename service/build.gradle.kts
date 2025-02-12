@@ -68,13 +68,13 @@ idea {
 }
 
 dependencies {
-    api(kotlin("stdlib"))
+    implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // cve fixes
-    api("org.yaml:snakeyaml:2.3")
+    implementation("org.yaml:snakeyaml:2.3")
 
-    api("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -86,25 +86,25 @@ dependencies {
     implementation("org.flywaydb:flyway-core:10.20.0")
     implementation("org.flywaydb:flyway-database-postgresql:11.3.0")
     implementation("org.postgresql:postgresql:42.7.1")
-    api(platform("org.jdbi:jdbi3-bom:3.47.0"))
+    implementation(platform("org.jdbi:jdbi3-bom:3.47.0"))
     implementation("org.jdbi:jdbi3-core")
     implementation("org.jdbi:jdbi3-jackson2")
     implementation("org.jdbi:jdbi3-kotlin")
     implementation("org.jdbi:jdbi3-postgres")
 
-    api(platform("com.fasterxml.jackson:jackson-bom:2.18.2"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.18.2"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("com.auth0:java-jwt:4.5.0")
 
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    api("ch.qos.logback.access:logback-access-tomcat:2.0.5")
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.5")
 
-    api("io.github.oshai:kotlin-logging-jvm:7.0.3")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
-    api(platform("org.junit:junit-bom:5.11.4"))
+    implementation(platform("org.junit:junit-bom:5.11.4"))
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -126,8 +126,8 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
-    api("ch.qos.logback:logback-classic:1.5.16")
-    api("ch.qos.logback:logback-core:1.5.16")
+    implementation("ch.qos.logback:logback-classic:1.5.16")
+    implementation("ch.qos.logback:logback-core:1.5.16")
     implementation("commons-codec:commons-codec:1.18.0")
 }
 
