@@ -25,8 +25,8 @@ buildscript {
 }
 
 node {
-    version.set("16.13.0")
-    npmVersion.set("8.1.0")
+    version.set("20.11.0") // Latest LTS version
+    npmVersion.set("10.1.0")
     download.set(true)
     workDir = file("${project.projectDir}/.gradle/nodejs") // Set the node work directory
     npmWorkDir = file("${project.projectDir}/.gradle/npm") // Set the npm work directory
