@@ -53,4 +53,18 @@ SPDX-License-Identifier: LGPL-2.1-or-later
        ]]></notes>
         <cve>CVE-2024-1597</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Affected version is only used by klint plugin, which is not part of the deployment
+       ]]></notes>
+        <cve>CVE-2024-12801</cve>
+        <cve>CVE-2024-12798</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Fix not available for awssdk as of writing 12.2.2025
+       ]]></notes>
+        <cve>CVE-2025-24970</cve>
+        <cve>CVE-2025-25193</cve>
+    </suppress>
 </suppressions>

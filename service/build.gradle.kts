@@ -9,7 +9,7 @@ plugins {
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.spring") version "1.9.25"
     id("org.flywaydb.flyway") version "11.3.1"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
     id("com.github.node-gradle.node") version "7.1.0"
     kotlin("plugin.serialization") version "2.0.20"
     id("org.owasp.dependencycheck") version "12.0.1"
@@ -100,9 +100,6 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     api("ch.qos.logback.access:logback-access-tomcat:2.0.5")
 
-    // These constraints are needed for CVE fixes
-    api("ch.qos.logback:logback-classic:1.5.15")
-    api("ch.qos.logback:logback-core:1.5.15")
     api("io.github.oshai:kotlin-logging-jvm:7.0.3")
 
     testImplementation(kotlin("test"))
@@ -121,16 +118,16 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
-    implementation("software.amazon.awssdk:ses:2.30.16")
-    implementation("software.amazon.awssdk:core:2.30.16")
-    implementation("software.amazon.awssdk:regions:2.30.16")
+    implementation("software.amazon.awssdk:ses:2.30.18")
+    implementation("software.amazon.awssdk:core:2.30.18")
+    implementation("software.amazon.awssdk:regions:2.30.18")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.commonmark:commonmark:0.24.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     implementation("org.unbescape:unbescape:1.1.6.RELEASE")
 
-    api("ch.qos.logback:logback-classic:1.5.15")
-    api("ch.qos.logback:logback-core:1.5.15")
+    api("ch.qos.logback:logback-classic:1.5.16")
+    api("ch.qos.logback:logback-core:1.5.16")
     implementation("commons-codec:commons-codec:1.18.0")
 }
 
