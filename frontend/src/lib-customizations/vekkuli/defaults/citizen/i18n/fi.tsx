@@ -169,15 +169,18 @@ export default {
           Winter: {
             width: 'Säilytyspaikan leveys (m)',
             length: 'Säilytyspaikan pituus (m)',
-            harborInfo: 'Valitse talvipaikka venepaikkasi satamasta tai Suomenojalta.'
+            harborInfo:
+              'Valitse talvipaikka venepaikkasi satamasta tai Suomenojalta.'
           },
           Storage: {
             width: 'Säilytyspaikan leveys (m)',
             length: 'Säilytyspaikan pituus (m)',
-            harborInfo: 'Ympärivuotisen säilytyksen voit varata ainoastaan Ämmäsmäen säilytysalueelta.'
+            harborInfo:
+              'Ympärivuotisen säilytyksen voit varata ainoastaan Ämmäsmäen säilytysalueelta.'
           }
         },
-        storageInfo: 'Veneen säilytykseen tarvittavan kaluston on mahduttava kokonaan varattavan paikan sisäpuolelle. Huomioi myös, että tarpeettoman suurille paikoille sijoitetut veneet voidaan siirtää pienemmille paikoille.'
+        storageInfo:
+          'Veneen säilytykseen tarvittavan kaluston on mahduttava kokonaan varattavan paikan sisäpuolelle. Huomioi myös, että tarpeettoman suurille paikoille sijoitetut veneet voidaan siirtää pienemmille paikoille.'
       },
       switchInfoText:
         'Olet vaihtamassa venepaikkaa. Paikan voi vaihtaa ainoastaan saman paikkatyypin paikkoihin. ',
@@ -432,7 +435,8 @@ export default {
     postOffice: 'Postitoimipaikka',
     municipality: 'Kotikunta',
     birthday: 'Syntymäaika',
-    streetAddress: 'Katuosoite'
+    streetAddress: 'Katuosoite',
+    homeAddress: 'Kotiosoite'
   },
   citizenPage: {
     title: 'Omat tiedot',
@@ -449,8 +453,21 @@ export default {
       },
       showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
       renewNotification: (date: LocalDate) =>
-        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`
-    }
+        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`,
+      harbor: 'Satama',
+      reservationDate: 'Varaus tehty',
+      place: 'Paikka',
+      reservationValidity: 'Varaus voimassa',
+      placeType: 'Paikan tyyppi',
+      price: 'Hinta',
+      boatPresent: 'Paikalla oleva vene',
+      equipment: 'Varuste',
+      paymentStatus: 'Maksun tila',
+      storageType: 'Säilytystapa'
+    },
+    placeReservations: 'Paikkavaraukset',
+    expired: 'Päättyneet',
+    expiredReservations: 'Päättyneet varaukset'
   },
   organization: {
     information: {
@@ -458,6 +475,11 @@ export default {
       phone: 'Yhteisön puhelinnumero',
       email: 'Yhteisön sähköposti'
     },
+    title: 'Yhteisöt',
+    name: 'Nimi',
+    organizationId: 'Y-tunnus',
+    municipality: 'Kotikunta',
+    physicalAddress: 'Käyntiosoite',
     contactDetails: {
       title: 'Yhteyshenkilöt',
       fields: {

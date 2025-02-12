@@ -168,10 +168,12 @@ const sv: Translations = {
           Storage: {
             width: 'Förvaringsplatsens bredd (m)',
             length: 'Förvaringsplatsens längd (m)',
-            harborInfo: 'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
+            harborInfo:
+              'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
           }
         },
-        storageInfo: 'All utrustning som behövs för båtens förvaring måste rymmas helt inom den reserverade platsen. Observera också att båtar placerade på onödigt stora platser kan flyttas till mindre platser.'
+        storageInfo:
+          'All utrustning som behövs för båtens förvaring måste rymmas helt inom den reserverade platsen. Observera också att båtar placerade på onödigt stora platser kan flyttas till mindre platser.'
       },
       switchInfoText:
         'Du håller på att byta båtplats. Platsen kan endast bytas till en plats av samma typ.',
@@ -338,9 +340,11 @@ const sv: Translations = {
   },
   boat: {
     delete: 'Ta bort båt',
-    deleteFailed: 'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
+    deleteFailed:
+      'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
     deleteSuccess: 'Båten har tagits bort',
-    confirmDelete: (boatName: string) => `Du håller på att ta bort informationen för båten ${boatName}`,
+    confirmDelete: (boatName: string) =>
+      `Du håller på att ta bort informationen för båten ${boatName}`,
     editBoatDetails: 'Redigera båtdetaljer',
     boatName: 'Båtnamn',
     boatDepthInMeters: 'Djupgående (m)',
@@ -432,7 +436,8 @@ const sv: Translations = {
     postOffice: 'Postort',
     municipality: 'Kommun',
     birthday: 'Födelsedatum',
-    streetAddress: 'Adress'
+    streetAddress: 'Adress',
+    homeAddress: 'Hemadress'
   },
   citizenPage: {
     title: 'Mina uppgifter',
@@ -449,8 +454,21 @@ const sv: Translations = {
       },
       showAllBoats: 'Visa även båtar som inte är kopplade till en reservation',
       renewNotification: (date: LocalDate) =>
-        `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()} eller byt till en ny plats.`
-    }
+        `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()} eller byt till en ny plats.`,
+      harbor: 'Hamn',
+      reservationDate: 'Reservation gjord',
+      place: 'Plats',
+      reservationValidity: 'Reservationens giltighet',
+      placeType: 'Platstyp',
+      price: 'Pris',
+      boatPresent: 'Båt närvarande',
+      equipment: 'Utrustning',
+      paymentStatus: 'Betalningsstatus',
+      storageType: 'Förvaringstyp'
+    },
+    placeReservations: 'Platsreservationer',
+    expired: 'Avslutade',
+    expiredReservations: 'Avslutade bokningar'
   },
   organization: {
     information: {
@@ -458,6 +476,11 @@ const sv: Translations = {
       phone: 'Organisationens telefonnummer',
       email: 'Organisationens e-post'
     },
+    title: 'Organisationer',
+    name: 'Namn',
+    organizationId: 'Organisationsnummer',
+    municipality: 'Hemkommun',
+    physicalAddress: 'Besökadress',
     contactDetails: {
       title: 'Kontaktpersoner',
       fields: {

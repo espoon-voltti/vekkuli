@@ -3,6 +3,7 @@ import React from 'react'
 
 import { UpdateBoatRequest } from 'citizen-frontend/api-clients/boat'
 import { ExistingBoatSpaceReservation } from 'citizen-frontend/api-types/reservation'
+import { useTranslation } from 'citizen-frontend/localization'
 import { Boat, BoatId } from 'citizen-frontend/shared/types'
 import { MutationDescription } from 'lib-common/query'
 
@@ -22,9 +23,10 @@ export default React.memo(function Boats({
   deleteMutation,
   updateMutation
 }: BoatsProps) {
+  const i18n = useTranslation()
   return (
     <Container isBlock data-testid="boat-list">
-      <h3>Veneet</h3>
+      <h3>{i18n.boat.title}</h3>
       <div className="reservation-list form-section no-bottom-border">
         {boatsInActiveReservationsFilter(boats, activeReservations).map(
           (boat) => (

@@ -8,12 +8,26 @@ import { Organization } from 'citizen-frontend/shared/types'
 import { useTranslation } from '../../localization'
 import { MemberListLoader } from '../organizationMembers'
 
+const buildAddress = (
+  address: string,
+  postalCode: string,
+  postOffice: string
+) => {
+  const addressParts = [address, postalCode, postOffice]
+  return addressParts.filter((part) => part).join(', ')
+}
+
 export default React.memo(function OrganizationInformation({
   organization
 }: {
   organization: Organization
 }) {
   const i18n = useTranslation()
+  const physicalAddress = buildAddress(
+    organization.streetAddress || '',
+    organization.postalCode || '',
+    organization.postOffice || ''
+  )
   return (
     <Container isBlock>
       <FormSection>
@@ -25,30 +39,22 @@ export default React.memo(function OrganizationInformation({
         <Columns>
           <Column isOneQuarter>
             <TextField
-              label="Etunimi"
+              label={i18n.organization.name}
               value={organization.name}
               readonly={true}
             />
           </Column>
-
           <Column isOneQuarter>
             <TextField
-              label="Kotiosoite"
-              value={organization.streetAddress || undefined}
+              label={i18n.organization.organizationId}
+              value={organization.businessId}
               readonly={true}
             />
           </Column>
-          <Column isOneEight>
+          <Column isOneQuarter>
             <TextField
-              label="Postinumero"
-              value={organization.postalCode || undefined}
-              readonly={true}
-            />
-          </Column>
-          <Column isOneEight>
-            <TextField
-              label="Postitoimipaikka"
-              value={organization.postOffice || undefined}
+              label={i18n.organization.municipality}
+              value={organization.municipalityName || undefined}
               readonly={true}
             />
           </Column>
@@ -56,29 +62,22 @@ export default React.memo(function OrganizationInformation({
         <Columns>
           <Column isOneQuarter>
             <TextField
-              label="Kotikunta"
-              value={organization.municipalityName || undefined}
-              readonly={true}
-            />
-          </Column>
-          <Column isOneQuarter>
-            <TextField
-              label="Puhelinnumero"
+              label={i18n.organization.contactDetails.fields.phone}
               value={organization.phone}
               readonly={true}
             />
           </Column>
           <Column isOneQuarter>
             <TextField
-              label="Sähköposti"
+              label={i18n.organization.contactDetails.fields.email}
               value={organization.email}
               readonly={true}
             />
           </Column>
-          <Column isOneEight>
+          <Column isOneQuarter>
             <TextField
-              label="Y-Tunnus"
-              value={organization.businessId}
+              label={i18n.organization.physicalAddress}
+              value={physicalAddress || undefined}
               readonly={true}
             />
           </Column>
