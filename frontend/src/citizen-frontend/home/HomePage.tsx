@@ -78,7 +78,7 @@ const InfoColumn = React.memo(function InfoColumn({
 }: InfoColumnProps) {
   return (
     <div className="columns">
-      <div className="column is-narrow">
+      <div className="column is-narrow" aria-hidden="true">
         <span className="icon is-medium">{icon()}</span>
       </div>
       <div className="column">
