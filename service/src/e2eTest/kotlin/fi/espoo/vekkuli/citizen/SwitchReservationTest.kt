@@ -484,7 +484,8 @@ class SwitchReservationTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti D 013",
                 expectedPrice,
-                "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus."
+                "Paikan vaihto. Maksettu vain erotus. Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
             // switched place was fixed term so the new place should be as well
             assertEmailIsSentOfCitizensFixedTermSlipSwitch("olivia@noreplytest.fi")

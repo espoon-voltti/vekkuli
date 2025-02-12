@@ -2,7 +2,8 @@ import { RedisClientOptions } from 'redis'
 import { ValidateInResponseTo } from '@node-saml/node-saml'
 
 export interface Config {
-  session: SessionConfig
+  citizenSession: SessionConfig
+  userSession: SessionConfig
   ad: {
     externalIdPrefix: string
     userIdKey: string
@@ -175,9 +176,14 @@ export function configFromEnv(): Config {
         })
   }
 
-  const cookieSecret = required(
-    process.env.COOKIE_SECRET ??
-      ifNodeEnv(['local', 'test'], 'A very hush hush cookie secret.')
+  const citizenCookieSecret = required(
+    process.env.CITIZEN_COOKIE_SECRET ??
+      ifNodeEnv(['local', 'test'], 'A very hush hush citizen cookie secret.')
+  )
+
+  const userCookieSecret = required(
+    process.env.USER_COOKIE_SECRET ??
+      ifNodeEnv(['local', 'test'], 'A very hush hush user cookie secret.')
   )
 
   const useSecureCookies =
@@ -186,11 +192,17 @@ export function configFromEnv(): Config {
     true
 
   return {
-    session: {
+    citizenSession: {
       useSecureCookies,
-      cookieSecret,
+      cookieSecret: citizenCookieSecret,
       sessionTimeoutMinutes:
-        env('SESSION_TIMEOUT_MINUTES', parseInteger) ?? 8 * 60
+        env('CITIZEN_SESSION_TIMEOUT_MINUTES', parseInteger) ?? 8 * 60
+    },
+    userSession: {
+      useSecureCookies,
+      cookieSecret: userCookieSecret,
+      sessionTimeoutMinutes:
+        env('USER_SESSION_TIMEOUT_MINUTES', parseInteger) ?? 8 * 60
     },
     ad,
     sfi,

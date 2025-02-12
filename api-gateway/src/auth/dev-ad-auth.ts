@@ -115,7 +115,7 @@ export function createDevAdRouter(sessions: Sessions): Router {
     `/logout`,
     toRequestHandler(async (req, res) => {
       await logout(sessions, req, res)
-      res.redirect('/')
+      res.redirect('/virkailija')
     })
   )
 

@@ -20,24 +20,38 @@ export function createAuthRouter(
 ): Router {
   const router = Router()
 
-  const sessions = sessionSupport(redisClient, config.session)
+  const citizenSessions = sessionSupport(
+    'citizen',
+    redisClient,
+    config.citizenSession
+  )
+  router.use(
+    '/saml-suomifi',
+    citizenSessions.middleware,
+    passport.session(),
+    cookieParser(config.citizenSession.cookieSecret)
+  )
 
-  router.use(sessions.middleware)
-  router.use(passport.session())
-  router.use(cookieParser(config.session.cookieSecret))
+  const userSessions = sessionSupport('user', redisClient, config.userSession)
+  router.use(
+    '/saml',
+    userSessions.middleware,
+    passport.session(),
+    cookieParser(config.userSession.cookieSecret)
+  )
 
   router.use(cacheControl(() => 'forbid-cache'))
 
   if (config.sfi.type === 'mock') {
-    router.use('/saml-suomifi', createDevSfiRouter(sessions))
+    router.use('/saml-suomifi', createDevSfiRouter(citizenSessions))
   } else {
     router.use(
       '/saml-suomifi',
       createSamlRouter({
-        sessions,
+        sessions: citizenSessions,
         strategyName: 'suomifi',
         strategy: createSuomiFiStrategy(
-          sessions,
+          citizenSessions,
           createSamlConfig(
             config.sfi.saml,
             redisCacheProvider(redisClient, {
@@ -51,15 +65,15 @@ export function createAuthRouter(
   }
 
   if (config.ad.type === 'mock') {
-    router.use('/saml', createDevAdRouter(sessions))
+    router.use('/saml', createDevAdRouter(userSessions))
   } else if (config.ad.type === 'saml') {
     router.use(
       '/saml',
       createSamlRouter({
-        sessions,
+        sessions: userSessions,
         strategyName: 'ead',
         strategy: createAdSamlStrategy(
-          sessions,
+          userSessions,
           config.ad,
           createSamlConfig(
             config.ad.saml,
