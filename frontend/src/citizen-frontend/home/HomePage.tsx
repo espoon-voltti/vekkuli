@@ -43,7 +43,10 @@ export default React.memo(function HomePage() {
             />
           </div>
           <div className="column is-align-content-center">
-            <img src={MapImage} alt="Satamat" />
+            <img
+              src={MapImage}
+              alt={i18n.citizenFrontPage.image.harbors.altText}
+            />
           </div>
         </div>
         <div className="block">

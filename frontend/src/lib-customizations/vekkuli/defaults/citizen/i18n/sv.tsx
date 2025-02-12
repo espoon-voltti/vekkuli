@@ -182,6 +182,11 @@ const sv: Translations = {
     },
     button: {
       browseBoatSpaces: 'Bläddra bland båtplatser'
+    },
+    image: {
+      harbors: {
+        altText: 'Hamnar på kartan'
+      }
     }
   },
   reservation: {

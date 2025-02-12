@@ -182,6 +182,11 @@ const en: Translations = {
     },
     button: {
       browseBoatSpaces: 'Browse boat spaces'
+    },
+    image: {
+      harbors: {
+        altText: 'Marinas on the map'
+      }
     }
   },
   reservation: {

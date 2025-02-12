@@ -182,6 +182,11 @@ export default {
     },
     button: {
       browseBoatSpaces: 'Selaile vapaita venepaikkoja'
+    },
+    image: {
+      harbors: {
+        altText: 'Satamat kartalla'
+      }
     }
   },
   reservation: {
