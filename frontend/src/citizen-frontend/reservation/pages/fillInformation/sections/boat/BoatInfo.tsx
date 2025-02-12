@@ -7,16 +7,18 @@ import React from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
-import { ChevronLeft } from '../../../../../../lib-icons'
 import { BoatSpace } from '../../../../../shared/types'
+import ReservationCancel from '../../../../components/ReservationCancel'
 import { BoatInfoForm } from '../../formDefinitions/boat'
 
 export default React.memo(function Boat({
   bind,
-  boatSpace
+  boatSpace,
+  reservationId
 }: {
   bind: BoundForm<BoatInfoForm>
   boatSpace: BoatSpace
+  reservationId: number
 }) {
   const i18n = useTranslation()
   const {
@@ -104,7 +106,7 @@ export default React.memo(function Boat({
           />
         </div>
       </div>
-      {showSizeWarning && <BoatSizeWarning />}
+      {showSizeWarning && <BoatSizeWarning reservationId={reservationId} />}
       <div className="columns is-vcentered">
         <div className="column is-one-quarter">
           <NumberField
@@ -171,23 +173,17 @@ export default React.memo(function Boat({
   )
 })
 
-const BoatSizeWarning = () => {
+const BoatSizeWarning = ({ reservationId }: { reservationId: number }) => {
   const i18n = useTranslation()
+
   return (
     <div className="columns is-vcentered">
       <div className="warning" id="boatSize-warning">
         <p className="block">{i18n.boat.boatSizeWarning}</p>
         <p className="block">{i18n.boat.boatSizeWarningExplanation}</p>
-        <button
-          className="icon-text"
-          type="button"
-          id="size-warning-back-button"
-        >
-          <span className="icon">
-            <ChevronLeft />
-          </span>
-          <span>{i18n.reservation.goBack}</span>
-        </button>
+        <ReservationCancel reservationId={reservationId} type="link">
+          {i18n.reservation.goBack}
+        </ReservationCancel>
       </div>
     </div>
   )

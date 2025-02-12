@@ -12,10 +12,12 @@ import ExistingBoat from './BoatSelection'
 
 export default React.memo(function Boat({
   bind,
-  boatSpace
+  boatSpace,
+  reservationId
 }: {
   bind: BoundForm<BoatForm>
   boatSpace: BoatSpace
+  reservationId: number
 }) {
   const i18n = useTranslation()
   const { boatInfo, boatSelection, ownership } = useFormFields(bind)
@@ -25,7 +27,11 @@ export default React.memo(function Boat({
       <div className="form-section">
         <h3 className="header">{i18n.reservation.formPage.boatInformation}</h3>
         <ExistingBoat bind={boatSelection} />
-        <BoatInfo bind={boatInfo} boatSpace={boatSpace} />
+        <BoatInfo
+          bind={boatInfo}
+          boatSpace={boatSpace}
+          reservationId={reservationId}
+        />
       </div>
       <BoatOwnershipStatus bind={ownership} />
     </div>
