@@ -7,7 +7,9 @@ import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceService
+import fi.espoo.vekkuli.utils.formatDecimal
 import fi.espoo.vekkuli.utils.formatInt
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
@@ -43,10 +45,10 @@ data class BoatSpaceListRow(
     val priceInEuro: String
         get() = formatInt(priceCents)
 
-    val widthInMeter: Double
-        get() = widthCm.toDouble()
-    val lengthInMeter: Double
-        get() = lengthCm.toDouble()
+    val widthInMeter: String
+        get() = formatDecimal(intToDecimal(widthCm))
+    val lengthInMeter: String
+        get() = formatDecimal(intToDecimal(lengthCm))
 }
 
 @Controller
