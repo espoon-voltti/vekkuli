@@ -4,8 +4,10 @@ import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceService
+import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
@@ -18,6 +20,29 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.net.URI
+
+data class BoatSpaceListRow(
+    val id: Int,
+    // @TODO: should come from the DB
+    val active: Boolean = true,
+    val type: BoatSpaceType,
+    val section: String,
+    val placeNumber: Int,
+    val amenity: BoatSpaceAmenity,
+    val widthCm: Int,
+    val lengthCm: Int,
+    val description: String,
+    val excludedBoatTypes: List<BoatType>? = null,
+    val locationName: String?,
+    val locationAddress: String?,
+    val priceCents: Int,
+    val priceClass: String? = null,
+    val reserved: Boolean = false,
+    val validity: ReservationValidity? = null
+) {
+    val priceInEuro: String
+        get() = formatInt(priceCents)
+}
 
 @Controller
 @RequestMapping("/virkailija/venepaikat")

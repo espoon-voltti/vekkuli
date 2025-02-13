@@ -10,7 +10,7 @@ import java.util.*
 class BoatSpaceList : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)
 
-    fun render(boatSpaces: List<BoatSpace>): String {
+    fun render(boatSpaces: List<BoatSpaceListRow>): String {
         fun getBoatSpacePage(boatSpaceId: Int) {
         }
         // language=HTML
@@ -39,10 +39,10 @@ class BoatSpaceList : BaseView() {
                    
                     <td>${result.widthCm}</td>
                     <td>${result.lengthCm}</td>
-                    <td>ML1</td>
-                    <td>Aktiivinen</td>
-                    <td>Varattu</td>
-                    <td>Toistaiseksi</td>
+                    <td>${result.priceInEuro}</td>
+                    <td>${if (result.active) t("boatSpacesList.text.active") else t("boatSpacesList.text.inactive")}</td>
+                    <td>${if (result.reserved) t("boatSpacesList.text.reserved") else t("boatSpacesList.text.notReserved")}</td>
+                    <td>${result.validity ?: '-'}</td>
                 </tr>
                 """.trimIndent()
             }
