@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.repository
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceFilter
@@ -185,22 +186,62 @@ class JdbiBoatSpaceRepository(
             val sql =
                 """
                 SELECT 
-                    bs.*,
-                    location.name as location_name, 
-                    location.address as location_address,
-                    ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
-                FROM boat_space bs
-                JOIN location ON bs.location_id = location.id
-                JOIN price ON bs.price_id = price.id
-                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
-                WHERE bs.id = :boatSpaceId
-                GROUP BY bs.id, location.name, location.address
+                     bs.*,
+                     location.name as location_name, 
+                     location.address as location_address,
+                     ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                 FROM boat_space bs
+                 JOIN location ON bs.location_id = location.id
+                 JOIN price ON bs.price_id = price.id
+                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
+                 WHERE bs.id = :boatSpaceId
+                 GROUP BY bs.id, location.name, location.address
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
             query.bind("boatSpaceId", boatSpaceId)
 
             query.mapTo<BoatSpace>().firstOrNull()
+        }
+
+    override fun getBoatSpaces(): List<BoatSpaceListRow> =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT 
+                    bs.*,
+                    location.name AS location_name, 
+                    location.address AS location_address,
+                    price.price_cents,
+                    price.name as price_class,
+                    ARRAY_AGG(harbor_restriction.excluded_boat_type) AS excluded_boat_types,
+                    COALESCE(
+                        (SELECT EXISTS (
+                            SELECT 1
+                            FROM boat_space_reservation bsr
+                            WHERE bsr.boat_space_id = bs.id
+                              AND (
+                                  (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
+                                  OR (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
+                              )
+                        )), false
+                    ) AS reserved,
+                    res.validity AS validity
+                FROM boat_space bs
+                JOIN location ON bs.location_id = location.id
+                JOIN price ON bs.price_id = price.id
+                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
+                LEFT JOIN boat_space_reservation res ON res.boat_space_id = bs.id
+                GROUP BY bs.id, bs.location_id, bs.price_id, 
+                         location.name, location.address, price.price_cents, 
+                           res.validity, price.name
+                ORDER BY location_name
+
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+            query.mapTo<BoatSpaceListRow>().toList()
         }
 
     override fun isBoatSpaceReserved(boatSpaceId: Int): Boolean =

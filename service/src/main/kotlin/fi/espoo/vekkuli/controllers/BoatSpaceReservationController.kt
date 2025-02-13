@@ -79,7 +79,7 @@ class BoatSpaceReservationController {
         return ResponseEntity.ok(
             layout.render(
                 true,
-                employee.fullName,
+                request.requestURI,
                 boatSpaceReservationList.render(harbors, boatSpaceTypes, actualAmenities, reservations, params, UserType.EMPLOYEE)
             )
         )
