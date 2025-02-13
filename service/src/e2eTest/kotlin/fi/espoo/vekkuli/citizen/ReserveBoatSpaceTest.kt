@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceTest : ReserveTest() {
@@ -1256,6 +1257,23 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val winterStorageType = formPage.getWinterStorageTypeSection()
         assertThat(winterStorageType.trailerLengthInput).hasValue("")
         assertThat(winterStorageType.trailerWidthInput).hasValue("")
+    }
+
+    @Test
+    fun `Boat spaces are ordered correctly by scandic alphabet`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.filterForSlipBoatSpaceB001AndÄ001()
+        val searchResults = reserveBoatSpacePage.getSearchResultsSection()
+
+        // wait for the results to be loaded before checking the order
+        assertThat(searchResults.firstReserveButton).isVisible()
+        val b001Index = searchResults.getReserveButtonPlacementByPlace("Svinö", "B 001")
+        val ä001Index = searchResults.getReserveButtonPlacementByPlace("Svinö", "Ä 001")
+
+        assertTrue(b001Index < ä001Index, "B 001 should be before Ä 001")
     }
 
     @Test

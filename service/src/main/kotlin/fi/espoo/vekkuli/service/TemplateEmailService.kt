@@ -68,7 +68,7 @@ class TemplateEmailService(
         recipients: List<Recipient>,
         reservationType: ReservationType,
         reservationId: Int,
-        messageType: String,
+        emailType: EmailType,
         variables: Map<String, Any>,
     ): List<QueuedMessage> {
         val tpl = templateRepo.getTemplate(template)
@@ -79,7 +79,7 @@ class TemplateEmailService(
         // Get emails that have not been sent
         val emails =
             messageService
-                .getAndInsertUnsentEmails(reservationType, reservationId, messageType, recipients.map { it.email })
+                .getAndInsertUnsentEmails(reservationType, reservationId, emailType, recipients.map { it.email })
         return messageService.sendEmails(
             userId = userId,
             senderAddress = senderAddress,

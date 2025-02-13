@@ -43,6 +43,7 @@ class ReserveBoatSpacePage(
         val amenityWalkBeamCheckbox = fields.getCheckbox("Kävelyaisa")
         val haukilahtiCheckbox = fields.getCheckbox("Haukilahti")
         val kivenlahtiCheckbox = fields.getCheckbox("Kivenlahti")
+        val svinöCheckbox = fields.getCheckbox("Svinö")
     }
 
     class TrailerFilterSection(
@@ -84,6 +85,15 @@ class ReserveBoatSpacePage(
             section: String,
             placeNumber: String,
         ) = root.locator("tr:has-text('$section $placeNumber')").locator("button:has-text('Varaa')")
+
+        fun getReserveButtonPlacementByPlace(
+            location: String,
+            place: String
+        ): Int {
+            val location = root.locator("h3:has-text('$location')").locator("..").locator("..")
+            val rows = location.locator("tr").all()
+            return rows.indexOfFirst { row -> row.innerText().contains(place) }
+        }
     }
 
     class ReserveModal(
@@ -160,6 +170,16 @@ class ReserveBoatSpacePage(
         slipFilterSection.boatTypeSelect.selectOption("Sailboat")
         slipFilterSection.widthInput.fill("1")
         slipFilterSection.lengthInput.fill("3")
+    }
+
+    fun filterForSlipBoatSpaceB001AndÄ001() {
+        val filterSection = getFilterSection()
+        filterSection.slipRadio.click()
+        val slipFilterSection = filterSection.getSlipFilterSection()
+        slipFilterSection.boatTypeSelect.selectOption("OutboardMotor")
+        slipFilterSection.widthInput.fill("1.7")
+        slipFilterSection.lengthInput.fill("4")
+        slipFilterSection.svinöCheckbox.click()
     }
 
     fun filterForTrailerSpace012() {

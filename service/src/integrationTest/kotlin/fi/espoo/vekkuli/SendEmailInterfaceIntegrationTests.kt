@@ -101,7 +101,7 @@ class SendEmailInterfaceIntegrationTests : IntegrationTestBase() {
             )
         val reservationType = ReservationType.Marine
         val reservationId = 1
-        val source = "test"
+        val source = EmailType.Expiry
         var emails =
             templateEmailService.sendBatchEmail(
                 "reservation_created_by_employee",

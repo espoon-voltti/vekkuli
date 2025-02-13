@@ -111,6 +111,7 @@ class BoatReservationService(
     private val boatSpaceRepository: BoatSpaceRepository,
     private val reserverRepository: ReserverRepository,
     private val reserverService: ReserverService,
+    private val messageService: MessageService,
 ) {
     fun handlePaytrailPaymentResult(
         params: Map<String, String>,
@@ -473,6 +474,8 @@ class BoatReservationService(
     fun getExpiringFixedTermBoatSpaceReservations(): List<BoatSpaceReservationDetails> =
         boatSpaceReservationRepo.getExpiringBoatSpaceReservations(ReservationValidity.FixedTerm)
 
+    fun getExpiredBoatSpaceReservations(): List<BoatSpaceReservationDetails> = boatSpaceReservationRepo.getExpiredBoatSpaceReservations()
+
     fun acknowledgeWarnings(
         reservationId: Int,
         userId: UUID,
@@ -582,7 +585,31 @@ class BoatReservationService(
 
     fun markReservationEnded(reservationId: Int) {
         boatSpaceReservationRepo.setReservationAsExpired(reservationId)
+        preventSendingAReservationExpirationEmail(reservationId)
     }
+
+    private fun preventSendingAReservationExpirationEmail(reservationId: Int) {
+        val reservation =
+            boatSpaceReservationRepo.getBoatSpaceReservationDetails(
+                reservationId
+            ) ?: throw IllegalArgumentException("Reservation not found")
+        val recipientEmails = getRecipientEmails(reservation)
+        messageService.getAndInsertUnsentEmails(
+            ReservationType.Marine,
+            reservationId,
+            EmailType.ExpiredReservation,
+            recipientEmails
+        )
+    }
+
+    private fun getRecipientEmails(reservation: BoatSpaceReservationDetails) =
+        if (reservation.reserverType == ReserverType.Organization) {
+            organizationService
+                .getOrganizationMembers(reservation.reserverId)
+                .map { it.email } + listOf(reservation.email)
+        } else {
+            listOf(reservation.email)
+        }
 
     fun getHarbors(): List<Location> = boatSpaceReservationRepo.getHarbors()
 
