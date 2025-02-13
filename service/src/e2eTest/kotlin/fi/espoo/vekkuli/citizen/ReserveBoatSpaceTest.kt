@@ -1147,4 +1147,38 @@ class ReserveBoatSpaceTest : ReserveTest() {
         assertThat(winterStorageType.trailerLengthInput).hasValue("")
         assertThat(winterStorageType.trailerWidthInput).hasValue("")
     }
+
+    @Test
+    fun `A warning is shown if the boat size is not within the limits`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        val formPage = BoatSpaceFormPage(page)
+        val boatSection = formPage.getBoatSection()
+
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("7.8")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("7.81")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.lengthInput.fill("5")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        boatSection.widthInput.fill("3.1")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.widthInput.fill("3.11")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.widthInput.fill("3")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        boatSection.widthInput.fill("10")
+        boatSection.boatSizeWarningBackButton.click()
+        val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+        assertThat(confirmCancelReservationModal.root).isVisible()
+        confirmCancelReservationModal.confirmButton.click()
+
+        assertThat(reservationPage.header).isVisible()
+    }
 }

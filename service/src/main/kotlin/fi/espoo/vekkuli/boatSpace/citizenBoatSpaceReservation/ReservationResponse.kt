@@ -192,7 +192,7 @@ class ReservationResponseMapper(
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservationWithDependencies)
         val (minLength, maxLength) = BoatSpaceConfig.getLengthLimitsForBoat(boatSpace.lengthCm, boatSpace.amenity)
-        val (minWidth, maxWidth) = BoatSpaceConfig.getLengthLimitsForBoat(boatSpace.lengthCm, boatSpace.amenity)
+        val (minWidth, maxWidth) = BoatSpaceConfig.getWidthLimitsForBoat(boatSpace.widthCm, boatSpace.amenity)
 
         val trailer = getTrailer(reservationWithDependencies)
         val canReserveNew =
