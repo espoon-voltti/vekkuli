@@ -4,8 +4,8 @@ import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationRespons
 import fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation.ReservationResponseMapper
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 
 @RestController

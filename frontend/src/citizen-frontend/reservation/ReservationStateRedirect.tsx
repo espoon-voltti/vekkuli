@@ -72,6 +72,10 @@ function getExpectedPath(
     return current
   }
 
+  if (current.startsWith('/kuntalainen/venepaikka/vaihda/')) {
+    return current
+  }
+
   return '/kuntalainen/venepaikka'
 }
 

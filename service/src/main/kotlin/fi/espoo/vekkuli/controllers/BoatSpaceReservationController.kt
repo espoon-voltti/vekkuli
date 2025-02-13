@@ -10,8 +10,8 @@ import fi.espoo.vekkuli.domain.actualAmenities
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.views.employee.BoatSpaceReservationList
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
-import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.springframework.beans.factory.annotation.Autowired

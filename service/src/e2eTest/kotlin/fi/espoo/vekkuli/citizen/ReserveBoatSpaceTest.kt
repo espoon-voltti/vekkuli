@@ -723,7 +723,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 314",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -766,7 +767,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 314",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -821,7 +823,8 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 314",
                 expectedPriceForOrganization,
-                "Hinnassa huomioitu $organizationDiscount% alennus."
+                "Hinnassa huomioitu $organizationDiscount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)
@@ -1028,7 +1031,6 @@ class ReserveBoatSpaceTest : ReserveTest() {
         assertThat(paymentPage.reservationSuccessNotification).isVisible()
         assertCorrectPaymentForReserver("Virtanen Mikko", PaymentStatus.Success, "Haukilahti B 314", "418,00", "")
 
-        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
         val citizenDetailPage = CitizenDetailsPage(page)
         citizenDetailPage.navigateToPage()
 
@@ -1077,12 +1079,120 @@ class ReserveBoatSpaceTest : ReserveTest() {
             reservationStateFilter("PAYMENT").click()
         })
 
-        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
         val citizenDetailPage = CitizenDetailsPage(page)
         citizenDetailPage.navigateToPage()
 
         val reservationSection = citizenDetailPage.getReservationSection("Haukilahti B 314")
         assertThat(reservationSection.root).not().isVisible()
+    }
+
+    @Test
+    fun `Deleted citizen boats are not available in reservation form`() {
+        CitizenHomePage(page).loginAsLeoKorhonen()
+
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        val boatSpaceFormPage = BoatSpaceFormPage(page)
+        val boatSection = boatSpaceFormPage.getBoatSection()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+
+        // check boat is available in reservation form
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        reserveBoatSpacePage.getReserveModal().reserveANewSpace.click()
+        assertThat(boatSection.existingBoat("Leon vene")).isVisible()
+        assertThat(boatSection.existingBoat("Leon toinen liian iso vene")).isVisible()
+
+        boatSpaceFormPage.cancelButton.click()
+        boatSpaceFormPage.getConfirmCancelReservationModal().confirmButton.click()
+
+        // delete boat
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.showAllBoatsButton.click()
+        citizenDetailsPage.getBoatSection("Leon toinen liian iso vene").deleteButton.click()
+        citizenDetailsPage.getDeleteBoatModal().confirmButton.click()
+        assertThat(citizenDetailsPage.getDeleteBoatSuccessModal().root).isVisible()
+
+        // check boat is not available in reservation form
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        reserveBoatSpacePage.getReserveModal().reserveANewSpace.click()
+        assertThat(boatSection.existingBoat("Leon vene")).isVisible()
+        assertThat(boatSection.existingBoat("Leon toinen liian iso vene")).not().isVisible()
+    }
+
+    @Test
+    fun `Deleted organization boats are not available in reservation form`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveOrganization()
+
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        val boatSpaceFormPage = BoatSpaceFormPage(page)
+        val boatSection = boatSpaceFormPage.getBoatSection()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+
+        // check boat is available in reservation form
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        reserveBoatSpacePage.getReserveModal().getSwitchReservationButton("Haukilahti B 005").click()
+        assertThat(boatSection.existingBoat("Espoon lohi")).isVisible()
+        assertThat(boatSection.existingBoat("Espoon kuha")).isVisible()
+
+        boatSpaceFormPage.cancelButton.click()
+        boatSpaceFormPage.getConfirmCancelReservationModal().confirmButton.click()
+
+        // delete boat
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+        organizationDetailsPage.showAllBoatsButton.click()
+        organizationDetailsPage.getBoatSection("Espoon kuha").deleteButton.click()
+        organizationDetailsPage.getDeleteBoatModal().confirmButton.click()
+        assertThat(organizationDetailsPage.getDeleteBoatSuccessModal().root).isVisible()
+
+        // check boat is not available in reservation form
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpaceB314()
+        reserveBoatSpacePage.getReserveModal().getSwitchReservationButton("Haukilahti B 005").click()
+        assertThat(boatSection.existingBoat("Espoon lohi")).isVisible()
+        assertThat(boatSection.existingBoat("Espoon kuha")).not().isVisible()
+    }
+
+    @Test
+    fun `Citizen with trailer space should be allowed to reserve trailer space for organization`() {
+        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveOrganization()
+
+        // reserve for citizen
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.startReservingBoatSpace012()
+        BoatSpaceFormPage(page).fillFormAndSubmit {
+            getOrganizationSection().reserveForCitizen.click()
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-111")
+        }
+        PaymentPage(page).payReservation()
+
+        // reserve for organization
+        reserveBoatSpacePage.navigateToPage()
+        reserveBoatSpacePage.getSearchResultsSection().reserveButtonByPlace("TRAILERI", "013").click()
+        reserveBoatSpacePage.getReserveModal().reserveANewSpace.click()
+
+        BoatSpaceFormPage(page).fillFormAndSubmit {
+            getOrganizationSection().reserveForOrganization.click()
+            getOrganizationSection().organization("Espoon pursiseura").click()
+            getTrailerStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-222")
+        }
+        PaymentPage(page).payReservation()
+
+        // check citizen has reservation
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        assertThat(citizenDetailsPage.getReservationSection("TRAILERI 012").root).isVisible()
+
+        // check organization has reservation
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        assertThat(organizationDetailsPage.getReservationSection("TRAILERI 013").root).isVisible()
     }
 
     private fun fillReservationInfoAndAssertCorrectDiscount(

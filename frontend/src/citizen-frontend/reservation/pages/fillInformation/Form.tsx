@@ -3,6 +3,7 @@ import { FormSection } from 'lib-components/form'
 import React from 'react'
 import { useNavigate } from 'react-router'
 
+import { ReservationInfo } from 'citizen-frontend/api-types/reservation'
 import { useTranslation } from 'citizen-frontend/localization'
 import {
   formatPlaceIdentifier,
@@ -14,7 +15,6 @@ import { useFormErrorContext } from 'lib-common/form/state'
 import { useMutation } from 'lib-common/query'
 import { WarningExclamation } from 'lib-icons'
 
-import { ReservationInfo } from '../../../api-types/reservation'
 import { getReservationInfoForReservation } from '../../ReservationInfoForReservation'
 import { InfoBox } from '../../components/InfoBox'
 import ReservationCancel from '../../components/ReservationCancel'
@@ -68,7 +68,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
         boats,
         organizationsBoats,
         reservation.reservation.citizen,
-        reservation.reservation.boatSpace.type,
+        reservation.reservation.boatSpace,
         municipalities,
         organizations,
         reservation,
@@ -84,7 +84,8 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           boats,
           organizationsBoats,
           municipalities,
-          organizations
+          organizations,
+          reservation.reservation.boatSpace.excludedBoatTypes || []
         )
     }
   )

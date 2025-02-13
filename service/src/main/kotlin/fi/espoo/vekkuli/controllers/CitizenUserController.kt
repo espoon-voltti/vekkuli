@@ -26,9 +26,9 @@ import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsExceptionsContainer
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsMemoContainer
 import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model

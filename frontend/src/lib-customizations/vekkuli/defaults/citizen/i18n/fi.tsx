@@ -30,6 +30,7 @@ export default {
     print: 'Tulosta',
     ok: 'Ok',
     save: 'Tallenna',
+    saveChanges: 'Tallenna muutokset',
     discard: 'Älä tallenna',
     saveConfirmation: 'Haluatko tallentaa muutokset?',
     saveSuccess: 'Tallennettu',
@@ -157,22 +158,32 @@ export default {
         branchSpecific: {
           Slip: {
             width: 'Veneen leveys (m)',
-            length: 'Veneen pituus (m)'
+            length: 'Veneen pituus (m)',
+            harborInfo: ''
           },
           Trailer: {
             width: 'Trailerin leveys (m)',
-            length: 'Trailerin pituus (m)'
+            length: 'Trailerin pituus (m)',
+            harborInfo: 'Traileripaikan voit varata ainoastaan Suomenojalta.'
           },
           Winter: {
             width: 'Säilytyspaikan leveys (m)',
-            length: 'Säilytyspaikan pituus (m)'
+            length: 'Säilytyspaikan pituus (m)',
+            harborInfo:
+              'Valitse talvipaikka venepaikkasi satamasta tai Suomenojalta.'
           },
           Storage: {
             width: 'Säilytyspaikan leveys (m)',
-            length: 'Säilytyspaikan pituus (m)'
+            length: 'Säilytyspaikan pituus (m)',
+            harborInfo:
+              'Ympärivuotisen säilytyksen voit varata ainoastaan Ämmäsmäen säilytysalueelta.'
           }
-        }
+        },
+        storageInfo:
+          'Veneen säilytykseen tarvittavan kaluston on mahduttava kokonaan varattavan paikan sisäpuolelle. Huomioi myös, että tarpeettoman suurille paikoille sijoitetut veneet voidaan siirtää pienemmille paikoille.'
       },
+      switchInfoText:
+        'Olet vaihtamassa venepaikkaa. Paikan voi vaihtaa ainoastaan saman paikkatyypin paikkoihin. ',
       infoText: {
         title: 'Venepaikkojen varaaminen 2025',
         periods: {
@@ -188,9 +199,9 @@ export default {
       },
       modal: {
         reserveNewSpace: 'Varaa uusi paikka',
-        reservingBoatSpace: 'Olet varaamassa venepaikkaa:',
+        reservingBoatSpace: 'Olet varaamassa paikkaa:',
         cannotReserveNewPlace:
-          'Sinulla on jo kaksi venepaikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
+          'Sinulla on jo kaksi paikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
         currentPlaces: 'Paikkasi:',
         organizationCurrentPlaces: (organizationName: string) =>
           `Yhteisösi ${organizationName} paikat:`,
@@ -207,7 +218,7 @@ export default {
       },
       info: {
         switch:
-          'Olet vaihtamassa venepaikkaa. Venepaikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
+          'Olet vaihtamassa paikkaa. Paikkasi varausaika säilyy ennallaan. Samalla vanha paikkasi irtisanoutuu ja vapautuu muiden varattavaksi.'
       },
       submit: {
         continueToPayment: 'Jatka maksamaan',
@@ -339,8 +350,11 @@ export default {
     boatDepthInMeters: 'Syväys (m)',
     boatWeightInKg: 'Paino (kg)',
     registrationNumber: 'Rekisteritunnus',
-    otherIdentifier: 'Muu tunniste',
+    otherIdentifier: 'Merkki ja malli/muu tunniste',
     additionalInfo: 'Lisätiedot',
+    title: 'Veneet',
+    boatType: 'Veneen tyyppi',
+    ownership: 'Omistussuhde',
     boatSizeWarning: 'Veneen koko ei ole sopiva valitulle venepaikalle.',
     boatSizeWarningExplanation:
       'Venepaikoilla on turvavälit veneiden ja laiturien vaurioiden estämiseksi. Liian ahtaaseen tai tarpeettoman suureen paikkaan laitettu vene voidaan siirtää kaupungin toimesta, ja venepaikan haltija vastaa kustannuksista.'
@@ -398,7 +412,7 @@ export default {
       return undefined
     },
     amenities: {
-      Buoy: 'Poiju',
+      Buoy: 'Poiju merellä',
       RearBuoy: 'Peräpoiju',
       Beam: 'Aisa',
       WalkBeam: 'Kävelyaisa',
@@ -424,7 +438,8 @@ export default {
     postOffice: 'Postitoimipaikka',
     municipality: 'Kotikunta',
     birthday: 'Syntymäaika',
-    streetAddress: 'Katuosoite'
+    streetAddress: 'Katuosoite',
+    homeAddress: 'Kotiosoite'
   },
   citizenPage: {
     title: 'Omat tiedot',
@@ -439,8 +454,23 @@ export default {
       modal: {
         goBackToReservation: 'Siirry varaukseen'
       },
-      showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin'
-    }
+      showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
+      renewNotification: (date: LocalDate) =>
+        `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`,
+      harbor: 'Satama',
+      reservationDate: 'Varaus tehty',
+      place: 'Paikka',
+      reservationValidity: 'Varaus voimassa',
+      placeType: 'Paikan tyyppi',
+      price: 'Hinta',
+      boatPresent: 'Paikalla oleva vene',
+      equipment: 'Varuste',
+      paymentStatus: 'Maksun tila',
+      storageType: 'Säilytystapa'
+    },
+    placeReservations: 'Paikkavaraukset',
+    expired: 'Päättyneet',
+    expiredReservations: 'Päättyneet varaukset'
   },
   organization: {
     information: {
@@ -448,6 +478,11 @@ export default {
       phone: 'Yhteisön puhelinnumero',
       email: 'Yhteisön sähköposti'
     },
+    title: 'Yhteisöt',
+    name: 'Nimi',
+    organizationId: 'Y-tunnus',
+    municipality: 'Kotikunta',
+    physicalAddress: 'Käyntiosoite',
     contactDetails: {
       title: 'Yhteyshenkilöt',
       fields: {

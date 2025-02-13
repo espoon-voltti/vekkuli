@@ -3,12 +3,12 @@ package fi.espoo.vekkuli.boatSpace.invoice
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.EspiEnv
 import fi.espoo.vekkuli.utils.TimeProvider
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import mu.KotlinLogging
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.util.*

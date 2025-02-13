@@ -37,7 +37,7 @@ class ReserveBoatSpacePage(
         val boatTypeSelect = fields.getSelect("Venetyyppi")
         val widthInput = fields.getInput("Veneen leveys")
         val lengthInput = fields.getInput("Veneen pituus")
-        val amenityBuoyCheckbox = fields.getCheckbox("Poiju", true)
+        val amenityBuoyCheckbox = fields.getCheckbox("Poiju merellä", true)
         val amenityRearBuoyCheckbox = fields.getCheckbox("Peräpoiju")
         val amenityBeamCheckbox = fields.getCheckbox("Aisa", true)
         val amenityWalkBeamCheckbox = fields.getCheckbox("Kävelyaisa")
@@ -76,9 +76,9 @@ class ReserveBoatSpacePage(
     ) {
         val harborHeaders = root.locator(".harbor-header")
         val firstReserveButton = root.locator("button:has-text('Varaa')").first()
-        val b314ReserveButton = root.locator("tr:has-text('B 314')").locator("button:has-text('Varaa')")
-        val b059ReserveButton = root.locator("tr:has-text('B 059')").locator("button:has-text('Varaa')")
-        val b007ReserveButton = root.locator("tr:has-text('B 007')").locator("button:has-text('Varaa')")
+        val b314ReserveButton = reserveButtonByPlace("B", "314")
+        val b059ReserveButton = reserveButtonByPlace("B", "059")
+        val b007ReserveButton = reserveButtonByPlace("B", "007")
 
         internal fun reserveButtonByPlace(
             section: String,
@@ -104,6 +104,12 @@ class ReserveBoatSpacePage(
         val firstSwitchReservationButton = switchReservationButtons.first()
         val secondSwitchReservationButton =
             switchReservationButtons.nth(1)
+
+        fun getSwitchReservationButton(place: String) =
+            root.getByText(place).locator("..").locator("..").locator("..").getByRole(
+                AriaRole.BUTTON,
+                Locator.GetByRoleOptions().setName("Vaihdan nykyisen paikan").setExact(true)
+            )
     }
 
     class LoginModal(
@@ -114,6 +120,8 @@ class ReserveBoatSpacePage(
     }
 
     val header = page.getByText("Espoon kaupungin venepaikkojen vuokraus")
+    val switchInfoBox = page.getByText("Olet vaihtamassa paikkaa")
+    val switchGoBackButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 
     fun navigateToPage() {
         page.navigate("$baseUrl/kuntalainen/venepaikka")

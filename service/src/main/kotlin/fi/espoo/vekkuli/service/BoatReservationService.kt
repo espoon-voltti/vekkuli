@@ -650,13 +650,19 @@ class BoatReservationService(
                     "endDate",
                     "boatSpaceReservation.email.validity.${reservation.validity}",
                     listOf(formatAsFullDate(reservation.endDate))
-                ) + getCitizenReserverForOrganization(organizationReservation, reservation)
+                ) +
+                getCitizenReserverForOrganizationLocalization(
+                    organizationReservation,
+                    reservation
+                ) +
+                getHarborAddressLocalization(reservation, boatSpace.locationAddress ?: "")
 
         data class EmailSettings(
             val template: String,
             val recipients: List<String>,
             val params: Map<String, Any>
         )
+
         val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
 
         val recipients =
@@ -696,6 +702,7 @@ class BoatReservationService(
                         )
                     }
                 }
+
                 CreationType.Switch -> {
                     EmailSettings(
                         template = "reservation_switched_by_citizen",
@@ -703,6 +710,7 @@ class BoatReservationService(
                         params = defaultParams
                     )
                 }
+
                 CreationType.Renewal -> {
                     if (isInvoiced) {
                         if (reservationStatus == ReservationStatus.Confirmed) {
@@ -747,7 +755,21 @@ class BoatReservationService(
         }
     }
 
-    private fun getCitizenReserverForOrganization(
+    private fun getHarborAddressLocalization(
+        reservation: BoatSpaceReservationDetails,
+        locationAddress: String
+    ): Map<String, String> {
+        val code =
+            if (reservation.type == BoatSpaceType.Storage) {
+                "boatSpaceReservation.email.storagePlaceAddress"
+            } else {
+                "boatSpaceReservation.email.harborAddress"
+            }
+
+        return messageUtil.getLocalizedMap("harborAddress", code, listOf(locationAddress))
+    }
+
+    private fun getCitizenReserverForOrganizationLocalization(
         organizationReservation: Boolean,
         reservation: BoatSpaceReservationDetails
     ): Map<String, String> {

@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.service.*
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +27,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: BoatReservationService
 
+    @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
         deleteAllBoats(jdbi)
@@ -261,12 +263,12 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         )
 
         val freeRows = getFreeBoatSpaceReport(jdbi, today.atStartOfDay())
-        freeRows.find { it.place == "A 001" }
-        assertTrue(freeRows.none { it.place == "A 002" })
+        assertTrue(freeRows.any { it.harbor == "Haukilahti" && it.place == "A 001" })
+        assertTrue(freeRows.none { it.harbor == "Haukilahti" && it.place == "A 002" })
 
         val reservedRows = getReservedBoatSpaceReport(jdbi, today.atStartOfDay())
-        assertTrue(reservedRows.any { it.place == "A 002" })
-        assertTrue(reservedRows.none { it.place == "A 001" })
+        assertTrue(reservedRows.none { it.harbor == "Haukilahti" && it.place == "A 001" })
+        assertTrue(reservedRows.any { it.harbor == "Haukilahti" && it.place == "A 002" })
 
         val terminatedRows = getTerminatedBoatSpaceReport(jdbi, today.atStartOfDay())
         assertEquals(1, terminatedRows.size)

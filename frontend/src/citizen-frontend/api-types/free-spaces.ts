@@ -2,6 +2,7 @@ import { BoatSpaceAmenity, BoatSpaceType, BoatType } from '../shared/types'
 
 export interface Place {
   name: string
+  address: string
   id: number
 }
 

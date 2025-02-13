@@ -808,14 +808,17 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT bs.*, location.name as location_name, bsr,
+                    SELECT bs.*, 
+                    location.name as location_name, 
+                    location.address as location_address, 
+                    bsr,
                         ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
                     FROM boat_space_reservation bsr
                     JOIN boat_space bs ON bsr.boat_space_id = bs.id
                     JOIN location ON location.id = bs.location_id
                     LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                     WHERE bsr.id = :reservationId
-                    GROUP BY bs.id, location.name, bsr 
+                    GROUP BY bs.id, location.name, location.address, bsr 
                     """.trimIndent()
                 )
             query.bind("reservationId", reservationId)

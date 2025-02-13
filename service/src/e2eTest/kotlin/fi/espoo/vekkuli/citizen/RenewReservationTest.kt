@@ -62,6 +62,28 @@ class RenewReservationTest : ReserveTest() {
     }
 
     @Test
+    fun `should show renew notification when it's time to renew boat space`() {
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveSlipReservation()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+
+        val reservationSection = citizenDetailsPage.getFirstReservationSection()
+        assertThat(reservationSection.renewNotification).isVisible()
+        assertThat(reservationSection.renewNotification).containsText("31.01.2025")
+
+        reservationSection.renewButton.click()
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+        PaymentPage(page).payReservation()
+
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod.plusYears(1))
+        citizenDetailsPage.navigateToPage()
+        assertThat(reservationSection.renewNotification).isVisible()
+        assertThat(reservationSection.renewNotification).containsText("31.01.2026")
+    }
+
+    @Test
     fun `should be able to renew slip reservation for organization`() {
         try {
             mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
@@ -224,7 +246,6 @@ class RenewReservationTest : ReserveTest() {
             val reservationPage = ReserveBoatSpacePage(page)
             val filterSection = reservationPage.getFilterSection()
             val storageFilterSection = filterSection.getStorageFilterSection()
-
             reservationPage.reserveStorageWithTrailerType(filterSection, storageFilterSection)
 
             assertEmailIsSentOfCitizensStorageSpaceReservation()
@@ -323,7 +344,8 @@ class RenewReservationTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 001",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
 
             assertEmailIsSentOfCitizensSlipRenewal("leo@noreplytest.fi")
@@ -395,7 +417,8 @@ class RenewReservationTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti B 001",
                 expectedPrice,
-                "Hinnassa huomioitu $discount% alennus."
+                "Hinnassa huomioitu $discount% alennus.",
+                doLogin = false
             )
         } catch (e: AssertionError) {
             handleError(e)

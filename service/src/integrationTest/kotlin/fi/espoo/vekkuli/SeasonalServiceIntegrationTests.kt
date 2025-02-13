@@ -923,9 +923,9 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
     @Test
     fun `should fetch all harbors`() {
         val harbors = reservationService.getHarbors()
-        assertEquals(7, harbors.size, "Correct number of harbors are fetched")
-        assertEquals("Satamatie 1, Espoo", harbors[0].address, "Correct number of harbors are fetched")
-        assertEquals("Haukilahti", harbors[0].name, "Correct number of harbors are fetched")
+        assertEquals(8, harbors.size, "Correct number of harbors are fetched")
+        assertEquals("Mellstenintie 6, 02170 Espoo", harbors[0].address, "Correct address for first harbor")
+        assertEquals("Haukilahti", harbors[0].name, "Correct name for first harbor")
     }
 
     @Test

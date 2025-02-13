@@ -1,4 +1,5 @@
 import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces'
+import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
 import {
   BoatSpaceAmenity,
   BoatSpaceType,
@@ -91,10 +92,13 @@ export const searchFreeSpacesForm = mapped(
 export type SearchForm = typeof searchFreeSpacesForm
 
 export function initialFormState(
-  storedSearchState: StoredSearchState | undefined
+  storedSearchState: StoredSearchState | undefined,
+  switchInfo: SwitchReservationInformation | undefined
 ): StateOf<SearchForm> {
   const boatSpaceType =
-    (storedSearchState?.spaceType as BoatSpaceType) ?? 'Slip'
+    switchInfo?.spaceType ??
+    (storedSearchState?.spaceType as BoatSpaceType) ??
+    'Slip'
   return {
     boatSpaceType: {
       domValue: boatSpaceType,
@@ -102,7 +106,9 @@ export function initialFormState(
         domValue: type,
         label: (i18n: Translations) => i18n.boatSpace.boatSpaceType[type].label,
         info: (i18n: Translations) => i18n.boatSpace.boatSpaceType[type].info,
-        value: type
+        value: type,
+        disabled:
+          switchInfo?.spaceType !== undefined && type !== switchInfo.spaceType
       }))
     },
     boatSpaceUnionForm: initialUnionFormState(boatSpaceType, storedSearchState),
@@ -139,7 +145,6 @@ export const initialUnionFormState = (
       branchHarbors = harbors.map((h) => h)
       break
     case 'Trailer':
-      branchHarbors = harbors.map((h) => h)
       break
     case 'Winter':
       branchHarbors = harbors.filter((h) =>

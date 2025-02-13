@@ -54,7 +54,7 @@ passport.deserializeUser<Express.User>((user, done) => done(null, user))
 app.use('/auth', createAuthRouter(config, redisClient))
 app.use('/api/citizen', createCitizenRouter(config, redisClient))
 app.use('/dev', createDevRouter(config, redisClient))
-app.use('/', createSystemRouter(config, redisClient))
+app.use('/', createSystemRouter())
 app.use('/', createEmployeeRouter(config, redisClient))
 app.use(fallbackErrorHandler)
 

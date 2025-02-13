@@ -15,18 +15,18 @@ export function createDevRouter(
 ): Router {
   const router = Router()
 
-  const sessions = sessionSupport(redisClient, config.session)
+  const sessions = sessionSupport('user', redisClient, config.userSession)
   const proxy = createProxy(serviceUrl)
 
   router.use(sessions.middleware)
   router.use(passport.session())
-  router.use(cookieParser(config.session.cookieSecret))
+  router.use(cookieParser(config.userSession.cookieSecret))
 
   router.use(cacheControl(() => 'forbid-cache'))
 
   router.use(
-    requireAuthentication(['citizen', 'user'], (_req, res) => {
-      res.redirect('/')
+    requireAuthentication('user', (_req, res) => {
+      res.redirect('/virkailija')
     })
   )
   router.use(proxy)

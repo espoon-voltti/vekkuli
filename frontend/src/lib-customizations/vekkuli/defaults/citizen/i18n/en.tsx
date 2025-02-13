@@ -31,6 +31,7 @@ const en: Translations = {
     print: 'Print',
     ok: 'Ok',
     save: 'Save',
+    saveChanges: 'Save changes',
     discard: 'Discard',
     saveConfirmation: 'Do you want to save changes?',
     saveSuccess: 'Saved',
@@ -158,22 +159,32 @@ const en: Translations = {
         branchSpecific: {
           Slip: {
             width: 'Boat width (m)',
-            length: 'Boat length (m)'
+            length: 'Boat length (m)',
+            harborInfo: ''
           },
           Trailer: {
             width: 'Trailer width (m)',
-            length: 'Trailer length (m)'
+            length: 'Trailer length (m)',
+            harborInfo: 'You can only reserve a trailer spot from Suomenoja.'
           },
           Winter: {
             width: 'Storage space width (m)',
-            length: 'Storage space length (m)'
+            length: 'Storage space length (m)',
+            harborInfo:
+              'Select a winter storage space from your boat harbor or from Suomenoja.'
           },
           Storage: {
             width: 'Storage space width (m)',
-            length: 'Storage space length (m)'
+            length: 'Storage space length (m)',
+            harborInfo:
+              'You can only reserve year-round storage from the Ämmäsmäki storage area.'
           }
-        }
+        },
+        storageInfo:
+          'All equipment required for boat storage must fit entirely within the reserved space. Please also note that boats placed in unnecessarily large spaces may be moved to smaller spaces.'
       },
+      switchInfoText:
+        'You are changing your boat spot. The spot can only be changed to another spot of the same type.',
       infoText: {
         title: 'Booking Boat Spaces 2025',
         periods: {
@@ -343,8 +354,11 @@ const en: Translations = {
     boatDepthInMeters: 'Draft (m)',
     boatWeightInKg: 'Weight (kg)',
     registrationNumber: 'Registration Number',
-    otherIdentifier: 'Other Identifier',
+    otherIdentifier: 'Brand and model/Other identifier',
     additionalInfo: 'Additional Information',
+    title: 'Boats',
+    boatType: 'Boat Type',
+    ownership: 'Ownership',
     boatSizeWarning: `Boat doesn't fit in the selected boat space.`,
     boatSizeWarningExplanation:
       'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.'
@@ -424,7 +438,8 @@ const en: Translations = {
     postOffice: 'Post Office',
     municipality: 'Municipality',
     birthday: 'Birthday',
-    streetAddress: 'Address'
+    streetAddress: 'Address',
+    homeAddress: 'Home Address'
   },
   citizenPage: {
     title: 'My information',
@@ -439,8 +454,23 @@ const en: Translations = {
       modal: {
         goBackToReservation: 'Go to the reservation'
       },
-      showAllBoats: 'Also show boats that are not linked to a reservation'
-    }
+      showAllBoats: 'Also show boats that are not linked to a reservation',
+      renewNotification: (date: LocalDate) =>
+        `The contract period is ending. Secure the same spot for next season by paying the season fee by ${date.format()}, or switch to a new spot.`,
+      harbor: 'Harbor',
+      reservationDate: 'Reservation Made',
+      place: 'Place',
+      reservationValidity: 'Reservation validity',
+      placeType: 'Type of Place',
+      price: 'Price',
+      boatPresent: 'Boat Present',
+      equipment: 'Equipment',
+      paymentStatus: 'Payment status',
+      storageType: 'Storage type'
+    },
+    placeReservations: 'Place reservations',
+    expired: 'Expired',
+    expiredReservations: 'Expired reservations'
   },
   organization: {
     information: {
@@ -448,6 +478,11 @@ const en: Translations = {
       phone: 'Organization phone number',
       email: 'Organization email'
     },
+    title: 'Organizations',
+    name: 'Name',
+    organizationId: 'Business ID',
+    municipality: 'Municipality',
+    physicalAddress: 'Physical address',
     contactDetails: {
       title: 'Contact information',
       fields: {

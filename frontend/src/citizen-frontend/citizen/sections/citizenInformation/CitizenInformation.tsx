@@ -55,34 +55,44 @@ export default React.memo(function CitizenInformation({
           </Column>
           <Column isNarrow toRight>
             {editMode ? null : (
-              <EditLink action={() => setEditMode(true)}>Muokkaa</EditLink>
+              <EditLink action={() => setEditMode(true)}>
+                {i18n.common.edit}
+              </EditLink>
             )}
           </Column>
         </Columns>
         <Columns>
           <Column isOneQuarter>
-            <TextField label="Etunimi" value={user.firstName} readonly={true} />
-          </Column>
-          <Column isOneQuarter>
-            <TextField label="Sukunimi" value={user.lastName} readonly={true} />
+            <TextField
+              label={i18n.citizen.firstName}
+              value={user.firstName}
+              readonly={true}
+            />
           </Column>
           <Column isOneQuarter>
             <TextField
-              label="Kotiosoite"
+              label={i18n.citizen.lastName}
+              value={user.lastName}
+              readonly={true}
+            />
+          </Column>
+          <Column isOneQuarter>
+            <TextField
+              label={i18n.citizen.homeAddress}
               value={user.streetAddress}
               readonly={true}
             />
           </Column>
           <Column isOneEight>
             <TextField
-              label="Postinumero"
+              label={i18n.citizen.postalCode}
               value={user.postalCode}
               readonly={true}
             />
           </Column>
           <Column isOneEight>
             <TextField
-              label="Postitoimipaikka"
+              label={i18n.citizen.postOffice}
               value={user.postOffice}
               readonly={true}
             />
@@ -91,14 +101,14 @@ export default React.memo(function CitizenInformation({
         <Columns>
           <Column isOneQuarter>
             <TextField
-              label="Kotikunta"
+              label={i18n.citizen.municipality}
               value={user.municipalityName}
               readonly={true}
             />
           </Column>
           <Column isOneQuarter>
             <TextField
-              label="Puhelinnumero"
+              label={i18n.citizen.phoneNumber}
               bind={phone}
               readonly={!editMode}
               required={true}
@@ -106,7 +116,7 @@ export default React.memo(function CitizenInformation({
           </Column>
           <Column isOneQuarter>
             <TextField
-              label="Sähköposti"
+              label={i18n.citizen.email}
               bind={email}
               readonly={!editMode}
               required={true}
@@ -114,7 +124,7 @@ export default React.memo(function CitizenInformation({
           </Column>
           <Column isOneEight>
             <TextField
-              label="Syntymäaika"
+              label={i18n.citizen.birthday}
               value={user.birthday}
               readonly={true}
             />
@@ -123,10 +133,10 @@ export default React.memo(function CitizenInformation({
         {editMode && (
           <Buttons>
             <Button action={cancel} loading={isPending}>
-              Peruuta
+              {i18n.common.cancel}
             </Button>
             <Button action={onSubmit} type="primary" loading={isPending}>
-              Tallenna muutokset
+              {i18n.common.saveChanges}
             </Button>
           </Buttons>
         )}

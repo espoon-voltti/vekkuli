@@ -4,6 +4,7 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import fi.espoo.vekkuli.utils.startOfTrailerReservationPeriod
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
@@ -187,5 +188,31 @@ class OrganizationDetailsTest : PlaywrightTest() {
         assertThat(firstContact.name).containsText(expectedContactName)
         assertThat(firstContact.phone).containsText(expectedContactPhone)
         assertThat(firstContact.email).containsText(expectedContactEmail)
+    }
+
+    @Test
+    fun `should show renew notification when it's time to renew boat space`() {
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod)
+
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveOrganizationSlipReservation()
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        val reservationSection = organizationDetailsPage.getFirstReservationSection()
+        assertThat(reservationSection.renewNotification).isVisible()
+        assertThat(reservationSection.renewNotification).containsText("31.01.2025")
+
+        reservationSection.renewButton.click()
+        BoatSpaceFormPage(page).fillFormAndSubmit()
+        PaymentPage(page).payReservation()
+
+        mockTimeProvider(timeProvider, startOfSlipRenewPeriod.plusYears(1))
+        citizenDetailsPage.navigateToPage()
+        citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
+
+        assertThat(reservationSection.renewNotification).isVisible()
+        assertThat(reservationSection.renewNotification).containsText("31.01.2026")
     }
 }

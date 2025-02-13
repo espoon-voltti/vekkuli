@@ -21,10 +21,10 @@ import fi.espoo.vekkuli.views.Warnings
 import fi.espoo.vekkuli.views.citizen.Layout
 import fi.espoo.vekkuli.views.common.CommonComponents
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.*
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller

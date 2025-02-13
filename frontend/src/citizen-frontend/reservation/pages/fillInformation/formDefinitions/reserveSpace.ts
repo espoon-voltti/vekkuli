@@ -5,7 +5,8 @@ import {
 import { Reservation } from 'citizen-frontend/reservation/state'
 import {
   Boat,
-  BoatSpaceType,
+  BoatSpace,
+  BoatType,
   Citizen,
   Organization
 } from 'citizen-frontend/shared/types'
@@ -79,7 +80,7 @@ export function initialFormState(
   boats: Boat[],
   organizationBoats: Record<string, Boat[]>,
   reserver: Citizen | undefined,
-  spaceType: BoatSpaceType,
+  boatSpace: BoatSpace,
   municipalities: Municipality[],
   organizations: Organization[],
   unfinishedReservation: Reservation,
@@ -99,13 +100,14 @@ export function initialFormState(
     boat: initialBoatFormState(
       i18n,
       canCitizenReserve ? boats : organizationBoats[organizations[0].id],
-      spaceType,
+      boatSpace.type,
+      boatSpace.excludedBoatTypes || [],
       storedState,
       unfinishedReservation?.reservation.boat
     ),
     spaceTypeInfo: initialSpaceTypeInfoFormState(
       i18n,
-      spaceType,
+      boatSpace.type,
       storedState,
       unfinishedReservation.reservation.boatSpace.amenity,
       unfinishedReservation.reservation.trailer
@@ -121,7 +123,8 @@ export const onReserveSpaceUpdate = (
   boats: Boat[],
   organizationBoats: Record<string, Boat[]>,
   municipalities: Municipality[],
-  organizations: Organization[]
+  organizations: Organization[],
+  excludedBoatTypes?: BoatType[]
 ): StateOf<ReserveSpaceForm> => {
   return {
     ...next,
@@ -129,7 +132,8 @@ export const onReserveSpaceUpdate = (
       prev: prev.boat,
       next: next.boat,
       i18n,
-      boats: getBoatsSelection(next, organizationBoats, boats)
+      boats: getBoatsSelection(next, organizationBoats, boats),
+      excludedBoatTypes
     }),
     spaceTypeInfo: onSpaceTypeInfoUpdate({
       prev: prev.spaceTypeInfo,

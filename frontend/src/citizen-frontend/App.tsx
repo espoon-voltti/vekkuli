@@ -14,6 +14,7 @@ import OrganizationPage from './organization/OrganizationPage'
 import { queryClient, QueryClientProvider } from './query'
 import ReservationStateRedirect from './reservation/ReservationStateRedirect'
 import SearchPage from './reservation/pages/chooseBoatSpace/SearchPage'
+import SwitchSearchPage from './reservation/pages/chooseBoatSpace/SwitchSearchPage'
 import ConfirmationPage from './reservation/pages/confirmation/ConfirmationPage'
 import ReservationErrorPage from './reservation/pages/error/ErrorPage'
 import FormPage from './reservation/pages/fillInformation/FormPage'
@@ -84,6 +85,17 @@ export const appRouter = createBrowserRouter([
                 <ScrollToTop>
                   <ReservationStateRedirect />
                   <FormPage />
+                </ScrollToTop>
+              </RequireAuth>
+            )
+          },
+          {
+            path: 'vaihda/:switchReservationId',
+            element: (
+              <RequireAuth>
+                <ScrollToTop>
+                  <ReservationStateRedirect />
+                  <SwitchSearchPage />
                 </ScrollToTop>
               </RequireAuth>
             )

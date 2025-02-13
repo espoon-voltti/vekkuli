@@ -6,9 +6,9 @@ import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.BoatSpaceService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.constraints.Min
-import mu.KotlinLogging
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 
@@ -55,15 +55,16 @@ class FreeSpacesController(
             FreeSpacesResponse(
                 count = freeSpacesByHarbor.second,
                 placesWithFreeSpaces =
-                    freeSpacesByHarbor.first.map { harbor ->
+                    freeSpacesByHarbor.first.map { h ->
                         PlacesWithFreeSpaces(
                             place =
                                 Place(
-                                    id = harbor.location.id,
-                                    name = harbor.location.name
+                                    id = h.location.id,
+                                    name = h.location.name,
+                                    address = h.location.address,
                                 ),
                             spaces =
-                                harbor.boatSpaces.map { space ->
+                                h.boatSpaces.map { space ->
                                     FreeSpace(
                                         id = space.id,
                                         size =

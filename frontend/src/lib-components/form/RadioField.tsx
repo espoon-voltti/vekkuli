@@ -64,6 +64,7 @@ function RadioField_<T>({
               selected={option.domValue === state?.domValue}
               info={getI18nLabel(option.info, i18n)}
               horizontal={horizontal}
+              disabled={option.disabled}
             />
           ))}
           {!noErrorContainer && (
@@ -88,6 +89,7 @@ interface RadioFieldInputProps
   name?: string
   selected: boolean
   horizontal?: boolean
+  disabled?: boolean
 }
 
 const RadioFieldInput = React.memo(function RadioFieldInput({
@@ -98,13 +100,15 @@ const RadioFieldInput = React.memo(function RadioFieldInput({
   info,
   selected,
   onChange,
-  horizontal
+  horizontal,
+  disabled
 }: RadioFieldInputProps) {
   return (
     <label
       className={classNames('radio', {
         'has-text-top-aligned': !horizontal,
-        'column is-narrow': horizontal
+        'column is-narrow': horizontal,
+        'is-disabled': disabled
       })}
       htmlFor={id}
     >
@@ -114,6 +118,7 @@ const RadioFieldInput = React.memo(function RadioFieldInput({
         name={name}
         value={value}
         checked={selected}
+        disabled={disabled}
         onChange={(e) => {
           e.stopPropagation()
           if (onChange) onChange(value)

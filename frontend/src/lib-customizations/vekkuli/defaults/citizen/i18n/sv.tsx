@@ -31,6 +31,7 @@ const sv: Translations = {
     print: 'Skriva ut',
     ok: 'Ok',
     save: 'Spara',
+    saveChanges: 'Spara ändringar',
     discard: 'Spar inte',
     saveConfirmation: 'Vill du spara ändringar?',
     saveSuccess: 'Sparat',
@@ -151,22 +152,31 @@ const sv: Translations = {
         branchSpecific: {
           Slip: {
             width: 'Båtens bredd (m)',
-            length: 'Båtens längd (m)'
+            length: 'Båtens längd (m)',
+            harborInfo: 'Du kan endast reservera en trailerplats från Finno.'
           },
           Trailer: {
             width: 'Släpvagnens bredd (m)',
-            length: 'Släpvagnens längd (m)'
+            length: 'Släpvagnens längd (m)',
+            harborInfo: 'Du kan endast reservera en trailerplats från Finno.'
           },
           Winter: {
             width: 'Förvaringsplatsens bredd (m)',
-            length: 'Förvaringsplatsens längd (m)'
+            length: 'Förvaringsplatsens längd (m)',
+            harborInfo: 'Välj en vinterplats i din båthamn eller i Finno.'
           },
           Storage: {
             width: 'Förvaringsplatsens bredd (m)',
-            length: 'Förvaringsplatsens längd (m)'
+            length: 'Förvaringsplatsens längd (m)',
+            harborInfo:
+              'Du kan endast reservera en året-runt-förvaringsplats i Ämmäsmäki.'
           }
-        }
+        },
+        storageInfo:
+          'All utrustning som behövs för båtens förvaring måste rymmas helt inom den reserverade platsen. Observera också att båtar placerade på onödigt stora platser kan flyttas till mindre platser.'
       },
+      switchInfoText:
+        'Du håller på att byta båtplats. Platsen kan endast bytas till en plats av samma typ.',
       infoText: {
         title: 'Bokning av båtplatser 2025',
         periods: {
@@ -340,8 +350,11 @@ const sv: Translations = {
     boatDepthInMeters: 'Djupgående (m)',
     boatWeightInKg: 'Vikt (kg)',
     registrationNumber: 'Registreringsnummer',
-    otherIdentifier: 'Annan identifierare',
+    otherIdentifier: 'Märke och modell/annan identifierare',
     additionalInfo: 'Ytterligare information',
+    title: 'Båtar',
+    boatType: 'Båttyp',
+    ownership: 'Ägande',
     boatSizeWarning: 'Båten passar inte på den valda båtplatsen.',
     boatSizeWarningExplanation:
       'Båtplatser har säkerhetsutrymmen för att förhindra skador på båtar och bryggor. En båt placerad på en plats som är för trång kan flyttas av kommunen, och ägaren av båtplatsen ansvarar för kostnaderna.'
@@ -426,7 +439,8 @@ const sv: Translations = {
     postOffice: 'Postort',
     municipality: 'Kommun',
     birthday: 'Födelsedatum',
-    streetAddress: 'Adress'
+    streetAddress: 'Adress',
+    homeAddress: 'Hemadress'
   },
   citizenPage: {
     title: 'Mina uppgifter',
@@ -441,8 +455,23 @@ const sv: Translations = {
       modal: {
         goBackToReservation: 'Gå till bokningen'
       },
-      showAllBoats: 'Visa även båtar som inte är kopplade till en reservation'
-    }
+      showAllBoats: 'Visa även båtar som inte är kopplade till en reservation',
+      renewNotification: (date: LocalDate) =>
+        `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()} eller byt till en ny plats.`,
+      harbor: 'Hamn',
+      reservationDate: 'Reservation gjord',
+      place: 'Plats',
+      reservationValidity: 'Reservationens giltighet',
+      placeType: 'Platstyp',
+      price: 'Pris',
+      boatPresent: 'Båt närvarande',
+      equipment: 'Utrustning',
+      paymentStatus: 'Betalningsstatus',
+      storageType: 'Förvaringstyp'
+    },
+    placeReservations: 'Platsreservationer',
+    expired: 'Avslutade',
+    expiredReservations: 'Avslutade bokningar'
   },
   organization: {
     information: {
@@ -450,6 +479,11 @@ const sv: Translations = {
       phone: 'Organisationens telefonnummer',
       email: 'Organisationens e-post'
     },
+    title: 'Organisationer',
+    name: 'Namn',
+    organizationId: 'Organisationsnummer',
+    municipality: 'Hemkommun',
+    physicalAddress: 'Besökadress',
     contactDetails: {
       title: 'Kontaktpersoner',
       fields: {

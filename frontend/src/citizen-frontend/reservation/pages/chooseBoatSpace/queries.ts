@@ -1,6 +1,7 @@
 import { getFreeSpaces } from 'citizen-frontend/api-clients/free-spaces'
 import {
   canReserveSpace,
+  getReservationBeingSwitched,
   reserveSpace,
   startToSwitchBoatSpace
 } from 'citizen-frontend/api-clients/reservation'
@@ -16,7 +17,11 @@ const reservationQueryKeys = createQueryKeys('free-spaces', {
     'searchFreeSpaces',
     params
   ],
-  canReserveSpace: (spaceId: number) => ['canReserveSpace', spaceId]
+  canReserveSpace: (spaceId: number) => ['canReserveSpace', spaceId],
+  reservationBeingSwitched: (reservationId: number) => [
+    'reservationBeingSwitched',
+    reservationId
+  ]
 })
 
 export const freeSpacesQuery = query({
@@ -44,4 +49,9 @@ export const startSwitchSpaceMutation = mutation({
 export const canReserveSpaceQuery = query({
   api: canReserveSpace,
   queryKey: reservationQueryKeys.canReserveSpace
+})
+
+export const reservationBeingSwitchedQuery = query({
+  api: getReservationBeingSwitched,
+  queryKey: reservationQueryKeys.reservationBeingSwitched
 })

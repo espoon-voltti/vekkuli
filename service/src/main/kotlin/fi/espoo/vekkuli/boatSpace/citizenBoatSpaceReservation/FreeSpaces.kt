@@ -16,6 +16,7 @@ data class FreeSpace(
 data class Place(
     val id: Int,
     val name: String,
+    val address: String,
 )
 
 data class PlacesWithFreeSpaces(

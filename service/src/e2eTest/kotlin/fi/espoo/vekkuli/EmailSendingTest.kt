@@ -520,7 +520,7 @@ open class EmailSendingTest : PlaywrightTest() {
                 emailToCitizen.recipientAddress == recipientAddress &&
                     emailToCitizen.subject == citizenEmailSubject &&
                     emailToCitizen.body.contains("$placeType $terminatedSpace on irtisanottu.") &&
-                    emailToCitizen.body.contains("Irtisanoaja: $terminator") &&
+                    emailToCitizen.body.contains("Irtisanoja: $terminator") &&
                     emailToCitizen.body.contains("Paikan vuokraaja: $reserverName")
             )
         }
@@ -533,7 +533,7 @@ open class EmailSendingTest : PlaywrightTest() {
                 emailToEmployee.subject == employeeEmailSubject &&
                 emailToEmployee.body.contains("$placeType $terminatedSpace on irtisanottu") &&
                 emailToEmployee.body.contains("Paikan vuokraaja: $reserverName") &&
-                emailToEmployee.body.contains("Irtisanoaja:\nNimi: $terminator")
+                emailToEmployee.body.contains("Irtisanoja:\nNimi: $terminator")
         )
     }
 }

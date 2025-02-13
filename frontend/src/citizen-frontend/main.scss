@@ -239,6 +239,11 @@ h4 {
   align-items: center;
   margin-inline-start: 0px !important;
   margin-bottom: $spacing-small;
+
+  &.is-disabled
+  {
+    opacity: 0.7;
+  }
 }
 
 .radio.has-text-top-aligned {
@@ -701,6 +706,14 @@ tr.table-borderless th {
 .reservation-card:last-child::before {
   bottom: 0;
 }
+
+.reservation-card:not(:first-child) {
+  padding-top: $spacing-large;
+}
+
+.reservation-card .trailer-information .columns:last-child {
+    margin-bottom: 0;
+  }
 
 .container-tabs {
   @extend .container;

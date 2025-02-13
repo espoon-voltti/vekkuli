@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
+
+import { SwitchReservationInformation } from '../../../../api-types/reservation'
+
 import ErrorModal, { ErrorCode } from './ErrorModal'
 
 interface ReserveActionContextType {
@@ -9,6 +12,7 @@ interface ReserveActionContextType {
   onClose: () => void
   error: ErrorCode | undefined
   setError: React.Dispatch<React.SetStateAction<ErrorCode | undefined>>
+  switchInfo?: SwitchReservationInformation
 }
 
 const ReserveActionContext = createContext<
@@ -23,7 +27,8 @@ export const useReserveActionContext = () => {
     setTargetSpaceId: () => null,
     onClose: () => null,
     error: undefined,
-    setError: () => null
+    setError: () => null,
+    switchInfo: undefined
   }
 
   return useContext(ReserveActionContext) ?? defaultContext
@@ -33,12 +38,14 @@ export type ReserveActionProviderProps = {
   spaceId: number
   children?: React.ReactNode
   onClose: () => void
+  switchInfo?: SwitchReservationInformation
 }
 
 export const ReserveActionProvider = ({
   children,
   spaceId,
-  onClose
+  onClose,
+  switchInfo
 }: ReserveActionProviderProps): React.JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const [targetSpaceId, setTargetSpaceId] = useState(spaceId)
@@ -52,6 +59,7 @@ export const ReserveActionProvider = ({
         targetSpaceId,
         setTargetSpaceId,
         onClose,
+        switchInfo,
         error,
         setError
       }}

@@ -286,6 +286,7 @@ export interface OneOfOption<Output> {
   label: string | ((i18n: Translations) => string)
   info?: LabelInfoField
   dataQa?: string | undefined
+  disabled?: boolean | undefined
   value: Output
 }
 
