@@ -1,11 +1,11 @@
 package fi.espoo.vekkuli.repository.filter.boatspacereservation
 
-import fi.espoo.vekkuli.domain.BoatSpaceFilterColumn
+import fi.espoo.vekkuli.domain.BoatSpaceReservationFilterColumn
 import fi.espoo.vekkuli.repository.filter.SortBy
 import fi.espoo.vekkuli.repository.filter.SortDirection
 
 class BoatSpaceReservationSortBy(
-    columns: List<Pair<BoatSpaceFilterColumn, SortDirection>>,
+    columns: List<Pair<BoatSpaceReservationFilterColumn, SortDirection>>,
 ) : SortBy(
         fields =
             columns.flatMap { (field, direction) ->
@@ -16,22 +16,22 @@ class BoatSpaceReservationSortBy(
         allowedFields = columnFieldMap.flatMap { it.value }
     ) {
     companion object {
-        private val columnFieldMap: Map<BoatSpaceFilterColumn, List<String>> =
+        private val columnFieldMap: Map<BoatSpaceReservationFilterColumn, List<String>> =
             mapOf(
-                BoatSpaceFilterColumn.START_DATE to listOf("start_date"),
-                BoatSpaceFilterColumn.END_DATE to listOf("end_date"),
-                BoatSpaceFilterColumn.PLACE to
+                BoatSpaceReservationFilterColumn.START_DATE to listOf("start_date"),
+                BoatSpaceReservationFilterColumn.END_DATE to listOf("end_date"),
+                BoatSpaceReservationFilterColumn.PLACE to
                     listOf(
                         "location",
                         "place"
                     ),
-                BoatSpaceFilterColumn.PLACE_TYPE to listOf("type"),
-                BoatSpaceFilterColumn.CUSTOMER to listOf("name"),
-                BoatSpaceFilterColumn.EMAIL to listOf("email"),
-                BoatSpaceFilterColumn.PHONE to listOf("phone"),
-                BoatSpaceFilterColumn.HOME_TOWN to listOf("municipality_name"),
-                BoatSpaceFilterColumn.BOAT to listOf("boat_registration_code"),
-                BoatSpaceFilterColumn.AMENITY to listOf("amenity", "storage_type"),
+                BoatSpaceReservationFilterColumn.PLACE_TYPE to listOf("type"),
+                BoatSpaceReservationFilterColumn.CUSTOMER to listOf("name"),
+                BoatSpaceReservationFilterColumn.EMAIL to listOf("email"),
+                BoatSpaceReservationFilterColumn.PHONE to listOf("phone"),
+                BoatSpaceReservationFilterColumn.HOME_TOWN to listOf("municipality_name"),
+                BoatSpaceReservationFilterColumn.BOAT to listOf("boat_registration_code"),
+                BoatSpaceReservationFilterColumn.AMENITY to listOf("amenity", "storage_type"),
             )
     }
 }

@@ -18,14 +18,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 data class BoatSpaceListRow(
     val id: Int,
     // @TODO: should come from the DB
     val active: Boolean = true,
     val type: BoatSpaceType,
-    val section: String,
-    val placeNumber: Int,
+    val place: String,
     val amenity: BoatSpaceAmenity,
     private val widthCm: Int,
     private val lengthCm: Int,
@@ -35,8 +35,8 @@ data class BoatSpaceListRow(
     val locationAddress: String?,
     private val priceCents: Int,
     val priceClass: String? = null,
-    val reserved: Boolean = false,
-    val validity: ReservationValidity? = null
+    val reserverName: String? = null,
+    val reserverId: UUID?,
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)
@@ -71,6 +71,7 @@ class BoatSpaceListController {
     @ResponseBody
     fun boatSpaceSearchPage(
         request: HttpServletRequest,
+        @ModelAttribute params: BoatSpaceListParams,
         model: Model
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
@@ -80,12 +81,12 @@ class BoatSpaceListController {
         request.ensureEmployeeId()
 
         val boatSpaces =
-            boatSpaceService.getBoatSpaces()
+            boatSpaceService.getBoatSpacesFiltered(params)
         return ResponseEntity.ok(
             layout.render(
                 true,
                 request.requestURI,
-                boatSpaceList.render(boatSpaces)
+                boatSpaceList.render(boatSpaces, params)
             )
         )
     }
