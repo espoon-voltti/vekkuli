@@ -35,7 +35,7 @@ class AsyncJobConfig {
             val logger = KotlinLogging.logger {}
             asyncJobRunners.forEach {
                 it.startBackgroundPolling()
-                logger.info("Async job runner ${it.name} started")
+                logger.info { "Async job runner ${it.name} started" }
             }
         }
 }

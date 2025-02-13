@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.DomainConstants
 import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReservationType
+import fi.espoo.vekkuli.service.EmailType
 import fi.espoo.vekkuli.utils.TimeProvider
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -144,7 +145,7 @@ class JdbiSentMessageRepository(
     override fun getAndInsertUnsentEmails(
         reservationType: ReservationType,
         reservationId: Int,
-        source: String,
+        emailType: EmailType,
         recipientEmails: List<String>,
     ): List<String> {
         val query =
@@ -152,7 +153,7 @@ class JdbiSentMessageRepository(
             SELECT recipient_email FROM processed_message
             WHERE reservation_type = :reservationType
             AND reservation_id = :reservationId
-            AND message_type = :source
+            AND message_type = :emailType
             AND recipient_email = ANY(:recipientEmails)
             """.trimIndent()
         val alreadySentEmails =
@@ -161,7 +162,7 @@ class JdbiSentMessageRepository(
                     .createQuery(query)
                     .bind("reservationType", reservationType)
                     .bind("reservationId", reservationId)
-                    .bind("source", source)
+                    .bind("emailType", emailType.toString())
                     .bind("recipientEmails", recipientEmails.toTypedArray())
                     .mapTo<String>()
                     .list()
@@ -173,7 +174,7 @@ class JdbiSentMessageRepository(
                 handle.prepareBatch(
                     """
                         INSERT INTO processed_message (reservation_type, reservation_id, message_type, recipient_email)
-                        VALUES (:reservationType, :reservationId, :source, :recipientEmail)
+                        VALUES (:reservationType, :reservationId, :emailType, :recipientEmail)
                         """
                 )
 
@@ -181,7 +182,7 @@ class JdbiSentMessageRepository(
                 batch
                     .bind("reservationType", reservationType)
                     .bind("reservationId", reservationId)
-                    .bind("source", source)
+                    .bind("emailType", emailType.toString())
                     .bind("recipientEmail", email)
                     .add()
             }

@@ -410,7 +410,7 @@ class SwitchReservationTest : ReserveTest() {
             storageFilterSection.lengthInput.fill("3")
             val expectedBoatSpaceSection = "B"
             val expectedPlaceNumber = "009"
-            selectBoatSpaceForSwitch(reservationPage, 3, expectedBoatSpaceSection, expectedPlaceNumber)
+            selectBoatSpaceForSwitch(reservationPage, 4, expectedBoatSpaceSection, expectedPlaceNumber)
             // switch form
             val switchSpaceFormPage = SwitchSpaceFormPage(page)
             // Make sure that citizen is redirected to unfinished reservation switch form

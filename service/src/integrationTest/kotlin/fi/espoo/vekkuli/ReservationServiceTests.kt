@@ -19,10 +19,13 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -59,6 +62,9 @@ class ReservationServiceTests : IntegrationTestBase() {
 
     @Autowired
     private lateinit var reserverRepository: ReserverRepository
+
+    @MockitoBean
+    private lateinit var messageService: MessageService
 
     @BeforeEach
     override fun resetDatabase() {
@@ -565,6 +571,24 @@ class ReservationServiceTests : IntegrationTestBase() {
                     reservationService.getPaymentInformation(reservationId)
                 }
             assertEquals("Reservation is not filled", exception.message)
+        }
+
+    @Test
+    fun `Marking a reservation as ended should also insert a processed message entry for same reservation`(): Unit =
+        runBlocking {
+            loginAs(citizenIdOlivia)
+            allowReservation(any())
+            val boatSpaceId = insertBoatSpace()
+            val information = createReservationInformation()
+            val (reservationId) = reservationService.startReservation(boatSpaceId)
+            reservationService.fillReservationInformation(reservationId, information)
+            boatReservationService.markReservationEnded(reservationId)
+            verify(messageService, times(1)).getAndInsertUnsentEmails(
+                eq(ReservationType.Marine),
+                eq(reservationId),
+                eq(EmailType.ExpiredReservation),
+                eq(listOf("test@test.com"))
+            )
         }
 
     private fun insertBoat(

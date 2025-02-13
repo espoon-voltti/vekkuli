@@ -41,22 +41,27 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
         val id: UUID,
         val name: String,
         val email: String,
+        val boatSpaceType: BoatSpaceType
     )
 
-    val expectedEmailRecipients =
+    private final val storagePlaceUser =
+        TestUser(this.citizenIdJorma, "Pulkkinen Jorma", "jorma@noreplytest.fi", BoatSpaceType.Storage)
+    private val expectedEmailRecipients =
         listOf(
-            TestUser(this.citizenIdLeo, "Korhonen Leo", "leo@noreplytest.fi"),
-            TestUser(this.citizenIdJorma, "Pulkkinen Jorma", "jorma@noreplytest.fi"),
-            TestUser(this.citizenIdOlivia, "Espoon Pursiseura", "olivia@noreplytest.fi"),
-            TestUser(this.organizationId, "Espoon Pursiseura", "eps@noreplytest.fi")
+            TestUser(this.citizenIdLeo, "Korhonen Leo", "leo@noreplytest.fi", BoatSpaceType.Slip),
+            storagePlaceUser,
+            TestUser(this.citizenIdOlivia, "Espoon Pursiseura", "olivia@noreplytest.fi", BoatSpaceType.Slip),
+            TestUser(this.organizationId, "Espoon Pursiseura", "eps@noreplytest.fi", BoatSpaceType.Slip)
         ).sortedBy { e -> e.email }
+
+    private val now = LocalDateTime.of(2024, 12, 10, 12, 12, 12)
+    private val endDate = LocalDate.of(2024, 12, 31)
 
     private fun setupTest(
         validity: ReservationValidity,
+        expectedSentEmailCount: Int = 4,
         functionToTest: () -> Unit
     ): List<SendEmailServiceMock.SentEmail> {
-        val now = LocalDateTime.of(2024, 12, 10, 12, 12, 12)
-        val endOfYear = LocalDate.of(2024, 12, 31)
         mockTimeProvider(timeProvider, now)
 
         testUtils.createReservationInConfirmedState(
@@ -66,17 +71,18 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
                 1,
                 1,
                 validity,
-                endDate = endOfYear
+                endDate = endDate
             )
         )
+        // storage space
         testUtils.createReservationInConfirmedState(
             CreateReservationParams(
                 timeProvider,
                 this.citizenIdJorma,
-                2,
+                346,
                 3,
                 validity,
-                endDate = endOfYear
+                endDate = endDate
             )
         )
         // organization reservation, mail should be sent to it and its members
@@ -88,7 +94,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
                 6,
                 validity,
                 reserverId = this.organizationId,
-                endDate = endOfYear
+                endDate = endDate
             )
         )
 
@@ -106,7 +112,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
 
         mockTimeProvider(
             timeProvider,
-            endOfYear.minusDays(20).atStartOfDay()
+            endDate.minusDays(20).atStartOfDay()
         )
 
         // First send the reservation confirmation emails
@@ -119,7 +125,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
         // sort by email address so it matches usersWithExpiringFixedTermReservation
         val sentEmails = SendEmailServiceMock.emails.sortedBy { e -> e.recipientAddress }
 
-        assertEquals(4, sentEmails.size)
+        assertEquals(expectedSentEmailCount, sentEmails.size)
         return sentEmails
     }
 
@@ -133,7 +139,12 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
         expectedEmailRecipients.forEachIndexed { i, reserver ->
             val sentEmail = sentEmails[i]
             assertEquals(reserver.email, sentEmail.recipientAddress)
-            assertEquals("Espoon kaupungin laituripaikkavarauksesi on päättymässä", sentEmail.subject)
+            val spacePhrase =
+                when (reserver.boatSpaceType) {
+                    BoatSpaceType.Slip -> "laituripaikkavarauksesi"
+                    else -> "säilytyspaikkavarauksesi"
+                }
+            assertEquals("Espoon kaupungin $spacePhrase on päättymässä", sentEmail.subject)
             assertTrue(sentEmail.body.contains("varausaika on päättymässä 31.12.2024"))
             assertTrue(sentEmail.body.contains("Paikan vuokraaja: ${reserver.name}"))
         }
@@ -147,10 +158,50 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
             }
         expectedEmailRecipients.forEachIndexed { i, reserver ->
             val sentEmail = sentEmails[i]
+            val spacePhrase =
+                when (reserver.boatSpaceType) {
+                    BoatSpaceType.Slip -> "laituripaikkasi"
+                    else -> "säilytyspaikkasi"
+                }
             assertEquals(reserver.email, sentEmail.recipientAddress)
-            assertEquals("Varmista Espoon kaupungin laituripaikkasi jatko ensi kaudelle nyt", sentEmail.subject)
-            assertTrue(sentEmail.body.contains("On aika jatkaa laituripaikkasi varausta ensi kaudelle."))
+            assertEquals("Varmista Espoon kaupungin $spacePhrase jatko ensi kaudelle nyt", sentEmail.subject)
+            assertTrue(sentEmail.body.contains("On aika jatkaa $spacePhrase varausta ensi kaudelle."))
             assertTrue(sentEmail.body.contains("Paikan vuokraaja: ${reserver.name}"))
         }
+    }
+
+    @Suppress("ktlint:standard:max-line-length")
+    @Test
+    fun `should send email when a reservation ends to reservers and do not send it again, for storage space, send email to employee also`() {
+        val sentEmails =
+            setupTest(ReservationValidity.FixedTerm, 5) {
+                mockTimeProvider(
+                    timeProvider,
+                    endDate.plusDays(1).atStartOfDay()
+                )
+                scheduledSendEmailService.sendReservationExpiredEmails()
+            }
+        expectedEmailRecipients.forEachIndexed { i, reserver ->
+            val sentEmail = sentEmails[i]
+            assertEquals(reserver.email, sentEmail.recipientAddress)
+            assertEquals("Espoon kaupungin venepaikan vuokrasopimus on päättynyt", sentEmail.subject)
+            assertTrue(sentEmail.body.contains("Paikan vuokraaja: ${reserver.name}"))
+        }
+
+        val emailToEmployee = sentEmails.last()
+        val employeeEmailSubject =
+            "Säilytyspaikan Ämmäsmäki C 030 vuokrasopimus on päättynyt, asiakas: ${storagePlaceUser.name}"
+
+        assertEquals("venepaikat@espoo.fi", emailToEmployee.recipientAddress)
+        assertEquals(employeeEmailSubject, emailToEmployee.subject)
+        assertTrue(emailToEmployee.body.contains("Asiakas:\n${storagePlaceUser.name}"))
+
+        SendEmailServiceMock.resetEmails()
+
+        // Verify that expiration emails are not sent again.
+        scheduledSendEmailService.sendReservationExpiredEmails()
+        messageService.sendScheduledEmails()
+
+        assertEquals(0, SendEmailServiceMock.emails.size)
     }
 }
