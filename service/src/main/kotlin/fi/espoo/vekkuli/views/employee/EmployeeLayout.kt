@@ -42,7 +42,7 @@ class EmployeeLayout(
                    href="/virkailija/venepaikat/varaukset">
                     ${t("menu.boatSpaceReservations")}
                 </a>
-                <a  class="${if (currentUri == "/virkailija/venepaikat/varaukset") "active" else ""}"
+                <a  class="${if (currentUri == "/virkailija/admin/reporting") "active" else ""}"
                     href="/virkailija/admin/reporting">
                     ${t("menu.reports")}
                 </a>

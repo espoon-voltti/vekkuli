@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
@@ -20,6 +21,8 @@ interface BoatSpaceRepository {
     fun getBoatSpace(boatSpace: Int): BoatSpace?
 
     fun isBoatSpaceReserved(boatSpace: Int): Boolean
+
+    fun getBoatSpaces(): List<BoatSpaceListRow>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -28,6 +31,8 @@ fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item)
 class BoatSpaceService(
     private val boatSpaceRepo: BoatSpaceRepository
 ) {
+    fun getBoatSpaces(): List<BoatSpaceListRow> = boatSpaceRepo.getBoatSpaces()
+
     fun getUnreservedBoatSpaceOptions(
         boatType: BoatType? = null,
         width: BigDecimal? = null,
