@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
 import fi.espoo.vekkuli.common.getAppUser
 import fi.espoo.vekkuli.config.audit
+import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
@@ -31,13 +32,13 @@ data class BoatSpaceListRow(
     val section: String,
     val placeNumber: Int,
     val amenity: BoatSpaceAmenity,
-    val widthCm: Int,
-    val lengthCm: Int,
+    private val widthCm: Int,
+    private val lengthCm: Int,
     val description: String,
     val excludedBoatTypes: List<BoatType>? = null,
     val locationName: String?,
     val locationAddress: String?,
-    val priceCents: Int,
+    private val priceCents: Int,
     val priceClass: String? = null,
     val reserved: Boolean = false,
     val validity: ReservationValidity? = null
@@ -83,17 +84,12 @@ class BoatSpaceListController {
         val boatSpaces =
             boatSpaceService.getBoatSpaces()
 
-        val authenticatedUser = request.getAuthenticatedUser()
-        if (authenticatedUser == null) {
-            val headers = org.springframework.http.HttpHeaders()
-            headers.location = URI(getServiceUrl("/virkailija"))
-            return ResponseEntity(headers, HttpStatus.FOUND)
-        }
+        val authenticatedUserId = request.ensureEmployeeId()
 
         val employee =
-            authenticatedUser.let {
+            authenticatedUserId.let {
                 jdbi.inTransactionUnchecked { tx ->
-                    tx.getAppUser(authenticatedUser.id)
+                    tx.getAppUser(authenticatedUserId)
                 }
             }
         if (employee == null) {

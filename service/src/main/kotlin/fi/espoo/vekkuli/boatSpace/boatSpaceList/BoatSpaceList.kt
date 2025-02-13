@@ -42,7 +42,7 @@ class BoatSpaceList : BaseView() {
                     <td>${result.priceInEuro}</td>
                     <td>${if (result.active) t("boatSpacesList.text.active") else t("boatSpacesList.text.inactive")}</td>
                     <td>${if (result.reserved) t("boatSpacesList.text.reserved") else t("boatSpacesList.text.notReserved")}</td>
-                    <td>${if (result.validity !== null) t("boatSpaceReservation.validity.${result.validity}") else '-' } </td>
+                    <td>${if (result.validity !== null) t("boatSpacesList.validity.${result.validity}") else '-' } </td>
                 </tr>
                 """.trimIndent()
             }
@@ -52,43 +52,6 @@ class BoatSpaceList : BaseView() {
             <section class="section">
                
                 <div class="container" >
-                    <form id="reservation-filter-form"
-                          hx-get="/virkailija/venepaikat/varaukset"
-                          hx-target="#table-body"
-                          hx-select="#table-body"
-                          hx-trigger="change, keyup delay:500ms"
-                          hx-swap="outerHTML"
-                          hx-push-url="true"
-                          hx-indicator="#loader, .loaded-content"
-                    >
-                        <div class="employee-filter-container">                        
-                            <div class="filter-group">
-                                <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
-                               
-                            </div>
-                            <div class="filter-group">
-                                <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
-                                
-                            </div>
-                            <div class="filter-group">
-                                <h1 class="label">${t("boatSpaceReservation.title.paymentState")}</h1>
-                                
-                            </div>                            
-                            <div class="filter-group">
-                                <h1 class="label">${t("employee.boatReservations.title.reservationValidity")}</h1>
-                               
-                            </div>                            
-                        </div>
-                        
-                        <div class="employee-filter-container">
-                            <div class="filter-group">
-                              <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
-                              <div class="tag-container">
-                              </div>
-                            </div>
-                        </div>
-
-
                         <div class="reservation-list form-section block">
                         <div class='table-container'>
                             <table class="table is-hoverable">
@@ -129,7 +92,6 @@ class BoatSpaceList : BaseView() {
                                     <th class="nowrap">
                                         ${ t("boatSpaceList.title.reservationStatus")}
                                     </th>
-
                                 </tr>
                                 
                                 <tr>
@@ -154,7 +116,6 @@ class BoatSpaceList : BaseView() {
                             </div>
                             <div id="loader" class="htmx-indicator"> ${icons.spinner} <div>
                         </div>
-                    </form>
                 </div>
             </section>
             """.trimIndent()
