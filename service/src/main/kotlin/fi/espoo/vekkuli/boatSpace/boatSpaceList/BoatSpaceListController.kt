@@ -81,7 +81,6 @@ class BoatSpaceListController {
 
         val boatSpaces =
             boatSpaceService.getBoatSpaces()
-        println(request.requestURI,)
         return ResponseEntity.ok(
             layout.render(
                 true,
