@@ -42,6 +42,11 @@ data class BoatSpaceListRow(
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)
+
+    val widthInMeter: Double
+        get() = widthCm.toDouble()
+    val lengthInMeter: Double
+        get() = lengthCm.toDouble()
 }
 
 @Controller

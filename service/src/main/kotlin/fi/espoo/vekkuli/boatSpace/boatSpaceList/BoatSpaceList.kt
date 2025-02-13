@@ -37,12 +37,12 @@ class BoatSpaceList : BaseView() {
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
                    
-                    <td>${result.widthCm}</td>
-                    <td>${result.lengthCm}</td>
+                    <td>${result.widthInMeter}</td>
+                    <td>${result.lengthInMeter}</td>
                     <td>${result.priceInEuro}</td>
                     <td>${if (result.active) t("boatSpacesList.text.active") else t("boatSpacesList.text.inactive")}</td>
                     <td>${if (result.reserved) t("boatSpacesList.text.reserved") else t("boatSpacesList.text.notReserved")}</td>
-                    <td>${result.validity ?: '-'}</td>
+                    <td>${if (result.validity !== null) t("boatSpaceReservation.validity.${result.validity}") else '-' } </td>
                 </tr>
                 """.trimIndent()
             }
