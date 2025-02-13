@@ -476,7 +476,9 @@ VALUES (1, 'Haukilahti', 'Mellstenintie 6, 02170 Espoo'),
        (5, 'Soukka', 'Soukanlahdentie 15, 02360 Espoo'),
        (6, 'Suomenoja', 'Hylkeenpyytäjäntie 9, 02270 Espoo'),
        (7, 'Svinö', 'Skatantie 36, 02380 Espoo'),
-       (8, 'Ämmäsmäki', 'Ämmäsmäentie 4, 02820 Espoo');
+       (8, 'Ämmäsmäki', 'Ämmäsmäentie 4, 02820 Espoo')
+ON CONFLICT DO NOTHING;
+
 
 DELETE FROM harbor_restriction;
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (1, 'JetSki');
@@ -3940,7 +3942,8 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
     ('2433', 'Slip', '7', '4', 'E', '62', 'WalkBeam', '380', '1000', 'none'),
     ('2434', 'Slip', '7', '4', 'E', '64', 'WalkBeam', '380', '1000', 'none'),
     ('2435', 'Slip', '7', '4', 'E', '66', 'WalkBeam', '380', '1000', 'none'),
-    ('2436', 'Slip', '7', '3', 'E', '68', 'WalkBeam', '320', '1000', 'none');
+    ('2436', 'Slip', '7', '3', 'E', '68', 'WalkBeam', '320', '1000', 'none'),
+    ('2437', 'Slip', '7', '2', 'Ä', '1', 'Beam', '250', '500', 'none');
 
 
 INSERT INTO trailer (registration_code, reserver_id, width_cm, length_cm)
