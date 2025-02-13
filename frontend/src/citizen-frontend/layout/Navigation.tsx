@@ -28,12 +28,12 @@ export default React.memo(function Navigation() {
       <div className="nav-row">
         <div>
           <Link className="link" to="/kuntalainen/venepaikka">
-            Venepaikat
+            {i18n.citizenFrontPage.title}
           </Link>
         </div>
         <div>
           <Link className="link" to="/kuntalainen/omat-tiedot">
-            Omat tiedot
+            {i18n.citizenPage.title}
           </Link>
         </div>
       </div>
