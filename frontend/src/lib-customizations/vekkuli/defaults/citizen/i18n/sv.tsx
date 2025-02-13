@@ -514,7 +514,18 @@ const sv: Translations = {
         change: 'Byt plats'
       },
       modal: {
-        goBackToReservation: 'Gå till bokningen'
+        goBackToReservation: 'Gå till bokningen',
+        termination: {
+          title: 'Du säger upp båtplatsreservationen',
+          moveBoatImmediately:
+            'Observera att du måste flytta din båt omedelbart från båtplatsen när du har sagt upp platsen.',
+          notEntitledToRefund:
+            'Esbo stad beviljar ingen återbetalning för en betald båtplats.',
+          confirm: 'Säg upp båtplatsen',
+          terminationFailed:
+            'Ett fel inträffade vid uppsägning av båtplatsen. Vänligen kontakta kundtjänst.',
+          success: 'Bokningen har avslutats framgångsrikt'
+        }
       },
       showAllBoats: 'Visa även båtar som inte är kopplade till en reservation',
       renewNotification: (date: LocalDate) =>

@@ -31,11 +31,11 @@ export default React.memo(function TerminateModal({
     useMutationResult(terminateMutation)
   const buttons = [
     {
-      label: 'Peruuta',
+      label: i18n.common.cancel,
       action: onCancel
     },
     {
-      label: 'Irtisano venepaikka',
+      label: i18n.citizenPage.reservation.modal.termination.confirm,
       type: 'danger' as const,
       loading: isPending,
       action: () => {
@@ -54,7 +54,7 @@ export default React.memo(function TerminateModal({
 
   return (
     <Modal
-      title="Olet irtisanomassa venepaikkaa:"
+      title={i18n.citizenPage.reservation.modal.termination.title}
       close={close}
       buttons={buttons}
       data-testid="terminate-reservation-modal"
@@ -82,12 +82,13 @@ export default React.memo(function TerminateModal({
         </Column>
         <Column isFull>
           <p>
-            Huomioi, että sinun on siirrettävä veneesi välittömästi pois
-            venepaikalta kun olet irtisanonut paikan.
+            {i18n.citizenPage.reservation.modal.termination.moveBoatImmediately}
           </p>
         </Column>
         <Column isFull>
-          <p>Espoon kaupunki ei myönnä hyvitystä maksetusta venepaikasta.</p>
+          <p>
+            {i18n.citizenPage.reservation.modal.termination.notEntitledToRefund}
+          </p>
         </Column>
       </Columns>
     </Modal>
