@@ -185,9 +185,17 @@ class JdbiBoatSpaceRepository(
         jdbi.withHandleUnchecked { handle ->
             val sql =
                 """
-                ${buildBoatSpaceSelector()}
-                WHERE bs.id = :boatSpaceId
-                GROUP BY bs.id, location.name, location.address
+                SELECT 
+                     bs.*,
+                     location.name as location_name, 
+                     location.address as location_address,
+                     ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
+                 FROM boat_space bs
+                 JOIN location ON bs.location_id = location.id
+                 JOIN price ON bs.price_id = price.id
+                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
+                 WHERE bs.id = :boatSpaceId
+                 GROUP BY bs.id, location.name, location.address
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
@@ -235,17 +243,6 @@ class JdbiBoatSpaceRepository(
             query.bind("endDateCut", timeProvider.getCurrentDate())
             query.mapTo<BoatSpaceListRow>().toList()
         }
-
-    private fun buildBoatSpaceSelector() =
-        """SELECT 
-                    bs.*,
-                    location.name as location_name, 
-                    location.address as location_address,
-                    ARRAY_AGG(harbor_restriction.excluded_boat_type) as excluded_boat_types
-                FROM boat_space bs
-                JOIN location ON bs.location_id = location.id
-                JOIN price ON bs.price_id = price.id
-                LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id"""
 
     override fun isBoatSpaceReserved(boatSpaceId: Int): Boolean =
         jdbi.withHandleUnchecked { handle ->
