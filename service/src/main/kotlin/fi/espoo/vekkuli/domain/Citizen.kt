@@ -42,6 +42,7 @@ data class CitizenWithDetails(
     val nationalId: String,
     val firstName: String,
     val lastName: String,
+    val dataProtection: Boolean
 ) {
     val birthday: String
         get() = getBirthDateFromSSN(nationalId)

@@ -577,7 +577,7 @@ class BoatReservationService(
 
     fun getEmailRecipientForReservation(reservationId: Int): Recipient? {
         val recipient = boatSpaceReservationRepo.getReservationReserverEmail(reservationId)
-        if (recipient?.id == null || recipient.email == null) {
+        if (recipient?.id == null) {
             return null
         }
         return recipient
@@ -690,7 +690,7 @@ class BoatReservationService(
             val params: Map<String, Any>
         )
 
-        val invoiceAddress = "${reservation.streetAddress}, ${reservation.postalCode}"
+        val invoiceAddress = getInvoiceAddress(reservation)
 
         val recipients =
             if (organizationReservation) {
@@ -717,8 +717,8 @@ class BoatReservationService(
                                 recipients = recipients,
                                 params =
                                     defaultParams
-                                        .plus("invoiceAddress" to invoiceAddress)
-                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider))) +
+                                        invoiceAddress
                             )
                         }
                     } else {
@@ -752,8 +752,8 @@ class BoatReservationService(
                                 recipients = recipients,
                                 params =
                                     defaultParams
-                                        .plus("invoiceAddress" to invoiceAddress)
-                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                                        .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider))) +
+                                        invoiceAddress
                             )
                         }
                     } else {
@@ -762,8 +762,8 @@ class BoatReservationService(
                             recipients = recipients,
                             params =
                                 defaultParams
-                                    .plus("invoiceAddress" to invoiceAddress)
-                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider)))
+                                    .plus("invoiceDueDate" to formatAsFullDate(getInvoiceDueDate(timeProvider))) +
+                                    invoiceAddress
                         )
                     }
                 }
@@ -780,6 +780,36 @@ class BoatReservationService(
         if (reservation.creationType == CreationType.Switch) {
             documentSwitchToMemo(reservation)
         }
+    }
+
+    private fun getInvoiceAddress(reservation: BoatSpaceReservationDetails): Map<String, String> {
+        val key = "invoiceAddress"
+
+        if (reservation.reserverType == ReserverType.Organization) {
+            val organisation =
+                organizationService.getOrganizationById(reservation.reserverId)
+                    ?: throw BadRequest("Organization with id ${reservation.reserverId} not found")
+            val invoiceAddress =
+                "${organisation.billingName}/${organisation.billingStreetAddress}," +
+                    "${organisation.billingPostalCode},${organisation.billingPostOffice}"
+            return getLocalizedParameter(key, invoiceAddress)
+        } else {
+            val citizen =
+                reserverService.getCitizen(reservation.reserverId)
+                    ?: throw BadRequest("Citizen with id ${reservation.reserverId} not found")
+            return if (citizen.dataProtection) {
+                messageUtil.getLocalizedMap(key, "boatSpaceReservation.email.dataProtectionAddress")
+            } else {
+                getLocalizedParameter(key, "${reservation.streetAddress}, ${reservation.postalCode}")
+            }
+        }
+    }
+
+    private fun getLocalizedParameter(
+        key: String,
+        value: String
+    ) = messageUtil.locales.associate { locale ->
+        "$key${locale.language.replaceFirstChar { it.uppercaseChar() }}" to value
     }
 
     private fun getHarborAddressLocalization(
@@ -814,9 +844,7 @@ class BoatReservationService(
                 listOf(actingCitizen)
             )
         } else {
-            messageUtil.locales.associate { locale ->
-                "$key${locale.language.replaceFirstChar { it.uppercaseChar() }}" to ""
-            }
+            getLocalizedParameter(key, "")
         }
     }
 
