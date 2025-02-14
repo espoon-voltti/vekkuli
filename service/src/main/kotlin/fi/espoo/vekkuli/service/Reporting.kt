@@ -1,7 +1,19 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.CreationType
+import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.PaymentHistory
 import fi.espoo.vekkuli.domain.PaymentType
+import fi.espoo.vekkuli.utils.amenityToText
+import fi.espoo.vekkuli.utils.boatTypeToText
+import fi.espoo.vekkuli.utils.ownershipStatusToText
+import fi.espoo.vekkuli.utils.placeTypeToText
+import fi.espoo.vekkuli.utils.reservationCreationTypeToText
+import fi.espoo.vekkuli.utils.terminationReasonToText
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.jdbi.v3.core.kotlin.mapTo
@@ -17,10 +29,10 @@ data class StickerReportRow(
     val postOffice: String?,
     val harbor: String?,
     val place: String?,
-    val placeType: String?,
-    val amenity: String?,
+    val placeType: BoatSpaceType?,
+    val amenity: BoatSpaceAmenity?,
     val boatName: String?,
-    val boatType: String?,
+    val boatType: BoatType?,
     val placeWidthCm: String?,
     val placeLengthCm: String?,
     val boatWidthCm: String?,
@@ -28,7 +40,7 @@ data class StickerReportRow(
     val boatWeightKg: String?,
     val registrationCode: String?,
     val otherIdentification: String?,
-    val ownership: String?,
+    val ownership: OwnershipStatus?,
     val startDate: String?,
     val endDate: String?,
     val productCode: String?,
@@ -138,18 +150,18 @@ data class BoatSpaceReportRow(
     val placeLengthCm: String?,
     val boatWidthCm: String?,
     val boatLengthCm: String?,
-    val amenity: String?,
+    val amenity: BoatSpaceAmenity?,
     val name: String?,
     val municipality: String?,
     val registrationCode: String?,
     val totalCents: String?,
     val productCode: String?,
     val terminationTimestamp: LocalDateTime?,
-    val terminationReason: String?,
+    val terminationReason: ReservationTerminationReason?,
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val paid: LocalDateTime?,
-    val creationType: String?
+    val creationType: CreationType?
 )
 
 fun getFreeBoatSpaceReport(
@@ -381,99 +393,6 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
     }
 
     return csvContent.toString()
-}
-
-fun placeTypeToText(placeType: String?): String {
-    return when (placeType) {
-        "Storage" -> "Säilytys"
-        "Slip" -> "Laituri"
-        "Trailer" -> "Traileri"
-        "Winter" -> "Talvi"
-        else -> placeType ?: ""
-    }
-}
-
-fun amenityToText(amenity: String?): String {
-    return when (amenity) {
-        "None" -> ""
-        "RearBuoy" -> "Peräpoiju"
-        "Beam" -> "Aisa"
-        "WalkBeam" -> "Kävelyaisa"
-        "Trailer" -> "Traileri"
-        "Buck" -> "Pukit"
-        else -> amenity ?: ""
-    }
-}
-
-fun boatTypeToText(boatType: String?): String {
-    return when (boatType) {
-        "RowBoat" -> "Soutuvene"
-        "OutboardMotor" -> "Perämoottori"
-        "InboardMotor" -> "Sisämoottori"
-        "Sailboat" -> "Purjevene"
-        "JetSki" -> "Vesijetti"
-        "Other" -> "Muu"
-        else -> boatType ?: ""
-    }
-}
-
-fun ownershipStatusToText(ownershipStatus: String?): String {
-    return when (ownershipStatus) {
-        "Owner" -> "Omistaja"
-        "User" -> "Haltija"
-        "CoOwner" -> "Kanssaomistaja"
-        "FutureOwner" -> "Tuleva omistaja"
-        else -> ownershipStatus ?: ""
-    }
-}
-
-fun terminationReasonToText(terminationReason: String?): String {
-    return when (terminationReason) {
-        "UserRequest" -> "Toive"
-        "InvalidOwner" -> "Väärä omistaja"
-        "RuleViolation" -> "Sääntörikkomus"
-        "PaymentViolation" -> "Maksurikkomus"
-        "Other" -> "Muu"
-        else -> terminationReason ?: ""
-    }
-}
-
-fun boatSpaceTypeToText(boatSpaceType: String?): String {
-    return when (boatSpaceType) {
-        "Slip" -> "Laituri"
-        "Storage" -> "Säilytys"
-        "Trailer" -> "Traileri"
-        "Winter" -> "Talvi"
-        else -> boatSpaceType ?: ""
-    }
-}
-
-fun paymentStatusToText(paymentStatus: String?): String {
-    return when (paymentStatus) {
-        "Created" -> "Luotu"
-        "Success" -> "Maksettu"
-        "Failed" -> "Keskeytynyt"
-        "Refunded" -> "Hyvitetty"
-        else -> paymentStatus ?: ""
-    }
-}
-
-fun paymentTypeToText(paymentType: String?): String {
-    return when (paymentType) {
-        "OnlinePayment" -> "Verkkomaksu"
-        "Invoice" -> "Lasku"
-        "Other" -> "Muu"
-        else -> paymentType ?: ""
-    }
-}
-
-fun reservationCreationTypeToText(creationType: String?): String {
-    return when (creationType) {
-        "New" -> "Uusi"
-        "Renewal" -> "Jatko"
-        "Switch" -> "Vaihto"
-        else -> ""
-    }
 }
 
 fun getReference(p: PaymentHistory): String? =

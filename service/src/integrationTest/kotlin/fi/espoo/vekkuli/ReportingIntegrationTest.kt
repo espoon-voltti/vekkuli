@@ -161,7 +161,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         assertEquals(true, reportRows.size > 0)
         val row = reportRows.find { (it.harbor == "Haukilahti" && it.place == "A 001") }
         assertEquals("Korhonen Leo", row?.name)
-        assertEquals("Renewal", row?.creationType)
+        assertEquals("Renewal", row?.creationType.toString())
     }
 
     @Test
@@ -276,7 +276,7 @@ class ReportingIntegrationTest : IntegrationTestBase() {
         val terminatedRows = getTerminatedBoatSpaceReport(jdbi, today.atStartOfDay())
         assertEquals(1, terminatedRows.size)
         assertEquals("A 003", terminatedRows[0].place)
-        assertEquals("RuleViolation", terminatedRows[0].terminationReason)
+        assertEquals("RuleViolation", terminatedRows[0].terminationReason.toString())
         assertEquals(today.plusMonths(1).atStartOfDay(), terminatedRows[0].terminationTimestamp)
     }
 }

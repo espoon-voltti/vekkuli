@@ -4,10 +4,7 @@ import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.boatSpaceTypeToText
 import fi.espoo.vekkuli.service.getReference
-import fi.espoo.vekkuli.service.paymentStatusToText
-import fi.espoo.vekkuli.service.paymentTypeToText
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationList
@@ -440,11 +437,11 @@ class ReserverDetailsReservationsContainer(
                 // language=HTML
                 """
                 <tr>
-                    <td ${addTestId("payment-status")}>${paymentStatusToText(p.paymentStatus.toString())}</td>
+                    <td ${addTestId("payment-status")}>${paymentStatusToText(p.paymentStatus)}</td>
                     <td ${addTestId("place")}>${p.harborName} ${p.place}</td>
-                    <td>${boatSpaceTypeToText(p.boatSpaceType.toString())}</td>
+                    <td>${boatSpaceTypeToText(p.boatSpaceType)}</td>
                     <td>${p.paymentReference}</td>
-                    <td>${paymentTypeToText(p.paymentType.toString())}</td>
+                    <td>${paymentTypeToText(p.paymentType)}</td>
                     <td ${addTestId("payment-reference")} class='description'>${getReference(p) ?: ""}</td>
                     <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
                     <td ${addTestId("payment-paid-date")}>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
