@@ -36,28 +36,20 @@ export default React.memo(function Boat({
   const { noRegisterNumber, number: registrationNumberValue } =
     useFormFields(registrationNumber)
 
-  const getValueOrNull = (formValue: typeof length) => {
-    try {
-      return formValue.value()
-    } catch {
-      return null
-    }
-  }
-
-  const widthOrNull = getValueOrNull(width)
-  const lengthOrNull = getValueOrNull(length)
+  const widthOrNaN = parseFloat(width.state)
+  const lengthOrNaN = parseFloat(length.state)
   const minLength = boatSpace.minLength
   const maxLength = boatSpace.maxLength
   const minWidth = boatSpace.minWidth
   const maxWidth = boatSpace.maxWidth
 
   const showSizeWarning =
-    (lengthOrNull !== null &&
-      ((minLength !== null && lengthOrNull * 100 < minLength) ||
-        (maxLength !== null && lengthOrNull * 100 > maxLength))) ||
-    (widthOrNull !== null &&
-      ((minWidth !== null && widthOrNull * 100 < minWidth) ||
-        (maxWidth !== null && widthOrNull * 100 > maxWidth)))
+    (!isNaN(lengthOrNaN) &&
+      ((minLength !== null && lengthOrNaN < minLength) ||
+        (maxLength !== null && lengthOrNaN > maxLength))) ||
+    (!isNaN(widthOrNaN) &&
+      ((minWidth !== null && widthOrNaN < minWidth) ||
+        (maxWidth !== null && widthOrNaN > maxWidth)))
 
   return (
     <>

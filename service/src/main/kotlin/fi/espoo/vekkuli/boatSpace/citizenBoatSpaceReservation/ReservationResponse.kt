@@ -113,10 +113,10 @@ data class ReservationResponse(
         val description: String,
         val excludedBoatTypes: List<BoatType>? = null,
         val locationName: String?,
-        val minLength: Int?,
-        val maxLength: Int?,
-        val minWidth: Int?,
-        val maxWidth: Int?
+        val minLength: BigDecimal?,
+        val maxLength: BigDecimal?,
+        val minWidth: BigDecimal?,
+        val maxWidth: BigDecimal?
     )
 
     data class Trailer(
@@ -338,11 +338,13 @@ class ReservationResponseMapper(
             description = boatSpace.description,
             excludedBoatTypes = boatSpace.excludedBoatTypes,
             locationName = boatSpace.locationName,
-            minLength = minLength,
-            maxLength = maxLength,
-            maxWidth = maxWidth,
-            minWidth = minWidth
+            minLength = minLength.toMeters(),
+            maxLength = maxLength.toMeters(),
+            maxWidth = maxWidth.toMeters(),
+            minWidth = minWidth.toMeters()
         )
+
+    private fun Int?.toMeters(): BigDecimal? = this?.let { BigDecimal(it).divide(BigDecimal(100)) }
 
     private fun getTrailer(reservation: ReservationWithDependencies): Trailer? {
         if (reservation.trailerId == null) {
