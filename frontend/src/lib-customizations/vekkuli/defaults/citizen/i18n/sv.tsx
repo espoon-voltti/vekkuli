@@ -288,7 +288,8 @@ const sv: Translations = {
       },
       trailerInfo: {
         title: 'Information om släpvagnen',
-        registrationCode: 'Registernummer'
+        registrationNumber: 'Registernummer',
+        editTrailerDetails: 'Redigera släpvagnsdetaljer'
       },
       allYearStorage: {
         Trailer: {

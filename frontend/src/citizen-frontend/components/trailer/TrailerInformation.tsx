@@ -50,12 +50,12 @@ export default React.memo(function TrailerInformation({
     <div className="trailer-information" data-testid="trailer-information">
       <Columns isVCentered>
         <Column isNarrow>
-          <h4>Trailerin tiedot</h4>
+          <h4>{i18n.reservation.formPage.trailerInfo.title}</h4>
         </Column>
         <Column isNarrow toRight>
           {editMode || editDisabled ? null : (
             <EditLink action={() => changeEditMode(true)}>
-              Muokkaa trailerin tietoja
+              {i18n.reservation.formPage.trailerInfo.editTrailerDetails}
             </EditLink>
           )}
         </Column>
@@ -63,14 +63,14 @@ export default React.memo(function TrailerInformation({
       <Columns>
         <Column isOneQuarter>
           <TextField
-            label="Rekisterinumero"
+            label={i18n.reservation.formPage.trailerInfo.registrationNumber}
             bind={registrationNumber}
             readonly={!editMode}
           />
         </Column>
         <Column isOneQuarter>
           <NumberField
-            label="Leveys (m)"
+            label={i18n.common.unit.dimensions.widthInMeters}
             bind={width}
             readonly={!editMode}
             precision={2}
@@ -78,7 +78,7 @@ export default React.memo(function TrailerInformation({
         </Column>
         <Column isOneQuarter>
           <NumberField
-            label="Pituus (m)"
+            label={i18n.common.unit.dimensions.lengthInMeters}
             bind={length}
             readonly={!editMode}
             precision={2}
@@ -88,10 +88,10 @@ export default React.memo(function TrailerInformation({
       {editMode && (
         <Buttons>
           <Button action={cancel} loading={isPending}>
-            Peruuta
+            {i18n.common.cancel}
           </Button>
           <Button action={onSubmit} type="primary" loading={isPending}>
-            Tallenna muutokset
+            {i18n.common.saveChanges}
           </Button>
         </Buttons>
       )}

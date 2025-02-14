@@ -21,7 +21,7 @@ export const TrailerInfo = React.memo(function TrailerInfo({
         <Column isOneQuarter>
           <TextField
             id="trailer-registration-number"
-            label={i18n.reservation.formPage.trailerInfo.registrationCode}
+            label={i18n.reservation.formPage.trailerInfo.registrationNumber}
             required={true}
             bind={registrationNumber}
           />
