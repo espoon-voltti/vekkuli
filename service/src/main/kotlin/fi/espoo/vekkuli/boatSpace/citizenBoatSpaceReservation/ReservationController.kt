@@ -6,13 +6,10 @@ import fi.espoo.vekkuli.common.NotFound
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureCitizenId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.domain.BoatType
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.decimalToInt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
 
 @RestController
 @RequestMapping("/api/citizen")
@@ -189,55 +186,6 @@ class ReservationController(
             )
         }
         return reservationService.getPaymentInformation(reservationId).toPaymentInformationResponse()
-    }
-
-    @GetMapping("/reservation/{reservationId}/validate-boat-type")
-    fun validateBoatType(
-        @PathVariable reservationId: Int,
-        @RequestParam boatType: BoatType,
-        request: HttpServletRequest
-    ): Boolean {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "VALIDATE_BOAT_TYPE",
-                mapOf("targetId" to reservationId.toString())
-            )
-        }
-        return reservationService.validateBoatType(reservationId, boatType)
-    }
-
-    @GetMapping("/reservation/{reservationId}/validate-boat-size")
-    fun validateBoatSize(
-        @PathVariable reservationId: Int,
-        @RequestParam width: BigDecimal,
-        @RequestParam length: BigDecimal,
-        request: HttpServletRequest
-    ): Boolean {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "VALIDATE_BOAT_SIZE",
-                mapOf("targetId" to reservationId.toString())
-            )
-        }
-        return reservationService.validateBoatSize(reservationId, decimalToInt(width), decimalToInt(length))
-    }
-
-    @GetMapping("/reservation/{reservationId}/validate-boat-weight")
-    fun validateBoatWeight(
-        @PathVariable reservationId: Int,
-        @RequestParam weight: Int,
-        request: HttpServletRequest
-    ): Boolean {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "VALIDATE_BOAT_WEIGHT",
-                mapOf("targetId" to reservationId.toString())
-            )
-        }
-        return reservationService.validateBoatWeight(reservationId, weight)
     }
 
     @GetMapping("/municipalities")
