@@ -1,4 +1,4 @@
-package fi.espoo.vekkuli.common
+package fi.espoo.vekkuli.utils
 
 import fi.espoo.vekkuli.domain.ReservationStatus
 

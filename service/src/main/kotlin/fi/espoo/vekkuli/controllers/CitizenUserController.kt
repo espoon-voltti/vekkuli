@@ -3,7 +3,7 @@ package fi.espoo.vekkuli.controllers
 import fi.espoo.vekkuli.boatSpace.organization.OrganizationDetailsView
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.common.Unauthorized
-import fi.espoo.vekkuli.common.reservationStatusToText
+import fi.espoo.vekkuli.utils.reservationStatusToText
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
