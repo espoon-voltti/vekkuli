@@ -9,6 +9,7 @@ import {
 } from 'citizen-frontend/api-clients/citizen'
 import { terminateReservation } from 'citizen-frontend/api-clients/reservation'
 import { updateTrailer } from 'citizen-frontend/api-clients/trailer'
+import { queryKeys as authQueryKeys } from 'citizen-frontend/auth/queries'
 import { queryKeys as sharedQueryKeys } from 'citizen-frontend/shared/queries'
 import { mutation, query } from 'lib-common/query'
 
@@ -51,7 +52,8 @@ export const citizenOrganizationQuery = query({
 })
 
 export const updateCitizenInformationMutation = mutation({
-  api: updateCitizenInformation
+  api: updateCitizenInformation,
+  invalidateQueryKeys: () => [authQueryKeys.authStatus()]
 })
 
 export const updateCitizenTrailerMutation = mutation({
