@@ -419,7 +419,10 @@ export default {
     additionalInfo: 'Lisätiedot',
     title: 'Veneet',
     boatType: 'Veneen tyyppi',
-    ownership: 'Omistussuhde'
+    ownership: 'Omistussuhde',
+    boatSizeWarning: 'Veneen koko ei ole sopiva valitulle venepaikalle.',
+    boatSizeWarningExplanation:
+      'Venepaikoilla on turvavälit veneiden ja laiturien vaurioiden estämiseksi. Liian ahtaaseen tai tarpeettoman suureen paikkaan laitettu vene voidaan siirtää kaupungin toimesta, ja venepaikan haltija vastaa kustannuksista.'
   },
   boatSpace: {
     renterType: {

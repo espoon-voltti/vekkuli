@@ -85,6 +85,8 @@ object BoatSpaceConfig {
                 )
 
             BoatSpaceAmenity.None -> Pair(null, spaceWidth)
+            BoatSpaceAmenity.Buck -> Pair(null, spaceWidth)
+            BoatSpaceAmenity.Trailer -> Pair(null, spaceWidth)
             else -> Pair(null, null)
         }
 
@@ -133,6 +135,8 @@ object BoatSpaceConfig {
             )
 
         BoatSpaceAmenity.None -> Pair(null, spaceLength)
+        BoatSpaceAmenity.Buck -> Pair(null, spaceLength)
+        BoatSpaceAmenity.Trailer -> Pair(null, spaceLength)
         else -> Pair(null, null)
     }
 

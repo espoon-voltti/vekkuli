@@ -7,6 +7,7 @@ import fi.espoo.vekkuli.boatSpace.citizen.CitizenOrganizationResponse
 import fi.espoo.vekkuli.boatSpace.renewal.RenewalPolicyService
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.NotFound
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.discountedPriceInCents
@@ -112,6 +113,10 @@ data class ReservationResponse(
         val description: String,
         val excludedBoatTypes: List<BoatType>? = null,
         val locationName: String?,
+        val minLength: BigDecimal?,
+        val maxLength: BigDecimal?,
+        val minWidth: BigDecimal?,
+        val maxWidth: BigDecimal?
     )
 
     data class Trailer(
@@ -186,6 +191,9 @@ class ReservationResponseMapper(
             }
         val boat = getBoat(reservationWithDependencies)
         val boatSpace = getBoatSpace(reservationWithDependencies)
+        val (minLength, maxLength) = BoatSpaceConfig.getLengthLimitsForBoat(boatSpace.lengthCm, boatSpace.amenity)
+        val (minWidth, maxWidth) = BoatSpaceConfig.getWidthLimitsForBoat(boatSpace.widthCm, boatSpace.amenity)
+
         val trailer = getTrailer(reservationWithDependencies)
         val canReserveNew =
             if (citizen != null) {
@@ -199,7 +207,7 @@ class ReservationResponseMapper(
             reserverType = reservationWithDependencies.reserverType ?: ReserverType.Citizen,
             citizen = formatCitizen(citizen),
             boat = formatBoat(boat),
-            boatSpace = formatBoatSpace(boatSpace),
+            boatSpace = formatBoatSpace(boatSpace, minLength, maxLength, minWidth, maxWidth),
             status = status,
             startDate = startDate,
             validity = validity,
@@ -312,7 +320,13 @@ class ReservationResponseMapper(
     private fun getBoatSpace(reservation: ReservationWithDependencies): BoatSpace =
         spaceReservationService.getBoatSpaceRelatedToReservation(reservation.id) ?: throw NotFound()
 
-    fun formatBoatSpace(boatSpace: BoatSpace): ReservationResponse.BoatSpace =
+    fun formatBoatSpace(
+        boatSpace: BoatSpace,
+        minLength: Int?,
+        maxLength: Int?,
+        minWidth: Int?,
+        maxWidth: Int?
+    ): ReservationResponse.BoatSpace =
         ReservationResponse.BoatSpace(
             id = boatSpace.id,
             type = boatSpace.type,
@@ -323,8 +337,14 @@ class ReservationResponseMapper(
             length = intToDecimal(boatSpace.lengthCm),
             description = boatSpace.description,
             excludedBoatTypes = boatSpace.excludedBoatTypes,
-            locationName = boatSpace.locationName
+            locationName = boatSpace.locationName,
+            minLength = minLength.toMeters(),
+            maxLength = maxLength.toMeters(),
+            maxWidth = maxWidth.toMeters(),
+            minWidth = minWidth.toMeters()
         )
+
+    private fun Int?.toMeters(): BigDecimal? = this?.let { BigDecimal(it).divide(BigDecimal(100)) }
 
     private fun getTrailer(reservation: ReservationWithDependencies): Trailer? {
         if (reservation.trailerId == null) {

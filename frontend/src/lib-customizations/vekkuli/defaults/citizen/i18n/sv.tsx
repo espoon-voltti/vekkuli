@@ -418,7 +418,10 @@ const sv: Translations = {
     additionalInfo: 'Ytterligare information',
     title: 'Båtar',
     boatType: 'Båttyp',
-    ownership: 'Ägande'
+    ownership: 'Ägande',
+    boatSizeWarning: 'Båten passar inte på den valda båtplatsen.',
+    boatSizeWarningExplanation:
+      'Båtplatser har säkerhetsutrymmen för att förhindra skador på båtar och bryggor. En båt placerad på en plats som är för trång kan flyttas av kommunen, och ägaren av båtplatsen ansvarar för kostnaderna.'
   },
   boatSpace: {
     boatSpaceType: {

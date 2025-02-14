@@ -7,12 +7,18 @@ import React from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
+import { BoatSpace } from '../../../../../shared/types'
+import ReservationCancel from '../../../../components/ReservationCancel'
 import { BoatInfoForm } from '../../formDefinitions/boat'
 
 export default React.memo(function Boat({
-  bind
+  bind,
+  boatSpace,
+  reservationId
 }: {
   bind: BoundForm<BoatInfoForm>
+  boatSpace: BoatSpace
+  reservationId: number
 }) {
   const i18n = useTranslation()
   const {
@@ -29,6 +35,21 @@ export default React.memo(function Boat({
 
   const { noRegisterNumber, number: registrationNumberValue } =
     useFormFields(registrationNumber)
+
+  const widthOrNaN = parseFloat(width.state)
+  const lengthOrNaN = parseFloat(length.state)
+  const minLength = boatSpace.minLength
+  const maxLength = boatSpace.maxLength
+  const minWidth = boatSpace.minWidth
+  const maxWidth = boatSpace.maxWidth
+
+  const showSizeWarning =
+    (!isNaN(lengthOrNaN) &&
+      ((minLength !== null && lengthOrNaN < minLength) ||
+        (maxLength !== null && lengthOrNaN > maxLength))) ||
+    (!isNaN(widthOrNaN) &&
+      ((minWidth !== null && widthOrNaN < minWidth) ||
+        (maxWidth !== null && widthOrNaN > maxWidth)))
 
   return (
     <>
@@ -77,6 +98,7 @@ export default React.memo(function Boat({
           />
         </div>
       </div>
+      {showSizeWarning && <BoatSizeWarning reservationId={reservationId} />}
       <div className="columns is-vcentered">
         <div className="column is-one-quarter">
           <NumberField
@@ -142,3 +164,19 @@ export default React.memo(function Boat({
     </>
   )
 })
+
+const BoatSizeWarning = ({ reservationId }: { reservationId: number }) => {
+  const i18n = useTranslation()
+
+  return (
+    <div className="columns is-vcentered">
+      <div className="warning" id="boatSize-warning">
+        <p className="block">{i18n.boat.boatSizeWarning}</p>
+        <p className="block">{i18n.boat.boatSizeWarningExplanation}</p>
+        <ReservationCancel reservationId={reservationId} type="link">
+          {i18n.reservation.goBack}
+        </ReservationCancel>
+      </div>
+    </div>
+  )
+}

@@ -422,7 +422,10 @@ const en: Translations = {
     additionalInfo: 'Additional Information',
     title: 'Boats',
     boatType: 'Boat Type',
-    ownership: 'Ownership'
+    ownership: 'Ownership',
+    boatSizeWarning: `Boat doesn't fit in the selected boat space.`,
+    boatSizeWarningExplanation:
+      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.'
   },
   boatSpace: {
     renterType: {

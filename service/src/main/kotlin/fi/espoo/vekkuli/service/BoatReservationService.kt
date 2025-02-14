@@ -577,7 +577,7 @@ class BoatReservationService(
 
     fun getEmailRecipientForReservation(reservationId: Int): Recipient? {
         val recipient = boatSpaceReservationRepo.getReservationReserverEmail(reservationId)
-        if (recipient?.id == null || recipient.email == null) {
+        if (recipient?.id == null) {
             return null
         }
         return recipient

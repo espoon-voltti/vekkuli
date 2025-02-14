@@ -1275,4 +1275,156 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         assertTrue(b001Index < ä001Index, "B 001 should be before Ä 001")
     }
+
+    @Test
+    fun `For a slip, a warning is shown if the boat size is not within the limits`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        val formPage = BoatSpaceFormPage(page)
+        val boatSection = formPage.getBoatSection()
+
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("7.8")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("7.81")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.lengthInput.fill("5")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        boatSection.widthInput.fill("3.1")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.widthInput.fill("3.11")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.widthInput.fill("3")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        boatSection.widthInput.fill("10")
+        boatSection.boatSizeWarningBackButton.click()
+        val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+        assertThat(confirmCancelReservationModal.root).isVisible()
+        confirmCancelReservationModal.confirmButton.click()
+
+        assertThat(reservationPage.header).isVisible()
+    }
+
+    @Test
+    fun `For a trailer, a warning is shown for if the boat size is not within the limits`() {
+        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpace012()
+        val formPage = BoatSpaceFormPage(page)
+        val boatSection = formPage.getBoatSection()
+
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("7")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("7.01")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.lengthInput.fill("6")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        boatSection.widthInput.fill("2.6")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.widthInput.fill("2.61")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.widthInput.fill("2")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        // TODO: Implement warnings for the trailer's size
+
+        boatSection.widthInput.fill("10")
+        boatSection.boatSizeWarningBackButton.click()
+        val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+        assertThat(confirmCancelReservationModal.root).isVisible()
+        confirmCancelReservationModal.confirmButton.click()
+
+        assertThat(reservationPage.header).isVisible()
+    }
+
+    @Test
+    fun `For winter storage, a warning is shown for if the boat size is not within the limits`() {
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        reservationPage.startReservingWinterBoatSpaceB013()
+        val formPage = BoatSpaceFormPage(page)
+        val boatSection = formPage.getBoatSection()
+
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("4.5")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("4.51")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.lengthInput.fill("4")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        boatSection.widthInput.fill("2.5")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.widthInput.fill("2.51")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.widthInput.fill("2")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        // TODO: Implement warnings for the trailer's size
+
+        boatSection.widthInput.fill("10")
+        boatSection.boatSizeWarningBackButton.click()
+        val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+        assertThat(confirmCancelReservationModal.root).isVisible()
+        confirmCancelReservationModal.confirmButton.click()
+
+        assertThat(reservationPage.header).isVisible()
+    }
+
+    @Test
+    fun `For storage, a warning is shown for if the boat size is not within the limits`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        reservationPage.navigateToPage()
+        val filterSection = reservationPage.getFilterSection()
+        val storageFilterSection = filterSection.getStorageFilterSection()
+        filterSection.storageRadio.click()
+
+        storageFilterSection.trailerRadio.click()
+        storageFilterSection.widthInput.fill("1")
+        storageFilterSection.lengthInput.fill("3")
+
+        reservationPage.getSearchResultsSection().b007ReserveButton.click()
+        val formPage = BoatSpaceFormPage(page)
+        val boatSection = formPage.getBoatSection()
+
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("4.5")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.lengthInput.fill("4.51")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.lengthInput.fill("4")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        boatSection.widthInput.fill("2.5")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+        boatSection.widthInput.fill("2.51")
+        assertThat(boatSection.boatSizeWarning).isVisible()
+        boatSection.widthInput.fill("2")
+        assertThat(boatSection.boatSizeWarning).isHidden()
+
+        // TODO: Implement warnings for the trailer's size
+
+        boatSection.widthInput.fill("10")
+        boatSection.boatSizeWarningBackButton.click()
+        val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+        assertThat(confirmCancelReservationModal.root).isVisible()
+        confirmCancelReservationModal.confirmButton.click()
+
+        assertThat(reservationPage.header).isVisible()
+    }
 }

@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
+import com.microsoft.playwright.Page.*
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.pages.BasePage
 
@@ -55,6 +56,8 @@ open class BoatSpaceFormPage(
         val widthError = fields.getInputError("Leveys")
         val widthInput = fields.getInput("Leveys")
         val newBoatSelection = fields.getRadio("Uusi vene")
+        val boatSizeWarning = root.getByTestId("boatSize-warning")
+        val boatSizeWarningBackButton = boatSizeWarning.getByText("Palaa takaisin")
 
         fun existingBoat(name: String) = fields.getRadio(name)
     }
@@ -127,9 +130,9 @@ open class BoatSpaceFormPage(
     fun getConfirmCancelReservationModal() = ConfirmCancelReservationModal(getByDataTestId("confirm-cancel-reservation-modal"))
 
     val validationWarning = page.locator(".form-validation-message").getByText("Pakollisia tietoja puuttuu")
-    val submitButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
-    val confirmButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Vahvista varaus").setExact(true))
-    val cancelButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
+    val submitButton = page.getByRole(AriaRole.BUTTON, GetByRoleOptions().setName("Jatka maksamaan").setExact(true))
+    val confirmButton = page.getByRole(AriaRole.BUTTON, GetByRoleOptions().setName("Vahvista varaus").setExact(true))
+    val cancelButton = page.getByRole(AriaRole.BUTTON, GetByRoleOptions().setName("Peruuta varaus").setExact(true))
     val header = page.getByText("Venepaikan varaus:")
     val switchInfoBox = page.getByText("Olet vaihtamassa paikkaa")
 

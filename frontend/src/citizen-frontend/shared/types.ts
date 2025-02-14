@@ -124,6 +124,10 @@ export type BoatSpace = {
   description: string
   excludedBoatTypes: BoatType[] | null
   locationName: string | null
+  minLength: number | null
+  maxLength: number | null
+  minWidth: number | null
+  maxWidth: number | null
 }
 
 export const harbors = [
