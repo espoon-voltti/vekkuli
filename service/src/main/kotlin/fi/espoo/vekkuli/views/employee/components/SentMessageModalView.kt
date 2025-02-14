@@ -63,7 +63,7 @@ class SentMessageModalView : BaseView() {
                             </div>
                             <div class="column is-full">
                                 <label class="label">Viesti</label>
-                                <p class="message-content">${message.body}</p>
+                                <p ${addTestId("message-content")} class="message-content">${message.body}</p>
                             </div>
                         </div>
                 </form>
