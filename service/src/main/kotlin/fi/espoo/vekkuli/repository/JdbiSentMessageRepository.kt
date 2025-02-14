@@ -114,6 +114,20 @@ class JdbiSentMessageRepository(
                 .list()
         }
 
+    override fun getMessage(messageId: UUID): QueuedMessage =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery(
+                    """
+                    SELECT *
+                    FROM sent_message
+                    WHERE id = :messageId
+                    """.trimIndent()
+                ).bind("messageId", messageId)
+                .mapTo<QueuedMessage>()
+                .one()
+        }
+
     override fun getUnsentEmailsAndSetToProcessing(batchSize: Int): List<QueuedMessage> =
         jdbi.withHandleUnchecked { handle ->
             val query =

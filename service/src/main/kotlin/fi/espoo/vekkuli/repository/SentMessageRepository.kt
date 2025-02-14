@@ -22,6 +22,8 @@ interface SentMessageRepository {
 
     fun getMessagesSentToUser(citizenId: UUID): List<QueuedMessage>
 
+    fun getMessage(messageId: UUID): QueuedMessage
+
     /** Get all unsent messages in batches and set their status to processing **/
     fun getUnsentEmailsAndSetToProcessing(batchSize: Int = DomainConstants.DEFAULT_EMAIL_BATCH_SIZE): List<QueuedMessage>
 
