@@ -6,8 +6,8 @@ import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
-import fi.espoo.vekkuli.service.paymentStatusToText
 import fi.espoo.vekkuli.utils.fullDateFormat
+import fi.espoo.vekkuli.utils.paymentStatusToText
 
 class ReserveTest : EmailSendingTest() {
     protected fun setDiscountForReserver(
@@ -54,7 +54,7 @@ class ReserveTest : EmailSendingTest() {
                 val paymentAmount = citizenDetails.getByDataTestId("payment-amount", row).textContent()
                 val paymentReference = citizenDetails.getByDataTestId("payment-reference", row).textContent()
                 val paymentPaidDate = citizenDetails.getByDataTestId("payment-paid-date", row).textContent()
-                paymentStatus == paymentStatusToText(status.name) &&
+                paymentStatus == paymentStatusToText(status) &&
                     place == placeName &&
                     paymentAmount == amount &&
                     paidDate == paymentPaidDate &&
