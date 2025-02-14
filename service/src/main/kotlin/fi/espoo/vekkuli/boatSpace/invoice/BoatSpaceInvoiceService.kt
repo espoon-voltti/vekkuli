@@ -12,8 +12,8 @@ import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.PaymentService
 import fi.espoo.vekkuli.service.ReserverService
-import fi.espoo.vekkuli.service.placeTypeToText
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.placeTypeToText
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
@@ -125,7 +125,7 @@ class BoatSpaceInvoiceService(
         val desc =
             description
                 ?: (
-                    placeTypeToText(reservation.type.toString()) +
+                    placeTypeToText(reservation.type) +
                         " " + reservation.locationName + " " + reservation.place + " " + timeProvider.getCurrentDate().year +
                         if (reservation.startDate.year < reservation.endDate.year) ("-" + reservation.endDate.year) else ""
                 )

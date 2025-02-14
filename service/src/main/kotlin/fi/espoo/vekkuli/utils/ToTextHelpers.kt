@@ -1,0 +1,112 @@
+package fi.espoo.vekkuli.utils
+
+import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
+import fi.espoo.vekkuli.domain.BoatSpaceAmenity
+import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.BoatType
+import fi.espoo.vekkuli.domain.CreationType
+import fi.espoo.vekkuli.domain.OwnershipStatus
+import fi.espoo.vekkuli.domain.PaymentStatus
+import fi.espoo.vekkuli.domain.PaymentType
+import fi.espoo.vekkuli.domain.ReservationStatus
+
+fun reservationStatusToText(reservationStatus: ReservationStatus): String =
+    when (reservationStatus) {
+        ReservationStatus.Info -> "Info"
+        ReservationStatus.Payment -> "Maksettavana"
+        ReservationStatus.Confirmed -> "Maksettu"
+        ReservationStatus.Invoiced -> "Laskutettavana"
+        ReservationStatus.Cancelled -> "Irtisanottu"
+    }
+
+fun placeTypeToText(placeType: BoatSpaceType?): String {
+    return when (placeType) {
+        BoatSpaceType.Storage -> "Säilytys"
+        BoatSpaceType.Slip -> "Laituri"
+        BoatSpaceType.Trailer -> "Traileri"
+        BoatSpaceType.Winter -> "Talvi"
+        else -> ""
+    }
+}
+
+fun amenityToText(amenity: BoatSpaceAmenity?): String {
+    return when (amenity) {
+        BoatSpaceAmenity.None -> ""
+        BoatSpaceAmenity.RearBuoy -> "Peräpoiju"
+        BoatSpaceAmenity.Beam -> "Aisa"
+        BoatSpaceAmenity.WalkBeam -> "Kävelyaisa"
+        BoatSpaceAmenity.Trailer -> "Traileri"
+        BoatSpaceAmenity.Buck -> "Pukit"
+        else -> ""
+    }
+}
+
+fun boatTypeToText(boatType: BoatType?): String {
+    return when (boatType) {
+        BoatType.OutboardMotor -> "Perämoottori"
+        BoatType.InboardMotor -> "Sisämoottori"
+        BoatType.Sailboat -> "Purjevene"
+        BoatType.JetSki -> "Vesijetti"
+        BoatType.Other -> "Muu"
+        else -> ""
+    }
+}
+
+fun ownershipStatusToText(ownershipStatus: OwnershipStatus?): String {
+    return when (ownershipStatus) {
+        OwnershipStatus.Owner -> "Omistaja"
+        OwnershipStatus.User -> "Haltija"
+        OwnershipStatus.CoOwner -> "Kanssaomistaja"
+        OwnershipStatus.FutureOwner -> "Tuleva omistaja"
+        else -> ""
+    }
+}
+
+fun terminationReasonToText(terminationReason: ReservationTerminationReason?): String {
+    return when (terminationReason) {
+        ReservationTerminationReason.UserRequest -> "Toive"
+        ReservationTerminationReason.InvalidOwner -> "Väärä omistaja"
+        ReservationTerminationReason.RuleViolation -> "Sääntörikkomus"
+        ReservationTerminationReason.PaymentViolation -> "Maksurikkomus"
+        ReservationTerminationReason.Other -> "Muu"
+        else -> ""
+    }
+}
+
+fun boatSpaceTypeToText(boatSpaceType: BoatSpaceType?): String {
+    return when (boatSpaceType) {
+        BoatSpaceType.Slip -> "Laituri"
+        BoatSpaceType.Storage -> "Säilytys"
+        BoatSpaceType.Trailer -> "Traileri"
+        BoatSpaceType.Winter -> "Talvi"
+        else -> ""
+    }
+}
+
+fun paymentStatusToText(paymentStatus: PaymentStatus?): String {
+    return when (paymentStatus) {
+        PaymentStatus.Created -> "Luotu"
+        PaymentStatus.Success -> "Maksettu"
+        PaymentStatus.Failed -> "Keskeytynyt"
+        PaymentStatus.Refunded -> "Hyvitetty"
+        else -> ""
+    }
+}
+
+fun paymentTypeToText(paymentType: PaymentType?): String {
+    return when (paymentType) {
+        PaymentType.OnlinePayment -> "Verkkomaksu"
+        PaymentType.Invoice -> "Lasku"
+        PaymentType.Other -> "Muu"
+        else -> ""
+    }
+}
+
+fun reservationCreationTypeToText(creationType: CreationType?): String {
+    return when (creationType) {
+        CreationType.New -> "Uusi"
+        CreationType.Renewal -> "Jatko"
+        CreationType.Switch -> "Vaihto"
+        else -> ""
+    }
+}
