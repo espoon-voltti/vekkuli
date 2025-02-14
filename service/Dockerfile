@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jammy AS base
+FROM eclipse-temurin:21-jammy AS base
 
 ARG CACHE_BUST=2025-W05
 
