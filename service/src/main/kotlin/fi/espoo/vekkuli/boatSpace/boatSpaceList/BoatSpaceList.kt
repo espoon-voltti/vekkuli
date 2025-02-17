@@ -62,7 +62,7 @@ class BoatSpaceList : BaseView() {
                     <td>${result.widthInMeter}</td>
                     <td>${result.lengthInMeter}</td>
                     <td>${result.priceInEuro}</td>
-                    <td>${if (result.active) t("boatSpacesList.text.active") else t("boatSpacesList.text.inactive")}</td>
+                    <td> <span id='status-ball' class=${if (result.active) "active" else "inactive"}></span></td>
                     <td>${result.reserverName ?: '-'}</td>
                 </tr>
                 """.trimIndent()
