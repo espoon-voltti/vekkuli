@@ -130,6 +130,7 @@ class ReserveBoatSpacePage(
     }
 
     val header = page.getByText("Espoon kaupungin venepaikkojen vuokraus")
+    val citizenDetailsLink = page.getByRole(AriaRole.LINK, Page.GetByRoleOptions().setName("Omat tiedot").setExact(true))
     val switchInfoBox = page.getByText("Olet vaihtamassa paikkaa")
     val switchGoBackButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Palaa takaisin").setExact(true))
 
