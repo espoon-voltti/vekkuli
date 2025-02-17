@@ -13,7 +13,6 @@ import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.isNotEmpty
 
@@ -492,56 +491,4 @@ class ReserverDetailsReservationsContainer(
             </div>
             """.trimIndent()
     }
-
-    fun messageTabContent(
-        reserver: ReserverWithDetails,
-        messages: List<QueuedMessage>,
-    ): String {
-        val messageHtml =
-            messages.joinToString("\n") { message ->
-                // language=HTML
-                """
-                <tr>
-                    <td>${message.subject}</td>
-                    <td>${message.recipientAddress}</td>
-                    <td>${message.sentAt?.let { formatDate(it) } ?: "Ei lähetetty"}</td>
-                    <td>${message.senderAddress ?: ""}</td>
-                </tr>
-                """.trimIndent()
-            }
-
-        val messagesHtml =
-            if (messages.isNotEmpty()) {
-                // language=HTML
-                """
-                <div class="message-list">
-                    <table id="messages-table">
-                      <thead>
-                        <tr>
-                          <th>${t("citizenDetails.messages.subject")}</th>
-                          <th>${t("citizenDetails.messages.recipient")}</th>
-                          <th>${t("citizenDetails.messages.sentAt")}</th>
-                          <th>${t("citizenDetails.messages.sender")}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                          $messageHtml
-                      </tbody>
-                    </table>
-                </div>
-                """.trimIndent()
-            } else {
-                "<h2>${t("citizenDetails.messages.noMessages")}</h2>"
-            }
-
-        // language=HTML
-        return """
-            <div id="tab-content" class="container block">
-              ${reserverDetailsTabs.renderTabNavi(reserver, SubTab.Messages)}
-              $messagesHtml
-            </div>
-            """.trimIndent()
-    }
-
-    fun formatDate(d: LocalDateTime): String = d.format(fullDateTimeFormat)
 }

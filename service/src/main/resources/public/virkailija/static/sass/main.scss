@@ -1102,6 +1102,28 @@ ul {
   font-size: 13px;
 }
 
+#sent-message-form {
+    .close-modal {
+      display: flex;
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 10;
+      padding: 20px 10px 10px;
+      justify-content: right;
+      transform: translateY(-20px);
+
+    }
+    .meta-content {
+      padding-top: $spacing-small;
+      padding-bottom: $spacing-xl;
+    }
+    .message-content {
+      white-space: pre-line;
+    }
+
+}
+
 #status-ball {
   display: block;
   width: 20px;

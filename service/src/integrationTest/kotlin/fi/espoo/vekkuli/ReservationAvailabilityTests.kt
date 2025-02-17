@@ -64,7 +64,8 @@ class ReservationAvailabilityTests : IntegrationTestBase() {
                 discountPercentage = 10,
                 nationalId = "123456-789A",
                 firstName = "Mikko",
-                lastName = "Testinen"
+                lastName = "Testinen",
+                dataProtection = false
             )
 
         // Let's not tes

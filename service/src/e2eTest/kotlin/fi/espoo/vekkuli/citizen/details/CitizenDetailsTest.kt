@@ -2,10 +2,7 @@ package fi.espoo.vekkuli.citizen.details
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
-import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage
-import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
-import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
-import fi.espoo.vekkuli.pages.citizen.PaymentPage
+import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
 import fi.espoo.vekkuli.utils.endOfSlipSwitchPeriodForEspooCitizen
@@ -187,6 +184,32 @@ class CitizenDetailsTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `updated citizen information is cached correctly while navigating the site`() {
+        val citizenHomePage = CitizenHomePage(page)
+        val citizenDetailsPage = CitizenDetailsPage(page)
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        val citizenSection = citizenDetailsPage.getCitizenSection()
+        val citizenPhone = "0405839281"
+        val citizenEmail = "test2@email.com"
+
+        citizenHomePage.loginAsLeoKorhonen()
+        citizenDetailsPage.navigateToPage()
+
+        citizenSection.editButton.click()
+        citizenSection.emailInput.fill(citizenEmail)
+        citizenSection.phoneInput.fill(citizenPhone)
+        citizenSection.saveButton.click()
+        assertThat(citizenSection.editButton).isVisible()
+
+        citizenDetailsPage.boatSpaceSearchLink.click()
+        assertThat(reserveBoatSpacePage.header).isVisible()
+        reserveBoatSpacePage.citizenDetailsLink.click()
+
+        assertThat(citizenSection.phoneField).hasText(citizenPhone)
+        assertThat(citizenSection.emailField).hasText(citizenEmail)
     }
 
     @Test

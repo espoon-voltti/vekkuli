@@ -71,7 +71,8 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
                 postOfficeSv = "Esbo",
                 streetAddressSv = "",
                 espooRulesApplied = false,
-                discountPercentage = 0
+                discountPercentage = 0,
+                dataProtection = false
             )
         val updatedCitizen =
             reserverService.updateCitizen(
@@ -115,7 +116,8 @@ class ReserverServiceIntegrationTests : IntegrationTestBase() {
                 postOfficeSv = "Esbo",
                 streetAddressSv = "",
                 espooRulesApplied = false,
-                discountPercentage = 0
+                discountPercentage = 0,
+                dataProtection = false
             )
         reserverService.updateCitizen(
             UpdateCitizenParams(

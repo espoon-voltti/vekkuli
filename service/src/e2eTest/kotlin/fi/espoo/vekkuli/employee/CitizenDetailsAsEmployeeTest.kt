@@ -131,6 +131,10 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             val citizenDetails = CitizenDetailsPage(page)
             citizenDetails.messagesNavi.click()
             assertThat(citizenDetails.messages).containsText("Käyttöveden katko")
+            citizenDetails.messages.click()
+            assertThat(
+                citizenDetails.messageContent
+            ).hasText("Haukilahden satamassa on käyttöveden katko 2.9.2024 klo 12-14. Pahoittelemme häiriötä.")
         } catch (e: AssertionError) {
             handleError(e)
         }

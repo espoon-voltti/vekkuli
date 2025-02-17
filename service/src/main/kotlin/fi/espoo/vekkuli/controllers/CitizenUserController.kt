@@ -23,9 +23,7 @@ import fi.espoo.vekkuli.views.citizen.details.reservation.TrailerCard
 import fi.espoo.vekkuli.views.employee.CitizenDetails
 import fi.espoo.vekkuli.views.employee.EditCitizen
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
-import fi.espoo.vekkuli.views.employee.components.ReserverDetailsExceptionsContainer
-import fi.espoo.vekkuli.views.employee.components.ReserverDetailsMemoContainer
-import fi.espoo.vekkuli.views.employee.components.ReserverDetailsReservationsContainer
+import fi.espoo.vekkuli.views.employee.components.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -42,6 +40,7 @@ class CitizenUserController(
     private val organizationDetailsView: OrganizationDetailsView,
     private val organizationService: OrganizationService,
     private val reserverDetailsReservationsContainer: ReserverDetailsReservationsContainer,
+    private val reserverDetailsMessagesContainer: ReserverDetailsMessagesContainer,
     private val reserverDetailsMemoContainer: ReserverDetailsMemoContainer,
     private val reserverDetailsExceptionsContainer: ReserverDetailsExceptionsContainer,
     private val editBoat: EditBoat,
@@ -56,7 +55,8 @@ class CitizenUserController(
     private val reserverRepository: JdbiReserverRepository,
     private val trailerCard: TrailerCard,
     private val editCitizen: EditCitizen,
-    private val paymentService: PaymentService
+    private val paymentService: PaymentService,
+    private val sentMessageModalView: SentMessageModalView
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -157,7 +157,21 @@ class CitizenUserController(
         val reserver =
             reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val messages = reserverService.getMessages(citizenId)
-        return reserverDetailsReservationsContainer.messageTabContent(reserver, messages)
+        return reserverDetailsMessagesContainer.messageTabContent(reserver, messages)
+    }
+
+    @GetMapping("/virkailija/kayttaja/{citizenId}/viestit/{messageId}")
+    @ResponseBody
+    fun citizenMessageContent(
+        request: HttpServletRequest,
+        @PathVariable citizenId: UUID,
+        @PathVariable messageId: UUID
+    ): String {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "CITIZEN_PROFILE_MESSAGES", mapOf("targetId" to citizenId.toString()))
+        }
+        val message = reserverService.getMessage(messageId)
+        return sentMessageModalView.render(message)
     }
 
     @GetMapping("/virkailija/kayttaja/{citizenId}/muistiinpanot")

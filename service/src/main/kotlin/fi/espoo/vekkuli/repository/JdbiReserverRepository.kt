@@ -63,7 +63,7 @@ class JdbiReserverRepository(
             handle
                 .createQuery(
                     """    
-                    SELECT c.first_name, c.last_name, c.national_id, r.*, m.name as municipality_name
+                    SELECT c.first_name, c.last_name, c.national_id, c.data_protection, r.*, m.name as municipality_name
                     FROM citizen c
                     JOIN reserver r ON r.id = c.id
                     JOIN municipality m ON r.municipality_code = m.code
@@ -79,7 +79,7 @@ class JdbiReserverRepository(
             handle
                 .createQuery(
                     """    
-                    SELECT c.first_name, c.last_name, c.national_id, r.*, m.name as municipality_name
+                    SELECT c.first_name, c.last_name, c.national_id, c.data_protection, r.*, m.name as municipality_name
                     FROM citizen c
                     JOIN reserver r ON r.id = c.id
                     JOIN municipality m ON r.municipality_code = m.code
@@ -97,7 +97,7 @@ class JdbiReserverRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT c.first_name, c.last_name, c.national_id, r.*, m.name as municipality_name 
+                    SELECT c.first_name, c.last_name, c.national_id, c.data_protection, r.*, m.name as municipality_name 
                     FROM citizen c
                     JOIN reserver r ON r.id = c.id
                     JOIN municipality m ON r.municipality_code = m.code
