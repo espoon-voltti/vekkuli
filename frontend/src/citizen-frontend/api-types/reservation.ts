@@ -64,9 +64,11 @@ export type ExistingBoatSpaceReservation = {
   vatValue: string
   boat: Boat
   storageType?: StorageType
-  paymentDate?: LocalDate
   trailer?: Trailer
   reserverType: ReserverType
+  status: ReservationStatus
+  paymentDate?: LocalDate
+  dueDate?: LocalDate
 }
 
 export type CanReserveResultStatus =
@@ -132,9 +134,11 @@ export type ExistingBoatSpaceReservationResponse = {
   vatValue: string
   boat: Boat
   storageType: StorageType | null
-  paymentDate?: string | null
   trailer?: Trailer | null
   reserverType: ReserverType
+  status: ReservationStatus
+  paymentDate?: string | null
+  dueDate?: string | null
 }
 
 export type ReservationInfo = {

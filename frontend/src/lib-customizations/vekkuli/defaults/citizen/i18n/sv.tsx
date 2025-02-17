@@ -356,6 +356,9 @@ const sv: Translations = {
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Betald ${paymentDate.format()}` : '-'
     },
+    invoiceState: (dueDate?: LocalDate) => {
+      return dueDate ? `Faktureras ${dueDate.format()}` : '-'
+    },
     errors: {
       startReservation: {
         title: 'Det går inte att göra en reservation',

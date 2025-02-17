@@ -21,13 +21,15 @@ data class ExistingReservationResponse(
     val endDate: LocalDate,
     val validity: ReservationValidity,
     val isActive: Boolean,
-    val paymentDate: LocalDate?,
     val totalPrice: String,
     val vatValue: String,
     val storageType: StorageType?,
     val trailer: Trailer?,
     val canRenew: Boolean,
     val canSwitch: Boolean,
+    val status: ReservationStatus,
+    val paymentDate: LocalDate?,
+    val dueDate: LocalDate?
 ) {
     data class Boat(
         val id: Int?,
@@ -74,12 +76,12 @@ class ExistingReservationResponseMapper(
     private val citizenAccessControl: CitizenAccessControl,
     private val timeProvider: TimeProvider
 ) {
-    fun toActiveReservationResponse(boatSpaceReservation: BoatSpaceReservation) = toReservationResponse(boatSpaceReservation, true)
+    fun toActiveReservationResponse(boatSpaceReservation: BoatSpaceReservationDetails) = toReservationResponse(boatSpaceReservation, true)
 
-    fun toExpiredReservationResponse(boatSpaceReservation: BoatSpaceReservation) = toReservationResponse(boatSpaceReservation, false)
+    fun toExpiredReservationResponse(boatSpaceReservation: BoatSpaceReservationDetails) = toReservationResponse(boatSpaceReservation, false)
 
     fun toReservationResponse(
-        boatSpaceReservation: BoatSpaceReservation,
+        boatSpaceReservation: BoatSpaceReservationDetails,
         isActive: Boolean? = null
     ): ExistingReservationResponse {
         val (reserverId) = citizenAccessControl.requireCitizen()
@@ -92,8 +94,8 @@ class ExistingReservationResponseMapper(
 
         val trailer = getTrailer(reservationWithDependencies)
 
-        val canRenew = getCanRenew(boatSpaceReservation, reserverId)
-        val canSwitch = getCanSwitch(boatSpaceReservation, reserverId)
+        val canRenew = getCanRenew(boatSpaceReservation.id, reserverId)
+        val canSwitch = getCanSwitch(boatSpaceReservation.id, reserverId)
 
         val isActive =
             if (isActive !== null) {
@@ -135,7 +137,9 @@ class ExistingReservationResponseMapper(
             storageType = reservationWithDependencies.storageType,
             trailer = formatTrailer(trailer),
             canRenew = canRenew,
-            canSwitch = canSwitch
+            canSwitch = canSwitch,
+            status = boatSpaceReservation.status,
+            dueDate = boatSpaceReservation.invoiceDueDate
         )
     }
 
@@ -198,12 +202,12 @@ class ExistingReservationResponseMapper(
     }
 
     private fun getCanRenew(
-        reservation: BoatSpaceReservation,
+        reservationId: Int,
         reserverId: UUID?
     ): Boolean {
         return if (reserverId != null) {
             renewalPolicyService.citizenCanRenewReservation(
-                reservation.id,
+                reservationId,
                 reserverId
             ).success
         } else {
@@ -212,12 +216,12 @@ class ExistingReservationResponseMapper(
     }
 
     private fun getCanSwitch(
-        reservation: BoatSpaceReservation,
+        reservationId: Int,
         reserverId: UUID?
     ): Boolean {
         return if (reserverId != null) {
             switchPolicyService.citizenCanSwitchReservation(
-                reservation.id,
+                reservationId,
                 reserverId
             ).success
         } else {

@@ -54,25 +54,21 @@ open class ReservationService(
         return BoatSpaceConfig.getUnfinishedReservationExpirationTime(reservation.created, timeProvider.getCurrentDateTime())
     }
 
-    fun getActiveReservationsForCurrentCitizen(): List<BoatSpaceReservation> {
+    fun getActiveReservationsForCurrentCitizen(): List<BoatSpaceReservationDetails> {
         val (citizenId) = citizenAccessControl.requireCitizen()
-        return boatReservationService.getBoatSpaceReservationsForReserver(citizenId).map { it.toBoatSpaceReservation() }
+        return boatReservationService.getBoatSpaceReservationsForReserver(citizenId)
     }
 
-    fun getExpiredReservationsForCurrentCitizen(): List<BoatSpaceReservation> {
+    fun getExpiredReservationsForCurrentCitizen(): List<BoatSpaceReservationDetails> {
         val (citizenId) = citizenAccessControl.requireCitizen()
-        return boatReservationService.getExpiredBoatSpaceReservationsForReserver(citizenId).map { it.toBoatSpaceReservation() }
+        return boatReservationService.getExpiredBoatSpaceReservationsForReserver(citizenId)
     }
 
-    fun getActiveReservationsForOrganization(orgId: UUID): List<BoatSpaceReservation> =
-        boatReservationService.getBoatSpaceReservationsForReserver(orgId).map {
-            it.toBoatSpaceReservation()
-        }
+    fun getActiveReservationsForOrganization(orgId: UUID): List<BoatSpaceReservationDetails> =
+        boatReservationService.getBoatSpaceReservationsForReserver(orgId)
 
-    fun getExpiredReservationsForOrganization(orgId: UUID): List<BoatSpaceReservation> =
-        boatReservationService.getExpiredBoatSpaceReservationsForReserver(orgId).map {
-            it.toBoatSpaceReservation()
-        }
+    fun getExpiredReservationsForOrganization(orgId: UUID): List<BoatSpaceReservationDetails> =
+        boatReservationService.getExpiredBoatSpaceReservationsForReserver(orgId)
 
     fun getReservation(reservationId: Int): BoatSpaceReservation = accessReservationAsCurrentCitizen(reservationId).toBoatSpaceReservation()
 

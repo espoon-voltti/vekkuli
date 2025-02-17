@@ -66,6 +66,13 @@ export default React.memo(function Reservation({
     boatSpace.locationName
   )
 
+  const paymentStatus =
+      reservation.status === 'Confirmed' || reservation.status === 'Cancelled' ?
+        i18n.reservation.paymentState(reservation.paymentDate) :
+      reservation.status === 'Invoiced' ?
+        i18n.reservation.invoiceState(reservation.dueDate)
+      : '-'
+
   return (
     <>
       <div className="reservation-card" data-testid="reservation-list-card">
@@ -157,8 +164,9 @@ export default React.memo(function Reservation({
               />
             )}
             <TextField
+              dataTestId={'payment-status'}
               label={i18n.citizenPage.reservation.paymentStatus}
-              value={i18n.reservation.paymentState(reservation.paymentDate)}
+              value={paymentStatus}
               readonly={true}
             />
           </Column>
