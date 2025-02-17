@@ -408,6 +408,7 @@ export default {
     continueToPaymentButton: 'Jatka maksamaan'
   },
   boat: {
+    newBoat: 'Uusi vene',
     delete: 'Poista vene',
     deleteFailed:
       'Veneen poistamisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',

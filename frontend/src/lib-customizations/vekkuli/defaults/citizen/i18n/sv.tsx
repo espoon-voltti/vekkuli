@@ -407,6 +407,7 @@ const sv: Translations = {
     continueToPaymentButton: 'Fortsätt till betalning'
   },
   boat: {
+    newBoat: 'Ny båt',
     delete: 'Ta bort båt',
     deleteFailed:
       'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',

@@ -411,6 +411,7 @@ const en: Translations = {
     continueToPaymentButton: 'Continue to payment'
   },
   boat: {
+    newBoat: 'New boat',
     delete: 'Delete boat',
     deleteFailed:
       'An error occurred while deleting the boat. Please contact customer support.',
