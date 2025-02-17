@@ -38,14 +38,18 @@ class EmployeeLayout(
         val boatSpaceReservationsLink =
             if (isAuthenticated) {
                 """
-                <a class="${if (currentUri == "/virkailija/venepaikat/varaukset") "active" else ""}"
-                   href="/virkailija/venepaikat/varaukset">
-                    ${t("menu.boatSpaceReservations")}
-                </a>
-                <a  class="${if (currentUri == "/virkailija/admin/reporting") "active" else ""}"
-                    href="/virkailija/admin/reporting">
-                    ${t("menu.reports")}
-                </a>
+                  <a class="${if (currentUri == "/virkailija/venepaikat/varaukset") "active" else ""}"
+                     href="/virkailija/venepaikat/varaukset">
+                      ${t("menu.boatSpaceReservations")}
+                  </a>
+                  <a  class="${if (currentUri == "/virkailija/admin/reporting") "active" else ""}"
+                      href="/virkailija/admin/reporting">
+                      ${t("menu.reports")}
+                  </a>
+                <a  class="${if (currentUri == "/virkailija/venepaikat/selaa") "active" else ""}"
+                      href="/virkailija/venepaikat/selaa">
+                      ${t("menu.boatSpaces")}
+                  </a>
                 """.trimIndent()
             } else {
                 """
