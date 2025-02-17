@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 data class BoatSpaceListParams(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
@@ -33,7 +34,13 @@ class BoatSpaceList : BaseView() {
         boatSpaces: List<BoatSpaceListRow>,
         searchParams: BoatSpaceListParams
     ): String {
-        fun getBoatSpacePage(boatSpaceId: Int) {
+        fun getBoatSpacePage(
+            reserverId: UUID?,
+            reserverType: ReserverType?
+        ) = if (reserverId !== null) {
+            "/virkailija/${reserverType?.toPath()}/$reserverId"
+        } else {
+            ""
         }
         // language=HTML
         val reservationRows =
@@ -42,19 +49,19 @@ class BoatSpaceList : BaseView() {
                 """
                 <tr class="boat-space-item"
                     id="boat-space-${result.id}"
-                    hx-trigger="click"
-                    hx-get=${getBoatSpacePage(result.id)}
+                    hx-trigger=${if (getBoatSpacePage(result.reserverId, result.reserverType).isNotEmpty()) "click" else ""}
+                    hx-get=${getBoatSpacePage(result.reserverId, result.reserverType)}
                     hx-push-url="true"
                     hx-target=".section"
                     hx-select=".section">
                     <td></td>
                     <td>${result.locationName}</td>
-                    <td>
-                        <a href=${getBoatSpacePage(result.id)} ${
+                    <td
+                        ${
                     addTestId(
                         "place"
                     )
-                }>${result.place}</a>
+                }>${result.place}
                     </td>
                     <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
                     <td>${t("boatSpaces.amenityOption.${result.amenity}")}</td>
@@ -63,7 +70,7 @@ class BoatSpaceList : BaseView() {
                     <td>${result.lengthInMeter}</td>
                     <td>${result.priceInEuro}</td>
                     <td> <span id='status-ball' class=${if (result.active) "active" else "inactive"}></span></td>
-                    <td>${result.reserverName ?: '-'}</td>
+                    <td> <a href=${getBoatSpacePage(result.reserverId, result.reserverType)} >${result.reserverName ?: '-'}</a></td>
                 </tr>
                 """.trimIndent()
             }
