@@ -460,6 +460,7 @@ export default {
       JetSki: 'Vesiskootteri',
       Other: 'Muu'
     },
+    ownershipTitle: 'Veneen omistussuhde Traficomin mukaan',
     ownershipStatus: {
       Owner: 'Omistan veneen',
       User: 'Olen veneen haltija',

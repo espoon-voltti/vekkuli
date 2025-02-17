@@ -463,6 +463,7 @@ const en: Translations = {
       JetSki: 'Jet ski',
       Other: 'Other'
     },
+    ownershipTitle: 'Ownership of the boat according to Traficom',
     ownershipStatus: {
       Owner: 'I own the boat',
       User: 'I am the user of the boat',

@@ -460,7 +460,7 @@ const sv: Translations = {
       Citizen: 'Jag bokar som privatperson',
       Organization: 'Jag bokar för en organisation'
     },
-
+    ownershipTitle: 'Ägande enligt Traficom',
     ownershipStatus: {
       Owner: 'Jag äger båten',
       User: 'Jag är användare av båten',
