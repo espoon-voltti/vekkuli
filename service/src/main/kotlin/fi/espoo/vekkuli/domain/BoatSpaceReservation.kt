@@ -146,6 +146,17 @@ data class BoatSpaceReservationItem(
 }
 
 enum class BoatSpaceFilterColumn {
+    PLACE,
+    PLACE_TYPE,
+    AMENITY,
+    PLACE_WIDTH,
+    PLACE_LENGTH,
+    PRICE,
+    ACTIVE,
+    RESERVER
+}
+
+enum class BoatSpaceReservationFilterColumn {
     START_DATE,
     END_DATE,
     PLACE,
@@ -171,7 +182,7 @@ enum class ReservationExpiration {
 }
 
 data class BoatSpaceReservationFilter(
-    val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
+    val sortBy: BoatSpaceReservationFilterColumn = BoatSpaceReservationFilterColumn.PLACE,
     val ascending: Boolean = false,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),

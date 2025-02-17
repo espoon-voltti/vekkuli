@@ -5,6 +5,8 @@ $black: #536076;
 $grey: #A9B0BB;
 $light-gray: #F7F7F7;
 $darkGray: #536076;
+$green: #70C673;
+$red: #FF4F57;
 $gainsboro: #dddddd;
 $warning: #FF8E31;
 $error: #FF3D3D;
@@ -1098,4 +1100,17 @@ ul {
 
 .discount-info {
   font-size: 13px;
+}
+
+#status-ball {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  &.active {
+   background-color: $green;
+ }
+  &.inactive {
+    background-color: $red;
+    }
 }

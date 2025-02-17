@@ -558,7 +558,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             reservationService
                 .getBoatSpaceReservations(
                     BoatSpaceReservationFilter(
-                        sortBy = BoatSpaceFilterColumn.PLACE,
+                        sortBy = BoatSpaceReservationFilterColumn.PLACE,
                         ascending = true,
                     )
                 ).first()
@@ -827,7 +827,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         val reservations =
             reservationService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
-                    sortBy = BoatSpaceFilterColumn.PLACE,
+                    sortBy = BoatSpaceReservationFilterColumn.PLACE,
                     ascending = true,
                 )
             )
