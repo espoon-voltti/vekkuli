@@ -209,6 +209,11 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertThat(PaymentPage(page).reservationSuccessNotification).isVisible()
 
             assertEmailIsSentOfCitizensStorageSpaceReservation()
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservation = citizenDetailsPage.getReservationSection(1)
+            assertEquals("Maksettu 15.09.2024", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -375,8 +380,12 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
             assertThat(confirmationPage.getByDataTestId("reservation-validity")).hasText("$fixedDateEndDate asti")
-
             assertEmailIsSentOfCitizensFixedTermTrailerReservation(endDate = fixedDateEndDate)
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservation = citizenDetailsPage.getReservationSection(0)
+            assertEquals("Maksettu 01.05.2024", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -512,6 +521,11 @@ class ReserveBoatSpaceTest : ReserveTest() {
             assertThat(trailerSection.registrationCodeField).containsText(trailerRegistrationCode)
 
             assertEmailIsSentOfCitizensWinterSpaceReservation()
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservation = citizenDetailsPage.getReservationSection(1)
+            assertEquals("Maksettu 15.09.2024", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -727,6 +741,11 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 "Hinnassa huomioitu $discount% alennus.",
                 doLogin = false
             )
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservation = citizenDetailsPage.getReservationSection(2)
+            assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -771,6 +790,11 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 "Hinnassa huomioitu $discount% alennus.",
                 doLogin = false
             )
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservation = citizenDetailsPage.getReservationSection(2)
+            assertEquals("Maksettu 01.04.2024", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -827,6 +851,11 @@ class ReserveBoatSpaceTest : ReserveTest() {
                 "Hinnassa huomioitu $organizationDiscount% alennus.",
                 doLogin = false
             )
+
+            val citizenDetailsPage = CitizenDetailsPage(page)
+            citizenDetailsPage.navigateToPage()
+            val reservation = citizenDetailsPage.getReservationSection(0)
+            assertEquals("-", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }

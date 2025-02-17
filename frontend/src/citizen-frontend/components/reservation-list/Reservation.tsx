@@ -67,7 +67,7 @@ export default React.memo(function Reservation({
   )
 
   const paymentStatus =
-      reservation.status === 'Confirmed' ?
+      reservation.status === 'Confirmed' || reservation.status === 'Cancelled' ?
         i18n.reservation.paymentState(reservation.paymentDate) :
       reservation.status === 'Invoiced' ?
         i18n.reservation.invoiceState(reservation.dueDate)
@@ -164,6 +164,7 @@ export default React.memo(function Reservation({
               />
             )}
             <TextField
+              dataTestId={'payment-status'}
               label={i18n.citizenPage.reservation.paymentStatus}
               value={paymentStatus}
               readonly={true}
