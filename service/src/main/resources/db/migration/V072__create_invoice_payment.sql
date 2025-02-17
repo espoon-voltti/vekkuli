@@ -1,7 +1,7 @@
 CREATE TABLE invoice_payment (
      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
      transaction_number BIGINT NOT NULL UNIQUE,
-     amount_paid INTEGER NOT NULL,
+     amount_paid_cents INTEGER NOT NULL,
      payment_date DATE NOT NULL,
      invoice_number INTEGER NOT NULL,
      created TIMESTAMP DEFAULT NOW(),
