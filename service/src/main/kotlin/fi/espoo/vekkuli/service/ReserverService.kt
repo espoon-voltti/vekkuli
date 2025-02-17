@@ -61,6 +61,8 @@ class ReserverService(
 
     fun getMessages(citizenId: UUID): List<QueuedMessage> = sentMessagesRepository.getMessagesSentToUser(citizenId)
 
+    fun getMessage(messageId: UUID): QueuedMessage = sentMessagesRepository.getMessage(messageId)
+
     fun getMunicipalities(): List<Municipality> = reserverRepository.getMunicipalities()
 
     fun upsertCitizenUserFromAd(adUser: CitizenAdUser): CitizenWithDetails = reserverRepository.upsertCitizenUserFromAd(adUser)
