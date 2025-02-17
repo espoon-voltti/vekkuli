@@ -35,7 +35,7 @@ class JdbiOrganizationRepository(
             handle
                 .createQuery(
                     """
-                    SELECT c.national_id, c.first_name, c.last_name, r.*, m.name as municipality_name 
+                    SELECT c.national_id, c.first_name, c.last_name, c.data_protection, r.*, m.name as municipality_name 
                     FROM organization_member om
                     JOIN citizen c on om.member_id = c.id
                     JOIN reserver r on om.member_id = r.id

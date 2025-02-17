@@ -631,7 +631,7 @@ venepaikat@espoo.fi'),
 
 Sinulle on varattu Espoon kaupungin {{placeTypeFi}} {{name}}.
 
-Sinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi. Maksun saavuttua tilillemme lähetämme sähköpostilla lisätietoa laiturin portin avaimesta sekä kausitarran postitse.
+Lasku lähetetään osoitteeseen {{invoiceAddressFi}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi. Maksun saavuttua tilillemme lähetämme sähköpostilla lisätietoa laiturin portin avaimesta sekä kausitarran postitse.
 
 Vuokralainen:
 {{reserverName}}
@@ -664,7 +664,7 @@ Hej kund,
 
 Du har reserverat en {{placeTypeSv}} {{name}} från Esbo stad.
 
-En faktura har skickats till adressen {{invoiceAddress}}. För att bekräfta bokningen, betala platsen innan förfallodatumet. Om betalningen uteblir annulleras bokningen och platsen blir tillgänglig för andra. När betalningen har mottagits på vårt konto skickar vi ytterligare information om bryggportens nyckel via e-post samt säsongsetiketten per post.
+Fakturan skickas till {{invoiceAddressSv}}. För att bekräfta bokningen, betala platsen innan förfallodatumet. Om betalningen uteblir annulleras bokningen och platsen blir tillgänglig för andra. När betalningen har mottagits på vårt konto skickar vi ytterligare information om bryggportens nyckel via e-post samt säsongsetiketten per post.
 
 Hyresgäst:
 {{reserverName}}
@@ -697,7 +697,7 @@ Dear customer,
 
 You have reserved a {{placeTypeEn}} {{name}} from the City of Espoo.
 
-An invoice has been sent to {{invoiceAddress}}. To confirm your booking, please pay for the spot before the due date. If unpaid, the booking will be canceled and made available for others. Once payment is received, we will send additional information about the dock gate key via email and the season sticker by mail.
+The invoice will be sent to {{invoiceAddressEn}}. To confirm your booking, please pay for the spot before the due date. If unpaid, the booking will be canceled and made available for others. Once payment is received, we will send additional information about the dock gate key via email and the season sticker by mail.
 
 Tenant:
 {{reserverName}}
@@ -901,7 +901,7 @@ venepaikat@espoo.fi'),
 
 Varaamasi Espoon kaupungin {{placeTypeFi}} on jatkettu uudelle kaudelle.
 
-Sinulle on lähetetty lasku osoitteeseen {{invoiceAddress}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi.
+Lasku lähetetään osoitteeseen {{invoiceAddressFi}}. Vahvistaaksesi varauksen, maksa paikka eräpäivään mennessä. Maksamaton paikka irtisanoutuu ja se vapautuu muiden varattavaksi.
 
 Vuokralainen:
 {{reserverName}}
@@ -929,7 +929,7 @@ Hej kund,
 
 Din bokning av {{placeTypeSv}} har förlängts för en ny säsong.
 
-En faktura har skickats till adressen {{invoiceAddress}}. För att bekräfta bokningen, vänligen betala platsen innan förfallodatumet. En obetald plats sägs upp och blir tillgänglig för andra.
+Fakturan skickas till {{invoiceAddressSv}}. För att bekräfta bokningen, vänligen betala platsen innan förfallodatumet. En obetald plats sägs upp och blir tillgänglig för andra.
 
 Hyresgäst:
 {{reserverName}}
@@ -957,7 +957,7 @@ Dear customer,
 
 Your reservation for {{placeTypeEn}} has been extended for a new season.
 
-An invoice has been sent to {{invoiceAddress}}. To confirm your reservation, please pay for the spot before the due date. An unpaid spot will be canceled and made available for others.
+The invoice will be sent to {{invoiceAddressEn}}. To confirm your reservation, please pay for the spot before the due date. An unpaid spot will be canceled and made available for others.
 
 Tenant:
 {{reserverName}}
@@ -1472,8 +1472,12 @@ VALUES
   ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', '150499-911U', 'Leo', 'Korhonen'),
   ('509edb00-5549-11ef-a1c7-776e76028a49', '031298-988S', 'Olivia', 'Virtanen'),
   ('1128bd21-fbbc-4e9a-8658-dc2044a64a58', '290991-993F', 'Marko', 'Kuusinen'),
-  ('82722a75-793a-4cbe-a3d9-a3043f2f5731', '111275-180K', 'Jorma', 'Pulkkinen'),
-  ('6a7b1b37-ace5-4992-878b-1fa0cd52e4e7', '250695-7378', 'Turvald', 'Kieltoinen')
+  ('82722a75-793a-4cbe-a3d9-a3043f2f5731', '111275-180K', 'Jorma', 'Pulkkinen')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO citizen (id, national_id, first_name, last_name, data_protection)
+VALUES
+    ('6a7b1b37-ace5-4992-878b-1fa0cd52e4e7', '250695-7378', 'Turvald', 'Kieltoinen', true)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO organization (id, business_id, billing_name, billing_street_address, billing_postal_code, billing_post_office)

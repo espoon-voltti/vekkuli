@@ -153,7 +153,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
             citizenDetailsPage.memoNavi.click()
             assertThat(page.getByText("Varauksen tila: Maksettu 2024-04-22: 100000")).isVisible()
 
-            assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice()
+            assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice(invoiceAddress = "Test street 1, 12345")
             citizenDetailsPage.paymentsNavi.click()
 
             page.waitForCondition { citizenDetailsPage.paymentsTable.textContent().contains("Maksettu") }
@@ -877,7 +877,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         messageService.sendScheduledEmails()
         assertEquals(1, SendEmailServiceMock.emails.size)
 
-        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi")
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi", "Katu 1, 00100")
     }
 
     @Test
@@ -927,7 +927,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         // Check that the reservation is visible in the list
         assertThat(page.getByText(place)).isVisible()
 
-        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("turvald@kieltoinen.fi")
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("turvald@kieltoinen.fi", "*salainen*")
     }
 
     @Test
@@ -998,11 +998,19 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.orgBusinessIdInput.fill("1234567-8")
         formPage.orgPhoneNumberInput.fill("123456789")
         formPage.orgEmailInput.fill("foo@bar.com")
+        formPage.orgAddressInput.fill("Organisaation käyntiosoite")
+        formPage.orgPostalCodeInput.fill("03300")
+        formPage.orgCityInput.fill("Espoo")
 
-        formPage.orgBillingNameInput.fill("Billing Name")
-        formPage.orgBillingAddressInput.fill("Billing Name")
-        formPage.orgBillingPostalCodeInput.fill("12345")
-        formPage.orgBillingCityInput.fill("12345")
+        val orgBillingName = "Laskun vastaanottaja"
+        val orgBillingAddress = "Laskutusosoite 12"
+        val orgBillingPostalCode = "02320"
+        val orgBillingCity = "Espoo"
+
+        formPage.orgBillingNameInput.fill(orgBillingName)
+        formPage.orgBillingAddressInput.fill(orgBillingAddress)
+        formPage.orgBillingPostalCodeInput.fill(orgBillingPostalCode)
+        formPage.orgBillingCityInput.fill(orgBillingCity)
 
         formPage.depthInput.fill("1.5")
         formPage.depthInput.blur()
@@ -1035,11 +1043,12 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
 
+        val expectedInvoiceAddress = "$orgBillingName/$orgBillingAddress,$orgBillingPostalCode,$orgBillingCity"
         messageService.sendScheduledEmails()
         // Email is sent to both organization representative and the reserver
         assertEquals(2, SendEmailServiceMock.emails.size)
-        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("foo@bar.com", false)
-        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi", false)
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("foo@bar.com", expectedInvoiceAddress, false)
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi", expectedInvoiceAddress, false)
     }
 
     @Test

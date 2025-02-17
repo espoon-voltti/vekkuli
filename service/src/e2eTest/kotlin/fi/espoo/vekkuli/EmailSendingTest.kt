@@ -23,11 +23,12 @@ open class EmailSendingTest : PlaywrightTest() {
 
     protected fun assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice(
         emailAddress: String? = null,
+        invoiceAddress: String,
         sendAndAssertSendCount: Boolean? = null
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin laituripaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen $invoiceAddress",
         sendAndAssertSendCount
     )
 
@@ -48,7 +49,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Espoon kaupungin laituripaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         endDate,
         sendAndAssertSendCount
     )
@@ -93,7 +94,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin säilytyspaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         sendAndAssertSendCount
     )
 
@@ -114,7 +115,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Espoon kaupungin säilytyspaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         endDate,
         sendAndAssertSendCount
     )
@@ -147,7 +148,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin traileripaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         sendAndAssertSendCount
     )
 
@@ -168,7 +169,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Espoon kaupungin traileripaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         endDate,
         sendAndAssertSendCount
     )
@@ -213,7 +214,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin talvipaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         sendAndAssertSendCount
     )
 
@@ -234,7 +235,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertFixedTermReservationEmail(
         emailAddress,
         "Espoon kaupungin talvipaikkavaraus",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         endDate,
         sendAndAssertSendCount
     )
@@ -268,7 +269,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin laituripaikkavarauksen jatkaminen",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         sendAndAssertSendCount
     )
 
@@ -298,7 +299,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin säilytyspaikkavarauksen jatkaminen",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         sendAndAssertSendCount
     )
 
@@ -328,7 +329,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin talvipaikkavarauksen jatkaminen",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         sendAndAssertSendCount
     )
 
@@ -358,7 +359,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin traileripaikkavarauksen jatkaminen",
-        "Sinulle on lähetetty lasku osoitteeseen",
+        "Lasku lähetetään osoitteeseen",
         sendAndAssertSendCount
     )
 

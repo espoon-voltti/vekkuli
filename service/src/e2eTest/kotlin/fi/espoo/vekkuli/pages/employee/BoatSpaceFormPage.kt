@@ -72,6 +72,9 @@ class BoatSpaceFormPage(
     val orgNameInput = page.getByTestId("orgName")
     val orgBusinessIdInput = page.getByTestId("orgBusinessId")
     val orgPhoneNumberInput = page.getByTestId("orgPhone")
+    val orgAddressInput = page.getByTestId("orgAddress")
+    val orgPostalCodeInput = page.getByTestId("orgPostalCode")
+    val orgCityInput = page.getByTestId("orgCity")
     val orgEmailInput = page.getByTestId("orgEmail")
 
     val orgBillingNameInput = page.getByTestId("orgBillingName")

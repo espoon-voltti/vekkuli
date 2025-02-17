@@ -64,7 +64,7 @@ class ReserveAndTerminateFlowTest : ReserveTest() {
         reserveBoatSpacePage.revealB314BoatSpace()
         assertThat(reserveBoatSpacePage.reserveTableB314Row).not().isVisible()
 
-        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi")
+        assertEmailIsSentOfEmployeesIndefiniteSlipReservationWithInvoice("mikko.virtanen@noreplytest.fi", "Katu 1, 00100")
         SendEmailServiceMock.resetEmails()
 
         // Terminate the reservation
