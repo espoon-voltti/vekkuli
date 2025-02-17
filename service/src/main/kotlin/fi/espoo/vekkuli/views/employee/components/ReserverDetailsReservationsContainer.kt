@@ -362,7 +362,7 @@ class ReserverDetailsReservationsContainer(
         // language=HTML
         return """
                    <div id="tab-content" class="container block" x-data="{ 
-                showAllBoats: document.getElementById('showAllBoats').checked 
+                showAllBoats: document.getElementById('showAllBoats')?.checked ?? false 
             }">
                        ${if (userType == UserType.EMPLOYEE) reserverDetailsTabs.renderTabNavi(reserver, SubTab.Reservations) else ""}
                        <h3>${t("boatSpaceReservation.title.splitReservations")}</h3>
