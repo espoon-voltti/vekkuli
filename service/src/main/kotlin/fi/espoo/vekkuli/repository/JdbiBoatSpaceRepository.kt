@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceSortBy
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceFilter
@@ -204,43 +205,40 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpace>().firstOrNull()
         }
 
-    override fun getBoatSpaces(): List<BoatSpaceListRow> =
+    override fun getBoatSpaces(sortBy: BoatSpaceSortBy?): List<BoatSpaceListRow> =
         jdbi.withHandleUnchecked { handle ->
+            val sortByQuery = sortBy?.apply()?.takeIf { it.isNotEmpty() } ?: ""
             val sql =
                 """
                 SELECT 
-                    bs.*,
+                    bs.id,
+                    bs.type,
+                    bs.amenity,
+                    bs.width_cm,
+                    bs.length_cm,
+                    bs.description,
                     location.name AS location_name, 
                     location.address AS location_address,
                     price.price_cents,
                     price.name as price_class,
                     ARRAY_AGG(harbor_restriction.excluded_boat_type) AS excluded_boat_types,
-                    COALESCE(
-                        (SELECT EXISTS (
-                            SELECT 1
-                            FROM boat_space_reservation bsr
-                            WHERE bsr.boat_space_id = bs.id
-                              AND (
-                                  (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
-                                  OR (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
-                              )
-                        )), false
-                    ) AS reserved,
-                    res.validity AS validity
+                    r.name as reserver_name,
+                    r.id as reserver_id,
+                    CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place
                 FROM boat_space bs
                 JOIN location ON bs.location_id = location.id
                 JOIN price ON bs.price_id = price.id
                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
-                LEFT JOIN boat_space_reservation res ON res.boat_space_id = bs.id
+                LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
+                LEFT JOIN reserver r ON r.id = bsr.reserver_id
                 GROUP BY bs.id, bs.location_id, bs.price_id, 
-                         location.name, location.address, price.price_cents, 
-                           res.validity, price.name
-                ORDER BY location_name
-
+                     location.name, location.address, 
+                     price.price_cents, price.name, 
+                     r.name, r.id, bs.place_number, bs.section
+                $sortByQuery
                 """.trimIndent()
 
             val query = handle.createQuery(sql)
-            query.bind("endDateCut", timeProvider.getCurrentDate())
             query.mapTo<BoatSpaceListRow>().toList()
         }
 

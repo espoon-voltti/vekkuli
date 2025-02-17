@@ -1,7 +1,10 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceSortBy
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.filter.SortDirection
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -22,7 +25,7 @@ interface BoatSpaceRepository {
 
     fun isBoatSpaceReserved(boatSpace: Int): Boolean
 
-    fun getBoatSpaces(): List<BoatSpaceListRow>
+    fun getBoatSpaces(sortBy: BoatSpaceSortBy? = null): List<BoatSpaceListRow>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -31,7 +34,14 @@ fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item)
 class BoatSpaceService(
     private val boatSpaceRepo: BoatSpaceRepository
 ) {
-    fun getBoatSpaces(): List<BoatSpaceListRow> = boatSpaceRepo.getBoatSpaces()
+    fun getBoatSpacesFiltered(params: BoatSpaceListParams): List<BoatSpaceListRow> {
+        val sortBy =
+            BoatSpaceSortBy(
+                listOf(params.sortBy to if (params.ascending) SortDirection.Ascending else SortDirection.Descending)
+            )
+        val boatSpaces = boatSpaceRepo.getBoatSpaces(sortBy)
+        return boatSpaces
+    }
 
     fun getUnreservedBoatSpaceOptions(
         boatType: BoatType? = null,
