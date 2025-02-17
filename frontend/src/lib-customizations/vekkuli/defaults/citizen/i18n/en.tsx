@@ -296,7 +296,8 @@ const en: Translations = {
       },
       trailerInfo: {
         title: 'Trailer information',
-        registrationCode: 'Registration number'
+        registrationNumber: 'Registration number',
+        editTrailerDetails: 'Edit trailer details'
       },
       allYearStorage: {
         Trailer: {

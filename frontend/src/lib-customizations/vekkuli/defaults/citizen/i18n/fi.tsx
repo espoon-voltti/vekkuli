@@ -296,7 +296,8 @@ export default {
       },
       trailerInfo: {
         title: 'Trailerin tiedot',
-        registrationCode: 'Rekisteritunnus'
+        registrationNumber: 'Rekisterinumero',
+        editTrailerDetails: 'Muokkaa trailerin tietoja'
       },
       allYearStorage: {
         Trailer: {
