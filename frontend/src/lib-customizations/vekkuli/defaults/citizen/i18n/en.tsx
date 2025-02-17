@@ -367,6 +367,9 @@ const en: Translations = {
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Paid ${paymentDate.format()}` : '-'
     },
+    invoiceState: (dueDate?: LocalDate) => {
+      return dueDate ? `Invoiced ${dueDate.format()}` : '-'
+    },
     errors: {
       startReservation: {
         title: 'Reservation is not possible',
