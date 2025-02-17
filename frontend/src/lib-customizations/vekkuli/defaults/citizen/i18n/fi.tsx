@@ -517,7 +517,18 @@ export default {
         change: 'Vaihda paikka'
       },
       modal: {
-        goBackToReservation: 'Siirry varaukseen'
+        goBackToReservation: 'Siirry varaukseen',
+        termination: {
+          title: 'Olet irtisanomassa venepaikkaa:',
+          moveBoatImmediately:
+            'Huomioi, että sinun on siirrettävä veneesi välittömästi pois venepaikalta kun olet irtisanonut paikan.',
+          notEntitledToRefund:
+            'Espoon kaupunki ei myönnä hyvitystä maksetusta venepaikasta.',
+          confirm: 'Irtisano venepaikka',
+          terminationFailed:
+            'Venepaikan irtisanomisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
+          success: 'Paikka irtisanottu onnistuneesti'
+        }
       },
       showAllBoats: 'Näytä myös veneet joita ei ole liitetty venepaikkoihin',
       renewNotification: (date: LocalDate) =>

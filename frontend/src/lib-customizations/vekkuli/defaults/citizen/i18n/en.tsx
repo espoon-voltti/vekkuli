@@ -516,7 +516,18 @@ const en: Translations = {
         change: 'Change Place'
       },
       modal: {
-        goBackToReservation: 'Go to the reservation'
+        goBackToReservation: 'Go to the reservation',
+        termination: {
+          title: 'You are terminating the boat space reservation',
+          moveBoatImmediately:
+            'Please note that you must immediately move your boat from the berth once you have terminated the berth agreement.',
+          notEntitledToRefund:
+            'The City of Espoo does not grant a refund for a paid berth.',
+          confirm: 'Terminate berth',
+          terminationFailed:
+            'An error occurred while terminating the boat space reservation. Please contact customer service.',
+          success: 'Reservation terminated successfully'
+        }
       },
       showAllBoats: 'Also show boats that are not linked to a reservation',
       renewNotification: (date: LocalDate) =>
