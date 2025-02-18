@@ -40,6 +40,7 @@ const Content = React.memo(function Content({
 }: {
   reservation: Result<BoatSpaceReservation>
 }) {
+  const i18n = useTranslation()
   return (
     <Loader results={[reservation]}>
       {(loadedReservation) => {
@@ -47,22 +48,19 @@ const Content = React.memo(function Content({
           loadedReservation,
           loadedReservation.reservationInfo
         )
+        const isIndefinite =
+          loadedReservation.reservationInfo.validity === 'Indefinite'
         return (
           <>
-            <h2 className="h1">Paikan varaus onnistui</h2>
+            <h2 className="h1">{i18n.reservation.confirmationPage.header}</h2>
             <div className="container">
               <ul className="has-bullets ml-none">
+                <li />
+                <li>{i18n.reservation.confirmationPage.emailInfo}</li>
                 <li>
-                  Saat viestin vahvistuksesta myös ilmoittamaasi
-                  sähköpostiosoitteeseen.
-                </li>
-                <li>
-                  Vahvistussähköpostissa on lisätietoa varaamastasi venepaikasta
-                  ja sataman käytännöistä.
-                </li>
-                <li>
-                  Varauksesi on voimassa toistaiseksi ja voit jatkaa sitä
-                  seuraavalle kaudelle vuosittain jatkokauden aikana.
+                  {isIndefinite
+                    ? i18n.reservation.confirmationPage.indefiniteInfo
+                    : i18n.reservation.confirmationPage.fixedInfo}
                 </li>
               </ul>
             </div>
