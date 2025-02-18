@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli.controllers
 
 import fi.espoo.vekkuli.boatSpace.organization.OrganizationDetailsView
+import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.common.Unauthorized
 import fi.espoo.vekkuli.config.MessageUtil
@@ -56,7 +57,8 @@ class CitizenUserController(
     private val trailerCard: TrailerCard,
     private val editCitizen: EditCitizen,
     private val paymentService: PaymentService,
-    private val sentMessageModalView: SentMessageModalView
+    private val sentMessageModalView: SentMessageModalView,
+    private val reservationFormService: ReservationFormService
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -911,7 +913,7 @@ class CitizenUserController(
             )
         )
 
-        reservationService.updateReservationStatus(
+        reservationFormService.markReservationAsPaid(
             reservationId,
             reservationStatus,
             paymentDate.atStartOfDay(),
