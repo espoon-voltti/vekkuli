@@ -63,7 +63,8 @@ const sv: Translations = {
     },
     openExpandingInfo: 'Öppna detaljer',
     errors: {
-      genericGetError: 'Hämtning av information misslyckades'
+      genericGetError: 'Hämtning av information misslyckades',
+      validationWarning: 'Vänligen fyll i alla obligatoriska fält'
     },
     datetime: {
       dayShort: 'pv',

@@ -62,7 +62,8 @@ export default {
     },
     openExpandingInfo: 'Avaa lisätietokenttä',
     errors: {
-      genericGetError: 'Tietojen hakeminen ei onnistunut'
+      genericGetError: 'Tietojen hakeminen ei onnistunut',
+      validationWarning: 'Pakollisia tietoja puuttuu'
     },
     datetime: {
       dayShort: 'pv',

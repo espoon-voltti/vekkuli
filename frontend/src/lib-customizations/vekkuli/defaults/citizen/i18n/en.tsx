@@ -63,7 +63,8 @@ const en: Translations = {
     },
     openExpandingInfo: 'Open the details',
     errors: {
-      genericGetError: 'Error in fetching the requested information'
+      genericGetError: 'Error in fetching the requested information',
+      validationWarning: 'Missing required information'
     },
     datetime: {
       dayShort: 'd',
