@@ -4,7 +4,7 @@ import passport from 'passport'
 import { requireAuthentication } from './auth/index.js'
 import { sessionSupport } from './auth/session.js'
 import { RedisClient } from './clients/redis-client.js'
-import { Config, serviceUrl } from './config.js'
+import { Config, employeeRootUrl, serviceUrl } from './config.js'
 import { cacheControl } from './middleware/cache-control.js'
 import { errorHandler } from './middleware/errors.js'
 import { createProxy } from './utils/proxy.js'
@@ -26,7 +26,7 @@ export function createDevRouter(
 
   router.use(
     requireAuthentication('user', (_req, res) => {
-      res.redirect('/virkailija')
+      res.redirect(employeeRootUrl)
     })
   )
   router.use(proxy)

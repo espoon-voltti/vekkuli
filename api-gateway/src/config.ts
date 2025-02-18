@@ -235,6 +235,9 @@ export const appBaseUrl = required(
   process.env.BASE_URL ?? ifNodeEnv(['local', 'test'], 'local')
 )
 
+export const citizenRootUrl = '/'
+export const employeeRootUrl = '/virkailija'
+
 export const serviceUrl = required(
   process.env.SERVICE_URL ??
     ifNodeEnv(['local', 'test'], 'http://localhost:8080')
