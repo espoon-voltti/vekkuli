@@ -399,6 +399,38 @@ class ReservationFormService(
         }
     }
 
+    @Transactional
+    fun markReservationAsPaid(
+        reservationId: Int,
+        reservationStatus: ReservationStatus,
+        paymentDate: LocalDateTime,
+        paymentStatusTest: String
+    ) {
+        // If reservation is to be set as confirmed, mark the original reservation as ended
+        if (reservationStatus == ReservationStatus.Confirmed) {
+            val reservation =
+                boatReservationService.getBoatSpaceReservation(reservationId)
+                    ?: throw BadRequest("Reservation $reservationId not found")
+
+            if (reservation.originalReservationId != null) {
+                val originalReservation =
+                    boatReservationService.getBoatSpaceReservation(reservation.originalReservationId)
+                        ?: throw BadRequest("Original reservation ${reservation.originalReservationId} not found")
+
+                if (originalReservation.status == ReservationStatus.Confirmed) {
+                    boatReservationService.markReservationEnded(originalReservation.id, reservation.startDate)
+                }
+            }
+        }
+
+        boatReservationService.updateReservationStatus(
+            reservationId,
+            reservationStatus,
+            paymentDate,
+            paymentStatusTest
+        )
+    }
+
     fun getReservationForApplicationForm(reservationId: Int) = reservationRepository.getReservationForApplicationForm(reservationId)
 
     fun getBoatSpaceFormForCitizen(
