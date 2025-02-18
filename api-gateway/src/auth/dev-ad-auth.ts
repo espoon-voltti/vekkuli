@@ -3,6 +3,8 @@ import _ from 'lodash'
 import passport, { Strategy } from 'passport'
 import { AdUser, userLogin } from '../clients/service-client.js'
 import { appBaseUrl, employeeRootUrl } from '../config.js'
+import { logWarn } from '../logging/index.js'
+import { errorOrUndefined } from '../utils/errorOrUndefined.js'
 import {
   assertStringProp,
   AsyncRequestHandler,
@@ -114,8 +116,15 @@ export function createDevAdRouter(sessions: Sessions): Router {
   router.get(
     `/logout`,
     toRequestHandler(async (req, res) => {
-      await logout(sessions, req, res)
-      res.redirect(employeeRootUrl)
+      try {
+        await logout(sessions, req, res)
+      } catch (error) {
+        logWarn('Logout failed', req, undefined, errorOrUndefined(error))
+      } finally {
+        if (!res.headersSent) {
+          res.redirect(employeeRootUrl)
+        }
+      }
     })
   )
 

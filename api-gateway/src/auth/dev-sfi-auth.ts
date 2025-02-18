@@ -2,11 +2,13 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
-import { ErrorRequestHandler, Request, Router, urlencoded } from 'express'
+import { Request, Router, urlencoded } from 'express'
 import _ from 'lodash'
 import passport, { Strategy } from 'passport'
 import { citizenLogin, CitizenUser } from '../clients/service-client.js'
 import { appBaseUrl, citizenRootUrl } from '../config.js'
+import { logWarn } from '../logging/index.js'
+import { errorOrUndefined } from '../utils/errorOrUndefined.js'
 import {
   assertStringProp,
   AsyncRequestHandler,
@@ -172,8 +174,15 @@ export function createDevSfiRouter(sessions: Sessions): Router {
   router.get(
     `/logout`,
     toRequestHandler(async (req, res) => {
-      await logout(sessions, req, res)
-      res.redirect(citizenRootUrl)
+      try {
+        await logout(sessions, req, res)
+      } catch (error) {
+        logWarn('Logout failed', req, undefined, errorOrUndefined(error))
+      } finally {
+        if (!res.headersSent) {
+          res.redirect(citizenRootUrl)
+        }
+      }
     })
   )
 
