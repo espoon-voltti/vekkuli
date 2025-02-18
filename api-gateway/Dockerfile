@@ -1,6 +1,6 @@
 FROM node:20.11-bookworm-slim AS base
 
-ARG CACHE_BUST=2025-W05
+ARG CACHE_BUST=none
 
 WORKDIR /app
 

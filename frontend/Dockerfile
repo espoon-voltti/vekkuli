@@ -7,7 +7,7 @@ ARG NGINX_VERSION=1.26.0
 
 FROM node:22.12.0-bookworm-slim AS builder
 
-ARG CACHE_BUST=2025-W05
+ARG CACHE_BUST=none
 
 WORKDIR /project
 
@@ -26,7 +26,7 @@ FROM builder AS test
 
 FROM nginx:${NGINX_VERSION}
 
-ARG CACHE_BUST=2025-W05
+ARG CACHE_BUST=none
 
 ENV NGINX_ENV=local \
   TZ=UTC
