@@ -296,7 +296,8 @@ export default {
       },
       trailerInfo: {
         title: 'Trailerin tiedot',
-        registrationCode: 'Rekisteritunnus'
+        registrationNumber: 'Rekisterinumero',
+        editTrailerDetails: 'Muokkaa trailerin tietoja'
       },
       allYearStorage: {
         Trailer: {
@@ -365,6 +366,9 @@ export default {
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'
+    },
+    invoiceState: (dueDate?: LocalDate) => {
+      return dueDate ? `Laskutettu ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {

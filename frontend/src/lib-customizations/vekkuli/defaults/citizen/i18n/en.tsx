@@ -296,7 +296,8 @@ const en: Translations = {
       },
       trailerInfo: {
         title: 'Trailer information',
-        registrationCode: 'Registration number'
+        registrationNumber: 'Registration number',
+        editTrailerDetails: 'Edit trailer details'
       },
       allYearStorage: {
         Trailer: {
@@ -366,6 +367,9 @@ const en: Translations = {
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Paid ${paymentDate.format()}` : '-'
+    },
+    invoiceState: (dueDate?: LocalDate) => {
+      return dueDate ? `Invoiced ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {

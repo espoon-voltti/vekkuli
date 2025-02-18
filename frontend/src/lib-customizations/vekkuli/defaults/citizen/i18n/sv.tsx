@@ -288,7 +288,8 @@ const sv: Translations = {
       },
       trailerInfo: {
         title: 'Information om släpvagnen',
-        registrationCode: 'Registernummer'
+        registrationNumber: 'Registernummer',
+        editTrailerDetails: 'Redigera släpvagnsdetaljer'
       },
       allYearStorage: {
         Trailer: {
@@ -354,6 +355,9 @@ const sv: Translations = {
     },
     paymentState: (paymentDate?: LocalDate) => {
       return paymentDate ? `Betald ${paymentDate.format()}` : '-'
+    },
+    invoiceState: (dueDate?: LocalDate) => {
+      return dueDate ? `Faktureras ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {
