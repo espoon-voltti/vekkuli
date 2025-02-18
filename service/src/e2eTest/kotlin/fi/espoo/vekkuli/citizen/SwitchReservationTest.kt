@@ -6,10 +6,12 @@ import fi.espoo.vekkuli.baseUrlWithEnglishLangParam
 import fi.espoo.vekkuli.baseUrlWithFinnishLangParam
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
+import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.assertEquals
 
 @ActiveProfiles("test")
 class SwitchReservationTest : ReserveTest() {
@@ -34,6 +36,7 @@ class SwitchReservationTest : ReserveTest() {
             paymentPage.nordeaSuccessButton.click()
             val confirmationPage = ConfirmationPage(page)
             assertThat(confirmationPage.reservationSuccessNotification).isVisible()
+
             assertCorrectPaymentForReserver(
                 "korhonen",
                 PaymentStatus.Success,
@@ -47,6 +50,8 @@ class SwitchReservationTest : ReserveTest() {
             citizenDetails.memoNavi.click()
             assertThat(citizenDetails.userMemo(2))
                 .containsText("Leo Korhonen vaihtoi paikan. Vanha paikka: Haukilahti D 013. Uusi paikka: Haukilahti B 001.")
+
+            assertEquals("Vaihto Venepaikka 2024 Haukilahti D 013", PaytrailMock.paytrailPayments.first().items?.first()?.description)
         } catch (e: AssertionError) {
             handleError(e)
         }
