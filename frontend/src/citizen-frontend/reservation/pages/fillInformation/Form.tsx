@@ -217,12 +217,13 @@ export default React.memo(function Form({ reservation }: FormProperties) {
 })
 
 export const ValidationWarning = React.memo(function ValidationWarning() {
+  const i18n = useTranslation()
   return (
     <div className="warning block form-validation-message" role="alert">
       <span className="icon">
         <WarningExclamation isError={false} />
       </span>
-      <span className="p-l">Pakollisia tietoja puuttuu</span>
+      <span className="p-l">{i18n.common.errors.validationWarning}</span>
     </div>
   )
 })

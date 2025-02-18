@@ -62,7 +62,8 @@ export default {
     },
     openExpandingInfo: 'Avaa lisätietokenttä',
     errors: {
-      genericGetError: 'Tietojen hakeminen ei onnistunut'
+      genericGetError: 'Tietojen hakeminen ei onnistunut',
+      validationWarning: 'Pakollisia tietoja puuttuu'
     },
     datetime: {
       dayShort: 'pv',
@@ -408,6 +409,7 @@ export default {
     continueToPaymentButton: 'Jatka maksamaan'
   },
   boat: {
+    newBoat: 'Uusi vene',
     delete: 'Poista vene',
     deleteFailed:
       'Veneen poistamisessa tapahtui virhe. Ota yhteyttä asiakaspalveluun.',
@@ -459,6 +461,7 @@ export default {
       JetSki: 'Vesiskootteri',
       Other: 'Muu'
     },
+    ownershipTitle: 'Veneen omistussuhde Traficomin mukaan',
     ownershipStatus: {
       Owner: 'Omistan veneen',
       User: 'Olen veneen haltija',
