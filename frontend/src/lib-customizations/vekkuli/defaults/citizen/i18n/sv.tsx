@@ -63,7 +63,8 @@ const sv: Translations = {
     },
     openExpandingInfo: 'Öppna detaljer',
     errors: {
-      genericGetError: 'Hämtning av information misslyckades'
+      genericGetError: 'Hämtning av information misslyckades',
+      validationWarning: 'Vänligen fyll i alla obligatoriska fält'
     },
     datetime: {
       dayShort: 'pv',
@@ -415,6 +416,7 @@ const sv: Translations = {
     continueToPaymentButton: 'Fortsätt till betalning'
   },
   boat: {
+    newBoat: 'Ny båt',
     delete: 'Ta bort båt',
     deleteFailed:
       'Ett fel uppstod vid borttagning av båten. Vänligen kontakta kundtjänst.',
@@ -467,7 +469,7 @@ const sv: Translations = {
       Citizen: 'Jag bokar som privatperson',
       Organization: 'Jag bokar för en organisation'
     },
-
+    ownershipTitle: 'Ägande enligt Traficom',
     ownershipStatus: {
       Owner: 'Jag äger båten',
       User: 'Jag är användare av båten',

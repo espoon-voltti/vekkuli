@@ -167,7 +167,7 @@ const initialBoatSelectionState = (
   if (initialBoatSelection.options.length > 0)
     initialBoatSelection.options.unshift({
       domValue: '',
-      label: 'Uusi vene',
+      label: (i18n: Translations) => i18n.boat.newBoat,
       value: null
     })
   return initialBoatSelection

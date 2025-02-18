@@ -63,7 +63,8 @@ const en: Translations = {
     },
     openExpandingInfo: 'Open the details',
     errors: {
-      genericGetError: 'Error in fetching the requested information'
+      genericGetError: 'Error in fetching the requested information',
+      validationWarning: 'Missing required information'
     },
     datetime: {
       dayShort: 'd',
@@ -420,6 +421,7 @@ const en: Translations = {
     continueToPaymentButton: 'Continue to payment'
   },
   boat: {
+    newBoat: 'New boat',
     delete: 'Delete boat',
     deleteFailed:
       'An error occurred while deleting the boat. Please contact customer support.',
@@ -471,6 +473,7 @@ const en: Translations = {
       JetSki: 'Jet ski',
       Other: 'Other'
     },
+    ownershipTitle: 'Ownership of the boat according to Traficom',
     ownershipStatus: {
       Owner: 'I own the boat',
       User: 'I am the user of the boat',
