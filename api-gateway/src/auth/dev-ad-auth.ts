@@ -1,15 +1,15 @@
-import _ from 'lodash'
 import { Request, Router, urlencoded } from 'express'
+import _ from 'lodash'
+import passport, { Strategy } from 'passport'
+import { AdUser, userLogin } from '../clients/service-client.js'
+import { appBaseUrl, employeeRootUrl } from '../config.js'
 import {
   assertStringProp,
   AsyncRequestHandler,
   toRequestHandler
 } from '../utils/express.js'
-import { AdUser, userLogin } from '../clients/service-client.js'
-import { Sessions } from './session.js'
-import passport, { Strategy } from 'passport'
 import { AppSessionUser, authenticate, login, logout } from './index.js'
-import { appBaseUrl } from '../config.js'
+import { Sessions } from './session.js'
 
 class DevStrategy extends Strategy {
   constructor(private verifyUser: (req: Request) => Promise<AppSessionUser>) {
@@ -100,7 +100,7 @@ export function createDevAdRouter(sessions: Sessions): Router {
           res.redirect(`${appBaseUrl}?loginError=true`)
         } else {
           await login(req, user)
-          res.redirect('/virkailija') //parseRelayState(req) ?? appBaseUrl)
+          res.redirect(employeeRootUrl) //parseRelayState(req) ?? appBaseUrl)
         }
       } catch (err) {
         if (!res.headersSent) {
@@ -115,7 +115,7 @@ export function createDevAdRouter(sessions: Sessions): Router {
     `/logout`,
     toRequestHandler(async (req, res) => {
       await logout(sessions, req, res)
-      res.redirect('/virkailija')
+      res.redirect(employeeRootUrl)
     })
   )
 

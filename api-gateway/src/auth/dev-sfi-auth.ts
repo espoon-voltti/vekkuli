@@ -2,19 +2,19 @@
 //
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
+import { ErrorRequestHandler, Request, Router, urlencoded } from 'express'
 import _ from 'lodash'
-import { Request, Router, urlencoded } from 'express'
+import passport, { Strategy } from 'passport'
+import { citizenLogin, CitizenUser } from '../clients/service-client.js'
+import { appBaseUrl, citizenRootUrl } from '../config.js'
 import {
   assertStringProp,
   AsyncRequestHandler,
   toRequestHandler
 } from '../utils/express.js'
-import { citizenLogin, CitizenUser } from '../clients/service-client.js'
-import { Sessions } from './session.js'
-import passport, { Strategy } from 'passport'
 import { AppSessionUser, authenticate, login, logout } from './index.js'
-import { appBaseUrl } from '../config.js'
 import { parseRelayState } from './saml/common.js'
+import { Sessions } from './session.js'
 
 class DevStrategy extends Strategy {
   constructor(private verifyUser: (req: Request) => Promise<AppSessionUser>) {
@@ -157,7 +157,7 @@ export function createDevSfiRouter(sessions: Sessions): Router {
           res.redirect(`${appBaseUrl}?loginError=true`)
         } else {
           await login(req, user)
-          const redirectUrl = parseRelayState(req) ?? '/'
+          const redirectUrl = parseRelayState(req) ?? citizenRootUrl
           res.redirect(redirectUrl)
         }
       } catch (err) {
@@ -173,7 +173,7 @@ export function createDevSfiRouter(sessions: Sessions): Router {
     `/logout`,
     toRequestHandler(async (req, res) => {
       await logout(sessions, req, res)
-      res.redirect('/')
+      res.redirect(citizenRootUrl)
     })
   )
 

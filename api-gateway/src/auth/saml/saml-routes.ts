@@ -1,25 +1,28 @@
-import express, { Router, urlencoded } from 'express'
-import passport from 'passport'
 import passportSaml from '@node-saml/passport-saml'
-import { login, logout } from '../index.js'
-import { toMiddleware, toRequestHandler } from '../../utils/express.js'
-import { logDebug, logInfo } from '../../logging/index.js'
-import { fromCallback } from '../../utils/promise-utils.js'
-import { Sessions } from '../session.js'
-import { parseDescriptionFromSamlError } from './error-utils.js'
 import type {
   AuthenticateOptions,
   RequestWithUser
 } from '@node-saml/passport-saml/lib/types.js'
+import express, { Router, urlencoded } from 'express'
+import passport from 'passport'
+import { citizenRootUrl, employeeRootUrl } from '../../config.js'
+import { logDebug, logInfo } from '../../logging/index.js'
+import { toMiddleware, toRequestHandler } from '../../utils/express.js'
+import { fromCallback } from '../../utils/promise-utils.js'
+import { login, logout } from '../index.js'
+import { Sessions } from '../session.js'
 import { createLogoutToken, parseRelayState } from './common.js'
+import { parseDescriptionFromSamlError } from './error-utils.js'
 
 const urlencodedParser = urlencoded({ extended: false })
 
 type Role = 'employee' | 'citizen'
 
 function getRedirectUrl(type: Role, req: express.Request): string {
-  if (type === 'employee') return '/virkailija'
-  return parseRelayState(req) ?? '/'
+  return (
+    parseRelayState(req) ??
+    (type === 'employee' ? employeeRootUrl : citizenRootUrl)
+  )
 }
 
 export interface SamlEndpointConfig {
