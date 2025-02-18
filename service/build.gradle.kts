@@ -111,7 +111,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:3.0.3")
     implementation("io.ktor:ktor-client-cio:3.1.0") // CIO engine
-    implementation("io.ktor:ktor-client-content-negotiation:3.0.3") // Content negotiation
+    implementation("io.ktor:ktor-client-content-negotiation:3.1.0") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
