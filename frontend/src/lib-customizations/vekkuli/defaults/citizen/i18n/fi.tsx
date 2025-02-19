@@ -414,7 +414,15 @@ export default {
     cancelReservation: 'Peruuta varaus',
     cancelAndGoBack: 'Peruuta varaus ja palaa takaisin',
     goBack: 'Palaa takaisin',
-    continueToPaymentButton: 'Jatka maksamaan'
+    continueToPaymentButton: 'Jatka maksamaan',
+    timer: {
+      title:
+        'Sinulla on ${minutes} ja ${seconds} aikaa vahvistaa venepaikkavaraus maksamalla.',
+      minute: 'minuutti',
+      minutes: 'minuuttia',
+      second: 'sekunti',
+      seconds: 'sekuntia'
+    }
   },
   boat: {
     newBoat: 'Uusi vene',

@@ -413,7 +413,15 @@ const sv: Translations = {
     cancelReservation: 'Avbryt reservation',
     cancelAndGoBack: 'Avbryt och gå tillbaka',
     goBack: 'Gå tillbaka',
-    continueToPaymentButton: 'Fortsätt till betalning'
+    continueToPaymentButton: 'Fortsätt till betalning',
+    timer: {
+      title:
+        'Du har ${minutes} och ${seconds} på dig att bekräfta din båtplatsreservation genom att betala.',
+      minute: 'minut',
+      minutes: 'minuter',
+      second: 'sekund',
+      seconds: 'sekunder'
+    }
   },
   boat: {
     newBoat: 'Ny båt',
