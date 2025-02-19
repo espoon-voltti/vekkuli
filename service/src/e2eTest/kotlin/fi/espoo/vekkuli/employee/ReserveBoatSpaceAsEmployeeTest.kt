@@ -967,7 +967,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     }
 
     @Test
-    fun reservingABoatSpaceAsOrganization() {
+    fun reservingABoatSpaceAsNewOrganization() {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
 
@@ -993,8 +993,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(page.getByTestId("firstName")).containsText("Mikko")
         assertThat(page.getByTestId("lastName")).containsText("Virtanen")
 
+        val orgName = "My Organization"
         formPage.organizationRadioButton.click()
-        formPage.orgNameInput.fill("My Organization")
+        formPage.orgNameInput.fill(orgName)
         formPage.orgBusinessIdInput.fill("1234567-8")
         formPage.orgPhoneNumberInput.fill("123456789")
         formPage.orgEmailInput.fill("foo@bar.com")
@@ -1043,7 +1044,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
 
-        val expectedInvoiceAddress = "$orgBillingName/$orgBillingAddress,$orgBillingPostalCode,$orgBillingCity"
+        val expectedInvoiceAddress = "$orgBillingName/$orgName/$orgBillingAddress,$orgBillingPostalCode,$orgBillingCity"
         messageService.sendScheduledEmails()
         // Email is sent to both organization representative and the reserver
         assertEquals(2, SendEmailServiceMock.emails.size)
