@@ -11,20 +11,14 @@ object ReservationPaymentConfig {
     const val SUCCESS_REDIRECT_PATH: String = "/api/citizen/paytrail/redirect/success"
     const val CANCEL_REDIRECT_PATH: String = "/api/citizen/paytrail/redirect/cancel"
 
-    fun confirmedFrontendUrl(reservationId: Int): URI {
-        return URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/vahvistus/$reservationId"))
-    }
+    fun confirmedFrontendUrl(reservationId: Int): URI = URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/vahvistus/$reservationId"))
 
-    fun cancelledFrontendUrl(): URI {
-        return URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/maksa?cancelled=true"))
-    }
+    fun cancelledFrontendUrl(): URI = URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/maksa?cancelled=true"))
 
     fun errorFrontendUrl(
         reservationId: Int,
         errorType: PaymentProcessErrorCode
-    ): URI {
-        return URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/varausvirhe/$reservationId/$errorType"))
-    }
+    ): URI = URI.create(Utils.getServiceUrl("/kuntalainen/venepaikka/varausvirhe/$reservationId/$errorType"))
 
     fun redirectUrls() =
         PaytrailCallbackUrl(

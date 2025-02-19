@@ -8,10 +8,9 @@ data class UpdateCitizenInformationInput(
     val phone: String,
 )
 
-fun UpdateCitizenInformationInput.toCitizenUpdateInput(citizenId: UUID): UpdateCitizenParams {
-    return UpdateCitizenParams(
+fun UpdateCitizenInformationInput.toCitizenUpdateInput(citizenId: UUID): UpdateCitizenParams =
+    UpdateCitizenParams(
         id = citizenId,
         phone = phone,
         email = email,
     )
-}

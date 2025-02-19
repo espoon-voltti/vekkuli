@@ -2,11 +2,14 @@ package fi.espoo.vekkuli.pages.citizen
 
 import com.microsoft.playwright.Locator
 
-class FieldLocator(private val root: Locator) {
+class FieldLocator(
+    private val root: Locator
+) {
     fun getField(
         label: String,
         exact: Boolean = false
-    ) = root.locator("label")
+    ) = root
+        .locator("label")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
         .locator("p")
@@ -14,7 +17,8 @@ class FieldLocator(private val root: Locator) {
     fun getInput(
         label: String,
         exact: Boolean = false
-    ) = root.locator("label")
+    ) = root
+        .locator("label")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
         .locator("input")
@@ -22,7 +26,8 @@ class FieldLocator(private val root: Locator) {
     fun getInputError(
         label: String,
         exact: Boolean = false
-    ) = root.locator("label")
+    ) = root
+        .locator("label")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
         .locator(".help.is-danger:not(:empty)")
@@ -30,7 +35,8 @@ class FieldLocator(private val root: Locator) {
     fun getCheckbox(
         label: String,
         exact: Boolean = false
-    ) = root.locator("label.checkbox span")
+    ) = root
+        .locator("label.checkbox span")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
         .locator("input[type=checkbox]")
@@ -38,7 +44,8 @@ class FieldLocator(private val root: Locator) {
     fun getCheckboxError(
         label: String,
         exact: Boolean = false
-    ) = root.locator("label.checkbox span")
+    ) = root
+        .locator("label.checkbox span")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
         .locator("input[type=checkbox]")
@@ -46,7 +53,8 @@ class FieldLocator(private val root: Locator) {
     fun getRadio(
         label: String,
         exact: Boolean = false
-    ) = root.locator("label .body")
+    ) = root
+        .locator("label .body")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
         .locator("..")
@@ -55,7 +63,8 @@ class FieldLocator(private val root: Locator) {
     fun getSelect(
         label: String,
         exact: Boolean = false
-    ) = root.locator("label")
+    ) = root
+        .locator("label")
         .getByText(label, Locator.GetByTextOptions().setExact(exact))
         .locator("..")
         .locator("select")

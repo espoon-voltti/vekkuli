@@ -34,11 +34,14 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         mockTimeProvider(timeProvider, LocalDateTime.of(2024, 4, 30, 12, 0, 0))
 
         val boatSpaces =
-            boatSpaceService.getUnreservedBoatSpaceOptions(
-                width = BigDecimal(3.5),
-                length = BigDecimal(5.0),
-                boatSpaceType = BoatSpaceType.Slip
-            ).first.map { it.boatSpaces }.flatten()
+            boatSpaceService
+                .getUnreservedBoatSpaceOptions(
+                    width = BigDecimal(3.5),
+                    length = BigDecimal(5.0),
+                    boatSpaceType = BoatSpaceType.Slip
+                ).first
+                .map { it.boatSpaces }
+                .flatten()
 
         assertTrue(boatSpaces.any { it.id == 83 }, "Boat space 83 is available")
 
@@ -56,11 +59,14 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             )
         )
         val boatSpacesAfterReservation =
-            boatSpaceService.getUnreservedBoatSpaceOptions(
-                width = BigDecimal(3.5),
-                length = BigDecimal(5.0),
-                boatSpaceType = BoatSpaceType.Slip
-            ).first.map { it.boatSpaces }.flatten()
+            boatSpaceService
+                .getUnreservedBoatSpaceOptions(
+                    width = BigDecimal(3.5),
+                    length = BigDecimal(5.0),
+                    boatSpaceType = BoatSpaceType.Slip
+                ).first
+                .map { it.boatSpaces }
+                .flatten()
 
         assertTrue(boatSpacesAfterReservation.none { it.id == 83 }, "Boat space 83 is not available")
     }

@@ -51,38 +51,37 @@ data class StickerReportRow(
 fun getStickerReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
-): List<StickerReportRow> {
-    return jdbi.inTransactionUnchecked { tx ->
-        tx.createQuery(
-            """
-            SELECT
-                r.name, r.street_address, r.postal_code, r.post_office,
-                l.name AS harbor, CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
-                bs.type AS place_type, bs.amenity, b.name AS boat_name, b.type AS boat_type,
-                bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm, b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm, b.weight_kg AS boat_weight_kg, b.registration_code, b.other_identification,
-                b.ownership, bsr.start_date, bsr.end_date,
-                price.name AS product_code,
-                p.total_cents,
-                p.paid
-            FROM boat_space_reservation bsr
-                JOIN reserver r ON r.id = bsr.reserver_id
-                JOIN boat_space bs ON bs.id = bsr.boat_space_id
-                JOIN location l ON l.id = bs.location_id
-                JOIN payment p ON p.reservation_id = bsr.id
-                LEFT JOIN boat b ON b.id = bsr.boat_id
-                LEFT JOIN price ON price.id = bs.price_id
-            WHERE 
-                bsr.reserver_id IS NOT NULL
-                AND :reportDate::date >= bsr.start_date 
-                AND :reportDate::date <= bsr.end_date
-                AND bsr.status = 'Confirmed'
-            """.trimIndent()
-        )
-            .bind("reportDate", reportDate)
+): List<StickerReportRow> =
+    jdbi.inTransactionUnchecked { tx ->
+        tx
+            .createQuery(
+                """
+                SELECT
+                    r.name, r.street_address, r.postal_code, r.post_office,
+                    l.name AS harbor, CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
+                    bs.type AS place_type, bs.amenity, b.name AS boat_name, b.type AS boat_type,
+                    bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm, b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm, b.weight_kg AS boat_weight_kg, b.registration_code, b.other_identification,
+                    b.ownership, bsr.start_date, bsr.end_date,
+                    price.name AS product_code,
+                    p.total_cents,
+                    p.paid
+                FROM boat_space_reservation bsr
+                    JOIN reserver r ON r.id = bsr.reserver_id
+                    JOIN boat_space bs ON bs.id = bsr.boat_space_id
+                    JOIN location l ON l.id = bs.location_id
+                    JOIN payment p ON p.reservation_id = bsr.id
+                    LEFT JOIN boat b ON b.id = bsr.boat_id
+                    LEFT JOIN price ON price.id = bs.price_id
+                WHERE 
+                    bsr.reserver_id IS NOT NULL
+                    AND :reportDate::date >= bsr.start_date 
+                    AND :reportDate::date <= bsr.end_date
+                    AND bsr.status = 'Confirmed'
+                """.trimIndent()
+            ).bind("reportDate", reportDate)
             .mapTo<StickerReportRow>()
             .list()
     }
-}
 
 fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
     val csvHeader =
@@ -115,27 +114,48 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
 
     for (report in reportRows) {
         csvContent
-            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.streetAddress)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.postalCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.postOffice)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(placeTypeToText(report.placeType))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.boatName)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(boatTypeToText(report.boatType))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.boatWeightKg)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.otherIdentification)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(ownershipStatusToText(report.ownership))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.streetAddress))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.postalCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.postOffice))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.harbor))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(placeTypeToText(report.placeType)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.boatName))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(boatTypeToText(report.boatType)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.boatWeightKg))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.registrationCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.otherIdentification))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(ownershipStatusToText(report.ownership)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.totalCents)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -182,48 +202,47 @@ fun getTerminatedBoatSpaceReport(
 fun getBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
-): List<BoatSpaceReportRow> {
-    return jdbi.inTransactionUnchecked { tx ->
-        tx.createQuery(
-            """
-            SELECT
-                l.name AS harbor,
-                bs.section AS pier,
-                CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
-                bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm,
-                b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm,
-                bs.amenity,
-                r.name,
-                coalesce(m.name, '') AS municipality,
-                b.registration_code,
-                p.total_cents,
-                price.name AS product_code,
-                bsr.termination_timestamp,
-                bsr.termination_reason,
-                bsr.start_date,
-                bsr.end_date,
-                p.paid,
-                bsr.creation_type
-            FROM boat_space bs
-                 LEFT JOIN location l ON l.id = bs.location_id
-                 LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
-                 LEFT JOIN reserver r ON r.id = bsr.reserver_id
-                 LEFT JOIN payment p ON p.reservation_id = bsr.id
-                 LEFT JOIN boat b ON b.id = bsr.boat_id
-                 LEFT JOIN municipality m ON m.code = r.municipality_code
-                 LEFT JOIN price ON price.id = bs.price_id
-            WHERE
-                bsr.start_date is NULL OR
-                (:reportDate::date >= bsr.start_date
-                AND :reportDate::date <= bsr.end_date) 
-            ORDER BY harbor, pier, place
-            """.trimIndent()
-        )
-            .bind("reportDate", reportDate)
+): List<BoatSpaceReportRow> =
+    jdbi.inTransactionUnchecked { tx ->
+        tx
+            .createQuery(
+                """
+                SELECT
+                    l.name AS harbor,
+                    bs.section AS pier,
+                    CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) AS place,
+                    bs.width_cm AS place_width_cm, bs.length_cm AS place_length_cm,
+                    b.width_cm AS boat_width_cm, b.length_cm AS boat_length_cm,
+                    bs.amenity,
+                    r.name,
+                    coalesce(m.name, '') AS municipality,
+                    b.registration_code,
+                    p.total_cents,
+                    price.name AS product_code,
+                    bsr.termination_timestamp,
+                    bsr.termination_reason,
+                    bsr.start_date,
+                    bsr.end_date,
+                    p.paid,
+                    bsr.creation_type
+                FROM boat_space bs
+                     LEFT JOIN location l ON l.id = bs.location_id
+                     LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
+                     LEFT JOIN reserver r ON r.id = bsr.reserver_id
+                     LEFT JOIN payment p ON p.reservation_id = bsr.id
+                     LEFT JOIN boat b ON b.id = bsr.boat_id
+                     LEFT JOIN municipality m ON m.code = r.municipality_code
+                     LEFT JOIN price ON price.id = bs.price_id
+                WHERE
+                    bsr.start_date is NULL OR
+                    (:reportDate::date >= bsr.start_date
+                    AND :reportDate::date <= bsr.end_date) 
+                ORDER BY harbor, pier, place
+                """.trimIndent()
+            ).bind("reportDate", reportDate)
             .mapTo<BoatSpaceReportRow>()
             .list()
     }
-}
 
 fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
     val csvHeader =
@@ -254,25 +273,44 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
 
     for (report in reportRows) {
         csvContent
-            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateToText(report.endDate))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.harbor))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.municipality))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.registrationCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.totalCents)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.startDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.endDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -297,14 +335,22 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
 
     for (report in reportRows) {
         csvContent
-            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.harbor))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -337,22 +383,38 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
 
     for (report in reportRows) {
         csvContent
-            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.registrationCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.totalCents))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.productCode)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.paid))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateToText(report.startDate))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.harbor))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.municipality))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.registrationCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.totalCents)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.productCode))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.startDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -379,16 +441,26 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
 
     for (report in reportRows) {
         csvContent
-            .append(sanitizeCsvCellData(report.harbor)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.pier)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.place)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(amenityToText(report.amenity))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.name)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(report.municipality)).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp))).append(CSV_FIELD_SEPARATOR)
-            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason))).append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.harbor))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.pier))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.place))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeWidthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(intToDecimal(report.placeLengthCm)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(amenityToText(report.amenity)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.name))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(report.municipality))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -404,39 +476,34 @@ fun getReference(p: PaymentHistory): String? =
 
 val localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-fun localDateTimeToText(theDate: LocalDateTime?): String {
-    return theDate?.format(localDateTimeFormatter) ?: ""
-}
+fun localDateTimeToText(theDate: LocalDateTime?): String = theDate?.format(localDateTimeFormatter) ?: ""
 
-fun localDateToText(theDate: LocalDate?): String {
-    return theDate?.toString() ?: ""
-}
+fun localDateToText(theDate: LocalDate?): String = theDate?.toString() ?: ""
 
-fun intToDecimal(nr: String?): String {
-    return nr?.let {
+fun intToDecimal(nr: String?): String =
+    nr?.let {
         val centsInt = it.toIntOrNull() ?: 0
         (centsInt / 100.0).toString().replace(".", ",")
     } ?: ""
-}
 
 const val CSV_FIELD_SEPARATOR = ";"
 const val CSV_RECORD_SEPARATOR = "\r\n"
 
-fun sanitizeCsvCellData(cellData: String?): String {
-    return CsvEscape.escapeCsv(escapeCsvInjection(cellData ?: ""))
-}
+fun sanitizeCsvCellData(cellData: String?): String = CsvEscape.escapeCsv(escapeCsvInjection(cellData ?: ""))
 
 /**
  * Escapes dangerous characters in strings to prevent CSV injection.
  * Prepends dangerous characters with a single quote.
  */
-private fun escapeCsvInjection(value: String): String {
-    return if (value.startsWith("=") || value.startsWith("+") ||
-        value.startsWith("-") || value.startsWith("@") ||
-        value.startsWith("|") || value.startsWith("\\")
+private fun escapeCsvInjection(value: String): String =
+    if (value.startsWith("=") ||
+        value.startsWith("+") ||
+        value.startsWith("-") ||
+        value.startsWith("@") ||
+        value.startsWith("|") ||
+        value.startsWith("\\")
     ) {
         "'$value"
     } else {
         value
     }
-}

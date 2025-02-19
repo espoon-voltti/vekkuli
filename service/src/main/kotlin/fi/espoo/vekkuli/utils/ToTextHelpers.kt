@@ -19,18 +19,17 @@ fun reservationStatusToText(reservationStatus: ReservationStatus): String =
         ReservationStatus.Cancelled -> "Irtisanottu"
     }
 
-fun placeTypeToText(placeType: BoatSpaceType?): String {
-    return when (placeType) {
+fun placeTypeToText(placeType: BoatSpaceType?): String =
+    when (placeType) {
         BoatSpaceType.Storage -> "Säilytys"
         BoatSpaceType.Slip -> "Laituri"
         BoatSpaceType.Trailer -> "Traileri"
         BoatSpaceType.Winter -> "Talvi"
         else -> ""
     }
-}
 
-fun amenityToText(amenity: BoatSpaceAmenity?): String {
-    return when (amenity) {
+fun amenityToText(amenity: BoatSpaceAmenity?): String =
+    when (amenity) {
         BoatSpaceAmenity.None -> ""
         BoatSpaceAmenity.RearBuoy -> "Peräpoiju"
         BoatSpaceAmenity.Beam -> "Aisa"
@@ -39,10 +38,9 @@ fun amenityToText(amenity: BoatSpaceAmenity?): String {
         BoatSpaceAmenity.Buck -> "Pukit"
         else -> ""
     }
-}
 
-fun boatTypeToText(boatType: BoatType?): String {
-    return when (boatType) {
+fun boatTypeToText(boatType: BoatType?): String =
+    when (boatType) {
         BoatType.OutboardMotor -> "Perämoottori"
         BoatType.InboardMotor -> "Sisämoottori"
         BoatType.Sailboat -> "Purjevene"
@@ -50,20 +48,18 @@ fun boatTypeToText(boatType: BoatType?): String {
         BoatType.Other -> "Muu"
         else -> ""
     }
-}
 
-fun ownershipStatusToText(ownershipStatus: OwnershipStatus?): String {
-    return when (ownershipStatus) {
+fun ownershipStatusToText(ownershipStatus: OwnershipStatus?): String =
+    when (ownershipStatus) {
         OwnershipStatus.Owner -> "Omistaja"
         OwnershipStatus.User -> "Haltija"
         OwnershipStatus.CoOwner -> "Kanssaomistaja"
         OwnershipStatus.FutureOwner -> "Tuleva omistaja"
         else -> ""
     }
-}
 
-fun terminationReasonToText(terminationReason: ReservationTerminationReason?): String {
-    return when (terminationReason) {
+fun terminationReasonToText(terminationReason: ReservationTerminationReason?): String =
+    when (terminationReason) {
         ReservationTerminationReason.UserRequest -> "Toive"
         ReservationTerminationReason.InvalidOwner -> "Väärä omistaja"
         ReservationTerminationReason.RuleViolation -> "Sääntörikkomus"
@@ -71,42 +67,37 @@ fun terminationReasonToText(terminationReason: ReservationTerminationReason?): S
         ReservationTerminationReason.Other -> "Muu"
         else -> ""
     }
-}
 
-fun boatSpaceTypeToText(boatSpaceType: BoatSpaceType?): String {
-    return when (boatSpaceType) {
+fun boatSpaceTypeToText(boatSpaceType: BoatSpaceType?): String =
+    when (boatSpaceType) {
         BoatSpaceType.Slip -> "Laituri"
         BoatSpaceType.Storage -> "Säilytys"
         BoatSpaceType.Trailer -> "Traileri"
         BoatSpaceType.Winter -> "Talvi"
         else -> ""
     }
-}
 
-fun paymentStatusToText(paymentStatus: PaymentStatus?): String {
-    return when (paymentStatus) {
+fun paymentStatusToText(paymentStatus: PaymentStatus?): String =
+    when (paymentStatus) {
         PaymentStatus.Created -> "Luotu"
         PaymentStatus.Success -> "Maksettu"
         PaymentStatus.Failed -> "Keskeytynyt"
         PaymentStatus.Refunded -> "Hyvitetty"
         else -> ""
     }
-}
 
-fun paymentTypeToText(paymentType: PaymentType?): String {
-    return when (paymentType) {
+fun paymentTypeToText(paymentType: PaymentType?): String =
+    when (paymentType) {
         PaymentType.OnlinePayment -> "Verkkomaksu"
         PaymentType.Invoice -> "Lasku"
         PaymentType.Other -> "Muu"
         else -> ""
     }
-}
 
-fun reservationCreationTypeToText(creationType: CreationType?): String {
-    return when (creationType) {
+fun reservationCreationTypeToText(creationType: CreationType?): String =
+    when (creationType) {
         CreationType.New -> "Uusi"
         CreationType.Renewal -> "Jatko"
         CreationType.Switch -> "Vaihto"
         else -> ""
     }
-}

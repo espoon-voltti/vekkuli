@@ -23,8 +23,8 @@ data class UpdateBoatInput(
 fun UpdateBoatInput.toBoatInput(
     boatId: Int,
     reserverId: UUID
-): Boat {
-    return Boat(
+): Boat =
+    Boat(
         id = boatId,
         reserverId = reserverId,
         name = name,
@@ -38,4 +38,3 @@ fun UpdateBoatInput.toBoatInput(
         extraInformation = extraInformation,
         ownership = ownership,
     )
-}

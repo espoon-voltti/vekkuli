@@ -18,9 +18,7 @@ interface CitizenAccessControl {
 class ContextCitizenAccessControl(
     private val citizenContextProvider: CitizenContextProvider,
 ) : CitizenAccessControl {
-    override fun requireCitizen(): CitizenWithDetails {
-        return citizenContextProvider.getCurrentCitizen() ?: throw Unauthorized()
-    }
+    override fun requireCitizen(): CitizenWithDetails = citizenContextProvider.getCurrentCitizen() ?: throw Unauthorized()
 
     override fun requireCitizenId(citizenId: UUID) {
         val citizen = citizenContextProvider.getCurrentCitizen()
@@ -39,7 +37,5 @@ class RequestCitizenContextProvider(
     private val request: HttpServletRequest,
     private val reserverService: ReserverService,
 ) : CitizenContextProvider {
-    override fun getCurrentCitizen(): CitizenWithDetails? {
-        return getCitizen(request, reserverService)
-    }
+    override fun getCurrentCitizen(): CitizenWithDetails? = getCitizen(request, reserverService)
 }

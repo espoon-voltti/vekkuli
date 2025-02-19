@@ -4,7 +4,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class Accordion {
-    fun createBuilder(): AccordionBuilder {
-        return AccordionBuilder()
-    }
+    fun createBuilder(): AccordionBuilder = AccordionBuilder()
 }

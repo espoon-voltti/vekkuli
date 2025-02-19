@@ -9,6 +9,4 @@ interface IGetByTestId<T> where T : BasePage, T : IGetByTestId<T>
 fun <T> IGetByTestId<T>.getByDataTestId(
     testId: String,
     locator: Locator? = null
-): Locator where T : BasePage, T : IGetByTestId<T> {
-    return (this as T).getByDataTestId(testId, locator)
-}
+): Locator where T : BasePage, T : IGetByTestId<T> = (this as T).getByDataTestId(testId, locator)

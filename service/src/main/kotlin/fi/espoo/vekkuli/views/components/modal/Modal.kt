@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class Modal {
-    fun createModalBuilder(): ModalBuilder {
-        return ModalBuilder()
-    }
+    fun createModalBuilder(): ModalBuilder = ModalBuilder()
 
     fun openModalButton(
         text: String,
@@ -26,9 +24,7 @@ class Modal {
             """.trimIndent()
     }
 
-    fun createOpenModalBuilder(): OpenModalButtonBuilder {
-        return OpenModalButtonBuilder()
-    }
+    fun createOpenModalBuilder(): OpenModalButtonBuilder = OpenModalButtonBuilder()
 
     class OpenModalButtonBuilder {
         var text: String = ""
