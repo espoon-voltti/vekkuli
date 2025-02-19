@@ -129,8 +129,6 @@ class InvoicePreview(
                     ${if (isOrganization) invoiceLine(t("invoice.label.companyId"), model.orgId,"orgId") else ""}
                     ${invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress,"reserverAddress")}
                     
-                    <hr/>
-                    
                     $contactPerson
                     
                     <h3 class="subtitle">${t("invoice.subtitle.invoiceDetails")}</h3>

@@ -1168,6 +1168,72 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         }
     }
 
+    @Test
+    fun `Organization billing name is added to the invoice preview`() {
+        EmployeeHomePage(page).employeeLogin()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.navigateTo()
+        reservationPage.revealB314BoatSpace()
+        reservationPage.reserveTableB314Row.locator(".reserve-button").click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.existingCitizenSelector.click()
+        typeText(formPage.citizenSearchInput, "olivia")
+        page.waitForHtmxSettle()
+        page.waitForCondition { formPage.citizenSearchOption1.isVisible }
+        formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+
+        formPage.organizationRadioButton.click()
+        assertThat(formPage.espoonPursiseuraRadioButton).isVisible()
+        formPage.espoonPursiseuraRadioButton.click()
+        assertThat(formPage.orgBillingNameInput).not().isEmpty()
+
+        formPage.orgBillingNameInput.fill("expected billing name")
+        formPage.fillFormWithPrefilledValuesAndSubmit()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.contactPerson).hasValue("expected billing name")
+
+        invoicePreviewPage.sendButton.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        assertThat(organizationDetailsPage.organizationBillingNameField).hasText("expected billing name")
+    }
+
+    @Test
+    fun `Organization billing name is optional when making reservation`() {
+        EmployeeHomePage(page).employeeLogin()
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.navigateTo()
+        reservationPage.revealB314BoatSpace()
+        reservationPage.reserveTableB314Row.locator(".reserve-button").click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.existingCitizenSelector.click()
+        typeText(formPage.citizenSearchInput, "olivia")
+        page.waitForHtmxSettle()
+        page.waitForCondition { formPage.citizenSearchOption1.isVisible }
+        formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+
+        formPage.organizationRadioButton.click()
+        assertThat(formPage.espoonPursiseuraRadioButton).isVisible()
+        formPage.espoonPursiseuraRadioButton.click()
+        assertThat(formPage.orgBillingNameInput).not().isEmpty()
+
+        formPage.orgBillingNameInput.fill("")
+        formPage.fillFormWithPrefilledValuesAndSubmit()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.contactPerson).hasValue("")
+
+        invoicePreviewPage.sendButton.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        assertThat(organizationDetailsPage.organizationBillingNameField).hasText("-")
+    }
+
     private fun renewABoatSpaceReservation(sendInvoice: Boolean) {
         mockTimeProvider(timeProvider, LocalDateTime.of(2025, 1, 7, 0, 0, 0))
         val listingPage = reservationListPage()

@@ -14,4 +14,5 @@ class InvoicePreviewPage(
     val confirmModalCancel = page.getByTestId("confirm-modal-cancel")
     val priceWithTax = page.getByTestId("priceWithTax")
     val description = page.getByTestId("description")
+    val contactPerson = page.getByTestId("contactPerson")
 }

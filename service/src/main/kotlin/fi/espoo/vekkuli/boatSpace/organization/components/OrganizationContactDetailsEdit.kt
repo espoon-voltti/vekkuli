@@ -67,7 +67,7 @@ class OrganizationContactDetailsEdit(
                 "organizationDetails.title.billingName",
                 "billingName",
                 organization.billingName,
-                required = true,
+                required = false,
             )
         val billingStreetAddress =
             formComponents.textInput(
