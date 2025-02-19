@@ -151,7 +151,7 @@ class BoatSpaceList(
                         </div>
                          <div class="employee-filter-container">
                          <div class="filter-group">
-                              <h1 class="label">${t("boatSpaceReservation.title.active")}</h1>
+                              <h1 class="label">${t("boatSpaceReservation.title.state")}</h1>
                               <div class="tag-container">
                                 ${filters.boatSpaceStateFilter(searchParams.boatSpaceState)}
                               </div>
