@@ -13,10 +13,8 @@ import fi.espoo.vekkuli.repository.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.utils.intToDecimal
-import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -74,50 +72,6 @@ class BoatSpaceRenewalService(
     ) {
         boatReservationService.removeBoatSpaceReservation(renewalReservationId, citizenId)
     }
-
-    fun getSendInvoiceModel(reservationId: Int): SendInvoiceModel {
-        val reservation = boatReservationService.getReservationWithReserver(reservationId)
-        if (reservation?.reserverId == null) {
-            throw IllegalArgumentException("Reservation or reserver not found")
-        }
-
-        val invoiceData = invoiceService.createInvoiceData(reservationId, reservation.reserverId)
-        if (invoiceData == null) {
-            throw IllegalArgumentException("Failed to create invoice data")
-        }
-
-        // TODO: get the actual data
-        return SendInvoiceModel(
-            reservationId = reservationId,
-            reserverName = "${invoiceData.firstnames} ${invoiceData.lastname}",
-            reserverSsn = invoiceData.ssn ?: "",
-            reserverAddress = "${invoiceData.street} ${invoiceData.postalCode} ${invoiceData.post}",
-            product = reservation.locationName,
-            billingPeriodStart = "",
-            billingPeriodEnd = "",
-            boatingSeasonStart = LocalDate.of(2025, 5, 1),
-            boatingSeasonEnd = LocalDate.of(2025, 9, 30),
-            invoiceNumber = "",
-            dueDate = invoiceData.dueDate,
-            costCenter = "?",
-            invoiceType = "?",
-            priceWithTax = intToDecimal(reservation.priceCents),
-            discountedPriceWithTax = intToDecimal(reservation.discountedPriceCents),
-            description = invoiceData.description,
-            contactPerson = "",
-            orgId = invoiceData.orgId ?: "",
-            function = getDefaultFunction(reservation.type),
-            discountPercentage = reservation.discountPercentage ?: 0
-        )
-    }
-
-    fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
-        when (boatSpaceType) {
-            BoatSpaceType.Slip -> "T1270"
-            BoatSpaceType.Winter -> "T1271"
-            BoatSpaceType.Storage -> "T1276"
-            BoatSpaceType.Trailer -> "T1270"
-        }
 
     @Transactional
     fun activateRenewalAndSendInvoice(

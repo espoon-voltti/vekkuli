@@ -36,6 +36,7 @@ class OrganizationDetailsViewTest : ReserveTest() {
             assertThat(organizationDetailsPage.organizationDetailsSection).isVisible()
             organizationDetailsPage.renewReservationButton(reservationId).click()
             assertThat(invoiceDetails.header).isVisible()
+            assertThat(invoiceDetails.reserverName).hasText("Espoon Pursiseura")
 
             invoiceDetails.sendButton.click()
             assertThat(organizationDetailsPage.renewReservationButton(reservationId)).isHidden()

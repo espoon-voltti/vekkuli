@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
+import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.invoice.InvoiceController.InvoiceInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.BoatRegistrationBaseInput
 import fi.espoo.vekkuli.boatSpace.reservationForm.ValidBoatRegistration
@@ -33,6 +34,7 @@ class BoatSpaceRenewController(
     private val boatSpaceRenewalService: BoatSpaceRenewalService,
     private val invoicePreview: InvoicePreview,
     private val boatReservationService: BoatReservationService,
+    private val invoiceService: BoatSpaceInvoiceService
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -55,8 +57,16 @@ class BoatSpaceRenewController(
         try {
             val renewedReservation =
                 boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, originalReservationId)
+            val reservation = boatReservationService.getReservationWithReserver(renewedReservation.id)
+            if (reservation?.reserverId == null) {
+                throw IllegalArgumentException("Reservation or reserver not found")
+            }
 
-            val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(renewedReservation.id)
+            val invoiceData = invoiceService.createInvoiceData(renewedReservation.id, reservation.reserverId)
+            if (invoiceData == null) {
+                throw IllegalArgumentException("Failed to create invoice data")
+            }
+            val invoiceModel = invoicePreview.buildInvoiceModel(reservation, invoiceData,)
             if (renewedReservation.reserverId == null || renewedReservation.originalReservationId == null) {
                 return badRequest("Invalid renewal reservation")
             }
