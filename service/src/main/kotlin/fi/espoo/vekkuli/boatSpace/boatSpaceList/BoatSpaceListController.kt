@@ -80,14 +80,15 @@ class BoatSpaceListController {
         }
 
         request.ensureEmployeeId()
-
+        val harbors = reservationService.getHarbors()
+        val boatSpaceTypes = BoatSpaceType.entries.toList()
         val boatSpaces =
             boatSpaceService.getBoatSpacesFiltered(params)
         return ResponseEntity.ok(
             layout.render(
                 true,
                 request.requestURI,
-                boatSpaceList.render(boatSpaces, params)
+                boatSpaceList.render(boatSpaces, params, harbors, boatSpaceTypes, actualAmenities)
             )
         )
     }

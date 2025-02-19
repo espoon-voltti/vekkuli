@@ -181,6 +181,13 @@ enum class ReservationExpiration {
     Expired,
 }
 
+enum class BoatSpaceState {
+    Active,
+    Inactive
+}
+
+val sections = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "O")
+
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceReservationFilterColumn = BoatSpaceReservationFilterColumn.PLACE,
     val ascending: Boolean = false,

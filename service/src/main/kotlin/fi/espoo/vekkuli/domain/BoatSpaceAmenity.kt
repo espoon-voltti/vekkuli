@@ -11,8 +11,8 @@ enum class BoatSpaceAmenity {
 }
 
 val slipAmenities = listOf(BoatSpaceAmenity.Beam, BoatSpaceAmenity.WalkBeam, BoatSpaceAmenity.RearBuoy, BoatSpaceAmenity.Buoy)
-
-val storageAmenities = listOf(BoatSpaceAmenity.Trailer, BoatSpaceAmenity.Buck)
+val slipAmenitiesWithNone =
+    listOf(BoatSpaceAmenity.Beam, BoatSpaceAmenity.WalkBeam, BoatSpaceAmenity.RearBuoy, BoatSpaceAmenity.Buoy, BoatSpaceAmenity.None)
 
 val storageTypeAmenities = listOf(BoatSpaceAmenity.Trailer, BoatSpaceAmenity.Buck)
 
