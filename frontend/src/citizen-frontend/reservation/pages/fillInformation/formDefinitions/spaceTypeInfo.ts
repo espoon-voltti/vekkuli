@@ -45,7 +45,7 @@ export function initialSpaceTypeInfoFormState(
     case 'Winter':
       return {
         branch: type,
-        state: initialWinterStorageFormState(i18n, initialTrailer)
+        state: initialWinterStorageFormState(initialTrailer)
       }
     case 'Storage':
       return {
