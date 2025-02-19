@@ -4,6 +4,7 @@ import { Container } from 'lib-components/dom'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { unfinishedReservationQuery } from 'citizen-frontend/reservation/queries'
 import { useQueryResult } from 'lib-common/query'
 
@@ -22,11 +23,16 @@ export default React.memo(function ReservationTimer() {
   )
 })
 
+const boldText = (text: string) => {
+  return `<span class="has-text-weight-bold">${text}</span>`
+}
+
 const TimeRemaining = React.memo(function TimeRemaining({
   seconds
 }: {
   seconds: number
 }) {
+  const i18n = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [remainingTime, setRemainingTime] = useState(seconds || 0)
@@ -65,6 +71,23 @@ const TimeRemaining = React.memo(function TimeRemaining({
   const remainingMinutes: number = Math.floor(remainingTime / 60)
   const remainingSeconds: number = remainingTime % 60
 
+  const formattedMinutes = boldText(`
+    ${remainingMinutes} ${
+      remainingMinutes === 1
+        ? i18n.reservation.timer.minute
+        : i18n.reservation.timer.minutes
+    }`)
+  const formattedSeconds = boldText(`
+    ${remainingSeconds} ${
+      remainingSeconds === 1
+        ? i18n.reservation.timer.second
+        : i18n.reservation.timer.seconds
+    }`)
+
+  const formattedText = i18n.reservation.timer.title
+    .replace('${minutes}', formattedMinutes)
+    .replace('${seconds}', formattedSeconds)
+
   return (
     <div
       role="timer"
@@ -72,17 +95,7 @@ const TimeRemaining = React.memo(function TimeRemaining({
       className="timer has-text-centered p-3"
       data-testid="reservation-timer"
     >
-      Sinulla on
-      <span className="has-text-weight-bold">
-        {' '}
-        {remainingMinutes} minuuttia
-      </span>{' '}
-      ja
-      <span className="has-text-weight-bold">
-        {' '}
-        {remainingSeconds} sekuntia
-      </span>{' '}
-      aikaa vahvistaa venepaikkavaraus maksamalla.
+      <div dangerouslySetInnerHTML={{ __html: formattedText }} />
     </div>
   )
 })

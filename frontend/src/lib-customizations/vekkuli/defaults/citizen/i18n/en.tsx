@@ -418,7 +418,15 @@ const en: Translations = {
     cancelReservation: 'Cancel reservation',
     cancelAndGoBack: 'Cancel reservation and go back',
     goBack: 'Go back',
-    continueToPaymentButton: 'Continue to payment'
+    continueToPaymentButton: 'Continue to payment',
+    timer: {
+      title:
+        'You have ${minutes} and ${seconds} to confirm your boat space reservation by paying.',
+      minute: 'minute',
+      minutes: 'minutes',
+      second: 'second',
+      seconds: 'seconds'
+    }
   },
   boat: {
     newBoat: 'New boat',
