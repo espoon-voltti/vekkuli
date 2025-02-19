@@ -2,7 +2,7 @@ import { Request, Router, urlencoded } from 'express'
 import _ from 'lodash'
 import passport, { Strategy } from 'passport'
 import { AdUser, userLogin } from '../clients/service-client.js'
-import { appBaseUrl, employeeRootUrl } from '../config.js'
+import { employeeRootUrl } from '../config.js'
 import { logWarn } from '../logging/index.js'
 import { errorOrUndefined } from '../utils/errorOrUndefined.js'
 import {
@@ -99,14 +99,14 @@ export function createDevAdRouter(sessions: Sessions): Router {
       try {
         const user = await authenticate(strategyName, req, res)
         if (!user) {
-          res.redirect(`${appBaseUrl}?loginError=true`)
+          res.redirect(`${employeeRootUrl}?loginError=true`)
         } else {
           await login(req, user)
-          res.redirect(employeeRootUrl) //parseRelayState(req) ?? appBaseUrl)
+          res.redirect(employeeRootUrl) //parseRelayState(req) ?? employeeRootUrl)
         }
       } catch (err) {
         if (!res.headersSent) {
-          res.redirect(`${appBaseUrl}?loginError=true`)
+          res.redirect(`${employeeRootUrl}?loginError=true`)
         }
         throw err
       }
