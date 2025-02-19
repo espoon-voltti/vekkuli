@@ -224,7 +224,8 @@ class JdbiBoatSpaceRepository(
                     ARRAY_AGG(harbor_restriction.excluded_boat_type) AS excluded_boat_types,
                     r.name as reserver_name,
                     r.id as reserver_id,
-                    CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place
+                    CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
+                    r.type as reserver_type
                 FROM boat_space bs
                 JOIN location ON bs.location_id = location.id
                 JOIN price ON bs.price_id = price.id

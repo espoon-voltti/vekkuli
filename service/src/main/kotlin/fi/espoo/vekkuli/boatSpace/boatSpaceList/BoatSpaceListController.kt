@@ -37,6 +37,7 @@ data class BoatSpaceListRow(
     val priceClass: String? = null,
     val reserverName: String? = null,
     val reserverId: UUID?,
+    val reserverType: ReserverType?,
 ) {
     val priceInEuro: String
         get() = formatInt(priceCents)
