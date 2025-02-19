@@ -139,8 +139,8 @@ data class BoatSpaceReservationItem(
 
     fun getBoatSpaceAmenity(): BoatSpaceAmenity =
         when (type) {
-            BoatSpaceType.Slip -> amenity ?: BoatSpaceAmenity.None
-            BoatSpaceType.Winter, BoatSpaceType.Storage -> getAmenityForStorageType()
+            BoatSpaceType.Slip, BoatSpaceType.Storage -> amenity ?: BoatSpaceAmenity.None
+            BoatSpaceType.Winter -> getAmenityForStorageType()
             else -> BoatSpaceAmenity.None
         }
 }
