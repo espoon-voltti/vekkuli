@@ -17,6 +17,10 @@ plugins {
     idea
 }
 
+ktlint {
+    version.set("1.5.0")
+}
+
 buildscript {
     dependencies {
         classpath("org.postgresql:postgresql:42.7.1")
