@@ -6,7 +6,7 @@ import { Request, Router, urlencoded } from 'express'
 import _ from 'lodash'
 import passport, { Strategy } from 'passport'
 import { citizenLogin, CitizenUser } from '../clients/service-client.js'
-import { appBaseUrl, citizenRootUrl } from '../config.js'
+import { citizenRootUrl } from '../config.js'
 import { logWarn } from '../logging/index.js'
 import { errorOrUndefined } from '../utils/errorOrUndefined.js'
 import {
@@ -156,7 +156,7 @@ export function createDevSfiRouter(sessions: Sessions): Router {
       try {
         const user = await authenticate(strategyName, req, res)
         if (!user) {
-          res.redirect(`${appBaseUrl}?loginError=true`)
+          res.redirect(`${citizenRootUrl}?loginError=true`)
         } else {
           await login(req, user)
           const redirectUrl = parseRelayState(req) ?? citizenRootUrl
@@ -164,7 +164,7 @@ export function createDevSfiRouter(sessions: Sessions): Router {
         }
       } catch (err) {
         if (!res.headersSent) {
-          res.redirect(`${appBaseUrl}?loginError=true`)
+          res.redirect(`${citizenRootUrl}?loginError=true`)
         }
         throw err
       }
