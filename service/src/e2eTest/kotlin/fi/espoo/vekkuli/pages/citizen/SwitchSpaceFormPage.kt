@@ -9,7 +9,5 @@ class SwitchSpaceFormPage(
 ) : BoatSpaceFormPage(page) {
     val reserveButton = page.getByRole(AriaRole.BUTTON, Page.GetByRoleOptions().setName("Vahvista varaus").setExact(true))
 
-    override fun resolveSubmitButton(): Locator {
-        return if (reserveButton.count() > 0) reserveButton else super.resolveSubmitButton()
-    }
+    override fun resolveSubmitButton(): Locator = if (reserveButton.count() > 0) reserveButton else super.resolveSubmitButton()
 }

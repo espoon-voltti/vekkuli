@@ -204,28 +204,28 @@ class ExistingReservationResponseMapper(
     private fun getCanRenew(
         reservationId: Int,
         reserverId: UUID?
-    ): Boolean {
-        return if (reserverId != null) {
-            renewalPolicyService.citizenCanRenewReservation(
-                reservationId,
-                reserverId
-            ).success
+    ): Boolean =
+        if (reserverId != null) {
+            renewalPolicyService
+                .citizenCanRenewReservation(
+                    reservationId,
+                    reserverId
+                ).success
         } else {
             false
         }
-    }
 
     private fun getCanSwitch(
         reservationId: Int,
         reserverId: UUID?
-    ): Boolean {
-        return if (reserverId != null) {
-            switchPolicyService.citizenCanSwitchReservation(
-                reservationId,
-                reserverId
-            ).success
+    ): Boolean =
+        if (reserverId != null) {
+            switchPolicyService
+                .citizenCanSwitchReservation(
+                    reservationId,
+                    reserverId
+                ).success
         } else {
             false
         }
-    }
 }

@@ -10,7 +10,9 @@ import fi.espoo.vekkuli.pages.citizen.components.IHaveReservationList
 
 class CitizenDetailsPage(
     page: Page
-) : BasePage(page), IHaveBoatList<CitizenDetailsPage>, IHaveReservationList<CitizenDetailsPage> {
+) : BasePage(page),
+    IHaveBoatList<CitizenDetailsPage>,
+    IHaveReservationList<CitizenDetailsPage> {
     class CitizenSection(
         root: Locator
     ) {
@@ -27,7 +29,9 @@ class CitizenDetailsPage(
         val phoneInput = fields.getInput("Puhelinnumero")
     }
 
-    class OrganizationSection(root: Locator) {
+    class OrganizationSection(
+        root: Locator
+    ) {
         private val fields = FieldLocator(root)
         val nameField = fields.getField("Nimi")
         val businessIdField = fields.getField("Y-tunnus")

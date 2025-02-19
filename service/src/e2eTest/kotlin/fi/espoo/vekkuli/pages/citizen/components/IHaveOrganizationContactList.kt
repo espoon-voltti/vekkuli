@@ -13,7 +13,9 @@ interface IHaveOrganizationContactList<T> : IGetByTestId<T> where T : BasePage, 
         val email = root.locator("div").nth(2)
     }
 
-    class ContactListSection(val root: Locator) {
+    class ContactListSection(
+        val root: Locator
+    ) {
         val title = root.getByRole(AriaRole.HEADING)
         val labels = root.locator("label")
     }
@@ -21,9 +23,7 @@ interface IHaveOrganizationContactList<T> : IGetByTestId<T> where T : BasePage, 
     val contactList: Locator get() = getByDataTestId("organization-contact-list")
     val contactListItems: Locator get() = getByDataTestId("organization-contact-list-item", contactList)
 
-    fun getContactListItems(): List<ContactListItem> {
-        return contactListItems.all().map { ContactListItem(it) }
-    }
+    fun getContactListItems(): List<ContactListItem> = contactListItems.all().map { ContactListItem(it) }
 
     fun getContactList() = ContactListSection(contactList)
 }

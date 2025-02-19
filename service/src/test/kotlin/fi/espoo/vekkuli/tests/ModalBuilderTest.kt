@@ -59,8 +59,7 @@ class ModalBuilderTest {
                     setText("Cancel")
                     setType(ModalButtonType.Cancel)
                     setStyle(ModalButtonStyle.Default)
-                }
-                .addButton {
+                }.addButton {
                     setText("Accept")
                     setType(ModalButtonType.Submit)
                     setStyle(ModalButtonStyle.Primary)

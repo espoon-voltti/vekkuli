@@ -8,7 +8,8 @@ import fi.espoo.vekkuli.pages.citizen.components.IHaveReservationTimer
 
 class PaymentPage(
     page: Page
-) : BasePage(page), IHaveReservationTimer<PaymentPage> {
+) : BasePage(page),
+    IHaveReservationTimer<PaymentPage> {
     val header = page.getByText("Valitse maksutapa")
     val nordeaSuccessButton =
         page.getByText(

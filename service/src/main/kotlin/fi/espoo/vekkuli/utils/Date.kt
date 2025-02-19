@@ -140,6 +140,11 @@ fun getNextDate(
     }
 }
 
-data class SecondsRemaining(val value: Int)
+data class SecondsRemaining(
+    val value: Int
+)
 
-data class DateRange(val startDate: LocalDate, val endDate: LocalDate)
+data class DateRange(
+    val startDate: LocalDate,
+    val endDate: LocalDate
+)

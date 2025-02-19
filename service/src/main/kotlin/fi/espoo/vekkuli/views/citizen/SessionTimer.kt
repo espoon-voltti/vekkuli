@@ -9,9 +9,7 @@ class SessionTimer {
     @Autowired
     lateinit var messageUtil: MessageUtil
 
-    fun t(key: String): String {
-        return messageUtil.getMessage(key)
-    }
+    fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(reservationTimeInSeconds: Long): String {
         val d = "$"
