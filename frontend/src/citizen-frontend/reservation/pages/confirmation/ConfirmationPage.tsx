@@ -55,7 +55,6 @@ const Content = React.memo(function Content({
             <h2 className="h1">{i18n.reservation.confirmationPage.header}</h2>
             <div className="container">
               <ul className="has-bullets ml-none">
-                <li />
                 <li>{i18n.reservation.confirmationPage.emailInfo}</li>
                 <li>
                   {isIndefinite
