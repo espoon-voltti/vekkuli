@@ -101,7 +101,10 @@ interface BoatSpaceReservationRepository {
 
     fun getExpiredBoatSpaceReservations(): List<BoatSpaceReservationDetails>
 
-    fun setReservationAsExpired(reservationId: Int)
+    fun setReservationEndDate(
+        reservationId: Int,
+        expirationDate: LocalDate
+    )
 
     fun getHarbors(): List<Location>
 

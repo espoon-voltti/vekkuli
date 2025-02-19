@@ -1206,7 +1206,10 @@ class JdbiBoatSpaceReservationRepository(
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
-    override fun setReservationAsExpired(reservationId: Int): Unit =
+    override fun setReservationEndDate(
+        reservationId: Int,
+        endDate: LocalDate
+    ): Unit =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createUpdate(
@@ -1216,7 +1219,7 @@ class JdbiBoatSpaceReservationRepository(
                     WHERE id = :id
                     """.trimIndent()
                 ).bind("id", reservationId)
-                .bind("endDate", timeProvider.getCurrentDate().minusDays(1))
+                .bind("endDate", endDate)
                 .bind("updatedTime", timeProvider.getCurrentDateTime())
                 .execute()
         }

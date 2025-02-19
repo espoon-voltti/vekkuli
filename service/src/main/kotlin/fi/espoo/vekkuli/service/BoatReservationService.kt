@@ -584,11 +584,11 @@ class BoatReservationService(
     }
 
     fun markReservationEnded(reservationId: Int) {
-        boatSpaceReservationRepo.setReservationAsExpired(reservationId)
+        boatSpaceReservationRepo.setReservationEndDate(reservationId, timeProvider.getCurrentDate().minusDays(1))
         preventSendingAReservationExpirationEmail(reservationId)
     }
 
-    private fun preventSendingAReservationExpirationEmail(reservationId: Int) {
+    fun preventSendingAReservationExpirationEmail(reservationId: Int) {
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(
                 reservationId

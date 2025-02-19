@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Month
 import java.util.*
 
@@ -418,7 +419,11 @@ class ReservationFormService(
                         ?: throw BadRequest("Original reservation ${reservation.originalReservationId} not found")
 
                 if (originalReservation.status == ReservationStatus.Confirmed) {
-                    boatReservationService.markReservationEnded(originalReservation.id, reservation.startDate)
+                    boatSpaceReservationRepo.setReservationEndDate(
+                        reservation.originalReservationId,
+                        timeProvider.getCurrentDate().minusDays(1)
+                    )
+                    boatReservationService.preventSendingAReservationExpirationEmail(reservationId)
                 }
             }
         }
