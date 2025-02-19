@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.config.DomainConstants.INVOICE_PAYMENT_PERIOD
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.BoatSpaceReservationDetails
 import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.utils.SecondsRemaining
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -44,6 +45,12 @@ object BoatSpaceConfig {
     }
 
     fun paytrailDescription(reservation: BoatSpaceReservationDetails): String {
+        val creationType =
+            when (reservation.creationType) {
+                CreationType.New -> ""
+                CreationType.Renewal -> ""
+                CreationType.Switch -> "Vaihto "
+            }
         val typeDescription =
             when (reservation.type) {
                 BoatSpaceType.Slip -> "Venepaikka"
@@ -51,10 +58,8 @@ object BoatSpaceConfig {
                 BoatSpaceType.Winter -> "Talvipaikka"
                 BoatSpaceType.Storage -> "Säilytyspaikka"
             }
-        return "$typeDescription ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
+        return "$creationType$typeDescription ${reservation.startDate.year} ${reservation.locationName} ${reservation.place}"
     }
-
-    const val PAYTRAIL_PRODUCT_CODE = "329700-1230329-T1270-0-0-0-0-0-0-0-0-0-100"
 
     const val BEAM_MAX_WIDTH_ADJUSTMENT_CM = 40
 

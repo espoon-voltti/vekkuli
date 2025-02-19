@@ -2,6 +2,7 @@ package fi.espoo.vekkuli
 
 import com.microsoft.playwright.*
 import fi.espoo.vekkuli.service.MessageService
+import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.createAndSeedDatabase
@@ -60,6 +61,7 @@ abstract class PlaywrightTest {
         // Mock the behavior to return a specific date-time
         mockTimeProvider(timeProvider)
         SendEmailServiceMock.resetEmails()
+        PaytrailMock.paytrailPayments.clear()
     }
 
     @AfterEach
