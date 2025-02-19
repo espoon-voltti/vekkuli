@@ -1171,6 +1171,8 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     @Test
     fun `Organization billing name is added to the invoice preview`() {
         EmployeeHomePage(page).employeeLogin()
+        val organizationName = "Espoon Pursiseura"
+        val billingName = "expected billing name"
 
         val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
         reservationPage.navigateTo()
@@ -1189,21 +1191,26 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.espoonPursiseuraRadioButton.click()
         assertThat(formPage.orgBillingNameInput).not().isEmpty()
 
-        formPage.orgBillingNameInput.fill("expected billing name")
+        formPage.orgBillingNameInput.fill(billingName)
         formPage.fillFormWithPrefilledValuesAndSubmit()
 
         val invoicePreviewPage = InvoicePreviewPage(page)
-        assertThat(invoicePreviewPage.contactPerson).hasValue("expected billing name")
+        assertThat(invoicePreviewPage.contactPerson).hasValue(billingName)
 
         invoicePreviewPage.sendButton.click()
 
         val organizationDetailsPage = OrganizationDetailsPage(page)
-        assertThat(organizationDetailsPage.organizationBillingNameField).hasText("expected billing name")
+        assertThat(organizationDetailsPage.organizationBillingNameField).hasText(billingName)
+
+        messageService.sendScheduledEmails()
+        assertEquals(2, SendEmailServiceMock.emails.size)
+        assertTrue(SendEmailServiceMock.emails.all { it.body.contains("Lasku lähetetään osoitteeseen $billingName/$organizationName") })
     }
 
     @Test
     fun `Organization billing name is optional when making reservation`() {
         EmployeeHomePage(page).employeeLogin()
+        val organizationName = "Espoon Pursiseura"
 
         val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
         reservationPage.navigateTo()
@@ -1232,6 +1239,10 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
 
         val organizationDetailsPage = OrganizationDetailsPage(page)
         assertThat(organizationDetailsPage.organizationBillingNameField).hasText("-")
+
+        messageService.sendScheduledEmails()
+        assertEquals(2, SendEmailServiceMock.emails.size)
+        assertTrue(SendEmailServiceMock.emails.all { it.body.contains("Lasku lähetetään osoitteeseen $organizationName") })
     }
 
     private fun renewABoatSpaceReservation(sendInvoice: Boolean) {
