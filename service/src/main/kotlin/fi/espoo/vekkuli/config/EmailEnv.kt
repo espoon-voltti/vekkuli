@@ -30,7 +30,7 @@ data class EmailEnv(
                 senderAddress =
                     env.getProperty(
                         "vekkuli.email.sender_address",
-                    ) ?: "no-reply@espoo.fi",
+                    ) ?: "venepaikat@espoo.fi",
                 employeeAddress =
                     env.getProperty(
                         "vekkuli.email.employee_address",
