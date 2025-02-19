@@ -98,6 +98,7 @@ class BoatSpaceRenewController(
             return redirectUrl(getBackUrl(renewedReservation.reserverType, renewedReservation.reserverId))
         } catch (e: Exception) {
             // TODO: should we respond with error page or redirect to some other page?
+            logger.error(e) { "Error renewing reservation by employee" }
             val errorPage = boatSpaceRenewForm.invoiceErrorPage()
             return ResponseEntity.ok(employeeLayout.render(true, request.requestURI, errorPage))
         }
