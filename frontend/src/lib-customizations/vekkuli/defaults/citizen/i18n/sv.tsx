@@ -317,6 +317,14 @@ const sv: Translations = {
       paymentCancelled:
         'Betalningen misslyckades, försök igen eller gå tillbaka för att avbryta bokningen.'
     },
+    confirmationPage: {
+      header: 'Bokningen lyckades',
+      emailInfo:
+        'Du kommer också att få en bekräftelse via e-post till den adress du angav.',
+      indefiniteInfo:
+        'Din bokning gäller tills vidare, och du kan förlänga den till nästa säsong årligen under förlängningsperioden.',
+      fixedInfo: 'Din bokning är tidsbegränsad och gäller för en säsong.'
+    },
     steps: {
       chooseBoatSpace: 'Välj plats',
       fillInformation: 'Fyll i information',

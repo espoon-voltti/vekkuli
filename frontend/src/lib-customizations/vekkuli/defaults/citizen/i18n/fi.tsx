@@ -325,6 +325,14 @@ export default {
       paymentCancelled:
         'Maksu epäonnistui, yritä uudelleen tai palaa takaisin peruuttaaksesi varauksen.'
     },
+    confirmationPage: {
+      header: 'Paikan varaus onnistui',
+      emailInfo:
+        'Saat viestin vahvistuksesta myös ilmoittamaasi sähköpostiosoitteeseen.',
+      indefiniteInfo:
+        'Varauksesi on voimassa toistaiseksi ja voit jatkaa sitä seuraavalle kaudelle vuosittain jatkokauden aikana.',
+      fixedInfo: 'Varauksesi on määräaikainen ja voimassa yhden kauden verran.'
+    },
 
     noRegistererNumber: 'Ei rekisterinumeroa',
     certify: 'Vakuutan antamani tiedot oikeiksi',

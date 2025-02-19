@@ -325,6 +325,15 @@ const en: Translations = {
       paymentCancelled:
         'Payment failed, please try again or go back to cancel the reservation.'
     },
+    confirmationPage: {
+      header: 'Reservation successful',
+      emailInfo:
+        'You will also receive a confirmation message at the email address you provided.',
+      indefiniteInfo:
+        'Your reservation is valid indefinitely, and you can extend it to the next season annually during the renewal period.',
+      fixedInfo:
+        'Your reservation is for a fixed term and valid for one season.'
+    },
     noRegistererNumber: 'No registration number',
     certify: 'I certify that the information I have provided is correct',
     agreeToRules:
