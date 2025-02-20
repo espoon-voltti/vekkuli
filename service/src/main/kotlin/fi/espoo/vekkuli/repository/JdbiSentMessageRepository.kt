@@ -182,7 +182,10 @@ class JdbiSentMessageRepository(
                     .list()
             }
 
-        val emailsNotSent = recipientEmails.filter { !alreadySentEmails.contains(it) }
+        val emailsNotSent = recipientEmails.distinct().filter { !alreadySentEmails.contains(it) }
+
+        if (emailsNotSent.isEmpty()) return emptyList()
+
         jdbi.withHandleUnchecked { handle ->
             val batch =
                 handle.prepareBatch(
