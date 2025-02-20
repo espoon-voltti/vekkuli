@@ -2,11 +2,12 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
-import fi.espoo.vekkuli.pages.citizen.components.IKnowOrganizationIds
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.OrganizationDetailsPage
 import fi.espoo.vekkuli.service.SendEmailServiceMock
+import fi.espoo.vekkuli.shared.CitizenIds
+import fi.espoo.vekkuli.shared.OrganizationIds
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
 import org.junit.jupiter.api.Test
@@ -333,8 +334,8 @@ class OrganizationDetailsViewTest : ReserveTest() {
             EmployeeHomePage(page).employeeLogin()
             val organizationDetails = OrganizationDetailsPage(page)
 
-            // Inject XSS scripts to organization information from organiazations details page and return assertions
-            val assertions = injectXSSToOrganizationInformation(page, IKnowOrganizationIds.espoonPursiseura)
+            // Inject XSS scripts to organization information from organizations details page and return assertions
+            val assertions = injectXSSToOrganizationInformation(page, OrganizationIds.espoonPursiseura)
 
             // Make sure htmx has settled
             assertThat(organizationDetails.editButton).isVisible()
@@ -355,9 +356,9 @@ class OrganizationDetailsViewTest : ReserveTest() {
             EmployeeHomePage(page).employeeLogin()
             val organizationDetails = OrganizationDetailsPage(page)
             // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToCitizenInformation(page, IKnowOrganizationIds.citizenInEspoonPursiseura)
+            val assertions = injectXSSToCitizenInformation(page, CitizenIds.citizenInEspoonPursiseura)
 
-            organizationDetails.navigateToPage(IKnowOrganizationIds.espoonPursiseura)
+            organizationDetails.navigateToPage(OrganizationIds.espoonPursiseura)
 
             // Make sure htmx has settled
             assertThat(organizationDetails.editButton).isVisible()

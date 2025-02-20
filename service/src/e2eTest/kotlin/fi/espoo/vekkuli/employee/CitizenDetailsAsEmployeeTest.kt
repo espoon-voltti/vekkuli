@@ -5,10 +5,10 @@ import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
-import fi.espoo.vekkuli.pages.citizen.components.IKnowCitizenIds
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfWinterReservationPeriod
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -390,7 +390,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             val citizenDetails = CitizenDetailsPage(page)
 
             // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToCitizenInformation(page, IKnowCitizenIds.citizenIdLeo)
+            val assertions = injectXSSToCitizenInformation(page, CitizenIds.leo)
 
             // Make sure htmx has settled
             assertThat(citizenDetails.editButton).isVisible()
@@ -412,7 +412,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
 
             EmployeeHomePage(page).employeeLogin()
             val citizenDetails = CitizenDetailsPage(page)
-            citizenDetails.navigateToUserPage(IKnowCitizenIds.citizenIdLeo)
+            citizenDetails.navigateToUserPage(CitizenIds.leo)
 
             citizenDetails.memoNavi.clickAndWaitForHtmxSettle()
             citizenDetails.addNewMemoBtn.clickAndWaitForHtmxSettle()
