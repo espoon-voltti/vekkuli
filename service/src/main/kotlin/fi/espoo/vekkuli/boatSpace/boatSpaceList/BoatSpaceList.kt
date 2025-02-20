@@ -3,16 +3,27 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceList
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.employee.SanitizeInput
+import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
+import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 data class BoatSpaceListParams(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
     val ascending: Boolean = false,
+    val amenity: List<BoatSpaceAmenity> = emptyList(),
+    val harbor: List<Int> = emptyList(),
+    val boatSpaceType: List<BoatSpaceType> = emptyList(),
+    val boatSpaceState: List<BoatSpaceState> = emptyList(),
+    val sectionFilter: List<String> = emptyList(),
 )
 
 @Service
-class BoatSpaceList : BaseView() {
+class BoatSpaceList(
+    private val expandingSelectionFilter: ExpandingSelectionFilter,
+    private val filters: ListFilters
+) : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun sortButton(
@@ -32,7 +43,11 @@ class BoatSpaceList : BaseView() {
 
     fun render(
         boatSpaces: List<BoatSpaceListRow>,
-        searchParams: BoatSpaceListParams
+        @SanitizeInput searchParams: BoatSpaceListParams,
+        harbors: List<Location>,
+        boatSpaceTypes: List<BoatSpaceType>,
+        amenities: List<BoatSpaceAmenity>,
+        sections: List<String>
     ): String {
         fun getBoatSpacePage(
             reserverId: UUID?,
@@ -42,6 +57,13 @@ class BoatSpaceList : BaseView() {
         } else {
             ""
         }
+        val sectionFilter =
+            expandingSelectionFilter.render(
+                searchParams.sectionFilter,
+                "selectedSections",
+                sections.joinToString("\n") { expandingSelectionFilter.sectionCheckbox(it) }
+            )
+
         // language=HTML
         val reservationRows =
             boatSpaces.joinToString("\n") { result ->
@@ -106,9 +128,31 @@ class BoatSpaceList : BaseView() {
                          <input type="hidden" name="sortBy" id="sortColumn" value="${searchParams.sortBy}" >
                          <input type="hidden" name="ascending" id="sortDirection" value="${searchParams.ascending}">
                         
-                        
-                       
-
+                        <div class="employee-filter-container">                        
+                            <div class="filter-group">
+                                <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
+                                <div class="tag-container">
+                                ${filters.harborFilters(harbors, searchParams.harbor)}
+                                </div>
+                            </div>
+                        </div>            
+                         <div class="employee-filter-container">
+                            <div class="filter-group">
+                              <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
+                              <div class="tag-container">
+                                ${filters.boatSpaceTypeFilters(boatSpaceTypes, searchParams.boatSpaceType)}
+                              </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                              <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                              <div class="tag-container">
+                                ${filters.amenityFilters(amenities, searchParams.amenity)}
+                              </div>
+                            </div>
+                        </div>
+                         
+                         
 
                         <div class="reservation-list form-section block">
                         <div class='table-container'>
@@ -152,7 +196,7 @@ class BoatSpaceList : BaseView() {
                                 <tr>
                                     <th></th>
                                     <th></th>
-                                    <th></th>
+                                    <th>$sectionFilter</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>

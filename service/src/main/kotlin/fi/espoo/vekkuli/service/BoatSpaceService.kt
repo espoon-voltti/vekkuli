@@ -5,6 +5,9 @@ import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListRow
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceSortBy
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.SortDirection
+import fi.espoo.vekkuli.repository.filter.boatspacereservation.*
+import fi.espoo.vekkuli.utils.AndExpr
+import fi.espoo.vekkuli.utils.SqlExpr
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -25,7 +28,12 @@ interface BoatSpaceRepository {
 
     fun isBoatSpaceReserved(boatSpace: Int): Boolean
 
-    fun getBoatSpaces(sortBy: BoatSpaceSortBy? = null): List<BoatSpaceListRow>
+    fun getBoatSpaces(
+        filter: SqlExpr,
+        sortBy: BoatSpaceSortBy? = null
+    ): List<BoatSpaceListRow>
+
+    fun getSections(): List<String>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -39,7 +47,33 @@ class BoatSpaceService(
             BoatSpaceSortBy(
                 listOf(params.sortBy to if (params.ascending) SortDirection.Ascending else SortDirection.Descending)
             )
-        val boatSpaces = boatSpaceRepo.getBoatSpaces(sortBy)
+        val filters: MutableList<SqlExpr> = mutableListOf()
+
+        if (params.harbor.isNotEmpty()) {
+            filters.add(LocationExpr(params.harbor))
+        }
+
+        if (params.boatSpaceType.isNotEmpty()) {
+            filters.add(BoatSpaceTypeExpr(params.boatSpaceType))
+        }
+
+        if (params.amenity.isNotEmpty()) {
+            filters.add(AmenityExpr(params.amenity))
+        }
+
+        if (params.sectionFilter.isNotEmpty()) {
+            filters.add(SectionExpr(params.sectionFilter))
+        }
+
+        // TODO: add active boat space filter
+
+        val boatSpaces =
+            boatSpaceRepo.getBoatSpaces(
+                AndExpr(
+                    filters
+                ),
+                sortBy
+            )
         return boatSpaces
     }
 
@@ -62,4 +96,6 @@ class BoatSpaceService(
             )
         return boatSpaceRepo.getUnreservedBoatSpaceOptions(params)
     }
+
+    fun getSections() = boatSpaceRepo.getSections()
 }

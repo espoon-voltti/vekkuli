@@ -205,8 +205,12 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpace>().firstOrNull()
         }
 
-    override fun getBoatSpaces(sortBy: BoatSpaceSortBy?): List<BoatSpaceListRow> =
+    override fun getBoatSpaces(
+        filter: SqlExpr,
+        sortBy: BoatSpaceSortBy?
+    ): List<BoatSpaceListRow> =
         jdbi.withHandleUnchecked { handle ->
+            val filterQuery = if (filter.toSql().isNotEmpty()) """WHERE ${filter.toSql()}""" else ""
             val sortByQuery = sortBy?.apply()?.takeIf { it.isNotEmpty() } ?: ""
             val sql =
                 """
@@ -232,15 +236,29 @@ class JdbiBoatSpaceRepository(
                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                 LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
                 LEFT JOIN reserver r ON r.id = bsr.reserver_id
+                $filterQuery
                 GROUP BY bs.id, bs.location_id, bs.price_id, 
                      location.name, location.address, 
                      price.price_cents, price.name, 
                      r.name, r.id, bs.place_number, bs.section
                 $sortByQuery
                 """.trimIndent()
-
             val query = handle.createQuery(sql)
+            filter.bind(query)
+
             query.mapTo<BoatSpaceListRow>().toList()
+        }
+
+    override fun getSections(): List<String> =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT DISTINCT section
+                FROM boat_space
+                ORDER BY section
+                """.trimIndent()
+
+            handle.createQuery(sql).mapTo<String>().toList()
         }
 
     override fun isBoatSpaceReserved(boatSpaceId: Int): Boolean =
