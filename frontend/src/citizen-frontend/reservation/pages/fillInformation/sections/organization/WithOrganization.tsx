@@ -31,7 +31,7 @@ export const WithOrganization = React.memo(function Organization({
         <Column isOneQuarter>
           <TextField
             id="organization-name"
-            label="Yhteisön nimi"
+            label={i18n.organization.information.name}
             readonly={true}
             bind={name}
           />
@@ -39,7 +39,7 @@ export const WithOrganization = React.memo(function Organization({
         <Column isOneQuarter>
           <TextField
             id="organization-business-id"
-            label="Y-tunnus"
+            label={i18n.organization.organizationId}
             readonly={true}
             bind={businessId}
           />
@@ -47,7 +47,7 @@ export const WithOrganization = React.memo(function Organization({
         <Column isOneQuarter>
           <SelectField
             id="organization-municipality-code"
-            label="Kotikunta"
+            label={i18n.organization.municipality}
             readonly={true}
             bind={municipality}
           />
@@ -57,7 +57,7 @@ export const WithOrganization = React.memo(function Organization({
         <Column isOneQuarter>
           <TextField
             id="organization-phone"
-            label="Puhelinnumero"
+            label={i18n.organization.contactDetails.fields.phone}
             required={true}
             bind={phone}
             ariaLabel={i18n.organization.information.phone}
@@ -66,7 +66,7 @@ export const WithOrganization = React.memo(function Organization({
         <Column isOneQuarter>
           <TextField
             id="organization-email"
-            label="Sähköposti"
+            label={i18n.organization.contactDetails.fields.email}
             required={true}
             bind={email}
             ariaLabel={i18n.organization.information.email}
@@ -75,21 +75,21 @@ export const WithOrganization = React.memo(function Organization({
         <Column isOneQuarter>
           <TextField
             id="organization-address"
-            label="Katuosoite"
+            label={i18n.organization.streetAddress}
             bind={streetAddress}
           />
         </Column>
         <Column isOneEight>
           <TextField
             id="organization-postal-code"
-            label="Postinumero"
+            label={i18n.organization.postalCode}
             bind={postalCode}
           />
         </Column>
         <Column isOneEight>
           <TextField
             id="organization-city"
-            label="Postitoimipaikka"
+            label={i18n.organization.postOffice}
             bind={postOffice}
           />
         </Column>

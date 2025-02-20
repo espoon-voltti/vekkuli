@@ -574,13 +574,17 @@ const sv: Translations = {
     information: {
       title: 'Organisationens information',
       phone: 'Organisationens telefonnummer',
-      email: 'Organisationens e-post'
+      email: 'Organisationens e-post',
+      name: 'Organisationens namn'
     },
     title: 'Organisationer',
     name: 'Namn',
     organizationId: 'Organisationsnummer',
     municipality: 'Hemkommun',
     physicalAddress: 'Besökadress',
+    streetAddress: 'Adress',
+    postalCode: 'Postnummer',
+    postOffice: 'Postanstalt',
     contactDetails: {
       title: 'Kontaktpersoner',
       fields: {
