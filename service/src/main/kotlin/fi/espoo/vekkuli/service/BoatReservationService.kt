@@ -789,8 +789,9 @@ class BoatReservationService(
             val organisation =
                 organizationService.getOrganizationById(reservation.reserverId)
                     ?: throw BadRequest("Organization with id ${reservation.reserverId} not found")
+            val billingName = if (organisation.billingName.isNotEmpty()) "${organisation.billingName}/" else ""
             val invoiceAddress =
-                "${organisation.billingName}/${organisation.billingStreetAddress}," +
+                "${billingName}${organisation.name}/${organisation.billingStreetAddress}," +
                     "${organisation.billingPostalCode},${organisation.billingPostOffice}"
             return getLocalizedParameter(key, invoiceAddress)
         } else {
