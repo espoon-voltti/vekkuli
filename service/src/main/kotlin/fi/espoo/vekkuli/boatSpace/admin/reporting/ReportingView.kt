@@ -16,7 +16,7 @@ class ReportingView(
             formComponents.dateInput(
                 DateInputOptions(
                     id = "reportingDate",
-                    labelKey = "reporting.filter.reportingDate",
+                    labelKey = "reporting.filter.creationDate",
                     value = timeProvider.getCurrentDate().toString(),
                     autoWidth = true
                 )

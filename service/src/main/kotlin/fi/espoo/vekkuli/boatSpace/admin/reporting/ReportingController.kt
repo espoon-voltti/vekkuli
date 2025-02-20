@@ -51,12 +51,12 @@ class ReportingController(
     ): ResponseEntity<String> {
         logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_STICKER_REPORT")
 
-        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
-        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val minCreationDate = reportingDate ?: timeProvider.getCurrentDate()
+        val dateFormatted = minCreationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         return ResponseEntity
             .ok()
-            .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$todayFormatted.csv\"")
-            .body(utf8BOM + stickerReportToCsv(getStickerReport(jdbi, reportDate)))
+            .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$dateFormatted.csv\"")
+            .body(utf8BOM + stickerReportToCsv(getStickerReport(jdbi, minCreationDate)))
     }
 
     @GetMapping("/boat-space-report", produces = ["text/csv"])
