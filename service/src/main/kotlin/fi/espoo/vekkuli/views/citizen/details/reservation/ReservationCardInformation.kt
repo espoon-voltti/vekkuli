@@ -6,7 +6,6 @@ import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
 import fi.espoo.vekkuli.utils.formatDecimal
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
@@ -18,7 +17,7 @@ class ReservationCardInformation : BaseView() {
     lateinit var trailerCard: TrailerCard
 
     fun render(
-        @SanitizeInput reservation: BoatSpaceReservationDetails,
+        reservation: BoatSpaceReservationDetails,
         userType: UserType,
         reserverId: UUID,
     ): String {

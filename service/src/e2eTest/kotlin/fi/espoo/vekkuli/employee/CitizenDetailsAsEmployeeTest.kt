@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.ReserveTest
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReasonOptions
 import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
+import fi.espoo.vekkuli.pages.citizen.components.IKnowCitizenIds
 import fi.espoo.vekkuli.pages.employee.CitizenDetailsPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
@@ -377,6 +378,49 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
                     .getByDataTestId("reserver-name")
                     .getByText("Korhonen")
             ).containsText("Korhonen Leo")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `citizen details should shield against XSS scripts when in edit mode`() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val citizenDetails = CitizenDetailsPage(page)
+
+            // Inject XSS scripts to citizen information from citizen details page and return assertions
+            val assertions = injectXSSToCitizenInformation(page, IKnowCitizenIds.citizenIdLeo)
+
+            // Make sure htmx has settled
+            assertThat( citizenDetails.editButton).isVisible()
+            // The script was run setting to edit mode after the injection
+            citizenDetails.editButton.click()
+            // Make sure htmx has settled
+            assertThat( citizenDetails.citizenFirstNameInput).isVisible()
+
+            assertions()
+
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `citizen details should shield agains XSS scripts in memos`() {
+        try {
+            val maliciousValue = "XSS_ATTACK_MEMO"
+
+            EmployeeHomePage(page).employeeLogin()
+            val citizenDetails = CitizenDetailsPage(page)
+            citizenDetails.navigateToUserPage(IKnowCitizenIds.citizenIdLeo)
+
+            citizenDetails.memoNavi.clickAndWaitForHtmxSettle()
+            citizenDetails.addNewMemoBtn.clickAndWaitForHtmxSettle()
+            citizenDetails.newMemoContent.fill(maliciousCode(maliciousValue))
+            citizenDetails.newMemoSaveBtn.clickAndWaitForHtmxSettle()
+
+            assertFalse(page.evaluate("() => window.hasOwnProperty('${maliciousValue}')") as Boolean, "XSS script was executed on user memo")
         } catch (e: AssertionError) {
             handleError(e)
         }

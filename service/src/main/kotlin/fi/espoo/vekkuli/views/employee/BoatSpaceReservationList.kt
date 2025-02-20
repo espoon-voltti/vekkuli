@@ -16,8 +16,8 @@ class BoatSpaceReservationList : BaseView() {
         harbors: List<Location>,
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
-        reservations: List<BoatSpaceReservationItem>,
-        params: BoatSpaceReservationFilter,
+        @SanitizeInput reservations: List<BoatSpaceReservationItem>,
+        @SanitizeInput params: BoatSpaceReservationFilter,
         userType: UserType
     ): String {
         val harborFilters =
@@ -213,8 +213,7 @@ class BoatSpaceReservationList : BaseView() {
             </div>
             """.trimIndent()
 
-        val sectionFilter =
-            expandingSelectionFilter(params.sectionFilter, "selectedSections", sections.joinToString("\n") { sectionCheckbox(it) })
+        val sectionFilter = expandingSelectionFilter(params.sectionFilter, "selectedSections", sections.joinToString("\n") { sectionCheckbox(it) })
 
         val amenityFilter =
             expandingSelectionFilter(

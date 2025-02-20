@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.employee.components
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.SubTab
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -17,7 +18,7 @@ class ReserverDetailsMemoContainer : BaseView() {
     fun formatDate(d: LocalDateTime): String = d.format(fullDateTimeFormat)
 
     fun memoContent(
-        memo: ReserverMemoWithDetails,
+        @SanitizeInput memo: ReserverMemoWithDetails,
         edit: Boolean,
     ): String {
         val createdBy =
@@ -182,7 +183,7 @@ class ReserverDetailsMemoContainer : BaseView() {
 
     fun tabContent(
         reserver: ReserverWithDetails,
-        memos: List<ReserverMemoWithDetails>,
+        @SanitizeInput memos: List<ReserverMemoWithDetails>,
     ): String {
         val memoHtml =
             memos.joinToString("\n") {

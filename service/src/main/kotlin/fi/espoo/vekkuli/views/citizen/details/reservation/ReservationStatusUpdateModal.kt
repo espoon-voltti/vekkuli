@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.components.modal.*
+import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.format.DateTimeFormatter
@@ -29,7 +30,7 @@ class ReservationStatusUpdateModal : BaseView() {
 
     fun render(
         reserverId: UUID,
-        reservation: BoatSpaceReservationDetails
+        @SanitizeInput reservation: BoatSpaceReservationDetails
     ): String {
         val today = timeProvider.getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         val formId = "reservation-status-update-form"

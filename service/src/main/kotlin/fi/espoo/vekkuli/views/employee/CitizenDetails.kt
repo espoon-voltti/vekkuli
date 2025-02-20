@@ -30,7 +30,7 @@ class CitizenDetails(
 ) : BaseView() {
     fun citizenPage(
         @SanitizeInput citizen: CitizenWithDetails,
-        @SanitizeInput boatSpaceReservations: List<BoatSpaceReservationDetails>,
+        boatSpaceReservations: List<BoatSpaceReservationDetails>,
         @SanitizeInput boats: List<CitizenUserController.BoatUpdateForm>,
         @SanitizeInput organizations: List<Organization>,
         userType: UserType,

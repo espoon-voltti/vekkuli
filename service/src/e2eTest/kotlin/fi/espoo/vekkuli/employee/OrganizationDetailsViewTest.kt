@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.employee
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
+import fi.espoo.vekkuli.pages.citizen.components.IKnowOrganizationIds
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.InvoicePreviewPage
 import fi.espoo.vekkuli.pages.employee.OrganizationDetailsPage
@@ -320,6 +321,50 @@ class OrganizationDetailsViewTest : ReserveTest() {
             assertThat(organizationDetails.citizenEmailField).isVisible()
             organizationDetails.submitOrganizationMemberAdd.click()
             assertThat(organizationDetails.organizationMemberTableBody).containsText("Mikko Virtanen")
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `organization details should shield against XSS scripts when in edit mode`() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+
+            // Inject XSS scripts to organization information from organiazations details page and return assertions
+            val assertions = injectXSSToOrganizationInformation(page, IKnowOrganizationIds.espoonPursiseura)
+
+            // Make sure htmx has settled
+            assertThat( organizationDetails.editButton).isVisible()
+            // The script was run setting to edit mode after the injection
+            organizationDetails.editButton.click()
+            // Make sure htmx has settled
+            assertThat( organizationDetails.organizationNameInput ).isVisible()
+
+            assertions()
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
+    @Test
+    fun `organization members should shield against XSS scripts when in details page`() {
+        try {
+            EmployeeHomePage(page).employeeLogin()
+            val organizationDetails = OrganizationDetailsPage(page)
+            // Inject XSS scripts to citizen information from citizen details page and return assertions
+            val assertions = injectXSSToCitizenInformation(page, IKnowOrganizationIds.citizenInEspoonPursiseura)
+
+            organizationDetails.navigateToPage(IKnowOrganizationIds.espoonPursiseura)
+
+            // Make sure htmx has settled
+            assertThat(organizationDetails.editButton).isVisible()
+            organizationDetails.editButton.click()
+            // Make sure htmx has settled
+            assertThat(organizationDetails.organizationNameInput).isVisible()
+
+            assertions()
         } catch (e: AssertionError) {
             handleError(e)
         }

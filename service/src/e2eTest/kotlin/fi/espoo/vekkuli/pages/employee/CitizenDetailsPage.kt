@@ -4,10 +4,12 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.pages.citizen.components.IKnowCitizenIds
+import java.util.UUID
 
 class CitizenDetailsPage(
     page: Page
-) : BasePage(page) {
+) : BasePage(page), IKnowCitizenIds<CitizenDetailsPage> {
     val citizenDetailsSection = page.getByTestId("reserver-details")
 
     val reservationValidity = getByDataTestId("reservation-validity")
@@ -48,6 +50,10 @@ class CitizenDetailsPage(
 
     fun navigateToPage() {
         page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
+    }
+
+    fun navigateToUserPage(userId: UUID) {
+        page.navigate("$baseUrl/virkailija/kayttaja/${userId}")
     }
 
     fun hideModalWindow() {
