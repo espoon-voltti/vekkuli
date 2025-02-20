@@ -41,16 +41,17 @@ data class StickerReportRow(
     val registrationCode: String?,
     val otherIdentification: String?,
     val ownership: OwnershipStatus?,
-    val startDate: String?,
-    val endDate: String?,
+    val startDate: LocalDate?,
+    val endDate: LocalDate?,
     val productCode: String?,
     val totalCents: String?,
     val paid: LocalDateTime?,
+    val creationType: CreationType?
 )
 
 fun getStickerReport(
     jdbi: Jdbi,
-    reportDate: LocalDateTime
+    createdCutoffDate: LocalDate
 ): List<StickerReportRow> =
     jdbi.inTransactionUnchecked { tx ->
         tx
@@ -64,7 +65,9 @@ fun getStickerReport(
                     b.ownership, bsr.start_date, bsr.end_date,
                     price.name AS product_code,
                     p.total_cents,
-                    p.paid
+                    p.paid,
+                    bsr.creation_type,
+                    bsr.created
                 FROM boat_space_reservation bsr
                     JOIN reserver r ON r.id = bsr.reserver_id
                     JOIN boat_space bs ON bs.id = bsr.boat_space_id
@@ -74,11 +77,12 @@ fun getStickerReport(
                     LEFT JOIN price ON price.id = bs.price_id
                 WHERE 
                     bsr.reserver_id IS NOT NULL
-                    AND :reportDate::date >= bsr.start_date 
-                    AND :reportDate::date <= bsr.end_date
+                    AND :minCreated >= bsr.created::date
+                    AND :minCreated::date >= bsr.start_date 
+                    AND :minCreated::date <= bsr.end_date
                     AND bsr.status = 'Confirmed'
                 """.trimIndent()
-            ).bind("reportDate", reportDate)
+            ).bind("minCreated", createdCutoffDate)
             .mapTo<StickerReportRow>()
             .list()
     }
@@ -105,8 +109,11 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             "muu tunniste",
             "omistussuhde",
             "maksuluokka",
+            "tyyppi",
             "maksupäivä",
-            "hinta"
+            "hinta",
+            "varauksen alkupvm",
+            "varauksen loppupvm"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -152,10 +159,15 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.totalCents)))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.startDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.endDate)))
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -310,7 +322,6 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(localDateToText(report.endDate)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
-            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 

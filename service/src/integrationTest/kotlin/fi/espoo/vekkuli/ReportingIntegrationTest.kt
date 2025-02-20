@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.domain.CreationType
 import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.ReservationStatus
 import fi.espoo.vekkuli.service.*
+import org.jdbi.v3.core.kotlin.inTransactionUnchecked
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -97,7 +98,16 @@ class ReportingIntegrationTest : IntegrationTestBase() {
                 )
             )
 
-        val stickerReportRows = getStickerReport(jdbi, today.atStartOfDay())
+        // Update created date to today because it is automatically set to real time
+        jdbi.inTransactionUnchecked { tx ->
+            tx
+                .createUpdate("UPDATE boat_space_reservation SET created = :created::date")
+                .bind("created", today)
+                .bind("id", resId)
+                .execute()
+        }
+
+        val stickerReportRows = getStickerReport(jdbi, today)
         assertEquals(true, stickerReportRows.size > 0)
         assertEquals(today.atStartOfDay(), stickerReportRows[0].paid)
         val row = stickerReportRows.find { it.harbor == "Haukilahti" && it.place == "A 001" }
