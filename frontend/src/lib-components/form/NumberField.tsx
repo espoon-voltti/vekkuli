@@ -41,8 +41,10 @@ function NumberFieldR({
     (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
   const readOnlyValue = state !== undefined ? state : value
   const errorFieldId = id && `error-${id}`
+  // TODO: handle different fractions, min and max
   const inputRef = useNumberFormat({
-    locales: ['fi-FI']
+    locales: ['fi-FI'],
+    maximumFractionDigits: 2
   })
   return (
     <div className="field">
@@ -55,10 +57,10 @@ function NumberFieldR({
           <ReadOnly value={formatNumber(readOnlyValue, precision)} />
         ) : (
           <>
-            <InputNumberFormat
+            <input
               ref={inputRef}
               className="input"
-              type="number"
+              type="text"
               id={id}
               step={step}
               min={min}
