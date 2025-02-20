@@ -5,11 +5,16 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsShortYearDate
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
+import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class BoatSpaceReservationList : BaseView() {
+class BoatSpaceReservationList(
+    private val expandingSelectionFilter: ExpandingSelectionFilter,
+    private val filters: ListFilters
+) : BaseView() {
     fun t(key: String): String = messageUtil.getMessage(key)
 
     fun render(
@@ -18,113 +23,9 @@ class BoatSpaceReservationList : BaseView() {
         amenities: List<BoatSpaceAmenity>,
         @SanitizeInput reservations: List<BoatSpaceReservationItem>,
         @SanitizeInput params: BoatSpaceReservationFilter,
+        sections: List<String>,
         userType: UserType
     ): String {
-        val harborFilters =
-            harbors.joinToString("\n") { harbor ->
-                """
-                <label class="filter-button" ${addTestId(
-                    "filter-harbor-$harbor.name"
-                )}>
-                    <input type="checkbox" name="harbor" value="${harbor.id}" class="is-hidden" ${if (params.hasHarbor(
-                        harbor.id
-                    )
-                ) {
-                    "checked"
-                } else {
-                    ""
-                }}>
-                    <span class="icon is-small">
-                        ${icons.check}
-                    </span>
-                    <span>${harbor.name}</span>
-                </label>
-                """.trimIndent()
-            }
-
-        val boatSpaceTypeFilters =
-            boatSpaceTypes.joinToString("\n") { boatSpaceType ->
-                """
-                <label class="filter-button" ${addTestId(
-                    "filter-type-$boatSpaceType"
-                )}>
-                    <input type="checkbox" name="boatSpaceType" value="$boatSpaceType" class="is-hidden" ${if (params.hasBoatSpaceType(
-                        boatSpaceType
-                    )
-                ) {
-                    "checked"
-                } else {
-                    ""
-                }}>
-                    <span class="icon is-small">
-                        ${icons.check}
-                    </span>
-                    <span>${t("employee.boatSpaceReservations.types.$boatSpaceType")}</span>
-                </label>
-                """.trimIndent()
-            }
-
-        val reservationExpirationFilter =
-            ReservationExpiration.entries.joinToString("\n") { state ->
-                """
-                <label class="filter-button" ${addTestId(
-                    "filter-reservation-expiration-$state"
-                )}>
-                    <input type="radio" name="expiration" value="${state.name}" class="is-hidden" ${if (params.expiration == state) {
-                    "checked"
-                } else {
-                    ""
-                }}>
-                    <span class="icon is-small">
-                        ${icons.check}
-                    </span>
-                    <span>${t("boatSpaces.expirationOption.$state")}</span>
-                </label>
-                """.trimIndent()
-            }
-
-        val paymentOptions = listOf(PaymentFilter.CONFIRMED, PaymentFilter.INVOICED, PaymentFilter.PAYMENT, PaymentFilter.CANCELLED)
-        val paymentFilters =
-            paymentOptions.joinToString("\n") { paymentOption ->
-                """
-                <label class="filter-button" ${addTestId(
-                    "filter-reservation-state-$paymentOption"
-                )}>
-                    <input type="checkbox" name="payment" value="$paymentOption" class="is-hidden" ${if (params.hasPayment(paymentOption)) {
-                    "checked"
-                } else {
-                    ""
-                }}>
-                    <span class="icon is-small">
-                        ${icons.check}
-                    </span>
-                    <span>${t("boatSpaceReservation.paymentOption.${paymentOption.toString().lowercase()}")}</span>
-                </label>
-                """.trimIndent()
-            }
-
-        val reservationValidityFilters =
-            ReservationValidity.entries.joinToString("\n") { validity ->
-                """
-                <label class="filter-button" ${addTestId(
-                    "filter-reservation-validity-$validity"
-                )}>
-                    <input type="checkbox" name="validity" value="$validity" class="is-hidden" ${if (params.hasValidity(
-                        validity
-                    )
-                ) {
-                    "checked"
-                } else {
-                    ""
-                }}>
-                    <span class="icon is-small">
-                        ${icons.check}
-                    </span>
-                    <span>${t("employee.boatReservations.validity.$validity")}</span>
-                </label>
-                """.trimIndent()
-            }
-
         val reservationsWithWarningsCount =
             reservations.fold(0) { acc, reservation -> acc + if (reservation.hasAnyWarnings()) 1 else 0 }
         val warningFilterCheckbox =
@@ -166,16 +67,6 @@ class BoatSpaceReservationList : BaseView() {
             </p>
             """.trimIndent()
 
-        val sections = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "O")
-
-        fun sectionCheckbox(section: String) =
-            """
-            <label class="checkbox dropdown-item" style="margin-bottom:4px;">
-                <input type="checkbox" name="sectionFilter" value="$section" x-model="selectedSections" >
-                <span>$section</span>
-            </label>
-            """.trimIndent()
-
         fun amenityCheckbox(amenity: String) =
             """
             <label class="checkbox dropdown-item" style="margin-bottom:4px;" ${addTestId(
@@ -191,33 +82,17 @@ class BoatSpaceReservationList : BaseView() {
             reserverType: ReserverType
         ) = """"/virkailija/${if (reserverType == ReserverType.Citizen) "kayttaja" else "yhteiso"}/$reserverId""""
 
-        fun expandingSelectionFilter(
-            filter: List<String>,
-            modelName: String,
-            content: String
-        ) = """
-            <div x-data="{ open: false, $modelName: [${filter.joinToString(",") { "'$it'" }}] }" @click.outside="open = false">
-                        <div class="dropdown $modelName" :class="{ 'is-active': open }" ${addTestId("filter-selection-$modelName")}>
-                            <div class="dropdown-trigger">
-                                <a aria-haspopup="true" aria-controls="dropdown-menu-$modelName" @click="open = !open">
-                                    <div class="input search-input has-icons-left has-icons-right">
-                                        <span class="icon is-small is-left">${icons.filter}</span>
-                                        <span class="filter-tag" x-show="$modelName.length > 0" x-text="$modelName.length" style="margin-left:auto"></span>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="dropdown-menu filter-dropdown-menu" id="dropdown-menu-$modelName" role="menu">
-                                <div>$content</div>
-                            </div>
-                        </div>
-            </div>
-            """.trimIndent()
-
         val sectionFilter =
-            expandingSelectionFilter(params.sectionFilter, "selectedSections", sections.joinToString("\n") { sectionCheckbox(it) })
+            expandingSelectionFilter.render(
+                params.sectionFilter,
+                "selectedSections",
+                sections.joinToString("\n") {
+                    expandingSelectionFilter.sectionCheckbox(it)
+                }
+            )
 
         val amenityFilter =
-            expandingSelectionFilter(
+            expandingSelectionFilter.render(
                 params.amenity.map { t ->
                     t.name
                 },
@@ -366,25 +241,25 @@ class BoatSpaceReservationList : BaseView() {
                             <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
                                 <div class="tag-container">
-                                $harborFilters
+                                ${filters.harborFilters(harbors, params.harbor)}
                                 </div>
                             </div>
                             <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.expiration")}</h1>
                                 <div class="tag-container">
-                                    $reservationExpirationFilter
+                                    ${filters.reservationExpirationFilter(params.expiration)}
                                 </div>
                             </div>
                             <div class="filter-group">
                                 <h1 class="label">${t("boatSpaceReservation.title.paymentState")}</h1>
                                 <div class="tag-container">
-                                    $paymentFilters
+                                    ${filters.paymentFilters(params.payment)}
                                 </div>
                             </div>                            
                             <div class="filter-group">
                                 <h1 class="label">${t("employee.boatReservations.title.reservationValidity")}</h1>
                                 <div class="tag-container">
-                                    $reservationValidityFilters
+                                    ${filters.reservationValidityFilters(params.validity)}
                                 </div>
                             </div>                            
                         </div>
@@ -393,7 +268,7 @@ class BoatSpaceReservationList : BaseView() {
                             <div class="filter-group">
                               <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
                               <div class="tag-container">
-                                $boatSpaceTypeFilters
+                                ${filters.boatSpaceTypeFilters(boatSpaceTypes, params.boatSpaceType)}
                               </div>
                             </div>
                         </div>

@@ -181,6 +181,13 @@ enum class ReservationExpiration {
     Expired,
 }
 
+enum class BoatSpaceState {
+    Active,
+    Inactive
+}
+
+val sections = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "O")
+
 data class BoatSpaceReservationFilter(
     val sortBy: BoatSpaceReservationFilterColumn = BoatSpaceReservationFilterColumn.PLACE,
     val ascending: Boolean = false,
@@ -195,17 +202,7 @@ data class BoatSpaceReservationFilter(
     val expiration: ReservationExpiration = ReservationExpiration.Active,
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
     val validity: List<ReservationValidity> = emptyList(),
-) {
-    fun hasHarbor(id: Int): Boolean = harbor.contains(id)
-
-    fun hasBoatSpaceType(id: BoatSpaceType): Boolean = boatSpaceType.contains(id)
-
-    fun hasAmenity(id: BoatSpaceAmenity): Boolean = amenity.contains(id)
-
-    fun hasPayment(paymentFilter: PaymentFilter): Boolean = payment.contains(paymentFilter)
-
-    fun hasValidity(id: ReservationValidity): Boolean = validity.contains(id)
-}
+)
 
 fun ReservationWithDependencies.toBoatSpaceReservation() =
     BoatSpaceReservation(
