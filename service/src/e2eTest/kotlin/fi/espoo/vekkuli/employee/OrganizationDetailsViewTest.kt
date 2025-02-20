@@ -117,6 +117,23 @@ class OrganizationDetailsViewTest : ReserveTest() {
     }
 
     @Test
+    fun `Organization billing name is optional when editing organization`() {
+        EmployeeHomePage(page).employeeLogin()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        organizationDetailsPage.navigateToEspoonPursiseura()
+
+        assertThat(organizationDetailsPage.organizationBillingNameField).isVisible()
+        assertThat(organizationDetailsPage.organizationBillingNameField).not().hasText("-")
+
+        organizationDetailsPage.editButton.click()
+        organizationDetailsPage.organizationBillingNameInput.fill("")
+        organizationDetailsPage.organizationEditSubmitButton.click()
+        assertThat(organizationDetailsPage.organizationBillingNameField).isVisible()
+        assertThat(organizationDetailsPage.organizationBillingNameField).hasText("-")
+    }
+
+    @Test
     fun userMemos() {
         try {
             EmployeeHomePage(page).employeeLogin()

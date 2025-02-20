@@ -69,6 +69,7 @@ class BoatSpaceFormPage(
     val citizenIdError = page.getByTestId("citizenId-error")
 
     val organizationRadioButton = page.getByTestId("reseverTypeOrg")
+    val espoonPursiseuraRadioButton = page.getByTestId("org-8b220a43-86a0-4054-96f6-d29a5aba17e7-radio")
     val orgNameInput = page.getByTestId("orgName")
     val orgBusinessIdInput = page.getByTestId("orgBusinessId")
     val orgPhoneNumberInput = page.getByTestId("orgPhone")

@@ -225,7 +225,7 @@ class SlipHolder(
                 "organizationDetails.title.billingName",
                 "orgBillingName",
                 org?.billingName,
-                required = true,
+                required = false,
             )
         val billingAddressInput =
             formComponents.textInput(
@@ -251,16 +251,16 @@ class SlipHolder(
         val billingAddressFields =
             // language=HTML
             """
-             <div class="field column is-one-fifth">
+             <div class="field column is-one-quarter">
                $billingNameField
             </div>
-             <div class="field column is-one-fifth">
+             <div class="field column is-one-quarter">
                 $billingAddressInput
              </div>
-             <div class="field column is-one-fifth">
+             <div class="field column is-one-quarter">
                 $billingPostalCodeInput
              </div>
-             <div class="field column is-one-fifth">
+             <div class="field column is-one-quarter">
                 $billingPostOfficeInput
              </div>
             """.trimIndent()

@@ -967,7 +967,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
     }
 
     @Test
-    fun reservingABoatSpaceAsOrganization() {
+    fun reservingABoatSpaceAsNewOrganization() {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
 
@@ -993,8 +993,9 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         assertThat(page.getByTestId("firstName")).containsText("Mikko")
         assertThat(page.getByTestId("lastName")).containsText("Virtanen")
 
+        val orgName = "My Organization"
         formPage.organizationRadioButton.click()
-        formPage.orgNameInput.fill("My Organization")
+        formPage.orgNameInput.fill(orgName)
         formPage.orgBusinessIdInput.fill("1234567-8")
         formPage.orgPhoneNumberInput.fill("123456789")
         formPage.orgEmailInput.fill("foo@bar.com")
@@ -1043,7 +1044,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         reservationListPage.navigateTo()
         assertThat(reservationListPage.header).isVisible()
 
-        val expectedInvoiceAddress = "$orgBillingName/$orgBillingAddress,$orgBillingPostalCode,$orgBillingCity"
+        val expectedInvoiceAddress = "$orgBillingName/$orgName/$orgBillingAddress,$orgBillingPostalCode,$orgBillingCity"
         messageService.sendScheduledEmails()
         // Email is sent to both organization representative and the reserver
         assertEquals(2, SendEmailServiceMock.emails.size)
@@ -1166,6 +1167,83 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `Organization billing name is added to the invoice preview`() {
+        EmployeeHomePage(page).employeeLogin()
+        val organizationName = "Espoon Pursiseura"
+        val billingName = "expected billing name"
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.navigateTo()
+        reservationPage.revealB314BoatSpace()
+        reservationPage.reserveTableB314Row.locator(".reserve-button").click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.existingCitizenSelector.click()
+        typeText(formPage.citizenSearchInput, "olivia")
+        page.waitForHtmxSettle()
+        page.waitForCondition { formPage.citizenSearchOption1.isVisible }
+        formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+
+        formPage.organizationRadioButton.click()
+        assertThat(formPage.espoonPursiseuraRadioButton).isVisible()
+        formPage.espoonPursiseuraRadioButton.click()
+        assertThat(formPage.orgBillingNameInput).not().isEmpty()
+
+        formPage.orgBillingNameInput.fill(billingName)
+        formPage.fillFormWithPrefilledValuesAndSubmit()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.contactPerson).hasValue(billingName)
+
+        invoicePreviewPage.sendButton.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        assertThat(organizationDetailsPage.organizationBillingNameField).hasText(billingName)
+
+        messageService.sendScheduledEmails()
+        assertEquals(2, SendEmailServiceMock.emails.size)
+        assertTrue(SendEmailServiceMock.emails.all { it.body.contains("Lasku lähetetään osoitteeseen $billingName/$organizationName") })
+    }
+
+    @Test
+    fun `Organization billing name is optional when making reservation`() {
+        EmployeeHomePage(page).employeeLogin()
+        val organizationName = "Espoon Pursiseura"
+
+        val reservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        reservationPage.navigateTo()
+        reservationPage.revealB314BoatSpace()
+        reservationPage.reserveTableB314Row.locator(".reserve-button").click()
+
+        val formPage = BoatSpaceFormPage(page)
+        formPage.existingCitizenSelector.click()
+        typeText(formPage.citizenSearchInput, "olivia")
+        page.waitForHtmxSettle()
+        page.waitForCondition { formPage.citizenSearchOption1.isVisible }
+        formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+
+        formPage.organizationRadioButton.click()
+        assertThat(formPage.espoonPursiseuraRadioButton).isVisible()
+        formPage.espoonPursiseuraRadioButton.click()
+        assertThat(formPage.orgBillingNameInput).not().isEmpty()
+
+        formPage.orgBillingNameInput.fill("")
+        formPage.fillFormWithPrefilledValuesAndSubmit()
+
+        val invoicePreviewPage = InvoicePreviewPage(page)
+        assertThat(invoicePreviewPage.contactPerson).hasValue("")
+
+        invoicePreviewPage.sendButton.click()
+
+        val organizationDetailsPage = OrganizationDetailsPage(page)
+        assertThat(organizationDetailsPage.organizationBillingNameField).hasText("-")
+
+        messageService.sendScheduledEmails()
+        assertEquals(2, SendEmailServiceMock.emails.size)
+        assertTrue(SendEmailServiceMock.emails.all { it.body.contains("Lasku lähetetään osoitteeseen $organizationName") })
     }
 
     private fun renewABoatSpaceReservation(sendInvoice: Boolean) {

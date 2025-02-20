@@ -51,7 +51,14 @@ class SwitchReservationTest : ReserveTest() {
             assertThat(citizenDetails.userMemo(2))
                 .containsText("Leo Korhonen vaihtoi paikan. Vanha paikka: Haukilahti D 013. Uusi paikka: Haukilahti B 001.")
 
-            assertEquals("Vaihto Venepaikka 2024 Haukilahti D 013", PaytrailMock.paytrailPayments.first().items?.first()?.description)
+            assertEquals(
+                "Vaihto Venepaikka 2024 Haukilahti D 013",
+                PaytrailMock.paytrailPayments
+                    .first()
+                    .items
+                    ?.first()
+                    ?.description
+            )
         } catch (e: AssertionError) {
             handleError(e)
         }
