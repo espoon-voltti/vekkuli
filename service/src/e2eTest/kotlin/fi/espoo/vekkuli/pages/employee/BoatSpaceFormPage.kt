@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.pages.employee
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.shared.OrganizationIds
 
 class BoatSpaceFormPage(
     page: Page
@@ -69,7 +70,7 @@ class BoatSpaceFormPage(
     val citizenIdError = page.getByTestId("citizenId-error")
 
     val organizationRadioButton = page.getByTestId("reseverTypeOrg")
-    val espoonPursiseuraRadioButton = page.getByTestId("org-8b220a43-86a0-4054-96f6-d29a5aba17e7-radio")
+    val espoonPursiseuraRadioButton = page.getByTestId("org-${OrganizationIds.espoonPursiseura}-radio")
     val orgNameInput = page.getByTestId("orgName")
     val orgBusinessIdInput = page.getByTestId("orgBusinessId")
     val orgPhoneNumberInput = page.getByTestId("orgPhone")

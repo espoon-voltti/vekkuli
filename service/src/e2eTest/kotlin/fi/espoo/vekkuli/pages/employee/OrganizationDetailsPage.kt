@@ -4,6 +4,7 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.shared.CitizenIds
 import fi.espoo.vekkuli.shared.OrganizationIds
 import java.util.*
 
@@ -213,10 +214,10 @@ class OrganizationDetailsPage(
     val trailerLengthInput = page.getByTestId("trailerLength")
     val trailerEditSubmitButton = page.getByTestId("trailer-edit-submit")
 
-    val removeOliviaButton = page.getByTestId("remove-user-8b220a43-86a0-4054-96f6-d29a5aba17e7-509edb00-5549-11ef-a1c7-776e76028a49")
+    val removeOliviaButton = page.getByTestId("remove-user-${OrganizationIds.espoonPursiseura}-${CitizenIds.olivia}")
     val confirmOliviaRemove =
         page.getByTestId(
-            "delete-modal-confirm-8b220a43-86a0-4054-96f6-d29a5aba17e7-509edb00-5549-11ef-a1c7-776e76028a49"
+            "delete-modal-confirm-${OrganizationIds.espoonPursiseura}-${CitizenIds.olivia}"
         )
 
     // Add members
