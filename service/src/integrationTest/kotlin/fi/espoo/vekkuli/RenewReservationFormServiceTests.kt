@@ -49,13 +49,13 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
-        var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        val createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
         assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Info, createdRenewal.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, createdRenewal.creationType, "Status should be renewal")
 
-        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        val newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
         assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
@@ -75,13 +75,13 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
                     endDate = startOfSlipRenewPeriod.plusDays(1).toLocalDate()
                 )
             )
-        var createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        val createdRenewal = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertNotEquals(reservation.id, createdRenewal.id, "Renewal reservation ID is not the same as original")
         assertEquals(reservation.id, createdRenewal.originalReservationId, "Original reservation ID should match")
         assertEquals(ReservationStatus.Info, createdRenewal.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, createdRenewal.creationType, "Status should be renewal")
 
-        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        val newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertEquals(createdRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
         assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
@@ -120,28 +120,10 @@ class RenewReservationFormServiceTests : IntegrationTestBase() {
         assertEquals(ReservationStatus.Info, secondRenewal.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, secondRenewal.creationType, "Status should be renewal")
 
-        var newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
+        val newReservation = boatSpaceRenewalService.getOrCreateRenewalReservationForEmployee(userId, reservation.id)
         assertEquals(firstRenewal.id, newReservation.id, "Should fetch existing renewal reservation")
         assertEquals(ReservationStatus.Info, newReservation.status, "Status should be renewal")
         assertEquals(CreationType.Renewal, newReservation.creationType, "Status should be renewal")
-    }
-
-    @Test
-    fun `should generate invoice model for reservation`() {
-        val reservation =
-            testUtils.createReservationInRenewState(
-                CreateReservationParams(
-                    timeProvider,
-                    citizenIdLeo,
-                    1,
-                    validity = ReservationValidity.Indefinite,
-                )
-            )
-
-        val invoiceModel = boatSpaceRenewalService.getSendInvoiceModel(reservation.id)
-
-        assertNotNull(invoiceModel, "Invoice model should be generated")
-        assertEquals(reservation.id, invoiceModel.reservationId, "Reservation ID should match")
     }
 
     @Test

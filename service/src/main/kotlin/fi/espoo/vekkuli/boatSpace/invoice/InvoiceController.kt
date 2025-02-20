@@ -3,18 +3,14 @@ package fi.espoo.vekkuli.boatSpace.invoice
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
-import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationWithDependencies
 import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.repository.BoatSpaceReservationRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.utils.decimalToInt
-import fi.espoo.vekkuli.utils.formatAsFullDate
-import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.EmployeeLayout
 import fi.espoo.vekkuli.views.employee.InvoicePreview
-import fi.espoo.vekkuli.views.employee.SendInvoiceModel
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
@@ -22,7 +18,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
-import java.time.LocalDate
 import java.util.*
 
 @Controller
@@ -55,74 +50,19 @@ class InvoiceController(
         if (invoiceData == null) {
             throw IllegalArgumentException("Failed to create invoice data")
         }
-        val isOrganization = reservation.reserverType == ReserverType.Organization
 
-        val model = buildInvoiceModel(reservation, invoiceData, reservationId, isOrganization)
+        val model = invoicePreview.buildInvoiceModel(reservation, invoiceData)
         val content =
             invoicePreview.render(
                 model,
                 submitUrl = "/virkailija/venepaikka/varaus/${model.reservationId}/lasku",
                 backUrl = "/virkailija/venepaikat/varaukset",
                 deleteUrl = "/virkailija/venepaikka/varaus/$reservationId/lasku",
-                isOrganization
+                isOrganization = reservation.reserverType == ReserverType.Organization
             )
         val page = employeeLayout.render(true, request.requestURI, content)
         return ResponseEntity.ok(page)
     }
-
-    private fun buildInvoiceModel(
-        reservation: ReservationWithDependencies,
-        invoiceData: InvoiceData,
-        reservationId: Int,
-        isOrganization: Boolean
-    ): SendInvoiceModel {
-        val reserverName =
-            if (isOrganization) {
-                invoiceData.orgName ?: ""
-            } else {
-                "${invoiceData.firstnames} ${invoiceData.lastname}"
-            }
-
-        val reserverStreetAddress =
-            if (!invoiceData.street.isEmpty() && !invoiceData.postalCode.isEmpty() && !invoiceData.post.isEmpty()) {
-                "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}"
-            } else {
-                t("infoMissing")
-            }
-
-        val model =
-            SendInvoiceModel(
-                reservationId = reservationId,
-                reserverName = reserverName,
-                reserverSsn = invoiceData.ssn ?: "",
-                reserverAddress = reserverStreetAddress,
-                product = reservation.locationName,
-                function = getDefaultFunction(reservation.type),
-                billingPeriodStart = formatAsFullDate(reservation.startDate),
-                billingPeriodEnd = formatAsFullDate(reservation.endDate),
-                boatingSeasonStart = LocalDate.of(2025, 5, 1),
-                boatingSeasonEnd = LocalDate.of(2025, 9, 30),
-                invoiceNumber = "",
-                dueDate = invoiceData.dueDate,
-                costCenter = "",
-                invoiceType = "",
-                priceWithTax = intToDecimal(reservation.priceCents),
-                discountedPriceWithTax = intToDecimal(reservation.discountedPriceCents),
-                description = invoiceData.description,
-                contactPerson = invoiceData.orgRepresentative ?: "",
-                orgId = invoiceData.orgId ?: "",
-                discountPercentage = reservation.discountPercentage ?: 0
-            )
-        return model
-    }
-
-    fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
-        when (boatSpaceType) {
-            BoatSpaceType.Slip -> "T1270"
-            BoatSpaceType.Winter -> "T1271"
-            BoatSpaceType.Storage -> "T1276"
-            BoatSpaceType.Trailer -> "T1270"
-        }
 
     data class InvoiceInput(
         val priceWithTax: BigDecimal,

@@ -45,7 +45,7 @@ class SwitchReservationTest : ReserveTest() {
                 "Paikan vaihto. Maksettu vain erotus."
             )
 
-            assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi",)
+            assertEmailIsSentOfCitizensIndefiniteSlipSwitch("leo@noreplytest.fi")
             val citizenDetails = citizenPageInEmployeeView("korhonen", false)
             citizenDetails.memoNavi.click()
             assertThat(citizenDetails.userMemo(2))

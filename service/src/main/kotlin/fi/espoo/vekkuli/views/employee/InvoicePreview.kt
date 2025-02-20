@@ -1,8 +1,13 @@
 package fi.espoo.vekkuli.views.employee
 
 import fi.espoo.vekkuli.FormComponents
+import fi.espoo.vekkuli.boatSpace.invoice.InvoiceData
+import fi.espoo.vekkuli.domain.BoatSpaceType
+import fi.espoo.vekkuli.domain.ReservationWithDependencies
+import fi.espoo.vekkuli.domain.ReserverType
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.utils.formatAsFullDate
+import fi.espoo.vekkuli.utils.intToDecimal
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.MarkAsPaidConfirmModal
 import org.springframework.stereotype.Component
@@ -14,15 +19,7 @@ data class SendInvoiceModel(
     val reserverName: String,
     val reserverSsn: String,
     val reserverAddress: String,
-    val product: String,
-    val billingPeriodStart: String,
-    val billingPeriodEnd: String,
-    val boatingSeasonStart: LocalDate,
-    val boatingSeasonEnd: LocalDate,
-    val invoiceNumber: String,
     val dueDate: LocalDate,
-    val costCenter: String,
-    val invoiceType: String,
     val priceWithTax: BigDecimal,
     val discountedPriceWithTax: BigDecimal,
     val description: String,
@@ -40,6 +37,51 @@ class InvoicePreview(
     val formComponents: FormComponents,
     private val markAsPaidConfirmModal: MarkAsPaidConfirmModal
 ) : BaseView() {
+    fun buildInvoiceModel(
+        reservation: ReservationWithDependencies,
+        invoiceData: InvoiceData,
+    ): SendInvoiceModel {
+        val isOrganization = reservation.reserverType == ReserverType.Organization
+        val reserverName =
+            if (isOrganization) {
+                invoiceData.orgName ?: ""
+            } else {
+                "${invoiceData.firstnames} ${invoiceData.lastname}"
+            }
+
+        val reserverStreetAddress =
+            if (!invoiceData.street.isEmpty() && !invoiceData.postalCode.isEmpty() && !invoiceData.post.isEmpty()) {
+                "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}"
+            } else {
+                t("infoMissing")
+            }
+
+        val model =
+            SendInvoiceModel(
+                reservationId = reservation.id,
+                reserverName = reserverName,
+                reserverSsn = invoiceData.ssn ?: "",
+                reserverAddress = reserverStreetAddress,
+                function = getDefaultFunction(reservation.type),
+                dueDate = invoiceData.dueDate,
+                priceWithTax = intToDecimal(reservation.priceCents),
+                discountedPriceWithTax = intToDecimal(reservation.discountedPriceCents),
+                description = invoiceData.description,
+                contactPerson = invoiceData.orgRepresentative ?: "",
+                orgId = invoiceData.orgId ?: "",
+                discountPercentage = reservation.discountPercentage ?: 0
+            )
+        return model
+    }
+
+    private fun getDefaultFunction(boatSpaceType: BoatSpaceType): String =
+        when (boatSpaceType) {
+            BoatSpaceType.Slip -> "T1270"
+            BoatSpaceType.Winter -> "T1271"
+            BoatSpaceType.Storage -> "T1276"
+            BoatSpaceType.Trailer -> "T1270"
+        }
+
     fun render(
         model: SendInvoiceModel,
         submitUrl: String,
