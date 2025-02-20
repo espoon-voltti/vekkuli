@@ -10,7 +10,18 @@ class ReservationListPage(
     page: Page
 ) : BasePage(page) {
     fun navigateTo() {
-        page.navigate("$baseUrl/virkailija/venepaikat/varaukset")
+        navigateToWithParams()
+    }
+
+    fun navigateToWithParams(params: Map<String, String>? = null) {
+        // if params, map params to query string
+        val paramsString =
+            params
+                ?.takeIf { it.isNotEmpty() }
+                ?.map { (key, value) -> "$key=$value" }
+                ?.joinToString("&", prefix = "?") ?: ""
+
+        page.navigate("$baseUrl/virkailija/venepaikat/varaukset$paramsString")
     }
 
     private val filterLocator = { filter: String -> getByDataTestId("filter-$filter") }
@@ -19,6 +30,7 @@ class ReservationListPage(
     val boatSpace1 = page.locator("#boat-space-1").first()
     val boatSpace2 = page.locator("#boat-space-2").first()
     val boatSpace8 = page.locator("#boat-space-8").first()
+    val boatSpaceLeoKorhonen = page.locator("tr:has-text('Korhonen Leo')").first()
     val createReservation = page.locator("#create-reservation")
     val warningIcon = getByDataTestId("warning-icon", boatSpace1)
     val warningIcon8 = getByDataTestId("warning-icon", boatSpace8)

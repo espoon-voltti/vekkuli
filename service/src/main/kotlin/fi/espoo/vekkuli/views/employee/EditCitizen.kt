@@ -19,7 +19,7 @@ class EditCitizen {
     lateinit var commonComponents: CommonComponents
 
     fun editCitizenForm(
-        citizen: CitizenWithDetails,
+        @SanitizeInput citizen: CitizenWithDetails,
         municipalities: List<Municipality>,
         errors: Map<String, String>,
         userType: UserType

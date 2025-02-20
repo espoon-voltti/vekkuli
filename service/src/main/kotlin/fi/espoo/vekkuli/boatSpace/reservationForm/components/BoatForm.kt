@@ -7,8 +7,8 @@ import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.common.CommonComponents
+import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.stereotype.Component
-import kotlin.math.min
 
 // language=HTML
 @Component
@@ -266,7 +266,9 @@ class BoatForm(
         )
     }
 
-    fun render(params: BoatFormParams): String {
+    fun render(
+        @SanitizeInput params: BoatFormParams
+    ): String {
         val boatForm = """ ${
             boatForm(
                 BoatFormParams(

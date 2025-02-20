@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.domain.CitizenWithDetails
 import fi.espoo.vekkuli.domain.Municipality
 import fi.espoo.vekkuli.domain.Organization
 import fi.espoo.vekkuli.views.BaseView
+import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.stereotype.Component
 
 @Component
@@ -14,9 +15,9 @@ class OrganizationContactDetailsEdit(
     private val organizationMembersContainer: OrganizationMembersContainer,
 ) : BaseView() {
     fun render(
-        organization: Organization,
+        @SanitizeInput organization: Organization,
         municipalities: List<Municipality>,
-        organizationMembers: List<CitizenWithDetails>,
+        @SanitizeInput organizationMembers: List<CitizenWithDetails>,
     ): String {
         val organizationNameInput =
             formComponents.textInput(

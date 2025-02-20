@@ -4,15 +4,18 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.pages.citizen.components.IKnowOrganizationIds
+import fi.espoo.vekkuli.pages.citizen.components.IKnowOrganizationIds.Companion.espoonPursiseura
 import java.util.*
 
 class OrganizationDetailsPage(
     page: Page
-) : BasePage(page) {
+) : BasePage(page),
+    IKnowOrganizationIds<OrganizationDetailsPage> {
     val organizationDetailsSection = page.getByTestId("reserver-details")
 
     fun navigateToEspoonPursiseura() {
-        navigateToPage(UUID.fromString("8b220a43-86a0-4054-96f6-d29a5aba17e7"))
+        navigateToPage(espoonPursiseura)
     }
 
     fun navigateToPage(organizationId: UUID) {

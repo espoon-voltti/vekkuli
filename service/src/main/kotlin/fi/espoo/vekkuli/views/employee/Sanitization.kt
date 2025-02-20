@@ -19,6 +19,7 @@ class SanitizationUtil {
             is String -> htmlEscape(input) // Sanitize strings
             is Collection<*> -> input.map { sanitize(it) } // Recursively sanitize collections
             is Map<*, *> -> input.mapValues { sanitize(it.value) } // Recursively sanitize maps
+            is Enum<*> -> input // Do not sanitize enums
             else -> sanitizeObject(input) // Sanitize objects
         }
 
@@ -42,6 +43,7 @@ class SanitizationUtil {
                     when (it.returnType.classifier) {
                         String::class -> htmlEscape(value as String) // Sanitize strings
                         Collection::class -> sanitize(value) // Recursively sanitize collections
+                        List::class -> sanitize(value) // Recursively sanitize lists
                         Map::class -> sanitize(value) // Recursively sanitize maps
                         else -> if (value::class.isData) sanitize(value) else value // Recursively sanitize objects
                     }

@@ -16,8 +16,8 @@ class BoatSpaceReservationList : BaseView() {
         harbors: List<Location>,
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
-        reservations: List<BoatSpaceReservationItem>,
-        params: BoatSpaceReservationFilter,
+        @SanitizeInput reservations: List<BoatSpaceReservationItem>,
+        @SanitizeInput params: BoatSpaceReservationFilter,
         userType: UserType
     ): String {
         val harborFilters =
