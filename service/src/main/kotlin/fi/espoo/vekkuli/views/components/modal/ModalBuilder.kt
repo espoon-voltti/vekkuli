@@ -13,7 +13,7 @@ class ModalBuilder {
     private var centerButtons: Boolean = false
     private var isWide: Boolean = false
     private val buttons: MutableList<ModalButtonParam> = mutableListOf()
-    private var form: Pair<String, String>? = null
+    private var form: FormBuilder.BuildResult? = null
 
     fun getModalStateId(): String = modalStateId
 
@@ -79,11 +79,11 @@ class ModalBuilder {
                     @click="$modalStateId = false;"
                 ></div>
                 <div class="modal-content${if (isWide) " is-wide" else ""}">
-                    ${form?.first ?: ""}
+                    ${form?.startTag ?: ""}
                     ${if (!title.isNullOrEmpty()) """<h3>$title</h3>""" else ""}
                     $content
                     ${if (buttons.isNotEmpty()) buildButtons(buttons) else ""}
-                    ${form?.second ?: ""}
+                    ${form?.endTag ?: ""}
                 </div>
             </div>
             """.trimIndent()
@@ -114,6 +114,11 @@ class ModalBuilder {
         }
 
     class FormBuilder {
+        class BuildResult(
+            val startTag: String,
+            val endTag: String
+        )
+
         private var testId: String? = null
         private val attributes: MutableMap<String, String> =
             mutableMapOf(
@@ -137,8 +142,8 @@ class ModalBuilder {
                 this.attributes.putAll(attributes)
             }
 
-        fun build(): Pair<String, String> =
-            Pair(
+        fun build(): BuildResult =
+            BuildResult(
                 """
                 <form
                     ${attributes.toHtmlAttributes()}
