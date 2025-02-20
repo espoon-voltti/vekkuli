@@ -41,8 +41,8 @@ data class StickerReportRow(
     val registrationCode: String?,
     val otherIdentification: String?,
     val ownership: OwnershipStatus?,
-    val startDate: String?,
-    val endDate: String?,
+    val startDate: LocalDate?,
+    val endDate: LocalDate?,
     val productCode: String?,
     val totalCents: String?,
     val paid: LocalDateTime?,
@@ -106,7 +106,9 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             "omistussuhde",
             "maksuluokka",
             "maksupäivä",
-            "hinta"
+            "hinta",
+            "varauksen alkupvm",
+            "varauksen loppupvm"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
 
     val csvContent = StringBuilder()
@@ -156,6 +158,9 @@ fun stickerReportToCsv(reportRows: List<StickerReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(intToDecimal(report.totalCents)))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.startDate)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(localDateToText(report.endDate)))
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -310,7 +315,6 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(localDateToText(report.endDate)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
-            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
