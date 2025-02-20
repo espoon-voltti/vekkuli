@@ -1,13 +1,20 @@
 package fi.espoo.vekkuli
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIf
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @ActiveProfiles("test")
+@EnabledIf(value = "fi.espoo.vekkuli.HeaderTest#isLocalDocker", disabledReason = "Headers are only available when testing with nginx")
 class HeaderTest : PlaywrightTest() {
+    companion object {
+        @JvmStatic
+        fun isLocalDocker(): Boolean = "local-docker" == System.getenv("ENVIRONMENT")
+    }
+
     @Test
     fun `should not send duplicate headers for employee`() {
         val response = page.request().get("$baseUrl/virkailija")
