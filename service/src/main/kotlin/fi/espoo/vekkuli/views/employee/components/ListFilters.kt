@@ -105,7 +105,7 @@ class ListFilters : BaseView() {
                 <label class="filter-button" ${addTestId(
                 "filter-reservation-expiration-$state"
             )}>
-                    <input type="radio" name="expiration" funue="${state.name}" class="is-hidden" ${if (chosenExpiration == state) {
+                    <input type="radio" name="expiration" value="${state.name}" class="is-hidden" ${if (chosenExpiration == state) {
                 "checked"
             } else {
                 ""
@@ -129,7 +129,7 @@ class ListFilters : BaseView() {
                     "filter-reservation-state-$paymentOption"
                 )
             }>
-                    <input type="checkbox" name="payment" funue="$paymentOption" class="is-hidden" ${
+                    <input type="checkbox" name="payment" value="$paymentOption" class="is-hidden" ${
                 if (hasPayment(paymentOption)) {
                     "checked"
                 } else {
