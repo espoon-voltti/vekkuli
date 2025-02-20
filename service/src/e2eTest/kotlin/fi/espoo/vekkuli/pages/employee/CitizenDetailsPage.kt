@@ -4,13 +4,11 @@ import com.microsoft.playwright.Locator
 import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
-import fi.espoo.vekkuli.pages.citizen.components.IKnowCitizenIds
 import java.util.UUID
 
 class CitizenDetailsPage(
     page: Page
-) : BasePage(page),
-    IKnowCitizenIds<CitizenDetailsPage> {
+) : BasePage(page) {
     val citizenDetailsSection = page.getByTestId("reserver-details")
 
     val reservationValidity = getByDataTestId("reservation-validity")
