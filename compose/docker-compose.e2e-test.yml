@@ -1,5 +1,3 @@
-version: '3.5'
-
 services:
   frontend:
     image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/frontend:${TAG:-master}
@@ -37,7 +35,7 @@ services:
       - redis
 
   service-e2e-tests:
-    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/service-builder:${TAG:-master}
+    image: ghcr.io/espoon-voltti/vekkuli/service-builder:${TAG:-master}
     build:
       context: ../service/
       target: builder
