@@ -26,48 +26,51 @@ class TerminateReservationAsEmployeeModalView(
         return modalBuilder
             .setTitle(t("boatSpaceTermination.title"))
             .setIsWide(true)
+            .setForm {
+                setId(formId)
+                setTestId(formId)
+                setAttributes(
+                    mapOf(
+                        "hx-post" to "/boat-space/terminate-reservation/as-employee",
+                        "hx-swap" to "innerHTML",
+                        "hx-target" to "#modal-container"
+                    )
+                )
+            }
             // language=HTML
             .setContent(
                 """
-                <form
-                    id="$formId"
-                    ${addTestId(formId)}
-                    hx-post="/boat-space/terminate-reservation/as-employee"
-                    hx-swap="innerHTML"
-                    hx-target="#modal-container"
-                    xmlns="http://www.w3.org/1999/html">
-                    <div class='columns is-multiline form-section pb-none'>
-                        <div class="column is-full">
-                            <ul class="no-bullets">
-                                <li ${addTestId("terminate-reservation-location")}>
-                                    ${reservation.locationName} ${reservation.place}
-                                </li>
-                                <li ${addTestId("terminate-reservation-size")}>
-                                    ${reservation.boatSpaceWidthInM} x ${reservation.boatSpaceLengthInM} m
-                                </li>
-                                <li ${addTestId("terminate-reservation-amenity")}>
-                                    ${t("boatSpaces.amenityOption.${reservation.amenity}")}
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="column is-full">
-                            $endDateField
-                        
-                            $reasonField
-                        
-                            $explanationField
-                        </div>
+                <div class='columns is-multiline form-section pb-none'>
+                    <div class="column is-full">
+                        <ul class="no-bullets">
+                            <li ${addTestId("terminate-reservation-location")}>
+                                ${reservation.locationName} ${reservation.place}
+                            </li>
+                            <li ${addTestId("terminate-reservation-size")}>
+                                ${reservation.boatSpaceWidthInM} x ${reservation.boatSpaceLengthInM} m
+                            </li>
+                            <li ${addTestId("terminate-reservation-amenity")}>
+                                ${t("boatSpaces.amenityOption.${reservation.amenity}")}
+                            </li>
+                        </ul>
                     </div>
-                    <h3 class="pt-s">${t("boatSpaceTermination.messageToCustomerTitle")}</h3>
-                    <div class='columns is-multiline'>
-                        <div class="column is-full">
-                            $messageTitleField
-                            
-                            $messageContentField
-                        </div>
-                     </div>
-                    <input hidden name="reservationId" value="${reservation.id}" />
-                </form>
+                    <div class="column is-full">
+                        $endDateField
+                    
+                        $reasonField
+                    
+                        $explanationField
+                    </div>
+                </div>
+                <h3 class="pt-s">${t("boatSpaceTermination.messageToCustomerTitle")}</h3>
+                <div class='columns is-multiline'>
+                    <div class="column is-full">
+                        $messageTitleField
+                        
+                        $messageContentField
+                    </div>
+                 </div>
+                <input hidden name="reservationId" value="${reservation.id}" />
                 """.trimIndent()
             ).addButton {
                 setText(t("cancel"))
@@ -77,7 +80,6 @@ class TerminateReservationAsEmployeeModalView(
                 setStyle(ModalButtonStyle.Danger)
                 setType(ModalButtonType.Submit)
                 setText(t("boatSpaceTermination.button.confirm"))
-                setTargetForm(formId)
                 setTestId("terminate-reservation-modal-confirm")
             }.build()
     }

@@ -13,12 +13,20 @@ class ModalBuilder {
     private var centerButtons: Boolean = false
     private var isWide: Boolean = false
     private val buttons: MutableList<ModalButtonParam> = mutableListOf()
+    private var form: FormBuilder.BuildResult? = null
 
     fun getModalStateId(): String = modalStateId
 
     fun setTitle(title: String) =
         apply {
             this.title = title
+        }
+
+    fun setForm(init: FormBuilder.() -> Unit) =
+        apply {
+            val builder = FormBuilder()
+            builder.init()
+            form = builder.build()
         }
 
     fun setContent(content: String) =
@@ -71,9 +79,11 @@ class ModalBuilder {
                     @click="$modalStateId = false;"
                 ></div>
                 <div class="modal-content${if (isWide) " is-wide" else ""}">
+                    ${form?.startTag ?: ""}
                     ${if (!title.isNullOrEmpty()) """<h3>$title</h3>""" else ""}
                     $content
                     ${if (buttons.isNotEmpty()) buildButtons(buttons) else ""}
+                    ${form?.endTag ?: ""}
                 </div>
             </div>
             """.trimIndent()
@@ -83,15 +93,11 @@ class ModalBuilder {
         // language=HTML
         return """<div class="buttons ${if (centerButtons) "is-justify-content-center" else ""}">${
             buttons.joinToString("\n") { button ->
-                val additionalAttributes =
-                    button.attributes.entries.joinToString(" ") { (key, value) ->
-                        "$key=\"$value\""
-                    }
                 """
                 <button
                     class="${button.style.cssClass}"
                     ${getButtonType(button.type)}
-                    $additionalAttributes
+                    ${button.attributes.toHtmlAttributes()}
                 >
                     ${button.text}
                 </button>
@@ -106,6 +112,47 @@ class ModalBuilder {
             ModalButtonType.Cancel -> "type=\"button\" x-on:click=\"$modalStateId = false\""
             ModalButtonType.Submit -> "type=\"submit\""
         }
+
+    class FormBuilder {
+        class BuildResult(
+            val startTag: String,
+            val endTag: String
+        )
+
+        private var testId: String? = null
+        private val attributes: MutableMap<String, String> =
+            mutableMapOf(
+                "hx-disabled-elt" to "find button[type='submit']",
+                "hx-on:htmx:before-request" to "htmx.addClass(this.querySelector('button[type=submit]'), 'is-loading')",
+                "hx-on:htmx:after-request" to "htmx.removeClass(this.querySelector('button[type=submit]'), 'is-loading')"
+            )
+
+        fun setId(id: String) =
+            apply {
+                attributes["id"] = id
+            }
+
+        fun setTestId(testId: String) =
+            apply {
+                this.testId = testId
+            }
+
+        fun setAttributes(attributes: Map<String, String>) =
+            apply {
+                this.attributes.putAll(attributes)
+            }
+
+        fun build(): BuildResult =
+            BuildResult(
+                """
+                <form
+                    ${attributes.toHtmlAttributes()}
+                    ${testId?.let { addTestId(it) } ?: ""}
+                    xmlns="http://www.w3.org/1999/html">
+                """.trimIndent(),
+                "</form>"
+            )
+    }
 
     class ModalButtonBuilder {
         var text: String = ""
@@ -136,3 +183,8 @@ class ModalBuilder {
         fun build(): ModalButtonParam = ModalButtonParam(text, type, style, attributes)
     }
 }
+
+fun Map<String, String>.toHtmlAttributes(): String =
+    entries.joinToString(" ") { (key, value) ->
+        "$key=\"$value\""
+    }
