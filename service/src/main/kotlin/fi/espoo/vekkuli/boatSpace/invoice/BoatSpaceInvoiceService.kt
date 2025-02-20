@@ -122,13 +122,12 @@ class BoatSpaceInvoiceService(
         }
 
         val price = priceWithVatInCents ?: reservation.priceCents
+        val period =
+            "${timeProvider.getCurrentDate().year}${if (reservation.startDate.year < reservation.endDate.year) ("-" + reservation.endDate.year) else ""}"
+        val spaceType = placeTypeToText(reservation.type)
         val desc =
             description
-                ?: (
-                    placeTypeToText(reservation.type) +
-                        " " + reservation.locationName + " " + reservation.place + " " + timeProvider.getCurrentDate().year +
-                        if (reservation.startDate.year < reservation.endDate.year) ("-" + reservation.endDate.year) else ""
-                )
+                ?: "$spaceType $period ${reservation.locationName} ${reservation.place}"
 
         if (reservation.reserverType == ReserverType.Citizen) {
             val citizen = reserverService.getCitizen(reserverId)
