@@ -84,11 +84,13 @@ class BoatSpaceListController {
         val boatSpaceTypes = BoatSpaceType.entries.toList()
         val boatSpaces =
             boatSpaceService.getBoatSpacesFiltered(params)
+        val sections = boatSpaceService.getSections()
+
         return ResponseEntity.ok(
             layout.render(
                 true,
                 request.requestURI,
-                boatSpaceList.render(boatSpaces, params, harbors, boatSpaceTypes, actualAmenities)
+                boatSpaceList.render(boatSpaces, params, harbors, boatSpaceTypes, actualAmenities, sections)
             )
         )
     }

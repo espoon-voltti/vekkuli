@@ -23,6 +23,7 @@ class BoatSpaceReservationList(
         amenities: List<BoatSpaceAmenity>,
         @SanitizeInput reservations: List<BoatSpaceReservationItem>,
         @SanitizeInput params: BoatSpaceReservationFilter,
+        sections: List<String>,
         userType: UserType
     ): String {
         val reservationsWithWarningsCount =

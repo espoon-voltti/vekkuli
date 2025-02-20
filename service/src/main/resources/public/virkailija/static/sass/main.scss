@@ -737,7 +737,7 @@ label.filter-button:has(input:checked) .icon {
 
 .filter-dropdown-menu {
   min-width: unset;
-  width: 120px;
+  max-width: 200px;
   background: white;
   padding: 4px;
   border: 1px solid #DADDE2;

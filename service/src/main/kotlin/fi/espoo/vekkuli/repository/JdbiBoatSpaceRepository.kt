@@ -249,6 +249,18 @@ class JdbiBoatSpaceRepository(
             query.mapTo<BoatSpaceListRow>().toList()
         }
 
+    override fun getSections(): List<String> =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT DISTINCT section
+                FROM boat_space
+                ORDER BY section
+                """.trimIndent()
+
+            handle.createQuery(sql).mapTo<String>().toList()
+        }
+
     override fun isBoatSpaceReserved(boatSpaceId: Int): Boolean =
         jdbi.withHandleUnchecked { handle ->
             val sql =

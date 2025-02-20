@@ -32,6 +32,8 @@ interface BoatSpaceRepository {
         filter: SqlExpr,
         sortBy: BoatSpaceSortBy? = null
     ): List<BoatSpaceListRow>
+
+    fun getSections(): List<String>
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -94,4 +96,6 @@ class BoatSpaceService(
             )
         return boatSpaceRepo.getUnreservedBoatSpaceOptions(params)
     }
+
+    fun getSections() = boatSpaceRepo.getSections()
 }

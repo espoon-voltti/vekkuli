@@ -46,7 +46,8 @@ class BoatSpaceList(
         @SanitizeInput searchParams: BoatSpaceListParams,
         harbors: List<Location>,
         boatSpaceTypes: List<BoatSpaceType>,
-        amenities: List<BoatSpaceAmenity>
+        amenities: List<BoatSpaceAmenity>,
+        sections: List<String>
     ): String {
         fun getBoatSpacePage(
             reserverId: UUID?,
@@ -150,15 +151,7 @@ class BoatSpaceList(
                               </div>
                             </div>
                         </div>
-                         <div class="employee-filter-container">
-                         <div class="filter-group">
-                              <h1 class="label">${t("boatSpaceReservation.title.state")}</h1>
-                              <div class="tag-container">
-                                ${filters.boatSpaceStateFilter(searchParams.boatSpaceState)}
-                              </div>
-                            </div>
                          
-                        </div>
                          
 
                         <div class="reservation-list form-section block">
