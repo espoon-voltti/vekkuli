@@ -213,7 +213,8 @@ class BoatSpaceReservationList : BaseView() {
             </div>
             """.trimIndent()
 
-        val sectionFilter = expandingSelectionFilter(params.sectionFilter, "selectedSections", sections.joinToString("\n") { sectionCheckbox(it) })
+        val sectionFilter =
+            expandingSelectionFilter(params.sectionFilter, "selectedSections", sections.joinToString("\n") { sectionCheckbox(it) })
 
         val amenityFilter =
             expandingSelectionFilter(

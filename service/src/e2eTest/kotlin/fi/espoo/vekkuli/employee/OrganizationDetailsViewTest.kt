@@ -336,11 +336,11 @@ class OrganizationDetailsViewTest : ReserveTest() {
             val assertions = injectXSSToOrganizationInformation(page, IKnowOrganizationIds.espoonPursiseura)
 
             // Make sure htmx has settled
-            assertThat( organizationDetails.editButton).isVisible()
+            assertThat(organizationDetails.editButton).isVisible()
             // The script was run setting to edit mode after the injection
             organizationDetails.editButton.click()
             // Make sure htmx has settled
-            assertThat( organizationDetails.organizationNameInput ).isVisible()
+            assertThat(organizationDetails.organizationNameInput).isVisible()
 
             assertions()
         } catch (e: AssertionError) {

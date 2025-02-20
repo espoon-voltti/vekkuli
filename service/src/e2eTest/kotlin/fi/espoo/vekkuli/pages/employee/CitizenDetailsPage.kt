@@ -9,7 +9,8 @@ import java.util.UUID
 
 class CitizenDetailsPage(
     page: Page
-) : BasePage(page), IKnowCitizenIds<CitizenDetailsPage> {
+) : BasePage(page),
+    IKnowCitizenIds<CitizenDetailsPage> {
     val citizenDetailsSection = page.getByTestId("reserver-details")
 
     val reservationValidity = getByDataTestId("reservation-validity")
@@ -53,7 +54,7 @@ class CitizenDetailsPage(
     }
 
     fun navigateToUserPage(userId: UUID) {
-        page.navigate("$baseUrl/virkailija/kayttaja/${userId}")
+        page.navigate("$baseUrl/virkailija/kayttaja/$userId")
     }
 
     fun hideModalWindow() {

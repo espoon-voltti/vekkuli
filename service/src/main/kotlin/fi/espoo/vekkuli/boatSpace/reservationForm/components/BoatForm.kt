@@ -266,7 +266,9 @@ class BoatForm(
         )
     }
 
-    fun render(@SanitizeInput params: BoatFormParams): String {
+    fun render(
+        @SanitizeInput params: BoatFormParams
+    ): String {
         val boatForm = """ ${
             boatForm(
                 BoatFormParams(

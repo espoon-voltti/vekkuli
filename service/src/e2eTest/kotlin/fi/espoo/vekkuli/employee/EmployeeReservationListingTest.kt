@@ -104,7 +104,6 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         }
     }
 
-
     @ParameterizedTest
     @CsvSource(
         "sortBy, XSS_ATTACK_SORT_BY",
@@ -121,19 +120,23 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         "boatSpaceType, XSS_ATTACK_BOAT_SPACE_TYPE",
         "validity, XSS_ATTACK_VALIDITY",
     )
-    fun `reservations list should shield against XSS reflection scripts from parameters`(parameter: String, maliciousValue: String) {
+    fun `reservations list should shield against XSS reflection scripts from parameters`(
+        parameter: String,
+        maliciousValue: String
+    ) {
         try {
             EmployeeHomePage(page).employeeLogin()
             val listingPage = ReservationListPage(page)
 
-            fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.${value}=true;%3C/script%3E%20"
+            fun maliciousCode(value: String) = "%22%3E%3Cscript%3Ewindow.$value=true;%3C/script%3E%20"
 
-            val params = mapOf(
-                parameter to maliciousCode(maliciousValue),
-            )
+            val params =
+                mapOf(
+                    parameter to maliciousCode(maliciousValue),
+                )
             listingPage.navigateToWithParams(params)
 
-            assertFalse(page.evaluate("() => window.hasOwnProperty('${maliciousValue}')") as Boolean, "XSS script was executed on $parameter")
+            assertFalse(page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean, "XSS script was executed on $parameter")
         } catch (e: AssertionError) {
             handleError(e)
         }

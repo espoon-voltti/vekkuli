@@ -7,9 +7,15 @@ import fi.espoo.vekkuli.pages.employee.OrganizationDetailsPage
 import org.junit.jupiter.api.Assertions.assertFalse
 import java.util.UUID
 
-fun maliciousCode(value: String, extra: String? = null) = "\"><script>window.${value} = true;${if(extra != null) "var e = \"${extra}\";" else ""}</script>"
+fun maliciousCode(
+    value: String,
+    extra: String? = null
+) = "\"><script>window.$value = true;${if (extra != null) "var e = \"${extra}\";" else ""}</script>"
 
-fun injectXSSToCitizenInformation(page: Page, citizenId: UUID): () -> Unit {
+fun injectXSSToCitizenInformation(
+    page: Page,
+    citizenId: UUID
+): () -> Unit {
     val citizenDetails = CitizenDetailsPage(page)
     citizenDetails.navigateToUserPage(citizenId)
 
@@ -31,16 +37,31 @@ fun injectXSSToCitizenInformation(page: Page, citizenId: UUID): () -> Unit {
 
     citizenDetails.citizenEditSubmitButton.click()
     return {
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${firstNameMaliciousValue}')") as Boolean, "XSS script was executed on First name")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${lastNameMaliciousValue}')") as Boolean, "XSS script was executed on Last name")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${addressMaliciousValue}')") as Boolean, "XSS script was executed on Address")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${emailMaliciousValue}')") as Boolean, "XSS script was executed on Email")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${postalCodeMaliciousValue}')") as Boolean, "XSS script was executed on Postal code")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${cityMaliciousValue}')") as Boolean, "XSS script was executed on Municipality code")
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$firstNameMaliciousValue')") as Boolean,
+            "XSS script was executed on First name"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$lastNameMaliciousValue')") as Boolean,
+            "XSS script was executed on Last name"
+        )
+        assertFalse(page.evaluate("() => window.hasOwnProperty('$addressMaliciousValue')") as Boolean, "XSS script was executed on Address")
+        assertFalse(page.evaluate("() => window.hasOwnProperty('$emailMaliciousValue')") as Boolean, "XSS script was executed on Email")
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$postalCodeMaliciousValue')") as Boolean,
+            "XSS script was executed on Postal code"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$cityMaliciousValue')") as Boolean,
+            "XSS script was executed on Municipality code"
+        )
     }
 }
 
-fun injectXSSToOrganizationInformation(page: Page, organizationId: UUID): () -> Unit {
+fun injectXSSToOrganizationInformation(
+    page: Page,
+    organizationId: UUID
+): () -> Unit {
     val organizationDetails = OrganizationDetailsPage(page)
 
     val nameMaliciousValue = "XSS_ATTACK_NAME"
@@ -78,16 +99,40 @@ fun injectXSSToOrganizationInformation(page: Page, organizationId: UUID): () -> 
     organizationDetails.organizationEditSubmitButton.click()
 
     return {
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${nameMaliciousValue}')") as Boolean, "XSS script was executed on First name")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${businessIdMaliciousValue}')") as Boolean, "XSS script was executed on Last name")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${phoneNumberMaliciousValue}')") as Boolean, "XSS script was executed on Phone number")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${emailMaliciousValue}')") as Boolean, "XSS script was executed on Email")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${addressMaliciousValue}')") as Boolean, "XSS script was executed on Address")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${postalCodeMaliciousValue}')") as Boolean, "XSS script was executed on Postal code")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${cityMaliciousValue}')") as Boolean, "XSS script was executed on Municipality code")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${billingNameMaliciousValue}')") as Boolean, "XSS script was executed on Billing name")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${billingAddressMaliciousValue}')") as Boolean, "XSS script was executed on Billing address")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${billingPostalCodeMaliciousValue}')") as Boolean, "XSS script was executed on Billing postal code")
-        assertFalse(page.evaluate("() => window.hasOwnProperty('${billingCityMaliciousValue}')") as Boolean, "XSS script was executed on Billing city")
+        assertFalse(page.evaluate("() => window.hasOwnProperty('$nameMaliciousValue')") as Boolean, "XSS script was executed on First name")
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$businessIdMaliciousValue')") as Boolean,
+            "XSS script was executed on Last name"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$phoneNumberMaliciousValue')") as Boolean,
+            "XSS script was executed on Phone number"
+        )
+        assertFalse(page.evaluate("() => window.hasOwnProperty('$emailMaliciousValue')") as Boolean, "XSS script was executed on Email")
+        assertFalse(page.evaluate("() => window.hasOwnProperty('$addressMaliciousValue')") as Boolean, "XSS script was executed on Address")
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$postalCodeMaliciousValue')") as Boolean,
+            "XSS script was executed on Postal code"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$cityMaliciousValue')") as Boolean,
+            "XSS script was executed on Municipality code"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$billingNameMaliciousValue')") as Boolean,
+            "XSS script was executed on Billing name"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$billingAddressMaliciousValue')") as Boolean,
+            "XSS script was executed on Billing address"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$billingPostalCodeMaliciousValue')") as Boolean,
+            "XSS script was executed on Billing postal code"
+        )
+        assertFalse(
+            page.evaluate("() => window.hasOwnProperty('$billingCityMaliciousValue')") as Boolean,
+            "XSS script was executed on Billing city"
+        )
     }
 }

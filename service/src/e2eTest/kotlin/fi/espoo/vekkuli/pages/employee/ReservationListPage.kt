@@ -14,11 +14,12 @@ class ReservationListPage(
     }
 
     fun navigateToWithParams(params: Map<String, String>? = null) {
-
         // if params, map params to query string
-        val paramsString = params?.takeIf { it.isNotEmpty() }
-            ?.map { (key, value) -> "${key}=${value}" }
-            ?.joinToString("&", prefix = "?") ?: ""
+        val paramsString =
+            params
+                ?.takeIf { it.isNotEmpty() }
+                ?.map { (key, value) -> "$key=$value" }
+                ?.joinToString("&", prefix = "?") ?: ""
 
         page.navigate("$baseUrl/virkailija/venepaikat/varaukset$paramsString")
     }

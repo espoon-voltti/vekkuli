@@ -393,14 +393,13 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             val assertions = injectXSSToCitizenInformation(page, IKnowCitizenIds.citizenIdLeo)
 
             // Make sure htmx has settled
-            assertThat( citizenDetails.editButton).isVisible()
+            assertThat(citizenDetails.editButton).isVisible()
             // The script was run setting to edit mode after the injection
             citizenDetails.editButton.click()
             // Make sure htmx has settled
-            assertThat( citizenDetails.citizenFirstNameInput).isVisible()
+            assertThat(citizenDetails.citizenFirstNameInput).isVisible()
 
             assertions()
-
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -420,7 +419,7 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
             citizenDetails.newMemoContent.fill(maliciousCode(maliciousValue))
             citizenDetails.newMemoSaveBtn.clickAndWaitForHtmxSettle()
 
-            assertFalse(page.evaluate("() => window.hasOwnProperty('${maliciousValue}')") as Boolean, "XSS script was executed on user memo")
+            assertFalse(page.evaluate("() => window.hasOwnProperty('$maliciousValue')") as Boolean, "XSS script was executed on user memo")
         } catch (e: AssertionError) {
             handleError(e)
         }

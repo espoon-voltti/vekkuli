@@ -10,7 +10,8 @@ import java.util.*
 
 class OrganizationDetailsPage(
     page: Page
-) : BasePage(page), IKnowOrganizationIds<OrganizationDetailsPage> {
+) : BasePage(page),
+    IKnowOrganizationIds<OrganizationDetailsPage> {
     val organizationDetailsSection = page.getByTestId("reserver-details")
 
     fun navigateToEspoonPursiseura() {
