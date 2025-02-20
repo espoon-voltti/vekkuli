@@ -3076,6 +3076,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-input/core@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@react-input/core@npm:2.0.2"
+  peerDependencies:
+    "@types/react": ">=16.8"
+    react: ">=16.8 || ^19.0.0-rc"
+    react-dom: ">=16.8 || ^19.0.0-rc"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/c20b3e340e297c4f9b795247b4fe4696d225375915dcac0122ae43244751738665b4074e707d7bfae338749437110b282a966b6cbe950e1dc708367e8d63fa24
+  languageName: node
+  linkType: hard
+
+"@react-input/number-format@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@react-input/number-format@npm:2.0.3"
+  dependencies:
+    "@react-input/core": "npm:^2.0.2"
+  peerDependencies:
+    "@types/react": ">=16.8"
+    react: ">=16.8 || ^19.0.0-rc"
+    react-dom: ">=16.8 || ^19.0.0-rc"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/e4689c80007b84bf12e414bb37439a0b4772f4b3b0d5f466458e9ea75ab4ece8524225c415f4df2050533d7b2e628593bba258f58eaf67a828b188f4a95f71ea
+  languageName: node
+  linkType: hard
+
 "@rtsao/scc@npm:^1.1.0":
   version: 1.1.0
   resolution: "@rtsao/scc@npm:1.1.0"
@@ -11745,6 +11775,7 @@ __metadata:
     "@eslint/compat": "npm:^1.2.0"
     "@eslint/js": "npm:^9.16.0"
     "@playwright/test": "npm:^1.49.0"
+    "@react-input/number-format": "npm:^2.0.3"
     "@tanstack/react-query": "npm:^5.62.0"
     "@testing-library/dom": "npm:^10.4.0"
     "@testing-library/jest-dom": "npm:^6.5.0"

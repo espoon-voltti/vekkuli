@@ -1,3 +1,4 @@
+import { InputNumberFormat, useNumberFormat } from '@react-input/number-format'
 import React, { useState } from 'react'
 
 import { formatNumber } from 'citizen-frontend/shared/formatters'
@@ -40,6 +41,9 @@ function NumberFieldR({
     (showErrorsBeforeTouched || touched || showAllErrors === true) && !isValid()
   const readOnlyValue = state !== undefined ? state : value
   const errorFieldId = id && `error-${id}`
+  const inputRef = useNumberFormat({
+    locales: ['fi-FI']
+  })
   return (
     <div className="field">
       <div className="control">
@@ -51,7 +55,8 @@ function NumberFieldR({
           <ReadOnly value={formatNumber(readOnlyValue, precision)} />
         ) : (
           <>
-            <input
+            <InputNumberFormat
+              ref={inputRef}
               className="input"
               type="number"
               id={id}
