@@ -238,7 +238,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti D 013",
                 "0,00",
-                "Laituri Haukilahti D 013 2024-2025",
+                "Laituri 2024-2025 Haukilahti D 013",
                 doLogin = false
             )
 
