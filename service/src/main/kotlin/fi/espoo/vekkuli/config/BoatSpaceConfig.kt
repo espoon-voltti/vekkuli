@@ -30,7 +30,7 @@ enum class ReservationWarningType {
 }
 
 object BoatSpaceConfig {
-    const val SESSION_TIME_IN_SECONDS = 20 * 60
+    const val SESSION_TIME_IN_SECONDS = 40 * 60
     const val BOAT_RESERVATION_ALV_PERCENTAGE = 25.5
 
     fun paytrailProductCode(product: BoatSpaceType): String {
