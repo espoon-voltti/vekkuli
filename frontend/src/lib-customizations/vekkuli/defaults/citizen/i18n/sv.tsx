@@ -64,7 +64,11 @@ const sv: Translations = {
     openExpandingInfo: 'Öppna detaljer',
     errors: {
       genericGetError: 'Hämtning av information misslyckades',
-      validationWarning: 'Vänligen fyll i alla obligatoriska fält'
+      validationWarning: 'Vänligen fyll i alla obligatoriska fält',
+      error400: 'Oj nej! Du har gått på grund.',
+      error403: 'Oj nej! Båtleder är blockerad.',
+      error404: 'Oj nej! Leden är borta.',
+      error500: 'Oj nej! En storm överraskade systemet. Försök igen senare.'
     },
     datetime: {
       dayShort: 'pv',

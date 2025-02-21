@@ -350,6 +350,11 @@ input[type="radio"]:checked {
   border: 1px solid $error;
 }
 
+.error-container {
+  .list-item {
+    margin-bottom: $spacing-small;
+  }
+}
 
 .field.is-grouped.is-grouped-no-spacing-v {
   gap: 0;

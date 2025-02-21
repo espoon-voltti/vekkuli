@@ -64,7 +64,12 @@ const en: Translations = {
     openExpandingInfo: 'Open the details',
     errors: {
       genericGetError: 'Error in fetching the requested information',
-      validationWarning: 'Missing required information'
+      validationWarning: 'Missing required information',
+      error400: 'Oh no! You have run aground.',
+      error403: 'Oh no! The boat route is blocked.',
+      error404: 'Oh no! The route is lost.',
+      error500:
+        'Oh no! A storm caught the system off guard. Please try again later.'
     },
     datetime: {
       dayShort: 'd',

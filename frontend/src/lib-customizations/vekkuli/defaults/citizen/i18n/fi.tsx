@@ -63,7 +63,12 @@ export default {
     openExpandingInfo: 'Avaa lisätietokenttä',
     errors: {
       genericGetError: 'Tietojen hakeminen ei onnistunut',
-      validationWarning: 'Pakollisia tietoja puuttuu'
+      validationWarning: 'Pakollisia tietoja puuttuu',
+      error400: 'Voi ei! Karahdit karille.',
+      error403: 'Voi ei! Veneväylä on tukossa.',
+      error404: 'Voi ei! Väylä hukassa.',
+      error500:
+        'Voi ei! Myrsky yllätti järjestelmän. Yritä myöhemmin uudestaan.'
     },
     datetime: {
       dayShort: 'pv',
