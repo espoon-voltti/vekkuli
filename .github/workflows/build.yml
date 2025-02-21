@@ -443,27 +443,18 @@ jobs:
           package-type: container
           min-versions-to-keep: 20
 
-  deploy-environments:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate list of environments
-        id: environments
-        run: |
-          echo 'environments=${{ github.ref == 'refs/heads/master' && '["dev","staging","prod"]' || '["staging","prod"]' }}' >> "$GITHUB_OUTPUT"
-    outputs:
-      environments: ${{ steps.environments.outputs.environments }}
-
   deploy:
     runs-on: ubuntu-latest
     needs:
       - service
       - dockerize
-      - deploy-environments
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJson(needs.deploy-environments.outputs.environments) }}
-
+        environment:
+          - dev
+          - staging
+          - prod
     environment:
       name: ${{ matrix.environment }}
 
