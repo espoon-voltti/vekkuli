@@ -384,7 +384,7 @@ export default {
       return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'
     },
     invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Laskutettu ${dueDate.format()}` : '-'
+      return dueDate ? `Laskutettu, eräpäivä ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {

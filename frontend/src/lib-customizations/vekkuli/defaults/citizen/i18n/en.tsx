@@ -386,7 +386,7 @@ const en: Translations = {
       return paymentDate ? `Paid ${paymentDate.format()}` : '-'
     },
     invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Invoiced ${dueDate.format()}` : '-'
+      return dueDate ? `Invoiced, due date ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {

@@ -373,7 +373,7 @@ const sv: Translations = {
       return paymentDate ? `Betald ${paymentDate.format()}` : '-'
     },
     invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Faktureras ${dueDate.format()}` : '-'
+      return dueDate ? `Faktureras, förfallodag ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {
