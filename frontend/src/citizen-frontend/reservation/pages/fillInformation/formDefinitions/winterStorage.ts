@@ -13,7 +13,6 @@ import {
   value
 } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
-import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 export const storageTypeForm = oneOf<StorageType>()
 export type StorageTypeForm = typeof storageTypeForm
@@ -86,11 +85,10 @@ export function onWinterStorageFormUpdate({
 }
 
 export default function initialFormState(
-  i18n: Translations,
   initialTrailer?: Trailer
 ): StateOf<WinterStorageForm> {
   return {
-    storageType: initialStorageTypeState(i18n),
+    storageType: initialStorageTypeState(),
     trailerInfo: initialTrailerInfoState(initialTrailer)
   }
 }
@@ -108,13 +106,11 @@ function initialTrailerInfoState(
   }
 }
 
-const initialStorageTypeState = (
-  i18n: Translations
-): StateOf<StorageTypeForm> => ({
+const initialStorageTypeState = (): StateOf<StorageTypeForm> => ({
   domValue: 'Trailer',
   options: storageTypes.map((type) => ({
     domValue: type,
-    label: i18n.boatSpace.winterStorageType[type],
+    label: (i18n) => i18n.boatSpace.winterStorageType[type],
     value: type
   }))
 })
