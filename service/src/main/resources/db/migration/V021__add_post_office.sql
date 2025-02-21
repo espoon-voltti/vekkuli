@@ -1,4 +1,0 @@
-ALTER TABLE citizen
-  ADD COLUMN post_office TEXT DEFAULT NULL,
-  ADD COLUMN post_office_sv TEXT DEFAULT NULL,
-  ADD COLUMN address_sv TEXT DEFAULT NULL;
