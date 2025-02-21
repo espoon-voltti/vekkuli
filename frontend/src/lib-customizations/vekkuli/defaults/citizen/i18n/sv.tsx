@@ -395,6 +395,21 @@ const sv: Translations = {
         title: 'Återgång misslyckades',
         SERVER_ERROR:
           'Återgång för att fylla i informationen misslyckades, eller så inträffade ett annat fel. Vänligen kontakta kundtjänst. Du hittar kontaktuppgifter till kundtjänsten på startsidan.'
+      },
+      failedReservation: {
+        title: 'Reservering misslyckades',
+        type: {
+          boatSpaceNotAvailable: [
+            'Tyvärr bekräftade du inte bokningen i tid, och platsen har redan bokats av någon annan.',
+            'Din betalning kan ha genomförts, så vänligen kontrollera situationen genom att kontakta vår kundtjänst för vidare instruktioner och eventuell återbetalning.',
+            'Du hittar kundtjänstens kontaktuppgifter på startsidan.'
+          ],
+          unknown: [
+            'Okänt fel, platsen kunde inte bokas.',
+            'Din betalning kan ha genomförts, så vänligen kontrollera situationen genom att kontakta vår kundtjänst för vidare instruktioner och eventuell återbetalning.',
+            'Du hittar kundtjänstens kontaktuppgifter på startsidan.'
+          ]
+        }
       }
     },
     paymentInfo: {
