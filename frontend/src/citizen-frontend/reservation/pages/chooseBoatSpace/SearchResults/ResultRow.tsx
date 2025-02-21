@@ -19,9 +19,7 @@ export const ResultRow = React.memo(function ResultRow({
   const i18n = useTranslation()
   return (
     <tr>
-      <td>
-        <SpaceSize size={space.size} />
-      </td>
+      <td>{space.amenity !== 'Buoy' && <SpaceSize size={space.size} />}</td>
       <td>{i18n.boatSpace.amenities[space.amenity]} </td>
       <td>
         <PriceFormat price={space.price} />

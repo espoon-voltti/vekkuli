@@ -3947,7 +3947,8 @@ INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, 
     ('2434', 'Slip', '7', '4', 'E', '64', 'WalkBeam', '380', '1000', 'none'),
     ('2435', 'Slip', '7', '4', 'E', '66', 'WalkBeam', '380', '1000', 'none'),
     ('2436', 'Slip', '7', '3', 'E', '68', 'WalkBeam', '320', '1000', 'none'),
-    ('2437', 'Slip', '7', '2', 'Ä', '1', 'Beam', '250', '500', 'none');
+    ('2437', 'Slip', '7', '2', 'Ä', '1', 'Beam', '250', '500', 'none'),
+    ('2438', 'Slip', '6', '5', 'POIJU', '1', 'Buoy', '100000', '100000', 'none');
 
 
 INSERT INTO trailer (registration_code, reserver_id, width_cm, length_cm)
