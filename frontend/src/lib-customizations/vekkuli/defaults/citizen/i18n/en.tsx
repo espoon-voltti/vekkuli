@@ -575,13 +575,17 @@ const en: Translations = {
     information: {
       title: 'Organization information',
       phone: 'Organization phone number',
-      email: 'Organization email'
+      email: 'Organization email',
+      name: 'Organization name'
     },
     title: 'Organizations',
     name: 'Name',
     organizationId: 'Business ID',
     municipality: 'Municipality',
     physicalAddress: 'Physical address',
+    streetAddress: 'Address',
+    postalCode: 'Postal code',
+    postOffice: 'City',
     contactDetails: {
       title: 'Contact information',
       fields: {

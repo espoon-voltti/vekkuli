@@ -575,13 +575,17 @@ export default {
     information: {
       title: 'Yhteisön tiedot',
       phone: 'Yhteisön puhelinnumero',
-      email: 'Yhteisön sähköposti'
+      email: 'Yhteisön sähköposti',
+      name: 'Yhteisön nimi'
     },
     title: 'Yhteisöt',
     name: 'Nimi',
     organizationId: 'Y-tunnus',
     municipality: 'Kotikunta',
     physicalAddress: 'Käyntiosoite',
+    streetAddress: 'Katuosoite',
+    postalCode: 'Postinumero',
+    postOffice: 'Postitoimipaikka',
     contactDetails: {
       title: 'Yhteyshenkilöt',
       fields: {
