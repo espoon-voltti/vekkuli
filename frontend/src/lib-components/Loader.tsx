@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { useTranslation } from 'citizen-frontend/localization'
 import { Result } from 'lib-common/api'
 import { Error500 } from 'lib-icons'
 
@@ -44,6 +45,7 @@ const LoadingComponent = React.memo(function LoadingComponent() {
 })
 
 const ErrorComponent = React.memo(function ErrorComponent() {
+  const i18n = useTranslation()
   return (
     <Container>
       <Columns isMultiline>
@@ -51,7 +53,7 @@ const ErrorComponent = React.memo(function ErrorComponent() {
           <Error500 />
         </Column>
         <Column isFull textCentered>
-          Voi ei! Myrsky yllätti järjestelmän. Yritä myöhemmin uudestaan.
+          {i18n.common.errors.error500}
         </Column>
       </Columns>
     </Container>
