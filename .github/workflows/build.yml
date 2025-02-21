@@ -14,7 +14,7 @@ env:
   DOCKER_PULL: "${{ github.ref == 'refs/heads/master' && 'true' || 'false' }}"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }} # does not cancel master
   cancel-in-progress: true
 
 permissions:
