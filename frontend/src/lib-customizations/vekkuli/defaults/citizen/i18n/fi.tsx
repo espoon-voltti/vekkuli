@@ -143,16 +143,17 @@ export default {
     },
     periods: {
       Slip: {
-        title: 'Venepaikkojen varaaminen',
+        title: 'Venepaikkojen varaaminen 2025',
         season: (season: string) => `Veneilykausi ${season}`,
         periods: [
           (period: string) =>
-            `${period} espoolaiset* voivat varata venepaikkoja`,
+            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa venepaikansa vuokrausta`,
+          (period: string) => `${period} vain espoolaiset* voivat varata venepaikkoja`,
           (period: string) => `${period} kaikki voivat varata venepaikkoja`
         ]
       },
       Trailer: {
-        title: 'Suomenojan traileripaikkojen varaaminen',
+        title: 'Suomenojan traileripaikkojen varaaminen 2025',
         season: (season: string) =>
           `Vuokrakausi ${season} Vene trailerilla, vesillelasku luiskalta.`,
         periods: [
@@ -162,7 +163,7 @@ export default {
         ]
       },
       Winter: {
-        title: 'Talvipaikkojen varaaminen',
+        title: 'Talvipaikkojen varaaminen 2025',
         season: (season: string) => `Talvisäilytyskausi ${season}`,
         periods: [
           (period: string) =>
@@ -172,7 +173,7 @@ export default {
         ]
       },
       Storage: {
-        title: 'Ämmäsmäen säilytyspaikan varaaminen',
+        title: 'Ämmäsmäen säilytyspaikan varaaminen 2025 **',
         season: (season: string) => `Säilytyskausi ${season}`,
         periods: [
           (period: string) =>
@@ -181,7 +182,9 @@ export default {
         ]
       },
       footNote:
-        '*Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata vene-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.'
+        '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata vene-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
+      footNote2:
+        '** 14.9.2025 asti kaikki voivat varata säilytyspaikkoja kuluvalle kaudelle'
     },
     button: {
       browseBoatSpaces: 'Selaile vapaita venepaikkoja'

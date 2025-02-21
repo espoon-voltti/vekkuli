@@ -144,15 +144,16 @@ const sv: Translations = {
     },
     periods: {
       Slip: {
-        title: 'Boka båtplatser',
+        title: 'Boka båtplatser 2025',
         season: (season: string) => `Båtsäsong ${season}`,
         periods: [
-          (period: string) => `${period} Esbo-bor* kan boka båtplatser`,
+          (period: string) => `${period} endast Esbo-bor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
+          (period: string) => `${period} endast Esbobor* kan boka båtplatser.`,
           (period: string) => `${period} alla kan boka båtplatser`
         ]
       },
       Trailer: {
-        title: 'Boka trailerplatser vid Suomenoja',
+        title: 'Boka trailerplatser vid Suomenoja 2025',
         season: (season: string) =>
           `Hyressäsong ${season} Båt på trailer, sjösättning från ramp.`,
         periods: [
@@ -162,7 +163,7 @@ const sv: Translations = {
         ]
       },
       Winter: {
-        title: 'Boka vinterförvaringsplatser',
+        title: 'Boka vinterförvaringsplatser 2025',
         season: (season: string) => `Vinterförvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -172,7 +173,7 @@ const sv: Translations = {
         ]
       },
       Storage: {
-        title: 'Boka förvaringsplatser i Ämmässuo',
+        title: 'Boka förvaringsplatser i Ämmässuo 2025 **',
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -181,7 +182,9 @@ const sv: Translations = {
         ]
       },
       footNote:
-        '*Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbo-bo. I detta fall måste en Esbo-bo göra bokningen.'
+        '* Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbo-bo. I detta fall måste en Esbo-bo göra bokningen.',
+      footNote2:
+        '** Fram till 14.9.2025 kan alla boka förvaringsplatser för den pågående säsongen.'
     },
     button: {
       browseBoatSpaces: 'Bläddra bland båtplatser'
