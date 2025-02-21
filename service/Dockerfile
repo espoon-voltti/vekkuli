@@ -28,13 +28,13 @@ WORKDIR /app
 COPY ./gradle/ ./gradle/
 COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./webpack.config.js ./index.js ./htmx.js ./
 
-RUN ./gradlew --no-daemon resolveDependencies \
+RUN ./gradlew resolveDependencies \
  && ./gradlew e2eTestDeps
 
 COPY . .
 
-RUN ./gradlew compileSass
-RUN ./gradlew bundleJs
+RUN ./gradlew compileSass \
+ && ./gradlew bundleJs
 
 # --offline is used to be sure that all dependencies are installed in previous steps
 RUN ./gradlew --offline --no-daemon ktlintCheck
