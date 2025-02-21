@@ -337,7 +337,7 @@ const en: Translations = {
     noRegistererNumber: 'No registration number',
     certify: 'I certify that the information I have provided is correct',
     agreeToRules:
-      'I have read and agree to follow the harbor rules. The reservation replaces the rental agreement mentioned in the harbor rules.',
+      'I have read and agree to follow <a target="_blank" href="https://www.espoo.fi/en/marina-rules">the harbor rules</a>.',
     prices: {
       totalPrice: (amount: string) => `Total: ${amount} €`,
       vatValue: (amount: string) => `VAT: ${amount} €`,

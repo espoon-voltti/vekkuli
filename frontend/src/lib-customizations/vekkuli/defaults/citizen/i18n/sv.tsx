@@ -335,7 +335,7 @@ const sv: Translations = {
     noRegistererNumber: 'Inget registreringsnummer',
     certify: 'Jag intygar att de uppgifter jag har lämnat är korrekta.',
     agreeToRules:
-      'Jag har läst och godkänner att följa hamnreglerna. Bokningen ersätter hyresavtalet som nämns i hamnreglerna.',
+      'Jag har läst och godkänner att följa <a target="_blank" href="https://www.espoo.fi/sv/bestammelser-bathamnar">hamnreglerna</a>. Bokningen ersätter hyresavtalet som nämns i hamnreglerna.',
     prices: {
       totalPrice: (amount: string) => `Totalt: ${amount} €`,
       vatValue: (amount: string) => `Moms: ${amount} €`,

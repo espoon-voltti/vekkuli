@@ -337,7 +337,7 @@ export default {
     noRegistererNumber: 'Ei rekisterinumeroa',
     certify: 'Vakuutan antamani tiedot oikeiksi',
     agreeToRules:
-      'Olen lukenut venesatamasäännöt ja sitoudun noudattamaan niitä. Varaus korvaa venesatamasäännöissä mainitun vuokrasopimuksen.',
+      'Olen lukenut <a target="_blank" href="https://www.espoo.fi/fi/venesatamamia-koskevat-ehdot-saannot-ja-ohjeet">venesatamien sopimusehdot ja säännöt</a> ja sitoudun noudattamaan niitä.',
     prices: {
       totalPrice: (amount: string) => `Yhteensä: ${amount} €`,
       vatValue: (amount: string) => `Arvonlisävero: ${amount} €`,
