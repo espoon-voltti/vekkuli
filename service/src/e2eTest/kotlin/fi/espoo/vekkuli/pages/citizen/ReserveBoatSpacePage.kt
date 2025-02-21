@@ -43,6 +43,7 @@ class ReserveBoatSpacePage(
         val amenityWalkBeamCheckbox = fields.getCheckbox("Kävelyaisa")
         val haukilahtiCheckbox = fields.getCheckbox("Haukilahti")
         val kivenlahtiCheckbox = fields.getCheckbox("Kivenlahti")
+        val suomenojaCheckbox = fields.getCheckbox("Suomenoja")
         val svinöCheckbox = fields.getCheckbox("Svinö")
     }
 
@@ -81,10 +82,12 @@ class ReserveBoatSpacePage(
         val b059ReserveButton = reserveButtonByPlace("B", "059")
         val b007ReserveButton = reserveButtonByPlace("B", "007")
 
+        fun showMoreToggle(harbor: String) = root.getByLabel("Näytä lisää: $harbor", Locator.GetByLabelOptions().setExact(true))
+
         internal fun reserveButtonByPlace(
             section: String,
             placeNumber: String,
-        ) = root.locator("tr:has-text('$section $placeNumber')").locator("button:has-text('Varaa')")
+        ) = reserveRowByPlace(section, placeNumber).locator("button:has-text('Varaa')")
 
         fun getReserveButtonPlacementByPlace(
             location: String,
@@ -94,6 +97,11 @@ class ReserveBoatSpacePage(
             val rows = location.locator("tr").all()
             return rows.indexOfFirst { row -> row.innerText().contains(place) }
         }
+
+        fun reserveRowByPlace(
+            section: String,
+            placeNumber: String
+        ) = root.locator("tr:has-text('$section $placeNumber')")
     }
 
     class ReserveModal(
