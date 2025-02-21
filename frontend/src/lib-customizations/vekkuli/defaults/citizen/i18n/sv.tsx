@@ -136,7 +136,9 @@ const sv: Translations = {
       boatRequired:
         'Endast ägaren eller innehavaren av en båt kan boka båt-, vinter- eller förvaringsplatser. Se till att uppgifterna är korrekta i Traficoms båtregister.',
       contactInfo:
-        'Om du inte kan autentisera dig elektroniskt, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 mån och ons kl. 12:30-15:00 och tors kl. 9:00-11:00. Ha följande information redo för bokningen: bokarens personnummer, namn, adress och e-postadress; båtens bredd, längd och vikt; samt båtens namn eller annan identifierare.',
+        'Om du inte kan autentisera dig elektroniskt, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 mån och ons kl. 12:30-15:00 och tors kl. 9:00-11:00.',
+      preparations:
+          'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
         'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring här.'
     },

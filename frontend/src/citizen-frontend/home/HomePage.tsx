@@ -10,7 +10,7 @@ import {
   Boat,
   ContactSupport,
   InfoCircle,
-  MapMarker
+  MapMarker, Preparations
 } from 'lib-icons'
 
 export default React.memo(function HomePage() {
@@ -36,6 +36,10 @@ export default React.memo(function HomePage() {
             <InfoColumn
               icon={ContactSupport}
               text={i18n.citizenFrontPage.info.contactInfo}
+            />
+            <InfoColumn
+                icon={Preparations}
+                text={i18n.citizenFrontPage.info.preparations}
             />
             <InfoColumn
               icon={InfoCircle}

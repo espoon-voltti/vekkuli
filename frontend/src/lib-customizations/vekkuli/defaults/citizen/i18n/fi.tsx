@@ -135,7 +135,9 @@ export default {
       boatRequired:
         'Vain veneen omistaja tai haltija voi varata vene-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.',
       contactInfo:
-        'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11. Kerääthän valmiiksi varausta varten seuraavat tiedot: varaajan henkilötunnus, nimet, osoite ja sähköpostiosoite, veneen leveys, pituus ja paino, veneen nimi tai muu tunniste.',
+          'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
+      preparations:
+          'Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
       readMore:
         'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät täältä.'
     },
