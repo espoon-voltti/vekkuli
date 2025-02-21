@@ -254,13 +254,15 @@ const en: Translations = {
         title: 'Booking Boat Spaces 2025',
         periods: {
           newReservations:
-            'Booking new boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025',
+            'Booking boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025. The reservation is for the boating season 10.6.–14.9.2025.',
           trailerReservations:
-            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2025',
+            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2025. The reservation is for the boating season 1.5.2025–30.4.2026.',
           winter:
-            'Booking new winter spaces for Espoo residents from 15.9.–31.12.2025',
-          storage:
-            'Booking Ämmäsmäki storage spaces for everyone from 15.9.2025–31.7.2026'
+            'Booking winter spaces for Espoo residents from 15.9.–31.12.2025. The reservation is for the winter season 15.9.2025–10.6.2026.',
+          storage1:
+            'Booking Ämmäsmäki storage spaces for season 15.9.2024–14.9.2025 is open until 14.9.2025.',
+          storage2:
+            'Booking Ämmäsmäki storage spaces for season 15.9.2025–14.9.2026 opens on 15.9.2025.'
         }
       },
       modal: {
