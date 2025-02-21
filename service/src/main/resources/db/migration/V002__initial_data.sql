@@ -1,3 +1,7 @@
+
+INSERT INTO app_user (id, external_id, first_name, last_name, email, is_system_user)
+VALUES ('00000000-0000-0000-0000-000000000000', 'api-gw', 'api-gw', 'system-user', NULL, TRUE);
+
 INSERT INTO municipality (code, name)
 VALUES
     (1, 'Kotikuntaa vailla olevat'),
