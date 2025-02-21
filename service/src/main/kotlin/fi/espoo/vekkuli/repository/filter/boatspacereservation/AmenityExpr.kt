@@ -6,7 +6,7 @@ import fi.espoo.vekkuli.utils.OrExpr
 
 private class SlipAmenityExpr(
     amenities: List<BoatSpaceAmenity>
-) : InExpr<BoatSpaceAmenity>("bs.amenity", amenities.filter { slipAmenities.contains(it) })
+) : InExpr<BoatSpaceAmenity>("bs.amenity", amenities.filter { baseAmenities.contains(it) })
 
 private class StorageTypeAmenityExpr(
     amenities: List<BoatSpaceAmenity>
