@@ -104,7 +104,7 @@ class BoatSpaceSearch(
             """
             <label class="label">${t("boatSpaces.amenityHeader")}</label>
                 <div class="field columns is-multiline is-mobile">
-                ${slipAmenities.joinToString("\n") { option ->
+                ${baseAmenities.joinToString("\n") { option ->
                 """
                 <div class="column is-half pb-none">
                     <label class="checkbox">
