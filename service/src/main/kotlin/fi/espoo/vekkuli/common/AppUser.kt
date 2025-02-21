@@ -61,7 +61,7 @@ fun Handle.getAppUser(id: UUID) =
         """
 SELECT id, external_id, first_name, last_name, email
 FROM app_user 
-WHERE id = :id AND NOT system_user
+WHERE id = :id AND (system_user IS FALSE)
         """.trimIndent()
     ).bind("id", id)
         .mapTo<AppUser>()
