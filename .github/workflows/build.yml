@@ -444,11 +444,9 @@ jobs:
           min-versions-to-keep: 20
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     needs:
-      - test
-      - e2e-test
+      - service
       - dockerize
     strategy:
       fail-fast: false
