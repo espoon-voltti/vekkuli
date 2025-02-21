@@ -12,6 +12,7 @@ const _ = require('lodash')
 const yargs = require('yargs')
 
 const projectPath = 'src/citizen-frontend'
+const customizationPath = 'src/lib-customizations'
 const outdir = `dist/esbuild/citizen-frontend`
 const publicPath = '/'
 
@@ -151,10 +152,24 @@ async function staticFiles(outputs) {
   if (!indexCss) throw new Error(`Output file for main.css not found`)
   const indexHtml = _.template(await fs.readFile(`${projectPath}/index.html`))
 
+  // Copy favicon.ico to the output directory
+  await fs.copyFile(
+    `${customizationPath}/espoo/assets/favicon.ico`,
+    `${outdir}/favicon.ico`
+  )
+
+  // Copy robots.txt to the output directory
+  await fs.copyFile(
+    `${customizationPath}/espoo/assets/robots.txt`,
+    `${outdir}/robots.txt`
+  )
+
   await fs.writeFile(
     `${outdir}/index.html`,
     indexHtml({
-      assets: [stylesheet(indexCss), script(indexJs)].join('\n')
+      assets: [favicon(publicPath), stylesheet(indexCss), script(indexJs)].join(
+        '\n'
+      )
     })
   )
 }
@@ -178,4 +193,8 @@ function stylesheet(fileName) {
   return `<link rel="stylesheet" type="text/css" href="${
     publicPath + fileName
   }">`
+}
+
+function favicon(publicPath) {
+  return '<link rel="shortcut icon" href="' + publicPath + 'favicon.ico">'
 }
