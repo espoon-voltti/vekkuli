@@ -20,6 +20,7 @@ class SanitizationUtil {
             is Collection<*> -> input.map { sanitize(it) } // Recursively sanitize collections
             is Map<*, *> -> input.mapValues { sanitize(it.value) } // Recursively sanitize maps
             is Enum<*> -> input // Do not sanitize enums
+            is Int -> input // Do not sanitize integers
             else -> sanitizeObject(input) // Sanitize objects
         }
 
