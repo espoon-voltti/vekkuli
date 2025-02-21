@@ -152,6 +152,13 @@ class InvoicePreview(
                 ""
             }
 
+        val address =
+            if (isOrganization) {
+                invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress, "reserverAddress")
+            } else {
+                invoiceLine(t("invoice.label.billingAddress"), model.reserverAddress, "reserverAddress")
+            }
+
         // language=HTML
         return """
             <section class="section" x-data="{ confirmModalOpen: false, markAsPaidInputValue: false }">
@@ -169,7 +176,7 @@ class InvoicePreview(
                     ${if (!isOrganization) invoiceLine(t("invoice.label.bookerSsn"), model.reserverSsn,"reserverSsn") else ""}
                     
                     ${if (isOrganization) invoiceLine(t("invoice.label.companyId"), model.orgId,"orgId") else ""}
-                    ${invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress,"reserverAddress")}
+                    $address
                     
                     $contactPerson
                     

@@ -21,10 +21,10 @@ fun reservationStatusToText(reservationStatus: ReservationStatus): String =
 
 fun placeTypeToText(placeType: BoatSpaceType?): String =
     when (placeType) {
-        BoatSpaceType.Storage -> "Säilytys"
-        BoatSpaceType.Slip -> "Laituri"
-        BoatSpaceType.Trailer -> "Traileri"
-        BoatSpaceType.Winter -> "Talvi"
+        BoatSpaceType.Storage -> "Säilytyspaikka"
+        BoatSpaceType.Slip -> "Laituripaikka"
+        BoatSpaceType.Trailer -> "Traileripaikka"
+        BoatSpaceType.Winter -> "Talvipaikka"
         else -> ""
     }
 
