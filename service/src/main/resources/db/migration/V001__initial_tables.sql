@@ -27,11 +27,11 @@ CREATE TABLE app_user (
    first_name text NOT NULL,
    last_name text NOT NULL,
    email text,
-   system_user bool DEFAULT FALSE
+   is_system_user BOOLEAN NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX uniq$users$external_id ON app_user(external_id);
 
-INSERT INTO app_user (id, external_id, first_name, last_name, email, system_user)
+INSERT INTO app_user (id, external_id, first_name, last_name, email, is_system_user)
 VALUES ('00000000-0000-0000-0000-000000000000', 'api-gw', 'api-gw', 'system-user', NULL, TRUE);
 
 CREATE TYPE BoatSpaceType AS ENUM ('Storage', 'Slip');
