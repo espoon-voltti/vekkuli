@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import com.microsoft.playwright.*
+import fi.espoo.vekkuli.employee.waitForHtmxSettle
 import fi.espoo.vekkuli.service.MessageService
 import fi.espoo.vekkuli.service.PaytrailMock
 import fi.espoo.vekkuli.service.SendEmailServiceMock
@@ -80,7 +81,9 @@ abstract class PlaywrightTest {
         text: String
     ) {
         text.forEach { character ->
-            locator.press("$character")
+            page.waitForHtmxSettle {
+                locator.press("$character")
+            }
         }
     }
 }

@@ -100,4 +100,29 @@ class ModalBuilderTest {
         assertTrue(modalHtml.contains("hx-delete=\"/delete/item\""))
         assertTrue(modalHtml.contains("hx-target=\"#item-list\""))
     }
+
+    @Test
+    fun `test modal with form`() {
+        val modalBuilder =
+            ModalBuilder()
+                .setForm {
+                    setId("form-id")
+                    setTestId("form-test-id")
+                    setAttributes(
+                        mapOf(
+                            "attr1" to "value1",
+                            "attr2" to "value2",
+                        )
+                    )
+                }.setContent("<p>expected content</p>")
+
+        val modalHtml = modalBuilder.build()
+
+        assertNotNull(modalHtml)
+        assertTrue(modalHtml.contains("expected content"))
+        assertTrue(modalHtml.contains("id=\"form-id\""))
+        assertTrue(modalHtml.contains("data-testid=\"form-test-id\""))
+        assertTrue(modalHtml.contains("attr1=\"value1\""))
+        assertTrue(modalHtml.contains("attr2=\"value2\""))
+    }
 }

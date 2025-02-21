@@ -238,7 +238,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
                 PaymentStatus.Success,
                 "Haukilahti D 013",
                 "0,00",
-                "Laituri 2024-2025 Haukilahti D 013",
+                "Laituripaikka 2024-2025 Haukilahti D 013",
                 doLogin = false
             )
 
@@ -1072,9 +1072,7 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         formPage.submitButton.click()
 
         formPage.existingCitizenSelector.click()
-        "olivia".forEach { character ->
-            formPage.citizenSearchInput.press("$character")
-        }
+        typeText(formPage.citizenSearchInput, "olivia")
         page.waitForCondition { formPage.citizenSearchOption1.isVisible() }
         formPage.citizenSearchOption1.click()
 
@@ -1183,7 +1181,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val formPage = BoatSpaceFormPage(page)
         formPage.existingCitizenSelector.click()
         typeText(formPage.citizenSearchInput, "olivia")
-        page.waitForHtmxSettle()
         page.waitForCondition { formPage.citizenSearchOption1.isVisible }
         formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
 
@@ -1221,7 +1218,6 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         val formPage = BoatSpaceFormPage(page)
         formPage.existingCitizenSelector.click()
         typeText(formPage.citizenSearchInput, "olivia")
-        page.waitForHtmxSettle()
         page.waitForCondition { formPage.citizenSearchOption1.isVisible }
         formPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
 

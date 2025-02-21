@@ -17,7 +17,7 @@ version: '3.5'
 
 services:
   integration-test:
-    image: 730335326824.dkr.ecr.eu-north-1.amazonaws.com/vekkuli/service-builder:${TAG:-master}
+    image: ghcr.io/espoon-voltti/vekkuli/service-builder:${TAG:-master}
     build:
       context: ../service/
       target: builder

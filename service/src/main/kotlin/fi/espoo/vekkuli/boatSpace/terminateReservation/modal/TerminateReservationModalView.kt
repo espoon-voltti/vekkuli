@@ -17,38 +17,40 @@ class TerminateReservationModalView : BaseView() {
         val modalBuilder = modal.createModalBuilder()
         return modalBuilder
             .setTitle(t("boatSpaceTermination.title"))
+            .setForm {
+                setId(formId)
+                setTestId(formId)
+                setAttributes(
+                    mapOf(
+                        "hx-post" to "/boat-space/terminate-reservation",
+                        "hx-swap" to "innerHTML",
+                        "hx-target" to "#modal-container"
+                    )
+                )
+            }
             // language=HTML
             .setContent(
                 """
-                <form
-                    id="$formId"
-                    ${addTestId(formId)}
-                    hx-post="/boat-space/terminate-reservation"
-                    hx-swap="innerHTML"
-                    hx-target="#modal-container"
-                    >
-                    <div class='columns is-multiline'>
-                   
-                        <div class="column is-full">
-                            <ul class="no-bullets">
-                                <li ${addTestId("terminate-reservation-location")}>${reservation.locationName} ${reservation.place}</li>
-                                <li ${addTestId(
+                <div class='columns is-multiline'>
+                    <div class="column is-full">
+                        <ul class="no-bullets">
+                            <li ${addTestId("terminate-reservation-location")}>${reservation.locationName} ${reservation.place}</li>
+                            <li ${addTestId(
                     "terminate-reservation-size"
                 )}>${reservation.boatSpaceWidthInM} x ${reservation.boatSpaceLengthInM} m</li>
-                                <li ${addTestId(
+                            <li ${addTestId(
                     "terminate-reservation-amenity"
                 )}>${t("boatSpaces.amenityOption.${reservation.amenity}")}</li>
-                            </ul>
-                        </div>
-                        <div class="column is-full">
-                            <p>${t("boatSpaceTermination.messages.moveBoatImmediately")}</p>
-                        </div>
-                        <div class="column is-full">
-                            <p>${t("boatSpaceTermination.messages.notEntitledToRefund")}</p>
-                        </div>
+                        </ul>
                     </div>
-                    <input hidden name="reservationId" value="${reservation.id}" />
-                </form>
+                    <div class="column is-full">
+                        <p>${t("boatSpaceTermination.messages.moveBoatImmediately")}</p>
+                    </div>
+                    <div class="column is-full">
+                        <p>${t("boatSpaceTermination.messages.notEntitledToRefund")}</p>
+                    </div>
+                </div>
+                <input hidden name="reservationId" value="${reservation.id}" />
                 """.trimIndent()
             ).addButton {
                 setText(t("cancel"))
@@ -58,7 +60,6 @@ class TerminateReservationModalView : BaseView() {
                 setStyle(ModalButtonStyle.Danger)
                 setType(ModalButtonType.Submit)
                 setText(t("boatSpaceTermination.button.confirm"))
-                setTargetForm(formId)
                 setTestId("terminate-reservation-modal-confirm")
             }.build()
     }

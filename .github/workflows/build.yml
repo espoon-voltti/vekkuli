@@ -20,6 +20,7 @@ concurrency:
 permissions:
   id-token: write
   contents: read
+  packages: write
 
 jobs:
   lint-shell:
@@ -131,6 +132,8 @@ jobs:
         with:
           path: ${{ env.path }}
           pull: ${{ env.DOCKER_PULL }}
+          push: false
+          load: true
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE }}
@@ -142,32 +145,48 @@ jobs:
             build=${{ github.run_number }}
             commit=${{ github.sha }}
           target: ${{ env.builder }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push builder to GitHub Container Registry
+        id: ghcr_builder
+        run: |
+          image="ghcr.io/espoon-voltti/${{ env.name }}-${{ env.builder }}:${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "image=${image}" >> $GITHUB_OUTPUT
+          docker tag "${{ steps.builder.outputs.image }}" "$image"
+          docker push "$image"
+
     outputs:
       image: ${{ steps.build.outputs.image }}
       image_name: ${{ steps.build.outputs.image_name }}
       builder_image: ${{ steps.builder.outputs.image }}
       builder_image_name: ${{ steps.builder.outputs.image_name }}
+      ghcr_builder_image: ${{ steps.ghcr_builder.outputs.image }}
 
   owasp:
     if: ${{ github.actor != 'dependabot[bot]' }}
     needs:
       - service
     runs-on: ubuntu-latest
+    env:
+      name: vekkuli/service
+      path: service
+      builder: builder
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-duration-seconds: 1200
-
-      - name: Login to Amazon ECR
-        id: ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          mask-password: 'true'
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache dependency check database
         uses: actions/cache@v4
@@ -183,7 +202,7 @@ jobs:
           docker run --rm \
               -e NVD_API_KEY=${{ secrets.NVD_API_KEY }} \
               -v $(pwd)/dependency-check-data:/root/.gradle/dependency-check-data \
-              ${{ needs.service.outputs.builder_image }} \
+              "${{ needs.service.outputs.ghcr_builder_image }}" \
               sh -c "./gradlew --no-daemon dependencyCheckUpdate && ./gradlew --no-daemon dependencyCheckAnalyze"
 
       - name: Force caching dependency-check-data # If job fails cache is not saved without this
@@ -219,6 +238,13 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull images
         if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
@@ -278,6 +304,13 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull images
         if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
@@ -343,6 +376,13 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Pull images
         if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         run: |
@@ -372,6 +412,36 @@ jobs:
             compose/integration-test.log
             compose/integration-test-all.log
           retention-days: 2
+
+
+  cleanup:
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - service
+      - test
+      - e2e-test
+      - owasp
+      - integration-test
+
+    steps:
+      - name: Cleanup untagged images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: vekkuli/service-builder
+          package-type: container
+          min-versions-to-keep: 0
+          delete-only-untagged-versions: 'true'
+
+      # delete-package-versions does not support deleting using tags so we just
+      # keep X number of images where X is more than expected simultaneous CI jobs
+      # Then we cleanup all images in sheduled.yml every night
+      - name: Cleanup unnessary tagged image
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: vekkuli/service-builder
+          package-type: container
+          min-versions-to-keep: 20
 
   deploy:
     if: ${{ github.ref == 'refs/heads/master' }}

@@ -6,7 +6,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 plugins {
     id("org.springframework.boot") version "3.4.1"
     id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.1.10"
     kotlin("plugin.spring") version "2.1.10"
     id("org.flywaydb.flyway") version "11.3.1"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
@@ -76,7 +76,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // cve fixes
-    implementation("org.yaml:snakeyaml:2.3")
+    implementation("org.yaml:snakeyaml:2.4")
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -100,7 +100,7 @@ dependencies {
 
     implementation("com.auth0:java-jwt:4.5.0")
 
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.5")
 
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
@@ -113,7 +113,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.microsoft.playwright:playwright:1.47.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("io.ktor:ktor-client-core:3.0.3")
+    implementation("io.ktor:ktor-client-core:3.1.0")
     implementation("io.ktor:ktor-client-cio:3.1.0") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:3.1.0") // Content negotiation
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3") // kotlinx serialization

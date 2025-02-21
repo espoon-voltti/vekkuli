@@ -4,10 +4,10 @@ import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.domain.BoatSpaceAmenity
 import fi.espoo.vekkuli.domain.ReservationValidity
-import fi.espoo.vekkuli.pages.citizen.components.IKnowCitizenIds
-import fi.espoo.vekkuli.pages.citizen.components.IKnowOrganizationIds
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
 import fi.espoo.vekkuli.pages.employee.ReservationListPage
+import fi.espoo.vekkuli.shared.CitizenIds
+import fi.espoo.vekkuli.shared.OrganizationIds
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -71,7 +71,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
             val listingPage = ReservationListPage(page)
 
             // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToCitizenInformation(page, IKnowCitizenIds.citizenIdLeo)
+            val assertions = injectXSSToCitizenInformation(page, CitizenIds.leo)
 
             listingPage.navigateTo()
             // For some reason the page doesn't automatically reload the updated data
@@ -91,7 +91,7 @@ class EmployeeReservationListingTest : PlaywrightTest() {
             val listingPage = ReservationListPage(page)
 
             // Inject XSS scripts to citizen information from citizen details page and return assertions
-            val assertions = injectXSSToOrganizationInformation(page, IKnowOrganizationIds.espoonPursiseura)
+            val assertions = injectXSSToOrganizationInformation(page, OrganizationIds.espoonPursiseura)
 
             listingPage.navigateTo()
             // For some reason the page doesn't automatically reload the updated data
