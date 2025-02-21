@@ -44,7 +44,7 @@ Platsens bredd: {{width}}
 Platsens längd: {{length}}
 Platsens utrustning/förvaringssätt: {{amenitySv}}
 
-Din bokning är giltig till {{endDateSv}}.
+Din bokning är giltig {{endDateSv}}.
 
 Om du har bokat en bryggplats får du senare en säsongsetikett och en hamnkarta per post, där du hittar en nyckelkod för att skapa en nyckel till bryggporten (det finns ingen port vid Otsolahti F-bryggan). Säsongsetiketten måste fästas synligt på båten eller, om du har bokat en vinter- eller förvaringsplats, på skyddstältet, trailern eller stöttan.
 
