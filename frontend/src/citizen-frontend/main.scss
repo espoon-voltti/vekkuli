@@ -455,6 +455,10 @@ body > .columns {
     border-color: $bulma-primary;
   }
 
+  &.is-warning {
+    border-color: $warning;
+  }
+
   &.is-error {
     border-color: $warning;
   }

@@ -15,6 +15,7 @@ data class BoatSpaceOption(
     val priceCents: Int,
     val locationName: String,
     val locationAddress: String,
+    val locationId: Int,
     val amenity: BoatSpaceAmenity,
     val formattedSizes: String =
         if (amenity != BoatSpaceAmenity.Buoy) "${formatInt(widthCm)} x ${formatInt(lengthCm)} m" else ""

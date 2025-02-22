@@ -3,6 +3,7 @@ import React from 'react'
 import { Place, Space } from 'citizen-frontend/api-types/free-spaces'
 import { useTranslation } from 'citizen-frontend/localization'
 
+import { BridgeHeightWarningBox } from './BridgeHeightWarningBox'
 import { ResultRow } from './ResultRow'
 import { ShowMore } from './ShowMore'
 
@@ -28,6 +29,7 @@ export const ResultGroup = React.memo(function ResultGroup({
       <div className="mb-m">
         <h3 className="subtitle harbor-header mb-s">{place.name}</h3>
         <div className="block mb-s">{place.address}</div>
+        <BridgeHeightWarningBox placeId={place.id} />
       </div>
       <table className="table search-results-table is-striped is-hoverable is-fullwidth">
         <thead>

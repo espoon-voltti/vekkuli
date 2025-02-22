@@ -541,7 +541,13 @@ export default {
       Buck: 'Pukkisäilytys',
       BuckWithTent: 'Pukkisäilytys suojateltalla'
     },
-    reserve: 'Varaa'
+    reserve: 'Varaa',
+    heightWarning: {
+      bridge: (height: string) =>
+        `Satamaan johtavan sillan alituskorkeus on ${height} m`,
+      bridges: (height: string) =>
+        `Satamaan johtavien siltojen alituskorkeus ${height} m`
+    }
   },
   citizen: {
     firstName: 'Etunimi',
