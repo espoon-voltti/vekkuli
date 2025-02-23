@@ -136,21 +136,24 @@ const sv: Translations = {
       boatRequired:
         'Endast ägaren eller innehavaren av en båt kan boka båt-, vinter- eller förvaringsplatser. Se till att uppgifterna är korrekta i Traficoms båtregister.',
       contactInfo:
-        'Om du inte kan autentisera dig elektroniskt, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 mån och ons kl. 12:30-15:00 och tors kl. 9:00-11:00. Ha följande information redo för bokningen: bokarens personnummer, namn, adress och e-postadress; båtens bredd, längd och vikt; samt båtens namn eller annan identifierare.',
+        'Om du inte kan autentisera dig elektroniskt, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 mån och ons kl. 12:30-15:00 och tors kl. 9:00-11:00.',
+      preparations:
+          'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
         'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring här.'
     },
     periods: {
       Slip: {
-        title: 'Boka båtplatser',
+        title: 'Boka båtplatser 2025',
         season: (season: string) => `Båtsäsong ${season}`,
         periods: [
-          (period: string) => `${period} Esbo-bor* kan boka båtplatser`,
+          (period: string) => `${period} endast Esbo-bor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
+          (period: string) => `${period} endast Esbobor* kan boka båtplatser.`,
           (period: string) => `${period} alla kan boka båtplatser`
         ]
       },
       Trailer: {
-        title: 'Boka trailerplatser vid Suomenoja',
+        title: 'Boka trailerplatser vid Suomenoja 2025',
         season: (season: string) =>
           `Hyressäsong ${season} Båt på trailer, sjösättning från ramp.`,
         periods: [
@@ -160,7 +163,7 @@ const sv: Translations = {
         ]
       },
       Winter: {
-        title: 'Boka vinterförvaringsplatser',
+        title: 'Boka vinterförvaringsplatser 2025',
         season: (season: string) => `Vinterförvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -170,7 +173,7 @@ const sv: Translations = {
         ]
       },
       Storage: {
-        title: 'Boka förvaringsplatser i Ämmässuo',
+        title: 'Boka förvaringsplatser i Ämmässuo 2025 **',
         season: (season: string) => `Förvaringssäsong ${season}`,
         periods: [
           (period: string) =>
@@ -179,7 +182,9 @@ const sv: Translations = {
         ]
       },
       footNote:
-        '*Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbo-bo. I detta fall måste en Esbo-bo göra bokningen.'
+        '* Om en båt är delägd och över 50% av ägarna bor i Esbo, kan ni boka båtplats, vinter- eller förvaringsplats som Esbo-bo. I detta fall måste en Esbo-bo göra bokningen.',
+      footNote2:
+        '** Fram till 14.9.2025 kan alla boka förvaringsplatser för den pågående säsongen.'
     },
     button: {
       browseBoatSpaces: 'Bläddra bland båtplatser'
@@ -246,13 +251,15 @@ const sv: Translations = {
         title: 'Bokning av båtplatser 2025',
         periods: {
           newReservations:
-            'Bokning av nya båtplatser för Esbo-invånare från och med 3.3. och för andra från 1.4.–30.9.2025',
+            'Bokning båtplatser för Esbo-invånare från och med 3.3. och för andra från 1.4.–30.9.2025. Bokningen är för båtsäsongen 10.6–14.9.2025.',
           trailerReservations:
-            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2025',
+            'Bokning av trailerplatser i Finno för alla från 1.5.–31.12.2025. Bokningen är för båtsäsongen 1.5.2025–30.4.2026.',
           winter:
-            'Bokning av nya vinterplatser för Esbo-invånare från 15.9.–31.12.2025',
-          storage:
-            'Bokning av förvaringsplatser i Ämmäsmäki för alla från 15.9.2025–31.7.2026'
+            'Bokning vinterplatser för Esbo-invånare från 15.9.–31.12.2025. Bokningen är för vintersäsongen 15.9.2025–10.6.2026.',
+          storage1:
+            'Bokningen av förvaringsplatser i Ämmäsmäki för säsongen 15.9.2024–14.9.2025 är öppen till 14.9.2025.',
+          storage2:
+              'Bokningen av förvaringsplatser i Ämmäsmäki för säsongen 15.9.2025–14.9.2026 öppnar den 15.9.2025.'
         }
       },
       modal: {
@@ -366,7 +373,7 @@ const sv: Translations = {
       return paymentDate ? `Betald ${paymentDate.format()}` : '-'
     },
     invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Faktureras ${dueDate.format()}` : '-'
+      return dueDate ? `Faktureras, förfallodag ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {

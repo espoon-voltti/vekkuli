@@ -136,21 +136,24 @@ const en: Translations = {
       boatRequired:
         'Only the owner or holder of a boat can reserve berth, winter, or storage places. Ensure that the information is correct in Traficom’s boat register.',
       contactInfo:
-        'If you are unable to authenticate electronically, contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mon and Wed from 12:30-15:00 and Thu from 9:00-11:00. Please have the following information ready for the reservation: the reservist’s personal ID, names, address, and email address; the boat’s width, length, and weight; and the boat’s name or other identifier.',
+        'If you are unable to authenticate electronically, contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mon and Wed from 12:30-15:00 and Thu from 9:00-11:00.',
+      preparations:
+          'For the booking, you need the following information: email address, phone number, boat\'s registration number, width, length, and weight, boat\'s name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community\'s business ID and billing address.',
       readMore:
         'You can find more information about marinas, berth fees, and boat storage here.'
     },
     periods: {
       Slip: {
-        title: 'Booking berths',
+        title: 'Booking berths 2025',
         season: (season: string) => `Boating season ${season}`,
         periods: [
-          (period: string) => `${period} Espoo residents* can book berths`,
+          (period: string) => `${period} only Espoo residents* with an indefinite rental agreement can continue renting their boat place.`,
+          (period: string) => `${period} only Espoo residents* can book boat places.`,
           (period: string) => `${period} everyone can book berths`
         ]
       },
       Trailer: {
-        title: 'Booking trailer parking spots at Suomenoja',
+        title: 'Booking trailer parking spots at Suomenoja 2025',
         season: (season: string) =>
           `Rental season ${season} Boat on a trailer, launch from the ramp.`,
         periods: [
@@ -160,7 +163,7 @@ const en: Translations = {
         ]
       },
       Winter: {
-        title: 'Booking winter storage spots',
+        title: 'Booking winter storage spots 2025',
         season: (season: string) => `Winter storage season ${season}`,
         periods: [
           (period: string) =>
@@ -170,7 +173,7 @@ const en: Translations = {
         ]
       },
       Storage: {
-        title: 'Booking storage spots at Ämmässuo',
+        title: 'Booking storage spots at Ämmässuo 2025 **',
         season: (season: string) => `Storage season ${season}`,
         periods: [
           (period: string) =>
@@ -179,7 +182,9 @@ const en: Translations = {
         ]
       },
       footNote:
-        '*If a boat is co-owned and over 50% of the owners reside in Espoo, you can book berths, winter, or storage spots as an Espoo resident. In this case, an Espoo resident must make the reservation.'
+        '* If a boat is co-owned and over 50% of the owners reside in Espoo, you can book berths, winter, or storage spots as an Espoo resident. In this case, an Espoo resident must make the reservation.',
+      footNote2:
+        '** Until 14.9.2025, everyone can book storage spaces for the current season.'
     },
     button: {
       browseBoatSpaces: 'Browse boat spaces'
@@ -254,13 +259,15 @@ const en: Translations = {
         title: 'Booking Boat Spaces 2025',
         periods: {
           newReservations:
-            'Booking new boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025',
+            'Booking boat spaces for Espoo residents starting 3.3. and for others from 1.4.–30.9.2025. The reservation is for the boating season 10.6.–14.9.2025.',
           trailerReservations:
-            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2025',
+            'Booking Suomenoja trailer spaces for everyone from 1.5.–31.12.2025. The reservation is for the boating season 1.5.2025–30.4.2026.',
           winter:
-            'Booking new winter spaces for Espoo residents from 15.9.–31.12.2025',
-          storage:
-            'Booking Ämmäsmäki storage spaces for everyone from 15.9.2025–31.7.2026'
+            'Booking winter spaces for Espoo residents from 15.9.–31.12.2025. The reservation is for the winter season 15.9.2025–10.6.2026.',
+          storage1:
+            'Booking Ämmäsmäki storage spaces for season 15.9.2024–14.9.2025 is open until 14.9.2025.',
+          storage2:
+            'Booking Ämmäsmäki storage spaces for season 15.9.2025–14.9.2026 opens on 15.9.2025.'
         }
       },
       modal: {
@@ -379,7 +386,7 @@ const en: Translations = {
       return paymentDate ? `Paid ${paymentDate.format()}` : '-'
     },
     invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Invoiced ${dueDate.format()}` : '-'
+      return dueDate ? `Invoiced, due date ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {

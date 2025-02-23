@@ -20,7 +20,10 @@ export default React.memo(function ReservationSeasons() {
           {i18n.reservation.searchPage.infoText.periods.winter}
         </h3>
         <h3 className="label">
-          {i18n.reservation.searchPage.infoText.periods.storage}
+          {i18n.reservation.searchPage.infoText.periods.storage1}
+        </h3>
+        <h3 className="label">
+          {i18n.reservation.searchPage.infoText.periods.storage2}
         </h3>
       </div>
     </div>
