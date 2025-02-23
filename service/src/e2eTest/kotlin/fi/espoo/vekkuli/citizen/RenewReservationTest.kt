@@ -170,8 +170,6 @@ class RenewReservationTest : ReserveTest() {
 
             assertThat(reservationSection.renewButton).isVisible()
             reservationSection.renewButton.click()
-            // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
 
             val userAgreementSection = form.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()
