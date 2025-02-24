@@ -355,7 +355,7 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
                 ?: throw BadRequest("Original reservation not found")
 
-        if(reservationId != boatReservationService.getUnfinishedReservationForCitizen(actingCitizenId)?.id) {
+        if (reservationId != boatReservationService.getUnfinishedReservationForCitizen(actingCitizenId)?.id) {
             throw Forbidden("Citizen doesn't have started reservation")
         }
 
