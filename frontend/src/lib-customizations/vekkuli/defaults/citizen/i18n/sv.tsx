@@ -131,9 +131,9 @@ const sv: Translations = {
   },
   footer: {
     privacyLink:
-      '<a target="_blank" aria-label="Länken öppnas i en ny flik" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Integritetspolicy</a>',
+      '<a target="_blank" aria-label="Integritetspolicy (länken öppnas i en ny flik)" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Integritetspolicy</a>',
     boatingLink:
-      '<a target="_blank" aria-label="Länken öppnas i en ny flik" href="https://www.espoo.fi/en/sports-and-nature/boating">Esbo båtliv hemsida</a>'
+      '<a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/en/sports-and-nature/boating">Esbo båtliv hemsida</a>'
   },
   components: componentTranslations,
   citizenFrontPage: {
