@@ -3955,15 +3955,15 @@ INSERT INTO trailer (registration_code, reserver_id, width_cm, length_cm)
 VALUES ('ABC123', '509edb00-5549-11ef-a1c7-776e76028a49', 200, 300);
 
 /* System current date for tests 2024-04-01 */
-INSERT INTO boat_space_reservation (reserver_id, boat_space_id, start_date, end_date,  status, boat_id, validity, trailer_id, storage_type)
-VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01', '2025-01-31', 'Confirmed', 1, 'Indefinite', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2024-02-01', '2024-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01', '2023-12-31', 'Invoiced', 2, 'FixedTerm', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm', null, null),
-       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer'),
-       ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 3, '2024-02-01', '2025-01-31', 'Confirmed', 5, 'Indefinite', null, null),
-       ('82722a75-793a-4cbe-a3d9-a3043f2f5731', 1185, '2024-02-01', '2025-01-31', 'Confirmed', 7, 'Indefinite', null, null);
+INSERT INTO boat_space_reservation (reserver_id, boat_space_id, created, start_date, end_date,  status, boat_id, validity, trailer_id, storage_type)
+VALUES ('f5d377ea-5547-11ef-a1c7-7f2b94cf9afd', 1,'2024-02-01T00:00:00','2024-02-01', '2025-01-31', 'Confirmed', 1, 'Indefinite', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2024-02-01T00:00:00', '2024-02-01', '2024-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2023-02-01T00:00:00', '2023-02-01', '2023-12-31', 'Invoiced', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2022-02-01T00:00:00', '2022-02-01', '2022-12-31', 'Confirmed', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 2, '2021-02-01T00:00:00', '2021-02-01', '2021-12-31', 'Payment', 2, 'FixedTerm', null, null),
+       ('509edb00-5549-11ef-a1c7-776e76028a49', 8, '2024-02-01T00:00:00', '2024-02-01', '2025-08-31', 'Confirmed', 2, 'Indefinite', 1, 'Trailer'),
+       ('8b220a43-86a0-4054-96f6-d29a5aba17e7', 3, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 5, 'Indefinite', null, null),
+       ('82722a75-793a-4cbe-a3d9-a3043f2f5731', 1185, '2024-02-01T00:00:00', '2024-02-01', '2025-01-31', 'Confirmed', 7, 'Indefinite', null, null);
 
 -- Set the default staging system date to 2024-04-01
 INSERT INTO variable (id, value)

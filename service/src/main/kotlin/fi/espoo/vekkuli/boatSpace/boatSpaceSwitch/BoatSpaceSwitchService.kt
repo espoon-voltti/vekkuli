@@ -12,6 +12,7 @@ import java.util.*
 class BoatSpaceSwitchService(
     private val boatReservationService: BoatReservationService,
     private val boatSpaceSwitchRepository: BoatSpaceSwitchRepository,
+    private val boatSpaceRepository: BoatSpaceRepository,
     private val citizenAccessControl: ContextCitizenAccessControl,
     private val switchPolicyService: SwitchPolicyService,
 ) {
@@ -28,6 +29,11 @@ class BoatSpaceSwitchService(
 
         if (!switchPolicyService.citizenCanSwitchToReservation(reservationId, citizenId, spaceId).success) {
             throw Forbidden("Citizen can not switch reservation")
+        }
+
+        // Make sure the target space isn't reserved already
+        if (boatSpaceRepository.isBoatSpaceReserved(spaceId)) {
+            throw Forbidden("Boat space is already reserved")
         }
 
         return boatSpaceSwitchRepository.copyReservationToSwitchReservation(
