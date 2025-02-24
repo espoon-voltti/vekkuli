@@ -325,27 +325,91 @@ export const InfoCircle = () => (
 )
 
 export const Preparations = () => (
-    <svg width="40" height="41" viewBox="0 0 40 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g clip-path="url(#clip0_6154_96385)">
-        <path d="M31.788 26.4714V37.4036H8.05469V4.38739H31.788V19.3276" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10"/>
-        <path d="M16.75 10.0464H27.1596" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
-        <path d="M13.22 9.5939H12.3242V10.4989H13.22V9.5939Z" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10"/>
-        <path d="M16.75 16.3651H27.1596" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
-        <path d="M13.22 15.9071H12.3242V16.8121H13.22V15.9071Z" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10"/>
-        <path d="M16.75 22.6783H27.1596" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
-        <path d="M13.22 22.2258H12.3242V23.1308H13.22V22.2258Z" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10"/>
-        <path d="M16.75 28.9915H25.2007" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round"/>
-        <path d="M13.22 28.539H12.3242V29.444H13.22V28.539Z" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10"/>
-        <path d="M38.0156 16.8342L28.8073 31.2868L25.8976 32.2564L25.522 29.1416L34.7303 14.6889C35.0766 14.1455 35.7939 13.9903 36.3285 14.3433L37.6653 15.2143C38.2051 15.5661 38.3619 16.2908 38.0145 16.8289L38.0156 16.8342Z" stroke="#0047B6" stroke-width="2" stroke-miterlimit="10"/>
-      </g>
-      <defs>
-        <clipPath id="clip0_6154_96385">
-          <rect width="40" height="40" fill="white" transform="translate(0 0.895508)"/>
-        </clipPath>
-      </defs>
-    </svg>
+  <svg
+    width="40"
+    height="41"
+    viewBox="0 0 40 41"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g clipPath="url(#clip0_6154_96385)">
+      <path
+        d="M31.788 26.4714V37.4036H8.05469V4.38739H31.788V19.3276"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+      />
+      <path
+        d="M16.75 10.0464H27.1596"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.22 9.5939H12.3242V10.4989H13.22V9.5939Z"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+      />
+      <path
+        d="M16.75 16.3651H27.1596"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.22 15.9071H12.3242V16.8121H13.22V15.9071Z"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+      />
+      <path
+        d="M16.75 22.6783H27.1596"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.22 22.2258H12.3242V23.1308H13.22V22.2258Z"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+      />
+      <path
+        d="M16.75 28.9915H25.2007"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13.22 28.539H12.3242V29.444H13.22V28.539Z"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+      />
+      <path
+        d="M38.0156 16.8342L28.8073 31.2868L25.8976 32.2564L25.522 29.1416L34.7303 14.6889C35.0766 14.1455 35.7939 13.9903 36.3285 14.3433L37.6653 15.2143C38.2051 15.5661 38.3619 16.2908 38.0145 16.8289L38.0156 16.8342Z"
+        stroke="#0047B6"
+        strokeWidth="2"
+        strokeMiterlimit="10"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_6154_96385">
+        <rect
+          width="40"
+          height="40"
+          fill="white"
+          transform="translate(0 0.895508)"
+        />
+      </clipPath>
+    </defs>
+  </svg>
 )
-
 
 export const BlueInfoCircle = () => (
   <svg
