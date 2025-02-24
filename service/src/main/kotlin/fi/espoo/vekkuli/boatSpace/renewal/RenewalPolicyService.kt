@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.renewal
 
 import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
-import fi.espoo.vekkuli.config.BoatSpaceConfig.DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE
+import fi.espoo.vekkuli.config.BoatSpaceConfig.RENEW_PERIOD_BEFORE_RESERVATION_EXPIRY
 import fi.espoo.vekkuli.config.validateReservationIsActive
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationValidity
@@ -71,7 +71,7 @@ class RenewalPolicyService(
         }
 
         val currentDate = timeProvider.getCurrentDate()
-        val originalReservationRenewGracePeriod = reservation.endDate.minusDays(DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE.toLong())
+        val originalReservationRenewGracePeriod = reservation.endDate.minusDays(RENEW_PERIOD_BEFORE_RESERVATION_EXPIRY.toLong())
         // Check if the reservation is within the renewal period and reservation is about to expire
         if (currentDate.isBefore(originalReservationRenewGracePeriod)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
