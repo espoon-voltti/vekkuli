@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.boatSpace.terminateReservation.ReservationTerminationReason
 import fi.espoo.vekkuli.config.BoatSpaceConfig
+import fi.espoo.vekkuli.config.BoatSpaceConfig.MAX_DAYS_BEFORE_RESERVATION_EXPIRED_NOTICE
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
 import fi.espoo.vekkuli.service.EmailType
@@ -1188,7 +1189,7 @@ class JdbiBoatSpaceReservationRepository(
                     """
                     ${buildSqlSelectFromJoinPartForBoatSpaceReservationDetails()}                    
                     WHERE bsr.status = 'Confirmed'
-                       AND end_date::date < :currentTime::date
+                       AND end_date::date < :currentTime::date AND end_date > :endDateCut::date
                     AND NOT EXISTS (
                         SELECT 1 
                         FROM processed_message pm
@@ -1200,6 +1201,7 @@ class JdbiBoatSpaceReservationRepository(
 
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.bind("messageType", EmailType.ExpiredReservation)
+            query.bind("endDateCut", timeProvider.getCurrentDateTime().minusDays(MAX_DAYS_BEFORE_RESERVATION_EXPIRED_NOTICE.toLong()))
             query.mapTo<BoatSpaceReservationDetails>().list()
         }
 
