@@ -1342,6 +1342,13 @@ class ReserveBoatSpaceTest : ReserveTest() {
         val formPage = BoatSpaceFormPage(page)
         val boatSection = formPage.getBoatSection()
 
+        boatSection.weightInput.fill("15000")
+        assertThat(boatSection.boatWeightWarning).isHidden()
+        boatSection.weightInput.fill("15001")
+        assertThat(boatSection.boatWeightWarning).isVisible()
+        boatSection.weightInput.fill("100")
+        assertThat(boatSection.boatWeightWarning).isHidden()
+
         assertThat(boatSection.boatSizeWarning).isHidden()
         boatSection.lengthInput.fill("7.8")
         assertThat(boatSection.boatSizeWarning).isHidden()

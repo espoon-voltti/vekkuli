@@ -140,9 +140,9 @@ export default {
       boatRequired:
         'Vain veneen omistaja tai haltija voi varata vene-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.',
       contactInfo:
-          'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
+        'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
       preparations:
-          'Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
+        'Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
       readMore:
         'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät täältä.'
     },
@@ -153,7 +153,8 @@ export default {
         periods: [
           (period: string) =>
             `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa venepaikansa vuokrausta`,
-          (period: string) => `${period} vain espoolaiset* voivat varata venepaikkoja`,
+          (period: string) =>
+            `${period} vain espoolaiset* voivat varata venepaikkoja`,
           (period: string) => `${period} kaikki voivat varata venepaikkoja`
         ]
       },
@@ -471,7 +472,11 @@ export default {
     ownership: 'Omistussuhde',
     boatSizeWarning: 'Veneen koko ei ole sopiva valitulle venepaikalle.',
     boatSizeWarningExplanation:
-      'Venepaikoilla on turvavälit veneiden ja laiturien vaurioiden estämiseksi. Liian ahtaaseen tai tarpeettoman suureen paikkaan laitettu vene voidaan siirtää kaupungin toimesta, ja venepaikan haltija vastaa kustannuksista.'
+      'Venepaikoilla on turvavälit veneiden ja laiturien vaurioiden estämiseksi. Liian ahtaaseen tai tarpeettoman suureen paikkaan laitettu vene voidaan siirtää kaupungin toimesta, ja venepaikan haltija vastaa kustannuksista.',
+    boatWeightWarning:
+      'Espoon kaupungin omistamiin venesatamiin kiinnitettävän veneen suurin sallittu paino on 15 000 kg.',
+    boatWeightWarning2:
+      'Liian painava vene voidaan siirtää kaupungin toimesta, ja venepaikan haltija vastaa kustannuksista.'
   },
   boatSpace: {
     renterType: {
