@@ -35,7 +35,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
 
     @BeforeEach
     override fun resetDatabase() {
-        deleteAllInvoices(jdbi)
+        deleteAllReservations(jdbi)
     }
 
     @Test

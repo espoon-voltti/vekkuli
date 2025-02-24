@@ -232,6 +232,7 @@ class TestUtils(
         invoiceService: BoatSpaceInvoiceService,
         timeProvider: TimeProvider,
         citizenId: UUID,
+        reservationId: Int = 1
     ): Invoice {
         val citizen = reserverService.getCitizen(citizenId)!!
         val (invoice, payment) =
@@ -258,7 +259,7 @@ class TestUtils(
                     orgName = null
                 ),
                 citizenId,
-                1
+                reservationId
             )
 
         return invoice

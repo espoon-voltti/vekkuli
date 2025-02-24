@@ -31,14 +31,22 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
 
     @BeforeEach
     override fun resetDatabase() {
-        deleteAllPayments(jdbi)
+        deleteAllReservations(jdbi)
     }
 
-    private fun insertNewPayment(ref: String = "1"): Payment =
-        paymentService.insertPayment(
-            CreatePaymentParams(this.citizenIdLeo, ref, 1, 24.0, "1", PaymentType.OnlinePayment),
-            reservationId = 1
+    private fun insertNewPayment(ref: String = "1"): Payment {
+        val reserver = this.citizenIdLeo
+        val reservation =
+            testUtils.createReservationInPaymentState(
+                timeProvider,
+                reservationService,
+                reserver
+            )
+        return paymentService.insertPayment(
+            CreatePaymentParams(reserver, ref, 1, 24.0, "1", PaymentType.OnlinePayment),
+            reservationId = reservation.id
         )
+    }
 
     @Test
     fun `should add payment`() {
@@ -107,8 +115,14 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should add invoice`() {
+        val reservation =
+            testUtils.createReservationInPaymentState(
+                timeProvider,
+                reservationService,
+                this.citizenIdLeo
+            )
         val invoice =
-            testUtils.createInvoiceWithTestParameters(reserverService, invoiceService, timeProvider, this.citizenIdLeo)
+            testUtils.createInvoiceWithTestParameters(reserverService, invoiceService, timeProvider, this.citizenIdLeo, reservation.id)
         val fetchedInvoice = paymentService.getInvoice(invoice.id)
         assertEquals(invoice.id, fetchedInvoice?.id, "Fetched invoice ID matches the inserted invoice ID")
         assertEquals(invoice, fetchedInvoice, "Fetched invoice matches the inserted invoice")
