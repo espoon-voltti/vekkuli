@@ -128,6 +128,7 @@ class JdbiBoatSpaceRepository(
                 SELECT 
                     location.name as location_name, 
                     location.address as location_address,
+                    location.id as location_id,
                     boat_space.id,
                     CONCAT(section, ' ', TO_CHAR(place_number, 'FM000')) as place,
                     length_cm, 
@@ -136,7 +137,7 @@ class JdbiBoatSpaceRepository(
                     amenity
                 FROM boat_space
                 JOIN location
-                ON location_id = location.id
+                ON boat_space.location_id = location.id
                 JOIN price
                 ON price_id = price.id
                 LEFT JOIN boat_space_reservation
@@ -170,7 +171,7 @@ class JdbiBoatSpaceRepository(
                         Harbor(
                             location =
                                 Location(
-                                    id = spaces.first().id,
+                                    id = spaces.first().locationId,
                                     name = locationName,
                                     address = spaces.first().locationAddress
                                 ),

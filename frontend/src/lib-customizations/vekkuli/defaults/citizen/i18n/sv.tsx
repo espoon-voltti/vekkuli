@@ -540,7 +540,13 @@ const sv: Translations = {
       Buck: 'Förvaring på bock',
       BuckWithTent: 'Förvaring på bock med skyddstält'
     },
-    reserve: 'Boka'
+    reserve: 'Boka',
+    heightWarning: {
+      bridge: (height: string) =>
+        `Bron som leder till hamnen har en seglingshöjd på ${height} m`,
+      bridges: (height: string) =>
+        `Broarna som leder till hamnen har en seglingshöjd på ${height} m`
+    }
   },
   citizen: {
     firstName: 'Förnamn',

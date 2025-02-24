@@ -542,7 +542,13 @@ const en: Translations = {
       Buck: 'Stand storage',
       BuckWithTent: 'Stand storage with protective tent'
     },
-    reserve: 'Reserve'
+    reserve: 'Reserve',
+    heightWarning: {
+      bridge: (height: string) =>
+        `The clearance height of the bridge leading to the harbor is ${height} m`,
+      bridges: (height: string) =>
+        `The clearance height of the bridges leading to the harbor is ${height} m`
+    }
   },
   citizen: {
     firstName: 'First Name',
