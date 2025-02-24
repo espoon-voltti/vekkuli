@@ -64,7 +64,11 @@ const sv: Translations = {
     openExpandingInfo: 'Öppna detaljer',
     errors: {
       genericGetError: 'Hämtning av information misslyckades',
-      validationWarning: 'Vänligen fyll i alla obligatoriska fält'
+      validationWarning: 'Vänligen fyll i alla obligatoriska fält',
+      error400: 'Oj nej! Du har gått på grund.',
+      error403: 'Oj nej! Båtleder är blockerad.',
+      error404: 'Oj nej! Leden är borta.',
+      error500: 'Oj nej! En storm överraskade systemet. Försök igen senare.'
     },
     datetime: {
       dayShort: 'pv',
@@ -398,6 +402,21 @@ const sv: Translations = {
         title: 'Återgång misslyckades',
         SERVER_ERROR:
           'Återgång för att fylla i informationen misslyckades, eller så inträffade ett annat fel. Vänligen kontakta kundtjänst. Du hittar kontaktuppgifter till kundtjänsten på startsidan.'
+      },
+      failedReservation: {
+        title: 'Reservering misslyckades',
+        type: {
+          boatSpaceNotAvailable: [
+            'Tyvärr bekräftade du inte bokningen i tid, och platsen har redan bokats av någon annan.',
+            'Din betalning kan ha genomförts, så vänligen kontrollera situationen genom att kontakta vår kundtjänst för vidare instruktioner och eventuell återbetalning.',
+            'Du hittar kundtjänstens kontaktuppgifter på startsidan.'
+          ],
+          unknown: [
+            'Okänt fel, platsen kunde inte bokas.',
+            'Din betalning kan ha genomförts, så vänligen kontrollera situationen genom att kontakta vår kundtjänst för vidare instruktioner och eventuell återbetalning.',
+            'Du hittar kundtjänstens kontaktuppgifter på startsidan.'
+          ]
+        }
       }
     },
     paymentInfo: {

@@ -25,25 +25,29 @@ export default React.memo(function ErrorPage() {
       ariaLabel={i18n.reservation.steps.error}
     >
       <div className="container">
-        <h2 className="h1">Paikan varaus epäonnistui</h2>
+        <h2 className="h1">
+          {i18n.reservation.errors.failedReservation.title}
+        </h2>
         <div className="container">
           <ErrorMessage error={error} />
         </div>
         <Loader results={[reservation]}>
           {({ boatSpace }) => (
             <div className="form-section">
-              <h3 className="header">Varattava paikka</h3>
+              <h3 className="header">
+                {i18n.reservation.formPage.boatSpaceInformation}
+              </h3>
               <div className="columns">
                 <div className="column is-one-quarter">
                   <TextField
-                    label="Satama"
+                    label={i18n.reservation.formPage.harbor}
                     value={boatSpace.locationName ?? '-'}
                     readonly={true}
                   />
                 </div>
                 <div className="column is-one-quarter">
                   <TextField
-                    label="Paikka"
+                    label={i18n.reservation.formPage.place}
                     value={formatPlaceIdentifier(
                       boatSpace.section,
                       boatSpace.placeNumber
@@ -53,7 +57,7 @@ export default React.memo(function ErrorPage() {
                 </div>
                 <div className="column is-one-quarter">
                   <TextField
-                    label="Venepaikkatyyppi"
+                    label={i18n.reservation.formPage.boatSpaceType}
                     value={i18n.boatSpace.boatSpaceType[boatSpace.type].label}
                     readonly={true}
                   />
@@ -74,33 +78,27 @@ type ErrorMessageProps = {
 const ErrorMessage = React.memo(function ErrorMessage({
   error
 }: ErrorMessageProps) {
+  const i18n = useTranslation()
   const reservationError = error as ReservationError
   if (reservationError === 'BoatSpaceNotAvailable') {
     return (
       <ul className="has-bullets ml-none">
-        <li>
-          Valitettavasti et vahvistanut varausta ajoissa, ja paikka on jo
-          varattu toiselle.
-        </li>
-        <li>
-          Maksusi on saattanut lähteä, joten tarkistathan tilanteen ottamalla
-          yhteyttä asiakaspalveluumme saadaksesi lisäohjeita ja mahdollisen
-          hyvityksen.
-        </li>
-        <li>Asiakaspalvelun yhteystiedot löydät etusivulta.</li>
+        {i18n.reservation.errors.failedReservation.type.boatSpaceNotAvailable.map(
+          (message, index) => (
+            <li key={index}>{message}</li>
+          )
+        )}
       </ul>
     )
   }
 
   return (
     <ul className="has-bullets ml-none">
-      <li>Tuntematon virhe, paikkaa ei voitu varata.</li>
-      <li>
-        Maksusi on saattanut lähteä, joten tarkistathan tilanteen ottamalla
-        yhteyttä asiakaspalveluumme saadaksesi lisäohjeita ja mahdollisen
-        hyvityksen.
-      </li>
-      <li>Asiakaspalvelun yhteystiedot löydät etusivulta.</li>
+      {i18n.reservation.errors.failedReservation.type.unknown.map(
+        (message, index) => (
+          <li key={index}>{message}</li>
+        )
+      )}
     </ul>
   )
 })
