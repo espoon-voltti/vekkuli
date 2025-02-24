@@ -5,6 +5,7 @@ import fi.espoo.vekkuli.config.EmailEnv
 import fi.espoo.vekkuli.config.MessageUtil
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.formatAsFullDate
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
@@ -14,8 +15,30 @@ enum class EmailType {
     Renew
 }
 
+// Disable scheduling in tests
+@Profile("!test")
 @Service
 class ScheduledSendEmailService(
+    private val sendMassEmailService: SendMassEmailService
+) {
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    fun sendReservationRenewReminderEmails() {
+        sendMassEmailService.sendReservationRenewReminderEmails()
+    }
+
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    fun sendReservationExpiryReminderEmails() {
+        sendMassEmailService.sendReservationExpiryReminderEmails()
+    }
+
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    fun sendReservationExpiredEmails() {
+        sendMassEmailService.sendReservationExpiredEmails()
+    }
+}
+
+@Service
+class SendMassEmailService(
     private val templateEmailService: TemplateEmailService,
     private val reservationService: BoatReservationService,
     private val organizationService: OrganizationService,
@@ -23,7 +46,6 @@ class ScheduledSendEmailService(
     private val emailEnv: EmailEnv,
     private val messageUtil: MessageUtil,
 ) {
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     fun sendReservationRenewReminderEmails() {
         val expiringIndefiniteReservations = reservationService.getExpiringIndefiniteBoatSpaceReservations()
 
@@ -62,7 +84,6 @@ class ScheduledSendEmailService(
         }
     }
 
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     fun sendReservationExpiryReminderEmails() {
         val expiringFixedTermReservations = reservationService.getExpiringFixedTermBoatSpaceReservations()
         expiringFixedTermReservations.forEach { reservation ->
@@ -100,7 +121,6 @@ class ScheduledSendEmailService(
         return messageUtil.getLocalizedMap("harborAddress", code, listOf(locationAddress))
     }
 
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     fun sendReservationExpiredEmails() {
         val expiringFixedTermReservations = reservationService.getExpiredBoatSpaceReservations()
         expiringFixedTermReservations.forEach { reservation ->

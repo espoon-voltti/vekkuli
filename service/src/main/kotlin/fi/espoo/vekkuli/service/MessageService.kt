@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.domain.QueuedMessage
 import fi.espoo.vekkuli.domain.Recipient
 import fi.espoo.vekkuli.domain.ReservationType
 import fi.espoo.vekkuli.repository.SentMessageRepository
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
@@ -25,6 +26,19 @@ interface MessageServiceInterface {
         emailType: EmailType,
         recipientEmails: List<String>
     ): List<String>
+
+    fun sendScheduledEmails()
+}
+
+@Profile("!test")
+@Service
+class SendEmailsScheduler(
+    private val messageService: MessageServiceInterface
+) {
+    @Scheduled(fixedRate = 6000)
+    fun sendScheduledEmails() {
+        messageService.sendScheduledEmails()
+    }
 }
 
 @Service
@@ -56,15 +70,14 @@ class MessageService(
         recipientEmails: List<String>
     ): List<String> = messageRepository.getAndInsertUnsentEmails(reservationType, reservationId, emailType, recipientEmails)
 
-    @Scheduled(fixedRate = 60000)
-    fun sendScheduledEmails() {
+    override fun sendScheduledEmails() {
         val unsentEmails = messageRepository.getUnsentEmailsAndSetToProcessing()
 
         val failedMessageIds = mutableListOf<UUID>()
         val sentMessageIds = mutableListOf<Pair<UUID, String>>()
         unsentEmails.forEach {
             // Send email
-            var providerId =
+            val providerId =
                 sendEmailService.sendEmail(
                     it.senderAddress,
                     it.recipientAddress,
