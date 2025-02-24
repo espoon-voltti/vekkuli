@@ -12,6 +12,7 @@ import java.util.*
 class BoatSpaceSwitchService(
     private val boatReservationService: BoatReservationService,
     private val boatSpaceSwitchRepository: BoatSpaceSwitchRepository,
+    private val boatSpaceRepository: BoatSpaceRepository,
     private val citizenAccessControl: ContextCitizenAccessControl,
     private val switchPolicyService: SwitchPolicyService,
 ) {

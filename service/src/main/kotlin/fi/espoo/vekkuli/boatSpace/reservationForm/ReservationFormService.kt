@@ -95,7 +95,7 @@ class ReservationFormService(
                     reservation.priceCents
                 )
 
-            CreationType.Switch -> reserveSwitchedSpaceByCitizen(reservationId, reserverId, input)
+            CreationType.Switch -> reserveSwitchedSpaceByCitizen(reservationId, citizenId, input)
             CreationType.Renewal -> reserveRenewedSpaceByCitizen(reservationId, reserverId, input)
             else -> throw BadRequest("Invalid creation type for reservation")
         }
@@ -291,7 +291,7 @@ class ReservationFormService(
     @Transactional
     fun reserveRenewedSpaceByCitizen(
         reservationId: Int,
-        actingCitizenId: UUID,
+        reserverId: UUID,
         input: ReservationInput
     ) {
         val reservation =
@@ -301,7 +301,7 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
                 ?: throw BadRequest("Original reservation not found")
 
-        val canRenewResult = renewalPolicyService.citizenCanRenewReservation(originalReservation.id, actingCitizenId)
+        val canRenewResult = renewalPolicyService.citizenCanRenewReservation(originalReservation.id, reserverId)
 
         if (canRenewResult is ReservationResult.Failure) {
             throw Forbidden(
@@ -355,14 +355,8 @@ class ReservationFormService(
             boatReservationService.getBoatSpaceReservation(reservation.originalReservationId!!)
                 ?: throw BadRequest("Original reservation not found")
 
-        if (!switchPolicyService
-                .citizenCanSwitchToReservation(
-                    originalReservation.id,
-                    actingCitizenId,
-                    reservation.boatSpaceId,
-                ).success
-        ) {
-            throw Forbidden("Citizen can not switch reservation")
+        if (reservationId != boatReservationService.getUnfinishedReservationForCitizen(actingCitizenId)?.id) {
+            throw Forbidden("Citizen doesn't have started reservation")
         }
 
         val revisedPrice = paymentService.calculatePrice(reservation)

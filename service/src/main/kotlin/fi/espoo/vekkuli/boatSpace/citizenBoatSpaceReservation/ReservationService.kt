@@ -127,6 +127,14 @@ open class ReservationService(
         citizenId: UUID,
         spaceId: Int
     ): CanReserveResult {
+        // Make sure the target space isn't reserved already
+        if (!boatSpaceRepository.isBoatSpaceAvailable(spaceId)) {
+            return CanReserveResult(
+                status = CanReserveResultStatus.CanNotReserve,
+                emptyList(),
+                emptyList()
+            )
+        }
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val reservations = boatReservationService.getBoatSpaceReservationsForReserver(citizenId)
         val organizationReservations =

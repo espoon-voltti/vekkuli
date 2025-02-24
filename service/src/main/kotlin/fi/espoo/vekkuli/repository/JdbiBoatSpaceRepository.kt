@@ -280,4 +280,31 @@ class JdbiBoatSpaceRepository(
 
             query.mapTo<Boolean>().first()
         }
+
+    override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                SELECT NOT EXISTS (
+                SELECT 1
+                FROM boat_space_reservation bsr
+                WHERE bsr.boat_space_id = :boatSpaceId
+                    AND (
+                        (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
+                        OR
+                        (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
+                        OR
+                        (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
+                    )
+                )
+                """.trimIndent()
+
+            val query = handle.createQuery(sql)
+            query.bind("boatSpaceId", boatSpaceId)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
+            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+
+            query.mapTo<Boolean>().first()
+        }
 }

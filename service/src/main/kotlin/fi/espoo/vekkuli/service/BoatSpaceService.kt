@@ -28,6 +28,8 @@ interface BoatSpaceRepository {
 
     fun isBoatSpaceReserved(boatSpace: Int): Boolean
 
+    fun isBoatSpaceAvailable(boatSpace: Int): Boolean
+
     fun getBoatSpaces(
         filter: SqlExpr,
         sortBy: BoatSpaceSortBy? = null
