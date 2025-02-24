@@ -94,7 +94,7 @@ class BoatSpaceSearch(
         val storageType =
             // language=HTML
             """
-             <div class="block" x-show="boatSpaceType === 'Storage'" x-data="{amenities: 'Trailer'}">
+             <div class="block" x-show="boatSpaceType === 'Storage'" x-data="{amenities: ''}">
                 $storageTypeButtons
             </div>            
             """.trimIndent()
