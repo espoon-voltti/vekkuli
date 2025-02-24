@@ -14,6 +14,7 @@ import { bindOrPlaceholders, getI18nLabel } from './utils'
 interface CheckboxFieldProps<T> extends Omit<BaseFieldProps, 'onChange'> {
   bind?: BoundFormState<MultiSelectState<T>>
   isFullWidth?: boolean
+  useDangerouslySetInnerHtmlLabel?: boolean
 }
 
 function CheckboxFieldR<T>({
@@ -25,7 +26,8 @@ function CheckboxFieldR<T>({
   isFullWidth,
   readOnly,
   showErrorsBeforeTouched,
-  infoText
+  infoText,
+  useDangerouslySetInnerHtmlLabel = false
 }: CheckboxFieldProps<T>) {
   const i18n = useTranslation()
   const { state, update, isValid, validationError, translateError } =
@@ -59,9 +61,9 @@ function CheckboxFieldR<T>({
         </label>
       )}
       {!infoText ? null : (
-          <div className="block mb-m">
-            <p className="body">{infoText}</p>
-          </div>
+        <div className="block mb-m">
+          <p className="body">{infoText}</p>
+        </div>
       )}
       <div className="field columns is-multiline is-mobile">
         {readOnly ? (
@@ -79,6 +81,9 @@ function CheckboxFieldR<T>({
                 label={getI18nLabel(option.label, i18n)}
                 isFullWidth={isFullWidth}
                 ariaInvalid={showError}
+                useDangerouslySetInnerHtmlLabel={
+                  useDangerouslySetInnerHtmlLabel
+                }
               />
             ))}
             {showError && (
@@ -106,6 +111,7 @@ interface CheckboxFieldInputProps
   value: string
   selected: boolean
   isFullWidth?: boolean
+  useDangerouslySetInnerHtmlLabel: boolean
 }
 
 const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
@@ -116,7 +122,8 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
   selected,
   onChange,
   isFullWidth,
-  ariaInvalid
+  ariaInvalid,
+  useDangerouslySetInnerHtmlLabel
 }: CheckboxFieldInputProps) {
   return (
     <Column isFull={isFullWidth} isHalf={!isFullWidth} noBottomPadding>
@@ -133,7 +140,11 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
             onChange?.(e.target.checked)
           }}
         />
-        <span>{label}</span>
+        {useDangerouslySetInnerHtmlLabel ? (
+          <span dangerouslySetInnerHTML={{ __html: label ?? '' }} />
+        ) : (
+          <span>{label}</span>
+        )}
       </label>
     </Column>
   )

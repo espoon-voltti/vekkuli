@@ -29,6 +29,7 @@ export default React.memo(function UserAgreements({
             name="terms"
             bind={terms}
             isFullWidth={true}
+            useDangerouslySetInnerHtmlLabel={true}
           />
         </Column>
       </Columns>

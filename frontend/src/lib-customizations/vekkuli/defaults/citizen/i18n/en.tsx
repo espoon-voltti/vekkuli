@@ -142,8 +142,7 @@ const en: Translations = {
         'Only the owner or holder of a boat can reserve berth, winter, or storage places. Ensure that the information is correct in Traficom’s boat register.',
       contactInfo:
         'If you are unable to authenticate electronically, contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mon and Wed from 12:30-15:00 and Thu from 9:00-11:00.',
-      preparations:
-          'For the booking, you need the following information: email address, phone number, boat\'s registration number, width, length, and weight, boat\'s name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community\'s business ID and billing address.',
+      preparations: `For the booking, you need the following information: email address, phone number, boat's registration number, width, length, and weight, boat's name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community's business ID and billing address.`,
       readMore:
         'You can find more information about marinas, berth fees, and boat storage here.'
     },
@@ -152,8 +151,10 @@ const en: Translations = {
         title: 'Booking berths 2025',
         season: (season: string) => `Boating season ${season}`,
         periods: [
-          (period: string) => `${period} only Espoo residents* with an indefinite rental agreement can continue renting their boat place.`,
-          (period: string) => `${period} only Espoo residents* can book boat places.`,
+          (period: string) =>
+            `${period} only Espoo residents* with an indefinite rental agreement can continue renting their boat place.`,
+          (period: string) =>
+            `${period} only Espoo residents* can book boat places.`,
           (period: string) => `${period} everyone can book berths`
         ]
       },
@@ -349,7 +350,7 @@ const en: Translations = {
     noRegistererNumber: 'No registration number',
     certify: 'I certify that the information I have provided is correct',
     agreeToRules:
-      'I have read and agree to follow the harbor rules. The reservation replaces the rental agreement mentioned in the harbor rules.',
+      'I have read the <a target="_blank" href="https://www.espoo.fi/en/marina-rules">marina terms and rules</a> and agree to comply with them.',
     prices: {
       totalPrice: (amount: string) => `Total: ${amount} €`,
       vatValue: (amount: string) => `VAT: ${amount} €`,
