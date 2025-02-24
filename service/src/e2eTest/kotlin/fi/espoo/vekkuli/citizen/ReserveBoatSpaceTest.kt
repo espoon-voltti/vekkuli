@@ -1306,6 +1306,33 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
+    fun `Buoy boat spaces are ordered last and do not display size`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reserveBoatSpacePage = ReserveBoatSpacePage(page)
+        val filterSection = reserveBoatSpacePage.getFilterSection()
+        val slipFilterSection = filterSection.getSlipFilterSection()
+        val searchResultsSection = reserveBoatSpacePage.getSearchResultsSection()
+
+        reserveBoatSpacePage.navigateToPage()
+        filterSection.slipRadio.click()
+        slipFilterSection.boatTypeSelect.selectOption("Sailboat")
+        slipFilterSection.widthInput.fill("4")
+        slipFilterSection.lengthInput.fill("14")
+        slipFilterSection.suomenojaCheckbox.click()
+
+        searchResultsSection.showMoreToggle("Suomenoja").click()
+
+        val buoySpaceRowIndex = searchResultsSection.getReserveButtonPlacementByPlace("Suomenoja", "POIJU 001")
+        val referenceSpaceRowIndex = searchResultsSection.getReserveButtonPlacementByPlace("Suomenoja", "G 117")
+
+        assertTrue(referenceSpaceRowIndex < buoySpaceRowIndex, "Buoy boat spaces should be ordered last")
+
+        val buoySpaceRow = searchResultsSection.reserveRowByPlace("POIJU", "001")
+        assertThat(buoySpaceRow).not().containsText("1 000,00 x 1 000,00 m")
+    }
+
+    @Test
     fun `For a slip, a warning is shown if the boat size is not within the limits`() {
         CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
 

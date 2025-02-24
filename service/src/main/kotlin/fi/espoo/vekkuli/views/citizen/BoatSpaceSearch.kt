@@ -144,7 +144,8 @@ class BoatSpaceSearch(
                     <h3 class="label">${t("boatSpaces.infoText.periods.newReservations")}</h3>
                     <h3 class="label">${t("boatSpaces.infoText.periods.trailerReservations")}</h3>
                     <h3 class="label">${t("boatSpaces.infoText.periods.winter")}</h3>
-                    <h3 class="label">${t("boatSpaces.infoText.periods.storage")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.storage1")}</h3>
+                    <h3 class="label">${t("boatSpaces.infoText.periods.storage2")}</h3>
                 </div>
             </div>
             """.trimIndent()

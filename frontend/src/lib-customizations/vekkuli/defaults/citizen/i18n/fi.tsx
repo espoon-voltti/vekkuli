@@ -135,22 +135,25 @@ export default {
       boatRequired:
         'Vain veneen omistaja tai haltija voi varata vene-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.',
       contactInfo:
-        'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11. Kerääthän valmiiksi varausta varten seuraavat tiedot: varaajan henkilötunnus, nimet, osoite ja sähköpostiosoite, veneen leveys, pituus ja paino, veneen nimi tai muu tunniste.',
+          'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
+      preparations:
+          'Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
       readMore:
         'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät täältä.'
     },
     periods: {
       Slip: {
-        title: 'Venepaikkojen varaaminen',
+        title: 'Venepaikkojen varaaminen 2025',
         season: (season: string) => `Veneilykausi ${season}`,
         periods: [
           (period: string) =>
-            `${period} espoolaiset* voivat varata venepaikkoja`,
+            `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa venepaikansa vuokrausta`,
+          (period: string) => `${period} vain espoolaiset* voivat varata venepaikkoja`,
           (period: string) => `${period} kaikki voivat varata venepaikkoja`
         ]
       },
       Trailer: {
-        title: 'Suomenojan traileripaikkojen varaaminen',
+        title: 'Suomenojan traileripaikkojen varaaminen 2025',
         season: (season: string) =>
           `Vuokrakausi ${season} Vene trailerilla, vesillelasku luiskalta.`,
         periods: [
@@ -160,7 +163,7 @@ export default {
         ]
       },
       Winter: {
-        title: 'Talvipaikkojen varaaminen',
+        title: 'Talvipaikkojen varaaminen 2025',
         season: (season: string) => `Talvisäilytyskausi ${season}`,
         periods: [
           (period: string) =>
@@ -170,7 +173,7 @@ export default {
         ]
       },
       Storage: {
-        title: 'Ämmäsmäen säilytyspaikan varaaminen',
+        title: 'Ämmäsmäen säilytyspaikan varaaminen 2025 **',
         season: (season: string) => `Säilytyskausi ${season}`,
         periods: [
           (period: string) =>
@@ -179,7 +182,9 @@ export default {
         ]
       },
       footNote:
-        '*Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata vene-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.'
+        '* Jos vene on yhteisomistuksessa ja vähintään 50% veneen omistajista asuu Espoossa, voitte varata vene-, talvi- tai säilytyspaikan espoolaisena. Jonkun Espoossa asuvista on tällöin tehtävä varaus.',
+      footNote2:
+        '** 14.9.2025 asti kaikki voivat varata säilytyspaikkoja kuluvalle kaudelle'
     },
     button: {
       browseBoatSpaces: 'Selaile vapaita venepaikkoja'
@@ -254,13 +259,15 @@ export default {
         title: 'Venepaikkojen varaaminen 2025',
         periods: {
           newReservations:
-            'Uusien venepaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025',
+            'Venepaikkojen varaaminen espoolaisille 3.3. alkaen ja muille 1.4.–30.9.2025. Varaus on veneilykaudelle 10.6.–14.9.2025.',
           trailerReservations:
-            'Suomenojan traileripaikkojen varaaminen kaikille 1.5.–31.12.2025',
+            'Suomenojan traileripaikkojen varaaminen 1.5.–31.12.2025. Varaus on kaudelle 1.5.2025–30.4.2026.',
           winter:
-            'Uusien talvipaikkojen varaaminen espoolaisille 15.9.–31.12.2025',
-          storage:
-            'Ämmäsmäen säilytyspaikkojen varaaminen kaikille 15.9.2025–31.7.2026'
+            'Talvipaikkojen varaaminen espoolaisille 15.9.–31.12.2025. Varaus on talvisäilytyskaudelle 15.9.2025–10.6.2026.',
+          storage1:
+            'Ämmäsmäen säilytyspaikkojen varaaminen kaudelle 15.9.2024–14.9.2025 on auki 14.9.2025 asti.',
+          storage2:
+            'Ämmäsmäen säilytyspaikkojen varaaminen kaudelle 15.9.2025–14.9.2026 aukeaa 15.9.2025.'
         }
       },
       modal: {
@@ -377,7 +384,7 @@ export default {
       return paymentDate ? `Maksettu ${paymentDate.format()}` : '-'
     },
     invoiceState: (dueDate?: LocalDate) => {
-      return dueDate ? `Laskutettu ${dueDate.format()}` : '-'
+      return dueDate ? `Laskutettu, eräpäivä ${dueDate.format()}` : '-'
     },
     errors: {
       startReservation: {

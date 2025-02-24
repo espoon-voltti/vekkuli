@@ -10,7 +10,7 @@ import {
   Boat,
   ContactSupport,
   InfoCircle,
-  MapMarker
+  MapMarker, Preparations
 } from 'lib-icons'
 
 export default React.memo(function HomePage() {
@@ -38,6 +38,10 @@ export default React.memo(function HomePage() {
               text={i18n.citizenFrontPage.info.contactInfo}
             />
             <InfoColumn
+                icon={Preparations}
+                text={i18n.citizenFrontPage.info.preparations}
+            />
+            <InfoColumn
               icon={InfoCircle}
               text={i18n.citizenFrontPage.info.readMore}
             />
@@ -61,6 +65,7 @@ export default React.memo(function HomePage() {
             <Period key={`period-${index}`} {...period} />
           ))}
           <p>{i18n.citizenFrontPage.periods.footNote}</p>
+          <p>{i18n.citizenFrontPage.periods.footNote2}</p>
         </div>
       </div>
     </MainSection>
@@ -123,22 +128,22 @@ interface BoatSpaceSeason {
 const boatSpaceSeasons: BoatSpaceSeason[] = [
   {
     boatSpaceType: 'Slip',
-    season: '10.6.–14.9.',
-    periods: ['3.3.–31.3.', '1.4.–30.9.']
+    season: '10.6.–14.9.2025',
+    periods: ['7.1.–31.1.2025', '3.3.–31.3.2025', '1.4-30.9.2025']
   },
   {
     boatSpaceType: 'Trailer',
-    season: '1.5.–30.4.',
-    periods: ['1.4.–30.4.', '1.5.–31.12.']
+    season: '1.5.–30.4.2025',
+    periods: ['1.4.–30.4.2025', '1.5.–31.12.2025']
   },
   {
     boatSpaceType: 'Winter',
-    season: '15.9.–10.6.',
-    periods: ['15.8.–14.9.', '15.9.–31.12.']
+    season: '15.9.–10.6.2025',
+    periods: ['15.8.–14.9.2025', '15.9.–31.12.2025']
   },
   {
     boatSpaceType: 'Storage',
-    season: '15.9.–14.9.',
-    periods: ['15.8.–14.9.', '15.9.–31.7.']
+    season: '15.9.–14.9.2025',
+    periods: ['15.8.–14.9.2025', '15.9.–31.12.2025g']
   }
 ]
