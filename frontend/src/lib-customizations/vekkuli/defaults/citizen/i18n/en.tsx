@@ -441,8 +441,9 @@ const en: Translations = {
       continue: 'Continue to authentication'
     },
     cancelConfirmation:
-      'You are leaving the reservation form. Note that the reservation or entered information will not be saved.',
-    cancelConfirmation2: 'Do you want to continue?',
+        "You are leaving the reservation form. The filled-in information or reservation will not be saved. Are you sure you want to cancel the reservation?",
+    noAndGoBack: "No, go back",
+    yesCancelReservation: "Yes, cancel the reservation",
     cancelReservation: 'Cancel reservation',
     cancelAndGoBack: 'Cancel reservation and go back',
     goBack: 'Go back',

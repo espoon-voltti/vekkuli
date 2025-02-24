@@ -109,8 +109,8 @@ open class BoatSpaceFormPage(
     class ConfirmCancelReservationModal(
         val root: Locator
     ) {
-        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
-        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Jatka").setExact(true))
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ei, palaa takaisin").setExact(true))
+        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Kyllä, peru varaus").setExact(true))
     }
 
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen"))
