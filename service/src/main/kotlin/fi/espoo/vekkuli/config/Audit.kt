@@ -20,7 +20,8 @@ fun KLogger.audit(
         mapOf<String, Any?>(
             "userId" to user.id,
             "userType" to user.type,
-            "meta" to meta
+            "meta" to meta,
+            "eventCode" to eventCode
         )
 
     atWarn(AUDIT_MARKER) {
