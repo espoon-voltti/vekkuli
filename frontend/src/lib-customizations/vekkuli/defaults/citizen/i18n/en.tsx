@@ -131,9 +131,10 @@ const en: Translations = {
     mainNavigation: 'Main navigation'
   },
   footer: {
-    privacyLink: '<a>Privacy policy</a>',
+    privacyLink:
+      '<a target="_blank" aria-label="Link opens in a new tab" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Privacy policy</a>',
     boatingLink:
-      '<a href="https://www.espoo.fi/en/sports-and-nature/boating">Espoo boating homepage</a>'
+      '<a target="_blank" aria-label="Link opens in a new tab" href="https://www.espoo.fi/en/sports-and-nature/boating">Espoo boating homepage</a>'
   },
   components: componentTranslations,
   citizenFrontPage: {
