@@ -38,7 +38,7 @@ function App() {
 const Content = React.memo(function Content() {
   const i18n = useTranslation()
   return (
-    <div>
+    <div className="content-wrapper is-flex is-flex-direction-column is-fullheight">
       <SkipToContentLink target="main">
         {i18n.header.goToMainContent}
       </SkipToContentLink>

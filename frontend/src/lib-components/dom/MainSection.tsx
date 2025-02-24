@@ -16,7 +16,7 @@ export default React.memo(function MainSection({
       id="main"
       role="main"
       tabIndex={-1}
-      className="section"
+      className="section is-flex-grow-1"
       data-testid={dataTestId}
       aria-label={ariaLabel}
     >

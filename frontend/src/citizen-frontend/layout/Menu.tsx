@@ -28,7 +28,7 @@ const UserMenu = React.memo(function UserMenu({ user }: { user: User }) {
       {{
         label: (
           <>
-            <span>
+            <span className="is-primary-color">
               {user.firstName} {user.lastName}
             </span>
             <span className="icon is-small">
