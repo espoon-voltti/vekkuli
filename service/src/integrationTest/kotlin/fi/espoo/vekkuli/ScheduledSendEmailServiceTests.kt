@@ -110,6 +110,18 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
             )
         )
 
+        // this reservation should not get the email as it is too old
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                this.citizenIdMikko,
+                7,
+                3,
+                validity,
+                endDate = LocalDate.of(2024, 12, 1),
+            )
+        )
+
         mockTimeProvider(
             timeProvider,
             endDate.minusDays(20).atStartOfDay()
