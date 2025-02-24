@@ -123,7 +123,7 @@ const CheckboxFieldInput = React.memo(function CheckboxFieldInput({
   onChange,
   isFullWidth,
   ariaInvalid,
-  useDangerouslySetInnerHtmlLabel = false
+  useDangerouslySetInnerHtmlLabel
 }: CheckboxFieldInputProps) {
   return (
     <Column isFull={isFullWidth} isHalf={!isFullWidth} noBottomPadding>

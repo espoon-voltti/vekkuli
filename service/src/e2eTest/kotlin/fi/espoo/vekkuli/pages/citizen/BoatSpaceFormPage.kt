@@ -95,8 +95,8 @@ open class BoatSpaceFormPage(
         private val fields = FieldLocator(root)
         val certifyInfoCheckbox = fields.getCheckbox("Vakuutan antamani tiedot oikeiksi")
         val certifyInfoError = fields.getCheckboxError("Vakuutan antamani tiedot oikeiksi")
-        val agreementCheckbox = fields.getCheckbox("Olen lukenut venesatamasäännöt")
-        val agreementError = fields.getCheckboxError("Olen lukenut venesatamasäännöt")
+        val agreementCheckbox = fields.getCheckbox("Olen lukenut venesatamien sopimusehdot")
+        val agreementError = fields.getCheckboxError("Olen lukenut venesatamien sopimusehdot")
     }
 
     class ReservedSpaceSection(
