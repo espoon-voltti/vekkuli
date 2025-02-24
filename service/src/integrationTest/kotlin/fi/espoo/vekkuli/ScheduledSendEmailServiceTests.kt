@@ -25,7 +25,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     lateinit var messageService: MessageService
 
     @Autowired
-    lateinit var scheduledSendEmailService: ScheduledSendEmailService
+    lateinit var sendMassEmailService: SendMassEmailService
 
     @Autowired
     lateinit var reservationService: BoatReservationService
@@ -133,7 +133,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     fun `should send reservation expiring notification emails`() {
         val sentEmails =
             setupTest(ReservationValidity.FixedTerm) {
-                scheduledSendEmailService.sendReservationExpiryReminderEmails()
+                sendMassEmailService.sendReservationExpiryReminderEmails()
             }
 
         expectedEmailRecipients.forEachIndexed { i, reserver ->
@@ -154,7 +154,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
     fun `should send reservation renew reminder emails`() {
         val sentEmails =
             setupTest(ReservationValidity.Indefinite) {
-                scheduledSendEmailService.sendReservationRenewReminderEmails()
+                sendMassEmailService.sendReservationRenewReminderEmails()
             }
         expectedEmailRecipients.forEachIndexed { i, reserver ->
             val sentEmail = sentEmails[i]
@@ -179,7 +179,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
                     timeProvider,
                     endDate.plusDays(1).atStartOfDay()
                 )
-                scheduledSendEmailService.sendReservationExpiredEmails()
+                sendMassEmailService.sendReservationExpiredEmails()
             }
         expectedEmailRecipients.forEachIndexed { i, reserver ->
             val sentEmail = sentEmails[i]
@@ -199,7 +199,7 @@ class ScheduledSendEmailServiceTests : IntegrationTestBase() {
         SendEmailServiceMock.resetEmails()
 
         // Verify that expiration emails are not sent again.
-        scheduledSendEmailService.sendReservationExpiredEmails()
+        sendMassEmailService.sendReservationExpiredEmails()
         messageService.sendScheduledEmails()
 
         assertEquals(0, SendEmailServiceMock.emails.size)
