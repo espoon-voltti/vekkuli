@@ -436,8 +436,9 @@ export default {
       continue: 'Jatka tunnistautumiseen'
     },
     cancelConfirmation:
-      'Olet poistumassa varauslomakkeelta. Huomioi, että paikkavarausta tai syötettyjä tietoja ei tallenneta.',
-    cancelConfirmation2: 'Haluatko jatkaa?',
+      'Olet poistumassa varauslomakkeelta. Täytettyjä tietoja tai paikkavarausta ei tallenneta. Oletko varma, että haluat perua varauksen?',
+    noAndGoBack: 'Ei, palaa takaisin',
+    yesCancelReservation: 'Kyllä, peru varaus',
     cancelReservation: 'Peruuta varaus',
     cancelAndGoBack: 'Peruuta varaus ja palaa takaisin',
     goBack: 'Palaa takaisin',

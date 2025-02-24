@@ -435,8 +435,9 @@ const sv: Translations = {
       continue: 'Fortsätt'
     },
     cancelConfirmation:
-      'Du är på väg att lämna bokningsformuläret. Observera att platsbokningen eller inmatad information inte kommer att sparas.',
-    cancelConfirmation2: 'Vill du fortsätta?',
+        "Du håller på att lämna bokningsformuläret. Den ifyllda informationen eller bokningen sparas inte. Är du säker på att du vill avbryta bokningen?",
+    noAndGoBack: "Nej, gå tillbaka",
+    yesCancelReservation: "Ja, avbryt bokningen",
     cancelReservation: 'Avbryt reservation',
     cancelAndGoBack: 'Avbryt och gå tillbaka',
     goBack: 'Gå tillbaka',
