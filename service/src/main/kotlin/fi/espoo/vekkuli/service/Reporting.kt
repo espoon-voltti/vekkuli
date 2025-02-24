@@ -77,7 +77,7 @@ fun getStickerReport(
                     LEFT JOIN price ON price.id = bs.price_id
                 WHERE 
                     bsr.reserver_id IS NOT NULL
-                    AND :minCreated >= bsr.created::date
+                    AND :minCreated <= bsr.created::date
                     AND :minCreated::date >= bsr.start_date 
                     AND :minCreated::date <= bsr.end_date
                     AND bsr.status = 'Confirmed'
