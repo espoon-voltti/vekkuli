@@ -952,8 +952,23 @@ class JdbiBoatSpaceReservationRepository(
             val query =
                 handle.createQuery(
                     """
-                    INSERT INTO boat_space_reservation (reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type, validity)
-                    VALUES (:reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType, :validity)
+                    INSERT INTO boat_space_reservation (
+                        reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type, validity
+                    )
+                    SELECT 
+                        :reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDateTime, :creationType, :validity
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM boat_space_reservation bsr
+                        WHERE bsr.boat_space_id = :boatSpaceId
+                        AND (
+                            (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :startDate)
+                            OR
+                            (bsr.status = 'Cancelled' AND bsr.end_date > :startDate)
+                            OR
+                            (bsr.status = 'Info' AND (bsr.created > :currentDateTime - make_interval(secs => :reservationTimeout)))
+                        )
+                    )
                     RETURNING *
                     """.trimIndent()
                 )
@@ -962,7 +977,8 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
-            query.bind("currentDate", timeProvider.getCurrentDateTime())
+            query.bind("currentDateTime", timeProvider.getCurrentDateTime())
+            query.bind("reservationTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("creationType", creationType)
             query.bind("validity", validity)
             query.mapTo<BoatSpaceReservation>().one()
