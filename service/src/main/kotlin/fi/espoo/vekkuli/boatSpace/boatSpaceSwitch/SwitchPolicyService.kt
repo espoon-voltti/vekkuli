@@ -46,7 +46,7 @@ class SwitchPolicyService(
         }
 
         // Make sure the target space isn't reserved already
-        if (boatSpaceRepository.isBoatSpaceReserved(targetSpaceId)) {
+        if (!boatSpaceRepository.isBoatSpaceAvailable(targetSpaceId)) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
         }
 

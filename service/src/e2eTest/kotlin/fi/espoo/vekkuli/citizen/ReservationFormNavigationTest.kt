@@ -112,7 +112,6 @@ class ReservationFormNavigationTest : PlaywrightTest() {
 
         val reserveModal = reserveBoatSpacePage.getReserveModal()
         reserveModal.firstSwitchReservationButton.click()
-
         assertNoFullPageReload {
             SwitchSpaceFormPage(page).fillFormAndSubmit()
             assertThat(ConfirmationPage(page).reservationSuccessNotification).isVisible()

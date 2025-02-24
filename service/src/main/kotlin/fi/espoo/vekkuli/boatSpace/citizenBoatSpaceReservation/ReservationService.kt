@@ -128,7 +128,7 @@ open class ReservationService(
         spaceId: Int
     ): CanReserveResult {
         // Make sure the target space isn't reserved already
-        if (boatSpaceRepository.isBoatSpaceReserved(spaceId)) {
+        if (!boatSpaceRepository.isBoatSpaceAvailable(spaceId)) {
             return CanReserveResult(
                 status = CanReserveResultStatus.CanNotReserve,
                 emptyList(),

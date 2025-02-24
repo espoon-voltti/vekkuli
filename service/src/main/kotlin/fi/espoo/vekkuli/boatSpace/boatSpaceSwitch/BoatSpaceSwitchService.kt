@@ -31,11 +31,6 @@ class BoatSpaceSwitchService(
             throw Forbidden("Citizen can not switch reservation")
         }
 
-        // Make sure the target space isn't reserved already
-        if (boatSpaceRepository.isBoatSpaceReserved(spaceId)) {
-            throw Forbidden("Boat space is already reserved")
-        }
-
         return boatSpaceSwitchRepository.copyReservationToSwitchReservation(
             reservationId,
             citizenId,
