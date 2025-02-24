@@ -955,7 +955,7 @@ class JdbiBoatSpaceReservationRepository(
                         reserver_id, acting_citizen_id, boat_space_id, start_date, end_date, created, creation_type, validity
                     )
                     SELECT 
-                        :reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDate, :creationType, :validity
+                        :reserverId, :actingCitizenId, :boatSpaceId, :startDate, :endDate, :currentDateTime, :creationType, :validity
                     WHERE NOT EXISTS (
                         SELECT 1
                         FROM boat_space_reservation bsr
@@ -965,7 +965,7 @@ class JdbiBoatSpaceReservationRepository(
                             OR
                             (bsr.status = 'Cancelled' AND bsr.end_date > :startDate)
                             OR
-                            (bsr.status = 'Info' AND (bsr.created > :currentDate - make_interval(secs => :paymentTimeout)))
+                            (bsr.status = 'Info' AND (bsr.created > :currentDateTime - make_interval(secs => :reservationTimeout)))
                         )
                     )
                     RETURNING *
@@ -976,8 +976,8 @@ class JdbiBoatSpaceReservationRepository(
             query.bind("boatSpaceId", boatSpaceId)
             query.bind("startDate", startDate)
             query.bind("endDate", endDate)
-            query.bind("currentDate", timeProvider.getCurrentDateTime())
-            query.bind("paymentTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
+            query.bind("currentDateTime", timeProvider.getCurrentDateTime())
+            query.bind("reservationTimeout", BoatSpaceConfig.SESSION_TIME_IN_SECONDS)
             query.bind("creationType", creationType)
             query.bind("validity", validity)
             query.mapTo<BoatSpaceReservation>().one()
