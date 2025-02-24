@@ -109,7 +109,7 @@ open class BoatSpaceFormPage(
     class ConfirmCancelReservationModal(
         val root: Locator
     ) {
-        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("En, palaa takaisin").setExact(true))
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ei, palaa takaisin").setExact(true))
         val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Kyllä, peru varaus").setExact(true))
     }
 
