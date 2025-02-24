@@ -63,7 +63,12 @@ export default {
     openExpandingInfo: 'Avaa lisätietokenttä',
     errors: {
       genericGetError: 'Tietojen hakeminen ei onnistunut',
-      validationWarning: 'Pakollisia tietoja puuttuu'
+      validationWarning: 'Pakollisia tietoja puuttuu',
+      error400: 'Voi ei! Karahdit karille.',
+      error403: 'Voi ei! Veneväylä on tukossa.',
+      error404: 'Voi ei! Väylä hukassa.',
+      error500:
+        'Voi ei! Myrsky yllätti järjestelmän. Yritä myöhemmin uudestaan.'
     },
     datetime: {
       dayShort: 'pv',
@@ -407,6 +412,21 @@ export default {
         title: 'Takaisin palaaminen ei onnistunut',
         SERVER_ERROR:
           'Palaaminen tietojen täyttöön ei onnistunut, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.'
+      },
+      failedReservation: {
+        title: 'Paikan varaus epäonnistui',
+        type: {
+          boatSpaceNotAvailable: [
+            'Valitettavasti et vahvistanut varausta ajoissa, ja paikka on jo varattu toiselle.',
+            'Maksusi on saattanut lähteä, joten tarkistathan tilanteen ottamalla yhteyttä asiakaspalveluumme saadaksesi lisäohjeita ja mahdollisen hyvityksen.',
+            'Asiakaspalvelun yhteystiedot löydät etusivulta.'
+          ],
+          unknown: [
+            'Tuntematon virhe, paikkaa ei voitu varata.',
+            'Maksusi on saattanut lähteä, joten tarkistathan tilanteen ottamalla yhteyttä asiakaspalveluumme saadaksesi lisäohjeita ja mahdollisen hyvityksen.',
+            'Asiakaspalvelun yhteystiedot löydät etusivulta.'
+          ]
+        }
       }
     },
     auth: {

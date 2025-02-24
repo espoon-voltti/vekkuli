@@ -64,7 +64,12 @@ const en: Translations = {
     openExpandingInfo: 'Open the details',
     errors: {
       genericGetError: 'Error in fetching the requested information',
-      validationWarning: 'Missing required information'
+      validationWarning: 'Missing required information',
+      error400: 'Oh no! You have run aground.',
+      error403: 'Oh no! The boat route is blocked.',
+      error404: 'Oh no! The route is lost.',
+      error500:
+        'Oh no! A storm caught the system off guard. Please try again later.'
     },
     datetime: {
       dayShort: 'd',
@@ -412,6 +417,21 @@ const en: Translations = {
         title: 'Returning was unsuccessful',
         SERVER_ERROR:
           'Returning to fill in the information was unsuccessful, or another error occurred. Please contact customer service. You can find customer service contact details on the front page.'
+      },
+      failedReservation: {
+        title: 'Reserving failed',
+        type: {
+          boatSpaceNotAvailable: [
+            'Unfortunately, you did not confirm the reservation in time, and the place has already been reserved by someone else.',
+            'Your payment may have been processed, so please check the situation by contacting our customer service for further instructions and a possible refund.',
+            'You can find the customer service contact details on the homepage.'
+          ],
+          unknown: [
+            'Unknown error, the place could not be reserved.',
+            'Your payment may have been processed, so please check the situation by contacting our customer service for further instructions and a possible refund.',
+            'You can find the customer service contact details on the homepage.'
+          ]
+        }
       }
     },
     auth: {
