@@ -35,7 +35,7 @@ interface MessageServiceInterface {
 class SendEmailsScheduler(
     private val messageService: MessageServiceInterface
 ) {
-    @Scheduled(fixedRate = 6000)
+    @Scheduled(fixedRate = 60000)
     fun sendScheduledEmails() {
         messageService.sendScheduledEmails()
     }
