@@ -130,6 +130,11 @@ const en: Translations = {
     selectLanguage: 'Select language',
     mainNavigation: 'Main navigation'
   },
+  footer: {
+    privacyLink: '<a>Privacy policy</a>',
+    boatingLink:
+      '<a href="https://www.espoo.fi/en/sports-and-nature/boating">Espoo boating homepage</a>'
+  },
   components: componentTranslations,
   citizenFrontPage: {
     title: 'Boat spaces',

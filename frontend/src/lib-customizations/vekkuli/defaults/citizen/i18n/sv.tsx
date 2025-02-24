@@ -129,6 +129,11 @@ const sv: Translations = {
     selectLanguage: 'Välj språk',
     mainNavigation: 'Huvudnavigering'
   },
+  footer: {
+    privacyLink: '<a>Integritetspolicy</a>',
+    boatingLink:
+      '<a href="https://www.espoo.fi/en/sports-and-nature/boating">Esbo båtliv hemsida</a>'
+  },
   components: componentTranslations,
   citizenFrontPage: {
     title: 'Båtplatser',

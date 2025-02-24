@@ -52,6 +52,7 @@ $help-min-height: 18px;
   $subtitle-weight: 600,
   $subtitle-line-height: 24px,
   $danger: $bulma-danger,
+  $footer-padding: 2.25rem 1.5rem 2.25rem
 );
 @use "bulma/sass/utilities/mixins";
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';

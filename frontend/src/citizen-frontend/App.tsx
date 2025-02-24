@@ -8,6 +8,7 @@ import { AuthContextProvider } from './auth/state'
 import CitizenPage from './citizen/CitizenPage'
 import ErrorPage from './errors/ErrorPage'
 import HomePage from './home/HomePage'
+import { Footer } from './layout/Footer'
 import Navigation from './layout/Navigation'
 import { Localization, useTranslation } from './localization'
 import OrganizationPage from './organization/OrganizationPage'
@@ -43,6 +44,7 @@ const Content = React.memo(function Content() {
       </SkipToContentLink>
       <Navigation />
       <Outlet />
+      <Footer />
     </div>
   )
 })
