@@ -138,7 +138,7 @@ const sv: Translations = {
       contactInfo:
         'Om du inte kan autentisera dig elektroniskt, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 mån och ons kl. 12:30-15:00 och tors kl. 9:00-11:00.',
       preparations:
-          'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
+        'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
         'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring här.'
     },
@@ -147,7 +147,8 @@ const sv: Translations = {
         title: 'Boka båtplatser 2025',
         season: (season: string) => `Båtsäsong ${season}`,
         periods: [
-          (period: string) => `${period} endast Esbo-bor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
+          (period: string) =>
+            `${period} endast Esbo-bor* med ett tillsvidare gällande hyresavtal kan fortsätta hyra sin båtplats.`,
           (period: string) => `${period} endast Esbobor* kan boka båtplatser.`,
           (period: string) => `${period} alla kan boka båtplatser`
         ]
@@ -259,7 +260,7 @@ const sv: Translations = {
           storage1:
             'Bokningen av förvaringsplatser i Ämmäsmäki för säsongen 15.9.2024–14.9.2025 är öppen till 14.9.2025.',
           storage2:
-              'Bokningen av förvaringsplatser i Ämmäsmäki för säsongen 15.9.2025–14.9.2026 öppnar den 15.9.2025.'
+            'Bokningen av förvaringsplatser i Ämmäsmäki för säsongen 15.9.2025–14.9.2026 öppnar den 15.9.2025.'
         }
       },
       modal: {
@@ -342,7 +343,7 @@ const sv: Translations = {
     noRegistererNumber: 'Inget registreringsnummer',
     certify: 'Jag intygar att de uppgifter jag har lämnat är korrekta.',
     agreeToRules:
-      'Jag har läst och godkänner att följa <a target="_blank" href="https://www.espoo.fi/sv/bestammelser-bathamnar">hamnreglerna</a>. Bokningen ersätter hyresavtalet som nämns i hamnreglerna.',
+      'Jag har läst <a target="_blank" href="https://www.espoo.fi/sv/bestammelser-bathamnar">hamnens avtalsvillkor och regler</a> och förbinder mig att följa dem.',
     prices: {
       totalPrice: (amount: string) => `Totalt: ${amount} €`,
       vatValue: (amount: string) => `Moms: ${amount} €`,
