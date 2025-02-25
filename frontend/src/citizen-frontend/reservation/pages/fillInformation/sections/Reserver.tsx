@@ -78,7 +78,7 @@ export default React.memo(function Reserver({
           <TextField
             id="address"
             label={i18n.citizen.streetAddress}
-            value={`${reserver.address}, ${reserver.postalCode}, ${reserver.city}`}
+            value={`${reserver.address}, ${reserver.postalCode}, ${reserver.municipalityName}`}
             readonly={true}
           />
         </div>
