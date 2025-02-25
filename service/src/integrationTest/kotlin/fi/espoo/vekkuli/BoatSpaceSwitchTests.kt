@@ -26,10 +26,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
@@ -42,10 +43,10 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentService: PaymentService
 
-    @MockBean
+    @MockitoBean
     private lateinit var citizenContextProvider: CitizenContextProvider
 
-    @MockBean
+    @MockitoBean
     private lateinit var seasonalService: SeasonalService
 
     @Autowired
@@ -57,7 +58,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: ReservationService
 
-    @MockBean
+    @MockitoBean
     lateinit var organizationService: OrganizationService
 
     @Autowired
@@ -66,7 +67,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentRepository: PaymentRepository
 
-    @MockBean
+    @MockitoBean
     private lateinit var switchPolicyService: SwitchPolicyService
 
     @BeforeEach
@@ -129,7 +130,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     @Test
     fun `should create a switch reservation for citizen retaining information from the original reservation`() {
-        val originalReservation = createTestReservationForEspooCitizen()
+        val originalReservation = createTestReservationForEspooCitizen(startDate = timeProvider.getCurrentDate().minusDays(60))
         val newBoatSpaceId = 2
         val switchedReservationId =
             boatSpaceSwitchService
@@ -147,10 +148,11 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
         assertEquals(ReservationStatus.Info, switchedReservation.status, "Status should be info")
         assertEquals(newBoatSpaceId, switchedReservation.boatSpaceId, "Boat space id should be changed")
         assertEquals(CreationType.Switch, switchedReservation.creationType, "Creation type should be switch")
+        assertNotEquals(originalReservation.startDate, switchedReservation.startDate, "Start date should not be the same")
+        assertEquals(timeProvider.getCurrentDate(), switchedReservation.startDate, "Start date of new reservation should be current date")
 
         // These fields should be the same
         assertEquals(originalReservation.endDate, switchedReservation.endDate, "End date should be the same")
-        assertEquals(originalReservation.startDate, switchedReservation.startDate, "Start date should be the same")
         assertEquals(originalReservation.reserverId, switchedReservation.reserverId, "Reserver should be the same")
         assertEquals(originalReservation.validity, switchedReservation.validity, "Validity should be the same")
         assertEquals(originalReservation.reserverType, switchedReservation.reserverType, "ReserverType should be the same")
@@ -468,7 +470,8 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
 
     private fun createTestReservationForEspooCitizen(
         state: ReservationStatus = ReservationStatus.Confirmed,
-        spaceId: Int = 1
+        spaceId: Int = 1,
+        startDate: LocalDate = timeProvider.getCurrentDate(),
     ): BoatSpaceReservationDetails {
         if (ReservationStatus.Confirmed == state) {
             return testUtils.createReservationInConfirmedState(
@@ -477,7 +480,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
                     citizenIdMikko,
                     spaceId,
                     validity = ReservationValidity.Indefinite,
-                    startDate = timeProvider.getCurrentDate(),
+                    startDate = startDate,
                     endDate = timeProvider.getCurrentDate().plusDays(30),
                 )
             )
