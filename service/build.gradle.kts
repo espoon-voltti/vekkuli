@@ -86,7 +86,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
-    implementation("org.flywaydb:flyway-core:10.20.0")
+    implementation("org.flywaydb:flyway-core:11.3.3")
     implementation("org.flywaydb:flyway-database-postgresql:11.3.0")
     implementation("org.postgresql:postgresql:42.7.1")
     implementation(platform("org.jdbi:jdbi3-bom:3.47.0"))
