@@ -133,7 +133,7 @@ const sv: Translations = {
     privacyLink:
       '<a target="_blank" aria-label="Integritetspolicy (länken öppnas i en ny flik)" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Integritetspolicy</a>',
     boatingLink:
-      '<a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/en/sports-and-nature/boating">Esbo båtliv hemsida</a>'
+      '<a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/sv/idrott-motion-och-natur/batliv">Esbo båtliv hemsida</a>'
   },
   components: componentTranslations,
   citizenFrontPage: {
@@ -150,7 +150,7 @@ const sv: Translations = {
       preparations:
         'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
-        'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring här.'
+        'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring <a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/sv/idrott-motion-och-natur/batliv">här</a>.'
     },
     periods: {
       Slip: {
