@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.boatSpace.citizenBoatSpaceReservation
 
+import fi.espoo.vekkuli.config.AuthenticatedUser
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -23,12 +24,11 @@ class ReservationPaymentController(
         @RequestParam params: Map<String, String>,
         request: HttpServletRequest
     ): ResponseEntity<Void> {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "PAYTRAIL_CALLBACK_SUCCESS",
-            )
-        }
+        logger.audit(
+            AuthenticatedUser.createSystemUser(),
+            "PAYTRAIL_CALLBACK_SUCCESS",
+        )
+
         reservationPaymentService.handlePaymentSuccess(params)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
@@ -38,12 +38,11 @@ class ReservationPaymentController(
         @RequestParam params: Map<String, String>,
         request: HttpServletRequest
     ): ResponseEntity<Void> {
-        request.getAuthenticatedUser()?.let {
-            logger.audit(
-                it,
-                "PAYTRAIL_CALLBACK_CANCEL",
-            )
-        }
+        logger.audit(
+            AuthenticatedUser.createSystemUser(),
+            "PAYTRAIL_CALLBACK_CANCEL",
+        )
+
         reservationPaymentService.handlePaymentCancel(params)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }

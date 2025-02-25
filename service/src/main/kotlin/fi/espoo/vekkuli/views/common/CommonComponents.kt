@@ -265,7 +265,7 @@ class CommonComponents(
         val postalCodeField =
             formComponents.textInput("boatSpaceReservation.title.postalCode", "postalCode", citizen.postalCode)
         val cityField =
-            formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.municipalityName)
+            formComponents.textInput("boatSpaceReservation.title.city", "postalOffice", citizen.postOffice)
         val emailInput = formComponents.textInput("boatApplication.email", "email", citizen.email, true)
         val phoneInput = formComponents.textInput("boatApplication.phone", "phone", citizen.phone, true)
         val municipalityInput =
