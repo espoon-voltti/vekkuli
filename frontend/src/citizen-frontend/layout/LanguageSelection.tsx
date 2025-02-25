@@ -23,7 +23,7 @@ export default React.memo(function LanguageSelection() {
             <span className="icon is-small">
               <Globe />
             </span>
-            <span className="pl-xs">{lang.toUpperCase()}</span>
+            <span className="pl-xs is-primary-color">{lang.toUpperCase()}</span>
           </>
         ),
         menuItems: (

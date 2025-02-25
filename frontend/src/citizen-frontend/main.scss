@@ -52,6 +52,7 @@ $help-min-height: 18px;
   $subtitle-weight: 600,
   $subtitle-line-height: 24px,
   $danger: $bulma-danger,
+  $footer-padding: 1.5rem,
 );
 @use "bulma/sass/utilities/mixins";
 @import 'https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap';
@@ -96,6 +97,10 @@ html, body {
   height: 100%;
   background: $light-gray;
   margin: 0;
+}
+
+#app {
+  height: 100%
 }
 
 .container {
@@ -575,7 +580,7 @@ body > .columns {
 .nav-row{
   background: white;
   display:flex;
-  padding: $spacing-large $spacing-xl;
+  padding: 20px $spacing-large;
   border-bottom: $spacing-small solid $light-gray;
   justify-content: space-between;
 }
@@ -599,8 +604,7 @@ body > .columns {
 }
 
 .logo{
-  width: 185px;
-  height: 107px;
+  width: auto;
   margin-right: 16px
 }
 
@@ -1026,5 +1030,25 @@ ul {
 .columns.mb-xl-mobile {
   @include mixins.mobile {
     margin-bottom: $spacing-xl;
+  }
+}
+
+.content-wrapper {
+  height: 100%;
+}
+
+.footer a{
+  text-decoration: underline;
+}
+
+.footer .logo{
+  position: absolute;
+  right: 0;
+  top: 50%;
+    transform: translateY(-50%);
+  height: 86%;
+  width: auto;
+  @include mixins.mobile {
+    display: none;
   }
 }

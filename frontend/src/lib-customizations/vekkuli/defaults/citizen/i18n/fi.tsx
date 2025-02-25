@@ -129,6 +129,12 @@ export default {
     selectLanguage: 'Valitse kieli',
     mainNavigation: 'Päänavigaatio'
   },
+  footer: {
+    privacyLink:
+      '<a target="_blank" aria-label="Tietosuojaseloste (linkki aukeaa uuteen välilehteen)" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Tietosuojaseloste</a>',
+    boatingLink:
+      '<a target="_blank" aria-label="Espoon veneilyn etusivu (linkki aukeaa uuteen välilehteen)" href="https://www.espoo.fi/fi/liikunta-ja-luonto/veneily">Espoon veneilyn etusivu</a>'
+  },
   components: componentTranslations,
   citizenFrontPage: {
     title: 'Venepaikat',

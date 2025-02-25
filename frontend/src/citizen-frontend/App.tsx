@@ -8,6 +8,7 @@ import { AuthContextProvider } from './auth/state'
 import CitizenPage from './citizen/CitizenPage'
 import ErrorPage from './errors/ErrorPage'
 import HomePage from './home/HomePage'
+import { Footer } from './layout/Footer'
 import Navigation from './layout/Navigation'
 import { Localization, useTranslation } from './localization'
 import OrganizationPage from './organization/OrganizationPage'
@@ -37,12 +38,13 @@ function App() {
 const Content = React.memo(function Content() {
   const i18n = useTranslation()
   return (
-    <div>
+    <div className="content-wrapper is-flex is-flex-direction-column is-fullheight">
       <SkipToContentLink target="main">
         {i18n.header.goToMainContent}
       </SkipToContentLink>
       <Navigation />
       <Outlet />
+      <Footer />
     </div>
   )
 })

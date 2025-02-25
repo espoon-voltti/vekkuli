@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 
-import Logo from 'lib-customizations/espoo/assets/EspooLogoPrimary.svg'
+import Logo from 'lib-customizations/vekkuli/assets/VenepaikkavarausLogo.svg'
 
 import { useTranslation } from '../localization'
 
@@ -17,7 +17,7 @@ export default React.memo(function Navigation() {
           <Link to="/" className="link" aria-label={i18n.header.goToHomepage}>
             <img className="logo" src={Logo} alt="Espoo logo" />
           </Link>
-          <h1>{i18n.common.title}</h1>
+          <h1 className="is-primary-color">{i18n.common.title}</h1>
         </div>
         <div className="columns">
           <LanguageSelection />
