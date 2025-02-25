@@ -150,7 +150,7 @@ export default {
       preparations:
         'Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
       readMore:
-        'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät täältä.'
+        'Lisätietoja venesatamista, venepaikkamaksuista ja veneiden säilytyksestä löydät <a target="_blank" aria-label="Espoon veneilyn etusivu (linkki aukeaa uuteen välilehteen)" href="https://www.espoo.fi/fi/liikunta-ja-luonto/veneily">täältä</a>.'
     },
     periods: {
       Slip: {
