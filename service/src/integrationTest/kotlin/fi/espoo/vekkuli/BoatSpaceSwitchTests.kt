@@ -26,8 +26,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
 import java.util.UUID
@@ -42,10 +42,10 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentService: PaymentService
 
-    @MockBean
+    @MockitoBean
     private lateinit var citizenContextProvider: CitizenContextProvider
 
-    @MockBean
+    @MockitoBean
     private lateinit var seasonalService: SeasonalService
 
     @Autowired
@@ -57,7 +57,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     lateinit var reservationService: ReservationService
 
-    @MockBean
+    @MockitoBean
     lateinit var organizationService: OrganizationService
 
     @Autowired
@@ -66,7 +66,7 @@ class BoatSpaceSwitchTests : IntegrationTestBase() {
     @Autowired
     private lateinit var paymentRepository: PaymentRepository
 
-    @MockBean
+    @MockitoBean
     private lateinit var switchPolicyService: SwitchPolicyService
 
     @BeforeEach
