@@ -50,10 +50,10 @@ class InvoicePreview(
             }
 
         val reserverStreetAddress =
-            if (invoiceData.street.isEmpty() && invoiceData.postalCode.isEmpty() && invoiceData.post.isEmpty()) {
-                t("infoMissing")
-            } else {
+            if (!invoiceData.street.isEmpty() && !invoiceData.postalCode.isEmpty() && !invoiceData.post.isEmpty()) {
                 "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}"
+            } else {
+                t("infoMissing")
             }
 
         val model =
