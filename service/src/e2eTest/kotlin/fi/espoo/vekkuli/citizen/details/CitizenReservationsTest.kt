@@ -44,14 +44,14 @@ class CitizenReservationsTest : PlaywrightTest() {
 
             citizenDetailsPage.showExpiredReservationsToggle.click()
 
-            val firstExpiredReservationSection = citizenDetailsPage.getFirstExpiredReservationSection()
+            val firstExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection("31.12.2023 asti")
             assertThat(firstExpiredReservationSection.locationName).hasText("Haukilahti")
             assertThat(firstExpiredReservationSection.place).hasText("B 003")
-            assertThat(firstExpiredReservationSection.validity).hasText("31.12.2022 asti")
+            assertThat(firstExpiredReservationSection.validity).hasText("31.12.2023 asti")
 
-            val secondExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection(1)
+            val secondExpiredReservationSection = citizenDetailsPage.getExpiredReservationSection("31.12.2022 asti")
             assertThat(secondExpiredReservationSection.place).hasText("B 003")
-            assertThat(secondExpiredReservationSection.validity).hasText("31.12.2023 asti")
+            assertThat(secondExpiredReservationSection.validity).hasText("31.12.2022 asti")
             // Seed user has 2 expired reservations
             assertThat(citizenDetailsPage.expiredReservationListCards).hasCount(2)
         } catch (e: AssertionError) {
