@@ -129,6 +129,12 @@ const sv: Translations = {
     selectLanguage: 'Välj språk',
     mainNavigation: 'Huvudnavigering'
   },
+  footer: {
+    privacyLink:
+      '<a target="_blank" aria-label="Integritetspolicy (länken öppnas i en ny flik)" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Integritetspolicy</a>',
+    boatingLink:
+      '<a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/sv/idrott-motion-och-natur/batliv">Esbo båtliv hemsida</a>'
+  },
   components: componentTranslations,
   citizenFrontPage: {
     title: 'Båtplatser',
@@ -144,7 +150,7 @@ const sv: Translations = {
       preparations:
         'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
-        'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring här.'
+        'Du hittar mer information om småbåtshamnar, båtplatsavgifter och båtförvaring <a target="_blank" aria-label="Esbo båtliv hemsida (länken öppnas i en ny flik)" href="https://www.espoo.fi/sv/idrott-motion-och-natur/batliv">här</a>.'
     },
     periods: {
       Slip: {
@@ -435,8 +441,9 @@ const sv: Translations = {
       continue: 'Fortsätt'
     },
     cancelConfirmation:
-      'Du är på väg att lämna bokningsformuläret. Observera att platsbokningen eller inmatad information inte kommer att sparas.',
-    cancelConfirmation2: 'Vill du fortsätta?',
+        "Du håller på att lämna bokningsformuläret. Den ifyllda informationen eller bokningen sparas inte. Är du säker på att du vill avbryta bokningen?",
+    noAndGoBack: "Nej, gå tillbaka",
+    yesCancelReservation: "Ja, avbryt bokningen",
     cancelReservation: 'Avbryt reservation',
     cancelAndGoBack: 'Avbryt och gå tillbaka',
     goBack: 'Gå tillbaka',
@@ -470,7 +477,11 @@ const sv: Translations = {
     ownership: 'Ägande',
     boatSizeWarning: 'Båten passar inte på den valda båtplatsen.',
     boatSizeWarningExplanation:
-      'Båtplatser har säkerhetsutrymmen för att förhindra skador på båtar och bryggor. En båt placerad på en plats som är för trång kan flyttas av kommunen, och ägaren av båtplatsen ansvarar för kostnaderna.'
+      'Båtplatser har säkerhetsutrymmen för att förhindra skador på båtar och bryggor. En båt placerad på en plats som är för trång kan flyttas av kommunen, och ägaren av båtplatsen ansvarar för kostnaderna.',
+    boatWeightWarning:
+      'Den maximala tillåtna vikten för en båt förtöjd i Esbo stads hamnar är 15 000 kg.',
+    boatWeightWarning2:
+      'En båt som är för tung kan flyttas av staden, och båtplatsinnehavaren ansvarar för kostnaderna.'
   },
   boatSpace: {
     boatSpaceType: {
@@ -539,7 +550,13 @@ const sv: Translations = {
       Buck: 'Förvaring på bock',
       BuckWithTent: 'Förvaring på bock med skyddstält'
     },
-    reserve: 'Boka'
+    reserve: 'Boka',
+    heightWarning: {
+      bridge: (height: string) =>
+        `Bron som leder till hamnen har en seglingshöjd på ${height} m`,
+      bridges: (height: string) =>
+        `Broarna som leder till hamnen har en seglingshöjd på ${height} m`
+    }
   },
   citizen: {
     firstName: 'Förnamn',

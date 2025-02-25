@@ -202,7 +202,14 @@ object BoatSpaceConfig {
         return boat.length == null || ((minLength == null || boat.length >= minLength) && (maxLength == null || boat.length <= maxLength))
     }
 
-    const val DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE = 30
+    // How many max days later reservation expired emails are sent after expiration
+    const val MAX_DAYS_BEFORE_RESERVATION_EXPIRED_NOTICE = 30
+
+    // When reservation email is sent
+    const val DAYS_BEFORE_RESERVATION_EXPIRY_NOTICE = 21
+
+    // How many days before reservation expiration it can be renewed
+    const val RENEW_PERIOD_BEFORE_RESERVATION_EXPIRY = 31
 
     fun getSlipEndDate(
         currentDate: LocalDate,

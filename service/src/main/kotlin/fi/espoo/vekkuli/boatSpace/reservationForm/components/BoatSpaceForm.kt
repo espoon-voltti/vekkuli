@@ -201,7 +201,7 @@ class BoatSpaceForm(
                                 class="button"
                                 x-on:click="modalOpen = false"
                                 type="button">
-                                ${t("cancel")}
+                                ${t("boatSpaceApplication.cancelConfirmation3")}
                             </button>
                             <button id="confirm-cancel-modal-confirm"
                                 class="button is-primary"
@@ -209,7 +209,7 @@ class BoatSpaceForm(
                                 hx-delete="${urls.deleteUrl}"
                                 hx-params="none"
                                 hx-on-htmx-after-request="${if (userType == UserType.CITIZEN) "window.location = '${urls.urlToReturnTo}';" else "history.back()"}">
-                                ${t("confirm")}
+                                ${t("boatSpaceApplication.cancelConfirmation2")}
                             </button>
                         </div>
                     </div>

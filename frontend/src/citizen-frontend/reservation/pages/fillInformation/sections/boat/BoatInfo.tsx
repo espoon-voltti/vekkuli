@@ -38,6 +38,7 @@ export default React.memo(function Boat({
 
   const widthOrNaN = parseFloat(width.state)
   const lengthOrNaN = parseFloat(length.state)
+  const weightOrNaN = parseFloat(weight.state)
   const minLength = boatSpace.minLength
   const maxLength = boatSpace.maxLength
   const minWidth = boatSpace.minWidth
@@ -50,6 +51,9 @@ export default React.memo(function Boat({
     (!isNaN(widthOrNaN) &&
       ((minWidth !== null && widthOrNaN < minWidth) ||
         (maxWidth !== null && widthOrNaN > maxWidth)))
+
+  const maxWeight = 15000
+  const showWeightWarning = !isNaN(weightOrNaN) && weightOrNaN > maxWeight
 
   return (
     <>
@@ -125,6 +129,9 @@ export default React.memo(function Boat({
             required={true}
           />
         </div>
+      </div>
+      {showWeightWarning && <BoatWeightWarning reservationId={reservationId} />}
+      <div className="columns is-vcentered">
         {noRegisterNumber.state.domValues.length === 0 && (
           <div className="column is-one-quarter">
             <TextField
@@ -173,6 +180,21 @@ const BoatSizeWarning = ({ reservationId }: { reservationId: number }) => {
       <div className="warning" id="boatSize-warning">
         <p className="block">{i18n.boat.boatSizeWarning}</p>
         <p className="block">{i18n.boat.boatSizeWarningExplanation}</p>
+        <ReservationCancel reservationId={reservationId} type="link">
+          {i18n.reservation.goBack}
+        </ReservationCancel>
+      </div>
+    </div>
+  )
+}
+
+const BoatWeightWarning = ({ reservationId }: { reservationId: number }) => {
+  const i18n = useTranslation()
+  return (
+    <div className="columns is-vcentered">
+      <div className="warning" id="boatWeight-warning">
+        <p className="block">{i18n.boat.boatWeightWarning}</p>
+        <p className="block">{i18n.boat.boatWeightWarning2}</p>
         <ReservationCancel reservationId={reservationId} type="link">
           {i18n.reservation.goBack}
         </ReservationCancel>

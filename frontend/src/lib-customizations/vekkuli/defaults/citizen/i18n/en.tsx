@@ -130,6 +130,12 @@ const en: Translations = {
     selectLanguage: 'Select language',
     mainNavigation: 'Main navigation'
   },
+  footer: {
+    privacyLink:
+      '<a target="_blank" aria-label="Privacy policy (link opens in a new tab)" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Privacy policy</a>',
+    boatingLink:
+      '<a target="_blank" aria-label="Espoo boating homepage (link opens in a new tab)" href="https://www.espoo.fi/en/sports-and-nature/boating">Espoo boating homepage</a>'
+  },
   components: componentTranslations,
   citizenFrontPage: {
     title: 'Boat spaces',
@@ -144,7 +150,7 @@ const en: Translations = {
         'If you are unable to authenticate electronically, contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mon and Wed from 12:30-15:00 and Thu from 9:00-11:00.',
       preparations: `For the booking, you need the following information: email address, phone number, boat's registration number, width, length, and weight, boat's name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community's business ID and billing address.`,
       readMore:
-        'You can find more information about marinas, berth fees, and boat storage here.'
+        'You can find more information about marinas, berth fees, and boat storage <a target="_blank" aria-label="Espoo boating homepage (link opens in a new tab)" href="https://www.espoo.fi/en/sports-and-nature/boating">here</a>.'
     },
     periods: {
       Slip: {
@@ -441,8 +447,9 @@ const en: Translations = {
       continue: 'Continue to authentication'
     },
     cancelConfirmation:
-      'You are leaving the reservation form. Note that the reservation or entered information will not be saved.',
-    cancelConfirmation2: 'Do you want to continue?',
+        "You are leaving the reservation form. The filled-in information or reservation will not be saved. Are you sure you want to cancel the reservation?",
+    noAndGoBack: "No, go back",
+    yesCancelReservation: "Yes, cancel the reservation",
     cancelReservation: 'Cancel reservation',
     cancelAndGoBack: 'Cancel reservation and go back',
     goBack: 'Go back',
@@ -476,7 +483,10 @@ const en: Translations = {
     ownership: 'Ownership',
     boatSizeWarning: `Boat doesn't fit in the selected boat space.`,
     boatSizeWarningExplanation:
-      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.'
+      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.',
+    boatWeightWarning: `The maximum allowed weight for a boat moored in the City of Espoo's harbors is 15,000 kg.`,
+    boatWeightWarning2:
+      'A boat that is too heavy may be relocated by the city, and the berth holder is responsible for the costs.'
   },
   boatSpace: {
     renterType: {
@@ -541,7 +551,13 @@ const en: Translations = {
       Buck: 'Stand storage',
       BuckWithTent: 'Stand storage with protective tent'
     },
-    reserve: 'Reserve'
+    reserve: 'Reserve',
+    heightWarning: {
+      bridge: (height: string) =>
+        `The clearance height of the bridge leading to the harbor is ${height} m`,
+      bridges: (height: string) =>
+        `The clearance height of the bridges leading to the harbor is ${height} m`
+    }
   },
   citizen: {
     firstName: 'First Name',

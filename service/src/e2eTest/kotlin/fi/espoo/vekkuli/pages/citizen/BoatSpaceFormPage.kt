@@ -57,6 +57,7 @@ open class BoatSpaceFormPage(
         val widthInput = fields.getInput("Leveys")
         val newBoatSelection = fields.getRadio("Uusi vene")
         val boatSizeWarning = root.getByTestId("boatSize-warning")
+        val boatWeightWarning = root.getByTestId("boatWeight-warning")
         val boatSizeWarningBackButton = boatSizeWarning.getByText("Palaa takaisin")
 
         fun existingBoat(name: String) = fields.getRadio(name)
@@ -109,8 +110,8 @@ open class BoatSpaceFormPage(
     class ConfirmCancelReservationModal(
         val root: Locator
     ) {
-        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
-        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Jatka").setExact(true))
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ei, palaa takaisin").setExact(true))
+        val confirmButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Kyllä, peru varaus").setExact(true))
     }
 
     fun getCitizenSection() = CitizenSection(getByDataTestId("citizen"))

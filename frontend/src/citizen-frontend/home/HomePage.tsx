@@ -44,6 +44,7 @@ export default React.memo(function HomePage() {
             <InfoColumn
               icon={InfoCircle}
               text={i18n.citizenFrontPage.info.readMore}
+              useDangerouslySetInnerHtmlLabel={true}
             />
           </div>
           <div className="column is-align-content-center">
@@ -74,12 +75,14 @@ export default React.memo(function HomePage() {
 
 interface InfoColumnProps {
   icon: () => React.JSX.Element
-  text: string
+  text: string,
+  useDangerouslySetInnerHtmlLabel?: boolean
 }
 
 const InfoColumn = React.memo(function InfoColumn({
   icon,
-  text
+  text,
+  useDangerouslySetInnerHtmlLabel
 }: InfoColumnProps) {
   return (
     <div className="columns">
@@ -87,7 +90,11 @@ const InfoColumn = React.memo(function InfoColumn({
         <span className="icon is-medium">{icon()}</span>
       </div>
       <div className="column">
-        <p>{text}</p>
+        {useDangerouslySetInnerHtmlLabel ? (
+            <p dangerouslySetInnerHTML={{ __html: text ?? '' }} />
+        ) : (
+            <p>{text}</p>
+        )}
       </div>
     </div>
   )

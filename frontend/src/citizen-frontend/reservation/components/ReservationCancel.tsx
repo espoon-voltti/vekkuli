@@ -40,11 +40,11 @@ export default React.memo(function ReservationCancel({
 
   const buttons = [
     {
-      label: i18n.common.cancel,
+      label: i18n.reservation.noAndGoBack,
       loading: isPending
     },
     {
-      label: i18n.common.continue,
+      label: i18n.reservation.yesCancelReservation,
       type: 'primary' as const,
       loading: isPending,
       action: () => {
@@ -76,7 +76,6 @@ export default React.memo(function ReservationCancel({
           <Columns isMultiline>
             <Column>
               <p>{i18n.reservation.cancelConfirmation}</p>
-              <p>{i18n.reservation.cancelConfirmation2}</p>
             </Column>
           </Columns>
         </Modal>
