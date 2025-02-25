@@ -28,7 +28,7 @@ class CitizenContainerForCitizen(
             formComponents.field(
                 "boatApplication.address",
                 "address",
-                "${citizen?.streetAddress}, ${citizen?.postalCode}, ${citizen?.municipalityName}"
+                "${citizen?.streetAddress}, ${citizen?.postalCode}, ${citizen?.postOffice}"
             )
 
         val email =

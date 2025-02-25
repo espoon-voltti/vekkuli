@@ -98,13 +98,13 @@ class EditCitizen {
                 formComponents.textInput(
                     "boatSpaceReservation.title.city",
                     "city",
-                    citizen.municipalityName
+                    citizen.postOffice
                 )
             } else {
                 formComponents.field(
                     "boatSpaceReservation.title.city",
                     "cityField",
-                    citizen.municipalityName,
+                    citizen.postOffice,
                 )
             }
 
