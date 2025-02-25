@@ -471,7 +471,11 @@ const sv: Translations = {
     ownership: 'Ägande',
     boatSizeWarning: 'Båten passar inte på den valda båtplatsen.',
     boatSizeWarningExplanation:
-      'Båtplatser har säkerhetsutrymmen för att förhindra skador på båtar och bryggor. En båt placerad på en plats som är för trång kan flyttas av kommunen, och ägaren av båtplatsen ansvarar för kostnaderna.'
+      'Båtplatser har säkerhetsutrymmen för att förhindra skador på båtar och bryggor. En båt placerad på en plats som är för trång kan flyttas av kommunen, och ägaren av båtplatsen ansvarar för kostnaderna.',
+    boatWeightWarning:
+      'Den maximala tillåtna vikten för en båt förtöjd i Esbo stads hamnar är 15 000 kg.',
+    boatWeightWarning2:
+      'En båt som är för tung kan flyttas av staden, och båtplatsinnehavaren ansvarar för kostnaderna.'
   },
   boatSpace: {
     boatSpaceType: {

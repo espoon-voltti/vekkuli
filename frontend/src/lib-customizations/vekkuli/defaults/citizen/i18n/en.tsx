@@ -477,7 +477,10 @@ const en: Translations = {
     ownership: 'Ownership',
     boatSizeWarning: `Boat doesn't fit in the selected boat space.`,
     boatSizeWarningExplanation:
-      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.'
+      'Boat spaces have safety spaces to prevent damage to boats and docks. A boat placed in a space that is too cramped can be moved by the city, and the owner of the boat space is responsible for the costs.',
+    boatWeightWarning: `The maximum allowed weight for a boat moored in the City of Espoo's harbors is 15,000 kg.`,
+    boatWeightWarning2:
+      'A boat that is too heavy may be relocated by the city, and the berth holder is responsible for the costs.'
   },
   boatSpace: {
     renterType: {

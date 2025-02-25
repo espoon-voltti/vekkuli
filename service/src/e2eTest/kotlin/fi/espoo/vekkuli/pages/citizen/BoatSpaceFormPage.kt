@@ -57,6 +57,7 @@ open class BoatSpaceFormPage(
         val widthInput = fields.getInput("Leveys")
         val newBoatSelection = fields.getRadio("Uusi vene")
         val boatSizeWarning = root.getByTestId("boatSize-warning")
+        val boatWeightWarning = root.getByTestId("boatWeight-warning")
         val boatSizeWarningBackButton = boatSizeWarning.getByText("Palaa takaisin")
 
         fun existingBoat(name: String) = fields.getRadio(name)
