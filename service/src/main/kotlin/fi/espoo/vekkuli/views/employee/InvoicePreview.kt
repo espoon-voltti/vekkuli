@@ -50,11 +50,11 @@ class InvoicePreview(
             }
 
         val reserverStreetAddress =
-            if (!invoiceData.street.isEmpty() && !invoiceData.postalCode.isEmpty() && !invoiceData.post.isEmpty()) {
-                "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}"
-            } else {
-                t("infoMissing")
-            }
+//            if (invoiceData.street.isNotEmpty() && invoiceData.postalCode.isNotEmpty() && invoiceData.post.isNotEmpty()) {
+            "${invoiceData.street}, ${invoiceData.postalCode}, ${invoiceData.post}"
+//            } else {
+//                t("infoMissing")
+//            }
 
         val model =
             SendInvoiceModel(
@@ -154,9 +154,9 @@ class InvoicePreview(
 
         val address =
             if (isOrganization) {
-                invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress, "reserverAddress")
-            } else {
                 invoiceLine(t("invoice.label.billingAddress"), model.reserverAddress, "reserverAddress")
+            } else {
+                invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress, "reserverAddress")
             }
 
         // language=HTML
