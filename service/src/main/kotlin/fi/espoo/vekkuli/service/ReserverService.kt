@@ -43,6 +43,8 @@ class ReserverService(
         postalCode: String,
         municipalityCode: Int,
         dataProtection: Boolean,
+        postOffice: String,
+        postOfficeSv: String,
     ): CitizenWithDetails =
         reserverRepository.insertCitizen(
             nationalId,
@@ -53,8 +55,8 @@ class ReserverService(
             address,
             address,
             postalCode,
-            "",
-            "",
+            postOffice,
+            postOfficeSv,
             municipalityCode,
             dataProtection,
         )
