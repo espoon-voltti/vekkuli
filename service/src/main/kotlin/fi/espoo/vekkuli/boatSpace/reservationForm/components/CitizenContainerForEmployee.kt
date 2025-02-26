@@ -98,8 +98,8 @@ class CitizenContainerForEmployee(
         val cityField =
             formComponents.textInput(
                 "boatSpaceReservation.title.city",
-                "city",
-                input.city
+                "postalOffice",
+                input.postalOffice
             )
 
         val citizenFields =

@@ -912,6 +912,8 @@ class ReservationFormService(
                 postalCode = input.postalCode ?: "",
                 municipalityCode = input.municipalityCode ?: 1,
                 false,
+                postOffice = input.postalOffice ?: "",
+                postOfficeSv = input.postalOffice ?: ""
             )
     }
 }

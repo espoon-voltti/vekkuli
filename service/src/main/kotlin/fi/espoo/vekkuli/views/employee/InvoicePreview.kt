@@ -154,9 +154,9 @@ class InvoicePreview(
 
         val address =
             if (isOrganization) {
-                invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress, "reserverAddress")
-            } else {
                 invoiceLine(t("invoice.label.billingAddress"), model.reserverAddress, "reserverAddress")
+            } else {
+                invoiceLine(t("invoice.label.bookerAddress"), model.reserverAddress, "reserverAddress")
             }
 
         // language=HTML
