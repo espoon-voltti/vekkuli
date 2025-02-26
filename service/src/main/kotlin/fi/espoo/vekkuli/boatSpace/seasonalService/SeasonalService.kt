@@ -12,11 +12,10 @@ import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.service.ReservationResultErrorCode
 import fi.espoo.vekkuli.service.ReservationResultSuccess
 import fi.espoo.vekkuli.utils.DateRange
+import fi.espoo.vekkuli.utils.LocalDateRange
 import fi.espoo.vekkuli.utils.TimeProvider
-import fi.espoo.vekkuli.utils.isMonthDayWithinRange
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.MonthDay
 import java.util.*
 
 @Service
@@ -40,9 +39,8 @@ class SeasonalService(
                     it.operation == operation &&
                     it.isEspooCitizen == isEspooCitizen
             }
-        val today = MonthDay.from(now)
         return periods.any {
-            isMonthDayWithinRange(today, MonthDay.of(it.startMonth, it.startDay), MonthDay.of(it.endMonth, it.endDay))
+            LocalDateRange(it.startDate, it.endDate).contains(now)
         }
     }
 

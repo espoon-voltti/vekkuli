@@ -1,11 +1,11 @@
 package fi.espoo.vekkuli.domain
 
+import java.time.LocalDate
+
 data class ReservationPeriod(
     val isEspooCitizen: Boolean,
     val operation: ReservationOperation,
     val boatSpaceType: BoatSpaceType,
-    val startMonth: Int,
-    val startDay: Int,
-    val endMonth: Int,
-    val endDay: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
 )

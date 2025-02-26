@@ -543,7 +543,7 @@ INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, b
     ('2024-08-15', '2025-08-14', false, 'Change', 'Storage'),
     ('2024-09-15', '2025-09-14', false, 'New', 'Storage'),
     ('2024-09-15', '2025-09-14', false, 'SecondNew', 'Storage'),
-    
+
     ('2026-01-07', '2026-01-31', true, 'Renew', 'Slip'),
     ('2026-01-07', '2026-09-30', true, 'Change', 'Slip'),
     ('2026-03-03', '2026-09-30', true, 'New', 'Slip'),
