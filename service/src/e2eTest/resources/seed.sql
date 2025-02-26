@@ -517,6 +517,57 @@ VALUES
     (false, 'Storage', 'New', 9, 15, 9, 14),
     (false, 'Storage', 'SecondNew', 9, 15, 9, 14);
 
+DELETE FROM booking_period;
+
+INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, boat_space_type) VALUES
+    ('2025-01-07', '2025-01-31', true, 'Renew', 'Slip'),
+    ('2025-01-07', '2025-09-30', true, 'Change', 'Slip'),
+    ('2025-03-03', '2025-09-30', true, 'New', 'Slip'),
+    ('2025-04-01', '2025-09-30', true, 'SecondNew', 'Slip'),
+    ('2025-04-01', '2025-04-30', true, 'Renew', 'Trailer'),
+    ('2025-05-01', '2025-12-31', true, 'New', 'Trailer'),
+    ('2025-04-01', '2025-12-31', true, 'Change', 'Trailer'),
+    ('2025-08-15', '2025-09-14', true, 'Renew', 'Winter'),
+    ('2025-08-15', '2025-12-31', true, 'Change', 'Winter'),
+    ('2025-09-15', '2025-12-31', true, 'New', 'Winter'),
+    ('2025-09-15', '2025-12-31', true, 'SecondNew', 'Winter'),
+    ('2025-08-15', '2025-09-14', true, 'Renew', 'Storage'),
+    ('2024-08-15', '2025-08-14', true, 'Change', 'Storage'),
+    ('2024-09-15', '2025-09-14', true, 'New', 'Storage'),
+    ('2024-09-15', '2025-09-14', true, 'SecondNew', 'Storage'),
+    ('2025-04-01', '2025-09-30', false, 'New', 'Slip'),
+    ('2025-04-01', '2025-09-30', false, 'Change', 'Slip'),
+    ('2025-05-01', '2025-12-31', false, 'New', 'Trailer'),
+    ('2025-05-01', '2025-12-31', false, 'Change', 'Trailer'),
+    ('2025-08-15', '2025-09-14', false, 'Renew', 'Storage'),
+    ('2024-08-15', '2025-08-14', false, 'Change', 'Storage'),
+    ('2024-09-15', '2025-09-14', false, 'New', 'Storage'),
+    ('2024-09-15', '2025-09-14', false, 'SecondNew', 'Storage'),
+    
+    ('2026-01-07', '2026-01-31', true, 'Renew', 'Slip'),
+    ('2026-01-07', '2026-09-30', true, 'Change', 'Slip'),
+    ('2026-03-03', '2026-09-30', true, 'New', 'Slip'),
+    ('2026-04-01', '2026-09-30', true, 'SecondNew', 'Slip'),
+    ('2026-04-01', '2026-04-30', true, 'Renew', 'Trailer'),
+    ('2026-05-01', '2026-12-31', true, 'New', 'Trailer'),
+    ('2026-04-01', '2026-12-31', true, 'Change', 'Trailer'),
+    ('2026-08-15', '2026-09-14', true, 'Renew', 'Winter'),
+    ('2026-08-15', '2026-12-31', true, 'Change', 'Winter'),
+    ('2026-09-15', '2026-12-31', true, 'New', 'Winter'),
+    ('2026-09-15', '2026-12-31', true, 'SecondNew', 'Winter'),
+    ('2026-08-15', '2026-09-14', true, 'Renew', 'Storage'),
+    ('2025-08-15', '2026-08-14', true, 'Change', 'Storage'),
+    ('2025-09-15', '2026-09-14', true, 'New', 'Storage'),
+    ('2025-09-15', '2026-09-14', true, 'SecondNew', 'Storage'),
+    ('2026-04-01', '2026-09-30', false, 'New', 'Slip'),
+    ('2026-04-01', '2026-09-30', false, 'Change', 'Slip'),
+    ('2026-05-01', '2026-12-31', false, 'New', 'Trailer'),
+    ('2026-05-01', '2026-12-31', false, 'Change', 'Trailer'),
+    ('2026-08-15', '2026-09-14', false, 'Renew', 'Storage'),
+    ('2025-08-15', '2026-08-14', false, 'Change', 'Storage'),
+    ('2025-09-15', '2026-09-14', false, 'New', 'Storage'),
+    ('2025-09-15', '2026-09-14', false, 'SecondNew', 'Storage');
+
 
 INSERT INTO app_user (id, external_id, first_name, last_name, email)
 VALUES
