@@ -130,7 +130,7 @@ open class ReservationService(
         // Make sure the target space isn't reserved already
         if (!boatSpaceRepository.isBoatSpaceAvailable(spaceId)) {
             return CanReserveResult(
-                status = CanReserveResultStatus.CanNotReserve,
+                status = CanReserveResultStatus.NotAvailable,
                 emptyList(),
                 emptyList()
             )
@@ -184,7 +184,7 @@ open class ReservationService(
             return CanReserveResult(
                 status = CanReserveResultStatus.CanNotReserve,
                 switchableReservations,
-                switchableOrganizationReservations
+                switchableOrganizationReservations,
             )
         }
         // Can reserve and switch if previous reservations

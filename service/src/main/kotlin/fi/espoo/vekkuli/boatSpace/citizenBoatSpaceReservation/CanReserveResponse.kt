@@ -11,6 +11,7 @@ import java.math.BigDecimal
 enum class CanReserveResultStatus {
     CanReserve,
     CanNotReserve,
+    NotAvailable,
     CanReserveOnlyForOrganization,
 }
 
