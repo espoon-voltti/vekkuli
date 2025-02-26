@@ -105,11 +105,10 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
                 true,
                 BoatSpaceType.Slip,
                 ReservationOperation.Renew,
-                startDate.plusYears(1).year
             )
 
         // Move time to the last day of the renewal period
-        mockTimeProvider(timeProvider, renewPeriod.endDate.atStartOfDay())
+        mockTimeProvider(timeProvider, renewPeriod.endInclusive.atStartOfDay())
 
         val expectedRenewalEndDate = getSlipEndDate(timeProvider.getCurrentDate().plusYears(1), validity)
         val beforePeriodResult = renewalPolicyService.employeeCanRenewReservation(reservation.id)
@@ -544,14 +543,13 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
                 true,
                 BoatSpaceType.Slip,
                 ReservationOperation.Renew,
-                startDate.plusYears(1).year
             )
         val expectedRenewalEndDate = getSlipEndDate(timeProvider.getCurrentDate().plusYears(1), validity)
         val beforePeriodResult = renewalPolicyService.employeeCanRenewReservation(reservation.id)
 
         assertEquals(
             true,
-            dayWhenFixedReservationExpires.isBefore(startOfRenewPeriod.startDate.atStartOfDay()),
+            dayWhenFixedReservationExpires.isBefore(startOfRenewPeriod.start.atStartOfDay()),
             "We are operating before the start of the renewal period"
         )
 

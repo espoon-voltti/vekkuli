@@ -8,7 +8,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.DateRange
+import fi.espoo.vekkuli.utils.LocalDateRange
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.Jdbi
@@ -295,7 +295,7 @@ class TestUtils(
         // This is the configured year, because renew periods start at the next year.
         val year = if (operation == ReservationOperation.Renew) 2025 else 2024
         val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
-        moveTimeToPeriod(period.startMonth, period.startDay, year, addDays)
+        moveTimeToPeriod(period.startDate.month.value, period.startDate.dayOfMonth, year, addDays)
     }
 
     fun moveTimeToReservationPeriodEnd(
@@ -306,7 +306,7 @@ class TestUtils(
     ) {
         val year = if (operation == ReservationOperation.Renew) 2025 else 2024
         val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
-        moveTimeToPeriod(period.endMonth, period.endDay, year, addDays)
+        moveTimeToPeriod(period.endDate.month.value, period.endDate.dayOfMonth, year, addDays)
     }
 
     private fun moveTimeToPeriod(
@@ -339,12 +339,9 @@ class TestUtils(
         isEspooCitizen: Boolean,
         boatSpaceType: BoatSpaceType,
         operation: ReservationOperation,
-        year: Int
-    ): DateRange {
-        val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
-        return DateRange(
-            startDate = LocalDate.of(year, period.startMonth, period.startDay),
-            endDate = LocalDate.of(year, period.endMonth, period.endDay),
-        )
+    ): LocalDateRange {
+        val period =
+            getReservationPeriod(isEspooCitizen, boatSpaceType, operation).firstOrNull() ?: throw RuntimeException("Period missing")
+        return LocalDateRange(period.startDate, period.endDate)
     }
 }

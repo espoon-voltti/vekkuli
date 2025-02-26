@@ -15,7 +15,13 @@ class SeasonalRepository(
             val query =
                 handle.createQuery(
                     """
-                    SELECT * FROM reservation_period
+                    SELECT
+                        start_date,
+                        end_date,
+                        operation,
+                        boat_space_type,
+                        is_espoo_citizen
+                    FROM booking_period
                     """.trimIndent()
                 )
             query.mapTo<ReservationPeriod>().list()
