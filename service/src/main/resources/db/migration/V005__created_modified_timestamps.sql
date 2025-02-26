@@ -41,47 +41,47 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER boat_set_timestamp
     BEFORE UPDATE ON boat
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER boat_space_set_timestamp
     BEFORE UPDATE ON boat_space
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER citizen_set_timestamp
     BEFORE UPDATE ON citizen
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER email_template_set_timestamp
     BEFORE UPDATE ON email_template
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER organization_set_timestamp
     BEFORE UPDATE ON organization
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER organization_member_set_timestamp
     BEFORE UPDATE ON organization_member
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER price_set_timestamp
     BEFORE UPDATE ON price
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER trailer_set_timestamp
     BEFORE UPDATE ON trailer
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER set_timestamp
+CREATE TRIGGER variable_set_timestamp
     BEFORE UPDATE ON variable
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_column();
