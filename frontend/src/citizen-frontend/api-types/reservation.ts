@@ -75,6 +75,7 @@ export type CanReserveResultStatus =
   | 'CanReserve'
   | 'CanNotReserve'
   | 'CanReserveOnlyForOrganization'
+  | 'NotAvailable'
 
 export type SwitchableOrganizationReservation = {
   organizationName: string
