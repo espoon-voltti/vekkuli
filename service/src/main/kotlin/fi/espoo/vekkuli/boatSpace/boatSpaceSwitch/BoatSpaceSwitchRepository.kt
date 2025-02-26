@@ -43,7 +43,7 @@ class BoatSpaceSwitchRepository(
                              reserver_id, 
                              :actingCitizenId as acting_citizen_id, 
                              :boatSpaceId as boat_space_id, 
-                             start_date, 
+                             :currentDate as start_date, 
                              end_date, 
                              'Info' as status, 
                              validity, 

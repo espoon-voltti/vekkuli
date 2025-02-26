@@ -371,7 +371,7 @@ class ReservationFormService(
             buildReserveBoatSpaceInput(reservationId, input),
             status,
             originalReservation.validity,
-            originalReservation.startDate,
+            reservation.startDate,
             originalReservation.endDate
         )
 

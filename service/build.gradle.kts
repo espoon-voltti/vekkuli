@@ -86,10 +86,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
-    implementation("org.flywaydb:flyway-core:10.20.0")
+    implementation("org.flywaydb:flyway-core:11.3.3")
     implementation("org.flywaydb:flyway-database-postgresql:11.3.0")
     implementation("org.postgresql:postgresql:42.7.1")
-    implementation(platform("org.jdbi:jdbi3-bom:3.47.0"))
+    implementation(platform("org.jdbi:jdbi3-bom:3.48.0"))
     implementation("org.jdbi:jdbi3-core")
     implementation("org.jdbi:jdbi3-jackson2")
     implementation("org.jdbi:jdbi3-kotlin")
@@ -108,15 +108,15 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
     implementation(platform("org.junit:junit-bom:5.11.4"))
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.microsoft.playwright:playwright:1.47.0")
+    testImplementation("com.microsoft.playwright:playwright:1.50.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("io.ktor:ktor-client-core:3.1.0")
     implementation("io.ktor:ktor-client-cio:3.1.0") // CIO engine
     implementation("io.ktor:ktor-client-content-negotiation:3.1.0") // Content negotiation
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3") // kotlinx serialization
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.1") // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
