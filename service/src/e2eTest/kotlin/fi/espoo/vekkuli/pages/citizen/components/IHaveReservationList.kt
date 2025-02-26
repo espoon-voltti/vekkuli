@@ -71,6 +71,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
 
     fun getReservationSection(nth: Int) = ReservationSection(reservationListCards.nth(nth))
 
+    @Deprecated("Use getReservationSection(text) instead")
     fun getFirstReservationSection() = getReservationSection(0)
 
     val expiredReservationList: Locator get() = getByDataTestId("expired-reservation-list")
@@ -85,6 +86,7 @@ interface IHaveReservationList<T> : IGetByTestId<T> where T : BasePage, T : IHav
 
     fun getExpiredReservationSection(nth: Int) = ReservationSection(expiredReservationListCards.nth(nth))
 
+    @Deprecated("Use getExpiredReservationSection(text) instead")
     fun getFirstExpiredReservationSection() = getExpiredReservationSection(0)
 
     val showExpiredReservationsToggle: Locator get() = expiredReservationList.getByText("Päättyneet varaukset")

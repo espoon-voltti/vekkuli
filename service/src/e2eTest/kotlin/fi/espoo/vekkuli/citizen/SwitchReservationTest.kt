@@ -276,7 +276,7 @@ class SwitchReservationTest : ReserveTest() {
             assertEmailIsSentOfCitizensFixedTermTrailerSwitch(endDate = "30.04.2025")
         }
         // Check that the renewed reservation is visible
-        val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+        val firstReservationSection = citizenDetailsPage.getReservationSection("TRAILERI 015")
         assertThat(firstReservationSection.locationName).containsText("Suomenoja")
         assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
         assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
@@ -391,7 +391,7 @@ class SwitchReservationTest : ReserveTest() {
         val citizenDetailsPage = CitizenDetailsPage(page)
         citizenDetailsPage.navigateToPage()
 
-        val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+        val firstReservationSection = citizenDetailsPage.getReservationSection("$expectedBoatSpaceSection $expectedPlaceNumber")
         assertThat(firstReservationSection.locationName).containsText(expectedHarbor)
         assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
         assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(
@@ -444,7 +444,7 @@ class SwitchReservationTest : ReserveTest() {
             citizenDetailsPage.navigateToPage()
             assertEmailIsSentOfCitizensStorageSpaceSwitch()
 
-            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            val firstReservationSection = citizenDetailsPage.getReservationSection("$expectedBoatSpaceSection $expectedPlaceNumber")
             assertThat(firstReservationSection.locationName).containsText("Haukilahti")
             assertThat(firstReservationSection.place).containsText("$expectedBoatSpaceSection $expectedPlaceNumber")
             assertThat(firstReservationSection.getTrailerSection().registrationCodeField).containsText(

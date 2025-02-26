@@ -126,7 +126,8 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
         if (forOrganization) {
             citizenDetailsPage.getOrganizationsSection("Espoon Pursiseura").nameField.click()
         }
-        val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+
+        val firstReservationSection = citizenDetailsPage.getReservationSection(expectedReservationId.toString())
         assertThat(firstReservationSection.place).hasText(expectedReservationId)
 
         // Check that the boat space is not available for reservation anymore
