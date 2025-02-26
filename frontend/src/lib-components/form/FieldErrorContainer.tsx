@@ -18,7 +18,7 @@ export default React.memo(function FieldErrorContainer({
   const errorMessage =
     showError && typeof error == 'string' ? translateError(error) : null
 
-  return (
+  return errorMessage && (
     <p className="help is-danger" aria-live="polite" id={id}>
       {errorMessage}
     </p>

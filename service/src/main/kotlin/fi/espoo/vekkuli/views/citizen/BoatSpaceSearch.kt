@@ -197,6 +197,10 @@ class BoatSpaceSearch(
 
                                $typeSelect
                                
+                               <div class="block" x-show="boatSpaceType != 'Storage'">
+                                   $locationsCheckboxes
+                               </div>
+                               
                                $storageType
 
                                
@@ -247,9 +251,6 @@ class BoatSpaceSearch(
                                     $amenitiesCheckboxes
                                 </div>
 
-                                <div class="block" x-show="boatSpaceType != 'Storage'">
-                                    $locationsCheckboxes
-                                </div>
 
                             </form>
                             <script>

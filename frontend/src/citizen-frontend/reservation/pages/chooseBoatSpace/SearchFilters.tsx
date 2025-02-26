@@ -41,7 +41,17 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
           bind={boatSpaceType}
         />
       </div>
-      {boatType.state.options.length === 0 ? null : (
+      <div className="block">
+          <CheckboxField
+              id="harbor"
+              name="harbor"
+              bind={harbor}
+              label={i18n.reservation.searchPage.filters.harborHeader}
+              infoText={i18n.reservation.searchPage.filters.branchSpecific[branch].harborInfo}
+          />
+      </div>
+
+        {boatType.state.options.length === 0 ? null : (
         <div className="block">
           <SelectField
             id="boat-type"
@@ -104,17 +114,6 @@ export default React.memo(function SearchFilters({ bind }: SearchFiltersProps) {
           />
         </div>
       )}
-
-        <div className="block">
-          <CheckboxField
-            id="harbor"
-            name="harbor"
-            bind={harbor}
-            label={i18n.reservation.searchPage.filters.harborHeader}
-            infoText={i18n.reservation.searchPage.filters.branchSpecific[branch].harborInfo}
-          />
-        </div>
-
     </form>
   )
 })
