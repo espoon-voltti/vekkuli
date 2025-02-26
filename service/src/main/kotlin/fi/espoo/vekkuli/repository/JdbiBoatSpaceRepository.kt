@@ -139,19 +139,18 @@ class JdbiBoatSpaceRepository(
                 JOIN location
                 ON boat_space.location_id = location.id
                 JOIN price
-                ON price_id = price.id
-                LEFT JOIN boat_space_reservation
-                ON boat_space.id = boat_space_reservation.boat_space_id
-                AND (
-                    (boat_space_reservation.created <= :currentTime) AND
-                    (boat_space_reservation.status IN ('Info', 'Payment') AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
-                    (boat_space_reservation.status IN ('Confirmed', 'Invoiced') AND boat_space_reservation.end_date::date >= :currentTime::date) OR
-                    (boat_space_reservation.status = 'Cancelled' AND boat_space_reservation.end_date::date > :currentTime::date)
+                ON boat_space.price_id = price.id
+                WHERE NOT EXISTS (
+                    SELECT 1 
+                    FROM boat_space_reservation bsr
+                    WHERE bsr.boat_space_id = boat_space.id
+                    AND (
+                        (bsr.created <= :currentTime AND bsr.status IN ('Info', 'Payment') AND bsr.created > :currentTime - make_interval(secs => :sessionTimeInSeconds))
+                        OR (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date::date >= :currentTime::date)
+                        OR (bsr.status = 'Cancelled' AND bsr.end_date::date > :currentTime::date)
+                    )
                 )
-                WHERE 
-                    boat_space_reservation.id IS NULL
-                    AND ${combinedFilter.toSql()}
-                    
+                AND ${combinedFilter.toSql()}
                 ORDER BY width_cm, length_cm, section, place_number
                 """.trimIndent()
 
