@@ -1,13 +1,15 @@
 import { Loader } from 'lib-components/Loader'
 import { Column, Columns, Container, MainSection } from 'lib-components/dom'
 import { GoBackLink } from 'lib-components/links'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
+import { SearchFreeSpacesParams } from 'citizen-frontend/api-types/free-spaces.js'
 import { SwitchReservationInformation } from 'citizen-frontend/api-types/reservation'
 import { AuthContext } from 'citizen-frontend/auth/state'
 import { useTranslation } from 'citizen-frontend/localization'
 import { useForm } from 'lib-common/form/hooks'
 import { useQueryResult } from 'lib-common/query'
+import { useDebounce } from 'lib-common/utils/useDebounce.js'
 import MapImage from 'lib-customizations/vekkuli/assets/map-of-locations.png'
 
 import StepIndicator from '../../StepIndicator'
@@ -74,12 +76,21 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
 
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false)
 
-  const freeSpaces = useQueryResult(
-    freeSpacesQuery(bind.isValid() ? bind.value() : undefined),
-    {
-      enabled: bind.isValid()
-    }
+  const [freeSpacesSearchParams, setFreeSpacesSearchParams] =
+    React.useState<SearchFreeSpacesParams>()
+
+  const freeSpaces = useQueryResult(freeSpacesQuery(freeSpacesSearchParams), {
+    enabled: freeSpacesSearchParams !== undefined
+  })
+
+  const debouncedFreeSpacesSearchParams = useDebounce(
+    bind.isValid() ? bind.value() : undefined,
+    500,
+    true
   )
+  useEffect(() => {
+    setFreeSpacesSearchParams(debouncedFreeSpacesSearchParams)
+  }, [debouncedFreeSpacesSearchParams])
 
   const searchResult = freeSpaces.isSuccess
     ? {
