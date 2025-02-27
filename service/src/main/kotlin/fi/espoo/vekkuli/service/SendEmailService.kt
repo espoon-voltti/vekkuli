@@ -91,7 +91,7 @@ class SendEmailService(
             val response = sesClient.sendEmail(emailRequest)
             return response.messageId()
         } catch (ex: SesException) {
-            logger.warn("Failed to send email to $emailAddress: ${ex.awsErrorDetails().errorMessage()}")
+            logger.error("Failed to send email to $emailAddress: ${ex.awsErrorDetails().errorMessage()}")
             return null
         }
     }
