@@ -142,8 +142,8 @@ class JdbiBoatSpaceRepository(
                 ON boat_space.price_id = price.id
                 WHERE NOT EXISTS (
                     SELECT 1 
-                    FROM boat_space_reservation bsr
-                    WHERE bsr.boat_space_id = boat_space.id
+                    FROM boat_space_reservation 
+                    WHERE boat_space_reservation.boat_space_id = boat_space.id
                     AND (
                         (boat_space_reservation.created <= :currentTime) AND
                         (boat_space_reservation.status IN ('Info', 'Payment') AND boat_space_reservation.created > :currentTime - make_interval(secs => :sessionTimeInSeconds)) OR
