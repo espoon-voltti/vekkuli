@@ -209,7 +209,7 @@ class RenewReservationTest : ReserveTest() {
             assertEmailIsSentOfCitizensIndefiniteTrailerReservation()
             SendEmailServiceMock.resetEmails()
 
-            mockTimeProvider(timeProvider, startofTrailerRenewPeriod.plusYears(1))
+            mockTimeProvider(timeProvider, startofTrailerRenewPeriod)
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
             val reservationSection = citizenDetailsPage.getFirstReservationSection()
@@ -246,7 +246,7 @@ class RenewReservationTest : ReserveTest() {
 
             assertEmailIsSentOfCitizensStorageSpaceReservation()
             SendEmailServiceMock.resetEmails()
-            mockTimeProvider(timeProvider, startOfStorageRenewPeriod.plusYears(1))
+            mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()

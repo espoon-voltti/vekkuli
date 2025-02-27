@@ -18,11 +18,10 @@ fun mockTimeProvider(
 
 val startOfSlipRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 0)
 val startOfWinterSpaceRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 15, 12, 0, 0)
-val startofTrailerRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 4, 1, 12, 0, 0)
-val startOfStorageRenewPeriod: LocalDateTime = LocalDateTime.of(2025, 8, 15, 12, 0, 0)
+val startofTrailerRenewPeriod: LocalDateTime = LocalDateTime.of(2026, 4, 1, 12, 0, 0)
+val startOfStorageRenewPeriod: LocalDateTime = LocalDateTime.of(2026, 8, 15, 12, 0, 0)
 
 val endDateWithinMonthOfSlipRenewWindow: LocalDate = LocalDate.of(2025, 1, 31)
-val endDateWithinMonthOfWinterRenewWindow: LocalDate = LocalDate.of(2025, 8, 25)
 
 val startOfSlipReservationPeriod: LocalDateTime = LocalDateTime.of(2025, 4, 1, 12, 0, 0)
 val startOfWinterReservationPeriod: LocalDateTime = LocalDateTime.of(2025, 9, 15, 12, 0, 0)
@@ -37,9 +36,6 @@ val startOfTrailerSwitchPeriodForEspooCitizen: LocalDateTime = LocalDateTime.of(
 
 // Others
 val startOfStorageReservationPeriodForOthers: LocalDateTime = LocalDateTime.of(2025, 9, 15, 12, 0, 0)
-
-val startOfSlipSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2025, 1, 7, 12, 0, 0)
-val startOfWinterSwitchPeriodForOthers: LocalDateTime = LocalDateTime.of(2025, 9, 15, 12, 0, 0)
 
 val sessionDuration = Duration.ofSeconds(BoatSpaceConfig.SESSION_TIME_IN_SECONDS.toLong())
 val moreThanSessionDuration = sessionDuration.plusSeconds(5L)
