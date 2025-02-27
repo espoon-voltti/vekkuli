@@ -2,9 +2,7 @@ package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.utils.addTestId
-import fi.espoo.vekkuli.utils.formatAsFullDate
-import fi.espoo.vekkuli.utils.formatDecimal
+import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -100,8 +98,9 @@ class ReservationCardInformation : BaseView() {
                          <p>${formatDecimal(reservation.boatSpaceWidthInM)}</p>
                      </div>
                      <div class="field">
-                         <label class="label">${t("boatSpaceReservation.title.reservationDate")}</label>
+                         <label class="label">${t("boatSpaceReservation.title.reservationStartDate")}</label>
                          <p>${formatAsFullDate(reservation.startDate)}</p>
+                         <span class="reservation-created-tooltip">Varaus tehty: ${formatAsFullDateTime(reservation.created)}<span>
                      </div>
                  </div>
                  <div class="column">
