@@ -42,7 +42,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         val reserverId = espooCitizenWithoutReservationsId
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -54,7 +54,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the renewal period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew, addDays = -1)
 
         assertEquals(
             false,
@@ -63,7 +63,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
         assertEquals(
             true,
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
@@ -82,7 +82,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring indefinite at the last day of the renew period`() {
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
 
         val reserverId = espooCitizenWithoutReservationsId
         val validity = ReservationValidity.Indefinite
@@ -101,7 +101,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         val renewPeriod =
-            testUtils.getReservationPeriodDateRange(
+            testUtils.getNextReservationPeriodDateRange(
                 true,
                 BoatSpaceType.Slip,
                 ReservationOperation.Renew,
@@ -130,7 +130,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     fun `should not be able to renew expiring indefinite term slip reservation as non-Espoo citizen`() {
         val reserverId = nonEspooCitizenWithoutReservationsId
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New, isEspooCitizen = false)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New, isEspooCitizen = false)
 
         val reservation =
             testUtils.createReservationInConfirmedState(
@@ -143,7 +143,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move to the start of renewal period (for espoo citizen)
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
 
         assertEquals(
             false,
@@ -156,7 +156,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     fun `should not be able to renew expiring fixed term slip reservation as Espoo citizen`() {
         val reserverId = espooCitizenWithoutReservationsId
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
 
         val reservation =
             testUtils.createReservationInConfirmedState(
@@ -169,7 +169,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
 
         assertEquals(
             false,
@@ -181,11 +181,12 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring indefinite winter reservation as Espoo citizen within renewal time limits`() {
         val reserverId = espooCitizenWithoutReservationsId
-        val endDate = getWinterEndDate(timeProvider.getCurrentDate())
         val boatSpaceType = BoatSpaceType.Winter
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        val endDate = getWinterEndDate(timeProvider.getCurrentDate())
+
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -198,7 +199,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
 
         assertEquals(
             false,
@@ -207,7 +208,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             true,
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
@@ -238,7 +239,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         val boatSpaceType = BoatSpaceType.Winter
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -251,7 +252,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             false,
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
@@ -262,11 +263,12 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring indefinite storage reservation as Espoo citizen within renewal time limits`() {
         val reserverId = espooCitizenWithoutReservationsId
-        val endDate = getStorageEndDate(timeProvider.getCurrentDate())
         val boatSpaceType = BoatSpaceType.Storage
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        val endDate = getStorageEndDate(timeProvider.getCurrentDate())
+
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -279,7 +281,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
 
         assertEquals(
             false,
@@ -288,7 +290,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             true,
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
@@ -315,11 +317,12 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring indefinite storage reservation as non-Espoo citizen within renewal time limits`() {
         val reserverId = nonEspooCitizenWithoutReservationsId
-        val endDate = getStorageEndDate(timeProvider.getCurrentDate())
         val boatSpaceType = BoatSpaceType.Storage
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        val endDate = getStorageEndDate(timeProvider.getCurrentDate())
+
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -332,7 +335,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1, isEspooCitizen = false)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1, isEspooCitizen = false)
 
         assertEquals(
             false,
@@ -341,7 +344,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, isEspooCitizen = false)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, isEspooCitizen = false)
         assertEquals(
             true,
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
@@ -369,11 +372,12 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     fun `should be able to renew expiring indefinite trailer reservation as Espoo citizen within renewal time limits`() {
         val reserverId = espooCitizenWithoutReservationsId
         val validity = ReservationValidity.Indefinite
-        val endDate = getTrailerEndDate(timeProvider.getCurrentDate(), validity)
         val boatSpaceType = BoatSpaceType.Trailer
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        val endDate = getTrailerEndDate(timeProvider.getCurrentDate(), validity)
+
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -386,7 +390,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew, addDays = -1)
 
         assertEquals(
             false,
@@ -395,7 +399,8 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
+
         assertEquals(
             true,
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
@@ -426,7 +431,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         val boatSpaceType = BoatSpaceType.Trailer
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -439,7 +444,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Renew)
         assertEquals(
             false,
             renewalPolicyService.citizenCanRenewReservation(reservation.id, reserverId).success,
@@ -450,7 +455,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew active indefinite slip reservation as an Employee`() {
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
 
         val reserverId = espooCitizenWithoutReservationsId
         val validity = ReservationValidity.Indefinite
@@ -467,7 +472,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the renewal period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew, addDays = -1)
 
         val expectedRenewalEndDate = getSlipEndDate(timeProvider.getCurrentDate().plusYears(1), validity)
         val beforePeriodResult = renewalPolicyService.employeeCanRenewReservation(reservation.id)
@@ -491,7 +496,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
         assertEquals(
             true,
             renewalPolicyService.employeeCanRenewReservation(reservation.id).success,
@@ -518,12 +523,13 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
     @Test
     fun `should be able to renew expiring fixed term slip reservation as Employee for an active reservation`() {
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.New)
 
         val reserverId = espooCitizenWithoutReservationsId
         val validity = ReservationValidity.FixedTerm
         val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
         val startDate = timeProvider.getCurrentDate()
+
         val reservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -538,8 +544,9 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         // Move time before the start of the renewal period
         val dayWhenFixedReservationExpires = endDate.atStartOfDay()
         mockTimeProvider(timeProvider, dayWhenFixedReservationExpires)
+
         val startOfRenewPeriod =
-            testUtils.getReservationPeriodDateRange(
+            testUtils.getNextReservationPeriodDateRange(
                 true,
                 BoatSpaceType.Slip,
                 ReservationOperation.Renew,
@@ -572,7 +579,7 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of renewal period
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Renew)
         assertEquals(
             true,
             timeProvider.getCurrentDate().isAfter(endDate),
