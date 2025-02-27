@@ -3,7 +3,6 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceList
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
@@ -43,7 +42,7 @@ class BoatSpaceList(
 
     fun render(
         boatSpaces: List<BoatSpaceListRow>,
-        @SanitizeInput searchParams: BoatSpaceListParams,
+        searchParams: BoatSpaceListParams,
         harbors: List<Location>,
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
