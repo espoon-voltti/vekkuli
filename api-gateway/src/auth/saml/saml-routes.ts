@@ -64,6 +64,11 @@ function createLoginHandler({
             logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
             return res.redirect(redirectUrl)
           }
+          if (isUserInitiatedLoginFailure(err)) {
+            const redirectUrl = getRedirectUrl(type, req)
+            logDebug(`Redirecting to ${redirectUrl}`, req, { redirectUrl })
+            return res.redirect(redirectUrl)
+          }
 
           logInfo(
             `Failed to authenticate user. Description: ${description}. Details: ${err}`,
@@ -190,4 +195,13 @@ export default function createSamlRouter(
   router.use('/logout', logoutErrorHandler)
 
   return router
+}
+
+function isUserInitiatedLoginFailure(error?: { xmlStatus?: string }): boolean {
+  const xmlStatus = error?.xmlStatus
+  if (typeof xmlStatus !== 'string') {
+    return false
+  }
+
+  return xmlStatus.includes('Requester') && xmlStatus.includes('AuthnFailed')
 }
