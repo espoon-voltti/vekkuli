@@ -1,10 +1,8 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceService
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -175,5 +173,33 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             },
             "Only boat spaces with correct amenity are fetched"
         )
+    }
+
+    @Test
+    fun `should get sections`() {
+        val sections = boatSpaceService.getSections()
+        assertEquals(14, sections.size, "Correct number of sections are fetched")
+    }
+
+    @Test
+    fun `should get all boat spaces`() {
+        val params = BoatSpaceListParams()
+        val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
+        assertEquals(2434, boatSpaces.size, "No boat spaces are fetched")
+    }
+
+    @Test
+    fun `should get boat spaces filtered`() {
+        val params =
+            BoatSpaceListParams(
+                sortBy = BoatSpaceFilterColumn.AMENITY,
+                boatSpaceState = listOf(BoatSpaceState.Active),
+                harbor = listOf(1),
+                boatSpaceType = listOf(BoatSpaceType.Slip),
+                amenity = listOf(BoatSpaceAmenity.Beam),
+                sectionFilter = listOf("B")
+            )
+        val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
+        assertEquals(17, boatSpaces.size, "Correct number of boat spaces are fetched")
     }
 }
