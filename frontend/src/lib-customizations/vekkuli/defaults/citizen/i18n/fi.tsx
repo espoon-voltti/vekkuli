@@ -456,6 +456,8 @@ export default {
     timer: {
       title:
         'Sinulla on ${minutes} ja ${seconds} aikaa vahvistaa venepaikkavaraus maksamalla.',
+      announceTitle:
+        'Sinulla on ${time} aikaa vahvistaa venepaikkavaraus maksamalla.',
       minute: 'minuutti',
       minutes: 'minuuttia',
       second: 'sekunti',

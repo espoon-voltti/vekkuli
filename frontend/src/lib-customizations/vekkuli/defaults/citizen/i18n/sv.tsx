@@ -454,6 +454,8 @@ const sv: Translations = {
     timer: {
       title:
         'Du har ${minutes} och ${seconds} på dig att bekräfta din båtplatsreservation genom att betala.',
+      announceTitle:
+        'Du har ${time} på dig att bekräfta din båtplatsreservation genom att betala.',
       minute: 'minut',
       minutes: 'minuter',
       second: 'sekund',

@@ -460,6 +460,8 @@ const en: Translations = {
     timer: {
       title:
         'You have ${minutes} and ${seconds} to confirm your boat space reservation by paying.',
+      announceTitle:
+        'You have ${time} to confirm your boat space reservation by paying.',
       minute: 'minute',
       minutes: 'minutes',
       second: 'second',
