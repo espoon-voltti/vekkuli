@@ -110,75 +110,67 @@ class BoatSpaceReservationList(
 
         // language=HTML
         val reservationRows =
-            reservations.joinToString("\n") { result ->
-                val endDateFormatted = formatAsShortYearDate(result.endDate)
-                val statusText =
-                    when (result.status) {
-                        ReservationStatus.Confirmed ->
-                            t("boatSpaceReservation.paymentOption.confirmed") +
-                                if (result.paymentDate != null) {
-                                    (
-                                        ", " + t("employee.boatSpaceReservations.paidDate") +
-                                            " " + formatAsShortYearDate(result.paymentDate)
-                                    )
-                                } else {
-                                    ""
-                                }
+            buildString {
+                for (result in reservations) {
+                    val endDateFormatted = formatAsShortYearDate(result.endDate)
+                    val statusText =
+                        when (result.status) {
+                            ReservationStatus.Confirmed ->
+                                t("boatSpaceReservation.paymentOption.confirmed") +
+                                    result.paymentDate
+                                        ?.let {
+                                            ", ${t("employee.boatSpaceReservations.paidDate")} ${
+                                                formatAsShortYearDate(
+                                                    it
+                                                )
+                                            }"
+                                        }.orEmpty()
 
-                        ReservationStatus.Invoiced ->
-                            t("boatSpaceReservation.paymentOption.invoiced") +
-                                if (result.invoiceDueDate != null) {
-                                    (
-                                        ", " + t("employee.boatSpaceReservations.dueDate") +
-                                            " " + formatAsShortYearDate(result.invoiceDueDate)
-                                    )
-                                } else {
-                                    ""
-                                }
+                            ReservationStatus.Invoiced ->
+                                t("boatSpaceReservation.paymentOption.invoiced") +
+                                    result.invoiceDueDate
+                                        ?.let {
+                                            ", ${t("employee.boatSpaceReservations.dueDate")} ${formatAsShortYearDate(it)}"
+                                        }.orEmpty()
 
-                        else -> t("boatSpaceReservation.paymentOption.${result.status.toString().lowercase()}")
-                    }
+                            else -> t("boatSpaceReservation.paymentOption.${result.status.toString().lowercase()}")
+                        }
 
-                val endDateText =
-                    if (result.status == ReservationStatus.Cancelled) {
-                        """<span class="has-text-danger">${t("reservations.text.terminated")} $endDateFormatted</span>"""
-                    } else if (result.validity == ReservationValidity.FixedTerm) {
-                        endDateFormatted
-                    } else {
-                        ""
-                    }
-                """
-                <tr class="reservation-item"
-                    id="boat-space-${result.boatSpaceId}"
-                    hx-trigger="click"
-                    hx-get=${getReserverPageUrl(result.reserverId, result.reserverType)}
-                    hx-push-url="true"
-                    hx-target=".section"
-                    hx-select=".section">
-                    <td>${getWarningIcon(result.hasAnyWarnings())}</td>
-                    <td>${result.locationName}</td>
-                    <td>
-                        <span ${addTestId(
-                    "place"
-                )}>${result.place}</span>
-                    </td>
-                    <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
-                    <td>${t("boatSpaces.amenityOption.${result.getBoatSpaceAmenity()}")}</td>
-                    <td ${addTestId(
-                    "reserver-name"
-                )}><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${htmlEscape(result.name)}</a></td>
-                    <td>${htmlEscape(result.phone)}</td>
-                    <td>${htmlEscape(result.email)}</td>
-                    <td>${result.municipalityName}</td>
-                    <td>$statusText</td>
-                <td ${addTestId(
-                    "reservation-start-date"
-                )}>${formatAsShortYearDate(result.startDate)}</td>
-                    <td ${addTestId(
-                    "reservation-end-date"
-                )}>$endDateText</td>
-                </tr>
-                """.trimIndent()
+                    val endDateText =
+                        when {
+                            result.status == ReservationStatus.Cancelled ->
+                                """<span class="has-text-danger">${t("reservations.text.terminated")} $endDateFormatted</span>"""
+                            result.validity == ReservationValidity.FixedTerm -> endDateFormatted
+                            else -> ""
+                        }
+
+                    appendLine(
+                        """
+                        <tr class="reservation-item"
+                            id="boat-space-${result.boatSpaceId}"
+                            hx-trigger="click"
+                            hx-get="${getReserverPageUrl(result.reserverId, result.reserverType)}"
+                            hx-push-url="true"
+                            hx-target=".section"
+                            hx-select=".section">
+                            <td>${getWarningIcon(result.hasAnyWarnings())}</td>
+                            <td>${result.locationName}</td>
+                            <td><span ${addTestId("place")}>${result.place}</span></td>
+                            <td>${t("employee.boatSpaceReservations.types.${result.type}")}</td>
+                            <td>${t("boatSpaces.amenityOption.${result.getBoatSpaceAmenity()}")}</td>
+                            <td ${addTestId(
+                            "reserver-name"
+                        )}><a href="${getReserverPageUrl(result.reserverId, result.reserverType)}">${htmlEscape(result.name)}</a></td>
+                            <td>${htmlEscape(result.phone)}</td>
+                            <td>${htmlEscape(result.email)}</td>
+                            <td>${result.municipalityName}</td>
+                            <td>$statusText</td>
+                            <td ${addTestId("reservation-start-date")}>${formatAsShortYearDate(result.startDate)}</td>
+                            <td ${addTestId("reservation-end-date")}>$endDateText</td>
+                        </tr>
+                        """.trimIndent()
+                    )
+                }
             }
 
         fun sortButton(
