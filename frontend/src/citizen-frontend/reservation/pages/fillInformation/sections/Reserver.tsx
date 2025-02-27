@@ -7,6 +7,7 @@ import { Citizen } from 'citizen-frontend/shared/types'
 import { BoundForm, useFormFields } from 'lib-common/form/hooks'
 
 import { ReserverForm } from '../formDefinitions/reserver'
+import createAddress from 'lib-common/utils/createAddress'
 
 export default React.memo(function Reserver({
   reserver,
@@ -78,7 +79,11 @@ export default React.memo(function Reserver({
           <TextField
             id="address"
             label={i18n.citizen.streetAddress}
-            value={`${reserver.address}, ${reserver.postalCode}, ${reserver.municipalityName}`}
+            value={createAddress(
+              reserver.address,
+              reserver.postalCode,
+              reserver.postalOffice
+            )}
             readonly={true}
           />
         </div>

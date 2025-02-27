@@ -76,6 +76,8 @@ export const mapErrorCode = (errorCode: string): ErrorCode => {
       return 'MAX_RESERVATIONS'
     case 'NotPossible':
       return 'NOT_POSSIBLE'
+    case 'NotAvailable':
+      return 'NOT_AVAILABLE'
     default:
       return 'SERVER_ERROR'
   }

@@ -5,7 +5,11 @@ import React from 'react'
 import { useTranslation } from 'citizen-frontend/localization'
 import { ErrorGeneric } from 'lib-icons'
 
-export type ErrorCode = 'MAX_RESERVATIONS' | 'SERVER_ERROR' | 'NOT_POSSIBLE'
+export type ErrorCode =
+  | 'MAX_RESERVATIONS'
+  | 'SERVER_ERROR'
+  | 'NOT_POSSIBLE'
+  | 'NOT_AVAILABLE'
 
 export type ErrorModalProps = {
   close: () => void

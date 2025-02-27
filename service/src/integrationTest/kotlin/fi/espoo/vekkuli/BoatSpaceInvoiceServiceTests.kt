@@ -41,12 +41,7 @@ class BoatSpaceInvoiceServiceTests : IntegrationTestBase() {
     @Test
     fun `should create invoice with correct parameters`() {
         val madeReservation =
-            testUtils.createReservationInConfirmedState(
-                CreateReservationParams(
-                    timeProvider,
-                    this.citizenIdLeo
-                )
-            )
+            testUtils.createReservationInInfoState(this.citizenIdLeo)
         val invoiceData =
             boatSpaceInvoiceService.createInvoiceData(
                 madeReservation.id,

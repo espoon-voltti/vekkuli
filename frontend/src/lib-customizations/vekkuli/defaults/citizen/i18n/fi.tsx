@@ -406,7 +406,9 @@ export default {
         SERVER_ERROR:
           'Joko et ole oikeutettu varaamaan paikkaa, tai sattui muu virhe. Ota yhteyttä asiakaspalveluun. Asiakaspalvelun yhteystiedot löydät etusivulta.',
         MAX_PERSONAL_RESERVATIONS:
-          'Sinulla on jo maksimimäärä tämän tyypin paikkoja. Jos asioit yhteisön puolesta, voit jatkaa varaamista. '
+          'Sinulla on jo maksimimäärä tämän tyypin paikkoja. Jos asioit yhteisön puolesta, voit jatkaa varaamista. ',
+        NOT_AVAILABLE:
+          'Venepaikka jota yritit varata ei ole enää saatavilla. Valitse jokin muu paikka.'
       },
       fillInformation: {
         title: 'Varaaminen ei onnistunut',
