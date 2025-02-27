@@ -604,7 +604,7 @@ export default {
       renewNotification: (date: LocalDate) =>
         `Sopimusaika päättymässä. Varmista sama paikka ensi kaudelle maksamalla kausimaksu ${date.format()} mennessä tai vaihda uuteen paikkaan`,
       harbor: 'Satama',
-      reservationDate: 'Varaus tehty',
+      reservationDate: 'Varauksen alkupäivä',
       place: 'Paikka',
       reservationValidity: 'Varaus voimassa',
       placeType: 'Paikan tyyppi',

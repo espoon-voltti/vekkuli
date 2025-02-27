@@ -602,7 +602,7 @@ const sv: Translations = {
       renewNotification: (date: LocalDate) =>
         `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()} eller byt till en ny plats.`,
       harbor: 'Hamn',
-      reservationDate: 'Reservation gjord',
+      reservationDate: 'Reservationens startdatum',
       place: 'Plats',
       reservationValidity: 'Reservationens giltighet',
       placeType: 'Platstyp',

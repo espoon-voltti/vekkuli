@@ -603,7 +603,7 @@ const en: Translations = {
       renewNotification: (date: LocalDate) =>
         `The contract period is ending. Secure the same spot for next season by paying the season fee by ${date.format()}, or switch to a new spot.`,
       harbor: 'Harbor',
-      reservationDate: 'Reservation Made',
+      reservationDate: 'Reservation start date',
       place: 'Place',
       reservationValidity: 'Reservation validity',
       placeType: 'Type of Place',

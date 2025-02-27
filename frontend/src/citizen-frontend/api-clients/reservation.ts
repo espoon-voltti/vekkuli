@@ -229,6 +229,7 @@ export function deserializeJsonExistingBoatSpaceReservationResponse(
   return {
     id: json.id,
     created: HelsinkiDateTime.parseIso(json.created),
+    startDate: LocalDate.parseIso(json.startDate),
     endDate: LocalDate.parseIso(json.endDate),
     validity: json.validity,
     active: json.isActive,
