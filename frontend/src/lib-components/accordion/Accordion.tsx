@@ -34,7 +34,7 @@ export default React.memo(function Accordion({
         {title}
         <span
           className={classNames('ml-xl icon icon-transform', {
-            'icon-rotate-90': !isOpen
+            'icon-rotate-180': !isOpen
           })}
         >
           <OutlinedChevronDown />

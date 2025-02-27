@@ -43,7 +43,7 @@ class AccordionBuilder {
                     @click="$openStateId = !$openStateId"
                     ${addTestId("accordion-title")}>
                     $title
-                    <span class="ml-xl icon icon-transform" :class="{'icon-rotate-90': !$openStateId}">
+                    <span class="ml-xl icon icon-transform" :class="{'icon-rotate-180': !$openStateId}">
                         ${Icons().outlinedChevronDown}
                     </span>  
                 </h4>
