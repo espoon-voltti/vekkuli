@@ -57,6 +57,7 @@ export type ExistingBoatSpaceReservation = {
   boatSpace: BoatSpace
   allowedReservationOperations: ReservationOperation[]
   created: HelsinkiDateTime
+  startDate: LocalDate
   endDate: LocalDate
   validity: ReservationValidity
   active: boolean
@@ -128,6 +129,7 @@ export type ExistingBoatSpaceReservationResponse = {
   canRenew: boolean
   canSwitch: boolean
   created: string
+  startDate: string
   endDate: string
   validity: ReservationValidity
   isActive: boolean
