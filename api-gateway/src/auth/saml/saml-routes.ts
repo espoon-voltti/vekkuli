@@ -34,7 +34,7 @@ export interface SamlEndpointConfig {
   strategy: passportSaml.Strategy
 }
 
-const defaultNoAuthUrl = '/kirjaudu?loginError=true'
+const defaultNoAuthUrl = '/'
 
 function createLoginHandler({
   sessions,
