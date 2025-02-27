@@ -11,11 +11,11 @@ import java.util.UUID
 
 data class BoatSpaceListParams(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
-    val ascending: Boolean = false,
+    val ascending: Boolean = true,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
-    val boatSpaceState: List<BoatSpaceState> = emptyList(),
+    val boatSpaceState: List<BoatSpaceState> = listOf(BoatSpaceState.Active),
     val sectionFilter: List<String> = emptyList(),
 )
 
@@ -150,6 +150,16 @@ class BoatSpaceList(
                                 ${filters.amenityFilters(amenities, searchParams.amenity)}
                               </div>
                             </div>
+                        </div>
+                        
+                         <div class="employee-filter-container">
+                            <div class="filter-group">
+                              <h1 class="label">${t("boatSpaceReservation.title.state")}</h1>
+                              <div class="tag-container">
+                                ${filters.boatSpaceStateFilter(searchParams.boatSpaceState)}
+                              </div>
+                            </div>
+                            
                         </div>
                          
                          

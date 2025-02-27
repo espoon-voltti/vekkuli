@@ -67,7 +67,9 @@ class BoatSpaceService(
             filters.add(SectionExpr(params.sectionFilter))
         }
 
-        // TODO: add active boat space filter
+        if (params.boatSpaceState.isNotEmpty()) {
+            filters.add(BoatSpaceStateExpr(params.boatSpaceState))
+        }
 
         val boatSpaces =
             boatSpaceRepo.getBoatSpaces(

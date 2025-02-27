@@ -201,7 +201,7 @@ data class BoatSpaceReservationFilter(
     val sectionFilter: List<String> = emptyList(),
     val expiration: ReservationExpiration = ReservationExpiration.Active,
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
-    val validity: List<ReservationValidity> = emptyList(),
+    val validity: List<ReservationValidity> = emptyList()
 )
 
 fun ReservationWithDependencies.toBoatSpaceReservation() =

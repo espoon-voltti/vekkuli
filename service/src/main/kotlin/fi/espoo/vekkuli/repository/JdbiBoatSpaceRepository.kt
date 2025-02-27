@@ -223,6 +223,7 @@ class JdbiBoatSpaceRepository(
                     bs.width_cm,
                     bs.length_cm,
                     bs.description,
+                    bs.active,
                     location.name AS location_name, 
                     location.address AS location_address,
                     price.price_cents,

@@ -39,6 +39,28 @@ class ListFilters : BaseView() {
         }
     }
 
+    fun <T> filter(
+        allItems: List<T>,
+        selectedItems: List<T>,
+        getLabel: (T) -> String
+    ): String {
+        fun isSelected(item: T): Boolean = selectedItems.contains(item)
+
+        return allItems.joinToString("\n") { item ->
+            """
+            <label class="filter-button" ${addTestId("filter-type-$item")}>
+                <input type="checkbox" name="filterType" value="$item" class="is-hidden" ${
+                if (isSelected(item)) "checked" else ""
+            }>
+                <span class="icon is-small">
+                    ${icons.check}
+                </span>
+                <span>${getLabel(item)}</span>
+            </label>
+            """.trimIndent()
+        }
+    }
+
     fun boatSpaceTypeFilters(
         boatSpaceTypes: List<BoatSpaceType>,
         chosenBoatSpaceTypes: List<BoatSpaceType>
@@ -174,8 +196,9 @@ class ListFilters : BaseView() {
         }
     }
 
-    fun boatSpaceStateFilter(chosenActiveState: List<BoatSpaceState>): String =
-        BoatSpaceState.entries.joinToString("\n") { boatSpaceState ->
+    fun boatSpaceStateFilter(chosenActiveState: List<BoatSpaceState>): String {
+        fun hasState(state: BoatSpaceState): Boolean = chosenActiveState.contains(state)
+        return BoatSpaceState.entries.joinToString("\n") { boatSpaceState ->
             """
                 <label class="filter-button" ${
                 addTestId(
@@ -183,7 +206,7 @@ class ListFilters : BaseView() {
                 )
             }>
                     <input type="checkbox" name="boatSpaceState" value="$boatSpaceState" class="is-hidden" ${
-                if (BoatSpaceState.entries.contains(boatSpaceState)) {
+                if (hasState(boatSpaceState)) {
                     "checked"
                 } else {
                     ""
@@ -196,4 +219,5 @@ class ListFilters : BaseView() {
                 </label>
             """.trimIndent()
         }
+    }
 }
