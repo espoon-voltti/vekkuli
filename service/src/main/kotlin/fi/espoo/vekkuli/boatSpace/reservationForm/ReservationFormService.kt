@@ -944,7 +944,7 @@ data class ReservationInput(
     @field:Positive(message = "{validation.positiveNumber}")
     override val depth: BigDecimal?,
     @field:NotNull(message = "{validation.required}")
-    @field:Positive(message = "{validation.positiveNumber}")
+    @field:PositiveOrZero(message = "{validation.positiveNumber}")
     override val weight: Int?,
     override val boatName: String?,
     override val extraInformation: String?,
