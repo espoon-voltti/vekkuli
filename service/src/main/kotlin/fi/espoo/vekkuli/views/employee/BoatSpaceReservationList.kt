@@ -8,6 +8,7 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
+import org.springframework.web.util.HtmlUtils.htmlEscape
 import java.util.*
 
 @Service
@@ -21,8 +22,8 @@ class BoatSpaceReservationList(
         harbors: List<Location>,
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
-        @SanitizeInput reservations: List<BoatSpaceReservationItem>,
-        @SanitizeInput params: BoatSpaceReservationFilter,
+        reservations: List<BoatSpaceReservationItem>,
+        params: BoatSpaceReservationFilter,
         sections: List<String>,
         userType: UserType
     ): String {
@@ -165,9 +166,9 @@ class BoatSpaceReservationList(
                     <td>${t("boatSpaces.amenityOption.${result.getBoatSpaceAmenity()}")}</td>
                     <td ${addTestId(
                     "reserver-name"
-                )}><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${result.name}</a></td>
-                    <td>${result.phone}</td>
-                    <td>${result.email}</td>
+                )}><a href=${getReserverPageUrl(result.reserverId, result.reserverType)}>${htmlEscape(result.name)}</a></td>
+                    <td>${htmlEscape(result.phone)}</td>
+                    <td>${htmlEscape(result.email)}</td>
                     <td>${result.municipalityName}</td>
                     <td>$statusText</td>
                 <td ${addTestId(
@@ -327,8 +328,8 @@ class BoatSpaceReservationList(
                                     <th>$sectionFilter</th>
                                     <th></th>
                                     <th>$amenityFilter</th>
-                                    <th>${textSearchInput("nameSearch", params.nameSearch)}</th>
-                                    <th>${textSearchInput("phoneSearch", params.phoneSearch)}</th>
+                                    <th>${textSearchInput("nameSearch", htmlEscape(params.nameSearch ?: ""))}</th>
+                                    <th>${textSearchInput("phoneSearch", htmlEscape(params.phoneSearch ?: ""))}</th>
                                     <th></th>
                                     <th></th>
                                     <th></th>

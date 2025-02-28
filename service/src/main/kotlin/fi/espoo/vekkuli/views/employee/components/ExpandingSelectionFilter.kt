@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.views.employee.components
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
+import org.springframework.web.util.HtmlUtils.htmlEscape
 
 @Component
 class ExpandingSelectionFilter : BaseView() {
@@ -20,7 +21,7 @@ class ExpandingSelectionFilter : BaseView() {
         content: String
     ) = // language=HTML
         """
-        <div x-data="{ open: false, $modelName: [${filter.joinToString(",") { "'$it'" }}] }" @click.outside="open = false">
+        <div x-data="{ open: false, $modelName: [${filter.joinToString(",") { "'${htmlEscape(it)}'" }}] }" @click.outside="open = false">
                     <div class="dropdown $modelName" :class="{ 'is-active': open }" ${addTestId(
             "filter-selection-$modelName"
         )} @click="open = !open">

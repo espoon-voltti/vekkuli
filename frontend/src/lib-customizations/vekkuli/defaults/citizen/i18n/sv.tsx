@@ -396,7 +396,9 @@ const sv: Translations = {
         SERVER_ERROR:
           'Antingen är du inte berättigad att boka platsen, eller så inträffade ett annat fel. Kontakta kundtjänst. Kundtjänstens kontaktuppgifter finns på startsidan.',
         MAX_PERSONAL_RESERVATIONS:
-          'Du har redan det maximala antalet platser av denna typ. Om du agerar på uppdrag av en organisation kan du fortsätta att boka.'
+          'Du har redan det maximala antalet platser av denna typ. Om du agerar på uppdrag av en organisation kan du fortsätta att boka.',
+        NOT_AVAILABLE:
+          'Båtplatsen du försökte reservera är inte längre tillgänglig. Vänligen välj en annan ledig plats.'
       },
       fillInformation: {
         title: 'Reservering misslyckades',
@@ -441,9 +443,9 @@ const sv: Translations = {
       continue: 'Fortsätt'
     },
     cancelConfirmation:
-        "Du håller på att lämna bokningsformuläret. Den ifyllda informationen eller bokningen sparas inte. Är du säker på att du vill avbryta bokningen?",
-    noAndGoBack: "Nej, gå tillbaka",
-    yesCancelReservation: "Ja, avbryt bokningen",
+      'Du håller på att lämna bokningsformuläret. Den ifyllda informationen eller bokningen sparas inte. Är du säker på att du vill avbryta bokningen?',
+    noAndGoBack: 'Nej, gå tillbaka',
+    yesCancelReservation: 'Ja, avbryt bokningen',
     cancelReservation: 'Avbryt reservation',
     cancelAndGoBack: 'Avbryt och gå tillbaka',
     goBack: 'Gå tillbaka',
@@ -600,7 +602,7 @@ const sv: Translations = {
       renewNotification: (date: LocalDate) =>
         `Avtalsperioden är på väg att ta slut. Säkerställ samma plats för nästa säsong genom att betala säsongsavgiften senast ${date.format()} eller byt till en ny plats.`,
       harbor: 'Hamn',
-      reservationDate: 'Reservation gjord',
+      reservationDate: 'Reservationens startdatum',
       place: 'Plats',
       reservationValidity: 'Reservationens giltighet',
       placeType: 'Platstyp',

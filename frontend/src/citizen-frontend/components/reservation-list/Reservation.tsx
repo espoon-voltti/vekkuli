@@ -96,7 +96,7 @@ export default React.memo(function Reservation({
             />
             <TextField
               label={i18n.citizenPage.reservation.reservationDate}
-              value={reservation.created.format()}
+              value={reservation.startDate.format()}
               readonly={true}
             />
           </Column>

@@ -410,7 +410,9 @@ const en: Translations = {
         SERVER_ERROR:
           'Either you are not eligible to reserve a space, or another error occurred. Contact customer service. You can find customer service contact information on the homepage.',
         MAX_PERSONAL_RESERVATIONS:
-          'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.'
+          'You already have the maximum number of spaces of this type. If you are acting on behalf of a community, you can continue reserving.',
+        NOT_AVAILABLE:
+          'The boat space you tried to reserve is no longer available. Please select another available space.'
       },
       fillInformation: {
         title: 'Reserving failed',
@@ -447,9 +449,9 @@ const en: Translations = {
       continue: 'Continue to authentication'
     },
     cancelConfirmation:
-        "You are leaving the reservation form. The filled-in information or reservation will not be saved. Are you sure you want to cancel the reservation?",
-    noAndGoBack: "No, go back",
-    yesCancelReservation: "Yes, cancel the reservation",
+      'You are leaving the reservation form. The filled-in information or reservation will not be saved. Are you sure you want to cancel the reservation?',
+    noAndGoBack: 'No, go back',
+    yesCancelReservation: 'Yes, cancel the reservation',
     cancelReservation: 'Cancel reservation',
     cancelAndGoBack: 'Cancel reservation and go back',
     goBack: 'Go back',
@@ -601,7 +603,7 @@ const en: Translations = {
       renewNotification: (date: LocalDate) =>
         `The contract period is ending. Secure the same spot for next season by paying the season fee by ${date.format()}, or switch to a new spot.`,
       harbor: 'Harbor',
-      reservationDate: 'Reservation Made',
+      reservationDate: 'Reservation start date',
       place: 'Place',
       reservationValidity: 'Reservation validity',
       placeType: 'Type of Place',
