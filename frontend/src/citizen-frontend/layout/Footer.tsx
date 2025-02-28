@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 
 import { useTranslation } from 'citizen-frontend/localization'
 import Logo from 'lib-customizations/espoo/assets/EspooLogoPrimary.svg'
@@ -12,6 +13,9 @@ export const Footer = () => {
       <p className="is-flex is-justify-content-center is-align-items-center is-gap-2">
         <span dangerouslySetInnerHTML={{ __html: privacyLink }} />
         <span dangerouslySetInnerHTML={{ __html: boatingLink }} />
+        <Link to="/kuntalainen/saavutettavuus">
+          {i18n.footer.accessibilityLink}
+        </Link>
       </p>
       <img className="logo hid" src={Logo} alt="Espoo logo" />
     </footer>

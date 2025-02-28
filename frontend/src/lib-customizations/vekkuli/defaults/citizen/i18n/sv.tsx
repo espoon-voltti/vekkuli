@@ -130,6 +130,7 @@ const sv: Translations = {
     mainNavigation: 'Huvudnavigering'
   },
   footer: {
+    accessibilityLink: 'Tillgänglighetsutlåtande',
     privacyLink:
       '<a target="_blank" aria-label="Integritetspolicy (länken öppnas i en ny flik)" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Integritetspolicy</a>',
     boatingLink:

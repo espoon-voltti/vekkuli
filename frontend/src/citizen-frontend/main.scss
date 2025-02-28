@@ -1052,3 +1052,7 @@ ul {
     display: none;
   }
 }
+
+.content {
+  --bulma-content-heading-weight: --bulma-weight-normal;
+}
