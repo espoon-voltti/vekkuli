@@ -44,7 +44,7 @@ abstract class PlaywrightTest {
             playwright.chromium().launch(
                 BrowserType
                     .LaunchOptions()
-                    .setHeadless(false)
+                    .setHeadless(true)
                     .setTimeout(10_000.0)
             )
     }
