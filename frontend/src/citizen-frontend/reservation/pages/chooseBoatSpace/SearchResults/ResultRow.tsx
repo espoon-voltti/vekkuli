@@ -1,10 +1,9 @@
 import { useIsMutating } from '@tanstack/react-query'
+import { Button } from 'lib-components/dom'
 import React from 'react'
 
 import { Space } from 'citizen-frontend/api-types/free-spaces'
 import { useTranslation } from 'citizen-frontend/localization'
-
-import { Button } from '../../../../../lib-components/dom'
 
 import { PriceFormat, SpaceSize } from './utils'
 
