@@ -56,7 +56,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
     organizationReservationInfos
   } = reservation
 
-  const { mutateAsync: submitForm } = useMutation(
+  const { mutateAsync: submitForm, isPending } = useMutation(
     fillBoatSpaceReservationMutation
   )
   const [searchState, setSearchState] = useStoredSearchState()
@@ -200,7 +200,7 @@ export default React.memo(function Form({ reservation }: FormProperties) {
           >
             {i18n.reservation.cancelReservation}
           </ReservationCancel>
-          <Button type="primary" action={onSubmit}>
+          <Button type="primary" action={onSubmit} loading={isPending}>
             {parsePrice(
               reservationInfoForReservation.revisedPriceWithDiscountInEuro
             ) > 0
