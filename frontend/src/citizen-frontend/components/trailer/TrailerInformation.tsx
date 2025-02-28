@@ -42,6 +42,7 @@ export default React.memo(function TrailerInformation({
     if (form.isValid()) {
       await updateTrailer({ trailerId: trailer.id, input: form.value() })
       setEditMode(false)
+      setEditIsOn?.(false)
     }
   }
 
