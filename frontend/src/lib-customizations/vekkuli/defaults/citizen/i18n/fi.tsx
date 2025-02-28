@@ -130,6 +130,7 @@ export default {
     mainNavigation: 'Päänavigaatio'
   },
   footer: {
+    accessibilityLink: 'Saavutettavuusseloste',
     privacyLink:
       '<a target="_blank" aria-label="Tietosuojaseloste (linkki aukeaa uuteen välilehteen)" href="https://www.espoo.fi/fi/kaupunki-ja-paatoksenteko/turvallisuus/tietosuoja/elinvoiman-tulosalueen-tietosuojaselosteet/tietosuojaseloste-henkilotietojen-kasittely-liikunnan-ja-urheilun-tulosyksikko">Tietosuojaseloste</a>',
     boatingLink:

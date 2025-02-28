@@ -3,6 +3,7 @@ import { SkipToContentLink } from 'lib-components/links'
 import React from 'react'
 import { createBrowserRouter, Outlet } from 'react-router'
 
+import AccessibilityStatementPage from './accessibility/AccessibilityStatementPage'
 import RequireAuth from './auth/RequireAuth'
 import { AuthContextProvider } from './auth/state'
 import CitizenPage from './citizen/CitizenPage'
@@ -175,6 +176,14 @@ export const appRouter = createBrowserRouter([
               <OrganizationPage />
             </ScrollToTop>
           </RequireAuth>
+        )
+      },
+      {
+        path: 'kuntalainen/saavutettavuus',
+        element: (
+          <ScrollToTop>
+            <AccessibilityStatementPage />
+          </ScrollToTop>
         )
       }
     ]
