@@ -1,3 +1,5 @@
+import { useIsMutating } from '@tanstack/react-query'
+import { Button } from 'lib-components/dom'
 import React from 'react'
 
 import { Space } from 'citizen-frontend/api-types/free-spaces'
@@ -16,6 +18,7 @@ export const ResultRow = React.memo(function ResultRow({
   placeName,
   onReserveSpace
 }: ResultRowProps) {
+  const isLoading = useIsMutating() > 0
   const i18n = useTranslation()
   return (
     <tr>
@@ -26,13 +29,14 @@ export const ResultRow = React.memo(function ResultRow({
       </td>
       <td>{space.identifier}</td>
       <td>
-        <button
-          className="button is-primary reserve-button"
-          onClick={() => onReserveSpace(space.id)}
+        <Button
+          action={() => onReserveSpace(space.id)}
+          type="primary"
           aria-label={`${i18n.boatSpace.reserve} : ${placeName} ${space.identifier}`}
+          loading={isLoading}
         >
           {i18n.boatSpace.reserve}
-        </button>
+        </Button>
       </td>
     </tr>
   )
