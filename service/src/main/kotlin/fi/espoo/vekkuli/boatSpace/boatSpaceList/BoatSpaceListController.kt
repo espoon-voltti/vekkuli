@@ -22,7 +22,7 @@ import java.util.*
 
 data class BoatSpaceListRow(
     val id: Int,
-    val active: Boolean,
+    val isActive: Boolean,
     val type: BoatSpaceType,
     val place: String,
     val amenity: BoatSpaceAmenity,

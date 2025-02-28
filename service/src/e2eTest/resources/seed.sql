@@ -1578,7 +1578,7 @@ VALUES
     ('W9876', '82722a75-793a-4cbe-a3d9-a3043f2f5731', 'Ruutuässä', 200, 300, 120, 3000, 'Sailboat', 'Swan 45', '', 'Owner', null);
 
 
-INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description, active) VALUES
+INSERT INTO boat_space (id, type, location_id, price_id, section, place_number, amenity, width_cm, length_cm, description, is_active) VALUES
     ('1', 'Slip', '1', '2', 'B', '1', 'Beam', '250', '450','none' , true),
     ('2', 'Slip', '1', '2', 'B', '3', 'Beam', '250', '450','none' , true),
     ('3', 'Slip', '1', '2', 'B', '5', 'Beam', '250', '450','none' , true),

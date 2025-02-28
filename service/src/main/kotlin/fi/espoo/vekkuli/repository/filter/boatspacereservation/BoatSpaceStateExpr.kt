@@ -5,4 +5,4 @@ import fi.espoo.vekkuli.utils.InExpr
 
 class BoatSpaceStateExpr(
     boatSpaceState: List<BoatSpaceState>
-) : InExpr<Boolean>("bs.active", boatSpaceState.map { it == BoatSpaceState.Active })
+) : InExpr<Boolean>("bs.is_active", boatSpaceState.map { it == BoatSpaceState.Active })

@@ -150,7 +150,7 @@ class JdbiBoatSpaceRepository(
                 )
                 WHERE 
                     boat_space_reservation.id IS NULL
-                    AND boat_space.active = TRUE
+                    AND boat_space.is_active = TRUE
                     AND ${combinedFilter.toSql()}
                     
                 ORDER BY width_cm, length_cm, section, place_number
@@ -223,7 +223,7 @@ class JdbiBoatSpaceRepository(
                     bs.width_cm,
                     bs.length_cm,
                     bs.description,
-                    bs.active,
+                    bs.is_active,
                     location.name AS location_name, 
                     location.address AS location_address,
                     price.price_cents,

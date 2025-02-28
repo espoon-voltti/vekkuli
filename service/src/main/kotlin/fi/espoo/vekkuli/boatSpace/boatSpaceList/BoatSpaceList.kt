@@ -90,7 +90,7 @@ class BoatSpaceList(
                     <td>${result.widthInMeter}</td>
                     <td>${result.lengthInMeter}</td>
                     <td>${result.priceInEuro}</td>
-                    <td> <span id='status-ball' class=${if (result.active) "active" else "inactive"}></span></td>
+                    <td> <span id='status-ball' class=${if (result.isActive) "active" else "inactive"}></span></td>
                     <td> <a href=${getBoatSpacePage(result.reserverId, result.reserverType)} >${result.reserverName ?: '-'}</a></td>
                 </tr>
                 """.trimIndent()
@@ -194,7 +194,7 @@ class BoatSpaceList(
                                     ${sortButton(BoatSpaceFilterColumn.PRICE.name, t("boatSpaceList.title.price"))}
                                     </th>
                                     <th class="nowrap">
-                                    ${sortButton(BoatSpaceFilterColumn.ACTIVE.name, t("boatSpaceList.title.state"))}
+                                    ${t("boatSpaceList.title.state")}
                                     </th> 
                                     <th class="nowrap">
                                     ${sortButton(BoatSpaceFilterColumn.RESERVER.name, t("boatSpaceList.title.reserver"))}

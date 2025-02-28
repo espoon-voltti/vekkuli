@@ -39,28 +39,6 @@ class ListFilters : BaseView() {
         }
     }
 
-    fun <T> filter(
-        allItems: List<T>,
-        selectedItems: List<T>,
-        getLabel: (T) -> String
-    ): String {
-        fun isSelected(item: T): Boolean = selectedItems.contains(item)
-
-        return allItems.joinToString("\n") { item ->
-            """
-            <label class="filter-button" ${addTestId("filter-type-$item")}>
-                <input type="checkbox" name="filterType" value="$item" class="is-hidden" ${
-                if (isSelected(item)) "checked" else ""
-            }>
-                <span class="icon is-small">
-                    ${icons.check}
-                </span>
-                <span>${getLabel(item)}</span>
-            </label>
-            """.trimIndent()
-        }
-    }
-
     fun boatSpaceTypeFilters(
         boatSpaceTypes: List<BoatSpaceType>,
         chosenBoatSpaceTypes: List<BoatSpaceType>
