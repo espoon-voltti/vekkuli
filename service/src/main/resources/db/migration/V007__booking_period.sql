@@ -80,7 +80,7 @@ INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, b
     ('2026-09-15', '2026-12-31', true, 'New', 'Winter'),
     ('2026-09-15', '2026-12-31', true, 'SecondNew', 'Winter'),
     ('2026-08-18', '2026-09-14', true, 'Renew', 'Storage'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
-    ('2025-08-18', '2026-08-14', true, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
+    ('2025-08-15', '2026-08-17', true, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
     ('2025-09-15', '2026-09-14', true, 'New', 'Storage'),
     ('2025-09-15', '2026-09-14', true, 'SecondNew', 'Storage'),
     ('2026-04-01', '2026-09-30', false, 'New', 'Slip'),
@@ -88,6 +88,8 @@ INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, b
     ('2026-05-01', '2026-12-31', false, 'New', 'Trailer'),
     ('2026-05-01', '2026-12-31', false, 'Change', 'Trailer'),
     ('2026-08-18', '2026-09-14', false, 'Renew', 'Storage'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
-    ('2025-08-18', '2026-08-14', false, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
+    ('2025-08-15', '2026-08-17', false, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
     ('2025-09-15', '2026-09-14', false, 'New', 'Storage'),
     ('2025-09-15', '2026-09-14', false, 'SecondNew', 'Storage');
+
+DROP TABLE reservation_period;

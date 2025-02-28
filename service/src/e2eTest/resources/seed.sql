@@ -486,37 +486,6 @@ INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (4, 'Sai
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'JetSki');
 INSERT INTO harbor_restriction (location_id, excluded_boat_type) VALUES (7, 'Sailboat');
 
-DELETE FROM reservation_period;
-
-INSERT INTO reservation_period(is_espoo_citizen, boat_space_type, operation, start_month, start_day, end_month, end_day)
-VALUES
-    -- For Espoo citizens
-    (true, 'Slip', 'Renew', 1, 7, 1, 31),
-    (true, 'Slip', 'Change', 1, 7, 9, 30),
-    (true, 'Slip', 'New', 3, 3, 9, 30),
-    (true, 'Slip', 'SecondNew', 4, 1, 9, 30),
-    (true, 'Trailer', 'Renew', 4, 1, 4, 30),
-    (true, 'Trailer', 'New', 5, 1, 12, 31),
-    (true, 'Trailer', 'Change',  4, 1, 12, 31),
-    (true, 'Winter', 'Renew',  8, 15, 9, 14),
-    (true, 'Winter', 'Change',  8, 15, 12, 31),
-    (true, 'Winter', 'New', 9, 15, 12, 31),
-    (true, 'Winter', 'SecondNew', 9, 15, 12, 31),
-    (true, 'Storage', 'Renew',  8, 15, 9, 14),
-    (true, 'Storage', 'Change',  8, 15, 8, 14),
-    (true, 'Storage', 'New', 9, 15, 9, 14),
-    (true, 'Storage', 'SecondNew', 9, 15, 9, 14),
-
-    -- For non-Espoo citizens
-    (false, 'Slip', 'New', 4, 1, 9, 30),
-    (false, 'Slip', 'Change', 4, 1, 9, 30),
-    (false, 'Trailer', 'New', 5, 1, 12, 31),
-    (false, 'Trailer', 'Change',  5, 1, 12, 31),
-    (false, 'Storage', 'Renew',  8, 15, 9, 14),
-    (false, 'Storage', 'Change',  8, 15, 8, 14),
-    (false, 'Storage', 'New', 9, 15, 9, 14),
-    (false, 'Storage', 'SecondNew', 9, 15, 9, 14);
-
 DELETE FROM booking_period;
 
 INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, boat_space_type) VALUES
@@ -580,7 +549,7 @@ INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, b
     ('2026-09-15', '2026-12-31', true, 'New', 'Winter'),
     ('2026-09-15', '2026-12-31', true, 'SecondNew', 'Winter'),
     ('2026-08-18', '2026-09-14', true, 'Renew', 'Storage'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
-    ('2025-08-18', '2026-08-14', true, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
+    ('2025-08-15', '2026-08-17', true, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
     ('2025-09-15', '2026-09-14', true, 'New', 'Storage'),
     ('2025-09-15', '2026-09-14', true, 'SecondNew', 'Storage'),
     ('2026-04-01', '2026-09-30', false, 'New', 'Slip'),
@@ -588,7 +557,7 @@ INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, b
     ('2026-05-01', '2026-12-31', false, 'New', 'Trailer'),
     ('2026-05-01', '2026-12-31', false, 'Change', 'Trailer'),
     ('2026-08-18', '2026-09-14', false, 'Renew', 'Storage'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
-    ('2025-08-18', '2026-08-14', false, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
+    ('2025-08-15', '2026-08-17', false, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
     ('2025-09-15', '2026-09-14', false, 'New', 'Storage'),
     ('2025-09-15', '2026-09-14', false, 'SecondNew', 'Storage');
 
