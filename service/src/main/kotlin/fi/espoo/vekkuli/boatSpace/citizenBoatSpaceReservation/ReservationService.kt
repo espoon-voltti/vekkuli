@@ -78,6 +78,11 @@ open class ReservationService(
         val boatSpace = boatSpaceRepository.getBoatSpace(spaceId) ?: throw NotFound("Boat space not found")
         val organizations: List<Organization> = organizationService.getCitizenOrganizations(citizenId)
 
+        // Boat space has to be active to be reservable
+        if (!boatSpace.isActive) {
+            throw Forbidden("Boat space is not active")
+        }
+
         val citizenResult = seasonalService.canReserveANewSpace(citizenId, boatSpace.type)
         val reservationResults =
             organizations

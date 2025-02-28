@@ -26,8 +26,6 @@ interface BoatSpaceRepository {
 
     fun getBoatSpace(boatSpace: Int): BoatSpace?
 
-    fun isBoatSpaceReserved(boatSpace: Int): Boolean
-
     fun isBoatSpaceAvailable(boatSpace: Int): Boolean
 
     fun getBoatSpaces(

@@ -17,7 +17,8 @@ class RenewalPolicyService(
     private val seasonalService: SeasonalService,
     private val timeProvider: TimeProvider,
     private val permissionService: PermissionService,
-    private val reserverRepo: ReserverRepository
+    private val reserverRepo: ReserverRepository,
+    private val boatSpaceRepository: BoatSpaceRepository
 ) {
     fun employeeCanRenewReservation(reservationId: Int): ReservationResult {
         val reservation =
@@ -47,10 +48,17 @@ class RenewalPolicyService(
         val reservation =
             boatSpaceReservationRepo.getBoatSpaceReservationDetails(reservationId)
                 ?: throw IllegalArgumentException("Reservation not found")
+        val boatSpaceIsActive =
+            boatSpaceRepository.getBoatSpace(reservation.boatSpaceId)?.isActive ?: throw IllegalArgumentException("Boat space not found")
+
+        // Can renew only if boat space is active
+        if (!boatSpaceIsActive) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
 
         val reserver = reserverRepo.getReserverById(reserverId) ?: throw IllegalArgumentException("Reserver not found")
 
-        // Citizen can renew only reservations if they live in Espoo (or is a strorage)
+        // Citizen can renew only reservations if they live in Espoo (or is a storage)
         if (!reserver.isEspooCitizen() && reservation.type !== BoatSpaceType.Storage) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotEspooCitizen)
         }
