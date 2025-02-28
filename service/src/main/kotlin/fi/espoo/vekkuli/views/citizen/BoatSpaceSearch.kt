@@ -39,6 +39,7 @@ class BoatSpaceSearch(
                 "width",
                 null,
                 required = true,
+                min = 0.1
             )
 
         val boatLengthInput =
@@ -47,6 +48,7 @@ class BoatSpaceSearch(
                 "length",
                 null,
                 required = true,
+                min = 0.1,
             )
 
         val spaceWidthInput =
