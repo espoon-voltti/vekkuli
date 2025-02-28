@@ -70,24 +70,24 @@ INSERT INTO booking_period (start_date, end_date, is_espoo_citizen, operation, b
 
     ('2026-01-07', '2026-01-31', true, 'Renew', 'Slip'),
     ('2026-01-07', '2026-09-30', true, 'Change', 'Slip'),
-    ('2026-01-03', '2026-09-30', true, 'New', 'Slip'),
+    ('2026-01-05', '2026-09-30', true, 'New', 'Slip'),  -- Moved from Sunday (2026-01-03) to Monday (2026-01-05)
     ('2026-04-01', '2026-09-30', true, 'SecondNew', 'Slip'),
     ('2026-04-01', '2026-04-30', true, 'Renew', 'Trailer'),
     ('2026-05-01', '2026-12-31', true, 'New', 'Trailer'),
     ('2026-04-01', '2026-12-31', true, 'Change', 'Trailer'),
-    ('2026-08-15', '2026-09-14', true, 'Renew', 'Winter'),
-    ('2026-08-15', '2026-12-31', true, 'Change', 'Winter'),
+    ('2026-08-18', '2026-09-14', true, 'Renew', 'Winter'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
+    ('2026-08-18', '2026-12-31', true, 'Change', 'Winter'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
     ('2026-09-15', '2026-12-31', true, 'New', 'Winter'),
     ('2026-09-15', '2026-12-31', true, 'SecondNew', 'Winter'),
-    ('2026-08-15', '2026-09-14', true, 'Renew', 'Storage'),
-    ('2025-08-15', '2026-08-14', true, 'Change', 'Storage'),
+    ('2026-08-18', '2026-09-14', true, 'Renew', 'Storage'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
+    ('2025-08-18', '2026-08-14', true, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
     ('2025-09-15', '2026-09-14', true, 'New', 'Storage'),
     ('2025-09-15', '2026-09-14', true, 'SecondNew', 'Storage'),
     ('2026-04-01', '2026-09-30', false, 'New', 'Slip'),
     ('2026-04-01', '2026-09-30', false, 'Change', 'Slip'),
     ('2026-05-01', '2026-12-31', false, 'New', 'Trailer'),
     ('2026-05-01', '2026-12-31', false, 'Change', 'Trailer'),
-    ('2026-08-15', '2026-09-14', false, 'Renew', 'Storage'),
-    ('2025-08-15', '2026-08-14', false, 'Change', 'Storage'),
+    ('2026-08-18', '2026-09-14', false, 'Renew', 'Storage'),  -- Moved from Saturday (2026-08-15) to Monday (2026-08-18)
+    ('2025-08-18', '2026-08-14', false, 'Change', 'Storage'),  -- Moved from Saturday (2025-08-15) to Monday (2025-08-18)
     ('2025-09-15', '2026-09-14', false, 'New', 'Storage'),
     ('2025-09-15', '2026-09-14', false, 'SecondNew', 'Storage');
