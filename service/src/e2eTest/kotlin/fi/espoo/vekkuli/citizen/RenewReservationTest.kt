@@ -162,7 +162,7 @@ class RenewReservationTest : ReserveTest() {
 
             assertEmailIsSentOfCitizensWinterSpaceReservation()
             SendEmailServiceMock.resetEmails()
-            mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod.plusYears(1))
+            mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod2026)
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
