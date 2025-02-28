@@ -20,7 +20,7 @@ class ReserveBoatSpacePage(
         // Go to space search and fill the filters for B314
         revealB314BoatSpace()
         // Select the B314 boat space and reserve
-        reserveTableB314Row.locator(".reserve-button").click()
+        reserveTableB314Row.locator("button.is-primary").click()
         // Fill in the boat information
         boatSpaceFormPage.fillFormWithPrefilledValuesAndSubmit()
         // Then go through the payment
@@ -33,7 +33,7 @@ class ReserveBoatSpacePage(
         // Go to space search and fill the filters for B314
         revealB314BoatSpace()
         // Select the B314 boat space and reserve
-        reserveTableB314Row.locator(".reserve-button").click()
+        reserveTableB314Row.locator("button.is-primary").click()
 
         // Fill in the boat information
         boatSpaceFormPage.fillFormAsEmployeeWithPrefilledValuesAndSubmit(reserverName)

@@ -35,7 +35,6 @@ export const ResultRow = React.memo(function ResultRow({
           type="primary"
           aria-label={`${i18n.boatSpace.reserve} : ${placeName} ${space.identifier}`}
           loading={isLoading}
-          additionalClasses={['reserve-button']}
         >
           {i18n.boatSpace.reserve}
         </Button>
