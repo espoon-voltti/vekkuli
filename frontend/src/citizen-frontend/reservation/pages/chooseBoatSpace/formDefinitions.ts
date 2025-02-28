@@ -23,6 +23,7 @@ import { OutputOf, StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
 import { StoredSearchState } from '../useStoredSearchState'
+import {formatCmToM} from "../../../shared/formatters";
 
 const searchSpaceParamsForm = object({
   boatType: oneOf<BoatType>(),
@@ -111,48 +112,69 @@ export function initialFormState(
           switchInfo?.spaceType !== undefined && type !== switchInfo.spaceType
       }))
     },
-    boatSpaceUnionForm: initialUnionFormState(boatSpaceType, storedSearchState),
-    boatSpaceUnionCache: initialUnionCacheFormState(storedSearchState)
+    boatSpaceUnionForm: initialUnionFormState(boatSpaceType, storedSearchState, switchInfo),
+    boatSpaceUnionCache: initialUnionCacheFormState(storedSearchState, switchInfo)
   }
 }
 
 export type SearchFormBranches = BoatSpaceType
 
 const initialUnionCacheFormState = (
-  storedSearchState: StoredSearchState | undefined
+  storedSearchState: StoredSearchState | undefined,
+  switchInfo: SwitchReservationInformation | undefined
 ): StateOf<BoatSpaceUnionCache> => {
   return {
-    Slip: initialUnionFormState('Slip', storedSearchState).state,
-    Trailer: initialUnionFormState('Trailer', storedSearchState).state,
-    Winter: initialUnionFormState('Winter', storedSearchState).state,
-    Storage: initialUnionFormState('Storage', storedSearchState).state
+    Slip: initialUnionFormState('Slip', storedSearchState, switchInfo).state,
+    Trailer: initialUnionFormState('Trailer', storedSearchState, switchInfo).state,
+    Winter: initialUnionFormState('Winter', storedSearchState, switchInfo).state,
+    Storage: initialUnionFormState('Storage', storedSearchState, switchInfo).state
   }
 }
 
 export const initialUnionFormState = (
   branch: BoatSpaceType,
-  storedSearchState: StoredSearchState | undefined
+  storedSearchState: StoredSearchState | undefined,
+  switchInfo: SwitchReservationInformation | undefined
 ): StateOf<SearchFormUnion> => {
   let branchAmenities: BoatSpaceAmenity[] = []
   let branchHarbors: Harbor[] = []
   let branchBoatTypes: BoatType[] = []
   let storageAmenities: BoatSpaceAmenity[] = []
+  let width = storedSearchState?.width ?? positiveNumber.empty().value
+  let length = storedSearchState?.length ?? positiveNumber.empty().value
 
   switch (branch) {
     case 'Slip':
       branchBoatTypes = boatTypes.map((t) => t)
       branchAmenities = ['Buoy', 'RearBuoy', 'Beam', 'WalkBeam']
       branchHarbors = harbors.map((h) => h)
+      if (switchInfo?.boatWidthCm != null)
+        width = formatCmToM(switchInfo.boatWidthCm).toString()
+      if (switchInfo?.boatLengthCm != null)
+        length = formatCmToM(switchInfo.boatLengthCm).toString()
+
       break
     case 'Trailer':
+      if (switchInfo?.trailerWidthCm != null)
+        width = formatCmToM(switchInfo.trailerWidthCm).toString()
+      if (switchInfo?.trailerLengthCm != null)
+        length = formatCmToM(switchInfo.trailerLengthCm).toString()
       break
     case 'Winter':
       branchHarbors = harbors.filter((h) =>
         ['Laajalahti', 'Otsolahti', 'Suomenoja'].includes(h.label)
       )
+      if (switchInfo?.spaceWidthCm)
+        width = formatCmToM(switchInfo.spaceWidthCm).toString()
+      if (switchInfo?.spaceLengthCm)
+        length = formatCmToM(switchInfo.spaceLengthCm).toString()
       break
     case 'Storage':
       storageAmenities = ['Trailer', 'Buck']
+      if (switchInfo?.spaceWidthCm)
+        width = formatCmToM(switchInfo.spaceWidthCm).toString()
+      if (switchInfo?.spaceLengthCm)
+        length = formatCmToM(switchInfo.spaceLengthCm).toString()
       break
   }
   const selectedHarbors = storedSearchState?.harbor
@@ -165,7 +187,7 @@ export const initialUnionFormState = (
     branch: branch,
     state: {
       boatType: {
-        domValue: storedSearchState?.boatType ?? 'OutboardMotor',
+        domValue: switchInfo?.boatType ?? storedSearchState?.boatType ?? 'OutboardMotor',
         options: branchBoatTypes.map((type) => ({
           domValue: type,
           label: (i18n) => i18n.boatSpace.boatType[type],
@@ -188,8 +210,8 @@ export const initialUnionFormState = (
           value: harbor
         }))
       },
-      width: storedSearchState?.width ?? positiveNumber.empty().value,
-      length: storedSearchState?.length ?? positiveNumber.empty().value,
+      width: width,
+      length: length,
       storageAmenity: {
         domValue: storedSearchState?.storageAmenity || 'Trailer',
         options: storageAmenities.map((type) => ({

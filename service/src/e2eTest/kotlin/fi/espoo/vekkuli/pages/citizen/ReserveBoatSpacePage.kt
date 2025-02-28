@@ -191,7 +191,7 @@ class ReserveBoatSpacePage(
         slipFilterSection.svinöCheckbox.click()
     }
 
-    fun filterForTrailerSpace012() {
+    private fun filterForTrailerSpace012() {
         val filterSection = getFilterSection()
         filterSection.trailerRadio.click()
         val slipFilterSection = filterSection.getTrailerFilterSection()
@@ -200,12 +200,12 @@ class ReserveBoatSpacePage(
     }
 
     // Winter space
-    fun filterForWinterSpaceB013() {
+    private fun filterForWinterSpaceB013() {
         val filterSection = getFilterSection()
         filterSection.winterRadio.click()
-        val slipFilterSection = filterSection.getWinterFilterSection()
-        slipFilterSection.widthInput.fill("1")
-        slipFilterSection.lengthInput.fill("3")
+        val winterFilterSection = filterSection.getWinterFilterSection()
+        winterFilterSection.widthInput.fill("1")
+        winterFilterSection.lengthInput.fill("3")
     }
 
     fun startReservingBoatSpaceB314() {

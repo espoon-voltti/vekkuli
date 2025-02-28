@@ -4,7 +4,7 @@ import HelsinkiDateTime from '../../lib-common/date/helsinki-date-time'
 import {
   Boat,
   BoatSpace,
-  BoatSpaceType,
+  BoatSpaceType, BoatType,
   Citizen,
   CreationType,
   NewBoat,
@@ -119,6 +119,13 @@ export type BoatSpaceReservationResponse = {
 export type ReservationBeingSwitchedResponse = {
   id: ReservationId
   spaceType: BoatSpaceType
+  spaceWidthCm: number
+  spaceLengthCm: number
+  trailerWidthCm: number | null
+  trailerLengthCm: number | null
+  boatWidthCm: number | null
+  boatLengthCm: number | null
+  boatType: BoatType | null
 }
 
 export type SwitchReservationInformation = ReservationBeingSwitchedResponse
