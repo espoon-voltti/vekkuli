@@ -52,9 +52,7 @@ export function initialSpaceTypeInfoFormState(
         branch: type,
         state: initialAllYearStorageFormState(
           reservationAmenity as StorageAmenity,
-          i18n,
-          storedState,
-          initialTrailer
+          i18n
         )
       }
   }

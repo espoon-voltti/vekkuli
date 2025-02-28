@@ -249,7 +249,11 @@ class ReserveBoatSpacePage(
         val form = BoatSpaceFormPage(page)
         form.fillFormAndSubmit {
             assertThat(form.getReservedSpaceSection().storageTypeField).hasText("Trailerisäilytys")
+            getBoatSection().widthInput.fill("1.2")
+            getBoatSection().lengthInput.fill("3.4")
             getWinterStorageTypeSection().trailerRegistrationNumberInput.fill("ABC-123")
+            getWinterStorageTypeSection().trailerWidthInput.fill("1.2")
+            getWinterStorageTypeSection().trailerLengthInput.fill("3.4")
         }
 
         PaymentPage(page).payReservation()

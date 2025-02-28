@@ -1,14 +1,12 @@
 import {
   StorageType,
-  storageTypes,
-  Trailer
+  storageTypes
 } from 'citizen-frontend/shared/types'
 import { positiveNumber, string } from 'lib-common/form/fields'
 import { mapped, object, oneOf, required, union } from 'lib-common/form/form'
 import { StateOf } from 'lib-common/form/types'
 import { Translations } from 'lib-customizations/vekkuli/citizen'
 
-import { StoredSearchState } from '../../useStoredSearchState'
 
 export type StorageAmenity = 'Buck' | 'Trailer'
 const buckStorageTypes = storageTypes.filter((type) => type !== 'Trailer')
@@ -20,7 +18,6 @@ export const trailerInfoForm = object({
   width: required(positiveNumber()),
   registrationNumber: required(string())
 })
-export type TrailerInfoForm = typeof trailerInfoForm
 
 const storageTypeUnionForm = union({
   Trailer: trailerInfoForm,
@@ -52,31 +49,29 @@ export type AllYearStorageForm = typeof allYearStorageForm
 
 export default function initialFormState(
   branch: StorageAmenity,
-  i18n: Translations,
-  storedState?: StoredSearchState,
-  initialTrailer?: Trailer
+  i18n: Translations
 ): StateOf<AllYearStorageForm> {
   return {
     storageInfo: initialStorageInfoState(
       branch,
-      i18n,
-      storedState,
-      initialTrailer
+      i18n
     )
   }
 }
 
 function initialStorageInfoState(
   branch: StorageAmenity,
-  i18n: Translations,
-  storedState?: StoredSearchState,
-  initialTrailer?: Trailer
+  i18n: Translations
 ): StateOf<StorageTypeUnionForm> {
   switch (branch) {
     case 'Trailer':
       return {
         branch,
-        state: initialTrailerInfoState(storedState, initialTrailer)
+        state: {
+          registrationNumber: '',
+          width: positiveNumber.empty().value,
+          length: positiveNumber.empty().value
+        }
       }
     case 'Buck':
       return {
@@ -86,22 +81,6 @@ function initialStorageInfoState(
   }
 }
 
-function initialTrailerInfoState(
-  storedState?: StoredSearchState,
-  initialTrailer?: Trailer
-): StateOf<TrailerInfoForm> {
-  return {
-    registrationNumber: initialTrailer?.registrationNumber ?? '',
-    width:
-      storedState?.width ??
-      initialTrailer?.registrationNumber ??
-      positiveNumber.empty().value,
-    length:
-      storedState?.length ??
-      initialTrailer?.registrationNumber ??
-      positiveNumber.empty().value
-  }
-}
 
 const initialStorageTypeState = (
   i18n: Translations

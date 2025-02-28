@@ -98,7 +98,7 @@ function initialBoatInfoFormState(
     return transformBoatToFormBoat(defaultBoat, i18n, excludedBoatTypes)
   let width = positiveNumber.empty().value
   let length = positiveNumber.empty().value
-  if (boatSpaceType !== 'Winter') {
+  if (boatSpaceType == 'Slip') {
     width = storedSearchState?.width ?? positiveNumber.empty().value
     length = storedSearchState?.length ?? positiveNumber.empty().value
   }

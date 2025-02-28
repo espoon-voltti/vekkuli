@@ -437,6 +437,8 @@ class SwitchReservationTest : ReserveTest() {
             switchSpaceFormPage.getWinterStorageTypeSection().trailerRegistrationNumberInput.fill(
                 trailerRegistrationNumber
             )
+            switchSpaceFormPage.getWinterStorageTypeSection().trailerWidthInput.fill("1")
+            switchSpaceFormPage.getWinterStorageTypeSection().trailerLengthInput.fill("3")
             val userAgreementSection = switchSpaceFormPage.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()
             userAgreementSection.agreementCheckbox.check()
