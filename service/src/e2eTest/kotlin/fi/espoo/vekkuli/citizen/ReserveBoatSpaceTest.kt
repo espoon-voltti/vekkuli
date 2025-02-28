@@ -38,6 +38,37 @@ class ReserveBoatSpaceTest : ReserveTest() {
     }
 
     @Test
+    fun `citizen without reservations should be redirected to reservation form after login`() {
+        val reservationPage = ReserveBoatSpacePage(page)
+        val boatSpaceFormPage = BoatSpaceFormPage(page)
+
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+
+        reservationPage.getLoginModal().continueButton.click()
+        page.getByTestId(CitizenHomePage.mikkoVirtanenSsn).click()
+        page.getByText("Kirjaudu").click()
+
+        assertThat(boatSpaceFormPage.header).isVisible()
+        assertThat(boatSpaceFormPage.header).containsText("B 314")
+    }
+
+    @Test
+    fun `citizen with reservations should be shown reservation modal after login`() {
+        val reservationPage = ReserveBoatSpacePage(page)
+
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+
+        reservationPage.getLoginModal().continueButton.click()
+        page.getByTestId(CitizenHomePage.leoKorhonenSsn).click()
+        page.getByText("Kirjaudu").click()
+
+        assertThat(reservationPage.getReserveModal().root).isVisible()
+        assertThat(reservationPage.getReserveModal().root).containsText("B 314")
+    }
+
+    @Test
     fun reservingShouldFailOutsidePeriod() {
         try {
             mockTimeProvider(timeProvider, LocalDateTime.of(2024, 1, 1, 22, 22, 22))
