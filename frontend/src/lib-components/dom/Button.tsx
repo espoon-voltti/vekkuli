@@ -11,6 +11,7 @@ export type ButtonProps = {
   loading?: boolean
   ariaLabel?: string
   disabled?: boolean
+  additionalClasses?: string[]
 }
 
 export default React.memo(function Button({
@@ -20,9 +21,10 @@ export default React.memo(function Button({
   type,
   loading,
   ariaLabel,
-  disabled
+  disabled,
+  additionalClasses = []
 }: ButtonProps) {
-  const classes = ['button']
+  const classes = ['button', ...additionalClasses]
   switch (type) {
     case 'primary':
       classes.push('is-primary')
