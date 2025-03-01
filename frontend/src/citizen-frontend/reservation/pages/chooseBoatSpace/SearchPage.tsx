@@ -17,6 +17,7 @@ import { InfoBox } from '../../components/InfoBox'
 import { ReservationStateContext } from '../../state'
 import useStoredSearchState from '../useStoredSearchState'
 
+import { useSearchParams } from 'react-router'
 import LoginBeforeReservingModal from './LoginBeforeReservingModal'
 import ReservationSeasons from './ReservationSeasons'
 import ReserveAction from './ReserveAction/ReserveAction'
@@ -37,6 +38,7 @@ type SearchPageProps = {
 export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
   const i18n = useTranslation()
 
+  const [searchParams, setSearchParams] = useSearchParams()
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = isLoggedIn.getOrElse(false)
   const { reservation: unfinishedReservation } = useContext(
@@ -111,10 +113,22 @@ export default React.memo(function SearchPage({ switchInfo }: SearchPageProps) {
       harbor: bind.value().harbor,
       spaceType: bind.state.boatSpaceType.domValue
     })
-    return userLoggedIn
-      ? setSelectedBoatSpace(spaceId)
-      : setIsLoginModalOpen(true)
+    if (userLoggedIn) {
+      setSelectedBoatSpace(spaceId)
+    } else {
+      setSearchParams({ spaceId: `${spaceId}` })
+      setIsLoginModalOpen(true)
+    }
   }
+
+  const spaceIdParam = searchParams.get('spaceId')
+  const spaceId =
+    typeof spaceIdParam === 'string' ? parseInt(spaceIdParam, 10) : null
+  useEffect(() => {
+    if (userLoggedIn && spaceId !== null) {
+      setSelectedBoatSpace(spaceId)
+    }
+  }, [spaceId, userLoggedIn])
 
   return (
     <Loader results={[unfinishedReservation]} allowFailure>
