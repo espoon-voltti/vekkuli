@@ -1,8 +1,6 @@
 package fi.espoo.vekkuli.repository
 
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.BoatSpaceReservationSortBy
-import fi.espoo.vekkuli.utils.SqlExpr
 import java.time.LocalDate
 import java.util.*
 
@@ -45,11 +43,6 @@ interface BoatSpaceReservationRepository {
     ): List<BoatSpaceReservationDetails>
 
     fun getBoatSpaceReservationDetails(reservationId: Int): BoatSpaceReservationDetails?
-
-    fun getBoatSpaceReservations(
-        filter: SqlExpr,
-        sortBy: BoatSpaceReservationSortBy? = null
-    ): List<BoatSpaceReservationItem>
 
     fun getBoatSpaceRelatedToReservation(reservationId: Int): BoatSpace?
 

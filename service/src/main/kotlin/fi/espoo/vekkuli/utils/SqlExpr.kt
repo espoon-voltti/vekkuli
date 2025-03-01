@@ -93,6 +93,18 @@ open class InExpr<T>(
     }
 }
 
+class PaginationExpr(
+    val start: Int,
+    val end: Int
+) : SqlExpr() {
+    override fun toSql(): String = "LIMIT :pagination_limit OFFSET :pagination_offset"
+
+    override fun bind(query: Query) {
+        query.bind("pagination_limit", end - start)
+        query.bind("pagination_offset", start)
+    }
+}
+
 class EmptyExpr : SqlExpr() {
     override fun toSql(): String = ""
 
