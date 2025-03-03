@@ -81,6 +81,7 @@ fun getStickerReport(
                     AND :minCreated::date >= bsr.start_date 
                     AND :minCreated::date <= bsr.end_date
                     AND bsr.status = 'Confirmed'
+                    AND p.status = 'Success'
                 """.trimIndent()
             ).bind("minCreated", createdCutoffDate)
             .mapTo<StickerReportRow>()
