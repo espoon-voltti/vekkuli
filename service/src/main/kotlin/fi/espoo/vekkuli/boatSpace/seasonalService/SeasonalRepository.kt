@@ -17,6 +17,7 @@ class SeasonalRepository(
                     """
                     SELECT
                         start_date,
+                        start_time,
                         end_date,
                         operation,
                         boat_space_type,
