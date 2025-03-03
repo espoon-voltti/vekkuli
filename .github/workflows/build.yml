@@ -126,26 +126,6 @@ jobs:
             build=${{ github.run_number }}
             commit=${{ github.sha }}
 
-      - name: Build builder
-        uses: espoon-voltti/voltti-actions/docker-build-push@master
-        id: builder
-        with:
-          path: ${{ env.path }}
-          pull: ${{ env.DOCKER_PULL }}
-          push: false
-          load: true
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE }}
-          AWS_REGION: ${{ env.AWS_REGION }}
-          registry: ${{ env.ECR_REGISTRY }}
-          name: ${{ env.name }}-${{ env.builder }}
-          build-args: |
-            CACHE_BUST=${{ needs.cache-bust.outputs.cache-bust }}
-            build=${{ github.run_number }}
-            commit=${{ github.sha }}
-          target: ${{ env.builder }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -153,20 +133,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push builder to GitHub Container Registry
-        id: ghcr_builder
-        run: |
-          image="ghcr.io/espoon-voltti/${{ env.name }}-${{ env.builder }}:${{ github.event.pull_request.head.sha || github.sha }}"
-          echo "image=${image}" >> $GITHUB_OUTPUT
-          docker tag "${{ steps.builder.outputs.image }}" "$image"
-          docker push "$image"
+      - name: Build builder and push to GHCR
+        if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
+        uses: docker/build-push-action@v5
+        id: builder
+        with:
+          context: ${{ env.path }}
+          target: ${{ env.builder }}
+          pull: ${{ env.DOCKER_PULL }}
+          push: true
+          tags: ghcr.io/espoon-voltti/${{ env.name }}-${{ env.builder }}:${{ github.sha }}
+          build-args: |
+            CACHE_BUST=${{ needs.cache-bust.outputs.cache-bust }}
+            build=${{ github.run_number }}
+            commit=${{ github.sha }}
 
     outputs:
       image: ${{ steps.build.outputs.image }}
       image_name: ${{ steps.build.outputs.image_name }}
-      builder_image: ${{ steps.builder.outputs.image }}
-      builder_image_name: ${{ steps.builder.outputs.image_name }}
-      ghcr_builder_image: ${{ steps.ghcr_builder.outputs.image }}
+      builder_image: ghcr.io/espoon-voltti/${{ env.name }}-${{ env.builder }}:${{ github.sha }}
 
   owasp:
     if: ${{ github.actor != 'dependabot[bot]' }}
@@ -202,7 +187,7 @@ jobs:
           docker run --rm \
               -e NVD_API_KEY=${{ secrets.NVD_API_KEY }} \
               -v $(pwd)/dependency-check-data:/root/.gradle/dependency-check-data \
-              "${{ needs.service.outputs.ghcr_builder_image }}" \
+              "${{ needs.service.outputs.builder_image }}" \
               sh -c "./gradlew --no-daemon dependencyCheckUpdate && ./gradlew --no-daemon dependencyCheckAnalyze"
 
       - name: Force caching dependency-check-data # If job fails cache is not saved without this
