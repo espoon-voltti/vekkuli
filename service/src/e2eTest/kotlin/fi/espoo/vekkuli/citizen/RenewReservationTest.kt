@@ -162,7 +162,7 @@ class RenewReservationTest : ReserveTest() {
 
             assertEmailIsSentOfCitizensWinterSpaceReservation()
             SendEmailServiceMock.resetEmails()
-            mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod)
+            mockTimeProvider(timeProvider, startOfWinterSpaceRenewPeriod2026)
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
@@ -216,8 +216,6 @@ class RenewReservationTest : ReserveTest() {
 
             assertThat(reservationSection.renewButton).isVisible()
             reservationSection.renewButton.click()
-            // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
 
             val userAgreementSection = form.getUserAgreementSection()
             userAgreementSection.certifyInfoCheckbox.check()
@@ -248,18 +246,16 @@ class RenewReservationTest : ReserveTest() {
 
             assertEmailIsSentOfCitizensStorageSpaceReservation()
             SendEmailServiceMock.resetEmails()
-            mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
+            mockTimeProvider(timeProvider, startOfStorageRenewPeriod2026)
+
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
             val reservationSection = citizenDetailsPage.getFirstReservationSection()
 
             assertThat(reservationSection.renewButton).isVisible()
             reservationSection.renewButton.click()
-            // Make sure that citizen is redirected to unfinished reservation switch form
-            reservationPage.navigateToPage()
 
             val form = BoatSpaceFormPage(page)
-            Thread.sleep(5)
             assertThat(form.getWinterStorageTypeSection().trailerLengthInput).isVisible()
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).isVisible()
             assertThat(form.getWinterStorageTypeSection().trailerRegistrationNumberInput).hasValue("ABC-123")

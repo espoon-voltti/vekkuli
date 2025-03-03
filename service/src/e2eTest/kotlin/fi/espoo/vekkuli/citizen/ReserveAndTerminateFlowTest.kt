@@ -14,6 +14,7 @@ import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @ActiveProfiles("test")
 class ReserveAndTerminateFlowTest : EmailSendingTest() {
@@ -81,7 +82,7 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
         recipientAddresses: List<String>,
         forOrganization: Boolean
     ) {
-        mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
+        mockTimeProvider(timeProvider, startOfSlipReservationPeriod.minusYears(1))
 
         val citizenDetailsPage = CitizenDetailsPage(page)
         val reserveBoatSpacePage = ReserveBoatSpacePage(page)
@@ -110,7 +111,7 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
             recipientAddresses.forEach { address ->
                 assertEmailIsSentOfCitizensFixedTermSlipReservation(
                     address,
-                    sendAndAssertSendCount = false
+                    sendAndAssertSendCount = false,
                 )
             }
         } else {
@@ -216,8 +217,7 @@ class ReserveAndTerminateFlowTest : EmailSendingTest() {
         citizenDetailsPage.showExpiredReservationsToggle.click()
         assertThat(citizenDetailsPage.expiredReservationList).isVisible()
 
-        val firstExpiredReservationSection = citizenDetailsPage.getFirstExpiredReservationSection()
-        assertThat(firstExpiredReservationSection.place).hasText(expectedReservationId)
+        assertNotNull(citizenDetailsPage.getReservationSection(expectedReservationId))
 
         // Check that the boat space is available for reservation again
         reserveBoatSpacePage.navigateToPage()

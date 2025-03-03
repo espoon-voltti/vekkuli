@@ -122,7 +122,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         )
         val result = seasonalService.canReserveANewSpace(reserverId, BoatSpaceType.Slip)
         if (result is ReservationResult.Success) {
-            assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
+            assertEquals(LocalDate.of(2025, 12, 31), result.data.endDate)
             assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
         } else {
             throw AssertionError("canReserveANewSlip failed")
@@ -330,6 +330,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
 
     @Test
     fun `should allow reserving 2 storage spaces`() {
+        mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
         val firstStorageReservation =
             testUtils.createReservationInPaymentState(timeProvider, reservationService, espooCitizenId, 5)
         formReservationService.processBoatSpaceReservation(
@@ -400,7 +401,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
         val result = seasonalService.canReserveANewSpace(helsinkiCitizenId, BoatSpaceType.Slip)
         if (result is ReservationResult.Success) {
-            assertEquals(LocalDate.of(2024, 12, 31), result.data.endDate)
+            assertEquals(LocalDate.of(2025, 12, 31), result.data.endDate)
             assertEquals(ReservationValidity.FixedTerm, result.data.reservationValidity)
         } else {
             throw AssertionError("canReserveANewSlip failed")

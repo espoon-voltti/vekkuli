@@ -243,8 +243,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
-            val reservation = citizenDetailsPage.getReservationSection(1)
-            assertEquals("Maksettu 15.09.2024", reservation.paymentStatus.textContent())
+
+            val reservation = citizenDetailsPage.getReservationSection(0)
+            assertEquals("Maksettu 15.09.2025", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -366,7 +367,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     @Test
     fun `reserving a trailer space as a non-Espoo citizen should result in fixed term reservation`() {
         try {
-            val fixedDateEndDate = "30.04.2025"
+            val fixedDateEndDate = "30.04.2026"
             mockTimeProvider(timeProvider, startOfTrailerReservationPeriod)
 
             CitizenHomePage(page).loginAsNonEspooCitizenMarko()
@@ -416,7 +417,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
             val reservation = citizenDetailsPage.getReservationSection(0)
-            assertEquals("Maksettu 01.05.2024", reservation.paymentStatus.textContent())
+            assertEquals("Maksettu 01.05.2025", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -555,8 +556,9 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
-            val reservation = citizenDetailsPage.getReservationSection(1)
-            assertEquals("Maksettu 15.09.2024", reservation.paymentStatus.textContent())
+
+            val reservation = citizenDetailsPage.getReservationSection(0)
+            assertEquals("Maksettu 15.09.2025", reservation.paymentStatus.textContent())
         } catch (e: AssertionError) {
             handleError(e)
         }
@@ -1307,7 +1309,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
     fun `Search values are not carried over to the form for winter reservations`() {
         CitizenHomePage(page).loginAsOliviaVirtanen()
 
-        mockTimeProvider(timeProvider, startOfWinterReservationPeriod)
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod.minusYears(1))
         val reservationPage = ReserveBoatSpacePage(page)
         reservationPage.navigateToPage()
         reservationPage.startReservingWinterBoatSpaceB013()

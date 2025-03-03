@@ -50,7 +50,7 @@ class TerminateReservationTest : PlaywrightTest() {
     @Test
     fun `citizen can terminate reservation and see it in expired reservations list`() {
         try {
-            mockTimeProvider(timeProvider, startOfSlipReservationPeriod)
+            mockTimeProvider(timeProvider, startOfSlipReservationPeriod.minusYears(1))
             CitizenHomePage(page).loginAsLeoKorhonen()
 
             val citizenDetailsPage = CitizenDetailsPage(page)
@@ -62,7 +62,7 @@ class TerminateReservationTest : PlaywrightTest() {
             // Expired list is not on the page
             assertThat(citizenDetailsPage.expiredReservationList).hasCount(0)
 
-            val firstReservationSection = citizenDetailsPage.getFirstReservationSection()
+            val firstReservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 001")
             firstReservationSection.terminateButton.click()
 
             val terminateReservationModal = citizenDetailsPage.getTerminateReservationModal()

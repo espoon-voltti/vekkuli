@@ -8,7 +8,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.service.*
-import fi.espoo.vekkuli.utils.DateRange
+import fi.espoo.vekkuli.utils.LocalDateRange
 import fi.espoo.vekkuli.utils.TimeProvider
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.jdbi.v3.core.Jdbi
@@ -286,16 +286,17 @@ class TestUtils(
             postOfficeSv = ""
         )
 
-    fun moveTimeToReservationPeriodStart(
+    fun moveTimeToNextReservationPeriodStart(
         boatSpaceType: BoatSpaceType,
         operation: ReservationOperation,
         isEspooCitizen: Boolean = true,
         addDays: Long? = null
     ) {
-        // This is the configured year, because renew periods start at the next year.
-        val year = if (operation == ReservationOperation.Renew) 2025 else 2024
-        val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
-        moveTimeToPeriod(period.startMonth, period.startDay, year, addDays)
+        val today = timeProvider.getCurrentDate()
+        val period =
+            getReservationPeriod(isEspooCitizen, boatSpaceType, operation).firstOrNull { it.startDate.isAfter(today) }
+                ?: throw IllegalStateException("No future period found")
+        moveTimeToPeriod(period.startDate.month.value, period.startDate.dayOfMonth, period.startDate.year, addDays)
     }
 
     fun moveTimeToReservationPeriodEnd(
@@ -304,9 +305,9 @@ class TestUtils(
         isEspooCitizen: Boolean = true,
         addDays: Long? = null
     ) {
-        val year = if (operation == ReservationOperation.Renew) 2025 else 2024
+        val year = if (operation == ReservationOperation.Renew) 2026 else 2025
         val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
-        moveTimeToPeriod(period.endMonth, period.endDay, year, addDays)
+        moveTimeToPeriod(period.endDate.month.value, period.endDate.dayOfMonth, year, addDays)
     }
 
     private fun moveTimeToPeriod(
@@ -335,16 +336,15 @@ class TestUtils(
         }
     }
 
-    fun getReservationPeriodDateRange(
+    fun getNextReservationPeriodDateRange(
         isEspooCitizen: Boolean,
         boatSpaceType: BoatSpaceType,
         operation: ReservationOperation,
-        year: Int
-    ): DateRange {
-        val period = getReservationPeriod(isEspooCitizen, boatSpaceType, operation).first()
-        return DateRange(
-            startDate = LocalDate.of(year, period.startMonth, period.startDay),
-            endDate = LocalDate.of(year, period.endMonth, period.endDay),
-        )
+    ): LocalDateRange {
+        val today = timeProvider.getCurrentDate()
+        val period =
+            getReservationPeriod(isEspooCitizen, boatSpaceType, operation).firstOrNull { it.startDate.isAfter(today) }
+                ?: throw IllegalStateException("No future period found")
+        return LocalDateRange(period.startDate, period.endDate)
     }
 }

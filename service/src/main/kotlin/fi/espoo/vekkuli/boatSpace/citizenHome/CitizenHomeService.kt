@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.ReservationOperation
 import fi.espoo.vekkuli.domain.ReservationPeriod
 import fi.espoo.vekkuli.utils.TimeProvider
+import fi.espoo.vekkuli.utils.formatAsFullDate
 import org.springframework.stereotype.Service
 
 @Service
@@ -188,16 +189,7 @@ class CitizenHomeService(
         if (period == null) {
             return t("citizenFrontpage.periods.notFound") + ","
         }
-        var endYear = year
-        var startYear = ""
-        if (period.startMonth > period.endMonth || (period.startMonth == period.endMonth && period.startDay > period.endDay)) {
-            startYear = year
-            endYear = (year.toInt() + 1).toString()
-        }
-        val startMonth = period.startMonth.toString()
-        val startDay = period.startDay.toString()
-        val endMonth = period.endMonth.toString()
-        val endDay = period.endDay.toString()
-        return "$startDay.$startMonth.$startYear–$endDay.$endMonth.$endYear"
+
+        return "${formatAsFullDate(period.startDate)}–${formatAsFullDate(period.endDate)}"
     }
 }

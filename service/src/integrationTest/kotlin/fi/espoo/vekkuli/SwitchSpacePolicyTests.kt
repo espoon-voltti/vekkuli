@@ -9,6 +9,8 @@ import fi.espoo.vekkuli.domain.ReservationOperation
 import fi.espoo.vekkuli.domain.ReservationValidity
 import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.service.ReservationResultSuccess
+import fi.espoo.vekkuli.utils.mockTimeProvider
+import fi.espoo.vekkuli.utils.startOfSlipSwitchPeriodForEspooCitizen
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,7 +33,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
     @BeforeEach
     override fun resetDatabase() {
         deleteAllReservations(jdbi)
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Change)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Slip, ReservationOperation.Change)
     }
 
     @Test
@@ -63,7 +65,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
     fun `should fail if space type is not the same`() {
         val originalSpaceId = boatSpaceIdForWinter
         val targetSpaceId = boatSpaceIdForSlip
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
         // create a second reservation for the same boat space
         val originalReservation =
             testUtils.createReservationInConfirmedState(
@@ -112,7 +114,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         val targetSpaceId = boatSpaceIdForWinter2
         val reserver = espooCitizenWithoutReservationsId
 
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
         val originalReservation =
             testUtils.createReservationInConfirmedState(
                 CreateReservationParams(
@@ -143,7 +145,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
                 )
             )
 
-        testUtils.moveTimeToReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
+        testUtils.moveTimeToNextReservationPeriodStart(BoatSpaceType.Winter, ReservationOperation.Change)
         assertEquals(
             false,
             switchPolicyService.citizenCanSwitchToReservation(originalReservation.id, reserver, targetSpaceId).success,
@@ -159,7 +161,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         val targetSpaceId = boatSpaceIdForSlip2
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
         val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
 
         val reservation =
@@ -174,7 +176,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the switch period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
 
         assertEquals(
             false,
@@ -183,7 +185,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of switch period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
@@ -216,7 +218,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         val targetSpaceId = boatSpaceIdForWinter2
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
 
         val endDate = getWinterEndDate(timeProvider.getCurrentDate())
 
@@ -232,7 +234,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the switch period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
 
         assertEquals(
             false,
@@ -241,7 +243,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of switch period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchToReservation(reservation.id, reserverId, targetSpaceId).success,
@@ -273,7 +275,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         val originalSpaceId = boatSpaceIdForSlip
 
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
 
         val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
 
@@ -289,7 +291,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
             )
 
         // Move time before the start of the switch period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = -1)
 
         assertEquals(
             false,
@@ -298,7 +300,7 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         )
 
         // Move to the start of switch period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
@@ -329,8 +331,10 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
         val boatSpaceType = BoatSpaceType.Slip
         val originalSpaceId = boatSpaceIdForSlip
 
+        // 2025 season
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen)
         // Start at the start of reservation period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.New)
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
 
         val endDate = getSlipEndDate(timeProvider.getCurrentDate(), validity)
 
@@ -345,16 +349,16 @@ class SwitchSpacePolicyTests : IntegrationTestBase() {
                 )
             )
 
-        // Move to the start of switch period
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
+        // Move to the start of 2026 switch period
+        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.Change)
         assertEquals(
             true,
             switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,
             "Reservation can be switched at the start of the current season"
         )
 
-        // Move to the start of switch period of next year
-        testUtils.moveTimeToReservationPeriodStart(boatSpaceType, ReservationOperation.Change, addDays = 365)
+        // Move to the start of switch period of 2027
+        mockTimeProvider(timeProvider, startOfSlipSwitchPeriodForEspooCitizen.plusYears(2))
         assertEquals(
             false,
             switchPolicyService.citizenCanSwitchReservation(reservation.id, reserverId).success,

@@ -151,6 +151,6 @@ const boatSpaceSeasons: BoatSpaceSeason[] = [
   {
     boatSpaceType: 'Storage',
     season: '15.9.–14.9.2025',
-    periods: ['15.8.–14.9.2025', '15.9.–31.12.2025g']
+    periods: ['15.8.–14.9.2025', '15.9.–31.12.2025']
   }
 ]
