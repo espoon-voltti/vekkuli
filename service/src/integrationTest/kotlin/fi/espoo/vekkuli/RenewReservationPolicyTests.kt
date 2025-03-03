@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.ReservationResult
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import fi.espoo.vekkuli.utils.startOfSlipRenewPeriod
+import fi.espoo.vekkuli.utils.startOfStorageReservationPeriod
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -316,11 +317,10 @@ class RenewReservationPolicyTests : IntegrationTestBase() {
 
     @Test
     fun `should be able to renew expiring indefinite storage reservation as non-Espoo citizen within renewal time limits`() {
+        mockTimeProvider(timeProvider, startOfStorageReservationPeriod)
         val reserverId = nonEspooCitizenWithoutReservationsId
         val boatSpaceType = BoatSpaceType.Storage
 
-        // Start at the start of reservation period
-        testUtils.moveTimeToNextReservationPeriodStart(boatSpaceType, ReservationOperation.New)
         val endDate = getStorageEndDate(timeProvider.getCurrentDate())
 
         val reservation =

@@ -246,7 +246,7 @@ class RenewReservationTest : ReserveTest() {
 
             assertEmailIsSentOfCitizensStorageSpaceReservation()
             SendEmailServiceMock.resetEmails()
-            mockTimeProvider(timeProvider, startOfStorageRenewPeriod)
+            mockTimeProvider(timeProvider, startOfStorageRenewPeriod2026)
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
