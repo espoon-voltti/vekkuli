@@ -271,7 +271,6 @@ class JdbiBoatSpaceRepository(
                 SELECT NOT EXISTS (
                     SELECT 1
                     FROM boat_space_reservation bsr
-                    JOIN boat_space bs ON bs.id = bsr.boat_space_id
                     WHERE bsr.boat_space_id = :boatSpaceId 
                         AND (
                             (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
