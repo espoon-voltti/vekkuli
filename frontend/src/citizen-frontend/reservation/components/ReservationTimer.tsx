@@ -125,7 +125,7 @@ const TimeRemaining = React.memo(function TimeRemaining({
       className="timer has-text-centered p-3"
       data-testid="reservation-timer"
     >
-      <div dangerouslySetInnerHTML={{ __html: formattedText }} />
+      <div dangerouslySetInnerHTML={{ __html: formattedText }} tabIndex={-1} />
       <div aria-live="assertive" aria-atomic="true" className="is-sr-only">
         {announceText}
       </div>
