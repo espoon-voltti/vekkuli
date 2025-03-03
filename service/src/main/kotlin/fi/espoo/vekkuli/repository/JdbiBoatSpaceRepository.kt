@@ -150,6 +150,7 @@ class JdbiBoatSpaceRepository(
                 )
                 WHERE 
                     boat_space_reservation.id IS NULL
+                    AND boat_space.is_active = TRUE
                     AND ${combinedFilter.toSql()}
                     
                 ORDER BY width_cm, length_cm, section, place_number
@@ -222,6 +223,7 @@ class JdbiBoatSpaceRepository(
                     bs.width_cm,
                     bs.length_cm,
                     bs.description,
+                    bs.is_active,
                     location.name AS location_name, 
                     location.address AS location_address,
                     price.price_cents,
@@ -262,41 +264,23 @@ class JdbiBoatSpaceRepository(
             handle.createQuery(sql).mapTo<String>().toList()
         }
 
-    override fun isBoatSpaceReserved(boatSpaceId: Int): Boolean =
-        jdbi.withHandleUnchecked { handle ->
-            val sql =
-                """
-                SELECT EXISTS (
-                SELECT 1
-                FROM boat_space_reservation bsr
-                WHERE bsr.boat_space_id = :boatSpaceId
-                  AND (((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut)
-                       OR (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut))
-                )
-                """.trimIndent()
-
-            val query = handle.createQuery(sql)
-            query.bind("boatSpaceId", boatSpaceId)
-            query.bind("endDateCut", timeProvider.getCurrentDate())
-
-            query.mapTo<Boolean>().first()
-        }
-
     override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =
         jdbi.withHandleUnchecked { handle ->
             val sql =
                 """
                 SELECT NOT EXISTS (
-                SELECT 1
-                FROM boat_space_reservation bsr
-                WHERE bsr.boat_space_id = :boatSpaceId
-                    AND (
-                        (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
-                        OR
-                        (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
-                        OR
-                        (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
-                    )
+                    SELECT 1
+                    FROM boat_space_reservation bsr
+                    WHERE bsr.boat_space_id = :boatSpaceId 
+                        AND (
+                            (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
+                            OR
+                            (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
+                            OR
+                            (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
+                        )
+                ) AND EXISTS (
+                    SELECT 1 FROM boat_space bs WHERE bs.id = :boatSpaceId AND bs.is_active = TRUE
                 )
                 """.trimIndent()
 

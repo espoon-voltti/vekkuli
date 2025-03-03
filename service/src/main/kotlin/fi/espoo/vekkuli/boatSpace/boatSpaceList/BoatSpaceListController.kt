@@ -22,8 +22,7 @@ import java.util.*
 
 data class BoatSpaceListRow(
     val id: Int,
-    // @TODO: should come from the DB
-    val active: Boolean = true,
+    val isActive: Boolean,
     val type: BoatSpaceType,
     val place: String,
     val amenity: BoatSpaceAmenity,

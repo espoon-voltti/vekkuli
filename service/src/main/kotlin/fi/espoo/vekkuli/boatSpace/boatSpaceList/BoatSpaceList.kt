@@ -3,15 +3,15 @@ package fi.espoo.vekkuli.boatSpace.boatSpaceList
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
-import fi.espoo.vekkuli.views.employee.SanitizeInput
 import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
+import org.springframework.web.util.HtmlUtils.htmlEscape
 import java.util.UUID
 
 data class BoatSpaceListParams(
     val sortBy: BoatSpaceFilterColumn = BoatSpaceFilterColumn.PLACE,
-    val ascending: Boolean = false,
+    val ascending: Boolean = true,
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
@@ -43,7 +43,7 @@ class BoatSpaceList(
 
     fun render(
         boatSpaces: List<BoatSpaceListRow>,
-        @SanitizeInput searchParams: BoatSpaceListParams,
+        searchParams: BoatSpaceListParams,
         harbors: List<Location>,
         boatSpaceTypes: List<BoatSpaceType>,
         amenities: List<BoatSpaceAmenity>,
@@ -91,8 +91,11 @@ class BoatSpaceList(
                     <td>${result.widthInMeter}</td>
                     <td>${result.lengthInMeter}</td>
                     <td>${result.priceInEuro}</td>
-                    <td> <span id='status-ball' class=${if (result.active) "active" else "inactive"}></span></td>
-                    <td> <a href=${getBoatSpacePage(result.reserverId, result.reserverType)} >${result.reserverName ?: '-'}</a></td>
+                    <td> <span id='status-ball' class=${if (result.isActive) "active" else "inactive"}></span></td>
+                    <td> <a href=${getBoatSpacePage(
+                    result.reserverId,
+                    result.reserverType
+                )} >${htmlEscape((result.reserverName ?: '-').toString())}</a></td>
                 </tr>
                 """.trimIndent()
             }
@@ -151,6 +154,16 @@ class BoatSpaceList(
                               </div>
                             </div>
                         </div>
+                        
+                         <div class="employee-filter-container">
+                            <div class="filter-group">
+                              <h1 class="label">${t("boatSpaceReservation.title.state")}</h1>
+                              <div class="tag-container">
+                                ${filters.boatSpaceStateFilter(searchParams.boatSpaceState)}
+                              </div>
+                            </div>
+                            
+                        </div>
                          
                          
 
@@ -185,7 +198,7 @@ class BoatSpaceList(
                                     ${sortButton(BoatSpaceFilterColumn.PRICE.name, t("boatSpaceList.title.price"))}
                                     </th>
                                     <th class="nowrap">
-                                    ${sortButton(BoatSpaceFilterColumn.ACTIVE.name, t("boatSpaceList.title.state"))}
+                                    ${t("boatSpaceList.title.state")}
                                     </th> 
                                     <th class="nowrap">
                                     ${sortButton(BoatSpaceFilterColumn.RESERVER.name, t("boatSpaceList.title.reserver"))}

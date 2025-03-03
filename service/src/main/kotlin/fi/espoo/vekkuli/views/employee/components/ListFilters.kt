@@ -174,16 +174,17 @@ class ListFilters : BaseView() {
         }
     }
 
-    fun boatSpaceStateFilter(chosenActiveState: List<BoatSpaceState>): String =
-        BoatSpaceState.entries.joinToString("\n") { boatSpaceState ->
+    fun boatSpaceStateFilter(chosenActiveState: List<BoatSpaceState>): String {
+        fun hasState(state: BoatSpaceState): Boolean = chosenActiveState.contains(state)
+        return BoatSpaceState.entries.joinToString("\n") { boatSpaceState ->
             """
                 <label class="filter-button" ${
                 addTestId(
-                    "filter-reservation-boatSpaceState-$boatSpaceState"
+                    "filter-boatSpaceState-$boatSpaceState"
                 )
             }>
                     <input type="checkbox" name="boatSpaceState" value="$boatSpaceState" class="is-hidden" ${
-                if (BoatSpaceState.entries.contains(boatSpaceState)) {
+                if (hasState(boatSpaceState)) {
                     "checked"
                 } else {
                     ""
@@ -196,4 +197,5 @@ class ListFilters : BaseView() {
                 </label>
             """.trimIndent()
         }
+    }
 }

@@ -30,6 +30,11 @@ class SwitchPolicyService(
 
         val boatSpace = boatSpaceRepository.getBoatSpace(targetSpaceId) ?: throw BadRequest("Boat space not found")
 
+        // Can switch only if the target space is active
+        if (!boatSpace.isActive) {
+            return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)
+        }
+
         // Can only switch to the same type of space
         if (reservation.type != boatSpace.type) {
             return ReservationResult.Failure(ReservationResultErrorCode.NotPossible)

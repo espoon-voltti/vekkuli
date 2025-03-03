@@ -1,10 +1,9 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig
-import fi.espoo.vekkuli.domain.BoatSpaceAmenity
-import fi.espoo.vekkuli.domain.BoatSpaceType
-import fi.espoo.vekkuli.domain.BoatType
-import fi.espoo.vekkuli.domain.ReservationValidity
+import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.service.BoatSpaceService
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -28,6 +27,9 @@ import java.time.LocalDateTime
 class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var boatSpaceService: BoatSpaceService
+
+    @Autowired
+    lateinit var boatSpaceRepository: BoatSpaceRepository
 
     @Test
     fun `should not return a reserved boat space if reservation ends today`() {
@@ -136,7 +138,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         "Trailer, Buck, 1, 1, 0",
         "Winter, None, 10, 10, 0",
         "Winter, None, 2.75, 5.5, 25",
-        "Winter, None, 2.5, 4.5, 28",
+        "Winter, None, 2.5, 4.5, 27",
         "Winter, Trailer, 1, 1, 0",
         "Winter, Buck, 1, 1, 0",
         "Storage, Buck, 10, 10, 0",
@@ -175,5 +177,64 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
             },
             "Only boat spaces with correct amenity are fetched"
         )
+    }
+
+    @Test
+    fun `should get sections`() {
+        val sections = boatSpaceService.getSections()
+
+        // the sections are set up in the seed data (seed.sql)
+        assertEquals(14, sections.size, "Correct number of sections are fetched")
+    }
+
+    @Test
+    fun `should get all boat spaces`() {
+        val params = BoatSpaceListParams()
+        val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
+
+        // the boat spaces are set up in the seed data (seed.sql)
+        assertEquals(2438, boatSpaces.size, "No boat spaces are fetched")
+    }
+
+    @Test
+    fun `should get boat spaces filtered`() {
+        val params =
+            BoatSpaceListParams(
+                sortBy = BoatSpaceFilterColumn.AMENITY,
+                boatSpaceState = listOf(BoatSpaceState.Active),
+                harbor = listOf(1),
+                boatSpaceType = listOf(BoatSpaceType.Slip),
+                amenity = listOf(BoatSpaceAmenity.Beam),
+                sectionFilter = listOf("B")
+            )
+        val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
+
+        // the boat spaces are set up in the seed data (seed.sql)
+        assertEquals(17, boatSpaces.size, "Correct number of boat spaces are fetched")
+    }
+
+    @Test
+    fun `boat space should not be available if it has reservation`() {
+        var isBoatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(10)
+        assertEquals(true, isBoatSpaceAvailable, "Boat space is available")
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdLeo,
+                10,
+                1,
+                validity = ReservationValidity.Indefinite,
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate().plusDays(1)
+            )
+        )
+        isBoatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(10)
+        assertEquals(false, isBoatSpaceAvailable, "Boat space is not available")
+    }
+
+    @Test
+    fun `boat space should not be available if it is not active`() {
+        val boatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(31)
+        assertEquals(false, boatSpaceAvailable, "Boat space is not available")
     }
 }

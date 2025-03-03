@@ -26,8 +26,6 @@ interface BoatSpaceRepository {
 
     fun getBoatSpace(boatSpace: Int): BoatSpace?
 
-    fun isBoatSpaceReserved(boatSpace: Int): Boolean
-
     fun isBoatSpaceAvailable(boatSpace: Int): Boolean
 
     fun getBoatSpaces(
@@ -67,7 +65,9 @@ class BoatSpaceService(
             filters.add(SectionExpr(params.sectionFilter))
         }
 
-        // TODO: add active boat space filter
+        if (params.boatSpaceState.isNotEmpty() && params.boatSpaceState.size != BoatSpaceState.entries.size) {
+            filters.add(IsBoatSpaceStateExpr(params.boatSpaceState))
+        }
 
         val boatSpaces =
             boatSpaceRepo.getBoatSpaces(
