@@ -250,7 +250,7 @@ class RenewReservationTest : ReserveTest() {
 
             val citizenDetailsPage = CitizenDetailsPage(page)
             citizenDetailsPage.navigateToPage()
-            val reservationSection = citizenDetailsPage.getReservationSection(0)
+            val reservationSection = citizenDetailsPage.getReservationSection("Haukilahti B 007")
 
             assertThat(reservationSection.renewButton).isVisible()
             reservationSection.renewButton.click()

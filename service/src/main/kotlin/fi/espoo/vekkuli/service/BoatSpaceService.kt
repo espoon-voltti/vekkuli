@@ -65,8 +65,8 @@ class BoatSpaceService(
             filters.add(SectionExpr(params.sectionFilter))
         }
 
-        if (params.boatSpaceState.isNotEmpty()) {
-            filters.add(BoatSpaceStateExpr(params.boatSpaceState))
+        if (params.boatSpaceState.isNotEmpty() && params.boatSpaceState.size != BoatSpaceState.entries.size) {
+            filters.add(IsBoatSpaceStateExpr(params.boatSpaceState))
         }
 
         val boatSpaces =

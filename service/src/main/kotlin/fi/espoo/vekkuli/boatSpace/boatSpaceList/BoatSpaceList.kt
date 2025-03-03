@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.components.ExpandingSelectionFilter
 import fi.espoo.vekkuli.views.employee.components.ListFilters
 import org.springframework.stereotype.Service
+import org.springframework.web.util.HtmlUtils.htmlEscape
 import java.util.UUID
 
 data class BoatSpaceListParams(
@@ -14,7 +15,7 @@ data class BoatSpaceListParams(
     val amenity: List<BoatSpaceAmenity> = emptyList(),
     val harbor: List<Int> = emptyList(),
     val boatSpaceType: List<BoatSpaceType> = emptyList(),
-    val boatSpaceState: List<BoatSpaceState> = listOf(BoatSpaceState.Active),
+    val boatSpaceState: List<BoatSpaceState> = emptyList(),
     val sectionFilter: List<String> = emptyList(),
 )
 
@@ -91,7 +92,10 @@ class BoatSpaceList(
                     <td>${result.lengthInMeter}</td>
                     <td>${result.priceInEuro}</td>
                     <td> <span id='status-ball' class=${if (result.isActive) "active" else "inactive"}></span></td>
-                    <td> <a href=${getBoatSpacePage(result.reserverId, result.reserverType)} >${result.reserverName ?: '-'}</a></td>
+                    <td> <a href=${getBoatSpacePage(
+                    result.reserverId,
+                    result.reserverType
+                )} >${htmlEscape((result.reserverName ?: '-').toString())}</a></td>
                 </tr>
                 """.trimIndent()
             }

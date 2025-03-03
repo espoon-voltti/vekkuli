@@ -3,6 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.service.BoatSpaceService
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -26,6 +27,9 @@ import java.time.LocalDateTime
 class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     @Autowired
     lateinit var boatSpaceService: BoatSpaceService
+
+    @Autowired
+    lateinit var boatSpaceRepository: BoatSpaceRepository
 
     @Test
     fun `should not return a reserved boat space if reservation ends today`() {
@@ -207,5 +211,30 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
 
         // the boat spaces are set up in the seed data (seed.sql)
         assertEquals(17, boatSpaces.size, "Correct number of boat spaces are fetched")
+    }
+
+    @Test
+    fun `boat space should not be available if it has reservation`() {
+        var isBoatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(10)
+        assertEquals(true, isBoatSpaceAvailable, "Boat space is available")
+        testUtils.createReservationInConfirmedState(
+            CreateReservationParams(
+                timeProvider,
+                citizenIdLeo,
+                10,
+                1,
+                validity = ReservationValidity.Indefinite,
+                startDate = timeProvider.getCurrentDate(),
+                endDate = timeProvider.getCurrentDate().plusDays(1)
+            )
+        )
+        isBoatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(10)
+        assertEquals(false, isBoatSpaceAvailable, "Boat space is not available")
+    }
+
+    @Test
+    fun `boat space should not be available if it is not active`() {
+        val boatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(31)
+        assertEquals(false, boatSpaceAvailable, "Boat space is not available")
     }
 }

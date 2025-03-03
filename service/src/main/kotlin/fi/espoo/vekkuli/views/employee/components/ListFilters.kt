@@ -180,7 +180,7 @@ class ListFilters : BaseView() {
             """
                 <label class="filter-button" ${
                 addTestId(
-                    "filter-reservation-boatSpaceState-$boatSpaceState"
+                    "filter-boatSpaceState-$boatSpaceState"
                 )
             }>
                     <input type="checkbox" name="boatSpaceState" value="$boatSpaceState" class="is-hidden" ${

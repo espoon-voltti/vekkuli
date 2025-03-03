@@ -269,18 +269,19 @@ class JdbiBoatSpaceRepository(
             val sql =
                 """
                 SELECT NOT EXISTS (
-                SELECT 1
-                FROM boat_space_reservation bsr
-                JOIN boat_space bs ON bs.id = :boatSpaceId
-                WHERE bsr.boat_space_id = :boatSpaceId 
-                    AND (bs.is_active = TRUE)
-                    AND (
-                        (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
-                        OR
-                        (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
-                        OR
-                        (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
-                    )
+                    SELECT 1
+                    FROM boat_space_reservation bsr
+                    JOIN boat_space bs ON bs.id = bsr.boat_space_id
+                    WHERE bsr.boat_space_id = :boatSpaceId 
+                        AND (
+                            (bsr.status IN ('Confirmed', 'Invoiced') AND bsr.end_date >= :endDateCut)
+                            OR
+                            (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut)
+                            OR
+                            (bsr.status = 'Info' AND (bsr.created > :currentTime - make_interval(secs => :paymentTimeout)))
+                        )
+                ) AND EXISTS (
+                    SELECT 1 FROM boat_space bs WHERE bs.id = :boatSpaceId AND bs.is_active = TRUE
                 )
                 """.trimIndent()
 
