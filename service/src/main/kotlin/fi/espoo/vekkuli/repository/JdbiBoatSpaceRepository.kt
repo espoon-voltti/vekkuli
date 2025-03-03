@@ -238,7 +238,10 @@ class JdbiBoatSpaceRepository(
                 JOIN price ON bs.price_id = price.id
                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
                 LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
-                LEFT JOIN reserver r ON r.id = bsr.reserver_id
+                LEFT JOIN reserver r ON r.id = bsr.reserver_id AND (
+                            ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut) OR
+                             (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut) 
+                        )
                 $filterQuery
                 GROUP BY bs.id, bs.location_id, bs.price_id, 
                      location.name, location.address, 
@@ -248,6 +251,7 @@ class JdbiBoatSpaceRepository(
                 """.trimIndent()
             val query = handle.createQuery(sql)
             filter.bind(query)
+            query.bind("endDateCut", timeProvider.getCurrentDate())
 
             query.mapTo<BoatSpaceListRow>().toList()
         }

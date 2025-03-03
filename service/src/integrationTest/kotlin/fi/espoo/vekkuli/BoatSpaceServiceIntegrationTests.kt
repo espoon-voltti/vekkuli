@@ -1,6 +1,7 @@
 package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.boatSpaceList.BoatSpaceListParams
+import fi.espoo.vekkuli.boatSpace.terminateReservation.TerminateReservationService
 import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceRepository
@@ -25,6 +26,9 @@ import java.time.LocalDateTime
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
+    @Autowired
+    private lateinit var terminateReservationService: TerminateReservationService
+
     @Autowired
     lateinit var boatSpaceService: BoatSpaceService
 
@@ -236,5 +240,53 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     fun `boat space should not be available if it is not active`() {
         val boatSpaceAvailable = boatSpaceRepository.isBoatSpaceAvailable(31)
         assertEquals(false, boatSpaceAvailable, "Boat space is not available")
+    }
+
+    @Test
+    fun `reserver should be correctly fetched`() {
+        val boatSpaceId = 83
+        val reservation =
+            testUtils.createReservationInConfirmedState(
+                CreateReservationParams(
+                    timeProvider,
+                    this.citizenIdLeo,
+                    boatSpaceId,
+                    1,
+                    validity = ReservationValidity.Indefinite,
+                    startDate = timeProvider.getCurrentDate(),
+                    endDate = timeProvider.getCurrentDate()
+                )
+            )
+        val boatSpace =
+            boatSpaceService
+                .getBoatSpacesFiltered(
+                    BoatSpaceListParams(
+                        harbor = listOf(1),
+                        boatSpaceType = listOf(BoatSpaceType.Slip),
+                        amenity = listOf(BoatSpaceAmenity.Beam),
+                        sectionFilter = listOf("D"),
+                        sortBy = BoatSpaceFilterColumn.RESERVER,
+                        ascending = true
+                    )
+                ).first { it.id == boatSpaceId }
+        assertEquals(boatSpace.reserverId, reservation.reserverId, "Correct reserver is fetched")
+
+        terminateReservationService.terminateBoatSpaceReservationAsOwner(
+            reservation.id,
+            this.citizenIdLeo
+        )
+        val boatSpaceAfterTermination =
+            boatSpaceService
+                .getBoatSpacesFiltered(
+                    BoatSpaceListParams(
+                        harbor = listOf(1),
+                        boatSpaceType = listOf(BoatSpaceType.Slip),
+                        amenity = listOf(BoatSpaceAmenity.Beam),
+                        sectionFilter = listOf("D"),
+                        sortBy = BoatSpaceFilterColumn.RESERVER,
+                        ascending = true
+                    )
+                ).first { it.id == boatSpaceId }
+        assertEquals(boatSpaceAfterTermination.reserverId, null, "Reserver is null after termination")
     }
 }
