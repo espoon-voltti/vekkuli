@@ -182,6 +182,7 @@ class EmployeeReservationListView(
                                     paginationEnd: $paginationEndTo,
                                     paginationSize: $paginationSize,
                                     paginationTotalRows: ${reservations.totalRows},
+                                    paginationResultsLeft: ${reservations.totalRows - paginationStartFrom},
                                     hasMore: ${reservations.totalRows > paginationEndTo}
                                 }" x-show="hasMore">
                                 <button 
@@ -195,14 +196,15 @@ class EmployeeReservationListView(
                                     hx-include="#reservation-filter-form"
                                     hx-push-url="false"
                                     hx-vals='{"paginationStart": $paginationStartFrom, "paginationEnd": $paginationEndTo}'
-                                    @click="
+                                    @htmx:after-request="
                                         paginationStart = paginationEnd;
                                         paginationEnd = paginationEnd + paginationSize;
-                                        hasMore = paginationTotalRows > paginationEnd;
+                                        paginationResultsLeft = paginationTotalRows - paginationStart;
+                                        hasMore = paginationResultsLeft > 0;
                                         ${'$'}el.setAttribute('hx-vals', JSON.stringify({ paginationStart: paginationStart, paginationEnd: paginationEnd }));
                                     "
                                 >
-                                    ${t("showMore")} (<span x-text="paginationTotalRows - paginationEnd"></span>)
+                                    ${t("showMore")} (<span x-text="paginationResultsLeft"></span>)
                                 </button>
                             </div>
                             <div id="loader" class="htmx-indicator has-text-centered">${icons.spinner}</div>
