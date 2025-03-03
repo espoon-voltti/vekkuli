@@ -60,7 +60,6 @@ class EmployeeReservationListingTest : PlaywrightTest() {
         listingPage.amenityFilter(BoatSpaceAmenity.Trailer.name).click()
         page.waitForCondition { listingPage.reservations.count() == 1 }
         assertThat(listingPage.getByDataTestId("place").first()).containsText("B 015")
-        listingPage.expandingSelectionFilter("amenity").click()
         listingPage.amenityFilter(BoatSpaceAmenity.Beam.name).click()
         page.waitForCondition { listingPage.reservations.count() == 5 }
     }
