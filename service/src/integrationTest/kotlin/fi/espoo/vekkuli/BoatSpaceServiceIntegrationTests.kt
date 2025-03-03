@@ -138,7 +138,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         "Trailer, Buck, 1, 1, 0",
         "Winter, None, 10, 10, 0",
         "Winter, None, 2.75, 5.5, 25",
-        "Winter, None, 2.5, 4.5, 28",
+        "Winter, None, 2.5, 4.5, 27",
         "Winter, Trailer, 1, 1, 0",
         "Winter, Buck, 1, 1, 0",
         "Storage, Buck, 10, 10, 0",
@@ -193,7 +193,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val boatSpaces = boatSpaceService.getBoatSpacesFiltered(params)
 
         // the boat spaces are set up in the seed data (seed.sql)
-        assertEquals(2434, boatSpaces.size, "No boat spaces are fetched")
+        assertEquals(2438, boatSpaces.size, "No boat spaces are fetched")
     }
 
     @Test
