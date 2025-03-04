@@ -284,14 +284,14 @@ export default {
         }
       },
       modal: {
-        reserveNewSpace: 'Varaa uusi paikka',
+        reserveNewSpace: 'Varaan uuden paikan',
         reservingBoatSpace: 'Olet varaamassa paikkaa:',
         cannotReserveNewPlace:
           'Sinulla on jo kaksi paikkaa. Et voi varata uutta paikkaa, mutta voit vaihtaa nykyisen paikkasi.',
-        currentPlaces: 'Paikkasi:',
+        currentPlaces: 'Omat paikkasi:',
         organizationCurrentPlaces: (organizationName: string) =>
           `Yhteisösi ${organizationName} paikat:`,
-        switchCurrentPlace: 'Vaihdan nykyisen paikan'
+        switchCurrentPlace: 'Vaihdan tämän paikan'
       }
     },
     formPage: {
