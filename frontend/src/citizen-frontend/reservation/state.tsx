@@ -3,9 +3,16 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 
 import { useQueryClient } from '@tanstack/react-query'
-import React, { createContext, ReactNode, useCallback, useMemo } from 'react'
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useMemo
+} from 'react'
 
-import { Loading, Result } from 'lib-common/api'
+import { AuthContext } from 'citizen-frontend/auth/state.js'
+import { Failure, Loading, Result } from 'lib-common/api'
 import { useQueryResult } from 'lib-common/query'
 
 import { UnfinishedBoatSpaceReservation } from '../api-types/reservation'
@@ -24,6 +31,11 @@ const defaultState: ReservationState = {
   refreshReservationStatus: () => undefined
 }
 
+const unauthenticatedReservationStatus =
+  Failure.of<UnfinishedBoatSpaceReservation>({
+    message: 'not logged in'
+  })
+
 export const ReservationStateContext =
   createContext<ReservationState>(defaultState)
 
@@ -33,7 +45,14 @@ export const ReservationStateContextProvider = React.memo(
   }: {
     children: ReactNode
   }) {
-    const reservationStatus = useQueryResult(unfinishedReservationQuery())
+    const { isLoggedIn } = useContext(AuthContext)
+    const isAuthenticated = isLoggedIn.getOrElse(false) === true
+    const isUnauthenticated =
+      !isLoggedIn.isLoading && isLoggedIn.getOrElse(false) !== true
+
+    const reservationStatus = useQueryResult(unfinishedReservationQuery(), {
+      enabled: isAuthenticated
+    })
     const queryClient = useQueryClient()
     const refreshReservationStatus = useCallback(
       () =>
@@ -45,10 +64,12 @@ export const ReservationStateContextProvider = React.memo(
 
     const value = useMemo(
       () => ({
-        reservation: reservationStatus,
+        reservation: isUnauthenticated
+          ? unauthenticatedReservationStatus
+          : reservationStatus,
         refreshReservationStatus
       }),
-      [reservationStatus, refreshReservationStatus]
+      [reservationStatus, refreshReservationStatus, isUnauthenticated]
     )
     return (
       <ReservationStateContext.Provider value={value}>
