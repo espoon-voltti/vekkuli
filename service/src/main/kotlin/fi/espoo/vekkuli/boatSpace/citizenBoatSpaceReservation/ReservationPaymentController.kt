@@ -27,6 +27,7 @@ class ReservationPaymentController(
         logger.audit(
             AuthenticatedUser.createSystemUser(),
             "PAYTRAIL_CALLBACK_SUCCESS",
+            getRequestAuditMeta(params),
         )
 
         reservationPaymentService.handlePaymentSuccess(params)
@@ -41,6 +42,7 @@ class ReservationPaymentController(
         logger.audit(
             AuthenticatedUser.createSystemUser(),
             "PAYTRAIL_CALLBACK_CANCEL",
+            getRequestAuditMeta(params),
         )
 
         reservationPaymentService.handlePaymentCancel(params)
@@ -56,6 +58,7 @@ class ReservationPaymentController(
             logger.audit(
                 it,
                 "PAYTRAIL_REDIRECT_SUCCESS",
+                getRequestAuditMeta(params),
             )
         }
         val result = reservationPaymentService.handlePaymentSuccess(params)
@@ -71,6 +74,7 @@ class ReservationPaymentController(
             logger.audit(
                 it,
                 "PAYTRAIL_REDIRECT_CANCEL",
+                getRequestAuditMeta(params),
             )
         }
         val result = reservationPaymentService.handlePaymentCancel(params)
@@ -82,4 +86,7 @@ class ReservationPaymentController(
         headers.location = location
         return ResponseEntity<Void>(headers, HttpStatus.FOUND)
     }
+
+    private fun getRequestAuditMeta(params: Map<String, String>): Map<String, String> =
+        params["checkout-stamp"]?.let { s -> mapOf("targetId" to s) } ?: emptyMap()
 }
