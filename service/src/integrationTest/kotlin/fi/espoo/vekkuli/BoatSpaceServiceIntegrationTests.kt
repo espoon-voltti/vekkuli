@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceRepository
 import fi.espoo.vekkuli.service.BoatSpaceService
+import fi.espoo.vekkuli.service.EditBoatSpaceParams
 import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -20,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import kotlin.test.assertNotNull
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -288,5 +290,41 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                     )
                 ).first { it.id == boatSpaceId }
         assertEquals(boatSpaceAfterTermination.reserverId, null, "Reserver is null after termination")
+    }
+
+    @Test
+    fun `boat space can be edited`() {
+        val editBoatSpaceParams =
+            EditBoatSpaceParams(
+                BoatSpaceType.Slip,
+                "C",
+                1,
+                BoatSpaceAmenity.Beam,
+                100,
+                200,
+                "Test boat space",
+                true
+            )
+        boatSpaceService.editBoatSpaces(listOf(1, 84), editBoatSpaceParams)
+        val editedBoatSpace = boatSpaceRepository.getBoatSpace(1)
+        val editedBoatSpace2 = boatSpaceRepository.getBoatSpace(84)
+
+        assertNotNull(editedBoatSpace, "Boat space is edited")
+        assertEquals(editBoatSpaceParams.section, editedBoatSpace.section, "Boat space section is the same")
+        assertEquals(editBoatSpaceParams.placeNumber, editedBoatSpace.placeNumber, "Boat space place number is the same")
+        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Boat space amenity is the same")
+        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width is the same")
+        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length is the same")
+        assertEquals(editBoatSpaceParams.description, editedBoatSpace.description, "Boat space description is the same")
+        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space is active")
+
+        assertNotNull(editedBoatSpace2, "Boat space is edited")
+        assertEquals(editBoatSpaceParams.section, editedBoatSpace2.section, "Boat space section is the same")
+        assertEquals(editBoatSpaceParams.placeNumber, editedBoatSpace2.placeNumber, "Boat space place number is the same")
+        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace2.amenity, "Boat space amenity is the same")
+        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace2.widthCm, "Boat space width is the same")
+        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace2.lengthCm, "Boat space length is the same")
+        assertEquals(editBoatSpaceParams.description, editedBoatSpace2.description, "Boat space description is the same")
+        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace2.isActive, "Boat space is active")
     }
 }

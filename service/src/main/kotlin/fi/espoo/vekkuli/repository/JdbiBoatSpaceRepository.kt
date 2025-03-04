@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatSpaceFilter
 import fi.espoo.vekkuli.service.BoatSpaceRepository
+import fi.espoo.vekkuli.service.EditBoatSpaceParams
 import fi.espoo.vekkuli.utils.*
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
@@ -270,6 +271,39 @@ class JdbiBoatSpaceRepository(
                 """.trimIndent()
 
             handle.createQuery(sql).mapTo<String>().toList()
+        }
+
+    override fun editBoatSpaces(
+        boatSpaceIds: List<Int>,
+        editBoatSpaceParams: EditBoatSpaceParams
+    ): Unit =
+        jdbi.withHandleUnchecked { handle ->
+            val sql =
+                """
+                UPDATE boat_space bs
+                SET type = :type,
+                    section = :section,
+                    place_number = :placeNumber,
+                    amenity = :amenity,
+                    width_cm = :widthCm,
+                    length_cm = :lengthCm,
+                    description = :description,
+                    is_active = :isActive,
+                    updated = :currentTime
+                WHERE bs.id IN (<boatSpaceIds>)
+                """.trimIndent()
+            val query = handle.createUpdate(sql)
+            query.bindList("boatSpaceIds", boatSpaceIds)
+            query.bind("type", editBoatSpaceParams.type)
+            query.bind("section", editBoatSpaceParams.section)
+            query.bind("placeNumber", editBoatSpaceParams.placeNumber)
+            query.bind("amenity", editBoatSpaceParams.amenity)
+            query.bind("widthCm", editBoatSpaceParams.widthCm)
+            query.bind("lengthCm", editBoatSpaceParams.lengthCm)
+            query.bind("description", editBoatSpaceParams.description)
+            query.bind("isActive", editBoatSpaceParams.isActive)
+            query.bind("currentTime", timeProvider.getCurrentDateTime())
+            query.execute()
         }
 
     override fun isBoatSpaceAvailable(boatSpaceId: Int): Boolean =
