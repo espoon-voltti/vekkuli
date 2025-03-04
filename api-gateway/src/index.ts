@@ -1,3 +1,5 @@
+import './tracer.js'
+
 import express from 'express'
 import helmet from 'helmet'
 import passport from 'passport'

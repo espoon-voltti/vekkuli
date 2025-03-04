@@ -223,6 +223,18 @@ export const appBuild = process.env.APP_BUILD ?? 'UNDEFINED'
 export const appCommit = process.env.APP_COMMIT ?? 'UNDEFINED'
 export const hostIp = process.env.HOST_IP ?? 'UNDEFINED'
 
+export const tracingEnabled = parseBoolean(
+  process.env.DD_TRACE_ENABLED || 'false'
+)
+export const profilingEnabled = parseBoolean(
+  process.env.DD_PROFILING_ENABLED || 'false'
+)
+export const traceAgentHostname =
+  process.env.DD_TRACE_AGENT_HOSTNAME || 'localhost'
+export const traceAgentPort = parseInteger(
+  process.env.DD_TRACE_AGENT_PORT || '8126'
+)
+
 export const jwtPrivateKey = required(
   process.env.JWT_PRIVATE_KEY ??
     ifNodeEnv(['local', 'test'], 'config/test-cert/jwt_private_key.pem')

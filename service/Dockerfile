@@ -29,7 +29,8 @@ COPY ./gradle/ ./gradle/
 COPY ./gradlew ./build.gradle.kts ./gradle.properties ./settings.gradle.kts ./webpack.config.js ./index.js ./htmx.js ./
 
 RUN ./gradlew resolveDependencies \
- && ./gradlew e2eTestDeps
+ && ./gradlew e2eTestDeps \
+ && ./gradlew copyDownloadOnlyDeps
 
 COPY . .
 
@@ -48,6 +49,8 @@ WORKDIR /app
 COPY ./entrypoint.sh entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
 
+COPY --from=builder /app/build/download-only/dd-java-agent.jar /opt/dd-java-agent.jar
+COPY ./dd-jmxfetch/ /etc/jmxfetch/
 COPY --from=builder /app/target/ .
 
 ARG build=none

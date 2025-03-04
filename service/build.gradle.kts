@@ -2,6 +2,7 @@ import com.github.gradle.node.npm.task.NpxTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import java.util.regex.Pattern
 
 plugins {
     id("org.springframework.boot") version "3.4.1"
@@ -26,6 +27,10 @@ buildscript {
         classpath("org.postgresql:postgresql:42.7.1")
         classpath("org.flywaydb:flyway-database-postgresql:11.3.0")
     }
+}
+
+val downloadOnly: Configuration by configurations.creating {
+    isTransitive = false
 }
 
 node {
@@ -134,6 +139,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.16")
     implementation("ch.qos.logback:logback-core:1.5.16")
     implementation("commons-codec:commons-codec:1.18.0")
+
+    downloadOnly("com.datadoghq:dd-java-agent:1.46.1")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -227,6 +234,13 @@ tasks {
             showStandardStreams = true
             events("passed", "skipped", "failed")
         }
+    }
+
+    register("copyDownloadOnlyDeps", Copy::class) {
+        from(downloadOnly)
+        into(layout.buildDirectory.dir("download-only"))
+        // remove version numbers from jar filenames
+        rename(Pattern.compile("-([0-9]+[.]?)+.jar"), ".jar")
     }
 
     dependencyCheck {
