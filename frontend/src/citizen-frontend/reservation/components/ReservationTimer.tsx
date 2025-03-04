@@ -35,42 +35,48 @@ const TimeRemaining = React.memo(function TimeRemaining({
 }: {
   seconds: number
 }) {
+  const getCurrentTime = () => Date.now() / 1000
+
   const i18n = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [remainingTime, setRemainingTime] = useState(seconds || 0)
+  const [totalSeconds, setTotalSeconds] = useState(seconds || 0)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [startTime, setStartTime] = useState(getCurrentTime())
   const [announceText, setAnnounceText] = useState('')
   const [initialAnnounced, setInitialAnnounced] = useState(false)
 
   useEffect(() => {
-    setRemainingTime(seconds)
+    setTotalSeconds(seconds)
+    setElapsedSeconds(0)
+    setStartTime(getCurrentTime())
   }, [seconds])
 
   useEffect(() => {
-    const startTime = new Date().getTime()
     const handleNavigation = async () => {
       await queryClient.resetQueries({
         queryKey: unfinishedReservationQuery().queryKey
       })
       return navigate('/kuntalainen/venepaikka')
     }
-    const intervalId = setInterval(() => {
-      const elapsedTime = Math.floor((new Date().getTime() - startTime) / 1000)
-      const updatedTime = Math.max(remainingTime - elapsedTime, 0)
 
-      if (updatedTime <= 0) {
+    const intervalId = setInterval(() => {
+      const newElapsedSeconds = getCurrentTime() - startTime
+
+      if (newElapsedSeconds > totalSeconds) {
         clearInterval(intervalId)
         handleNavigation().catch((e) => console.error(e))
       } else {
-        setRemainingTime(updatedTime)
+        setElapsedSeconds(newElapsedSeconds)
       }
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [queryClient, navigate, setRemainingTime, remainingTime])
+  }, [queryClient, navigate, startTime, totalSeconds])
 
+  const remainingTime = totalSeconds - elapsedSeconds
   const remainingMinutes: number = Math.floor(remainingTime / 60)
-  const remainingSeconds: number = remainingTime % 60
+  const remainingSeconds: number = Math.floor(remainingTime % 60)
 
   const remainingMinutesText = `
     ${remainingMinutes} ${
