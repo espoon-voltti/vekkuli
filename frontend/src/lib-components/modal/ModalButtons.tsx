@@ -1,7 +1,7 @@
 import Button, { ButtonType } from 'lib-components/dom/Button'
 import React from 'react'
 
-import Buttons from '../dom/Buttons'
+import Buttons, { ButtonAlignment } from '../dom/Buttons'
 
 export interface ModalButton {
   label: string
@@ -12,20 +12,20 @@ export interface ModalButton {
 
 type ModalButtonsProps = {
   buttons?: ModalButton[]
-  centered?: boolean
+  alignment?: ButtonAlignment
   close: () => void
 }
 
 export default React.memo(function ModalButtons({
   buttons,
   close,
-  centered
+  alignment
 }: ModalButtonsProps) {
   if (!buttons || buttons.length === 0) return null
   const disableAllButtons = buttons.some((b) => !!b.loading)
   return (
     <div className="mt-l">
-      <Buttons centered={centered}>
+      <Buttons alignment={alignment}>
         {buttons.map((b, i) => (
           <Button
             key={`modal-button-${i}`}

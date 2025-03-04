@@ -32,7 +32,7 @@ export default React.memo(function ErrorModal({
   const body = i18n.reservation.errors.startReservation[error]
 
   return (
-    <Modal close={close} buttons={buttons} buttonsCentered>
+    <Modal close={close} buttons={buttons} buttonAlignment="center">
       <ScreenReaderOnly>
         {title}
         {'. '}

@@ -1,3 +1,4 @@
+import { ButtonAlignment } from 'lib-components/dom/Buttons.js'
 import React from 'react'
 
 import ModalBackground from './ModalBackground'
@@ -11,7 +12,7 @@ type ModalProperties = {
   children: React.ReactNode
   close: () => void
   buttons?: ModalButton[]
-  buttonsCentered?: boolean
+  buttonAlignment?: ButtonAlignment
   'data-testid'?: string
 }
 
@@ -20,7 +21,7 @@ export default React.memo(function Modal({
   title,
   close,
   buttons,
-  buttonsCentered,
+  buttonAlignment,
   'data-testid': dataTestId
 }: ModalProperties) {
   return (
@@ -31,7 +32,7 @@ export default React.memo(function Modal({
         <ModalButtons
           buttons={buttons}
           close={close}
-          centered={buttonsCentered}
+          alignment={buttonAlignment}
         />
       </ModalContent>
     </ModalBackground>

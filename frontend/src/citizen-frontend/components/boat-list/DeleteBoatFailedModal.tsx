@@ -24,7 +24,7 @@ export default React.memo(function DeleteBoatFailedModal({
     <Modal
       close={onClose}
       buttons={buttons}
-      buttonsCentered
+      buttonAlignment="center"
       data-testid="delete-boat-failed-modal"
     >
       <ScreenReaderOnly>{i18n.boat.deleteFailed}</ScreenReaderOnly>
