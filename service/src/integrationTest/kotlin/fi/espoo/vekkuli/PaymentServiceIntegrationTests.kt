@@ -3,6 +3,7 @@ package fi.espoo.vekkuli
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
+import fi.espoo.vekkuli.utils.mockTimeProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 
 @ExtendWith(SpringExtension::class)
@@ -111,6 +113,41 @@ class PaymentServiceIntegrationTests : IntegrationTestBase() {
         )
         val fetchedPayment = paymentService.getPayment(payment.id)
         assertEquals(PaymentStatus.Success, fetchedPayment?.status, "Payment is updated with new status")
+    }
+
+    @Test
+    fun `should set payment created time from time provider`() {
+        val creationTime = LocalDateTime.of(2025, 1, 1, 1, 0, 0)
+        mockTimeProvider(timeProvider, creationTime)
+
+        val payment = insertNewPayment()
+        assertEquals(creationTime, payment.created, "Created timestamp is from time provider")
+    }
+
+    @Test
+    fun `should set payment updated time from time provider`() {
+        val creationTime = LocalDateTime.of(2025, 1, 1, 1, 0, 0)
+        mockTimeProvider(timeProvider, creationTime)
+
+        val payment = insertNewPayment()
+        assertEquals(creationTime, payment.updated, "Updated timestamp is from time provider")
+    }
+
+    @Test
+    fun `should update payment updated timestamp`() {
+        val creationTime = LocalDateTime.of(2025, 1, 1, 1, 0, 0)
+        val updatedTime = LocalDateTime.of(2025, 1, 5, 10, 0, 0)
+
+        mockTimeProvider(timeProvider, creationTime)
+        val payment = insertNewPayment()
+        assertEquals(PaymentStatus.Created, payment.status, "Payment is in initial status")
+        assertEquals(creationTime, payment.updated, "Payment is updated during creation time")
+
+        mockTimeProvider(timeProvider, updatedTime)
+        val fetchedPayment = paymentService.updatePayment(payment.copy(status = PaymentStatus.Success))
+
+        assertEquals(PaymentStatus.Success, fetchedPayment?.status, "Payment is updated with new status")
+        assertEquals(updatedTime, fetchedPayment?.updated, "Payment is updated when modified")
     }
 
     @Test

@@ -25,13 +25,14 @@ class JdbiPaymentRepository(
                 handle
                     .createQuery(
                         """
-                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status, payment_type, paid, price_info)
-                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, :status, :paymentType, :paid, :priceInfo)
+                        INSERT INTO payment (id, reserver_id, reference, total_cents, vat_percentage, product_code, reservation_id, status, payment_type, paid, price_info, created, updated)
+                        VALUES (:id, :reserverId,  :reference, :totalCents, :vatPercentage, :productCode, :reservationId, :status, :paymentType, :paid, :priceInfo, :currentTime, :currentTime)
                         RETURNING *
                         """
                     ).bindKotlin(params)
                     .bind("id", id)
                     .bind("reservationId", reservationId)
+                    .bind("currentTime", timeProvider.getCurrentDateTime())
                     .mapTo<Payment>()
                     .one()
             result
@@ -39,17 +40,24 @@ class JdbiPaymentRepository(
 
     override fun updatePayment(payment: Payment): Payment =
         jdbi.withHandleUnchecked { handle ->
-            val id = UUID.randomUUID()
             val result =
                 handle
                     .createQuery(
                         """
                         UPDATE payment
-                            SET status = :status, updated = :updated, paid = :paid, reference = :reference, total_cents = :totalCents, vat_percentage = :vatPercentage, product_code = :productCode, payment_type = :paymentType
+                            SET status = :status,
+                                updated = :currentTime,
+                                paid = :paid,
+                                reference = :reference,
+                                total_cents = :totalCents,
+                                vat_percentage = :vatPercentage,
+                                product_code = :productCode,
+                                payment_type = :paymentType
                         WHERE id = :id 
                         RETURNING *
                         """
                     ).bindKotlin(payment)
+                    .bind("currentTime", timeProvider.getCurrentDateTime())
                     .mapTo<Payment>()
                     .one()
             result
