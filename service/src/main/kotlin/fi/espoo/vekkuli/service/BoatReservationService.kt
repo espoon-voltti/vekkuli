@@ -10,9 +10,6 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig.isLengthOk
 import fi.espoo.vekkuli.config.BoatSpaceConfig.isWidthOk
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.*
-import fi.espoo.vekkuli.repository.filter.SortDirection
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.*
-import fi.espoo.vekkuli.repository.filter.boatspacereservation.LocationExpr
 import fi.espoo.vekkuli.utils.*
 import fi.espoo.vekkuli.utils.decimalToInt
 import org.springframework.stereotype.Service
@@ -373,88 +370,6 @@ class BoatReservationService(
             startDate,
             endDate,
         )
-
-    fun getBoatSpaceReservations(params: BoatSpaceReservationFilter): List<BoatSpaceReservationItem> {
-        val filters: MutableList<SqlExpr> = mutableListOf()
-
-        // Add status filters based on the payment status
-        filters.add(
-            StatusExpr(
-                params.payment
-                    .flatMap {
-                        when (it) {
-                            PaymentFilter.CONFIRMED -> listOf(ReservationStatus.Confirmed)
-                            PaymentFilter.INVOICED -> listOf(ReservationStatus.Invoiced)
-                            PaymentFilter.PAYMENT -> listOf(ReservationStatus.Payment, ReservationStatus.Info)
-                            PaymentFilter.CANCELLED -> listOf(ReservationStatus.Cancelled)
-                        }
-                    }.ifEmpty {
-                        listOf(
-                            ReservationStatus.Confirmed,
-                            ReservationStatus.Invoiced,
-                            ReservationStatus.Payment,
-                            ReservationStatus.Info,
-                            ReservationStatus.Cancelled
-                        )
-                    }
-            )
-        )
-
-        if (params.expiration == ReservationExpiration.Active) {
-            filters.add(EndDateNotPassedExpr(timeProvider.getCurrentDate()))
-        } else {
-            filters.add(EndDatePassedExpr(timeProvider.getCurrentDate()))
-        }
-
-        if (params.warningFilter == true) {
-            filters.add(HasWarningExpr())
-        }
-
-        if (params.exceptionsFilter == true) {
-            filters.add(HasReserverExceptionsExpr())
-        }
-
-        if (!params.nameSearch.isNullOrBlank()) {
-            filters.add(NameSearchExpr(params.nameSearch))
-        }
-
-        if (!params.phoneSearch.isNullOrBlank()) {
-            filters.add(PhoneSearchExpr(params.phoneSearch))
-        }
-
-        if (params.harbor.isNotEmpty()) {
-            filters.add(LocationExpr(params.harbor))
-        }
-
-        if (params.boatSpaceType.isNotEmpty()) {
-            filters.add(BoatSpaceTypeExpr(params.boatSpaceType))
-        }
-
-        if (params.amenity.isNotEmpty()) {
-            filters.add(AmenityExpr(params.amenity))
-        }
-
-        if (params.sectionFilter.isNotEmpty()) {
-            filters.add(SectionExpr(params.sectionFilter))
-        }
-
-        if (params.validity.isNotEmpty()) {
-            filters.add(ReservationValidityExpr(params.validity))
-        }
-
-        val direction = if (params.ascending) SortDirection.Ascending else SortDirection.Descending
-        val sortBy =
-            BoatSpaceReservationSortBy(
-                listOf(params.sortBy to direction)
-            )
-
-        return boatSpaceReservationRepo.getBoatSpaceReservations(
-            AndExpr(
-                filters
-            ),
-            sortBy
-        )
-    }
 
     fun getBoatSpaceReservationsForReserver(
         reserverId: UUID,

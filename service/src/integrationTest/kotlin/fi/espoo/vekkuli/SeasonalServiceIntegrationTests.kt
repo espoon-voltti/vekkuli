@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli
 
+import fi.espoo.vekkuli.boatSpace.employeeReservationList.EmployeeReservationListService
 import fi.espoo.vekkuli.boatSpace.invoice.BoatSpaceInvoiceService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReservationFormService
 import fi.espoo.vekkuli.boatSpace.reservationForm.ReserveBoatSpaceInput
@@ -41,6 +42,9 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
 
     @Autowired
     lateinit var reservationService: BoatReservationService
+
+    @Autowired
+    lateinit var employeeReservationListService: EmployeeReservationListService
 
     @Autowired lateinit var formReservationService: ReservationFormService
 
@@ -556,15 +560,16 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
             timeProvider.getCurrentDate()
         )
         val reservation =
-            reservationService
+            employeeReservationListService
                 .getBoatSpaceReservations(
                     BoatSpaceReservationFilter(
                         sortBy = BoatSpaceReservationFilterColumn.PLACE,
                         ascending = true,
                     )
-                ).first()
+                ).items
+                .first()
 
-        assertEquals(3, reservation.warnings.size, "Warnings should be present")
+        assertEquals(3, reservation.warnings.count(), "Warnings should be present")
         assertEquals(
             listOf("BoatFutureOwner", "BoatLength", "BoatWidth"),
             reservation.warnings.sorted(),
@@ -618,7 +623,7 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         )
 
         val reservations =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     harbor = listOf(1, 2),
                     amenity = listOf(BoatSpaceAmenity.Beam, BoatSpaceAmenity.WalkBeam),
@@ -626,8 +631,8 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
                 )
             )
 
-        assertEquals(3, reservations.size, "reservations are out filtered correctly")
-        assertEquals(listOf(200, 177, 1), reservations.map { it.boatSpaceId }, "correct reservations are returned")
+        assertEquals(3, reservations.totalRows, "reservations are out filtered correctly")
+        assertEquals(listOf(200, 177, 1), reservations.items.map { it.boatSpaceId }, "correct reservations are returned")
     }
 
     @Test
@@ -638,30 +643,30 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         testUtils.createReservationInInvoiceState(timeProvider, reservationService, invoiceService, citizenIdOlivia, 2, 3)
 
         val unfilteredReservations =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter()
             )
 
         val unpaidReservations =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     payment = listOf(PaymentFilter.PAYMENT, PaymentFilter.INVOICED)
                 )
             )
 
         val paidReservations =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     payment = listOf(PaymentFilter.CONFIRMED)
                 )
             )
-        assertEquals(2, unfilteredReservations.size, "reservations are filtered correctly")
+        assertEquals(2, unfilteredReservations.totalRows, "reservations are filtered correctly")
 
-        assertEquals(1, unpaidReservations.size, "reservations are filtered correctly")
-        assertEquals(2, unpaidReservations.first().boatSpaceId, "correct reservation is returned")
+        assertEquals(1, unpaidReservations.totalRows, "reservations are filtered correctly")
+        assertEquals(2, unpaidReservations.items.first().boatSpaceId, "correct reservation is returned")
 
-        assertEquals(1, paidReservations.size, "reservations are filtered correctly")
-        assertEquals(1, paidReservations.first().boatSpaceId, "correct reservation is returned")
+        assertEquals(1, paidReservations.totalRows, "reservations are filtered correctly")
+        assertEquals(1, paidReservations.items.first().boatSpaceId, "correct reservation is returned")
     }
 
     @Test
@@ -682,25 +687,25 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         testUtils.createReservationInPaymentState(timeProvider, reservationService, citizenIdOlivia, 2, 3)
 
         val reservationsByFirstName =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     nameSearch = "leo"
                 )
             )
 
-        assertEquals(1, reservationsByFirstName.size, "reservations are filtered correctly")
-        assertEquals("Korhonen Leo", reservationsByFirstName.first().name, "correct reservation is returned")
+        assertEquals(1, reservationsByFirstName.totalRows, "reservations are filtered correctly")
+        assertEquals("Korhonen Leo", reservationsByFirstName.items.first().name, "correct reservation is returned")
 
         val reservationsByLastName =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     nameSearch = "VIRTA",
                     payment = listOf(PaymentFilter.CONFIRMED)
                 )
             )
 
-        assertEquals(2, reservationsByLastName.size, "reservations are filtered correctly")
-        val reservationsNames = reservationsByLastName.map { "${it.name}" }
+        assertEquals(2, reservationsByLastName.totalRows, "reservations are filtered correctly")
+        val reservationsNames = reservationsByLastName.items.map { "${it.name}" }
         assertContains(reservationsNames, "Virtanen Mikko")
         assertContains(reservationsNames, "Virtanen Olivia")
     }
@@ -751,14 +756,14 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         )
 
         val reservationsWithWarnings =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     warningFilter = true
                 )
             )
 
-        assertEquals(1, reservationsWithWarnings.size, "reservations are filtered correctly")
-        assertEquals(3, reservationsWithWarnings.first().boatSpaceId, "correct reservation is returned")
+        assertEquals(1, reservationsWithWarnings.totalRows, "reservations are filtered correctly")
+        assertEquals(3, reservationsWithWarnings.items.first().boatSpaceId, "correct reservation is returned")
     }
 
     @Test
@@ -793,13 +798,13 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         )
 
         val reservationsBySection =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     sectionFilter = listOf("B", "D")
                 )
             )
-        val sections = reservationsBySection.map { it.section }
-        assertEquals(2, reservationsBySection.size, "reservations are filtered correctly")
+        val sections = reservationsBySection.items.map { it.section }
+        assertEquals(2, reservationsBySection.totalRows, "reservations are filtered correctly")
         assertContains(sections, "B")
         assertContains(sections, "D")
     }
@@ -826,15 +831,15 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         testUtils.createReservationInInvoiceState(timeProvider, reservationService, invoiceService, citizenIdOlivia, 2, 3)
 
         val reservations =
-            reservationService.getBoatSpaceReservations(
+            employeeReservationListService.getBoatSpaceReservations(
                 BoatSpaceReservationFilter(
                     sortBy = BoatSpaceReservationFilterColumn.PLACE,
                     ascending = true,
                 )
             )
 
-        assertEquals(3, reservations.size, "reservations are filtered correctly")
-        assertEquals(listOf(1, 2, 177), reservations.map { it.boatSpaceId }, "reservations are sorted by place and amenity")
+        assertEquals(3, reservations.totalRows, "reservations are filtered correctly")
+        assertEquals(listOf(1, 2, 177), reservations.items.map { it.boatSpaceId }, "reservations are sorted by place and amenity")
     }
 
     @Test
