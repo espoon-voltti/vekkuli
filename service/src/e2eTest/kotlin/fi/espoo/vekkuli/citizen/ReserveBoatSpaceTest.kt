@@ -910,6 +910,7 @@ class ReserveBoatSpaceTest : ReserveTest() {
 
         val formPage = BoatSpaceFormPage(page)
         val confirmCancelReservationModal = formPage.getConfirmCancelReservationModal()
+        assertThat(formPage.header).isVisible()
 
         // Cancel, then cancel in modal
         formPage.cancelButton.click()
