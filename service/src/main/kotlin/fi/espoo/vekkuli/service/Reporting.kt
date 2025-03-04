@@ -9,6 +9,7 @@ import fi.espoo.vekkuli.domain.OwnershipStatus
 import fi.espoo.vekkuli.domain.PaymentHistory
 import fi.espoo.vekkuli.domain.PaymentType
 import fi.espoo.vekkuli.utils.amenityToText
+import fi.espoo.vekkuli.utils.boatSpaceTypeToText
 import fi.espoo.vekkuli.utils.boatTypeToText
 import fi.espoo.vekkuli.utils.ownershipStatusToText
 import fi.espoo.vekkuli.utils.placeTypeToText
@@ -194,7 +195,8 @@ data class BoatSpaceReportRow(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val paid: LocalDateTime?,
-    val creationType: CreationType?
+    val creationType: CreationType?,
+    val boatSpaceType: BoatSpaceType?
 )
 
 fun getFreeBoatSpaceReport(
@@ -237,7 +239,8 @@ fun getBoatSpaceReport(
                     bsr.start_date,
                     bsr.end_date,
                     p.paid,
-                    bsr.creation_type
+                    bsr.creation_type,
+                    bs.type AS boat_space_type
                 FROM boat_space bs
                      LEFT JOIN location l ON l.id = bs.location_id
                      LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
@@ -268,6 +271,7 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "veneen leveys",
             "veneen pituus",
             "paikan varuste",
+            "paikan tyyppi",
             "varaaja",
             "kotikunta",
             "veneen rekisterinumero",
@@ -301,6 +305,8 @@ fun boatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(intToDecimal(report.boatLengthCm)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity)))
+            .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.name))
             .append(CSV_FIELD_SEPARATOR)
@@ -338,6 +344,7 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "paikan leveys",
             "paikan pituus",
             "varuste",
+            "tyyppi",
             "maksuluokka",
             "maksupäivä"
         ).joinToString(CSV_FIELD_SEPARATOR, postfix = CSV_RECORD_SEPARATOR)
@@ -359,10 +366,11 @@ fun freeBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity)))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.productCode))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(localDateTimeToText(report.paid)))
-            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -380,6 +388,7 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             "veneen leveys",
             "veneen pituus",
             "paikan varuste",
+            "tyyppi",
             "varaaja",
             "kotikunta",
             "veneen rekisterinumero",
@@ -411,6 +420,8 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity)))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.name))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.municipality))
@@ -426,7 +437,6 @@ fun reservedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String {
             .append(sanitizeCsvCellData(localDateToText(report.startDate)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(reservationCreationTypeToText(report.creationType)))
-            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
@@ -442,6 +452,7 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             "paikan leveys",
             "paikan pituus",
             "paikan varuste",
+            "tyyppi",
             "varaaja",
             "kotikunta",
             "irtisanomisaika",
@@ -465,6 +476,8 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(amenityToText(report.amenity)))
             .append(CSV_FIELD_SEPARATOR)
+            .append(sanitizeCsvCellData(boatSpaceTypeToText(report.boatSpaceType)))
+            .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.name))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(report.municipality))
@@ -472,7 +485,6 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
             .append(sanitizeCsvCellData(localDateTimeToText(report.terminationTimestamp)))
             .append(CSV_FIELD_SEPARATOR)
             .append(sanitizeCsvCellData(terminationReasonToText(report.terminationReason)))
-            .append(CSV_FIELD_SEPARATOR)
             .append(CSV_RECORD_SEPARATOR)
     }
 
