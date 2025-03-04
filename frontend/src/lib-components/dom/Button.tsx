@@ -7,6 +7,7 @@ export type ButtonProps = {
   children: React.ReactNode
   id?: string
   type?: ButtonType
+  isFullWidth?: boolean
   action?: () => void
   loading?: boolean
   ariaLabel?: string
@@ -18,6 +19,7 @@ export default React.memo(function Button({
   action,
   id,
   type,
+  isFullWidth,
   loading,
   ariaLabel,
   disabled
@@ -34,6 +36,10 @@ export default React.memo(function Button({
       classes.push('is-danger')
       classes.push('is-outlined')
       break
+  }
+
+  if (isFullWidth) {
+    classes.push('is-fullwidth')
   }
 
   if (loading) {
