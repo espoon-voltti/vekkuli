@@ -52,12 +52,13 @@ export default React.memo(function SwitchReservation({
         <Column isHalf>
           <BoatSpaceInformation boatSpace={reservation.boatSpace} />
         </Column>
-        <Column isNarrow>
+        <Column isHalf>
           <Button
             type="primary"
             data-testid={`switch-button-${reservation.id}`}
             action={onSwitch}
             loading={isLoading}
+            isFullWidth
           >
             {i18n.reservation.searchPage.modal.switchCurrentPlace}
           </Button>

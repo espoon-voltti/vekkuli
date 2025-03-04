@@ -1,5 +1,5 @@
 import { Loader } from 'lib-components/Loader'
-import { Column, Columns } from 'lib-components/dom'
+import { Button, Column, Columns } from 'lib-components/dom'
 import Modal from 'lib-components/modal/Modal'
 import { ModalButton } from 'lib-components/modal/ModalButtons'
 import React from 'react'
@@ -27,37 +27,46 @@ export default React.memo(function ReserveModal({
   const boatSpaceResult = useQueryResult(boatSpaceQuery(targetSpaceId))
   const modalButtons: ModalButton[] = [
     {
-      label: i18n.common.cancel
+      label: i18n.reservation.cancelReservation
     }
   ]
-
-  if (
+  const canReserveAsNew =
     canReserveResult.status === 'CanReserve' ||
     canReserveResult.status === 'CanReserveOnlyForOrganization'
-  )
-    modalButtons.push({
-      label: i18n.reservation.searchPage.modal.reserveNewSpace,
-      type: 'primary',
-      action: () => {
-        return reserveSpace()
-      }
-    })
 
   return (
     <Loader results={[boatSpaceResult]}>
       {(loadedBoatSpaceResult) => (
         <Modal
-          title={i18n.reservation.searchPage.modal.reservingBoatSpace}
           close={onClose}
           buttons={modalButtons}
+          buttonAlignment="right"
           data-testid="reserve-modal"
         >
           <Columns isMultiline>
             <Column isFull>
-              <BoatSpaceInformation boatSpace={loadedBoatSpaceResult} />
+              <SectionTitle>
+                {i18n.reservation.searchPage.modal.reservingBoatSpace}
+              </SectionTitle>
             </Column>
             <Column isFull>
-              <h3>{i18n.reservation.searchPage.modal.currentPlaces}</h3>
+              <Columns>
+                <Column isHalf>
+                  <BoatSpaceInformation boatSpace={loadedBoatSpaceResult} />
+                </Column>
+                {canReserveAsNew && (
+                  <Column isHalf>
+                    <Button type="primary" action={reserveSpace} isFullWidth>
+                      {i18n.reservation.searchPage.modal.reserveNewSpace}
+                    </Button>
+                  </Column>
+                )}
+              </Columns>
+            </Column>
+            <Column isFull>
+              <SectionTitle>
+                {i18n.reservation.searchPage.modal.currentPlaces}
+              </SectionTitle>
             </Column>
             {canReserveResult.switchableReservations.map((reservation) => (
               <SwitchReservation
@@ -69,11 +78,11 @@ export default React.memo(function ReserveModal({
               (organizationReservation) => (
                 <>
                   <Column isFull key={organizationReservation.organizationName}>
-                    <h3>
+                    <SectionTitle>
                       {i18n.reservation.searchPage.modal.organizationCurrentPlaces(
                         organizationReservation.organizationName
                       )}
-                    </h3>
+                    </SectionTitle>
                   </Column>
                   {organizationReservation.reservations.map((reservation) => (
                     <SwitchReservation
@@ -90,3 +99,7 @@ export default React.memo(function ReserveModal({
     </Loader>
   )
 })
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return <p className="is-size-4 has-text-weight-medium my-2">{children}</p>
+}
