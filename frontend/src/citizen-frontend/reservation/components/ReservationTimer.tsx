@@ -27,6 +27,9 @@ const boldText = (text: string) => {
   return `<span class="has-text-weight-bold">${text}</span>`
 }
 
+const alertTimeMinutes = [30, 15, 10, 5, 2, 1, 0.5]
+const alertTimeSeconds = alertTimeMinutes.map((time) => time * 60)
+
 const TimeRemaining = React.memo(function TimeRemaining({
   seconds
 }: {
@@ -36,6 +39,8 @@ const TimeRemaining = React.memo(function TimeRemaining({
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [remainingTime, setRemainingTime] = useState(seconds || 0)
+  const [announceText, setAnnounceText] = useState('')
+  const [initialAnnounced, setInitialAnnounced] = useState(false)
 
   useEffect(() => {
     setRemainingTime(seconds)
@@ -64,38 +69,66 @@ const TimeRemaining = React.memo(function TimeRemaining({
     return () => clearInterval(intervalId)
   }, [queryClient, navigate, setRemainingTime, remainingTime])
 
-  if (remainingTime <= 0) {
-    return null
-  }
-
   const remainingMinutes: number = Math.floor(remainingTime / 60)
   const remainingSeconds: number = remainingTime % 60
 
-  const formattedMinutes = boldText(`
+  const remainingMinutesText = `
     ${remainingMinutes} ${
       remainingMinutes === 1
         ? i18n.reservation.timer.minute
         : i18n.reservation.timer.minutes
-    }`)
-  const formattedSeconds = boldText(`
+    }`
+
+  const remainingSecondsText = `
     ${remainingSeconds} ${
       remainingSeconds === 1
         ? i18n.reservation.timer.second
         : i18n.reservation.timer.seconds
-    }`)
+    }`
+
+  const formattedMinutes = boldText(remainingMinutesText)
+  const formattedSeconds = boldText(remainingSecondsText)
 
   const formattedText = i18n.reservation.timer.title
     .replace('${minutes}', formattedMinutes)
     .replace('${seconds}', formattedSeconds)
 
+  const screenReaderText = i18n.reservation.timer.announceTitle.replace(
+    '${time}',
+    remainingTime < 60 ? remainingSecondsText : remainingMinutesText
+  )
+
+  // Announce the remaining time to screen readers at defined (alertTimeSeconds) times.
+  // Set the announcement element to empty string after it has been announced (5 seconds),
+  // to prevent the user from receiving a stale value if they navigate on the element with
+  // the keyboard or screenreader.
+  // Do the initial announcement with a delay when navigating to a page with a timer,
+  // to allow the page title to be announced first.
+  useEffect(() => {
+    if (
+      alertTimeSeconds.includes(remainingTime) ||
+      (!initialAnnounced && seconds - remainingTime >= 5)
+    ) {
+      setInitialAnnounced(true)
+      setAnnounceText(screenReaderText)
+      setTimeout(() => setAnnounceText(''), 5000)
+    }
+  }, [remainingTime, screenReaderText, initialAnnounced, seconds])
+
+  if (remainingTime <= 0) {
+    return null
+  }
+
   return (
     <div
-      role="timer"
       id="timer"
       className="timer has-text-centered p-3"
       data-testid="reservation-timer"
     >
-      <div dangerouslySetInnerHTML={{ __html: formattedText }} />
+      <div dangerouslySetInnerHTML={{ __html: formattedText }} tabIndex={-1} />
+      <div aria-live="assertive" aria-atomic="true" className="is-sr-only">
+        {announceText}
+      </div>
     </div>
   )
 })
