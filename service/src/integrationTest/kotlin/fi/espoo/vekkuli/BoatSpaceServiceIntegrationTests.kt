@@ -243,7 +243,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     }
 
     @Test
-    fun `reserver should be correctly fetched`() {
+    fun `reserver should be fetched only when they have an active reservation for boat space`() {
         val boatSpaceId = 83
         val reservation =
             testUtils.createReservationInConfirmedState(

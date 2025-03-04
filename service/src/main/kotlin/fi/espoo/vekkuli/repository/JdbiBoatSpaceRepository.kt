@@ -233,15 +233,19 @@ class JdbiBoatSpaceRepository(
                     r.id as reserver_id,
                     CONCAT(bs.section, ' ', TO_CHAR(bs.place_number, 'FM000')) as place,
                     r.type as reserver_type
-                FROM boat_space bs
+                FROM boat_space bs    
                 JOIN location ON bs.location_id = location.id
                 JOIN price ON bs.price_id = price.id
                 LEFT JOIN harbor_restriction ON harbor_restriction.location_id = bs.location_id
-                LEFT JOIN boat_space_reservation bsr ON bsr.boat_space_id = bs.id
-                LEFT JOIN reserver r ON r.id = bsr.reserver_id AND (
-                            ((bsr.status = 'Confirmed' OR bsr.status = 'Invoiced') AND bsr.end_date >= :endDateCut) OR
-                             (bsr.status = 'Cancelled' AND bsr.end_date > :endDateCut) 
-                        )
+                LEFT JOIN (
+                    SELECT boat_space_id, reserver_id 
+                    FROM boat_space_reservation
+                    WHERE 
+                        (status IN ('Confirmed', 'Invoiced') AND end_date >= :endDateCut)
+                        OR (status = 'Cancelled' AND end_date > :endDateCut)
+                ) bsr ON bsr.boat_space_id = bs.id
+
+                LEFT JOIN reserver r ON r.id = bsr.reserver_id
                 $filterQuery
                 GROUP BY bs.id, bs.location_id, bs.price_id, 
                      location.name, location.address, 
