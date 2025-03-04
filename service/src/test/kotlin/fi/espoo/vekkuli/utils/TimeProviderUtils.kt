@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 fun mockTimeProvider(
     timeProvider: TimeProvider,
-    date: LocalDateTime = LocalDateTime.of(2024, 4, 1, 0, 0, 0)
+    date: LocalDateTime = LocalDateTime.of(2024, 4, 1, 12, 0, 0)
 ) {
     println("Mocking TimeProvider to: $date")
     // Mock the methods

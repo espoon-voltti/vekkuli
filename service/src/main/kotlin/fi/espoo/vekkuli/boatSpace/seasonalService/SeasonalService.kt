@@ -40,7 +40,12 @@ class SeasonalService(
                     it.isEspooCitizen == isEspooCitizen
             }
         return periods.any {
-            LocalDateRange(it.startDate, it.endDate).contains(now)
+            LocalDateRange(it.startDate, it.endDate).contains(now) &&
+                if (it.startDate == now) {
+                    it.startTime <= timeProvider.getCurrentDateTime().toLocalTime()
+                } else {
+                    true
+                }
         }
     }
 

@@ -12,6 +12,7 @@ import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -410,6 +411,33 @@ class SeasonalServiceIntegrationTests : IntegrationTestBase() {
         } else {
             throw AssertionError("canReserveANewSlip failed")
         }
+    }
+
+    @Test
+    fun `Should not allow reserving on the first day of season before 0900`() {
+        mockTimeProvider(timeProvider, startOfSlipReservationPeriod.withHour(8))
+        assertTrue(seasonalService.canReserveANewSpace(helsinkiCitizenId, BoatSpaceType.Slip) is ReservationResult.Failure)
+
+        mockTimeProvider(timeProvider, startOfSlipReservationPeriod.withHour(9))
+        assertTrue(seasonalService.canReserveANewSpace(helsinkiCitizenId, BoatSpaceType.Slip) is ReservationResult.Success)
+
+        mockTimeProvider(timeProvider, startOfStorageReservationPeriod.withHour(8))
+        assertTrue(seasonalService.canReserveANewSpace(helsinkiCitizenId, BoatSpaceType.Storage) is ReservationResult.Failure)
+
+        mockTimeProvider(timeProvider, startOfStorageReservationPeriod.withHour(9))
+        assertTrue(seasonalService.canReserveANewSpace(helsinkiCitizenId, BoatSpaceType.Storage) is ReservationResult.Success)
+
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod.withHour(8))
+        assertTrue(seasonalService.canReserveANewSpace(citizenIdLeo, BoatSpaceType.Winter) is ReservationResult.Failure)
+
+        mockTimeProvider(timeProvider, startOfWinterReservationPeriod.withHour(9))
+        assertTrue(seasonalService.canReserveANewSpace(citizenIdLeo, BoatSpaceType.Winter) is ReservationResult.Success)
+
+        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod.withHour(8))
+        assertTrue(seasonalService.canReserveANewSpace(citizenIdLeo, BoatSpaceType.Trailer) is ReservationResult.Failure)
+
+        mockTimeProvider(timeProvider, startOfTrailerReservationPeriod.withHour(9))
+        assertTrue(seasonalService.canReserveANewSpace(citizenIdLeo, BoatSpaceType.Trailer) is ReservationResult.Success)
     }
 
     @Test

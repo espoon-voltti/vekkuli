@@ -316,7 +316,7 @@ class TestUtils(
         year: Int,
         addDays: Long? = null
     ) {
-        var date = LocalDateTime.of(year, month, day, 0, 0, 0)
+        var date = LocalDateTime.of(year, month, day, 12, 0, 0)
         if (addDays != null) {
             date = date.plusDays(addDays)
         }
