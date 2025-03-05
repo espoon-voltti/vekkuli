@@ -1,16 +1,20 @@
 import classNames from 'classnames'
 import React from 'react'
 
+export type ButtonAlignment = 'left' | 'center' | 'right'
+
 export default React.memo(function Button({
   children,
-  centered
+  alignment
 }: {
   children: React.ReactNode
-  centered?: boolean
+  alignment?: ButtonAlignment
 }) {
   const classes = ['buttons']
-  if (centered) {
+  if (alignment === 'center') {
     classes.push('is-justify-content-center')
+  } else if (alignment === 'right') {
+    classes.push('is-justify-content-right')
   }
 
   return <div className={classNames(classes)}>{children}</div>

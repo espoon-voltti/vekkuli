@@ -3,8 +3,8 @@ import Modal from 'lib-components/modal/Modal'
 import React from 'react'
 
 import { useTranslation } from 'citizen-frontend/localization'
-import { ErrorGeneric } from 'lib-icons'
 import { ModalButton } from 'lib-components/modal/ModalButtons'
+import { ErrorGeneric } from 'lib-icons'
 import { useNavigate } from 'react-router'
 
 export type ErrorCode = 'SERVER_ERROR' | 'UNFINISHED_RESERVATION'
@@ -55,7 +55,7 @@ export default React.memo(function ErrorModal({
     <Modal
       close={close}
       buttons={buttons}
-      buttonsCentered
+      buttonAlignment="center"
       data-testid="error-modal"
     >
       <ScreenReaderOnly>

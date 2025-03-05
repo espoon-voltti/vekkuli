@@ -279,8 +279,8 @@ const sv: Translations = {
         reservingBoatSpace: 'Du håller på att boka en båtplats:',
         cannotReserveNewPlace:
           'Du har redan två båtplatser. Du kan inte boka en ny plats, men du kan byta din nuvarande plats.',
-        currentPlaces: 'Din nuvarande plats',
-        switchCurrentPlace: 'Byt min nuvarande plats',
+        currentPlaces: 'Din nuvarande plats:',
+        switchCurrentPlace: 'Byt denna plats',
         organizationCurrentPlaces: (organizationName: string) =>
           `Din organisation ${organizationName} plats:`
       }

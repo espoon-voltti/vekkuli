@@ -107,17 +107,17 @@ class ReserveBoatSpacePage(
     class ReserveModal(
         val root: Locator
     ) {
-        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta").setExact(true))
+        val cancelButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Peruuta varaus").setExact(true))
         val reserveANewSpace =
             root.getByRole(
                 AriaRole.BUTTON,
-                Locator.GetByRoleOptions().setName("Varaa uusi paikka").setExact(true)
+                Locator.GetByRoleOptions().setName("Varaan uuden paikan").setExact(true)
             )
         val switchReservationButtons =
             root
                 .getByRole(
                     AriaRole.BUTTON,
-                    Locator.GetByRoleOptions().setName("Vaihdan nykyisen paikan").setExact(true)
+                    Locator.GetByRoleOptions().setName("Vaihdan tämän paikan").setExact(true)
                 )
         val firstSwitchReservationButton = switchReservationButtons.first()
         val secondSwitchReservationButton =
@@ -126,7 +126,7 @@ class ReserveBoatSpacePage(
         fun getSwitchReservationButton(place: String) =
             root.getByText(place).locator("..").locator("..").locator("..").getByRole(
                 AriaRole.BUTTON,
-                Locator.GetByRoleOptions().setName("Vaihdan nykyisen paikan").setExact(true)
+                Locator.GetByRoleOptions().setName("Vaihdan tämän paikan").setExact(true)
             )
     }
 

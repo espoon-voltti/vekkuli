@@ -26,7 +26,7 @@ export default React.memo(function CancelPaymentErrorModal({
     <Modal
       close={close}
       buttons={buttons}
-      buttonsCentered
+      buttonAlignment="center"
       data-testid="error-modal"
     >
       <ScreenReaderOnly>
