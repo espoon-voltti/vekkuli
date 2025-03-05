@@ -158,6 +158,15 @@ h4 {
   color: $bulma-primary;
 }
 
+button.is-link {
+    color: $bulma-primary;
+  &:disabled {
+    cursor: initial;
+    color: $grey
+  }
+}
+
+
 .textarea {
   resize: none;
 
@@ -213,7 +222,7 @@ h4 {
 }
 
 .radio.has-text-top-aligned {
-    align-items: start;
+  align-items: start;
   .label-text {
     margin-top: calc($checkbox-size/(2*2));
     .information-text {
@@ -529,7 +538,7 @@ body > .columns {
   margin: 0;
 }
 .nav-row > .columns {
-    margin: 0;
+  margin: 0;
 }
 
 .link.active {
@@ -986,15 +995,15 @@ ul {
 }
 
 .has-text-danger {
-    color: $error !important;
+  color: $error !important;
 }
 
 .centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
 }
 
 .icon.is-extra-large
@@ -1107,24 +1116,24 @@ ul {
 }
 
 #sent-message-form {
-    .close-modal {
-      display: flex;
-      position: sticky;
-      top: 0;
-      background-color: white;
-      z-index: 10;
-      padding: 20px 10px 10px;
-      justify-content: right;
-      transform: translateY(-20px);
+  .close-modal {
+    display: flex;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 10;
+    padding: 20px 10px 10px;
+    justify-content: right;
+    transform: translateY(-20px);
 
-    }
-    .meta-content {
-      padding-top: $spacing-small;
-      padding-bottom: $spacing-xl;
-    }
-    .message-content {
-      white-space: pre-line;
-    }
+  }
+  .meta-content {
+    padding-top: $spacing-small;
+    padding-bottom: $spacing-xl;
+  }
+  .message-content {
+    white-space: pre-line;
+  }
 
 }
 
@@ -1134,9 +1143,10 @@ ul {
   height: 20px;
   border-radius: 50%;
   &.active {
-   background-color: $green;
- }
+    background-color: $green;
+  }
   &.inactive {
     background-color: $red;
-    }
+  }
 }
+

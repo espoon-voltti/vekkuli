@@ -18,6 +18,14 @@ enum class PaymentType {
     Other
 }
 
+data class Price(
+    val id: Int,
+    val name: String,
+    val priceCents: Int,
+    val vatCents: Int,
+    val netPriceCents: Int,
+)
+
 data class Payment(
     val id: UUID,
     val reserverId: UUID,

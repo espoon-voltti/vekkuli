@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Invoice
@@ -17,6 +18,8 @@ class PaymentService(
     private val paymentRepo: PaymentRepository,
     private val invoicePaymentRepository: InvoicePaymentRepository,
 ) {
+    fun getPaymentClasses(): List<Price> = paymentRepo.getPaymentClasses()
+
     fun getPayment(stamp: UUID): Payment? = paymentRepo.getPayment(stamp)
 
     fun deletePaymentInCreatedStatusForReservation(reservationId: Int) {

@@ -5,10 +5,13 @@ import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Invoice
 import fi.espoo.vekkuli.domain.Payment
 import fi.espoo.vekkuli.domain.PaymentDetails
+import fi.espoo.vekkuli.domain.Price
 import java.time.LocalDateTime
 import java.util.*
 
 interface PaymentRepository {
+    fun getPaymentClasses(): List<Price>
+
     fun getPayment(stamp: UUID): Payment?
 
     fun getPaymentForReservation(reservationId: Int): Payment?

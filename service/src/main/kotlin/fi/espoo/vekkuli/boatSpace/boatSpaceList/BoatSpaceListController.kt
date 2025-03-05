@@ -6,6 +6,9 @@ import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.BoatSpaceService
+import fi.espoo.vekkuli.service.EditBoatSpaceParams
+import fi.espoo.vekkuli.service.PaymentService
+import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.utils.formatDecimal
 import fi.espoo.vekkuli.utils.formatInt
 import fi.espoo.vekkuli.utils.intToDecimal
@@ -51,6 +54,9 @@ data class BoatSpaceListRow(
 @RequestMapping("/virkailija/venepaikat")
 class BoatSpaceListController {
     @Autowired
+    private lateinit var paymentService: PaymentService
+
+    @Autowired
     private lateinit var boatSpaceService: BoatSpaceService
 
     @Autowired
@@ -84,12 +90,39 @@ class BoatSpaceListController {
         val boatSpaces =
             boatSpaceService.getBoatSpacesFiltered(params)
         val sections = boatSpaceService.getSections()
-
+        val paymentClasses = paymentService.getPaymentClasses()
         return ResponseEntity.ok(
             layout.render(
                 true,
                 request.requestURI,
-                boatSpaceList.render(boatSpaces, params, harbors, boatSpaceTypes, actualAmenities, sections)
+                boatSpaceList.render(boatSpaces, params, harbors, paymentClasses, boatSpaceTypes, actualAmenities, sections, params.edit)
+            )
+        )
+    }
+
+    @PostMapping("/selaa/muokkaa")
+    @ResponseBody
+    fun boatSpaceEdit(
+        request: HttpServletRequest,
+        @ModelAttribute params: BoatSpaceListEditParams,
+        model: Model
+    ) {
+        request.getAuthenticatedUser()?.let {
+            logger.audit(it, "EMPLOYEE_BOAT_SPACE_EDIT")
+        }
+
+        request.ensureEmployeeId()
+        boatSpaceService.editBoatSpaces(
+            params.edit,
+            EditBoatSpaceParams(
+                params.boatSpaceTypeEdit,
+                if (params.sectionEdit.isNullOrEmpty()) null else params.sectionEdit,
+                if (params.placeNumberEdit.isNullOrEmpty()) null else params.placeNumberEdit.toInt(),
+                params.boatSpaceAmenityEdit,
+                decimalToInt(params.widthEdit),
+                decimalToInt(params.lengthEdit),
+                params.paymentEdit,
+                params.boatSpaceStateEdit == BoatSpaceState.Active
             )
         )
     }

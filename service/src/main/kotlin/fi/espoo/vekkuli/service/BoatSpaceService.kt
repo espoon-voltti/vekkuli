@@ -23,12 +23,12 @@ data class BoatSpaceFilter(
 
 data class EditBoatSpaceParams(
     val type: BoatSpaceType,
-    val section: String,
-    val placeNumber: Int,
+    val section: String?,
+    val placeNumber: Int?,
     val amenity: BoatSpaceAmenity,
     val widthCm: Int,
     val lengthCm: Int,
-    val description: String,
+    val priceId: Int,
     val isActive: Boolean
 )
 
@@ -121,6 +121,10 @@ class BoatSpaceService(
         boatSpaceIds: List<Int>,
         editBoatSpaceParams: EditBoatSpaceParams
     ) {
-        boatSpaceRepo.editBoatSpaces(boatSpaceIds, editBoatSpaceParams)
+        var editParams = editBoatSpaceParams
+        if (boatSpaceIds.size > 1) {
+            editParams = editParams.copy(section = null, placeNumber = null)
+        }
+        boatSpaceRepo.editBoatSpaces(boatSpaceIds, editParams)
     }
 }

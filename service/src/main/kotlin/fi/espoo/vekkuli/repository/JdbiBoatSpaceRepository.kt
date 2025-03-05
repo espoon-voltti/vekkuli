@@ -282,12 +282,12 @@ class JdbiBoatSpaceRepository(
                 """
                 UPDATE boat_space bs
                 SET type = :type,
-                    section = :section,
-                    place_number = :placeNumber,
+                    section = COALESCE(:section, section),
+                    place_number = COALESCE(:placeNumber, place_number),
                     amenity = :amenity,
                     width_cm = :widthCm,
                     length_cm = :lengthCm,
-                    description = :description,
+                    price_id = :priceId,
                     is_active = :isActive,
                     updated = :currentTime
                 WHERE bs.id IN (<boatSpaceIds>)
@@ -300,7 +300,7 @@ class JdbiBoatSpaceRepository(
             query.bind("amenity", editBoatSpaceParams.amenity)
             query.bind("widthCm", editBoatSpaceParams.widthCm)
             query.bind("lengthCm", editBoatSpaceParams.lengthCm)
-            query.bind("description", editBoatSpaceParams.description)
+            query.bind("priceId", editBoatSpaceParams.priceId)
             query.bind("isActive", editBoatSpaceParams.isActive)
             query.bind("currentTime", timeProvider.getCurrentDateTime())
             query.execute()

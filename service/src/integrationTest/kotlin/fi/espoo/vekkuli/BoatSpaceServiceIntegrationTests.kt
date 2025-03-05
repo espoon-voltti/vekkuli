@@ -302,7 +302,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
                 BoatSpaceAmenity.Beam,
                 100,
                 200,
-                "Test boat space",
+                1,
                 true
             )
         boatSpaceService.editBoatSpaces(listOf(1, 84), editBoatSpaceParams)
@@ -315,7 +315,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Boat space amenity is the same")
         assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width is the same")
         assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length is the same")
-        assertEquals(editBoatSpaceParams.description, editedBoatSpace.description, "Boat space description is the same")
+        assertEquals(editBoatSpaceParams.priceId, editedBoatSpace, "Boat space description is the same")
         assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space is active")
 
         assertNotNull(editedBoatSpace2, "Boat space is edited")
@@ -324,7 +324,7 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         assertEquals(editBoatSpaceParams.amenity, editedBoatSpace2.amenity, "Boat space amenity is the same")
         assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace2.widthCm, "Boat space width is the same")
         assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace2.lengthCm, "Boat space length is the same")
-        assertEquals(editBoatSpaceParams.description, editedBoatSpace2.description, "Boat space description is the same")
+        assertEquals(editBoatSpaceParams.priceId, editedBoatSpace2.description, "Boat space description is the same")
         assertEquals(editBoatSpaceParams.isActive, editedBoatSpace2.isActive, "Boat space is active")
     }
 }
