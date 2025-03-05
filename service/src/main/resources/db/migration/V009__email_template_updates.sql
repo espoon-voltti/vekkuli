@@ -1,5 +1,6 @@
-UPDATE email_template SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksesta',
-                          body = E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksesta',
+    body    = E'Hyvä asiakas,
 
 Veneelle varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu.{{citizenReserverFi}}
 
@@ -89,10 +90,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id='reservation_created_by_citizen';
+WHERE id = 'reservation_created_by_citizen';
 
-UPDATE email_template SET subject = 'Espoon kaupungin {{placeTypeFi}}varaus',
-                          body = E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Espoon kaupungin {{placeTypeFi}}varaus',
+    body    = E'Hyvä asiakas,
 
 Sinulle on varattu Espoon kaupungin {{placeTypeFi}} {{name}}.
 
@@ -188,10 +190,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'reservation_created_by_employee';
+WHERE id = 'reservation_created_by_employee';
 
-UPDATE email_template SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen',
+    body= E'Hyvä asiakas,
 
 Veneelle varaamasi {{placeTypeFi}} on maksettu ja varaus on vahvistettu uudelle kaudelle.{{citizenReserverFi}}
 
@@ -272,10 +275,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'reservation_renewed_by_citizen';
+WHERE id = 'reservation_renewed_by_citizen';
 
-UPDATE email_template SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen',
+    body= E'Hyvä asiakas,
 
 Varaamasi Espoon kaupungin {{placeTypeFi}} on jatkettu tulevalle kaudelle.
 
@@ -356,10 +360,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'reservation_renewed_by_employee';
+WHERE id = 'reservation_renewed_by_employee';
 
-UPDATE email_template SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksen jatkaminen',
+    body= E'Hyvä asiakas,
 
 Varaamasi Espoon kaupungin {{placeTypeFi}} on jatkettu tulevalle kaudelle.
 
@@ -440,10 +445,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'reservation_renewed_by_employee_confirmed';
+WHERE id = 'reservation_renewed_by_employee_confirmed';
 
-UPDATE email_template SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksen vaihdosta',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksen vaihdosta',
+    body= E'Hyvä asiakas,
 
 Olet vaihtanut Espoon kaupungilta vuokraamaasi {{placeTypeFi}}a.
 
@@ -537,10 +543,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'reservation_switched_by_citizen';
+WHERE id = 'reservation_switched_by_citizen';
 
-UPDATE email_template SET subject = 'Vahvistus Espoon kaupungin venepaikan irtisanomisesta',
-                          body= E'Hei!,
+UPDATE email_template
+SET subject = 'Vahvistus Espoon kaupungin venepaikan irtisanomisesta',
+    body= E'Hei!,
 
 Espoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu.
 
@@ -612,10 +619,11 @@ Best regards,
 
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'reservation_termination_by_citizen';
+WHERE id = 'reservation_termination_by_citizen';
 
-UPDATE email_template SET subject = 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}',
-                          body= E'Hei!
+UPDATE email_template
+SET subject = 'Espoon kaupungin {{placeTypeFi}} {{name}} irtisanottu, asiakas: {{reserverName}}',
+    body= E'Hei!
 
 Espoon kaupungin {{placeTypeFi}} {{name}} on irtisanottu {{time}}
 
@@ -626,10 +634,11 @@ Irtisanoja:
 Nimi: {{terminatorName}}
 Sähköposti: {{terminatorEmail}}
 Puhelinnumero: {{terminatorPhone}}'
-                      WHERE id = 'reservation_termination_by_citizen_to_employee';
+WHERE id = 'reservation_termination_by_citizen_to_employee';
 
-UPDATE email_template SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksesta',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Vahvistus Espoon kaupungin {{placeTypeFi}}varauksesta',
+    body= E'Hyvä asiakas,
 
 Sinulle on varattu Espoon kaupungin {{placeTypeFi}} {{name}}.
 
@@ -719,10 +728,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'reservation_created_by_employee_confirmed';
+WHERE id = 'reservation_created_by_employee_confirmed';
 
-UPDATE email_template SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksesi on päättymässä',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Espoon kaupungin {{placeTypeFi}}varauksesi on päättymässä',
+    body= E'Hyvä asiakas,
 
 Espoon kaupungin {{placeTypeFi}} {{name}} varausaika on päättymässä {{endDate}}.
 
@@ -773,10 +783,11 @@ You can check reservation periods and make a new reservation at https://varaukse
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'fixed_term_reservation_expiring';
+WHERE id = 'fixed_term_reservation_expiring';
 
-UPDATE email_template SET subject = 'Varmista Espoon kaupungin {{placeTypeFi}}si jatko ensi kaudelle nyt',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Varmista Espoon kaupungin {{placeTypeFi}}si jatko ensi kaudelle nyt',
+    body= E'Hyvä asiakas,
 
 On aika jatkaa {{placeTypeFi}}si varausta ensi kaudelle.
 
@@ -893,10 +904,11 @@ Terms and conditions for boat harbors and additional information can be found at
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'boat_reservation_renew_reminder';
+WHERE id = 'boat_reservation_renew_reminder';
 
-UPDATE email_template SET subject = 'Ilmoitus sopimuksen irtisanomisesta',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Ilmoitus sopimuksen irtisanomisesta',
+    body= E'Hyvä asiakas,
 
 Venepaikka: {{harbor}} {{place}} on irtisanottu virkailijan toimesta.
 
@@ -910,10 +922,11 @@ Mikäli teillä on kysyttävää, ota yhteyttä sähköpostilla {{employeeEmail}
 Terveisin
 Merellinen ulkoilu
 {{employeeEmail}}'
-                      WHERE id = 'marine_employee_reservation_termination_custom_message';
+WHERE id = 'marine_employee_reservation_termination_custom_message';
 
-UPDATE email_template SET subject = 'Espoon kaupungin venepaikan vuokrasopimus on päättynyt',
-                          body= E'Hyvä asiakas,
+UPDATE email_template
+SET subject = 'Espoon kaupungin venepaikan vuokrasopimus on päättynyt',
+    body= E'Hyvä asiakas,
 
 Espoon kaupungin {{placeTypeFi}} {{name}} vuokrasopimus on päättynyt.
 
@@ -958,13 +971,14 @@ You can check reservation periods and make a new reservation at https://varaukse
 Best regards
 Maritime Outdoor Services
 venepaikat@espoo.fi'
-                      WHERE id = 'expired_reservation';
+WHERE id = 'expired_reservation';
 
-UPDATE email_template SET subject = 'Säilytyspaikan {{name}} vuokrasopimus on päättynyt, asiakas: {{reserverName}}',
-                          body= E'Säilytyspaikan {{name}} vuokrasopimus on päättynyt {{endDate}}, asiakas ei ole maksanut kausimaksua uudelle kaudelle eräpäivään mennessä.
+UPDATE email_template
+SET subject = 'Säilytyspaikan {{name}} vuokrasopimus on päättynyt, asiakas: {{reserverName}}',
+    body= E'Säilytyspaikan {{name}} vuokrasopimus on päättynyt {{endDate}}, asiakas ei ole maksanut kausimaksua uudelle kaudelle eräpäivään mennessä.
 
 Asiakas:
 {{reserverName}}
 
 Sähköposti: {{reserverEmail}}'
-                      WHERE id = 'storage_place_expired_to_employee';
+WHERE id = 'storage_place_expired_to_employee';
