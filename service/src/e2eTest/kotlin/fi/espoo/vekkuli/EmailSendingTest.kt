@@ -279,7 +279,7 @@ open class EmailSendingTest : PlaywrightTest() {
     ) = assertIndefiniteReservationEmail(
         emailAddress,
         "Espoon kaupungin laituripaikkavarauksen jatkaminen",
-        "Varaamasi Espoon kaupungin laituripaikka on jatkettu uudelle kaudelle.",
+        "Varaamasi Espoon kaupungin laituripaikka on jatkettu tulevalle kaudelle.",
         sendAndAssertSendCount
     )
 
