@@ -65,9 +65,6 @@ data class BoatSpaceReservationDetails(
         get() = formatInt(vatCents)
     val priceWithoutVatInEuro: String
         get() = formatInt(netPriceCents)
-
-    val discountedPriceCents: Int
-        get() = discountedPriceInCents(priceCents, discountPercentage)
 }
 
 fun BoatSpaceReservationDetails.toBoatSpaceReservation() =
