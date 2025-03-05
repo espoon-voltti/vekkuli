@@ -143,11 +143,11 @@ export default {
       locations:
         'Varattavia laituripaikkoja löytyy seuraavista satamista: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja ja Svinö. Talvipaikkoja on varattavissa Laajalahdessa, Otsolahdessa ja Suomenojalla sekä ympärivuotisia säilytyspaikkoja Ämmäsmäellä.',
       authenticationRequired:
-        'Paikan varaaminen vaatii vahvan tunnistautumisen ja venepaikka maksetaan varaamisen yhteydessä.',
+        'Paikan varaaminen vaatii vahvan tunnistautumisen ja venepaikka maksetaan varaamisen yhteydessä. Varausjärjestelmä toimii parhaiten Google Chrome ja Edge selaimilla.',
       boatRequired:
         'Vain veneen omistaja tai haltija voi varata vene-, talvi-, tai säilytyspaikkoja. Pidä huoli, että tiedot ovat oikein Traficomin venerekisterissä.',
       contactInfo:
-        'Jos et voi tunnistautua sähköisesti, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
+        'Jos et voi tunnistautua sähköisesti tai varaat ensimmäistä kertaa yhteisön (yritys tai seura) puolesta, ota yhteyttä sähköpostilla venepaikat@espoo.fi tai puhelimitse 09 81658984 ma ja ke klo 12.30-15 ja to 9-11.',
       preparations:
         'Tarvitset varausta varten seuraavat tiedot: sähköpostiosoite, puhelinnumero, veneen rekisteritunnus, leveys, pituus ja paino, veneen nimi ja merkki tai muu tunniste. Jos varaat ensimmäistä kertaa yhteisön puolesta tarvitset lisäksi yhteisön Y-tunnuksen ja laskutusosoitteen.',
       readMore:
@@ -168,7 +168,7 @@ export default {
       Trailer: {
         title: 'Suomenojan traileripaikkojen varaaminen 2025',
         season: (season: string) =>
-          `Vuokrakausi ${season} Vene trailerilla, vesillelasku luiskalta.`,
+          `Vuokrakausi ${season}. Vene trailerilla, vesillelasku luiskalta.`,
         periods: [
           (period: string) =>
             `${period} vain espoolaiset* toistaiseksi voimassa olevan paikan vuokraajat voivat jatkaa traileripaikan vuokrausta`,

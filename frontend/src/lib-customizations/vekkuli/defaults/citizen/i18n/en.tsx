@@ -144,11 +144,11 @@ const en: Translations = {
       locations:
         'Available berth places can be found at the following marinas: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja, and Svinö. Winter storage places are available at Laajalahti, Otsolahti, and Suomenoja, as well as year-round storage places at Ämmäsmäki.',
       authenticationRequired:
-        'Reserving a place requires strong authentication, and the berth is paid for at the time of reservation.',
+        'Reserving a place requires strong authentication, and the berth is paid for at the time of reservation. The reservation system works best with Google Chrome and Edge browsers.',
       boatRequired:
         'Only the owner or holder of a boat can reserve berth, winter, or storage places. Ensure that the information is correct in Traficom’s boat register.',
       contactInfo:
-        'If you are unable to authenticate electronically, contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mon and Wed from 12:30-15:00 and Thu from 9:00-11:00.',
+        'If you cannot authenticate electronically or are making a reservation for the first time on behalf of a community (company or club), please contact us by email at venepaikat@espoo.fi or by phone at 09 81658984 on Mondays and Wednesdays from 12:30 to 15:00 and on Thursdays from 9:00 to 11:00.',
       preparations: `For the booking, you need the following information: email address, phone number, boat's registration number, width, length, and weight, boat's name and brand or another identifier. If you are booking for the first time on behalf of a community, you also need the community's business ID and billing address.`,
       readMore:
         'You can find more information about marinas, berth fees, and boat storage <a target="_blank" aria-label="Espoo boating homepage (link opens in a new tab)" href="https://www.espoo.fi/en/sports-and-nature/boating">here</a>.'
@@ -168,7 +168,7 @@ const en: Translations = {
       Trailer: {
         title: 'Booking trailer parking spots at Suomenoja 2025',
         season: (season: string) =>
-          `Rental season ${season} Boat on a trailer, launch from the ramp.`,
+          `Rental season ${season}. Boat on a trailer, launch from the ramp.`,
         periods: [
           (period: string) =>
             `${period} only Espoo residents* with a current rental agreement for a trailer spot can renew their rental`,
