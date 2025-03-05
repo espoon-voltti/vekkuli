@@ -44,6 +44,15 @@ class JdbiBoatRepository(
             }
         }
 
+    override fun getBoatCountForReserver(reserverId: UUID): Int =
+        jdbi.withHandleUnchecked { handle ->
+            handle
+                .createQuery("SELECT COUNT(*) FROM boat WHERE reserver_id = :reserverId AND deleted_at IS NULL")
+                .bind("reserverId", reserverId)
+                .mapTo<Int>()
+                .one()
+        }
+
     override fun getBoatsForReserversOrganizations(reserverId: UUID): Map<String, List<Boat>> =
         jdbi.withHandleUnchecked { handle ->
             val query = """

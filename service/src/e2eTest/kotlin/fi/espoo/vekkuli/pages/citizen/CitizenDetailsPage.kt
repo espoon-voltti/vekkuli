@@ -6,12 +6,14 @@ import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.pages.BasePage
 import fi.espoo.vekkuli.pages.citizen.components.IHaveBoatList
+import fi.espoo.vekkuli.pages.citizen.components.IHaveErrorModal
 import fi.espoo.vekkuli.pages.citizen.components.IHaveReservationList
 
 class CitizenDetailsPage(
     page: Page
 ) : BasePage(page),
     IHaveBoatList<CitizenDetailsPage>,
+    IHaveErrorModal<CitizenDetailsPage>,
     IHaveReservationList<CitizenDetailsPage> {
     class CitizenSection(
         root: Locator
@@ -37,14 +39,6 @@ class CitizenDetailsPage(
         val businessIdField = fields.getField("Y-tunnus")
     }
 
-    inner class ErrorModal(
-        private val root: Locator
-    ) {
-        private val fields = FieldLocator(root)
-        val title = root.getByRole(AriaRole.HEADING, Locator.GetByRoleOptions().setName("Varaaminen ei onnistunut").setExact(true))
-        val okButton = root.getByRole(AriaRole.BUTTON, Locator.GetByRoleOptions().setName("Ok").setExact(true))
-    }
-
     fun navigateToPage() {
         page.navigate("$baseUrl/kuntalainen/omat-tiedot?lang=en")
     }
@@ -57,6 +51,4 @@ class CitizenDetailsPage(
     val boatSpaceSearchLink = page.getByRole(AriaRole.LINK, Page.GetByRoleOptions().setName("Venepaikat").setExact(true))
 
     fun getOrganizationsSection(text: String) = OrganizationSection(organizationListRows.filter(Locator.FilterOptions().setHasText(text)))
-
-    fun getErrorModal() = ErrorModal(getByDataTestId("error-modal"))
 }
