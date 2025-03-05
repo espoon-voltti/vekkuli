@@ -659,6 +659,13 @@ tr.table-borderless th {
       margin-left: $spacing-small;
     }
   }
+
+  .general-warning-checkbox {
+    input[type="checkbox"] {
+      color: $white;
+      accent-color: $warning;
+    }
+  }
 }
 
 .reservation-card::before {

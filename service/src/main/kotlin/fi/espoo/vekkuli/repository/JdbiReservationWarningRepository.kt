@@ -74,16 +74,25 @@ class JdbiReservationWarningRepository(
                 .execute()
         }
 
-    override fun deleteReservationWarningsForReservation(reservationId: Int) {
+    override fun deleteReservationWarningsForReservation(
+        reservationId: Int,
+        key: String?
+    ) {
         jdbi.withHandleUnchecked { handle ->
-            handle
-                .createUpdate(
-                    """
+            val query =
+                handle
+                    .createUpdate(
+                        """
                     DELETE from reservation_warning
                     WHERE reservation_id = :reservationId
+                    ${if (key != null) " AND key = :key" else "" }
                     """
-                ).bind("reservationId", reservationId)
-                .execute()
+                    ).bind("reservationId", reservationId)
+            if (key != null) {
+                query.bind("key", key)
+            }
+
+            query.execute()
         }
     }
 }

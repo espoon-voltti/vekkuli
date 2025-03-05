@@ -87,7 +87,10 @@ interface ReservationWarningRepository {
         keys: List<String>,
     ): Unit
 
-    fun deleteReservationWarningsForReservation(reservationId: Int)
+    fun deleteReservationWarningsForReservation(
+        reservationId: Int,
+        key: String? = null
+    )
 }
 
 @Service
