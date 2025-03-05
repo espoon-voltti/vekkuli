@@ -6,6 +6,7 @@ import fi.espoo.vekkuli.boatSpace.seasonalService.SeasonalService
 import fi.espoo.vekkuli.common.Conflict
 import fi.espoo.vekkuli.common.Forbidden
 import fi.espoo.vekkuli.common.Unauthorized
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.repository.ReserverRepository
 import fi.espoo.vekkuli.service.*
@@ -590,6 +591,27 @@ class ReservationServiceTests : IntegrationTestBase() {
                 eq(listOf("test@test.com"))
             )
         }
+
+    @Test
+    fun `Should limit the boat count`() {
+        loginAs(citizenIdMarko)
+        allowReservation(eq(citizenIdMarko))
+        val boatSpaceId = insertBoatSpace()
+        val information = createReservationInformation()
+
+        for (i in 0 until BoatSpaceConfig.MAX_CITIZEN_BOATS) {
+            insertBoat(citizenIdMarko)
+        }
+
+        val (reservationId) = reservationService.startReservation(boatSpaceId)
+
+        val exception =
+            assertThrows<IllegalStateException> {
+                reservationService.fillReservationInformation(reservationId, information)
+            }
+
+        assertEquals("Can't add new boat for reserver", exception.message)
+    }
 
     private fun insertBoat(
         citizenId: UUID,

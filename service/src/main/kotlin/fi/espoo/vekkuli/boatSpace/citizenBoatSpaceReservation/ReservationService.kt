@@ -11,6 +11,7 @@ import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.config.BoatSpaceConfig.doesBoatFit
 import fi.espoo.vekkuli.config.Dimensions
 import fi.espoo.vekkuli.domain.*
+import fi.espoo.vekkuli.repository.BoatRepository
 import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.SecondsRemaining
 import fi.espoo.vekkuli.utils.TimeProvider
@@ -34,7 +35,8 @@ open class ReservationService(
     private val organizationService: OrganizationService,
     private val paymentService: PaymentService,
     private val permissionService: PermissionService,
-    private val switchPolicyService: SwitchPolicyService
+    private val switchPolicyService: SwitchPolicyService,
+    private val boatRepository: BoatRepository
 ) {
     fun getUnfinishedReservationForCurrentCitizen(): BoatSpaceReservation? {
         val (citizenId) = citizenAccessControl.requireCitizen()
@@ -212,6 +214,10 @@ open class ReservationService(
             throw Conflict("Reservation is already filled")
         }
 
+        if (containsNewBoat(information) && !canAddNewBoatToReserver(getReserverId(citizenId, information))) {
+            throw IllegalStateException("Can't add new boat for reserver")
+        }
+
         return reservationFormServiceAdapter.fillReservationInformation(citizenId, reservationId, information)
     }
 
@@ -318,6 +324,18 @@ open class ReservationService(
         validateCurrentCitizenAccessToReservation(result)
         return result
     }
+
+    private fun getReserverId(
+        citizenId: UUID,
+        information: ReservationInformation
+    ): UUID = information.organization?.id ?: citizenId
+
+    private fun canAddNewBoatToReserver(reserverId: UUID): Boolean {
+        val reserverBoatCount = boatRepository.getBoatCountForReserver(reserverId)
+        return reserverBoatCount < BoatSpaceConfig.MAX_CITIZEN_BOATS
+    }
+
+    private fun containsNewBoat(information: ReservationInformation): Boolean = information.boat.id == null
 }
 
 data class ReservationInformation(

@@ -3,9 +3,11 @@ package fi.espoo.vekkuli.employee
 import com.microsoft.playwright.Locator
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.controllers.UserType
 import fi.espoo.vekkuli.domain.BoatSpaceType
 import fi.espoo.vekkuli.domain.PaymentStatus
+import fi.espoo.vekkuli.pages.citizen.CitizenHomePage
 import fi.espoo.vekkuli.pages.employee.*
 import fi.espoo.vekkuli.service.SendEmailServiceMock
 import fi.espoo.vekkuli.utils.mockTimeProvider
@@ -15,6 +17,9 @@ import java.time.LocalDateTime
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import fi.espoo.vekkuli.pages.citizen.BoatSpaceFormPage as CitizenBoatSpaceFormPage
+import fi.espoo.vekkuli.pages.citizen.PaymentPage as CitizenPaymentPage
+import fi.espoo.vekkuli.pages.citizen.ReserveBoatSpacePage as CitizenReserveBoatSpacePage
 
 @ActiveProfiles("test")
 class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
@@ -1240,6 +1245,67 @@ class ReserveBoatSpaceAsEmployeeTest : ReserveTest() {
         messageService.sendScheduledEmails()
         assertEquals(2, SendEmailServiceMock.emails.size)
         assertTrue(SendEmailServiceMock.emails.all { it.body.contains("Lasku lähetetään osoitteeseen $organizationName") })
+    }
+
+    @Test
+    fun `Employee should not be bound by citizen boat count limits`() {
+        // create maximum amount of boats for citizen
+        // uses citizen frontend because employee does not have back button
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val citizenReservationPage = CitizenReserveBoatSpacePage(page)
+        val citizenFormPage = CitizenBoatSpaceFormPage(page)
+        val citizenPaymentPage = CitizenPaymentPage(page)
+
+        citizenReservationPage.navigateToPage()
+        citizenReservationPage.startReservingBoatSpaceB314()
+
+        citizenFormPage.fillFormAndSubmit()
+
+        for (i in 1..BoatSpaceConfig.MAX_CITIZEN_BOATS) {
+            assertThat(citizenPaymentPage.header).isVisible()
+            citizenPaymentPage.backButton.click()
+
+            assertThat(citizenFormPage.header).isVisible()
+            citizenFormPage.fillFormAndSubmit {
+                val boatNumber = i + 1
+                val boatSection = getBoatSection()
+                boatSection.newBoatSelection.click()
+                boatSection.depthInput.fill("1.5")
+                boatSection.weightInput.fill("2000")
+                boatSection.nameInput.fill("My Boat $boatNumber")
+                boatSection.otherIdentifierInput.fill("B$boatNumber")
+                boatSection.noRegistrationCheckbox.check()
+                boatSection.ownerRadio.check()
+            }
+        }
+
+        val citizenErrorModal = citizenFormPage.getErrorModal()
+        assertThat(citizenErrorModal.root).isVisible()
+        citizenErrorModal.okButton.click()
+
+        citizenFormPage.cancelButton.click()
+        citizenFormPage.getConfirmCancelReservationModal().confirmButton.click()
+        assertThat(citizenReservationPage.header).isVisible()
+
+        // create boat as employee
+        EmployeeHomePage(page).employeeLogin()
+        val employeeReservationPage = ReserveBoatSpacePage(page, UserType.EMPLOYEE)
+        val employeeFormPage = BoatSpaceFormPage(page)
+        val employeeInvoicePage = InvoicePreviewPage(page)
+
+        employeeReservationPage.navigateTo()
+        employeeReservationPage.revealB314BoatSpace()
+        employeeReservationPage.reserveTableB314Row.locator(".reserve-button").click()
+
+        employeeFormPage.existingCitizenSelector.click()
+        typeText(employeeFormPage.citizenSearchInput, "mikko")
+        page.waitForCondition { employeeFormPage.citizenSearchOption1.isVisible }
+        employeeFormPage.citizenSearchOption1.clickAndWaitForHtmxSettle()
+        fillBoatAndOtherDetails(employeeFormPage)
+        employeeFormPage.submitButton.click()
+
+        assertThat(employeeInvoicePage.header).isVisible()
     }
 
     private fun renewABoatSpaceReservation(sendInvoice: Boolean) {
