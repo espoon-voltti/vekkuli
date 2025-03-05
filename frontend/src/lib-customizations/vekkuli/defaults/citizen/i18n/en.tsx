@@ -128,7 +128,10 @@ const en: Translations = {
     goToHomepage: 'Go to homepage',
     goToMainContent: 'Skip to main content',
     selectLanguage: 'Select language',
-    mainNavigation: 'Main navigation'
+    mainNavigation: 'Main navigation',
+    instructionsLink: 'Guide',
+    openInANewWindow: 'Open in a new tab',
+    mapsLink: 'You can open the maps of harbors and storage locations in a new tab from here.'
   },
   footer: {
     accessibilityLink: 'Accessibility statement',

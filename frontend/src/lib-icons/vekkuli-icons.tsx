@@ -1084,3 +1084,36 @@ export const VekkuliLogo = () => (
     </defs>
   </svg>
 )
+
+export const OpenInNew = () => (
+    <svg
+        width="17"
+        height="16"
+        viewBox="0 0 17 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12.7695 9C12.4883 9 12.2695 9.25 12.2695 9.5V14C12.2695 14.5625 11.8008 15 11.2695 15H2.26953C1.70703 15 1.26953 14.5625 1.26953 14V5C1.26953 4.46875 1.70703 4 2.26953 4H5.76953C6.01953 4 6.26953 3.78125 6.26953 3.5C6.26953 3.25 6.01953 3 5.76953 3H2.26953C1.14453 3 0.269531 3.90625 0.269531 5V14C0.269531 15.125 1.14453 16 2.26953 16H11.2695C12.3633 16 13.2695 15.125 13.2695 14V9.5C13.2695 9.25 13.0195 9 12.7695 9ZM15.7695 0H10.7695C10.4883 0 10.2695 0.25 10.2695 0.5C10.2695 0.78125 10.4883 1 10.7695 1H14.5508L5.89453 9.65625C5.70703 9.84375 5.70703 10.1875 5.89453 10.375C5.98828 10.4688 6.11328 10.5 6.26953 10.5C6.39453 10.5 6.51953 10.4688 6.61328 10.375L15.2695 1.71875V5.5C15.2695 5.78125 15.4883 6 15.7695 6C16.0195 6 16.2695 5.78125 16.2695 5.5V0.5C16.2695 0.25 16.0195 0 15.7695 0Z"
+            fill="#0047B6"/>
+    </svg>
+)
+
+export const MapIcon = () => (
+    <svg width="28" height="41" viewBox="0 0 28 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clipPath="url(#clip0_6675_67418)">
+        <path d="M23.8581 7.98828H1.88281V38.0573H23.8581V7.98828Z" stroke="#0047B6" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M23.9969 8.06416L5.33594 3.01562L5.39273 8.15056" stroke="#0047B6" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M5.23438 3.01953H26.6174V32.3726H23.8345" stroke="#0047B6" strokeWidth="2" strokeLinejoin="round"/>
+        <path d="M12.875 18.4141V30.3668" stroke="#0047B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M18.3727 25.0234C18.3727 28.1011 15.9102 30.5986 12.8758 30.5986C9.84134 30.5986 7.37891 28.1011 7.37891 25.0234" stroke="#0047B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9.05078 20.5312H16.6977" stroke="#0047B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12.8743 18.4074C13.6787 18.4074 14.3307 17.746 14.3307 16.9302C14.3307 16.1145 13.6787 15.4531 12.8743 15.4531C12.07 15.4531 11.418 16.1145 11.418 16.9302C11.418 17.746 12.07 18.4074 12.8743 18.4074Z" stroke="#0047B6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </g>
+      <defs>
+        <clipPath id="clip0_6675_67418">
+          <rect width="26.9767" height="40" fill="white" transform="translate(0.761719 0.535156)"/>
+        </clipPath>
+      </defs>
+    </svg>
+
+)

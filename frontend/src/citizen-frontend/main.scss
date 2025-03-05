@@ -649,6 +649,11 @@ a.active {
 .logout-icon {
   vertical-align: text-bottom;
 }
+.open-in-new-link {
+  display: flex;
+  gap: $spacing-small;
+  align-items: center;
+}
 
 .payment-form,
 .payment-form button {
@@ -1055,4 +1060,10 @@ ul {
 
 .content {
   --bulma-content-heading-weight: --bulma-weight-normal;
+}
+
+.instructions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }

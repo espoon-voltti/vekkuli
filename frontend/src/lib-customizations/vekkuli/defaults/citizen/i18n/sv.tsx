@@ -127,7 +127,10 @@ const sv: Translations = {
     goToHomepage: 'Gå till hemsidan',
     goToMainContent: 'Hoppa till innehållet',
     selectLanguage: 'Välj språk',
-    mainNavigation: 'Huvudnavigering'
+    mainNavigation: 'Huvudnavigering',
+    instructionsLink: 'Instruktioner',
+    openInANewWindow: 'Öppna i en ny flik',
+    mapsLink: 'Du kan öppna kartorna över hamnar och förvaringsplatser i en ny flik härifrån.'
   },
   footer: {
     accessibilityLink: 'Tillgänglighetsutlåtande',

@@ -127,7 +127,10 @@ export default {
     goToHomepage: 'Siirry etusivulle',
     goToMainContent: 'Siirry pääsisältöön',
     selectLanguage: 'Valitse kieli',
-    mainNavigation: 'Päänavigaatio'
+    mainNavigation: 'Päänavigaatio',
+    instructionsLink: 'Ohje',
+    openInANewWindow: 'Avaa uudessa välilehdessä',
+    mapsLink: 'Satamien ja säilytyspaikkojen kartat voit avata uudelle välilehdelle tästä'
   },
   footer: {
     accessibilityLink: 'Saavutettavuusseloste',
