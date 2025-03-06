@@ -18,7 +18,9 @@ class InvoicePaymentService(
     fun fetchAndStoreInvoicePayments() {
         val invoicePaymentResponse = invoicePaymentClient.getPayments()
         val invoicePayments = invoicePaymentResponse.map { createInvoicePayment(it) }
-        invoicePaymentRepository.insertInvoicePayments(invoicePayments)
+        if (invoicePayments.isNotEmpty()) {
+            invoicePaymentRepository.insertInvoicePayments(invoicePayments)
+        }
     }
 
     private fun createInvoicePayment(invoicePaymentResponse: InvoicePaymentResponse): InvoicePayment {
