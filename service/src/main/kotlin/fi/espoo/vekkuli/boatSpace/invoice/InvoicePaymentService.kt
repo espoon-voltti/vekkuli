@@ -17,13 +17,13 @@ class InvoicePaymentService(
     @Scheduled(fixedRate = 1000 * 60 * 60)
     fun fetchAndStoreInvoicePayments() {
         val invoicePaymentResponse = invoicePaymentClient.getPayments()
-        val invoicePayments = invoicePaymentResponse.map { createInvoicePayment(it) }
+        val invoicePayments = invoicePaymentResponse.receipts.map { createInvoicePayment(it) }
         if (invoicePayments.isNotEmpty()) {
             invoicePaymentRepository.insertInvoicePayments(invoicePayments)
         }
     }
 
-    private fun createInvoicePayment(invoicePaymentResponse: InvoicePaymentResponse): InvoicePayment {
+    private fun createInvoicePayment(invoicePaymentResponse: Receipt): InvoicePayment {
         try {
             val invoiceNumber = (invoicePaymentResponse.invoiceNumber.split("_").last()).toInt()
             val amountPaidCents =
