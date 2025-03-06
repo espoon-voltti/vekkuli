@@ -19,25 +19,23 @@ class JdbiReservationWarningRepository(
         keys: List<String>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
-            val sql = StringBuilder()
-
-            sql.append("INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, info_text, key) VALUES ")
-            sql.append(
-                keys
-                    .mapIndexed { index, _ ->
-                        "(:reservationId, :boatId, :trailerId, :infoText, :key$index)"
-                    }.joinToString(", ")
-            )
-
-            val query = handle.createUpdate(sql.toString())
-            query.bind("reservationId", reservationId)
-            query.bind("boatId", boatId)
-            query.bind("trailerId", trailerId)
-            query.bind("infoText", infoText)
-            keys.forEachIndexed { index, key ->
-                query.bind("key$index", key)
+            val batch =
+                handle.prepareBatch(
+                    """
+                    INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, info_text, key) 
+                    VALUES (:reservationId, :boatId, :trailerId, :infoText, :key)
+                    """.trimIndent()
+                )
+            for (key in keys) {
+                batch
+                    .bind("reservationId", reservationId)
+                    .bind("boatId", boatId)
+                    .bind("trailerId", trailerId)
+                    .bind("infoText", infoText)
+                    .bind("key", key)
+                    .add()
             }
-            query.execute()
+            batch.execute()
         }
 
     override fun getWarningsForReservation(reservationId: Int): List<ReservationWarning> =
