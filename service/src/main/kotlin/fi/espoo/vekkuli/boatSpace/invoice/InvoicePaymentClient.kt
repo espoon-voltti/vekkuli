@@ -4,6 +4,7 @@ import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.EspiEnv
 import fi.espoo.vekkuli.utils.TimeProvider
 import io.ktor.client.call.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -36,6 +37,11 @@ object BigDecimalSerializer : KSerializer<BigDecimal> {
 
 @Serializable
 data class InvoicePaymentResponse(
+    val receipts: List<Receipt>
+)
+
+@Serializable
+data class Receipt(
     val transactionNumber: Int,
     @Serializable(with = BigDecimalSerializer::class)
     val amountPaid: BigDecimal,
@@ -44,17 +50,17 @@ data class InvoicePaymentResponse(
 )
 
 interface InvoicePaymentClient {
-    fun getPayments(): List<InvoicePaymentResponse>
+    fun getPayments(): InvoicePaymentResponse
 }
 
 @Profile("test || local")
 @Service
 class MockInvoicePaymentClient : InvoicePaymentClient {
-    private var payments: List<InvoicePaymentResponse> = listOf()
+    private var payments: List<Receipt> = listOf()
 
-    override fun getPayments(): List<InvoicePaymentResponse> = payments
+    override fun getPayments(): InvoicePaymentResponse = InvoicePaymentResponse(receipts = payments)
 
-    fun setPayments(payments: List<InvoicePaymentResponse>) {
+    fun setPayments(payments: List<Receipt>) {
         this.payments = payments
     }
 }
@@ -65,13 +71,13 @@ class EspiInvoicePaymentClient(
     val espiEnv: EspiEnv,
     val timeProvider: TimeProvider
 ) : InvoicePaymentClient {
-    override fun getPayments(): List<InvoicePaymentResponse> =
+    override fun getPayments(): InvoicePaymentResponse =
         runBlocking {
             val (apiUrl, apiUsername, apiPassword) = espiEnv
-            val today = timeProvider.getCurrentDateTime()
+            val startDate = timeProvider.getCurrentDateTime().minusDays(1)
 
             val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
-            val formattedDate = today.format(formatter)
+            val formattedDate = startDate.format(formatter)
             val encodedDate = URLEncoder.encode(formattedDate, StandardCharsets.UTF_8.toString())
 
             val url = "$apiUrl/invoice/api/v1/receipts?startDate=$encodedDate"
@@ -87,6 +93,9 @@ class EspiInvoicePaymentClient(
                     headers,
                 )
 
-            response.body<List<InvoicePaymentResponse>>()
+            if (response.bodyAsText().isEmpty()) {
+                InvoicePaymentResponse(receipts = listOf())
+            }
+            response.body<InvoicePaymentResponse>()
         }
 }
