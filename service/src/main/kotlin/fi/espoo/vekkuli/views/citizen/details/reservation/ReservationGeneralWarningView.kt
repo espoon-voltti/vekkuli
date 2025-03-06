@@ -1,7 +1,7 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.utils.addTestId
+import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
 import java.util.*
@@ -10,9 +10,9 @@ import java.util.*
 class ReservationGeneralWarningView : BaseView() {
     private fun reservationWarningContainer(
         reservationId: Int,
-        hasGeneralWarning: Boolean
+        generalWarning: ReservationWarning?
     ): String {
-        if (hasGeneralWarning) {
+        if (generalWarning != null) {
             // language=HTML
             return """
                 <div class="column">
@@ -42,7 +42,7 @@ class ReservationGeneralWarningView : BaseView() {
     fun showAcknowledgeWarningModal(
         reservationId: Int,
         reserverId: UUID,
-        hasGeneralWarning: Boolean
+        generalWarning: ReservationWarning?
     ): String {
         val submitUrl = getServiceUrl("/virkailija/kayttaja/reservation/partial/general-warning/$reserverId/$reservationId")
         // language=HTML
@@ -55,13 +55,13 @@ class ReservationGeneralWarningView : BaseView() {
                           hx-target="#general-warning-$reservationId"                               
                          >
                         <div class="block">
-                            <h1 class="label">${t("citizenDetails.label.warningInfo")}</h1>
+                            <h1 class="label">${t("employee.reservation.warning.infoText")}</h1>
                             <div class="control">
-                                <textarea data-testid="warning-info-input" class="textarea" rows="1" name="infoText"></textarea>
+                                <textarea data-testid="warning-info-input" class="textarea" rows="1" name="infoText">${generalWarning?.infoText ?: ""}</textarea>
                             </div>
                         </div>
                         <div class="block">
-                        ${if (!hasGeneralWarning) {
+                        ${if (generalWarning == null) {
                             """
                             <button id="ack-modal-cancel"
                                 class="button"
@@ -81,7 +81,7 @@ class ReservationGeneralWarningView : BaseView() {
                             """
                             <button id="ack-modal-update"
                                     hx-patch="$submitUrl"
-                                    class="button is-primary"
+                                    class="button"
                                     type="submit">
                                 ${t("employee.reservation.warning.update")}
                             </button>
@@ -119,13 +119,13 @@ class ReservationGeneralWarningView : BaseView() {
     fun renderContent(
         reservationId: Int,
         reserverId: UUID,
-        hasGeneralWarning: Boolean
+        generalWarning: ReservationWarning?
     ): String {
         // language=HTML
         return """
             <div x-data="{ modalOpen: false }" id="general-warning-$reservationId">
-                ${reservationWarningContainer(reservationId, hasGeneralWarning)}
-                ${showAcknowledgeWarningModal(reservationId, reserverId, hasGeneralWarning)}
+                ${reservationWarningContainer(reservationId, generalWarning)}
+                ${showAcknowledgeWarningModal(reservationId, reserverId, generalWarning)}
             </div>
             """.trimIndent()
     }

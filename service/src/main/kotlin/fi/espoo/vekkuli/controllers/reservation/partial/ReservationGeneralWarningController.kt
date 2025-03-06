@@ -3,6 +3,7 @@ package fi.espoo.vekkuli.controllers.reservation.partial
 import fi.espoo.vekkuli.boatSpace.reservationForm.UnauthorizedException
 import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.config.getAuthenticatedUser
+import fi.espoo.vekkuli.domain.ReservationWarning
 import fi.espoo.vekkuli.service.MemoService
 import fi.espoo.vekkuli.service.ReservationWarningRepository
 import fi.espoo.vekkuli.views.citizen.details.reservation.ReservationGeneralWarningView
@@ -15,7 +16,7 @@ import java.util.UUID
 
 @Controller
 @RequestMapping("/virkailija/kayttaja/reservation/partial")
-class ReservationGeneralWarning {
+class ReservationGeneralWarningController {
     @Autowired
     private lateinit var memoService: MemoService
 
@@ -42,13 +43,13 @@ class ReservationGeneralWarning {
         }
 
         val warnings = warningsRepository.getWarningsForReservation(reservationId)
-        val hasGeneralWarning = warnings.any { it.key == generalWarningsKey }
+        val generalWarning = warnings.find { it.key == generalWarningsKey }
 
         return ResponseEntity.ok(
             reservationWarningView.renderContent(
                 reservationId,
                 reserverId,
-                hasGeneralWarning
+                generalWarning
             )
         )
     }
@@ -71,6 +72,7 @@ class ReservationGeneralWarning {
             reservationId,
             null,
             null,
+            infoText,
             listOf(generalWarningsKey)
         )
 
@@ -78,7 +80,13 @@ class ReservationGeneralWarning {
             reservationWarningView.renderContent(
                 reservationId,
                 reserverId,
-                true
+                ReservationWarning(
+                    reservationId,
+                    key = generalWarningsKey,
+                    infoText = infoText,
+                    boatId = null,
+                    trailerId = null
+                )
             )
         )
     }
@@ -97,20 +105,27 @@ class ReservationGeneralWarning {
         if (!isEmployee) {
             throw UnauthorizedException()
         }
-        /*
-                warningsRepository.addReservationWarnings(
-                    reservationId,
-                    null,
-                    null,
-                    listOf(generalWarningsKey)
-                )
-         */
-        // todo update text
+
+        warningsRepository.deleteReservationWarningsForReservation(reservationId, generalWarningsKey)
+        warningsRepository.addReservationWarnings(
+            reservationId,
+            null,
+            null,
+            infoText,
+            listOf(generalWarningsKey)
+        )
+
         return ResponseEntity.ok(
             reservationWarningView.renderContent(
                 reservationId,
                 reserverId,
-                true
+                ReservationWarning(
+                    reservationId,
+                    key = generalWarningsKey,
+                    infoText = infoText,
+                    boatId = null,
+                    trailerId = null
+                )
             )
         )
     }
@@ -134,12 +149,11 @@ class ReservationGeneralWarning {
         if (infoText.isNotEmpty()) {
             memoService.insertMemo(reserverId, userId, infoText)
         }
-        // todo: add note
         return ResponseEntity.ok(
             reservationWarningView.renderContent(
                 reservationId,
                 reserverId,
-                false
+                null
             )
         )
     }
