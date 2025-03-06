@@ -220,8 +220,18 @@ tasks {
         outputs.upToDateWhen { false }
         testLogging {
             showStandardStreams = true
-            events("passed", "skipped", "failed")
+            events("passed", "skipped", "failed", "started")
         }
+
+        afterTest(
+            KotlinClosure2<TestDescriptor, TestResult, Any>({ descriptor, result ->
+                val className = descriptor.className ?: "UNKNOWN"
+                val testName = descriptor.name
+                val duration = result.endTime - result.startTime
+
+                println("E2ETEST '$className.$testName' ${duration}ms")
+            })
+        )
     }
     register("integrationTest", Test::class) {
         useJUnitPlatform()
