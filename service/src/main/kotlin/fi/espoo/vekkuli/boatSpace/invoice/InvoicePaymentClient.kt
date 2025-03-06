@@ -15,6 +15,9 @@ import kotlinx.serialization.encoding.Encoder
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 object BigDecimalSerializer : KSerializer<BigDecimal> {
@@ -66,7 +69,12 @@ class EspiInvoicePaymentClient(
         runBlocking {
             val (apiUrl, apiUsername, apiPassword) = espiEnv
             val today = timeProvider.getCurrentDateTime()
-            val url = "$apiUrl/invoice/api/v1/invoice-batches?endDate=$today"
+
+            val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
+            val formattedDate = today.format(formatter)
+            val encodedDate = URLEncoder.encode(formattedDate, StandardCharsets.UTF_8.toString())
+
+            val url = "$apiUrl/invoice/api/v1/receipts?startDate=$encodedDate"
             val authHeader = Base64.getEncoder().encodeToString("$apiUsername:$apiPassword".toByteArray())
             val headers =
                 mapOf(
