@@ -1,8 +1,6 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
-import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import fi.espoo.vekkuli.views.employee.SanitizeInput
 import org.springframework.stereotype.Component
@@ -20,7 +18,7 @@ class ReservationCardHeading(
                 <div class="column is-narrow">
                     <h4>${t("shared.title.boatSpace.${reservation.type}")}: ${reservation.locationName} ${reservation.place}</h4>                    
                 </div>
-                ${reservationWarningView.render(reservation.id)}                
+                ${reservationWarningView.render(reservation.id, reservation.reserverId)}                
             </div>
             """.trimIndent()
     }

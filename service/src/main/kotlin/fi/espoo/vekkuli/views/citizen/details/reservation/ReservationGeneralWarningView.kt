@@ -1,11 +1,10 @@
 package fi.espoo.vekkuli.views.citizen.details.reservation
 
-import fi.espoo.vekkuli.controllers.CitizenUserController
 import fi.espoo.vekkuli.controllers.Utils.Companion.getServiceUrl
-import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.utils.addTestId
 import fi.espoo.vekkuli.views.BaseView
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class ReservationGeneralWarningView : BaseView() {
@@ -14,46 +13,44 @@ class ReservationGeneralWarningView : BaseView() {
         hasGeneralWarning: Boolean
     ): String {
         if (hasGeneralWarning) {
-            return generalWarningIsSet(reservationId)
+            // language=HTML
+            return """
+                <div class="column">
+                    <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
+                        <span class="icon ml-s">${icons.warningExclamation(false)}</span> 
+                        <span data-testid='acknowledge-warnings'>${t("employee.reservation.warning.acknowledge")}</span> 
+                    </a>
+                </div>
+                """.trimIndent()
         } else {
             // language=HTML
             return """
-                <div class="general-warning-checkbox column is-narrow ml-auto checkbox">            
-                    <input type="checkbox" id="general-warning-checkbox-$reservationId" ${addTestId("general-warning-checkbox")}
+                <div class="column">
+                    <a class="is-link is-icon-link" 
                         hx-trigger="click"
-                        hx-vals='{"infoText": ""}'
-                        hx-post="${getServiceUrl("/virkailija/kayttaja/reservation/partial/general-warning/$reservationId/toggle-warning/${!hasGeneralWarning}")}"                    
+                        x-on:click="modalOpen = true"
                         hx-swap="outerHTML"  
-                        hx-target="#general-warning-$reservationId" 
-                    >                
-                    <span>${t("employee.reserverDetails.exceptions.general.reservation")}</span>                
-                </div>
+                        hx-target="#general-warning-$reservationId">
+                        <span class="icon mr-s">${icons.plus}</span>
+                        <span>${t("employee.reserverDetails.exceptions.general.reservation")}</span> 
+                    </a>
+                </div>                
                 """.trimIndent()
         }
     }
 
-    fun generalWarningIsSet(reservationId: Int): String {
-        // language=HTML
-        return """
-            <div class="column">
-                <a class="is-link is-icon-link has-text-warning has-text-weight-semibold" x-on:click="modalOpen = true">
-                    <span class="icon ml-s">${icons.warningExclamation(false)}</span> 
-                    <span data-testid='acknowledge-warnings'>${t("citizenDetails.button.acknowledgeWarnings")}</span> 
-                </a>
-            </div>
-            """.trimIndent()
-    }
-
     fun showAcknowledgeWarningModal(
         reservationId: Int,
+        reserverId: UUID,
         hasGeneralWarning: Boolean
     ): String {
+        val submitUrl = getServiceUrl("/virkailija/kayttaja/reservation/partial/general-warning/$reserverId/$reservationId")
         // language=HTML
         return """
             <div class="modal" x-show="modalOpen" style="display:none;">
                 <div class="modal-underlay" @click="modalOpen = false"></div>
                 <div class="modal-content">
-                    <form hx-post="${getServiceUrl("/virkailija/kayttaja/reservation/partial/general-warning/$reservationId/toggle-warning/${!hasGeneralWarning}")}"
+                    <form               
                           hx-swap="outerHTML"   
                           hx-target="#general-warning-$reservationId"                               
                          >
@@ -64,18 +61,39 @@ class ReservationGeneralWarningView : BaseView() {
                             </div>
                         </div>
                         <div class="block">
+                        ${if (!hasGeneralWarning) {
+                            """
                             <button id="ack-modal-cancel"
-                                    class="button"
-                                    x-on:click="modalOpen = false"
-                                    type="button">
-                                ${t("cancel")}
+                                class="button"
+                                x-on:click="modalOpen = false" 
+                                type="button">
+                                    ${t("cancel")}
                             </button>
                             <button
-                                    id="ack-modal-confirm"
+                                    id="ack-modal-save"
+                                    hx-post="$submitUrl"
                                     class="button is-primary"
                                     type="submit">
-                                ${t("confirm")}
+                                ${t("employee.reservation.warning.save")}
                             </button>
+                            """.trimIndent()
+                        } else {
+                            """
+                            <button id="ack-modal-update"
+                                    hx-patch="$submitUrl"
+                                    class="button is-primary"
+                                    type="submit">
+                                ${t("employee.reservation.warning.update")}
+                            </button>
+                            <button
+                                    id="ack-modal-delete"
+                                    hx-post="$submitUrl/acknowledge"
+                                    class="button is-primary"
+                                    type="submit">
+                                ${t("employee.reservation.warning.acknowledge")}
+                            </button>
+                            """.trimIndent()
+                        }}                                   
                         </div>
                     </form>
                 </div>
@@ -83,11 +101,14 @@ class ReservationGeneralWarningView : BaseView() {
             """.trimIndent()
     }
 
-    fun render(reservationId: Int): String {
+    fun render(
+        reservationId: Int,
+        reserverId: UUID
+    ): String {
         // language=HTML
         return """
             <div
-                hx-get="/virkailija/kayttaja/reservation/partial/general-warning/$reservationId"
+                hx-get="/virkailija/kayttaja/reservation/partial/general-warning/$reserverId/$reservationId"
                 hx-trigger="load"
                 hx-swap="outerHTML"            
                 >
@@ -97,13 +118,14 @@ class ReservationGeneralWarningView : BaseView() {
 
     fun renderContent(
         reservationId: Int,
+        reserverId: UUID,
         hasGeneralWarning: Boolean
     ): String {
         // language=HTML
         return """
             <div x-data="{ modalOpen: false }" id="general-warning-$reservationId">
                 ${reservationWarningContainer(reservationId, hasGeneralWarning)}
-                ${showAcknowledgeWarningModal(reservationId, hasGeneralWarning)}
+                ${showAcknowledgeWarningModal(reservationId, reserverId, hasGeneralWarning)}
             </div>
             """.trimIndent()
     }
