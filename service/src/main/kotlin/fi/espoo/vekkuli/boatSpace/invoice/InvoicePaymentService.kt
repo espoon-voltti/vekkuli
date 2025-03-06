@@ -12,7 +12,9 @@ class InvoicePaymentService(
     private val invoicePaymentClient: InvoicePaymentClient,
     private val invoicePaymentRepository: InvoicePaymentRepository
 ) {
-    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+//    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    // To test this in staging, setting the scheduler to run once per hour
+    @Scheduled(fixedRate = 1000 * 60 * 60)
     fun fetchAndStoreInvoicePayments() {
         val invoicePaymentResponse = invoicePaymentClient.getPayments()
         val invoicePayments = invoicePaymentResponse.map { createInvoicePayment(it) }
