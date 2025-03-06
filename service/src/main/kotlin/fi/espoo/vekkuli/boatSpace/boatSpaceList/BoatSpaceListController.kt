@@ -1,5 +1,7 @@
 package fi.espoo.vekkuli.boatSpace.boatSpaceList
 
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.components.BoatSpaceRow
+import fi.espoo.vekkuli.boatSpace.boatSpaceList.partials.BoatSpaceListRowsPartial
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
@@ -16,7 +18,6 @@ import org.jdbi.v3.core.Jdbi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -71,14 +72,16 @@ class BoatSpaceListController {
     @Autowired
     lateinit var layout: EmployeeLayout
 
+    @Autowired
+    lateinit var boatSpaceListRowsPartial: BoatSpaceListRowsPartial
+
     private val logger = KotlinLogging.logger {}
 
     @GetMapping("/selaa")
     @ResponseBody
     fun boatSpaceSearchPage(
         request: HttpServletRequest,
-        @ModelAttribute params: BoatSpaceListParams,
-        model: Model
+        @ModelAttribute params: BoatSpaceListParams
     ): ResponseEntity<String> {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "EMPLOYEE_BOAT_SPACE_SEARCH")
@@ -87,15 +90,30 @@ class BoatSpaceListController {
         request.ensureEmployeeId()
         val harbors = reservationService.getHarbors()
         val boatSpaceTypes = BoatSpaceType.entries.toList()
+
+        val initialPageSize = 50
+        val loadMorePageSize = 25
+
         val boatSpaces =
-            boatSpaceService.getBoatSpacesFiltered(params)
+            boatSpaceService.getBoatSpacesFiltered(params, 0, initialPageSize)
+
         val sections = boatSpaceService.getSections()
         val priceClasses = priceService.getPriceClasses()
         return ResponseEntity.ok(
             layout.render(
                 true,
                 request.requestURI,
-                boatSpaceList.render(boatSpaces, params, harbors, priceClasses, boatSpaceTypes, actualAmenities, sections, params.edit)
+                boatSpaceList.render(
+                    boatSpaces,
+                    params,
+                    harbors,
+                    priceClasses,
+                    boatSpaceTypes,
+                    actualAmenities,
+                    sections,
+                    params.edit,
+                    loadMorePageSize
+                )
             )
         )
     }
@@ -104,8 +122,7 @@ class BoatSpaceListController {
     @ResponseBody
     fun boatSpaceEdit(
         request: HttpServletRequest,
-        @ModelAttribute params: BoatSpaceListEditParams,
-        model: Model
+        @ModelAttribute params: BoatSpaceListEditParams
     ) {
         request.getAuthenticatedUser()?.let {
             logger.audit(it, "EMPLOYEE_BOAT_SPACE_EDIT")
@@ -126,5 +143,17 @@ class BoatSpaceListController {
                 params.boatSpaceState == BoatSpaceState.Active
             )
         )
+    }
+
+    @GetMapping("/selaa/rivit")
+    @ResponseBody
+    fun boatSpaceRows(
+        request: HttpServletRequest,
+        @ModelAttribute params: BoatSpaceListParams
+    ): ResponseEntity<String> {
+        val boatSpaces =
+            boatSpaceService.getBoatSpacesFiltered(params)
+
+        return ResponseEntity.ok(boatSpaceListRowsPartial.render(boatSpaces))
     }
 }
