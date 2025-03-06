@@ -94,8 +94,8 @@ class EspiInvoicePaymentClient(
                 )
 
             if (response.bodyAsText().isEmpty()) {
-                InvoicePaymentResponse(receipts = listOf())
+                return@runBlocking InvoicePaymentResponse(receipts = listOf())
             }
-            response.body<InvoicePaymentResponse>()
+            return@runBlocking response.body<InvoicePaymentResponse>()
         }
 }
