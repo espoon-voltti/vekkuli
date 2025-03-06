@@ -15,16 +15,17 @@ class JdbiReservationWarningRepository(
         reservationId: Int,
         boatId: Int?,
         trailerId: Int?,
+        infoText: String?,
         keys: List<String>,
     ): Unit =
         jdbi.withHandleUnchecked { handle ->
             val sql = StringBuilder()
 
-            sql.append("INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, key) VALUES ")
+            sql.append("INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, info_text, key) VALUES ")
             sql.append(
                 keys
                     .mapIndexed { index, _ ->
-                        "(:reservationId, :boatId, :trailerId, :key$index)"
+                        "(:reservationId, :boatId, :trailerId, :infoText, :key$index)"
                     }.joinToString(", ")
             )
 
@@ -32,6 +33,7 @@ class JdbiReservationWarningRepository(
             query.bind("reservationId", reservationId)
             query.bind("boatId", boatId)
             query.bind("trailerId", trailerId)
+            query.bind("infoText", infoText)
             keys.forEachIndexed { index, key ->
                 query.bind("key$index", key)
             }
