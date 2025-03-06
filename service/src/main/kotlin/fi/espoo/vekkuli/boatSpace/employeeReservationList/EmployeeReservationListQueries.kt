@@ -77,7 +77,7 @@ fun getFilteredBoatSpaceReservationWarningCount(
         val sqlParts = mutableListOf<String>()
         sqlParts.add(
             """
-            SELECT COUNT(*) as count
+            SELECT COUNT(distinct(bsr.id)) as count
             FROM boat_space_reservation bsr
             JOIN reserver r ON bsr.reserver_id = r.id
             JOIN boat_space bs ON bsr.boat_space_id = bs.id
