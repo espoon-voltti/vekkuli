@@ -130,7 +130,8 @@ export default {
     mainNavigation: 'Päänavigaatio',
     instructionsLink: 'Ohje',
     openInANewWindow: 'Avaa uudessa välilehdessä',
-    mapsLink: 'Satamien ja säilytyspaikkojen kartat voit avata uudelle välilehdelle tästä'
+    mapsLink: 'Satamien ja säilytyspaikkojen kartat voit avata uudelle välilehdelle tästä',
+    harborsInfoLink: 'https://www.espoo.fi/fi/liikunta-ja-luonto/veneily/venesatamat',
   },
   footer: {
     accessibilityLink: 'Saavutettavuusseloste',

@@ -130,7 +130,8 @@ const sv: Translations = {
     mainNavigation: 'Huvudnavigering',
     instructionsLink: 'Instruktioner',
     openInANewWindow: 'Öppna i en ny flik',
-    mapsLink: 'Du kan öppna kartorna över hamnar och förvaringsplatser i en ny flik härifrån.'
+    mapsLink: 'Du kan öppna kartorna över hamnar och förvaringsplatser i en ny flik härifrån.',
+    harborsInfoLink: 'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/bathamnar',
   },
   footer: {
     accessibilityLink: 'Tillgänglighetsutlåtande',

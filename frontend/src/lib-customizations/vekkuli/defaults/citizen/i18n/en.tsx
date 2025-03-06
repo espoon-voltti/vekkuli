@@ -131,7 +131,8 @@ const en: Translations = {
     mainNavigation: 'Main navigation',
     instructionsLink: 'Guide',
     openInANewWindow: 'Open in a new tab',
-    mapsLink: 'You can open the maps of harbors and storage locations in a new tab from here.'
+    mapsLink: 'You can open the maps of harbors and storage locations in a new tab from here.',
+    harborsInfoLink: 'https://www.espoo.fi/en/sports-and-nature/boating/marinas',
   },
   footer: {
     accessibilityLink: 'Accessibility statement',
