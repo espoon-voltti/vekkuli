@@ -5,10 +5,12 @@ import com.microsoft.playwright.Page
 import com.microsoft.playwright.Page.*
 import com.microsoft.playwright.options.AriaRole
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.pages.citizen.components.IHaveErrorModal
 
 open class BoatSpaceFormPage(
     page: Page
-) : BasePage(page) {
+) : BasePage(page),
+    IHaveErrorModal<CitizenDetailsPage> {
     class CitizenSection(
         root: Locator
     ) {

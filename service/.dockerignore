@@ -10,4 +10,4 @@
 !index.js
 !htmx.js
 !owasp-suppressions.xml
-
+!dd-jmxfetch*

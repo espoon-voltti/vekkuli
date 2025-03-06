@@ -1,6 +1,6 @@
 #!/bin/sh -eu
 
-# SPDX-FileCopyrightText: 2023-2024 City of Espoo
+# SPDX-FileCopyrightText: 2023-2025 City of Espoo
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
@@ -19,13 +19,26 @@ if [ "${API_GATEWAY_URL:-X}" = 'X' ]; then
   exit 1
 fi
 
-for template in /etc/nginx/conf.d/*.template /etc/nginx/*.template; do
-    if ! test -f "$template"; then
-      continue
-    fi
-    target=$(echo "$template" | sed -e "s/.template$//")
+if test -z "${DD_PROFILING_ENABLED:-}"; then
+  export DD_PROFILING_ENABLED="false"
+fi
 
-    erb "$template" > "$target"
+if [ "${DD_PROFILING_ENABLED}" = "true" ]; then
+  if test -z "${DD_AGENT_HOST:-}"; then
+    echo "ERROR: DD_AGENT_HOST missing"
+    exit 1
+  fi
+  if test -z "${DD_AGENT_PORT:-}"; then
+    echo "ERROR: DD_AGENT_PORT missing"
+    exit 1
+  fi
+else
+  export DD_AGENT_HOST="localhost"
+  export DD_AGENT_PORT="8126"
+fi
+
+for directory in /etc/nginx/conf.d/ /etc/nginx/; do
+  gomplate --input-dir="$directory" --output-map="$directory"'{{ .in | strings.ReplaceAll ".template" "" }}'
 done
 
 if [ "${DEBUG:-false}" = "true" ]; then

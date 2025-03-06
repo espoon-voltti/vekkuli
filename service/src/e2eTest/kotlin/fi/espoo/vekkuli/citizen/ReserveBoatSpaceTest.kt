@@ -2,6 +2,7 @@ package fi.espoo.vekkuli.citizen
 
 import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.ReserveTest
+import fi.espoo.vekkuli.config.BoatSpaceConfig
 import fi.espoo.vekkuli.domain.PaymentStatus
 import fi.espoo.vekkuli.pages.citizen.*
 import fi.espoo.vekkuli.pages.citizen.CitizenDetailsPage
@@ -1523,5 +1524,81 @@ class ReserveBoatSpaceTest : ReserveTest() {
         confirmCancelReservationModal.confirmButton.click()
 
         assertThat(reservationPage.header).isVisible()
+    }
+
+    @Test
+    fun `Should prevent citizen from creating excessive amount of boats`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithoutReservations()
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        val formPage = BoatSpaceFormPage(page)
+        val paymentPage = PaymentPage(page)
+
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+
+        formPage.fillFormAndSubmit()
+
+        for (i in 1..BoatSpaceConfig.MAX_CITIZEN_BOATS) {
+            assertThat(paymentPage.header).isVisible()
+            paymentPage.backButton.click()
+
+            assertThat(formPage.header).isVisible()
+            formPage.fillFormAndSubmit {
+                val boatNumber = i + 1
+                val boatSection = getBoatSection()
+                boatSection.newBoatSelection.click()
+                boatSection.depthInput.fill("1.5")
+                boatSection.weightInput.fill("2000")
+                boatSection.nameInput.fill("My Boat $boatNumber")
+                boatSection.otherIdentifierInput.fill("B$boatNumber")
+                boatSection.noRegistrationCheckbox.check()
+                boatSection.ownerRadio.check()
+            }
+        }
+
+        assertThat(formPage.getErrorModal().root).isVisible()
+    }
+
+    @Test
+    fun `Should prevent citizen from creating excessive amount of boats for organization`() {
+        CitizenHomePage(page).loginAsEspooCitizenWithActiveOrganization()
+        val organizationName = "Espoon Pursiseura"
+        val placeName = "Haukilahti B 005"
+        val seedBoatCount = 1
+
+        val reservationPage = ReserveBoatSpacePage(page)
+        val formPage = BoatSpaceFormPage(page)
+        val paymentPage = PaymentPage(page)
+
+        reservationPage.navigateToPage()
+        reservationPage.startReservingBoatSpaceB314()
+        reservationPage.getReserveModal().getSwitchReservationButton(placeName).click()
+
+        formPage.fillFormAndSubmit {
+            getOrganizationSection().organization(organizationName).click()
+        }
+
+        for (i in seedBoatCount + 1..BoatSpaceConfig.MAX_CITIZEN_BOATS) {
+            assertThat(paymentPage.header).isVisible()
+            paymentPage.backButton.click()
+
+            assertThat(formPage.header).isVisible()
+            formPage.fillFormAndSubmit {
+                getOrganizationSection().organization(organizationName).click()
+
+                val boatNumber = i + 1
+                val boatSection = getBoatSection()
+                boatSection.newBoatSelection.click()
+                boatSection.depthInput.fill("1.5")
+                boatSection.weightInput.fill("2000")
+                boatSection.nameInput.fill("My Boat $boatNumber")
+                boatSection.otherIdentifierInput.fill("B$boatNumber")
+                boatSection.noRegistrationCheckbox.check()
+                boatSection.ownerRadio.check()
+            }
+        }
+
+        assertThat(formPage.getErrorModal().root).isVisible()
     }
 }
