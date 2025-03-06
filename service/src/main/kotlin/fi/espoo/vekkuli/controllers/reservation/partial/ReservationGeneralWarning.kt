@@ -47,12 +47,13 @@ class ReservationGeneralWarning {
         )
     }
 
-    @PatchMapping("/general-warning/{reservationId}/toggle-warning/{hasGeneralWarning}")
+    @PostMapping("/general-warning/{reservationId}/toggle-warning/{hasGeneralWarning}")
     @ResponseBody
     fun toggleGeneralWarningForReservationPartial(
         request: HttpServletRequest,
         @PathVariable reservationId: Int,
         @PathVariable hasGeneralWarning: Boolean,
+        @RequestParam("infoText") infoText: String,
     ): ResponseEntity<String> {
         val authenticatedUser = request.getAuthenticatedUser()
         val isEmployee = authenticatedUser?.isEmployee() == true
