@@ -116,8 +116,8 @@ class BoatSpaceListController {
             params.edit,
             EditBoatSpaceParams(
                 params.boatSpaceTypeEdit,
-                if (params.sectionEdit.isNullOrEmpty()) null else params.sectionEdit,
-                if (params.placeNumberEdit.isNullOrEmpty()) null else params.placeNumberEdit.toInt(),
+                params.sectionEdit,
+                params.placeNumberEdit,
                 params.boatSpaceAmenityEdit,
                 decimalToInt(params.widthEdit),
                 decimalToInt(params.lengthEdit),

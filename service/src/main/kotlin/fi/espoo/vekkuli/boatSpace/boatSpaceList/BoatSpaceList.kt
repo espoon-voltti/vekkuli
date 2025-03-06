@@ -26,7 +26,7 @@ data class BoatSpaceListParams(
 data class BoatSpaceListEditParams(
     val edit: List<Int> = emptyList(),
     val sectionEdit: String? = null,
-    val placeNumberEdit: String? = null,
+    val placeNumberEdit: Int? = null,
     val boatSpaceTypeEdit: BoatSpaceType,
     val boatSpaceAmenityEdit: BoatSpaceAmenity,
     val widthEdit: BigDecimal,
@@ -188,13 +188,13 @@ class BoatSpaceList(
                                   </div>
                                 </div>
                             </div>
+                            <div class="employee-filter-container">
+                                <button :disabled='editBoatSpaces.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
+                            </div>
                         </div>
-                        <div class="reservation-list form-section block">
-                        
-                            
+                        <div class='reservation-list form-section block'>
                             <div class='table-container'>
                                 <table class="table is-hoverable">
-                                 <button :disabled='editBoatSpaces.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
                                 
                                     <thead id='boat-space-table-header'>
                                         <tr class="table-borderless">
@@ -252,11 +252,12 @@ class BoatSpaceList(
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} <div>
+                            <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
                         </div>
                     </form>
-                </div>
                     ${editModal.render(harbors, paymentClasses)}
+                    
+                </div>
             </section>
             """.trimIndent()
     }
