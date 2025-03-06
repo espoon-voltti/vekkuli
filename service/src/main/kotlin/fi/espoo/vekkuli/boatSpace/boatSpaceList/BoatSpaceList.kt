@@ -87,9 +87,9 @@ class BoatSpaceList(
         // language=HTML
         fun editCheckBox(result: BoatSpaceListRow) =
             """
-            <label class="checkbox">
-                       <input name="edit" id="edit-${result.id}" type="checkbox" value="${result.id}" x-model='editBoatSpaces' />
-                   </label>
+             <label class="checkbox">
+                <input name="edit" id="edit-boat-space-${result.id}" type="checkbox" value="${result.id}" x-model='editBoatSpaces' />
+            </label>
             """.trimIndent()
         // language=HTML
         val reservationRows =
@@ -189,7 +189,7 @@ class BoatSpaceList(
                                 </div>
                             </div>
                             <div class="employee-filter-container">
-                                <button :disabled='editBoatSpaces.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
+                                <button id="open-edit-modal" :disabled='editBoatSpaces.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
                             </div>
                         </div>
                         <div class='reservation-list form-section block'>

@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.employee
 
+import com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat
 import fi.espoo.vekkuli.PlaywrightTest
 import fi.espoo.vekkuli.pages.employee.BoatSpaceListPage
 import fi.espoo.vekkuli.pages.employee.EmployeeHomePage
@@ -92,6 +93,32 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
         } catch (e: AssertionError) {
             handleError(e)
         }
+    }
+
+    @Test
+    fun `should be able to edit boat space`() {
+        val listingPage = boatSpaceListPage()
+        listingPage.editButton(1).click()
+        listingPage.editModalButton.click()
+        val editModal = listingPage.editModalPage
+        editModal.fillForm(
+            "1.5",
+            "2.5",
+            harbor = "1",
+            section = "C",
+            placeNumber = "1",
+            boatSpaceType = "Storage",
+            boatSpaceAmenity = "None",
+            payment = "2"
+        )
+        editModal.submitButton.click()
+        listingPage.boatSpaceTypeFilter("Storage").click()
+        assertThat(listingPage.boatSpaceRow(1)).containsText("1,50")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("2,50")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("Haukilahti")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("Storage")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("-")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("267,19")
     }
 
     private fun boatSpaceListPage(): BoatSpaceListPage {
