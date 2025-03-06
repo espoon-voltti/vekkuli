@@ -44,16 +44,12 @@ class ReservationGeneralWarningView : BaseView() {
         reserverId: UUID,
         generalWarning: ReservationWarning?
     ): String {
-        val submitUrl = getServiceUrl("/virkailija/kayttaja/reservation/partial/general-warning/$reserverId/$reservationId")
         // language=HTML
         return """
             <div class="modal" x-show="modalOpen" style="display:none;">
                 <div class="modal-underlay" @click="modalOpen = false"></div>
                 <div class="modal-content">
-                    <form               
-                          hx-swap="outerHTML"   
-                          hx-target="#general-warning-$reservationId"                               
-                         >
+                    <form hx-swap="outerHTML" hx-target="#general-warning-$reservationId">
                         <div class="block">
                             <h1 class="label">${t("employee.reservation.warning.infoText")}</h1>
                             <div class="control">
@@ -61,44 +57,56 @@ class ReservationGeneralWarningView : BaseView() {
                             </div>
                         </div>
                         <div class="block">
-                        ${if (generalWarning == null) {
-                            """
-                            <button id="ack-modal-cancel"
-                                class="button"
-                                x-on:click="modalOpen = false" 
-                                type="button">
-                                    ${t("cancel")}
-                            </button>
-                            <button
-                                    id="ack-modal-save"
-                                    hx-post="$submitUrl"
-                                    class="button is-primary"
-                                    type="submit">
-                                ${t("employee.reservation.warning.save")}
-                            </button>
-                            """.trimIndent()
-                        } else {
-                            """
-                            <button id="ack-modal-update"
-                                    hx-patch="$submitUrl"
-                                    class="button"
-                                    type="submit">
-                                ${t("employee.reservation.warning.update")}
-                            </button>
-                            <button
-                                    id="ack-modal-delete"
-                                    hx-post="$submitUrl/acknowledge"
-                                    class="button is-primary"
-                                    type="submit">
-                                ${t("employee.reservation.warning.acknowledge")}
-                            </button>
-                            """.trimIndent()
-                        }}                                   
+                            ${renderButtons(reservationId, reserverId, generalWarning)}
                         </div>
                     </form>
                 </div>
             </div>
             """.trimIndent()
+    }
+
+    private fun renderButtons(
+        reservationId: Int,
+        reserverId: UUID,
+        generalWarning: ReservationWarning?
+    ): String {
+        val submitUrl =
+            getServiceUrl("/virkailija/kayttaja/reservation/partial/general-warning/$reserverId/$reservationId")
+        if (generalWarning == null) {
+            // language=HTML
+            return """
+                <button id="ack-modal-cancel"
+                    class="button"
+                    x-on:click="modalOpen = false" 
+                    type="button">
+                        ${t("cancel")}
+                </button>
+                <button
+                        id="ack-modal-save"
+                        hx-post="$submitUrl"
+                        class="button is-primary"
+                        type="submit">
+                    ${t("employee.reserverDetails.exceptions.general.reservation")}
+                </button>
+                """.trimIndent()
+        } else {
+            // language=HTML
+            return """
+                <button id="ack-modal-update"
+                        hx-patch="$submitUrl"
+                        class="button"
+                        type="submit">
+                    ${t("employee.reservation.warning.update")}
+                </button>
+                <button
+                        id="ack-modal-delete"
+                        hx-post="$submitUrl/acknowledge"
+                        class="button is-primary"
+                        type="submit">
+                    ${t("employee.reservation.warning.acknowledge")}
+                </button>
+                """.trimIndent()
+        }
     }
 
     fun render(
