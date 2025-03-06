@@ -120,22 +120,13 @@ class FormComponents {
     fun checkBox(
         text: String,
         id: String,
-        name: String = id,
-        value: String? = null,
-        required: Boolean? = false,
-    ): String {
-        val paramValue = value ?: "on"
-        //language=HTML
-
-        return (
-            """
-            <label class="checkbox">
-                        <input data-required=$required name="$name" id="$id" type="checkbox" value=$paramValue />
-                        <span>$text</span>
-                    </label>
-            """.trimIndent()
-        )
-    }
+        required: Boolean? = false
+    ) = """
+        <label class="checkbox">
+                    <input data-required=$required name="$id" id="$id" type="checkbox"/>
+                    <span>$text</span>
+                </label>
+        """.trimIndent()
 
     fun select(
         labelKey: String,

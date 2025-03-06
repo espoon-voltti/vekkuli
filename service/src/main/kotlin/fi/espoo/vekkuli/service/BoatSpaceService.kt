@@ -122,6 +122,8 @@ class BoatSpaceService(
         editBoatSpaceParams: EditBoatSpaceParams
     ) {
         var editParams = editBoatSpaceParams
+
+        // If multiple boat spaces are edited, section and place number should not be changed
         if (boatSpaceIds.size > 1) {
             editParams = editParams.copy(section = null, placeNumber = null)
         }
