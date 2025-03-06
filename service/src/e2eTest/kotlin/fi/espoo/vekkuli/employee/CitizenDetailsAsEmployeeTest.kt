@@ -425,6 +425,50 @@ class CitizenDetailsAsEmployeeTest : ReserveTest() {
         }
     }
 
+    @Test
+    fun employeeCanSetAGeneralWarningToReservationAndAcknowledgeIt() {
+        try {
+            val infoText = "Some text relating to the reservation"
+            val listingPage = reservationListPage()
+            listingPage.boatSpace1.click()
+            val citizenDetails = CitizenDetailsPage(page)
+            // click the link to add general warning
+            citizenDetails.addNewGeneralWarningLink.clickAndWaitForHtmxSettle()
+
+            // modal should be opened, add text and save the warning
+            assertThat(citizenDetails.generalWarningModal).isVisible()
+            val infoInput = citizenDetails.generalWarningInfoInput
+            infoInput.fill(infoText)
+            citizenDetails.generalWarningSaveBtn.clickAndWaitForHtmxSettle()
+            assertThat(citizenDetails.generalWarningModal).not().isVisible()
+
+            // warning indicator should be visible, click the link and check the inserted text is still present
+            citizenDetails.acknowledgeGeneralWarningLink.click()
+            assertThat(infoInput).containsText(infoText)
+
+            // update the text and save
+            val updatedText = "$infoText UPDATE"
+            infoInput.fill(updatedText)
+            citizenDetails.generalWarningUpdateBtn.click()
+            assertThat(citizenDetails.generalWarningModal).not().isVisible()
+
+            // click the warning indicator and verify the info text has been updated
+            citizenDetails.acknowledgeGeneralWarningLink.click()
+            assertThat(infoInput).containsText(updatedText)
+
+            // set the warning as acknowledged and verify the reservation has again the link to add warning
+            citizenDetails.generalWarningAcknowledgeBtn.click()
+            assertThat(citizenDetails.generalWarningModal).not().isVisible()
+            assertThat(citizenDetails.addNewGeneralWarningLink).isVisible()
+
+            // check that the info text is saved to memo, user has one memo from seed, so memo id is 2
+            citizenDetails.memoNavi.clickAndWaitForHtmxSettle()
+            assertThat(citizenDetails.userMemo(2)).containsText(updatedText)
+        } catch (e: AssertionError) {
+            handleError(e)
+        }
+    }
+
     private fun reservationListPage(): ReservationListPage {
         val employeeHome = EmployeeHomePage(page)
         employeeHome.employeeLogin()
