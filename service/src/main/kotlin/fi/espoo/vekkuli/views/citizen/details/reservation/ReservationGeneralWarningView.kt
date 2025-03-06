@@ -59,7 +59,7 @@ class ReservationGeneralWarningView : BaseView() {
                             <h1 class="label">${t("employee.reservation.warning.infoText")}</h1>
                             <div class="control">
                                 <textarea 
-                                    ${addTestId("warning-info-input")} 
+                                    ${addTestId("general-warning-info-input")} 
                                     class="textarea" rows="1" 
                                     name="infoText">
                                         ${generalWarning?.infoText ?: ""}
