@@ -197,7 +197,7 @@ class EmployeeReservationListView(
                                         paginationSize: $paginationSize,
                                         paginationTotalRows: ${reservations.totalRows},
                                         paginationResultsLeft: ${reservations.totalRows - paginationStartFrom},
-                                        hasMore: ${reservations.totalRows > paginationEndTo}
+                                        hasMore: ${reservations.totalRows - paginationStartFrom > 0}
                                     }" x-show="hasMore"
                                     @htmx:after-request="
                                         paginationStart = paginationEnd;
