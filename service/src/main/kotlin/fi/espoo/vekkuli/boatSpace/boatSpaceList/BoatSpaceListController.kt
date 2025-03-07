@@ -113,17 +113,17 @@ class BoatSpaceListController {
 
         request.ensureEmployeeId()
         boatSpaceService.editBoatSpaces(
-            params.edit,
+            params.boatSpaceIds,
             EditBoatSpaceParams(
-                params.harborEdit,
-                params.boatSpaceTypeEdit,
-                if (params.sectionEdit.isNullOrEmpty()) null else params.sectionEdit,
-                params.placeNumberEdit,
-                params.boatSpaceAmenityEdit,
-                decimalToInt(params.widthEdit),
-                decimalToInt(params.lengthEdit),
-                params.paymentEdit,
-                params.boatSpaceStateEdit == BoatSpaceState.Active
+                params.harbor,
+                params.boatSpaceType,
+                if (params.section.isNullOrEmpty()) null else params.section,
+                params.placeNumber,
+                params.boatSpaceAmenity,
+                decimalToInt(params.width),
+                decimalToInt(params.length),
+                params.payment,
+                params.boatSpaceState == BoatSpaceState.Active
             )
         )
     }

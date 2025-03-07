@@ -20,19 +20,19 @@ class EditModal(
         val harborDropdown =
             formComponents.select(
                 "boatSpaceList.label.harbor",
-                "harborEdit",
+                "harbor",
                 "",
                 listOf(Pair("", "Ei valittu")) + harborOptions,
                 placeholder = ""
             )
 
-        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionEdit", null)
-        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumberEdit", null)
+        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "section", null)
+        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumber", null)
 
         val boatSpaceTypeInput =
             formComponents.select(
                 "boatSpaceList.label.boatSpaceType",
-                "boatSpaceTypeEdit",
+                "boatSpaceType",
                 "",
                 listOf(Pair("", "Ei valittu")) +
                     BoatSpaceType.entries.map { Pair(it.name, t("employee.boatSpaceReservations.types.${it.name}")) },
@@ -41,24 +41,24 @@ class EditModal(
         val boatSpaceAmenityInput =
             formComponents.select(
                 "boatSpaceList.label.boatSpaceAmenity",
-                "boatSpaceAmenityEdit",
+                "boatSpaceAmenity",
                 "",
                 listOf(Pair("", "Ei valittu")) + BoatSpaceAmenity.entries.map { Pair(it.name, t("boatSpaces.amenityOption.${it.name}")) },
             )
-        val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "widthEdit", null)
-        val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "lengthEdit", null)
+        val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "width", null)
+        val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "length", null)
 
         val paymentInput =
             formComponents.select(
                 "boatSpaceList.label.paymentClass",
-                "paymentEdit",
+                "payment",
                 "",
                 listOf(Pair("", "Ei valittu")) + paymentClasses.map { Pair(it.id.toString(), it.name) },
             )
         val isActiveInput =
             formComponents.radioButtons(
                 "boatSpaceList.label.state",
-                "boatSpaceStateEdit",
+                "boatSpaceState",
                 defaultValue = "",
                 options =
                     listOf(RadioOption("", "Ei valittu")) +
@@ -75,15 +75,15 @@ class EditModal(
                             hx-post="/virkailija/venepaikat/selaa/muokkaa"
                             hx-swap="none" 
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">
-                        <input type="hidden" name="edit" x-model="editBoatSpaces" />
+                        <input type="hidden" name="boatSpaceIds" x-model="editBoatSpaceIds" />
                             <h2>Paikan tietojen muokkaus</h2>
-                            <p class='mb-m' x-text="'Muokataan ' + editBoatSpaces.length + ' paikkaa'" > </p>
+                            <p class='mb-m' x-text="'Muokataan ' + editBoatSpaceIds.length + ' paikkaa'" > </p>
                             <div class='form-section'>             
                                 <div class="columns ">
                                     <div class="column is-half">
                                         $harborDropdown
                                     </div>
-                                    <template x-if='editBoatSpaces.length === 1'>
+                                    <template x-if='editBoatSpaceIds.length === 1'>
                                         <div class='columns'>
                                             <div class="column">
                                                 $sectionInput
