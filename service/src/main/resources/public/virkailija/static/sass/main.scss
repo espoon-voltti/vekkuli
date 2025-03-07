@@ -862,6 +862,10 @@ label.filter-button:has(input:checked) .icon {
     text-decoration: none;
     color: $darkGray;
   }
+
+  tr.settlement-row {
+    background-color: $light-gray;
+  }
 }
 
 .htmx-indicator{

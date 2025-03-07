@@ -454,6 +454,24 @@ class ReserverDetailsReservationsContainer(
                     ""
                 }}</td>
                 </tr>
+                
+                ${p.invoicePayments.joinToString("\n") { i ->
+                    """
+                    <tr class='settlement-row'>
+                        <td>${t("citizenDetails.payments.settlement")}</td>
+                        <td></td>
+                        <td></td>
+                        <td>${i.invoiceNumber}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>${i.paymentDate.format(fullDateFormat)}</td>
+                        <td>${formatInt(i.amountPaidCents)}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    """
+                }}
                 """.trimIndent()
             }
 
