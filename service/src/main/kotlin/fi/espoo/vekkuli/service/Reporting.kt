@@ -492,10 +492,10 @@ fun terminatedBoatSpaceReportToCsv(reportRows: List<BoatSpaceReportRow>): String
 }
 
 fun getReference(p: PaymentHistory): String? =
-    if (p.paymentType == PaymentType.Invoice) {
-        p.invoiceReference
+    if (p.paymentDetails.paymentType == PaymentType.Invoice) {
+        p.paymentDetails.invoiceReference
     } else {
-        p.priceInfo
+        p.paymentDetails.priceInfo
     }
 
 val localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

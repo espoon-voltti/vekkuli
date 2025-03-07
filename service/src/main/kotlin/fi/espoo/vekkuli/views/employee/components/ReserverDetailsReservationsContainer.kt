@@ -436,18 +436,42 @@ class ReserverDetailsReservationsContainer(
                 // language=HTML
                 """
                 <tr>
-                    <td ${addTestId("payment-status")}>${paymentStatusToText(p.paymentStatus)}</td>
-                    <td ${addTestId("place")}>${p.harborName} ${p.place}</td>
-                    <td>${boatSpaceTypeToText(p.boatSpaceType)}</td>
-                    <td>${p.paymentReference}</td>
-                    <td>${paymentTypeToText(p.paymentType)}</td>
+                    <td ${addTestId("payment-status")}>${paymentStatusToText(p.paymentDetails.paymentStatus)}</td>
+                    <td ${addTestId("place")}>${p.paymentDetails.harborName} ${p.paymentDetails.place}</td>
+                    <td>${boatSpaceTypeToText(p.paymentDetails.boatSpaceType)}</td>
+                    <td>${p.paymentDetails.paymentReference}</td>
+                    <td>${paymentTypeToText(p.paymentDetails.paymentType)}</td>
                     <td ${addTestId("payment-reference")} class='description'>${getReference(p) ?: ""}</td>
-                    <td>${p.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
-                    <td ${addTestId("payment-paid-date")}>${p.paidDate?.format(fullDateFormat) ?: ""}</td>
-                    <td ${addTestId("payment-amount")}>${formatInt(p.totalCents)}</td>
-                    <td>${p.paymentCreated.format(fullDateTimeFormat)}</td>
-                    <td>${if (p.paymentStatus != PaymentStatus.Refunded) createRefundButton(p.paymentId) else ""}</td>
+                    <td>${p.paymentDetails.invoiceDueDate?.format(fullDateFormat) ?: ""}</td>
+                    <td ${addTestId("payment-paid-date")}>${p.paymentDetails.paidDate?.format(fullDateFormat) ?: ""}</td>
+                    <td ${addTestId("payment-amount")}>${formatInt(p.paymentDetails.totalCents)}</td>
+                    <td>${p.paymentDetails.paymentCreated.format(fullDateTimeFormat)}</td>
+                    <td>${if (p.paymentDetails.paymentStatus != PaymentStatus.Refunded) {
+                    createRefundButton(
+                        p.paymentDetails.paymentId
+                    )
+                } else {
+                    ""
+                }}</td>
                 </tr>
+                
+                ${p.invoicePayments.joinToString("\n") { i ->
+                    """
+                    <tr class='settlement-row'>
+                        <td>${t("citizenDetails.payments.settlement")}</td>
+                        <td></td>
+                        <td></td>
+                        <td>${i.invoiceNumber}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>${i.paymentDate.format(fullDateFormat)}</td>
+                        <td>${formatInt(i.amountPaidCents)}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    """
+                }}
                 """.trimIndent()
             }
 

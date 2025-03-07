@@ -39,7 +39,7 @@ class InvoicePaymentService(
                 invoiceNumber = invoiceNumber
             )
         } catch (e: Exception) {
-            throw Exception("Error creating invoice payment")
+            throw Exception("Error creating invoice payment", e)
         }
     }
 

@@ -166,7 +166,7 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    override fun getReserverPaymentHistory(reserverId: UUID): List<PaymentHistory> =
+    override fun getReserverPaymentDetails(reserverId: UUID): List<PaymentDetails> =
         jdbi.withHandleUnchecked { handle ->
             handle
                 .createQuery(
@@ -194,7 +194,7 @@ class JdbiPaymentRepository(
                     ORDER BY p.created DESC
                     """.trimIndent()
                 ).bind("reserverId", reserverId)
-                .mapTo<PaymentHistory>()
+                .mapTo<PaymentDetails>()
                 .list()
         }
 }

@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.domain
 
+import fi.espoo.vekkuli.boatSpace.invoice.InvoicePayment
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -61,7 +62,7 @@ data class CreateInvoiceParams(
     val paymentId: UUID,
 )
 
-data class PaymentHistory(
+data class PaymentDetails(
     val paymentId: UUID,
     val paymentStatus: PaymentStatus,
     val paidDate: LocalDate?,
@@ -75,4 +76,9 @@ data class PaymentHistory(
     val invoiceDueDate: LocalDate?,
     val paymentCreated: LocalDateTime,
     val priceInfo: String?
+)
+
+data class PaymentHistory(
+    val paymentDetails: PaymentDetails,
+    val invoicePayments: List<InvoicePayment>
 )

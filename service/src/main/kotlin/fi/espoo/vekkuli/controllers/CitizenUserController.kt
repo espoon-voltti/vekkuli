@@ -311,6 +311,7 @@ class CitizenUserController(
         }
         val reserver = reserverRepository.getReserverById(citizenId) ?: throw IllegalArgumentException("Reserver not found")
         val history = paymentService.getReserverPaymentHistory(reserver.id)
+
         return reserverDetailsReservationsContainer.paymentTabContent(reserver, history)
     }
 
