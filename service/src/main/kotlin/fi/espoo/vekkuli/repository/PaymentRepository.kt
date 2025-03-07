@@ -10,8 +10,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 interface PaymentRepository {
-    fun getPaymentClasses(): List<Price>
-
     fun getPayment(stamp: UUID): Payment?
 
     fun getPaymentForReservation(reservationId: Int): Payment?

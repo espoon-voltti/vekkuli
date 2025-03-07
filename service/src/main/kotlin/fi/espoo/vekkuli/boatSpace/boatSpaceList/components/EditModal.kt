@@ -16,7 +16,7 @@ class EditModal(
         paymentClasses: List<Price>
     ): String {
         val harborOptions = harbors.map { Pair(it.id.toString(), it.name) }
-        // language=HTML
+
         val harborDropdown =
             formComponents.select(
                 "boatSpaceList.label.harbor",
@@ -26,7 +26,6 @@ class EditModal(
                 placeholder = ""
             )
 
-        // language=HTML
         val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionEdit", null)
         val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumberEdit", null)
 
@@ -72,7 +71,7 @@ class EditModal(
                 <div class="modal-underlay" @click="openEditModal = false"></div>
                 <div class="modal-content">
                     <div class="container">
-                        <form id="edit-boat-space-form" class="is-1"
+                        <form class="is-1"
                             hx-post="/virkailija/venepaikat/selaa/muokkaa"
                             hx-swap="none" 
                             hx-on="htmx:afterRequest: window.location.href='/virkailija/venepaikat/selaa'">

@@ -4,10 +4,7 @@ import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.ensureEmployeeId
 import fi.espoo.vekkuli.config.getAuthenticatedUser
 import fi.espoo.vekkuli.domain.*
-import fi.espoo.vekkuli.service.BoatReservationService
-import fi.espoo.vekkuli.service.BoatSpaceService
-import fi.espoo.vekkuli.service.EditBoatSpaceParams
-import fi.espoo.vekkuli.service.PaymentService
+import fi.espoo.vekkuli.service.*
 import fi.espoo.vekkuli.utils.decimalToInt
 import fi.espoo.vekkuli.utils.formatDecimal
 import fi.espoo.vekkuli.utils.formatInt
@@ -54,6 +51,9 @@ data class BoatSpaceListRow(
 @RequestMapping("/virkailija/venepaikat")
 class BoatSpaceListController {
     @Autowired
+    private lateinit var priceService: PriceService
+
+    @Autowired
     private lateinit var paymentService: PaymentService
 
     @Autowired
@@ -90,12 +90,12 @@ class BoatSpaceListController {
         val boatSpaces =
             boatSpaceService.getBoatSpacesFiltered(params)
         val sections = boatSpaceService.getSections()
-        val paymentClasses = paymentService.getPaymentClasses()
+        val priceClasses = priceService.getPriceClasses()
         return ResponseEntity.ok(
             layout.render(
                 true,
                 request.requestURI,
-                boatSpaceList.render(boatSpaces, params, harbors, paymentClasses, boatSpaceTypes, actualAmenities, sections, params.edit)
+                boatSpaceList.render(boatSpaces, params, harbors, priceClasses, boatSpaceTypes, actualAmenities, sections, params.edit)
             )
         )
     }

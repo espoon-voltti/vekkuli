@@ -130,17 +130,6 @@ class JdbiPaymentRepository(
                 .firstOrNull()
         }
 
-    override fun getPaymentClasses(): List<Price> =
-        jdbi.withHandleUnchecked { handle ->
-            handle
-                .createQuery(
-                    """
-                    SELECT id, name, price_cents, vat_cents, net_price_cents FROM price
-                    """.trimIndent()
-                ).mapTo<Price>()
-                .list()
-        }
-
     override fun getPayment(stamp: UUID): Payment? =
         jdbi.withHandleUnchecked { handle ->
             handle

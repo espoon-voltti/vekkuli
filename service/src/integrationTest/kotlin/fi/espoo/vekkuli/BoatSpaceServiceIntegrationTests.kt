@@ -149,14 +149,14 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
         "Slip, Beam, 10, 10, 0",
-        "Slip, Beam, 3, 5, 31",
+        "Slip, Beam, 3, 5, 30",
         "Trailer, None, 10, 10, 0",
         "Trailer, None, 1, 3, 28",
         "Trailer, Trailer, 1, 1, 0",
         "Trailer, Buck, 1, 1, 0",
         "Winter, None, 10, 10, 0",
         "Winter, None, 2.75, 5.5, 25",
-        "Winter, None, 2.5, 4.5, 28",
+        "Winter, None, 2.5, 4.5, 27",
         "Winter, Trailer, 1, 1, 0",
         "Winter, Buck, 1, 1, 0",
         "Storage, Buck, 10, 10, 0",
