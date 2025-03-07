@@ -300,6 +300,7 @@ jobs:
       - name: Pull images
         if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         run: |
+          docker pull "ghcr.io/espoon-voltti/vekkuli/service-builder:$TAG"
           ./e2e-test-compose pull
 
       - name: Build images
@@ -397,36 +398,6 @@ jobs:
             compose/integration-test.log
             compose/integration-test-all.log
           retention-days: 2
-
-
-  cleanup:
-    if: always()
-    runs-on: ubuntu-latest
-    needs:
-      - service
-      - test
-      - e2e-test
-      - owasp
-      - integration-test
-
-    steps:
-      - name: Cleanup untagged images
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: vekkuli/service-builder
-          package-type: container
-          min-versions-to-keep: 0
-          delete-only-untagged-versions: 'true'
-
-      # delete-package-versions does not support deleting using tags so we just
-      # keep X number of images where X is more than expected simultaneous CI jobs
-      # Then we cleanup all images in sheduled.yml every night
-      - name: Cleanup unnessary tagged image
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: vekkuli/service-builder
-          package-type: container
-          min-versions-to-keep: 20
 
   deploy-environments:
     runs-on: ubuntu-latest
