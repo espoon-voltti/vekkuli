@@ -282,6 +282,7 @@ class JdbiBoatSpaceRepository(
                 """
                 UPDATE boat_space bs
                 SET type = COALESCE(:type, type),
+                    location_id = COALESCE(:locationId, location_id),
                     section = COALESCE(:section, section),
                     place_number = COALESCE(:placeNumber, place_number),
                     amenity = COALESCE(:amenity, amenity),
@@ -297,6 +298,7 @@ class JdbiBoatSpaceRepository(
             query.bind("type", editBoatSpaceParams.type)
             query.bind("section", editBoatSpaceParams.section)
             query.bind("placeNumber", editBoatSpaceParams.placeNumber)
+            query.bind("locationId", editBoatSpaceParams.locationId)
             query.bind("amenity", editBoatSpaceParams.amenity)
             query.bind("widthCm", editBoatSpaceParams.widthCm)
             query.bind("lengthCm", editBoatSpaceParams.lengthCm)

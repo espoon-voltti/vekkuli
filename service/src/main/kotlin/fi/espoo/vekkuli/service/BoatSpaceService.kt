@@ -22,6 +22,7 @@ data class BoatSpaceFilter(
 )
 
 data class EditBoatSpaceParams(
+    val locationId: Int?,
     val type: BoatSpaceType?,
     val section: String?,
     val placeNumber: Int?,

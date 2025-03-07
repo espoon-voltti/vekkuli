@@ -115,6 +115,7 @@ class BoatSpaceListController {
         boatSpaceService.editBoatSpaces(
             params.edit,
             EditBoatSpaceParams(
+                params.harborEdit,
                 params.boatSpaceTypeEdit,
                 if (params.sectionEdit.isNullOrEmpty()) null else params.sectionEdit,
                 params.placeNumberEdit,

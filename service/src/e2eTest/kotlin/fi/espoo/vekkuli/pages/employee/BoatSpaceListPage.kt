@@ -4,6 +4,7 @@ import com.microsoft.playwright.Page
 import fi.espoo.vekkuli.baseUrl
 import fi.espoo.vekkuli.domain.BoatSpaceState
 import fi.espoo.vekkuli.pages.BasePage
+import fi.espoo.vekkuli.pages.getByDataTestId
 
 class BoatSpaceListPage(
     page: Page
@@ -32,11 +33,11 @@ class BoatSpaceListPage(
     val expandingSelectionFilter = { selection: String -> filterLocator("selection-$selection") }
     val amenityFilter = { amenity: String -> filterLocator("amenity-$amenity") }
 
-    fun boatSpaceRow(boatSpaceId: Int) = page.getByTestId("boat-space-$boatSpaceId")
+    fun boatSpaceRow(boatSpaceId: Int) = page.getByDataTestId("boat-space-$boatSpaceId")
 
-    fun editButton(boatSpaceId: Int) = page.getByTestId("edit-boat-space-$boatSpaceId")
+    fun editButton(boatSpaceId: Int) = page.getByDataTestId("edit-boat-space-$boatSpaceId")
 
-    val editModalButton = page.getByTestId("open-edit-modal")
+    val editModalButton = page.getByDataTestId("open-edit-modal")
     val editModalPage = BoatSpaceEditModalPage(page)
 }
 

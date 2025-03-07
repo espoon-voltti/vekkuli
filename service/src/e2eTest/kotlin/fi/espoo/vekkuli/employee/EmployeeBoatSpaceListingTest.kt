@@ -99,26 +99,32 @@ class EmployeeBoatSpaceListingTest : PlaywrightTest() {
     fun `should be able to edit boat space`() {
         val listingPage = boatSpaceListPage()
         listingPage.editButton(1).click()
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("1,50")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("3,50")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("Laajalahti")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("Storage")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("RearBuoy")
+        assertThat(listingPage.boatSpaceRow(1)).not().containsText("223,67")
         listingPage.editModalButton.click()
         val editModal = listingPage.editModalPage
         editModal.fillForm(
             "1.5",
-            "2.5",
-            harbor = "1",
+            "3.5",
+            harbor = "3",
             section = "C",
             placeNumber = "1",
             boatSpaceType = "Storage",
-            boatSpaceAmenity = "None",
-            payment = "2"
+            boatSpaceAmenity = "RearBuoy",
+            payment = "1"
         )
         editModal.submitButton.click()
         listingPage.boatSpaceTypeFilter("Storage").click()
         assertThat(listingPage.boatSpaceRow(1)).containsText("1,50")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("2,50")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("Haukilahti")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("3,50")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("Laajalahti")
         assertThat(listingPage.boatSpaceRow(1)).containsText("Storage")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("-")
-        assertThat(listingPage.boatSpaceRow(1)).containsText("267,19")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("Rear buoy")
+        assertThat(listingPage.boatSpaceRow(1)).containsText("223,67")
     }
 
     private fun boatSpaceListPage(): BoatSpaceListPage {

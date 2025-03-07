@@ -27,6 +27,7 @@ data class BoatSpaceListEditParams(
     val edit: List<Int> = emptyList(),
     val sectionEdit: String? = null,
     val placeNumberEdit: Int? = null,
+    val harborEdit: Int? = null,
     val boatSpaceTypeEdit: BoatSpaceType?,
     val boatSpaceAmenityEdit: BoatSpaceAmenity?,
     val widthEdit: BigDecimal?,
@@ -88,7 +89,9 @@ class BoatSpaceList(
         fun editCheckBox(result: BoatSpaceListRow) =
             """
              <label class="checkbox">
-                <input name="edit" id="edit-boat-space-${result.id}" type="checkbox" value="${result.id}" x-model='editBoatSpaces' />
+                <input name="edit"  ${addTestId(
+                "edit-boat-space-${result.id}"
+            )} type="checkbox" value="${result.id}" x-model='editBoatSpaces' />
             </label>
             """.trimIndent()
         // language=HTML
@@ -97,7 +100,7 @@ class BoatSpaceList(
 
                 """
                 <tr class="boat-space-item"
-                    id="boat-space-${result.id}">
+                ${addTestId("boat-space-${result.id}")}>
                     <td>${editCheckBox(result)}</td>
                     <td>${result.locationName}</td>
                     <td
@@ -124,141 +127,149 @@ class BoatSpaceList(
 
         // language=HTML
         return """
-            <section class="section" >
-               
-                <div class="container" x-data="{
-                    sortColumn: '${searchParams.sortBy}',
-                    sortDirection: '${searchParams.ascending}',
-                    openEditModal: false,
-                    editBoatSpaces: [],
-                    updateSort(column) {
-                        if (this.sortColumn === column) {
-                            this.sortDirection = this.sortDirection === 'true' ? 'false' : 'true';
-                        } else {
-                            this.sortColumn = column;
-                            this.sortDirection = 'true';
-                        }
-                        document.getElementById('sortColumn').value = this.sortColumn;
-                        document.getElementById('sortDirection').value = this.sortDirection;
-                        document.getElementById('boat-space-table-header').dispatchEvent(new Event('change'));
-                    }
-                }">
-                    <form id="boat-space-filter-form"
-                          hx-get="/virkailija/venepaikat/selaa"
-                          hx-target="#table-body"
-                          hx-select="#table-body"
-                          hx-trigger="change from:#boat-space-filter-container, change from:#boat-space-table-header" 
-                          hx-swap="outerHTML"
-                          hx-push-url="true"
-                          hx-indicator="#loader, .loaded-content"
-                    >
-                         <input type="hidden" name="sortBy" id="sortColumn" value="${searchParams.sortBy}" >
-                         <input type="hidden" name="ascending" id="sortDirection" value="${searchParams.ascending}">
-                        
-                        <div id='boat-space-filter-container'>
-                            <div class="employee-filter-container">                        
-                                <div class="filter-group">
-                                    <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
-                                    <div class="tag-container">
-                                    ${filters.harborFilters(harbors, searchParams.harbor)}
-                                    </div>
-                                </div>
-                            </div>            
-                             <div class="employee-filter-container">
-                                <div class="filter-group">
-                                    <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
-                                    <div class="tag-container">
-                                        ${filters.boatSpaceTypeFilters(boatSpaceTypes, searchParams.boatSpaceType)}
-                                    </div>
-                                </div>
-                                
-                                <div class="filter-group">
-                                  <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
-                                  <div class="tag-container">
-                                    ${filters.amenityFilters(amenities, searchParams.amenity)}
-                                  </div>
-                                </div>
-                            </div>
-                            
-                             <div class="employee-filter-container">
-                                <div class="filter-group">
-                                  <h1 class="label">${t("boatSpaceReservation.title.state")}</h1>
-                                  <div class="tag-container">
-                                    ${filters.boatSpaceStateFilter(searchParams.boatSpaceState)}
-                                  </div>
-                                </div>
-                            </div>
-                            <div class="employee-filter-container">
-                                <button id="open-edit-modal" :disabled='editBoatSpaces.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
-                            </div>
-                        </div>
-                        <div class='reservation-list form-section block'>
-                            <div class='table-container'>
-                                <table class="table is-hoverable">
-                                
-                                    <thead id='boat-space-table-header'>
-                                        <tr class="table-borderless">
-                                            <th></th>
-                                            <th class="nowrap">
-                                            ${sortButton(BoatSpaceFilterColumn.PLACE.name, t("boatSpaceList.title.harbor"))}
-                                            </th>
-                                            <th class="nowrap">
-                                                 ${sortButton(BoatSpaceFilterColumn.PLACE.name, t("boatSpaceList.title.place"))}
-                                            </th>
-                
-                                            <th class="nowrap">
-                                            ${sortButton(BoatSpaceFilterColumn.PLACE_TYPE.name, t("boatSpaceList.title.type"))}
-                                            </th>
-                                            <th class="nowrap">
-                                            ${sortButton(BoatSpaceFilterColumn.AMENITY.name, t("boatSpaceList.title.amenity"))}
-                                            </th>
+                        <section class="section" >
+                           
+                            <div class="container" x-data="{
+                                sortColumn: '${searchParams.sortBy}',
+                                sortDirection: '${searchParams.ascending}',
+                                openEditModal: false,
+                                editBoatSpaces: [],
+                                updateSort(column) {
+                                    if (this.sortColumn === column) {
+                                        this.sortDirection = this.sortDirection === 'true' ? 'false' : 'true';
+                                    } else {
+                                        this.sortColumn = column;
+                                        this.sortDirection = 'true';
+                                    }
+                                    document.getElementById('sortColumn').value = this.sortColumn;
+                                    document.getElementById('sortDirection').value = this.sortDirection;
+                                    document.getElementById('boat-space-table-header').dispatchEvent(new Event('change'));
+                                }
+                            }">
+                                <form id="boat-space-filter-form"
+                                      hx-get="/virkailija/venepaikat/selaa"
+                                      hx-target="#table-body"
+                                      hx-select="#table-body"
+                                      hx-trigger="change from:#boat-space-filter-container, change from:#boat-space-table-header" 
+                                      hx-swap="outerHTML"
+                                      hx-push-url="true"
+                                      hx-indicator="#loader, .loaded-content"
+                                >
+                                     <input type="hidden" name="sortBy" id="sortColumn" value="${searchParams.sortBy}" >
+                                     <input type="hidden" name="ascending" id="sortDirection" value="${searchParams.ascending}">
+                                    
+                                    <div id='boat-space-filter-container'>
+                                        <div class="employee-filter-container">                        
+                                            <div class="filter-group">
+                                                <h1 class="label">${t("boatSpaceReservation.title.harbor")}</h1>
+                                                <div class="tag-container">
+                                                ${filters.harborFilters(harbors, searchParams.harbor)}
+                                                </div>
+                                            </div>
+                                        </div>            
+                                         <div class="employee-filter-container">
+                                            <div class="filter-group">
+                                                <h1 class="label">${t("boatSpaceReservation.title.type")}</h1>
+                                                <div class="tag-container">
+                                                    ${filters.boatSpaceTypeFilters(boatSpaceTypes, searchParams.boatSpaceType)}
+                                                </div>
+                                            </div>
                                             
-                                                                           
-                                            <th class="nowrap">
-                                            ${sortButton(BoatSpaceFilterColumn.PLACE_WIDTH.name, t("boatSpaceList.title.widthInMeters"))}
-                                            </th>
-                                            <th><span class="reservation-table-header">
-                                            ${sortButton(BoatSpaceFilterColumn.PLACE_LENGTH.name, t("boatSpaceList.title.lengthInMeters"))}
-                                            </span></th>
-                                            <th class="nowrap">
-                                            ${sortButton(BoatSpaceFilterColumn.PRICE.name, t("boatSpaceList.title.price"))}
-                                            </th>
-                                            <th class="nowrap">
-                                            ${t("boatSpaceList.title.state")}
-                                            </th> 
-                                            <th class="nowrap">
-                                            ${sortButton(BoatSpaceFilterColumn.RESERVER.name, t("boatSpaceList.title.reserver"))}
-                                            </th> 
-                                         
-                                        </tr>
+                                            <div class="filter-group">
+                                              <h1 class="label">${t("boatSpaceReservation.title.amenity")}</h1>
+                                              <div class="tag-container">
+                                                ${filters.amenityFilters(amenities, searchParams.amenity)}
+                                              </div>
+                                            </div>
+                                        </div>
                                         
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th>$sectionFilter</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="table-body" class="loaded-content">
-                                    $reservationRows
-                                    </tbody>
-                                </table>
+                                         <div class="employee-filter-container">
+                                            <div class="filter-group">
+                                              <h1 class="label">${t("boatSpaceReservation.title.state")}</h1>
+                                              <div class="tag-container">
+                                                ${filters.boatSpaceStateFilter(searchParams.boatSpaceState)}
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <div class="employee-filter-container">
+                                            <button ${addTestId(
+            "open-edit-modal"
+        )} :disabled='editBoatSpaces.length <= 0' class='is-link' type='button' @click="openEditModal = true" >Muokkaa</button>    
+                                        </div>
+                                    </div>
+                                    <div class='reservation-list form-section block'>
+                                        <div class='table-container'>
+                                            <table class="table is-hoverable">
+                                            
+                                                <thead id='boat-space-table-header'>
+                                                    <tr class="table-borderless">
+                                                        <th></th>
+                                                        <th class="nowrap">
+                                                        ${sortButton(BoatSpaceFilterColumn.PLACE.name, t("boatSpaceList.title.harbor"))}
+                                                        </th>
+                                                        <th class="nowrap">
+                                                             ${sortButton(BoatSpaceFilterColumn.PLACE.name, t("boatSpaceList.title.place"))}
+                                                        </th>
+                            
+                                                        <th class="nowrap">
+                                                        ${sortButton(BoatSpaceFilterColumn.PLACE_TYPE.name, t("boatSpaceList.title.type"))}
+                                                        </th>
+                                                        <th class="nowrap">
+                                                        ${sortButton(BoatSpaceFilterColumn.AMENITY.name, t("boatSpaceList.title.amenity"))}
+                                                        </th>
+                                                        
+                                                                                       
+                                                        <th class="nowrap">
+                                                        ${sortButton(
+            BoatSpaceFilterColumn.PLACE_WIDTH.name,
+            t("boatSpaceList.title.widthInMeters")
+        )}
+                                                        </th>
+                                                        <th><span class="reservation-table-header">
+                                                        ${sortButton(
+            BoatSpaceFilterColumn.PLACE_LENGTH.name,
+            t("boatSpaceList.title.lengthInMeters")
+        )}
+                                                        </span></th>
+                                                        <th class="nowrap">
+                                                        ${sortButton(BoatSpaceFilterColumn.PRICE.name, t("boatSpaceList.title.price"))}
+                                                        </th>
+                                                        <th class="nowrap">
+                                                        ${t("boatSpaceList.title.state")}
+                                                        </th> 
+                                                        <th class="nowrap">
+                                                        ${sortButton(BoatSpaceFilterColumn.RESERVER.name, t("boatSpaceList.title.reserver"))}
+                                                        </th> 
+                                                     
+                                                    </tr>
+                                                    
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th>$sectionFilter</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="table-body" class="loaded-content">
+                                                $reservationRows
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
+                                    </div>
+                                </form>
+                                ${editModal.render(harbors, paymentClasses)}
+                                
                             </div>
-                            <div id="loader" class="htmx-indicator is-centered is-vcentered"> ${icons.spinner} </div>
-                        </div>
-                    </form>
-                    ${editModal.render(harbors, paymentClasses)}
-                    
-                </div>
-            </section>
+                        </section>
             """.trimIndent()
     }
 }
