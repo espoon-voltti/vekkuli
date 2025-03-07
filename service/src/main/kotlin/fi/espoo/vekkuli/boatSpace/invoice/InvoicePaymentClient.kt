@@ -28,6 +28,7 @@ data class Receipt(
     val invoiceNumber: String
 )
 
+@Serializable
 data class RawInvoicePaymentResponse(
     val receipts: List<RawReceipt>
 )

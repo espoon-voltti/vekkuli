@@ -53,6 +53,9 @@ class VekkuliHttpClient {
         ): HttpResponse {
             val client =
                 HttpClient(CIO) {
+                    install(ContentNegotiation) {
+                        json()
+                    }
                     expectSuccess = true
                 }
             val response =
