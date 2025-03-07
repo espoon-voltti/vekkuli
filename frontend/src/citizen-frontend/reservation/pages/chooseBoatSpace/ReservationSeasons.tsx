@@ -9,7 +9,7 @@ export default React.memo(function ReservationSeasons() {
 
   const MapsLink = () => (
       <div className="is-primary-color ">
-        <Link to={i18n.header.harborsInfoLink} className="link open-in-new-link" aria-label={i18n.header.openInANewWindow} target="_blank">
+        <Link to={i18n.header.harborsInfoLink} className="link open-in-new-tab" aria-label={i18n.header.openInANewWindow} target="_blank">
           <MapIcon />
           <span>{i18n.header.mapsLink}</span>
           <OpenInNew />

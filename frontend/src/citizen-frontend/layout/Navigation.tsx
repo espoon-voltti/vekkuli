@@ -14,7 +14,7 @@ export default React.memo(function Navigation() {
 
   const InstructionsLink = () => (
     <div className="is-primary-color ">
-      <Link to={"https://admin.espoo.fi/sites/default/files/2025-03/Venepaikan%20varaaminen%20ja%20vaihtaminen.pdf"} className="link open-in-new-link" aria-label={i18n.header.openInANewWindow} target="_blank">
+      <Link to={"https://admin.espoo.fi/sites/default/files/2025-03/Venepaikan%20varaaminen%20ja%20vaihtaminen.pdf"} className="link open-in-new-tab" aria-label={i18n.header.openInANewWindow} target="_blank">
         <span>{i18n.header.instructionsLink}</span>
         <OpenInNew />
       </Link>
