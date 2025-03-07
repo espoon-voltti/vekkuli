@@ -3,16 +3,10 @@ package fi.espoo.vekkuli.boatSpace.invoice
 import fi.espoo.vekkuli.common.VekkuliHttpClient
 import fi.espoo.vekkuli.config.EspiEnv
 import fi.espoo.vekkuli.utils.TimeProvider
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.call.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -21,30 +15,27 @@ import java.nio.charset.StandardCharsets
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-object BigDecimalSerializer : KSerializer<BigDecimal> {
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor("BigDecimal", PrimitiveKind.STRING)
+val logger = KotlinLogging.logger {}
 
-    override fun serialize(
-        encoder: Encoder,
-        value: BigDecimal
-    ) {
-        encoder.encodeString(value.toPlainString())
-    }
-
-    override fun deserialize(decoder: Decoder): BigDecimal = BigDecimal(decoder.decodeString())
-}
-
-@Serializable
 data class InvoicePaymentResponse(
     val receipts: List<Receipt>
 )
 
-@Serializable
 data class Receipt(
     val transactionNumber: Int,
-    @Serializable(with = BigDecimalSerializer::class)
     val amountPaid: BigDecimal,
+    val paymentDate: String,
+    val invoiceNumber: String
+)
+
+data class RawInvoicePaymentResponse(
+    val receipts: List<RawReceipt>
+)
+
+@Serializable
+data class RawReceipt(
+    val transactionNumber: String,
+    val amountPaid: String,
     val paymentDate: String,
     val invoiceNumber: String
 )
@@ -93,9 +84,23 @@ class EspiInvoicePaymentClient(
                     headers,
                 )
 
-            if (response.bodyAsText().isEmpty()) {
-                return@runBlocking InvoicePaymentResponse(receipts = listOf())
-            }
-            return@runBlocking response.body<InvoicePaymentResponse>()
+            val parsedReceipts =
+                response.body<RawInvoicePaymentResponse>().receipts.mapNotNull {
+                    try {
+                        Receipt(
+                            transactionNumber = it.transactionNumber.toInt(),
+                            amountPaid = BigDecimal(it.amountPaid),
+                            paymentDate = it.paymentDate,
+                            invoiceNumber = it.invoiceNumber
+                        )
+                    } catch (e: Exception) {
+                        logger.error { "Parsing receipt failed: ${e.message}" }
+                        null
+                    }
+                }
+
+            return@runBlocking InvoicePaymentResponse(
+                receipts = parsedReceipts
+            )
         }
 }
