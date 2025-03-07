@@ -50,7 +50,7 @@ const ErrorContainer = React.memo(function ErrorContainer({
     <div className="error-container is-overlay has-text-primary has-background-white is-flex is-justify-content-center is-align-items-center">
       <div>
         <Columns isMultiline>{children}</Columns>
-        <Buttons centered>
+        <Buttons alignment={"center"}>
           <Button type="primary" action={() => navigate('/')}>
             {translations.buttonLabel}
           </Button>
