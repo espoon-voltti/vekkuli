@@ -127,7 +127,11 @@ const sv: Translations = {
     goToHomepage: 'Gå till hemsidan',
     goToMainContent: 'Hoppa till innehållet',
     selectLanguage: 'Välj språk',
-    mainNavigation: 'Huvudnavigering'
+    mainNavigation: 'Huvudnavigering',
+    instructionsLink: 'Instruktioner',
+    openInANewWindow: 'Öppna i en ny flik',
+    mapsLink: 'Du kan öppna kartorna över hamnar och förvaringsplatser i en ny flik härifrån.',
+    harborsInfoLink: 'https://www.espoo.fi/sv/idrott-motion-och-natur/batliv/bathamnar',
   },
   footer: {
     accessibilityLink: 'Tillgänglighetsutlåtande',
@@ -143,11 +147,11 @@ const sv: Translations = {
       locations:
         'Lediga båtplatser finns i följande hamnar: Haukilahti, Kivenlahti, Laajalahti, Otsolahti, Soukka, Suomenoja och Svinö. Vinterförvaringsplatser finns i Laajalahti, Otsolahti och Suomenoja samt året-runt-förvaringsplatser i Ämmäsmäki.',
       authenticationRequired:
-        'För att boka en plats krävs stark autentisering, och båtplatsen betalas vid bokningstillfället.',
+        'För att boka en plats krävs stark autentisering, och båtplatsen betalas vid bokningstillfället. Bokningssystemet fungerar bäst med Google Chrome och Edge-webbläsare.',
       boatRequired:
         'Endast ägaren eller innehavaren av en båt kan boka båt-, vinter- eller förvaringsplatser. Se till att uppgifterna är korrekta i Traficoms båtregister.',
       contactInfo:
-        'Om du inte kan autentisera dig elektroniskt, kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 mån och ons kl. 12:30-15:00 och tors kl. 9:00-11:00.',
+        'Om du inte kan identifiera dig elektroniskt eller bokar för första gången för en gemenskap (företag eller förening), kontakta oss via e-post på venepaikat@espoo.fi eller per telefon på 09 81658984 på måndagar och onsdagar kl. 12.30–15.00 och på torsdagar kl. 9.00–11.00.',
       preparations:
         'För att göra en bokning behöver du följande uppgifter: e-postadress, telefonnummer, båtens registreringsnummer, bredd, längd och vikt, båtens namn och märke eller annan identifiering. Om du bokar för första gången för en organisation behöver du dessutom organisationens FO-nummer och faktureringsadress.',
       readMore:
@@ -167,7 +171,7 @@ const sv: Translations = {
       Trailer: {
         title: 'Boka trailerplatser vid Suomenoja 2025',
         season: (season: string) =>
-          `Hyressäsong ${season} Båt på trailer, sjösättning från ramp.`,
+          `Hyressäsong ${season}. Båt på trailer, sjösättning från ramp.`,
         periods: [
           (period: string) =>
             `${period} endast Esbo-bor* med ett nuvarande hyresavtal för trailerplats kan förnya sin hyra`,
