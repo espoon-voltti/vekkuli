@@ -15,53 +15,55 @@ class EditModal(
         harbors: List<Location>,
         paymentClasses: List<Price>
     ): String {
+        val harborOptions = harbors.map { Pair(it.id.toString(), it.name) }
         // language=HTML
         val harborDropdown =
             formComponents.select(
                 "boatSpaceList.label.harbor",
                 "harborEdit",
                 "",
-                harbors.map { Pair(it.id.toString(), it.name) },
-                true
+                listOf(Pair("", "Ei valittu")) + harborOptions,
+                placeholder = ""
             )
 
         // language=HTML
-        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionEdit", "", true)
-        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumberEdit", null, true)
+        val sectionInput = formComponents.textInput("boatSpaceList.label.section", "sectionEdit", null)
+        val placeNumberInput = formComponents.numberInput("boatSpaceList.label.placeNumber", "placeNumberEdit", null)
 
         val boatSpaceTypeInput =
             formComponents.select(
                 "boatSpaceList.label.boatSpaceType",
                 "boatSpaceTypeEdit",
                 "",
-                BoatSpaceType.entries.map { Pair(it.name, t("employee.boatSpaceReservations.types.${it.name}")) },
-                true
+                listOf(Pair("", "Ei valittu")) +
+                    BoatSpaceType.entries.map { Pair(it.name, t("employee.boatSpaceReservations.types.${it.name}")) },
+                placeholder = ""
             )
         val boatSpaceAmenityInput =
             formComponents.select(
                 "boatSpaceList.label.boatSpaceAmenity",
                 "boatSpaceAmenityEdit",
                 "",
-                BoatSpaceAmenity.entries.map { Pair(it.name, t("boatSpaces.amenityOption.${it.name}")) },
-                true
+                listOf(Pair("", "Ei valittu")) + BoatSpaceAmenity.entries.map { Pair(it.name, t("boatSpaces.amenityOption.${it.name}")) },
             )
-        val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "widthEdit", null, true)
-        val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "lengthEdit", null, true)
+        val widthInput = formComponents.decimalInput("boatSpaceList.title.widthInMeters", "widthEdit", null)
+        val lengthInput = formComponents.decimalInput("boatSpaceList.title.lengthInMeters", "lengthEdit", null)
 
         val paymentInput =
             formComponents.select(
                 "boatSpaceList.label.paymentClass",
                 "paymentEdit",
-                paymentClasses[0].id.toString(),
-                paymentClasses.map { Pair(it.id.toString(), it.name) },
-                true
+                "",
+                listOf(Pair("", "Ei valittu")) + paymentClasses.map { Pair(it.id.toString(), it.name) },
             )
         val isActiveInput =
             formComponents.radioButtons(
                 "boatSpaceList.label.state",
                 "boatSpaceStateEdit",
-                defaultValue = BoatSpaceState.Active.name,
-                options = BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) }
+                defaultValue = "",
+                options =
+                    listOf(RadioOption("", "Ei valittu")) +
+                        BoatSpaceState.entries.map { RadioOption(it.name, t("boatSpaceList.boatSpaceState.${it.name}")) }
             )
         // language=HTML
         return (
@@ -137,9 +139,6 @@ class EditModal(
                             </div>
                         </div>
                     </form>
-                     <script>
-                        validation.init({forms: ['edit-boat-space-form']})
-                    </script>
                 </div>
             </div>
             """.trimIndent()

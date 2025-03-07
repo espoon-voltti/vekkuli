@@ -298,60 +298,83 @@ class BoatSpaceServiceIntegrationTests : IntegrationTestBase() {
         val originalBoatSpace2 = boatSpaceRepository.getBoatSpace(84)
         val editBoatSpaceParams =
             EditBoatSpaceParams(
-                BoatSpaceType.Slip,
-                "C",
-                1,
-                BoatSpaceAmenity.Beam,
-                100,
-                200,
-                1,
-                true
+                BoatSpaceType.Trailer,
+                "test",
+                2,
+                BoatSpaceAmenity.RearBuoy,
+                150,
+                250,
+                2,
+                false
             )
         boatSpaceService.editBoatSpaces(listOf(1, 84), editBoatSpaceParams)
         val editedBoatSpace = boatSpaceRepository.getBoatSpace(1)
         val editedBoatSpace2 = boatSpaceRepository.getBoatSpace(84)
 
-        assertNotNull(editedBoatSpace, "Boat space is edited")
+        assertNotNull(editedBoatSpace, "Edited boat space is fetched")
         // because there are multiple boat spaces to edit, the section and place numbers should be the same
-        assertEquals(originalBoatSpace?.section, editedBoatSpace.section, "Boat space section is the same")
-        assertEquals(originalBoatSpace?.placeNumber, editedBoatSpace.placeNumber, "Boat space place number is the same")
-        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Boat space amenity is the same")
-        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width is the same")
-        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length is the same")
-        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space is active")
+        assertEquals(originalBoatSpace?.section, editedBoatSpace.section, "Section was not edited")
+        assertEquals(originalBoatSpace?.placeNumber, editedBoatSpace.placeNumber, "Place number was not edited")
+        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Amenity has been edited")
+        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width has been edited")
+        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length has been edited")
+        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space has been edited")
 
         assertNotNull(editedBoatSpace2, "Boat space is edited")
-        assertEquals(originalBoatSpace2?.section, editedBoatSpace2.section, "Boat space section is the same")
-        assertEquals(originalBoatSpace2?.placeNumber, editedBoatSpace2.placeNumber, "Boat space place number is the same")
-        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace2.amenity, "Boat space amenity is the same")
-        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace2.widthCm, "Boat space width is the same")
-        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace2.lengthCm, "Boat space length is the same")
-        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace2.isActive, "Boat space is active")
+        assertEquals(originalBoatSpace2?.section, editedBoatSpace2.section, "Boat space section has been edited")
+        assertEquals(originalBoatSpace2?.placeNumber, editedBoatSpace2.placeNumber, "Boat space place number has been edited")
+        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace2.amenity, "Boat space amenity has been edited")
+        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace2.widthCm, "Boat space width has been edited")
+        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace2.lengthCm, "Boat space length has been edited")
+        assertEquals(editBoatSpaceParams.isActive, editedBoatSpace2.isActive, "Boat space has been edited")
+
+        assertEquals(editedBoatSpace.section, editedBoatSpace2.section, "Section has not been edited to be the same")
+        assertEquals(editedBoatSpace.placeNumber, editedBoatSpace2.placeNumber, "Place number has not been edited to be the same")
+    }
+
+    @Test
+    fun `boat space fields should not be edited if they are not given`() {
+        val originalBoatSpace = boatSpaceRepository.getBoatSpace(1)
+        val editBoatSpaceParams =
+            EditBoatSpaceParams(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            )
+        boatSpaceService.editBoatSpaces(listOf(1), editBoatSpaceParams)
+        val editedBoatSpace = boatSpaceRepository.getBoatSpace(1)
+
+        assertEquals(originalBoatSpace, editedBoatSpace, "Boat space is not edited")
     }
 
     @Test
     fun `boat space can be edited`() {
         val editBoatSpaceParams =
             EditBoatSpaceParams(
-                BoatSpaceType.Slip,
-                "C",
-                1,
-                BoatSpaceAmenity.Beam,
-                100,
-                200,
-                1,
-                true
+                BoatSpaceType.Trailer,
+                "test",
+                2,
+                BoatSpaceAmenity.RearBuoy,
+                150,
+                250,
+                2,
+                false
             )
         boatSpaceService.editBoatSpaces(listOf(1), editBoatSpaceParams)
         val editedBoatSpace = boatSpaceRepository.getBoatSpace(1)
 
         assertNotNull(editedBoatSpace, "Boat space is edited")
         // because there is only one boat space to edit, the section and place numbers should be the edited ones
-        assertEquals(editBoatSpaceParams.section, editedBoatSpace.section, "Boat space section is the same")
-        assertEquals(editBoatSpaceParams.placeNumber, editedBoatSpace.placeNumber, "Boat space place number is the same")
-        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Boat space amenity is the same")
-        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width is the same")
-        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length is the same")
+        assertEquals(editBoatSpaceParams.section, editedBoatSpace.section, "Boat space section has been edited")
+        assertEquals(editBoatSpaceParams.placeNumber, editedBoatSpace.placeNumber, "Boat space place number has been edited")
+        assertEquals(editBoatSpaceParams.amenity, editedBoatSpace.amenity, "Boat space amenity has been edited")
+        assertEquals(editBoatSpaceParams.widthCm, editedBoatSpace.widthCm, "Boat space width has been edited")
+        assertEquals(editBoatSpaceParams.lengthCm, editedBoatSpace.lengthCm, "Boat space length has been edited")
         assertEquals(editBoatSpaceParams.isActive, editedBoatSpace.isActive, "Boat space is active")
     }
 }

@@ -22,14 +22,14 @@ data class BoatSpaceFilter(
 )
 
 data class EditBoatSpaceParams(
-    val type: BoatSpaceType,
+    val type: BoatSpaceType?,
     val section: String?,
     val placeNumber: Int?,
-    val amenity: BoatSpaceAmenity,
-    val widthCm: Int,
-    val lengthCm: Int,
-    val priceId: Int,
-    val isActive: Boolean
+    val amenity: BoatSpaceAmenity?,
+    val widthCm: Int?,
+    val lengthCm: Int?,
+    val priceId: Int?,
+    val isActive: Boolean?
 )
 
 interface BoatSpaceRepository {

@@ -281,14 +281,14 @@ class JdbiBoatSpaceRepository(
             val sql =
                 """
                 UPDATE boat_space bs
-                SET type = :type,
+                SET type = COALESCE(:type, type),
                     section = COALESCE(:section, section),
                     place_number = COALESCE(:placeNumber, place_number),
-                    amenity = :amenity,
-                    width_cm = :widthCm,
-                    length_cm = :lengthCm,
-                    price_id = :priceId,
-                    is_active = :isActive,
+                    amenity = COALESCE(:amenity, amenity),
+                    width_cm = COALESCE(:widthCm, width_cm),
+                    length_cm = COALESCE(:lengthCm, length_cm),
+                    price_id = COALESCE(:priceId, price_id),
+                    is_active = COALESCE(:isActive, is_active),
                     updated = :currentTime
                 WHERE bs.id IN (<boatSpaceIds>)
                 """.trimIndent()

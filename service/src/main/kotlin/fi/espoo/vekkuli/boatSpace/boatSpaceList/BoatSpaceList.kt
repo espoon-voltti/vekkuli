@@ -27,12 +27,12 @@ data class BoatSpaceListEditParams(
     val edit: List<Int> = emptyList(),
     val sectionEdit: String? = null,
     val placeNumberEdit: Int? = null,
-    val boatSpaceTypeEdit: BoatSpaceType,
-    val boatSpaceAmenityEdit: BoatSpaceAmenity,
-    val widthEdit: BigDecimal,
-    val lengthEdit: BigDecimal,
-    val paymentEdit: Int,
-    val boatSpaceStateEdit: BoatSpaceState
+    val boatSpaceTypeEdit: BoatSpaceType?,
+    val boatSpaceAmenityEdit: BoatSpaceAmenity?,
+    val widthEdit: BigDecimal?,
+    val lengthEdit: BigDecimal?,
+    val paymentEdit: Int?,
+    val boatSpaceStateEdit: BoatSpaceState?
 )
 
 @Service
