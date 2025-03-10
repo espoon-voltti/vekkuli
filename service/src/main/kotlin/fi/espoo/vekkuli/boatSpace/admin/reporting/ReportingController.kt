@@ -3,9 +3,7 @@ package fi.espoo.vekkuli.boatSpace.admin.reporting
 import fi.espoo.vekkuli.boatSpace.admin.Layout
 import fi.espoo.vekkuli.config.audit
 import fi.espoo.vekkuli.config.getAuthenticatedEmployee
-import fi.espoo.vekkuli.service.boatSpaceReportToCsv
 import fi.espoo.vekkuli.service.freeBoatSpaceReportToCsv
-import fi.espoo.vekkuli.service.getBoatSpaceReport
 import fi.espoo.vekkuli.service.getFreeBoatSpaceReport
 import fi.espoo.vekkuli.service.getReservedBoatSpaceReport
 import fi.espoo.vekkuli.service.getStickerReport
@@ -57,22 +55,6 @@ class ReportingController(
             .ok()
             .header("Content-Disposition", "attachment; filename=\"vekkuli-tarraraportti-$dateFormatted.csv\"")
             .body(utf8BOM + stickerReportToCsv(getStickerReport(jdbi, minCreationDate)))
-    }
-
-    @GetMapping("/boat-space-report", produces = ["text/csv"])
-    @ResponseBody
-    fun boatSpaceReport(
-        request: HttpServletRequest,
-        @RequestParam("reportingDate") reportingDate: LocalDate?,
-    ): ResponseEntity<String> {
-        logger.audit(request.getAuthenticatedEmployee(), "DOWNLOAD_BOAT_SPACE_REPORT")
-
-        val reportDate = reportingDate?.atStartOfDay() ?: timeProvider.getCurrentDateTime()
-        val todayFormatted = reportDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        return ResponseEntity
-            .ok()
-            .header("Content-Disposition", "attachment; filename=\"vekkuli-venepaikkaraportti-$todayFormatted.csv\"")
-            .body(utf8BOM + boatSpaceReportToCsv(getBoatSpaceReport(jdbi, reportDate)))
     }
 
     @GetMapping("/boat-space-report/free", produces = ["text/csv"])

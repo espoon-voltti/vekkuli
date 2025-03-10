@@ -203,7 +203,12 @@ data class BoatSpaceReportRow(
 fun getFreeBoatSpaceReport(
     jdbi: Jdbi,
     reportDate: LocalDateTime
-): List<BoatSpaceReportRow> = getBoatSpaceReport(jdbi, reportDate).filter { it.startDate == null }
+): List<BoatSpaceReportRow> =
+    getBoatSpaceReport(jdbi, reportDate).filter {
+        it.startDate == null ||
+            !(it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced) ||
+            (it.terminationTimestamp != null && it.terminationTimestamp.isBefore(reportDate))
+    }
 
 fun getReservedBoatSpaceReport(
     jdbi: Jdbi,
@@ -211,9 +216,7 @@ fun getReservedBoatSpaceReport(
 ): List<BoatSpaceReportRow> =
     getBoatSpaceReport(jdbi, reportDate).filter {
         it.startDate != null &&
-            (
-                it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced
-            )
+            (it.reservationStatus == ReservationStatus.Confirmed || it.reservationStatus == ReservationStatus.Invoiced)
     }
 
 fun getTerminatedBoatSpaceReport(

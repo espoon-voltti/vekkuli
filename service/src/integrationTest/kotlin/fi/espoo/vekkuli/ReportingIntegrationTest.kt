@@ -259,6 +259,14 @@ class ReportingIntegrationTest : IntegrationTestBase() {
             )
         )
 
+        insertDevPayment(
+            DevPayment(
+                reserverId = citizenIdLeo,
+                reservationId = resId,
+                paid = today.atStartOfDay()
+            )
+        )
+
         val terminatedId = 3232
 
         insertDevBoatSpaceReservation(
