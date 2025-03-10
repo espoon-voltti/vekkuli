@@ -1,6 +1,10 @@
 package fi.espoo.vekkuli.boatSpace.invoice
 
+import fi.espoo.vekkuli.config.ReservationWarningType
 import fi.espoo.vekkuli.repository.InvoicePaymentRepository
+import fi.espoo.vekkuli.repository.PaymentRepository
+import fi.espoo.vekkuli.service.ReservationWarningRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -10,9 +14,13 @@ import java.time.LocalDate
 @Service
 class InvoicePaymentService(
     private val invoicePaymentClient: InvoicePaymentClient,
-    private val invoicePaymentRepository: InvoicePaymentRepository
+    private val invoicePaymentRepository: InvoicePaymentRepository,
+    private val paymentRepository: PaymentRepository,
+    private val reservationWarningRepository: ReservationWarningRepository
 ) {
-//    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
+    val logger = KotlinLogging.logger {}
+
+    //    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     // To test this in staging, setting the scheduler to run once per hour
     @Scheduled(fixedRate = 1000 * 60 * 60)
     fun fetchAndStoreInvoicePayments() {
@@ -20,6 +28,17 @@ class InvoicePaymentService(
         val invoicePayments = invoicePaymentResponse.receipts.map { createInvoicePayment(it) }
         if (invoicePayments.isNotEmpty()) {
             invoicePaymentRepository.insertInvoicePayments(invoicePayments)
+            invoicePayments.forEach { invoicePayment ->
+                paymentRepository.getInvoiceWithInvoiceNumber(invoicePayment.invoiceNumber)?.let { invoice ->
+                    reservationWarningRepository.addReservationWarnings(
+                        invoice.reservationId,
+                        null,
+                        null,
+                        invoicePayment.invoiceNumber,
+                        listOf(ReservationWarningType.InvoicePayment.name)
+                    )
+                } ?: logger.error { "No invoice found for invoice payment: $invoicePayment" }
+            }
         }
     }
 

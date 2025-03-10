@@ -2,8 +2,10 @@ package fi.espoo.vekkuli
 
 import fi.espoo.vekkuli.boatSpace.invoice.*
 import fi.espoo.vekkuli.repository.InvoicePaymentRepository
+import fi.espoo.vekkuli.repository.PaymentRepository
 import fi.espoo.vekkuli.service.BoatReservationService
 import fi.espoo.vekkuli.service.PaymentService
+import fi.espoo.vekkuli.service.ReservationWarningRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
@@ -32,12 +34,24 @@ class InvoicePaymentServiceIntegrationTest : IntegrationTestBase() {
     lateinit var invoicePaymentRepository: InvoicePaymentRepository
 
     @Autowired
+    lateinit var paymentRepository: PaymentRepository
+
+    @Autowired
+    lateinit var reservationWarningRepository: ReservationWarningRepository
+
+    @Autowired
     private lateinit var paymentService: PaymentService
 
     @BeforeEach
     fun setup() {
         deleteAllReservations(jdbi)
-        sut = InvoicePaymentService(mockInvoicePaymentClient, invoicePaymentRepository)
+        sut =
+            InvoicePaymentService(
+                mockInvoicePaymentClient,
+                invoicePaymentRepository,
+                paymentRepository,
+                reservationWarningRepository
+            )
     }
 
     @Test

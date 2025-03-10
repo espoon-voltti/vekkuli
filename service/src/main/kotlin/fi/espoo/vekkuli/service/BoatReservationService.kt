@@ -76,6 +76,7 @@ interface ReservationWarningRepository {
         reservationId: Int,
         boatId: Int?,
         trailerId: Int?,
+        invoiceNumber: Int?,
         infoText: String? = null,
         keys: List<String>,
     ): Unit
@@ -218,7 +219,7 @@ class BoatReservationService(
             }
 
             if (warnings.isNotEmpty()) {
-                reservationWarningRepo.addReservationWarnings(it.id, null, trailerId, keys = warnings)
+                reservationWarningRepo.addReservationWarnings(it.id, null, trailerId, null, keys = warnings)
             }
         }
     }
@@ -283,7 +284,7 @@ class BoatReservationService(
         }
 
         if (warnings.isNotEmpty()) {
-            reservationWarningRepo.addReservationWarnings(reservationId, boatId, null, keys = warnings)
+            reservationWarningRepo.addReservationWarnings(reservationId, boatId, null, null, keys = warnings)
         }
     }
 

@@ -15,6 +15,7 @@ class JdbiReservationWarningRepository(
         reservationId: Int,
         boatId: Int?,
         trailerId: Int?,
+        invoiceNumber: Int?,
         infoText: String?,
         keys: List<String>,
     ): Unit =
@@ -22,8 +23,8 @@ class JdbiReservationWarningRepository(
             val batch =
                 handle.prepareBatch(
                     """
-                    INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, info_text, key) 
-                    VALUES (:reservationId, :boatId, :trailerId, :infoText, :key)
+                    INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, invoice_number, info_text, key) 
+                    VALUES (:reservationId, :boatId, :trailerId, :invoiceNumber, :infoText, :key)
                     """.trimIndent()
                 )
             for (key in keys) {
@@ -31,6 +32,7 @@ class JdbiReservationWarningRepository(
                     .bind("reservationId", reservationId)
                     .bind("boatId", boatId)
                     .bind("trailerId", trailerId)
+                    .bind("invoiceNumber", invoiceNumber)
                     .bind("infoText", infoText)
                     .bind("key", key)
                     .add()

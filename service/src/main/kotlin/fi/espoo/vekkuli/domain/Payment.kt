@@ -47,7 +47,8 @@ data class Invoice(
     val dueDate: LocalDate,
     val reserverId: UUID,
     val paymentId: UUID,
-    val invoiceNumber: Long
+    val invoiceNumber: Long,
+    val reservationId: Int
 )
 
 data class CreatePaymentParams(
