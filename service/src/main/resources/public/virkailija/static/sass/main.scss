@@ -875,6 +875,10 @@ label.filter-button:has(input:checked) .icon {
   tr.settlement-row {
     background-color: $light-gray;
   }
+
+  .right-gap {
+    margin-right: $spacing-small;
+  }
 }
 
 .htmx-indicator{
@@ -1004,6 +1008,12 @@ ul {
   align-items: center;
   height: 100%;
   flex-direction: column;
+}
+
+.centered-row {
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-small;
 }
 
 .icon.is-extra-large

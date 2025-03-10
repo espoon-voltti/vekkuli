@@ -458,7 +458,19 @@ class ReserverDetailsReservationsContainer(
                 ${p.invoicePayments.joinToString("\n") { i ->
                     """
                     <tr class='settlement-row' ${addTestId("settlement-row")}>
-                        <td>${t("citizenDetails.payments.settlement")}</td>
+                        <td>
+                            <div class='centered-row'>
+                            ${if (i.reservationWarningId != null) {
+                        "<span>${
+                            icons.warningExclamation(
+                                false
+                            )
+                        }</span>"
+                    } else {
+                        ""
+                    }}<span>${t("citizenDetails.payments.settlement")}</span>
+                            </div>
+                        </td>
                         <td></td>
                         <td></td>
                         <td ${addTestId("settlement-invoice-number")}>${i.invoiceNumber}</td>

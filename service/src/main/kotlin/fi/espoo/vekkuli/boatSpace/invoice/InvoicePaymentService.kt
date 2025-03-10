@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
+import java.util.UUID
 
 @Service
 class InvoicePaymentService(
@@ -35,6 +36,7 @@ class InvoicePaymentService(
             invoicePayments.forEach { invoicePayment ->
                 paymentRepository.getInvoiceWithInvoiceNumber(invoicePayment.invoiceNumber)?.let { invoice ->
                     reservationWarningRepository.addReservationWarnings(
+                        UUID.randomUUID(),
                         invoice.reservationId,
                         null,
                         null,
@@ -74,5 +76,13 @@ data class InvoicePayment(
     val transactionNumber: Int,
     val amountPaidCents: Int,
     val paymentDate: LocalDate,
-    val invoiceNumber: Int
+    val invoiceNumber: Int,
+)
+
+data class InvoicePaymentWithReservationWarningId(
+    val transactionNumber: Int,
+    val amountPaidCents: Int,
+    val paymentDate: LocalDate,
+    val invoiceNumber: Int,
+    val reservationWarningId: UUID?
 )

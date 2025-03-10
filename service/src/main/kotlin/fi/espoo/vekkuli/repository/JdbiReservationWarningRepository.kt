@@ -6,12 +6,14 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.mapTo
 import org.jdbi.v3.core.kotlin.withHandleUnchecked
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 class JdbiReservationWarningRepository(
     private val jdbi: Jdbi
 ) : ReservationWarningRepository {
     override fun addReservationWarnings(
+        id: UUID,
         reservationId: Int,
         boatId: Int?,
         trailerId: Int?,
@@ -23,12 +25,13 @@ class JdbiReservationWarningRepository(
             val batch =
                 handle.prepareBatch(
                     """
-                    INSERT INTO reservation_warning (reservation_id, boat_id, trailer_id, invoice_number, info_text, key) 
-                    VALUES (:reservationId, :boatId, :trailerId, :invoiceNumber, :infoText, :key)
+                    INSERT INTO reservation_warning (id, reservation_id, boat_id, trailer_id, invoice_number, info_text, key) 
+                    VALUES (:id, :reservationId, :boatId, :trailerId, :invoiceNumber, :infoText, :key)
                     """.trimIndent()
                 )
             for (key in keys) {
                 batch
+                    .bind("id", id)
                     .bind("reservationId", reservationId)
                     .bind("boatId", boatId)
                     .bind("trailerId", trailerId)

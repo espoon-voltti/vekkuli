@@ -49,7 +49,7 @@ class PaymentService(
                 paymentDetails = it,
                 invoicePayments =
                     if (it.paymentType == PaymentType.Invoice && it.paymentReference.isNotEmpty()) {
-                        invoicePaymentRepository.getInvoicePayments(it.paymentReference.toLong())
+                        invoicePaymentRepository.getInvoicePaymentsWithReservationWarningInfo(it.paymentReference.toLong())
                     } else {
                         emptyList()
                     }
