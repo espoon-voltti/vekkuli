@@ -193,7 +193,7 @@ class ListFilters : BaseView() {
                     <span class="icon is-small">
                         ${icons.check}
                     </span>
-                    <span>${t("employee.boatReservations.boatSpaceState.$boatSpaceState")}</span>
+                    <span>${t("boatSpaceList.boatSpaceState.$boatSpaceState")}</span>
                 </label>
             """.trimIndent()
         }

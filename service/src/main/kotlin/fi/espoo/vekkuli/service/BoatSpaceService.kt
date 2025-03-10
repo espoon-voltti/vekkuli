@@ -21,6 +21,18 @@ data class BoatSpaceFilter(
     val locationIds: List<Int>? = null
 )
 
+data class EditBoatSpaceParams(
+    val locationId: Int?,
+    val type: BoatSpaceType?,
+    val section: String?,
+    val placeNumber: Int?,
+    val amenity: BoatSpaceAmenity?,
+    val widthCm: Int?,
+    val lengthCm: Int?,
+    val priceId: Int?,
+    val isActive: Boolean?
+)
+
 interface BoatSpaceRepository {
     fun getUnreservedBoatSpaceOptions(params: BoatSpaceFilter): Pair<List<Harbor>, Int>
 
@@ -34,6 +46,11 @@ interface BoatSpaceRepository {
     ): List<BoatSpaceListRow>
 
     fun getSections(): List<String>
+
+    fun editBoatSpaces(
+        boatSpaceIds: List<Int>,
+        editBoatSpaceParams: EditBoatSpaceParams
+    )
 }
 
 fun <T> getSingleOrEmptyList(item: T?): List<T> = if (item != null) listOf(item) else listOf()
@@ -100,4 +117,17 @@ class BoatSpaceService(
     }
 
     fun getSections() = boatSpaceRepo.getSections()
+
+    fun editBoatSpaces(
+        boatSpaceIds: List<Int>,
+        editBoatSpaceParams: EditBoatSpaceParams
+    ) {
+        var editParams = editBoatSpaceParams
+
+        // If multiple boat spaces are edited, section and place number should not be changed
+        if (boatSpaceIds.size > 1) {
+            editParams = editParams.copy(section = null, placeNumber = null)
+        }
+        boatSpaceRepo.editBoatSpaces(boatSpaceIds, editParams)
+    }
 }

@@ -1,5 +1,6 @@
 package fi.espoo.vekkuli.service
 
+import fi.espoo.vekkuli.domain.*
 import fi.espoo.vekkuli.domain.CreateInvoiceParams
 import fi.espoo.vekkuli.domain.CreatePaymentParams
 import fi.espoo.vekkuli.domain.Invoice
