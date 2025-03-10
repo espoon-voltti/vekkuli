@@ -68,8 +68,8 @@ class InvoicePaymentServiceIntegrationTest : IntegrationTestBase() {
 
         val invoice = paymentService.getInvoiceForReservation(reservation.id)!!
 
-        mockInvoicePaymentClient.setPayments(
-            listOf(Receipt(1, BigDecimal(20.21), "2025-01-01", "VEK_${invoice.invoiceNumber}"))
+        MockInvoicePaymentClient.payments.add(
+            Receipt(1, BigDecimal(20.21), "2025-01-01", "VEK_${invoice.invoiceNumber}")
         )
 
         sut.fetchAndStoreInvoicePayments()

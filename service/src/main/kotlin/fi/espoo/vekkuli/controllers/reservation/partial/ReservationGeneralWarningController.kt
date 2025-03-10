@@ -73,6 +73,7 @@ class ReservationGeneralWarningController {
             reservationId,
             null,
             null,
+            null,
             infoText.trim(),
             listOf(generalWarningsKey)
         )
@@ -86,6 +87,7 @@ class ReservationGeneralWarningController {
                     key = generalWarningsKey,
                     infoText = infoText.trim(),
                     boatId = null,
+                    invoiceNumber = null,
                     trailerId = null
                 )
             )
@@ -107,6 +109,7 @@ class ReservationGeneralWarningController {
             reservationId,
             null,
             null,
+            null,
             infoText.trim(),
             listOf(generalWarningsKey)
         )
@@ -120,7 +123,8 @@ class ReservationGeneralWarningController {
                     key = generalWarningsKey,
                     infoText = infoText.trim(),
                     boatId = null,
-                    trailerId = null
+                    trailerId = null,
+                    invoiceNumber = null
                 )
             )
         )

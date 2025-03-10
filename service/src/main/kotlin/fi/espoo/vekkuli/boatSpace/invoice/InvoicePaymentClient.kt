@@ -45,17 +45,13 @@ interface InvoicePaymentClient {
     fun getPayments(): InvoicePaymentResponse
 }
 
-
 @Profile("!(staging || production)")
 @Service
 class MockInvoicePaymentClient : InvoicePaymentClient {
     companion object {
-        var payments: List<Receipt> = listOf()
-
-        fun setPayments(payments: List<Receipt>) {
-            this.payments = payments
-        }
+        var payments: MutableList<Receipt> = mutableListOf()
     }
+
     override fun getPayments(): InvoicePaymentResponse = InvoicePaymentResponse(receipts = payments)
 }
 
